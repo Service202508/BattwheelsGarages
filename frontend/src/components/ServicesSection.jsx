@@ -1,17 +1,12 @@
 import React from 'react';
-import { services } from '../mockData';
-import { Wrench, Monitor, CircleSlash, Cpu, Zap, Paintbrush, Battery, Plug } from 'lucide-react';
+import { servicesByType } from '../mockData';
+import { Bike, TramFront, Car, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 
 const iconMap = {
-  Wrench,
-  Monitor,
-  CircleSlash,
-  Cpu,
-  Zap,
-  Paintbrush,
-  Battery,
-  Plug
+  Bike,
+  TramFront,
+  Car
 };
 
 const ServicesSection = () => {
@@ -21,46 +16,51 @@ const ServicesSection = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Our Services
+            Services by EV Type
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Comprehensive EV maintenance and repair services to keep your electric vehicle running smoothly
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Specialized onsite diagnostics and repair for all electric vehicle categories—from 2-wheelers to commercial 4-wheelers
           </p>
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.map((service) => {
-            const Icon = iconMap[service.icon];
+        <div className="grid md:grid-cols-3 gap-8 mb-12">
+          {servicesByType.map((category) => {
+            const Icon = iconMap[category.icon];
             return (
-              <Card 
-                key={service.id} 
-                className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer border-none"
-              >
+              <Card key={category.id} className="border-none shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader>
-                  <div className="bg-green-100 w-14 h-14 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-600 transition-colors">
-                    <Icon className="w-7 h-7 text-green-600 group-hover:text-white transition-colors" />
+                  <div className="bg-green-100 w-16 h-16 rounded-lg flex items-center justify-center mb-4">
+                    <Icon className="w-8 h-8 text-green-600" />
                   </div>
-                  <CardTitle className="text-lg">{service.title}</CardTitle>
+                  <CardTitle className="text-xl">{category.category}</CardTitle>
+                  <CardDescription className="text-gray-600">
+                    {category.description}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-gray-600">
-                    {service.description}
-                  </CardDescription>
+                  <ul className="space-y-2">
+                    {category.services.map((service, idx) => (
+                      <li key={idx} className="flex items-start space-x-2 text-sm">
+                        <ArrowRight className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-gray-700">{service}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </CardContent>
               </Card>
             );
           })}
         </div>
 
-        {/* CTA */}
-        <div className="text-center mt-12">
-          <a 
-            href="#contact" 
-            className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors shadow-lg"
-          >
-            Get a Free Quote
-          </a>
+        {/* Bottom Note */}
+        <div className="text-center bg-gray-900 text-white p-8 rounded-lg max-w-3xl mx-auto">
+          <p className="text-lg font-semibold mb-2">
+            🚫 We Do Not Service ICE Vehicles
+          </p>
+          <p className="text-gray-300 text-sm">
+            100% focus on electric vehicle systems, battery technology, and EV electronics. Zero distraction from conventional vehicles.
+          </p>
         </div>
       </div>
     </section>
