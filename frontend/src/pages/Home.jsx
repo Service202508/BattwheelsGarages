@@ -2,12 +2,14 @@ import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import HeroSection from '../components/HeroSection';
-import ServicesSection from '../components/ServicesSection';
+import ProblemSolutionSection from '../components/ProblemSolutionSection';
 import AboutSection from '../components/AboutSection';
-import StatsSection from '../components/StatsSection';
+import ServicesSection from '../components/ServicesSection';
+import FleetSolutionsSection from '../components/FleetSolutionsSection';
+import WhyBattwheelsSection from '../components/WhyBattwheelsSection';
+import GarageModelsSection from '../components/GarageModelsSection';
 import TestimonialsSection from '../components/TestimonialsSection';
-import FeaturesSection from '../components/FeaturesSection';
-import BrandsSection from '../components/BrandsSection';
+import PartnersSection from '../components/PartnersSection';
 import FAQSection from '../components/FAQSection';
 import ContactSection from '../components/ContactSection';
 import { Toaster } from '../components/ui/toaster';
@@ -18,12 +20,14 @@ const Home = () => {
       <Header />
       <main>
         <HeroSection />
-        <ServicesSection />
+        <ProblemSolutionSection />
         <AboutSection />
-        <StatsSection />
+        <ServicesSection />
+        <FleetSolutionsSection />
+        <WhyBattwheelsSection />
+        <GarageModelsSection />
         <TestimonialsSection />
-        <FeaturesSection />
-        <BrandsSection />
+        <PartnersSection />
         <FAQSection />
         <ContactSection />
       </main>
