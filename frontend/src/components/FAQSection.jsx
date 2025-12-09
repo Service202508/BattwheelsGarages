@@ -9,7 +9,7 @@ import {
 
 const FAQSection = () => {
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           {/* Section Header */}
@@ -18,7 +18,7 @@ const FAQSection = () => {
               Frequently Asked Questions
             </h2>
             <p className="text-lg text-gray-600">
-              Find answers to common questions about our EV services
+              Common questions from fleet operators and partners
             </p>
           </div>
 
@@ -28,7 +28,7 @@ const FAQSection = () => {
               <AccordionItem 
                 key={faq.id} 
                 value={`item-${faq.id}`}
-                className="bg-white border-none shadow-md rounded-lg px-6"
+                className="bg-gray-50 border border-gray-200 rounded-lg px-6"
               >
                 <AccordionTrigger className="text-left hover:no-underline">
                   <span className="font-semibold text-gray-900">{faq.question}</span>

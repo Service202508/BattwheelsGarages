@@ -3,16 +3,19 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
-import { Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Phone, Mail, MapPin } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 
 const ContactSection = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
     phone: '',
+    company: '',
+    role: '',
+    fleetSize: '',
     message: ''
   });
 
@@ -23,49 +26,56 @@ const ContactSection = () => {
     });
   };
 
+  const handleSelectChange = (name, value) => {
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Mock form submission
-    console.log('Form submitted:', formData);
+    console.log('B2B Lead captured:', formData);
     
     toast({
-      title: "Message Sent!",
-      description: "We'll get back to you within 24 hours.",
+      title: "Request Received!",
+      description: "Our team will contact you within 24 hours.",
     });
 
-    // Reset form
     setFormData({
-      firstName: '',
-      lastName: '',
+      name: '',
       email: '',
       phone: '',
+      company: '',
+      role: '',
+      fleetSize: '',
       message: ''
     });
   };
 
   return (
-    <section id="contact" className="py-20 bg-white">
+    <section id="contact" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Contact Us
+            Partner with Battwheels Garages
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Get in touch with our team for expert EV maintenance consultation and service
+            Fleet operators, OEMs, and mobility platforms—let's build India's EV infrastructure together
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-12">
+        <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Contact Info */}
           <div className="space-y-8">
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                Get Expert Consultation
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Get in Touch
               </h3>
               <p className="text-gray-600 mb-8">
-                Procuring expertise in electric vehicle (EV) maintenance and assurance at Battwheels Garages. We ensure top-notch consultation and service for all your EV needs.
+                Whether you're running a fleet of 10 or 10,000 EVs, we have the infrastructure and expertise to support your operations.
               </p>
             </div>
 
@@ -76,7 +86,7 @@ const ContactSection = () => {
                   <MapPin className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Address</h4>
+                  <h4 className="font-semibold text-gray-900 mb-1">Head Office</h4>
                   <p className="text-gray-600">Dwarka Sector 23, Delhi, India</p>
                 </div>
               </div>
@@ -88,6 +98,7 @@ const ContactSection = () => {
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-1">Phone</h4>
                   <p className="text-gray-600">+91 9876543210</p>
+                  <p className="text-sm text-green-600 mt-1">24x7 Operations</p>
                 </div>
               </div>
 
@@ -97,55 +108,40 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-1">Email</h4>
-                  <p className="text-gray-600">info@battwheelsgarages.in</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="bg-green-100 p-3 rounded-lg flex-shrink-0">
-                  <Clock className="w-6 h-6 text-green-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Service Hours</h4>
-                  <p className="text-gray-600">24x7 Available</p>
-                  <p className="text-sm text-green-600 font-medium mt-1">Emergency services available anytime</p>
+                  <p className="text-gray-600">partnerships@battwheelsgarages.in</p>
+                  <p className="text-gray-600">support@battwheelsgarages.in</p>
                 </div>
               </div>
             </div>
+
+            {/* Stats Box */}
+            <div className="bg-gray-900 text-white p-6 rounded-lg">
+              <p className="text-green-400 font-semibold mb-2">Response Guarantee</p>
+              <p className="text-sm text-gray-300">
+                All partnership inquiries are reviewed within 24 hours. For urgent fleet breakdowns, call our 24x7 operations line.
+              </p>
+            </div>
           </div>
 
-          {/* Contact Form */}
-          <div className="bg-gray-50 p-8 rounded-2xl">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="firstName">First Name *</Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    required
-                    className="mt-2"
-                    placeholder="John"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="lastName">Last Name *</Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    required
-                    className="mt-2"
-                    placeholder="Doe"
-                  />
-                </div>
+          {/* Contact Form - B2B Focused */}
+          <div className="bg-white p-8 rounded-lg border border-gray-200 shadow-lg">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Request Partnership / Demo</h3>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <Label htmlFor="name">Full Name *</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  className="mt-2"
+                  placeholder="John Doe"
+                />
               </div>
 
               <div>
-                <Label htmlFor="email">Email *</Label>
+                <Label htmlFor="email">Business Email *</Label>
                 <Input
                   id="email"
                   name="email"
@@ -154,12 +150,12 @@ const ContactSection = () => {
                   onChange={handleChange}
                   required
                   className="mt-2"
-                  placeholder="john@example.com"
+                  placeholder="john@company.com"
                 />
               </div>
 
               <div>
-                <Label htmlFor="phone">Mobile Number *</Label>
+                <Label htmlFor="phone">Phone Number *</Label>
                 <Input
                   id="phone"
                   name="phone"
@@ -173,7 +169,52 @@ const ContactSection = () => {
               </div>
 
               <div>
-                <Label htmlFor="message">Comment or Message</Label>
+                <Label htmlFor="company">Company / Fleet Name *</Label>
+                <Input
+                  id="company"
+                  name="company"
+                  value={formData.company}
+                  onChange={handleChange}
+                  required
+                  className="mt-2"
+                  placeholder="ABC Logistics Pvt Ltd"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="role">Your Role</Label>
+                <Select onValueChange={(value) => handleSelectChange('role', value)}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="fleet-manager">Fleet Manager</SelectItem>
+                    <SelectItem value="operations-head">Operations Head</SelectItem>
+                    <SelectItem value="cxo">CXO / Founder</SelectItem>
+                    <SelectItem value="procurement">Procurement Manager</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="fleetSize">Fleet Size</Label>
+                <Select onValueChange={(value) => handleSelectChange('fleetSize', value)}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Select fleet size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1-10">1-10 vehicles</SelectItem>
+                    <SelectItem value="10-50">10-50 vehicles</SelectItem>
+                    <SelectItem value="50-200">50-200 vehicles</SelectItem>
+                    <SelectItem value="200+">200+ vehicles</SelectItem>
+                    <SelectItem value="individual">Individual Owner</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="message">Message / Requirements</Label>
                 <Textarea
                   id="message"
                   name="message"
@@ -181,7 +222,7 @@ const ContactSection = () => {
                   onChange={handleChange}
                   className="mt-2"
                   rows={4}
-                  placeholder="Tell us about your EV service needs..."
+                  placeholder="Tell us about your fleet operations and service requirements..."
                 />
               </div>
 
@@ -190,7 +231,7 @@ const ContactSection = () => {
                 className="w-full bg-green-600 hover:bg-green-700 text-white"
                 size="lg"
               >
-                Submit
+                Submit Partnership Request
               </Button>
             </form>
           </div>
