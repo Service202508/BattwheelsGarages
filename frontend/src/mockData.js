@@ -1,189 +1,277 @@
-export const services = [
+// Services by EV Type
+export const servicesByType = [
   {
     id: 1,
-    title: 'Complete Vehicle Refurbishment',
-    description: 'Comprehensive restoration and refurbishment services for your EV to keep it running like new.',
-    icon: 'Wrench'
+    category: 'Electric 2-Wheelers',
+    description: 'Specialized onsite diagnostics and repair for electric scooters and bikes',
+    services: [
+      'Battery diagnostics & repair',
+      'Controller & motor troubleshooting',
+      'Throttle & wiring issues',
+      'Brake system maintenance',
+      'Software updates & calibration',
+      'Charging port repair'
+    ],
+    icon: 'Bike'
   },
   {
     id: 2,
-    title: 'Software Updates',
-    description: 'Latest software updates and firmware upgrades to enhance your EV performance and features.',
-    icon: 'Monitor'
+    category: 'Electric 3-Wheelers',
+    description: 'Fleet-grade service for e-rickshaws, cargo vehicles, and battery swapping models',
+    services: [
+      'E-rickshaw diagnostics',
+      'Battery swapping model support',
+      'Load carrier maintenance',
+      'Fleet preventive maintenance',
+      'Controller replacement',
+      'Complete electrical overhaul'
+    ],
+    icon: 'TramFront'
   },
   {
     id: 3,
-    title: 'Brake System Repair',
-    description: 'Expert brake system maintenance and repair services ensuring your safety on the road.',
-    icon: 'CircleSlash'
-  },
-  {
-    id: 4,
-    title: 'Motor & Controller Repairs',
-    description: 'Professional motor and controller diagnostics, repair, and replacement services.',
-    icon: 'Cpu'
-  },
-  {
-    id: 5,
-    title: 'Transmission / Electrical / Electronics',
-    description: 'Complete electrical and electronic system diagnostics and repair services.',
-    icon: 'Zap'
-  },
-  {
-    id: 6,
-    title: 'Chassis Alignment, Denting & Painting',
-    description: 'Professional body work including alignment, denting, and painting services.',
-    icon: 'Paintbrush'
-  },
-  {
-    id: 7,
-    title: 'Battery Health Diagnostics',
-    description: 'Advanced battery health monitoring, diagnostics, and replacement services.',
-    icon: 'Battery'
-  },
-  {
-    id: 8,
-    title: 'EV Charger Repair',
-    description: '24x7 EV charger troubleshooting, repair, and replacement services.',
-    icon: 'Plug'
+    category: 'Electric 4-Wheelers',
+    description: 'Commercial & passenger EV service including fleet operations',
+    services: [
+      'Passenger EV diagnostics',
+      'Commercial fleet maintenance',
+      'Battery health monitoring',
+      'HVAC & thermal management',
+      'Advanced driver assistance systems',
+      'Complete vehicle refurbishment'
+    ],
+    icon: 'Car'
   }
 ];
 
+// Fleet Solutions
+export const fleetSolutions = [
+  {
+    id: 1,
+    title: 'AMC & SLA Contracts',
+    description: 'Structured service agreements with guaranteed TAT and uptime SLAs for fleet operators',
+    features: ['Predictable cost structure', 'Priority response', 'Dedicated service manager', 'Monthly reports'],
+    icon: 'FileText'
+  },
+  {
+    id: 2,
+    title: 'Preventive Maintenance Programs',
+    description: 'Scheduled inspections and maintenance to prevent breakdowns and maximize fleet uptime',
+    features: ['Scheduled inspections', 'Health monitoring', 'Parts lifecycle tracking', 'Performance optimization'],
+    icon: 'ClipboardCheck'
+  },
+  {
+    id: 3,
+    title: 'Dark Store & Spare Parts Logistics',
+    description: 'Strategic parts inventory management ensuring critical components availability across regions',
+    features: ['Regional spare parts hubs', 'Fast replacement parts', '24x7 availability', 'Optimized inventory'],
+    icon: 'Package'
+  },
+  {
+    id: 4,
+    title: 'Fleet Audits & Digital Inspections',
+    description: 'Comprehensive vehicle health audits with digital ticketing and gate-entry inspection systems',
+    features: ['Digital inspection reports', 'Gate-entry checks', 'Parking ticketing', 'Fleet health scoring'],
+    icon: 'Clipboard'
+  }
+];
+
+// Why Battwheels - USP Comparison
+export const comparisonData = [
+  {
+    feature: 'EV Specialization',
+    traditional: 'ICE-focused, limited EV knowledge',
+    battwheels: 'EV-Only expertise, no ICE distraction'
+  },
+  {
+    feature: 'Service Model',
+    traditional: 'Towing-first approach',
+    battwheels: '80-90% onsite resolution, no towing dependency'
+  },
+  {
+    feature: 'Fleet Understanding',
+    traditional: 'Consumer-focused service',
+    battwheels: 'Fleet-first DNA, uptime optimization'
+  },
+  {
+    feature: 'Response Time',
+    traditional: 'Hours to days',
+    battwheels: 'Sub-2 hour response, faster MTTR'
+  },
+  {
+    feature: 'Technician Training',
+    traditional: 'ICE mechanics adapting',
+    battwheels: 'EV-trained technicians & electricians'
+  },
+  {
+    feature: 'Parts Availability',
+    traditional: 'Generic network',
+    battwheels: 'EV-specific dark stores & logistics'
+  }
+];
+
+// Garage Models
+export const garageModels = [
+  {
+    id: 1,
+    model: 'COCO',
+    fullForm: 'Company Owned Company Operated',
+    description: 'Fully owned and operated service centers in strategic metros and high-density EV zones',
+    benefits: ['Complete quality control', 'Direct operations', 'Rapid response', 'Brand standards'],
+    icon: 'Building2'
+  },
+  {
+    id: 2,
+    model: 'FOCO',
+    fullForm: 'Franchise Owned Company Operated',
+    description: 'Franchised infrastructure with Battwheels operational management and service standards',
+    benefits: ['Asset-light expansion', 'Local partnerships', 'Standardized service', 'Scalable model'],
+    icon: 'Handshake'
+  },
+  {
+    id: 3,
+    model: 'FOFO',
+    fullForm: 'Franchise Owned Franchise Operated',
+    description: 'Fully franchised model for rapid pan-India coverage with certified training and support',
+    benefits: ['Fastest expansion', 'Local entrepreneurship', 'Network effect', 'Geographic coverage'],
+    icon: 'Network'
+  }
+];
+
+// Core USPs
+export const coreUSPs = [
+  {
+    id: 1,
+    title: 'EV-Only Expertise',
+    description: 'Zero distraction from ICE vehicles. Our technicians are trained exclusively in EV systems, electronics, and battery technology.',
+    icon: 'Zap',
+    stats: '100% EV-Focused'
+  },
+  {
+    id: 2,
+    title: 'Onsite Resolution Model',
+    description: 'Diagnose and repair where the vehicle stops. 80-90% issues resolved on field without towing dependency.',
+    icon: 'MapPin',
+    stats: '80-90% Onsite Fix Rate'
+  },
+  {
+    id: 3,
+    title: 'Fleet-First DNA',
+    description: 'Built for high-utilization fleets running 10-14 hours daily. We understand uptime is money for fleet operations.',
+    icon: 'TrendingUp',
+    stats: 'Max Uptime Guaranteed'
+  },
+  {
+    id: 4,
+    title: 'Faster MTTR',
+    description: 'Mean Time to Repair optimized for fleet operations. Response within 2 hours, resolution on the same day.',
+    icon: 'Clock',
+    stats: '<2hr Response Time'
+  },
+  {
+    id: 5,
+    title: 'Pan-India Scalability',
+    description: 'COCO, FOCO, and FOFO garage models enabling rapid geographic expansion and local presence.',
+    icon: 'Map',
+    stats: 'Pan-India Network'
+  },
+  {
+    id: 6,
+    title: 'Operational Credibility',
+    description: 'Real operations, not marketing. ₹1 Crore revenue in Year 1 with a strong field engineering backbone.',
+    icon: 'Shield',
+    stats: '₹1Cr+ Revenue Y1'
+  }
+];
+
+// Testimonials - B2B Focused
 export const testimonials = [
   {
     id: 1,
-    name: 'MD. Abdul Aziz',
-    role: 'Fleet Manager',
-    content: 'We are pleased to work with Battwheels team as our vehicle service or breakdown TAT is very low. We are getting proper service on time, and also, there is proper spare parts availability at your service center.',
-    rating: 5
-  },
-  {
-    id: 2,
-    name: 'Diwakar',
-    role: 'Business Owner',
-    content: 'I am writing to thank you for the quality of service provided by you. We sincerely appreciate your efficient, gracious customer service and the way you conduct business. We will continue to recommend your services.',
-    rating: 5
-  },
-  {
-    id: 3,
     name: 'Sandeep Kumar Tiwari',
     role: 'Operations Head',
-    content: 'Battwheels Garages has been very instrumental in supporting our GPS related on-field operations. We found Battwheels Garages to be the best fit partner for the after sales services.',
+    company: 'Fleet Operations',
+    content: 'Battwheels has been instrumental in supporting our field operations. Their onsite resolution model reduced our vehicle downtime by 60%. Best fit partner for aftersales services.',
     rating: 5
-  },
-  {
-    id: 4,
-    name: 'Dipankar Panhera',
-    role: 'Product Manager',
-    content: 'Roadside Assistance as issue resolution on field from Battwheels Garages is a great addition for our customers. It\'s great fit with our motto of simplifying the EV ownership journey.',
-    rating: 5
-  },
-  {
-    id: 5,
-    name: 'Surender Sharma',
-    role: 'CEO',
-    content: 'As a company, our focus has been to strengthen our after-sales service. The initiative with Battwheels Garages focuses on empowering and increasing awareness for EVs.',
-    rating: 5
-  },
-  {
-    id: 6,
-    name: 'Ravindra Patnayak',
-    role: 'Director',
-    content: 'Battwheels Garages has been very instrumental in supporting our operations. While we thought of deploying people on field, we found Battwheels to be the best fit partner.',
-    rating: 5
-  }
-];
-
-export const features = [
-  {
-    id: 1,
-    title: 'Skilled Engineers',
-    description: 'Our engineers are specially trained in cutting-edge facilities, equipped with the latest technologies to deliver the highest quality work possible.',
-    icon: 'Users'
   },
   {
     id: 2,
-    title: 'Proven Expertise',
-    description: 'With our wealth of skills and experience, we can address any problem your EV may encounter, whether it\'s battery-related issues or software glitches.',
-    icon: 'Award'
+    name: 'Dipankar Panhera',
+    role: 'Product Manager',
+    company: 'EV Mobility Platform',
+    content: 'Roadside assistance with onsite resolution is a game-changer for our customers. Perfectly aligns with our motto of simplifying EV ownership journey.',
+    rating: 5
   },
   {
     id: 3,
-    title: 'Assured Service',
-    description: 'With our expansive workforce and network, we guarantee you reliable service and a faster turnaround time (TAT).',
-    icon: 'CheckCircle'
+    name: 'MD. Abdul Aziz',
+    role: 'Fleet Manager',
+    company: 'Last Mile Delivery',
+    content: 'Our vehicle breakdown TAT dropped significantly. Proper service on time with spare parts availability. No major issues since partnering with Battwheels.',
+    rating: 5
   },
   {
     id: 4,
-    title: 'Reliable Work',
-    description: 'We employ cutting-edge tools and techniques to guarantee the smooth and safe operation of your EV.',
-    icon: 'Shield'
-  },
-  {
-    id: 5,
-    title: 'Comprehensive Diagnostics',
-    description: 'Our advanced diagnostic tools allow us to quickly identify issues, ensuring precise and efficient repairs for optimal performance.',
-    icon: 'Search'
-  },
-  {
-    id: 6,
-    title: 'Customer-Centric Approach',
-    description: 'We prioritize customer satisfaction by offering transparent communication, affordable solutions, and personalized service for all your EV needs.',
-    icon: 'Heart'
+    name: 'Surender Sharma',
+    role: 'CEO',
+    company: 'EV Fleet Solutions',
+    content: 'Focus on strengthening aftersales service. Battwheels initiative empowers and increases EV awareness. Strong operational partner.',
+    rating: 5
   }
 ];
 
-export const brands = [
-  { id: 1, name: 'Ather', logo: 'https://via.placeholder.com/120x60/22c55e/ffffff?text=Ather' },
-  { id: 2, name: 'Bajaj', logo: 'https://via.placeholder.com/120x60/22c55e/ffffff?text=Bajaj' },
-  { id: 3, name: 'Chetak', logo: 'https://via.placeholder.com/120x60/22c55e/ffffff?text=Chetak' },
-  { id: 4, name: 'Bounce', logo: 'https://via.placeholder.com/120x60/22c55e/ffffff?text=Bounce' },
-  { id: 5, name: 'Hero Electric', logo: 'https://via.placeholder.com/120x60/22c55e/ffffff?text=Hero' },
-  { id: 6, name: 'Ola Electric', logo: 'https://via.placeholder.com/120x60/22c55e/ffffff?text=Ola' },
-  { id: 7, name: 'TVS', logo: 'https://via.placeholder.com/120x60/22c55e/ffffff?text=TVS' },
-  { id: 8, name: 'Revolt', logo: 'https://via.placeholder.com/120x60/22c55e/ffffff?text=Revolt' },
-  { id: 9, name: 'Simple', logo: 'https://via.placeholder.com/120x60/22c55e/ffffff?text=Simple' },
-  { id: 10, name: 'Ultraviolette', logo: 'https://via.placeholder.com/120x60/22c55e/ffffff?text=UV' },
-  { id: 11, name: 'Tata', logo: 'https://via.placeholder.com/120x60/22c55e/ffffff?text=Tata' },
-  { id: 12, name: 'MG', logo: 'https://via.placeholder.com/120x60/22c55e/ffffff?text=MG' }
+// Stats
+export const stats = [
+  { id: 1, value: '10000', label: 'Vehicles Serviced', suffix: '+' },
+  { id: 2, value: '90', label: 'Onsite Resolution Rate', suffix: '%' },
+  { id: 3, value: '2', label: 'Avg Response Time', suffix: 'hrs' },
+  { id: 4, value: '100', label: 'EV-Only Focus', suffix: '%' }
 ];
 
+// FAQs - B2B Focused
 export const faqs = [
   {
     id: 1,
-    question: 'What kind of maintenance does an electric vehicle require?',
-    answer: 'Electric vehicles require less maintenance than gasoline vehicles. Still, there are some key areas where EV maintenance and repair service is required including battery health checkups, tire rotation, brake inspection, software updates, etc.'
+    question: 'What makes Battwheels different from traditional RSA providers?',
+    answer: 'We are EV-only specialists with an onsite resolution model. Unlike traditional providers who tow-first, we diagnose and repair on the spot, achieving 80-90% onsite fix rates. This eliminates towing dependency and maximizes fleet uptime.'
   },
   {
     id: 2,
-    question: 'How often does an Electric vehicle require maintenance?',
-    answer: 'It is suggested to service EVs at least once a year or every 12,000 to 15,000 kilometers, considering the manufacturer\'s driving habits and guidelines.'
+    question: 'Do you work with fleet operators and OEMs?',
+    answer: 'Yes, B2B fleets are our core focus. We work with last-mile delivery fleets, mobility operators, battery swapping companies, and EV OEMs. We offer AMC/SLA contracts, preventive maintenance programs, and dedicated fleet solutions.'
   },
   {
     id: 3,
-    question: 'Do you provide immediate service?',
-    answer: 'Yes, we provide on-the-spot service based on your requirements. Our team is available 24x7 for emergency repairs and scheduled maintenance.'
+    question: 'What is your average response time?',
+    answer: 'Our average response time is under 2 hours for emergency breakdowns. For AMC/SLA customers, we provide priority response with guaranteed TAT based on contract terms.'
   },
   {
     id: 4,
-    question: 'Do you have a team to provide EV maintenance and repair services?',
-    answer: 'Yes, we have a team of expert professionals who provide EV maintenance and repair services onsite. Our technicians are specially trained in EV technology.'
+    question: 'Which EV types do you service?',
+    answer: 'We service all EV categories: 2-wheelers (scooters, bikes), 3-wheelers (e-rickshaws, cargo vehicles, battery swapping models), and 4-wheelers (passenger and commercial EVs). We do not service ICE vehicles.'
   },
   {
     id: 5,
-    question: 'What areas do you serve?',
-    answer: 'We primarily serve Delhi NCR region with our onsite services. We can reach your location within 2-4 hours depending on your area and service requirements.'
+    question: 'How does your garage expansion model work?',
+    answer: 'We operate through three models: COCO (Company Owned Company Operated), FOCO (Franchise Owned Company Operated), and FOFO (Franchise Owned Franchise Operated). This enables rapid pan-India scaling while maintaining service standards.'
   },
   {
     id: 6,
-    question: 'How do I book a service?',
-    answer: 'You can book a service through our website contact form, call our 24x7 helpline, or send us a message through WhatsApp. Our team will respond promptly to schedule your service.'
+    question: 'What is included in your AMC contracts?',
+    answer: 'AMC contracts include preventive maintenance, priority breakdown response, dedicated service manager, spare parts logistics, digital fleet audits, and monthly performance reports with guaranteed uptime SLAs.'
   }
 ];
 
-export const stats = [
-  { id: 1, value: '5000', label: 'Happy Customers', suffix: '+' },
-  { id: 2, value: '10000', label: 'Vehicles Serviced', suffix: '+' },
-  { id: 3, value: '50000', label: 'CO2 Saved', suffix: 'Kg +' },
-  { id: 4, value: '25', label: 'Part Replacement Cost Saved', suffix: 'Lakhs +' }
+// Partners/Clients
+export const partners = [
+  { id: 1, name: 'Zypp Electric', category: 'Last Mile Delivery' },
+  { id: 2, name: 'Ather Energy', category: 'EV OEM' },
+  { id: 3, name: 'Omega Seiki Mobility', category: 'EV OEM' },
+  { id: 4, name: 'Sun Mobility', category: 'Battery Swapping' },
+  { id: 5, name: 'Battery Smart', category: 'Battery Swapping' },
+  { id: 6, name: 'Magenta Mobility', category: 'Fleet Operator' },
+  { id: 7, name: 'Gentari', category: 'Charging Infrastructure' },
+  { id: 8, name: 'Log9', category: 'Battery Technology' },
+  { id: 9, name: 'Switchh', category: 'Mobility Platform' },
+  { id: 10, name: 'Indofast', category: 'Logistics' }
 ];
