@@ -1,85 +1,84 @@
 import React from 'react';
-import { Target, Eye, Leaf } from 'lucide-react';
+import { Users, Wrench, TrendingUp, Building } from 'lucide-react';
 
 const AboutSection = () => {
   return (
     <section id="about" className="py-20 bg-white">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Years Of Expertise in <span className="text-green-600">Electric Vehicle Maintenance</span>
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              About Battwheels Garages
             </h2>
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              Battwheels Garages has redefined the after sales experience of EV customers with our immediate assistance for electric vehicle repair and maintenance service. Holding years of expertise in offering proactive care to electronic vehicles, we ensure minimal downtime and maximum efficiency of your electric vehicles.
+            <p className="text-xl text-gray-600">
+              Operator-Led Company, Not MBA-Led
             </p>
-            <p className="text-gray-600 mb-8 leading-relaxed">
-              We have a team of professional EV repair and servicing experts who put their best efforts to cater to the needs of customers. Whether it is an e-rickshaw, two-wheelers or other types of EVs, our dedicated team is always ready to resolve issues on the spot.
+          </div>
+
+          {/* Main Content */}
+          <div className="prose prose-lg max-w-none mb-12">
+            <p className="text-gray-700 leading-relaxed mb-6">
+              Battwheels Garages is India's first EV-only, onsite roadside assistance (RSA) and aftersales service company. 
+              We exist to solve one core problem: <strong>EVs don't need towing first—they need diagnosis and repair on the spot.</strong>
+            </p>
+            
+            <p className="text-gray-700 leading-relaxed mb-6">
+              Traditional RSA models are fundamentally broken for electric vehicles. Towing wastes time, increases operational costs, 
+              and kills vehicle uptime—especially critical for high-utilization fleets running 10-14 hours daily.
             </p>
 
-            {/* Mission */}
-            <div className="bg-green-50 p-6 rounded-xl mb-6">
-              <div className="flex items-start space-x-4">
-                <div className="bg-green-600 p-3 rounded-lg flex-shrink-0">
-                  <Target className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Our Mission</h3>
-                  <p className="text-gray-600 text-sm">
-                    To support India's eco-friendly movement through the EV revolution. Since our inception, we have served thousands of businesses and individual owners by offering reliable, swift and expert services.
-                  </p>
-                </div>
+            <p className="text-gray-700 leading-relaxed mb-6">
+              We're not a marketing company running ads. We're an operations-first company with <strong>₹1 Crore revenue in Year 1</strong>, 
+              a strong field engineering backbone, and real expertise in EV systems, battery technology, and fleet operations.
+            </p>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            <div className="text-center p-6 bg-gray-50 rounded-lg">
+              <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Wrench className="w-6 h-6 text-green-600" />
               </div>
+              <div className="text-2xl font-bold text-gray-900">10,000+</div>
+              <div className="text-sm text-gray-600">Vehicles Serviced</div>
             </div>
 
-            {/* Vision */}
-            <div className="bg-green-50 p-6 rounded-xl">
-              <div className="flex items-start space-x-4">
-                <div className="bg-green-600 p-3 rounded-lg flex-shrink-0">
-                  <Eye className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Our Vision</h3>
-                  <p className="text-gray-600 text-sm">
-                    To constantly strive to keep ourselves updated with ongoing technological advancements so that we can meet our customer's requirements in the best way. We understand the value of time and deliver faster, smarter and efficient EV servicing.
-                  </p>
-                </div>
+            <div className="text-center p-6 bg-gray-50 rounded-lg">
+              <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                <TrendingUp className="w-6 h-6 text-green-600" />
               </div>
+              <div className="text-2xl font-bold text-gray-900">90%</div>
+              <div className="text-sm text-gray-600">Onsite Fix Rate</div>
+            </div>
+
+            <div className="text-center p-6 bg-gray-50 rounded-lg">
+              <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Users className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="text-2xl font-bold text-gray-900">50+</div>
+              <div className="text-sm text-gray-600">EV Technicians</div>
+            </div>
+
+            <div className="text-center p-6 bg-gray-50 rounded-lg">
+              <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Building className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="text-2xl font-bold text-gray-900">₹1Cr+</div>
+              <div className="text-sm text-gray-600">Revenue Y1</div>
             </div>
           </div>
 
-          {/* Right Image */}
-          <div className="relative">
-            <img 
-              src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&h=900&fit=crop" 
-              alt="EV Mechanic at work" 
-              className="rounded-2xl shadow-2xl"
-            />
-            {/* Sustainability Badge */}
-            <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-xl shadow-xl">
-              <div className="flex items-center space-x-4">
-                <div className="bg-green-100 p-3 rounded-full">
-                  <Leaf className="w-8 h-8 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">Sustainability</p>
-                  <p className="text-xs text-gray-600">That Serves You Better</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Sustainability Section */}
-        <div className="mt-20 bg-gradient-to-r from-green-600 to-green-500 rounded-2xl p-8 md:p-12 text-white">
-          <div className="text-center max-w-3xl mx-auto">
-            <Leaf className="w-12 h-12 mx-auto mb-4" />
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">
-              Sustainability That Serves You Better
-            </h3>
-            <p className="text-green-50 leading-relaxed">
-              Sustainability is the main factor in whatever we deliver to our customers. By choosing our eco-friendly EV repair and servicing, we can conserve energy and create a greener future. Our commitment to creating a greener planet will give us better products, smarter services, and happy customers because a healthier earth means a healthy life for everyone.
+          {/* Vision Box */}
+          <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-8 rounded-lg">
+            <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
+            <p className="text-gray-300 leading-relaxed mb-4">
+              To build India's EV Aftersales Infrastructure—a scalable, tech-enabled platform that supports the EV revolution 
+              with onsite diagnostics, rapid response, and fleet-grade reliability.
+            </p>
+            <p className="text-gray-300 leading-relaxed">
+              We're building for the next 5-7 years: COCO, FOCO, and FOFO garage models, AI-assisted diagnostics, 
+              digital ticketing systems, and API-ready architecture for seamless OEM and fleet integrations.
             </p>
           </div>
         </div>
