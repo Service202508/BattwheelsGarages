@@ -134,7 +134,7 @@ const RSAExplainedSection = () => {
             </p>
             <p className="text-gray-300">
               Every hour of downtime costs fleet operators revenue, customer trust, and competitive advantage. 
-              Battwheels eliminates the "towing tax" and gets your vehicles back on the road faster.
+              Battwheels eliminates the &quot;towing tax&quot; and gets your vehicles back on the road faster.
             </p>
           </div>
         </div>
