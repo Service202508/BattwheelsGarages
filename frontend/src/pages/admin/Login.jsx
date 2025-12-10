@@ -37,7 +37,7 @@ const AdminLogin = () => {
           {/* Logo */}
           <div className="flex justify-center mb-8">
             <img
-              src="/assets/battwheels-logo-color.svg"
+              src="/assets/battwheels-logo-main.png"
               alt="Battwheels Garages"
               className="h-12 w-auto"
             />

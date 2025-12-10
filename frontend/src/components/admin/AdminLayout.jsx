@@ -55,9 +55,9 @@ const AdminLayout = ({ children }) => {
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-6 bg-gray-800">
             <img
-              src="/assets/battwheels-logo-white.svg"
+              src="/assets/battwheels-logo-main.png"
               alt="Battwheels Admin"
-              className="h-8 w-auto"
+              className="h-8 w-auto brightness-0 invert"
             />
             <button
               onClick={() => setSidebarOpen(false)}
