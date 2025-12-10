@@ -145,6 +145,13 @@ const RSAExplainedSection = () => {
           </div>
         </div>
       </div>
+      
+      {/* Bottom wave transition to white background */}
+      <div className="absolute bottom-0 left-0 right-0">
+        <svg className="w-full h-16 md:h-24" viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M0,50 C360,80 720,20 1080,50 C1260,65 1350,35 1440,50 L1440,100 L0,100 Z" fill="white" />
+        </svg>
+      </div>
     </section>
   );
 };
