@@ -2,6 +2,7 @@ import React from 'react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import HeroSection from '../components/home/HeroSection';
+import RSAExplainedSection from '../components/home/RSAExplainedSection';
 import StatsSection from '../components/home/StatsSection';
 import WhyChooseSection from '../components/home/WhyChooseSection';
 import ServiceCategoriesSection from '../components/home/ServiceCategoriesSection';
@@ -16,6 +17,7 @@ const Home = () => {
       <Header />
       <main>
         <HeroSection />
+        <RSAExplainedSection />
         <StatsSection />
         <WhyChooseSection />
         <ServiceCategoriesSection />
