@@ -1,18 +1,14 @@
 import React from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import HeroSection from '../components/HeroSection';
-import ProblemSolutionSection from '../components/ProblemSolutionSection';
-import AboutSection from '../components/AboutSection';
-import ServicesSection from '../components/ServicesSection';
-import FleetSolutionsSection from '../components/FleetSolutionsSection';
-import WhyBattwheelsSection from '../components/WhyBattwheelsSection';
-import GarageModelsSection from '../components/GarageModelsSection';
-import TestimonialsSection from '../components/TestimonialsSection';
-import PartnersSection from '../components/PartnersSection';
-import FAQSection from '../components/FAQSection';
-import ContactSection from '../components/ContactSection';
-import { Toaster } from '../components/ui/toaster';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import HeroSection from '../components/home/HeroSection';
+import StatsSection from '../components/home/StatsSection';
+import WhyChooseSection from '../components/home/WhyChooseSection';
+import ServiceCategoriesSection from '../components/home/ServiceCategoriesSection';
+import IndustriesSlider from '../components/home/IndustriesSlider';
+import BrandsSection from '../components/home/BrandsSection';
+import TestimonialsSection from '../components/home/TestimonialsSection';
+import CTABand from '../components/home/CTABand';
 
 const Home = () => {
   return (
@@ -20,19 +16,15 @@ const Home = () => {
       <Header />
       <main>
         <HeroSection />
-        <ProblemSolutionSection />
-        <AboutSection />
-        <ServicesSection />
-        <FleetSolutionsSection />
-        <WhyBattwheelsSection />
-        <GarageModelsSection />
+        <StatsSection />
+        <WhyChooseSection />
+        <ServiceCategoriesSection />
+        <IndustriesSlider />
+        <BrandsSection />
         <TestimonialsSection />
-        <PartnersSection />
-        <FAQSection />
-        <ContactSection />
+        <CTABand />
       </main>
       <Footer />
-      <Toaster />
     </div>
   );
 };
