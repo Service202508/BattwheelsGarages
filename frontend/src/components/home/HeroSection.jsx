@@ -130,18 +130,22 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Right Image */}
+          {/* Right Image/Illustration */}
           <div className="relative">
-            <div className="relative">
+            <div className="relative z-10">
               <img 
-                src="https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=800&h=600&fit=crop" 
-                alt="EV Service" 
+                src="https://images.unsplash.com/photo-1648204798633-c51d248d637a?w=800&h=600&fit=crop" 
+                alt="Electric Vehicles - 2W, 3W, 4W Service" 
                 className="rounded-2xl shadow-2xl"
               />
+              {/* Floating Card - EV Types */}
               <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-xl">
                 <div className="flex items-center space-x-4">
-                  <div className="bg-green-100 p-3 rounded-full">
-                    <ArrowRight className="w-8 h-8 text-green-600" />
+                  <div className="bg-green-100 p-3 rounded-lg">
+                    <div className="text-center">
+                      <p className="text-xs text-gray-600 mb-1">We Service</p>
+                      <p className="text-lg font-bold text-green-600">2W • 3W • 4W</p>
+                    </div>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">10,000+</p>
@@ -150,6 +154,9 @@ const HeroSection = () => {
                 </div>
               </div>
             </div>
+            {/* Background Decoration */}
+            <div className="absolute top-10 right-10 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+            <div className="absolute -bottom-10 left-10 w-72 h-72 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '1s' }}></div>
           </div>
         </div>
       </div>
