@@ -6,8 +6,11 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { useToast } from '../hooks/use-toast';
-import { Briefcase, MapPin, Clock } from 'lucide-react';
+import { Briefcase, MapPin, Clock, Upload } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Careers = () => {
   const { toast } = useToast();
@@ -56,21 +59,67 @@ const Careers = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Application submitted:', { ...formData, jobId: selectedJob });
-    toast({
-      title: "Application Submitted!",
-      description: "We'll review your application and get back to you soon.",
-    });
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      experience: '',
-      cv: null
-    });
-    setSelectedJob(null);
+    
+    if (!formData.cv) {
+      toast({
+        title: "Error",
+        description: "Please upload your CV",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const job = jobs.find(j => j.id === selectedJob);
+      
+      // Create FormData for file upload
+      const formDataObj = new FormData();
+      formDataObj.append('job_id', selectedJob);
+      formDataObj.append('job_title', job.title);
+      formDataObj.append('name', formData.name);
+      formDataObj.append('email', formData.email);
+      formDataObj.append('phone', formData.phone);
+      formDataObj.append('experience', formData.experience || '');
+      formDataObj.append('cv_file', formData.cv);
+
+      const response = await axios.post(
+        `${API_URL}/api/careers/applications`,
+        formDataObj,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      toast({
+        title: "Application Submitted!",
+        description: "We'll review your application and get back to you soon.",
+      });
+
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        experience: '',
+        cv: null
+      });
+      setSelectedJob(null);
+      
+      // Reset file input
+      document.getElementById('cv').value = '';
+      
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      toast({
+        title: "Submission Failed",
+        description: error.response?.data?.detail || "Failed to submit application. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -194,16 +243,24 @@ const Careers = () => {
                     </div>
 
                     <div>
-                      <Label htmlFor="cv">Upload CV *</Label>
-                      <Input
-                        id="cv"
-                        name="cv"
-                        type="file"
-                        accept=".pdf,.doc,.docx"
-                        onChange={handleChange}
-                        required
-                        className="mt-2"
-                      />
+                      <Label htmlFor="cv">Upload CV * (PDF, DOC, or DOCX - Max 5MB)</Label>
+                      <div className="mt-2">
+                        <Input
+                          id="cv"
+                          name="cv"
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={handleChange}
+                          required
+                          className="cursor-pointer"
+                        />
+                        {formData.cv && (
+                          <p className="text-sm text-green-600 mt-2 flex items-center">
+                            <Upload className="w-4 h-4 mr-1" />
+                            {formData.cv.name}
+                          </p>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex gap-4">
