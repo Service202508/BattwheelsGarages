@@ -3,13 +3,19 @@ import { X, Check, TrendingDown, TrendingUp } from 'lucide-react';
 
 const RSAExplainedSection = () => {
   return (
-    <section className="py-20 bg-gray-900 text-white">
-      <div className="container mx-auto px-4">
+    <section className="relative py-20 bg-gradient-to-b from-green-900 via-green-800 to-green-900 text-white overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-green-400 rounded-full filter blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-72 h-72 bg-emerald-400 rounded-full filter blur-3xl" />
+      </div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
             Why Traditional RSA is Broken for EVs
           </h2>
-          <p className="text-gray-400 max-w-3xl mx-auto text-lg">
+          <p className="text-green-100 max-w-3xl mx-auto text-lg">
             Towing-first models waste time, increase costs, and kill vehicle uptime—especially for high-utilization EV fleets running 10-14 hours daily
           </p>
         </div>
