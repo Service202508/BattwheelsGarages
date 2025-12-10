@@ -342,6 +342,114 @@ class BattwheelsAPITester:
         
         return False
     
+    def test_create_career_application(self):
+        """Test creating a career application with file upload"""
+        # Create a dummy PDF file content
+        pdf_content = b"%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n/Pages 2 0 R\n>>\nendobj\n2 0 obj\n<<\n/Type /Pages\n/Kids [3 0 R]\n/Count 1\n>>\nendobj\n3 0 obj\n<<\n/Type /Page\n/Parent 2 0 R\n/MediaBox [0 0 612 792]\n>>\nendobj\nxref\n0 4\n0000000000 65535 f \n0000000009 00000 n \n0000000074 00000 n \n0000000120 00000 n \ntrailer\n<<\n/Size 4\n/Root 1 0 R\n>>\nstartxref\n179\n%%EOF"
+        
+        # Prepare form data
+        form_data = {
+            'job_id': '1',
+            'job_title': 'EV Technician',
+            'name': 'Alex Johnson',
+            'email': 'alex@example.com',
+            'phone': '+91 9876543210',
+            'experience': '3 years in automotive industry'
+        }
+        
+        files = {
+            'cv_file': ('alex_cv.pdf', pdf_content, 'application/pdf')
+        }
+        
+        try:
+            response = requests.post(
+                f"{self.base_url}/careers/applications",
+                data=form_data,
+                files=files,
+                timeout=15
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["success", "message", "application_id"]
+                
+                if all(field in data for field in required_fields):
+                    if data["success"] is True:
+                        self.log_test("Create Career Application", True, f"Application created with ID: {data['application_id']}", data)
+                        return data["application_id"]
+                    else:
+                        self.log_test("Create Career Application", False, f"Success flag is False: {data}", data)
+                else:
+                    missing = [f for f in required_fields if f not in data]
+                    self.log_test("Create Career Application", False, f"Missing fields: {missing}", data)
+            else:
+                self.log_test("Create Career Application", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Create Career Application", False, f"Request failed: {str(e)}")
+        
+        return None
+    
+    def test_get_all_career_applications(self):
+        """Test getting all career applications"""
+        try:
+            response = requests.get(f"{self.base_url}/careers/applications", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list):
+                    self.log_test("Get All Career Applications", True, f"Retrieved {len(data)} applications", {"count": len(data)})
+                    return True
+                else:
+                    self.log_test("Get All Career Applications", False, f"Expected list, got: {type(data)}", data)
+            else:
+                self.log_test("Get All Career Applications", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Get All Career Applications", False, f"Request failed: {str(e)}")
+        
+        return False
+    
+    def test_career_file_validation(self):
+        """Test career application file validation (invalid file type)"""
+        # Create a text file (invalid type)
+        txt_content = b"This is a text file, not a PDF"
+        
+        form_data = {
+            'job_id': '1',
+            'job_title': 'EV Technician',
+            'name': 'Test User',
+            'email': 'test@example.com',
+            'phone': '+91 9876543210'
+        }
+        
+        files = {
+            'cv_file': ('resume.txt', txt_content, 'text/plain')
+        }
+        
+        try:
+            response = requests.post(
+                f"{self.base_url}/careers/applications",
+                data=form_data,
+                files=files,
+                timeout=10
+            )
+            
+            if response.status_code == 400:
+                data = response.json()
+                if "Invalid file type" in data.get("detail", ""):
+                    self.log_test("Career File Validation", True, "Correctly rejected invalid file type", data)
+                    return True
+                else:
+                    self.log_test("Career File Validation", False, f"Unexpected error message: {data}", data)
+            else:
+                self.log_test("Career File Validation", False, f"Expected 400 error, got {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Career File Validation", False, f"Request failed: {str(e)}")
+        
+        return False
+    
     def run_all_tests(self):
         """Run all API tests"""
         print(f"🚀 Starting Battwheels Garages API Tests")
