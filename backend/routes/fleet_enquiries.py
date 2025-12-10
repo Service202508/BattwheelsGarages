@@ -36,7 +36,7 @@ async def get_all_enquiries(status: str = None, limit: int = 100):
         if status:
             query["status"] = status
         
-        enquiries = await db.fleet_enquiries.find(query).sort("created_at", -1).limit(limit).to_list(limit)
+        enquiries = await db.fleet_enquiries.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
         return [FleetEnquiry(**enquiry) for enquiry in enquiries]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching enquiries: {str(e)}")
@@ -47,7 +47,7 @@ async def get_enquiry(enquiry_id: str):
     Get a specific enquiry by ID
     """
     try:
-        enquiry = await db.fleet_enquiries.find_one({"id": enquiry_id})
+        enquiry = await db.fleet_enquiries.find_one({"id": enquiry_id}, {"_id": 0})
         if not enquiry:
             raise HTTPException(status_code=404, detail="Enquiry not found")
         return FleetEnquiry(**enquiry)

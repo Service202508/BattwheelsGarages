@@ -39,7 +39,7 @@ async def get_all_bookings(status: str = None, limit: int = 100):
         if status:
             query["status"] = status
         
-        bookings = await db.service_bookings.find(query).sort("created_at", -1).limit(limit).to_list(limit)
+        bookings = await db.service_bookings.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
         return [ServiceBooking(**booking) for booking in bookings]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching bookings: {str(e)}")
@@ -50,7 +50,7 @@ async def get_booking(booking_id: str):
     Get a specific booking by ID
     """
     try:
-        booking = await db.service_bookings.find_one({"id": booking_id})
+        booking = await db.service_bookings.find_one({"id": booking_id}, {"_id": 0})
         if not booking:
             raise HTTPException(status_code=404, detail="Booking not found")
         return ServiceBooking(**booking)

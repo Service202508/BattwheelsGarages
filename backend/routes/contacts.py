@@ -36,7 +36,7 @@ async def get_all_messages(status: str = None, limit: int = 100):
         if status:
             query["status"] = status
         
-        messages = await db.contact_messages.find(query).sort("created_at", -1).limit(limit).to_list(limit)
+        messages = await db.contact_messages.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
         return [ContactMessage(**message) for message in messages]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching messages: {str(e)}")
