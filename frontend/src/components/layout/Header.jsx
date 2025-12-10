@@ -39,14 +39,12 @@ const Header = () => {
       <nav className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="bg-gradient-to-br from-green-500 to-green-600 p-2 rounded-lg">
-              <Zap className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <span className="text-xl font-bold text-gray-900">{companyInfo.name}</span>
-              <p className="text-xs text-gray-600 hidden sm:block">{companyInfo.tagline}</p>
-            </div>
+          <Link to="/" className="flex items-center space-x-2">
+            <img 
+              src="/battwheels-logo.svg" 
+              alt="Battwheels Garages" 
+              className="h-10 sm:h-12 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation */}
