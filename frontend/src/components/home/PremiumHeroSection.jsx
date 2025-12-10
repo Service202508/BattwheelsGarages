@@ -211,8 +211,8 @@ const PremiumHeroSection = () => {
             isVisible ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
           }`}>
             <div className="mb-6 text-center lg:text-left">
-              <h3 className="text-white text-2xl lg:text-3xl font-bold mb-2">We Service All EV Types</h3>
-              <p className="text-white/80 text-lg">From 2-wheelers to commercial fleets</p>
+              <h3 className="text-gray-900 text-2xl lg:text-3xl font-bold mb-2">We Service All EV Types</h3>
+              <p className="text-gray-700 text-lg">From 2-wheelers to commercial fleets</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 lg:gap-6">
