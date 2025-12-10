@@ -32,7 +32,7 @@ const PremiumHeroSection = () => {
       name: '4-Wheeler EVs',
       category: 'Cars & SUVs',
       count: '40+ Models',
-      image: '/assets/commercial-ev.png',
+      image: '/assets/4w-car.webp',
       emoji: '🚗'
     },
     {
