@@ -27,13 +27,68 @@ const HeroSection = () => {
                 India's first <span className="font-semibold text-gray-900">no-towing-first</span> EV service model. We diagnose and fix your 2W, 3W, 4W & commercial EVs where they stop—maximizing uptime, minimizing costs.
               </p>
 
-              {/* Key Differentiator Box */}
-              <div className="bg-green-600 text-white p-6 rounded-xl">
-                <p className="text-sm font-semibold text-green-100 mb-2">The Battwheels Difference</p>
-                <p className="text-lg font-bold">
-                  No Towing First → Diagnose Onsite → Repair On-Spot → Resume Operations
-                </p>
-                <p className="text-sm text-green-100 mt-2">80-90% issues resolved on field. Maximum uptime for your fleet.</p>
+              {/* Key Differentiator - Visual Process Flow */}
+              <div className="bg-gradient-to-r from-green-600 to-green-500 text-white p-8 rounded-2xl">
+                <p className="text-sm font-semibold text-green-100 mb-6 text-center">The Battwheels Difference</p>
+                
+                <div className="grid grid-cols-4 gap-4 mb-6">
+                  {/* Step 1: No Towing */}
+                  <div className="text-center">
+                    <div className="bg-white/20 backdrop-blur rounded-xl p-4 mb-3 h-24 flex items-center justify-center">
+                      <div className="text-5xl">🚫</div>
+                    </div>
+                    <p className="text-xs font-semibold">No Towing First</p>
+                  </div>
+
+                  {/* Arrow */}
+                  <div className="flex items-center justify-center">
+                    <div className="text-3xl text-white/80">→</div>
+                  </div>
+
+                  {/* Step 2: Diagnose */}
+                  <div className="text-center">
+                    <div className="bg-white/20 backdrop-blur rounded-xl p-4 mb-3 h-24 flex items-center justify-center">
+                      <div className="text-5xl">🔍</div>
+                    </div>
+                    <p className="text-xs font-semibold">Diagnose Onsite</p>
+                  </div>
+
+                  {/* Arrow */}
+                  <div className="flex items-center justify-center">
+                    <div className="text-3xl text-white/80">→</div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-4 mb-4">
+                  {/* Step 3: Repair */}
+                  <div className="text-center">
+                    <div className="bg-white/20 backdrop-blur rounded-xl p-4 mb-3 h-24 flex items-center justify-center">
+                      <div className="text-5xl">🔧</div>
+                    </div>
+                    <p className="text-xs font-semibold">Repair On-Spot</p>
+                  </div>
+
+                  {/* Arrow */}
+                  <div className="flex items-center justify-center">
+                    <div className="text-3xl text-white/80">→</div>
+                  </div>
+
+                  {/* Step 4: Resume */}
+                  <div className="text-center">
+                    <div className="bg-white/20 backdrop-blur rounded-xl p-4 mb-3 h-24 flex items-center justify-center">
+                      <div className="text-5xl">✅</div>
+                    </div>
+                    <p className="text-xs font-semibold">Resume Operations</p>
+                  </div>
+
+                  {/* Empty space for alignment */}
+                  <div></div>
+                </div>
+
+                <div className="text-center pt-4 border-t border-white/20">
+                  <p className="text-lg font-bold">80-90% issues resolved on field</p>
+                  <p className="text-sm text-green-100 mt-1">Maximum uptime for your fleet</p>
+                </div>
               </div>
             </div>
 
