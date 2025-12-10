@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Linkedin, MessageCircle } from 'lucide-react';
 import { companyInfo } from '../../data/mockData';
 
 const Footer = () => {
@@ -73,16 +73,65 @@ const Footer = () => {
                 <span>{companyInfo.hours}</span>
               </li>
             </ul>
-            <div className="flex space-x-3 mt-4">
-              <a href={companyInfo.social.facebook} className="bg-gray-800 p-2 rounded hover:bg-green-600 transition-colors">
-                <Facebook className="w-4 h-4" />
+            
+            {/* WhatsApp CTA */}
+            <div className="mt-6 p-4 bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
+              <a 
+                href="https://wa.me/918076331607" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center space-x-3 text-white"
+                aria-label="Chat with us on WhatsApp - +91 80763 31607"
+              >
+                <MessageCircle className="w-5 h-5" />
+                <div>
+                  <div className="font-semibold text-sm">Chat with us on WhatsApp</div>
+                  <div className="text-xs text-green-100">+91 80763 31607</div>
+                </div>
               </a>
-              <a href={companyInfo.social.instagram} className="bg-gray-800 p-2 rounded hover:bg-green-600 transition-colors">
-                <Instagram className="w-4 h-4" />
-              </a>
-              <a href={companyInfo.social.linkedin} className="bg-gray-800 p-2 rounded hover:bg-green-600 transition-colors">
-                <Linkedin className="w-4 h-4" />
-              </a>
+            </div>
+
+            {/* Social Media Icons */}
+            <div className="mt-6">
+              <h4 className="text-white font-semibold mb-3 text-sm">Connect With Us</h4>
+              <div className="flex space-x-3">
+                <a 
+                  href="https://wa.me/918076331607" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-gray-800 p-2.5 rounded-lg hover:bg-green-600 hover:scale-110 transition-all duration-300"
+                  aria-label="WhatsApp - Chat with Battwheels Garages"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                </a>
+                <a 
+                  href="https://www.facebook.com/battwheelsgarages" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-gray-800 p-2.5 rounded-lg hover:bg-blue-600 hover:scale-110 transition-all duration-300"
+                  aria-label="Facebook - Battwheels Garages"
+                >
+                  <Facebook className="w-5 h-5" />
+                </a>
+                <a 
+                  href="https://www.instagram.com/battwheelsgarages" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-gray-800 p-2.5 rounded-lg hover:bg-pink-600 hover:scale-110 transition-all duration-300"
+                  aria-label="Instagram - Battwheels Garages"
+                >
+                  <Instagram className="w-5 h-5" />
+                </a>
+                <a 
+                  href="https://www.linkedin.com/company/battwheels-garages" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-gray-800 p-2.5 rounded-lg hover:bg-blue-700 hover:scale-110 transition-all duration-300"
+                  aria-label="LinkedIn - Battwheels Garages"
+                >
+                  <Linkedin className="w-5 h-5" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
