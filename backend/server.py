@@ -18,7 +18,7 @@ db = client[os.environ['DB_NAME']]
 app = FastAPI(title="Battwheels Garages API", version="1.0.0")
 
 # Import routes
-from routes import bookings, fleet_enquiries, contacts
+from routes import bookings, fleet_enquiries, contacts, careers
 
 # Health check route
 @app.get("/api/health")
@@ -29,6 +29,7 @@ async def health_check():
 app.include_router(bookings.router)
 app.include_router(fleet_enquiries.router)
 app.include_router(contacts.router)
+app.include_router(careers.router)
 
 # CORS Middleware
 app.add_middleware(
