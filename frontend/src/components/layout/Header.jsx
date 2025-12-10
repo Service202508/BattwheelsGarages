@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
-import { Menu, X, Phone, Zap } from 'lucide-react';
+import { Menu, X, Phone } from 'lucide-react';
 import { companyInfo } from '../../data/mockData';
 
 const Header = () => {
