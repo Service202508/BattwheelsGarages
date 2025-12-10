@@ -35,29 +35,66 @@ const BookService = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Booking submitted:', formData);
-    toast({
-      title: "Booking Confirmed!",
-      description: "We'll contact you within 2 hours to confirm your service.",
-    });
-    // Reset form
-    setFormData({
-      vehicleCategory: '',
-      customerType: '',
-      brand: '',
-      model: '',
-      serviceNeeded: [],
-      preferredDate: '',
-      timeSlot: '',
-      address: '',
-      city: '',
-      name: '',
-      phone: '',
-      email: ''
-    });
-    setStep(1);
+    
+    try {
+      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${BACKEND_URL}/api/bookings/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vehicle_category: formData.vehicleCategory,
+          customer_type: formData.customerType,
+          brand: formData.brand,
+          model: formData.model,
+          service_needed: formData.serviceNeeded,
+          preferred_date: formData.preferredDate,
+          time_slot: formData.timeSlot,
+          address: formData.address,
+          city: formData.city,
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Booking created:', data);
+        toast({
+          title: "Booking Confirmed!",
+          description: "We'll contact you within 2 hours to confirm your service.",
+        });
+        // Reset form
+        setFormData({
+          vehicleCategory: '',
+          customerType: '',
+          brand: '',
+          model: '',
+          serviceNeeded: [],
+          preferredDate: '',
+          timeSlot: '',
+          address: '',
+          city: '',
+          name: '',
+          phone: '',
+          email: ''
+        });
+        setStep(1);
+      } else {
+        throw new Error('Failed to submit booking');
+      }
+    } catch (error) {
+      console.error('Error submitting booking:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit booking. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
