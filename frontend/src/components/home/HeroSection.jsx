@@ -11,159 +11,237 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative bg-gradient-to-br from-gray-50 via-white to-green-50 py-20 md:py-28 overflow-hidden">
-      <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
-          <div className="space-y-8">
-            {/* Problem Statement Badge */}
-            <div className="inline-block">
-              <div className="bg-red-50 border border-red-200 px-4 py-2 rounded-lg text-sm">
-                <span className="text-red-700 font-semibold">⚠️ Traditional RSA is broken for EVs</span>
-              </div>
+    <section className="hero-section-wrapper">
+      {/* Hero Background with Composite EV Images */}
+      <div 
+        className="hero-background"
+        style={{
+          transform: `translateY(${scrollY * 0.4}px)`,
+        }}
+      >
+        {/* Main Hero Image - Composite of Multiple EVs */}
+        <div className="hero-image-overlay"></div>
+        <img 
+          src="https://images.unsplash.com/photo-1648204798633-c51d248d637a?w=2560&h=1440&fit=crop&q=90" 
+          alt="Electric Vehicles Service - 2W, 3W, 4W & Commercial EVs"
+          className="hero-main-image"
+          loading="eager"
+        />
+        
+        {/* Gradient Overlay for Text Readability */}
+        <div className="hero-gradient-overlay"></div>
+      </div>
+
+      {/* Content Container */}
+      <div className="hero-content-container">
+        <div className="container mx-auto px-4 py-20 md:py-32">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Side - Advanced Floating Card */}
+            <div className="hero-floating-card-wrapper">
+              <AdvancedFloatingCard />
             </div>
 
-            <div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                EVs Don't Need Towing First. They Need Diagnosis & Repair Onsite.
-              </h1>
-              <p className="text-xl text-gray-600 leading-relaxed mb-6">
-                India's first <span className="font-semibold text-gray-900">no-towing-first</span> EV service model. We diagnose and fix your 2W, 3W, 4W & commercial EVs where they stop—maximizing uptime, minimizing costs.
-              </p>
-
-              {/* Key Differentiator - Visual Process Flow */}
-              <div className="bg-gradient-to-r from-green-600 to-green-500 text-white p-8 rounded-2xl">
-                <p className="text-sm font-semibold text-green-100 mb-6 text-center">The Battwheels Difference</p>
+            {/* Right Side - Visual Stats Card */}
+            <div className="hero-stats-card">
+              <div className="stats-card-content">
+                <div className="stats-grid">
+                  <div className="stat-item">
+                    <div className="stat-icon">🏍️</div>
+                    <div className="stat-label">2-Wheeler EVs</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-icon">🛺</div>
+                    <div className="stat-label">3-Wheeler EVs</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-icon">🚗</div>
+                    <div className="stat-label">4-Wheeler EVs</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-icon">🚚</div>
+                    <div className="stat-label">Commercial EVs</div>
+                  </div>
+                </div>
                 
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                  {/* Step 1: No Towing */}
-                  <div className="text-center">
-                    <div className="bg-white/20 backdrop-blur rounded-xl p-4 mb-3 h-24 flex items-center justify-center">
-                      <div className="text-5xl">🚫</div>
-                    </div>
-                    <p className="text-xs font-semibold">No Towing First</p>
-                  </div>
-
-                  {/* Arrow */}
-                  <div className="flex items-center justify-center">
-                    <div className="text-3xl text-white/80">→</div>
-                  </div>
-
-                  {/* Step 2: Diagnose */}
-                  <div className="text-center">
-                    <div className="bg-white/20 backdrop-blur rounded-xl p-4 mb-3 h-24 flex items-center justify-center">
-                      <div className="text-5xl">🔍</div>
-                    </div>
-                    <p className="text-xs font-semibold">Diagnose Onsite</p>
-                  </div>
-
-                  {/* Arrow */}
-                  <div className="flex items-center justify-center">
-                    <div className="text-3xl text-white/80">→</div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-4 gap-4 mb-4">
-                  {/* Step 3: Repair */}
-                  <div className="text-center">
-                    <div className="bg-white/20 backdrop-blur rounded-xl p-4 mb-3 h-24 flex items-center justify-center">
-                      <div className="text-5xl">🔧</div>
-                    </div>
-                    <p className="text-xs font-semibold">Repair On-Spot</p>
-                  </div>
-
-                  {/* Arrow */}
-                  <div className="flex items-center justify-center">
-                    <div className="text-3xl text-white/80">→</div>
-                  </div>
-
-                  {/* Step 4: Resume */}
-                  <div className="text-center">
-                    <div className="bg-white/20 backdrop-blur rounded-xl p-4 mb-3 h-24 flex items-center justify-center">
-                      <div className="text-5xl">✅</div>
-                    </div>
-                    <p className="text-xs font-semibold">Resume Operations</p>
-                  </div>
-
-                  {/* Empty space for alignment */}
-                  <div></div>
-                </div>
-
-                <div className="text-center pt-4 border-t border-white/20">
-                  <p className="text-lg font-bold">80-90% issues resolved on field</p>
-                  <p className="text-sm text-green-100 mt-1">Maximum uptime for your fleet</p>
+                <div className="main-stat">
+                  <div className="main-stat-number">10,000+</div>
+                  <div className="main-stat-label">Electric Vehicles Serviced</div>
                 </div>
               </div>
             </div>
-
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg" 
-                className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
-                onClick={() => navigate('/book-service')}
-              >
-                Book EV Service Now
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-green-600 text-green-600 hover:bg-green-50"
-                onClick={() => navigate('/fleet-oem')}
-              >
-                <Phone className="mr-2 w-5 h-5" />
-                Talk to Fleet & OEM Team
-              </Button>
-            </div>
-
-            {/* Trust Badges */}
-            <div className="flex flex-wrap items-center gap-6 pt-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm text-gray-600 font-medium">Open 365 Days</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm text-gray-600 font-medium">24/7 Emergency Support</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm text-gray-600 font-medium">Pan-India Coverage</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Image/Illustration */}
-          <div className="relative">
-            <div className="relative z-10">
-              <img 
-                src="https://images.unsplash.com/photo-1648204798633-c51d248d637a?w=800&h=600&fit=crop" 
-                alt="Electric Vehicles - 2W, 3W, 4W Service" 
-                className="rounded-2xl shadow-2xl"
-              />
-              {/* Floating Card - EV Types */}
-              <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-xl">
-                <div className="flex items-center space-x-4">
-                  <div className="bg-green-100 p-3 rounded-lg">
-                    <div className="text-center">
-                      <p className="text-xs text-gray-600 mb-1">We Service</p>
-                      <p className="text-lg font-bold text-green-600">2W • 3W • 4W</p>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-gray-900">10,000+</p>
-                    <p className="text-sm text-gray-600">EVs Serviced</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* Background Decoration */}
-            <div className="absolute top-10 right-10 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-            <div className="absolute -bottom-10 left-10 w-72 h-72 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '1s' }}></div>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .hero-section-wrapper {
+          position: relative;
+          min-height: 90vh;
+          overflow: hidden;
+          background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+        }
+
+        .hero-background {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
+          will-change: transform;
+        }
+
+        .hero-main-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+        }
+
+        .hero-image-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.1);
+          z-index: 1;
+        }
+
+        .hero-gradient-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, transparent 60%);
+          z-index: 2;
+        }
+
+        .hero-content-container {
+          position: relative;
+          z-index: 10;
+        }
+
+        .hero-floating-card-wrapper {
+          animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .hero-stats-card {
+          display: none;
+        }
+
+        @media (min-width: 1024px) {
+          .hero-stats-card {
+            display: block;
+            animation: fadeInRight 1s ease-out 0.3s both;
+          }
+        }
+
+        @keyframes fadeInRight {
+          from {
+            opacity: 0;
+            transform: translateX(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .stats-card-content {
+          backdrop-filter: blur(20px) brightness(1.1);
+          background: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 24px;
+          padding: 40px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 24px;
+          margin-bottom: 32px;
+        }
+
+        .stat-item {
+          text-align: center;
+          padding: 20px;
+          background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%);
+          border-radius: 16px;
+          transition: all 0.3s ease;
+          cursor: pointer;
+        }
+
+        .stat-item:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2);
+        }
+
+        .stat-icon {
+          font-size: 48px;
+          margin-bottom: 12px;
+        }
+
+        .stat-label {
+          font-size: 14px;
+          font-weight: 600;
+          color: #4a4a4a;
+        }
+
+        .main-stat {
+          text-align: center;
+          padding: 32px;
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          border-radius: 20px;
+          color: white;
+        }
+
+        .main-stat-number {
+          font-size: 56px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+
+        .main-stat-label {
+          font-size: 18px;
+          font-weight: 500;
+        }
+
+        @media (max-width: 1023px) {
+          .hero-section-wrapper {
+            min-height: auto;
+          }
+
+          .hero-background {
+            opacity: 0.3;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .hero-floating-card-wrapper,
+          .hero-stats-card,
+          .stat-item {
+            animation: none !important;
+          }
+          
+          .hero-background {
+            transform: none !important;
+          }
+        }
+      `}</style>
     </section>
   );
 };
