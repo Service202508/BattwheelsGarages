@@ -5,7 +5,7 @@ from uuid import uuid4
 
 # Service Booking Model
 class ServiceBooking(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = Field(default_factory=lambda: str(uuid4()))
     vehicle_category: str
     customer_type: str
     brand: Optional[str] = None
@@ -37,7 +37,7 @@ class ServiceBookingCreate(BaseModel):
 
 # Fleet/OEM Enquiry Model
 class FleetEnquiry(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = Field(default_factory=lambda: str(uuid4()))
     company_name: str
     contact_person: str
     role: str
@@ -69,7 +69,7 @@ class FleetEnquiryCreate(BaseModel):
 
 # Contact Form Model
 class ContactMessage(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     email: EmailStr
     phone: Optional[str] = None
@@ -85,7 +85,7 @@ class ContactMessageCreate(BaseModel):
 
 # Career Application Model
 class CareerApplication(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = Field(default_factory=lambda: str(uuid4()))
     job_id: int
     job_title: str
     name: str
@@ -107,7 +107,7 @@ class CareerApplicationCreate(BaseModel):
 
 # Testimonial Model (for admin management)
 class Testimonial(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     designation: str
     company: str
@@ -118,7 +118,7 @@ class Testimonial(BaseModel):
 
 # Blog Post Model (for admin management)
 class BlogPost(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = Field(default_factory=lambda: str(uuid4()))
     title: str
     slug: str
     excerpt: str
