@@ -73,13 +73,16 @@ const PremiumHeroSection = () => {
   ];
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Animated Background Mesh */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
-        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
+    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-green-50 via-white to-green-50">
+      {/* Animated Background Mesh - Subtle Green Tones */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-green-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
+        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
       </div>
+      
+      {/* Top accent gradient */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-emerald-400 to-green-500" />
 
       <div className="relative container mx-auto px-4 py-12 lg:py-20">
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -257,8 +260,22 @@ const PremiumHeroSection = () => {
         </div>
       </div>
 
-      {/* Bottom Gradient Fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
+      {/* Bottom Gradient Fade - Smooth transition to next section */}
+      <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-green-900 via-green-800/50 to-transparent" />
+      
+      {/* Decorative wave transition */}
+      <div className="absolute bottom-0 left-0 right-0">
+        <svg className="w-full h-24 md:h-32" viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M0,50 C240,80 480,20 720,50 C960,80 1200,20 1440,50 L1440,100 L0,100 Z" fill="url(#gradient)" />
+          <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#064e3b" />
+              <stop offset="50%" stopColor="#065f46" />
+              <stop offset="100%" stopColor="#064e3b" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
     </section>
   );
 };
