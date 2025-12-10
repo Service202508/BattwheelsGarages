@@ -12,13 +12,29 @@ const HeroSection = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-8">
+            {/* Problem Statement Badge */}
+            <div className="inline-block">
+              <div className="bg-red-50 border border-red-200 px-4 py-2 rounded-lg text-sm">
+                <span className="text-red-700 font-semibold">⚠️ Traditional RSA is broken for EVs</span>
+              </div>
+            </div>
+
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                India's Onsite EV After-Sales & Maintenance Leader
+                EVs Don't Need Towing First. They Need Diagnosis & Repair Onsite.
               </h1>
-              <p className="text-xl text-gray-600 leading-relaxed">
-                We keep your 2W, 3W, 4W and commercial EVs running with no-towing-first onsite diagnostics, expert repairs, and fleet-grade uptime.
+              <p className="text-xl text-gray-600 leading-relaxed mb-6">
+                India's first <span className="font-semibold text-gray-900">no-towing-first</span> EV service model. We diagnose and fix your 2W, 3W, 4W & commercial EVs where they stop—maximizing uptime, minimizing costs.
               </p>
+
+              {/* Key Differentiator Box */}
+              <div className="bg-green-600 text-white p-6 rounded-xl">
+                <p className="text-sm font-semibold text-green-100 mb-2">The Battwheels Difference</p>
+                <p className="text-lg font-bold">
+                  No Towing First → Diagnose Onsite → Repair On-Spot → Resume Operations
+                </p>
+                <p className="text-sm text-green-100 mt-2">80-90% issues resolved on field. Maximum uptime for your fleet.</p>
+              </div>
             </div>
 
             {/* CTAs */}
