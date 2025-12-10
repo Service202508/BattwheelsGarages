@@ -8,7 +8,7 @@ import WhyChooseSection from '../components/home/WhyChooseSection';
 import ServiceCategoriesSection from '../components/home/ServiceCategoriesSection';
 import IndustriesSlider from '../components/home/IndustriesSlider';
 import BrandsSection from '../components/home/BrandsSection';
-import TestimonialsSection from '../components/home/TestimonialsSection';
+import ImprovedTestimonialsSection from '../components/home/ImprovedTestimonialsSection';
 import CTABand from '../components/home/CTABand';
 
 const Home = () => {
@@ -23,7 +23,7 @@ const Home = () => {
         <ServiceCategoriesSection />
         <IndustriesSlider />
         <BrandsSection />
-        <TestimonialsSection />
+        <ImprovedTestimonialsSection />
         <CTABand />
       </main>
       <Footer />
