@@ -177,6 +177,9 @@ metadata:
 test_plan:
   current_focus:
     - "All backend API endpoints tested and working"
+    - "MongoDB persistence verified"
+    - "Email notifications confirmed"
+    - "File upload system validated"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
