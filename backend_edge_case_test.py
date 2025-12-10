@@ -9,7 +9,7 @@ import json
 import sys
 
 # Get backend URL from environment
-BACKEND_URL = "https://car-repair-zone-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://greenmechanic.preview.emergentagent.com/api"
 
 class EdgeCaseTester:
     def __init__(self):

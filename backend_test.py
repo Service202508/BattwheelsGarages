@@ -11,7 +11,7 @@ from datetime import datetime
 import uuid
 
 # Get backend URL from environment
-BACKEND_URL = "https://car-repair-zone-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://greenmechanic.preview.emergentagent.com/api"
 
 class BattwheelsAPITester:
     def __init__(self):
