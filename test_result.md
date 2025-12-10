@@ -181,6 +181,56 @@ test_plan:
   test_all: true
   test_priority: "high_first"
 
+  - task: "Career Applications API"
+    implemented: true
+    working: true
+    file: "/app/backend/routes/careers.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Career application endpoints working correctly: POST /api/careers/applications (create with file upload), GET /api/careers/applications (list all). File upload validation working (PDF/DOC/DOCX only, 5MB max). CV files stored in /app/backend/uploads/careers/cvs/. Email notifications sent successfully."
+
+  - task: "Email Notifications System"
+    implemented: true
+    working: true
+    file: "/app/backend/services/email_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Email notification system working correctly in development mode. All email types tested: 🚗 Service Bookings, 🚛 Fleet Enquiries, 💬 Contact Messages, 📄 Career Applications. Emails logged to console with proper formatting and emojis. Production SMTP configuration available but using dev mode."
+
+  - task: "MongoDB Data Persistence"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "MongoDB persistence working correctly. All data saved to appropriate collections: service_bookings (4 records), fleet_enquiries (4 records), contact_messages (3 records), career_applications (1 record). UUID-based IDs working properly. Data retrieval via GET endpoints confirmed."
+
+  - task: "File Storage System"
+    implemented: true
+    working: true
+    file: "/app/backend/services/file_storage.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "File storage system working correctly in local mode. CV files uploaded to /app/backend/uploads/careers/cvs/ with unique filenames. File validation working (type and size checks). S3 configuration available but using local storage in development."
+
 agent_communication:
     - agent: "testing"
       message: "Comprehensive backend API testing completed successfully. All 10 core API tests passed (100% success rate). Additional edge case testing also passed (5/5 tests). All endpoints are working correctly with proper validation, error handling, and data persistence. Backend is fully functional and ready for production use."
+    - agent: "testing"
+      message: "Extended testing completed for MongoDB persistence and email notifications. All 13 API tests passed (100% success rate). New features tested: Career Applications API with file upload (PDF validation working), Email notification system (all 4 types working with proper emojis), MongoDB data persistence (all collections working), File storage system (local upload working). All requirements from review request successfully verified."
