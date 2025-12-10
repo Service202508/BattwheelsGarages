@@ -39,11 +39,11 @@ const Header = () => {
       <nav className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center">
             <img 
-              src="/battwheels-logo.svg" 
+              src="/assets/battwheels-logo-color.svg" 
               alt="Battwheels Garages" 
-              className="h-10 sm:h-12 w-auto"
+              className="h-12 md:h-14 lg:h-16 w-auto transition-all"
             />
           </Link>
 
