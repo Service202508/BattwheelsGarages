@@ -44,27 +44,64 @@ const FleetOEM = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Fleet/OEM enquiry submitted:', formData);
-    toast({
-      title: "Enquiry Submitted!",
-      description: "Our team will contact you within 24 hours to discuss your requirements.",
-    });
-    setFormData({
-      companyName: '',
-      contactPerson: '',
-      role: '',
-      email: '',
-      phone: '',
-      city: '',
-      vehicleCount2W: '',
-      vehicleCount3W: '',
-      vehicleCount4W: '',
-      vehicleCountCommercial: '',
-      requirements: [],
-      details: ''
-    });
+    
+    try {
+      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${BACKEND_URL}/api/fleet-enquiries/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          company_name: formData.companyName,
+          contact_person: formData.contactPerson,
+          role: formData.role,
+          email: formData.email,
+          phone: formData.phone,
+          city: formData.city,
+          vehicle_count_2w: parseInt(formData.vehicleCount2W) || 0,
+          vehicle_count_3w: parseInt(formData.vehicleCount3W) || 0,
+          vehicle_count_4w: parseInt(formData.vehicleCount4W) || 0,
+          vehicle_count_commercial: parseInt(formData.vehicleCountCommercial) || 0,
+          requirements: formData.requirements,
+          details: formData.details
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Fleet enquiry created:', data);
+        toast({
+          title: "Enquiry Submitted!",
+          description: "Our team will contact you within 24 hours to discuss your requirements.",
+        });
+        setFormData({
+          companyName: '',
+          contactPerson: '',
+          role: '',
+          email: '',
+          phone: '',
+          city: '',
+          vehicleCount2W: '',
+          vehicleCount3W: '',
+          vehicleCount4W: '',
+          vehicleCountCommercial: '',
+          requirements: [],
+          details: ''
+        });
+      } else {
+        throw new Error('Failed to submit enquiry');
+      }
+    } catch (error) {
+      console.error('Error submitting enquiry:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit enquiry. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
