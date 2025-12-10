@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
 from datetime import datetime, timezone
-import uuid
+from uuid import uuid4
 
 # Service Booking Model
 class ServiceBooking(BaseModel):
