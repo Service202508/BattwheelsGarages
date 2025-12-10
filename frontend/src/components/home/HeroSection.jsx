@@ -1,10 +1,14 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '../ui/button';
-import { ArrowRight, Phone } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import AdvancedFloatingCard from './AdvancedFloatingCard';
 
 const HeroSection = () => {
-  const navigate = useNavigate();
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <section className="relative bg-gradient-to-br from-gray-50 via-white to-green-50 py-20 md:py-28 overflow-hidden">
