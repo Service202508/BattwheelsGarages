@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend API Test Suite for Battwheels Garages
-Tests all API endpoints with comprehensive validation
+Tests all API endpoints with comprehensive validation including MongoDB persistence and email notifications
 """
 
 import requests
@@ -9,6 +9,8 @@ import json
 import sys
 from datetime import datetime
 import uuid
+import io
+import os
 
 # Get backend URL from environment
 BACKEND_URL = "https://greenmechanic.preview.emergentagent.com/api"
