@@ -4,6 +4,21 @@ import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Linkedin, MessageCircl
 import { companyInfo } from '../../data/mockData';
 
 const Footer = () => {
+  // Operational cities data - easily maintainable
+  const operationalCities = [
+    { city: "Ulhasnagar", area: "", state: "Maharashtra" },
+    { city: "Bengaluru", area: "Nelamangala / Yentaganahalli", state: "Karnataka" },
+    { city: "Chennai", area: "Thiruverkadu / Poonamallee", state: "Tamil Nadu" },
+    { city: "Pamarru", area: "Arandal Peta", state: "Andhra Pradesh" },
+    { city: "New Delhi", area: "Dwarka Sector 28 (Bamnoli)", state: "Delhi" },
+    { city: "New Delhi", area: "Okhla Phase 2 (Head Office)", state: "Delhi" },
+    { city: "Noida", area: "Sector 68 (Garhi Chaukhandi)", state: "Uttar Pradesh" },
+    { city: "Lucknow", area: "Ashiyana / Mansarovar Yojana", state: "Uttar Pradesh" },
+    { city: "Gurugram", area: "Pace City I (Sector 37)", state: "Haryana" },
+    { city: "Jaipur", area: "Vishwakarma Industrial Area", state: "Rajasthan" },
+    { city: "Hyderabad", area: "Kompally / Petbasheerabad", state: "Telangana" },
+  ];
+
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="container mx-auto px-4 py-12">
@@ -133,6 +148,37 @@ const Footer = () => {
                 </a>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Operational Cities Section */}
+        <div className="border-t border-gray-800 pt-8 mb-8">
+          <div className="text-center mb-6">
+            <h3 className="text-white text-xl font-bold mb-2">Pan-India Service Locations</h3>
+            <p className="text-gray-400 text-sm">Serving EV fleets and owners across these operational cities</p>
+          </div>
+
+          <div 
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            role="list"
+            aria-label="Operational cities across India"
+          >
+            {operationalCities.map((location, index) => (
+              <div
+                key={index}
+                className="flex items-start space-x-3 p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
+                role="listitem"
+              >
+                <MapPin className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-medium text-sm truncate">
+                    {location.city}
+                    {location.area && <span className="text-gray-400 font-normal"> – {location.area}</span>}
+                  </p>
+                  <p className="text-gray-400 text-xs">{location.state}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
