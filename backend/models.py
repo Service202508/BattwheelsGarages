@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 # Service Booking Model
@@ -19,7 +19,7 @@ class ServiceBooking(BaseModel):
     phone: str
     email: EmailStr
     status: str = "new"  # new, confirmed, in_progress, completed, cancelled
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ServiceBookingCreate(BaseModel):
     vehicle_category: str
