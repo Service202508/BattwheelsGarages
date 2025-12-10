@@ -3,6 +3,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from models import ServiceBooking, ServiceBookingCreate
 from typing import List
 import os
+from services.email_service import email_service
 
 router = APIRouter(prefix="/api/bookings", tags=["bookings"])
 
@@ -16,10 +17,13 @@ async def create_booking(booking: ServiceBookingCreate):
     """
     try:
         booking_obj = ServiceBooking(**booking.dict())
-        result = await db.service_bookings.insert_one(booking_obj.dict())
         
-        # TODO: Send email notification
-        # send_booking_confirmation_email(booking_obj)
+        # Save to database (exclude _id field for MongoDB)
+        booking_dict = booking_obj.dict()
+        result = await db.service_bookings.insert_one(booking_dict)
+        
+        # Send email notification
+        await email_service.send_booking_notification(booking_dict)
         
         return booking_obj
     except Exception as e:

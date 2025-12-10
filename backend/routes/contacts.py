@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from models import ContactMessage, ContactMessageCreate
 from typing import List
+from services.email_service import email_service
 
 router = APIRouter(prefix="/api/contacts", tags=["contacts"])
 
@@ -13,10 +14,13 @@ async def create_contact_message(message: ContactMessageCreate):
     """
     try:
         message_obj = ContactMessage(**message.dict())
-        result = await db.contact_messages.insert_one(message_obj.dict())
         
-        # TODO: Send email notification
-        # send_contact_message_email(message_obj)
+        # Save to database
+        message_dict = message_obj.dict()
+        result = await db.contact_messages.insert_one(message_dict)
+        
+        # Send email notification
+        await email_service.send_contact_notification(message_dict)
         
         return message_obj
     except Exception as e:

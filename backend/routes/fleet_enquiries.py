@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from models import FleetEnquiry, FleetEnquiryCreate
 from typing import List
+from services.email_service import email_service
 
 router = APIRouter(prefix="/api/fleet-enquiries", tags=["fleet"])
 
@@ -13,10 +14,13 @@ async def create_fleet_enquiry(enquiry: FleetEnquiryCreate):
     """
     try:
         enquiry_obj = FleetEnquiry(**enquiry.dict())
-        result = await db.fleet_enquiries.insert_one(enquiry_obj.dict())
         
-        # TODO: Send email notification
-        # send_fleet_enquiry_email(enquiry_obj)
+        # Save to database
+        enquiry_dict = enquiry_obj.dict()
+        result = await db.fleet_enquiries.insert_one(enquiry_dict)
+        
+        # Send email notification
+        await email_service.send_fleet_enquiry_notification(enquiry_dict)
         
         return enquiry_obj
     except Exception as e:
