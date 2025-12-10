@@ -51,7 +51,7 @@ class FleetEnquiry(BaseModel):
     requirements: List[str] = []
     details: Optional[str] = None
     status: str = "new"  # new, in_discussion, closed
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class FleetEnquiryCreate(BaseModel):
     company_name: str
@@ -75,7 +75,7 @@ class ContactMessage(BaseModel):
     phone: Optional[str] = None
     message: str
     status: str = "new"  # new, responded
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ContactMessageCreate(BaseModel):
     name: str
@@ -95,7 +95,7 @@ class CareerApplication(BaseModel):
     cv_filename: Optional[str] = None
     cv_path: Optional[str] = None
     status: str = "new"  # new, reviewed, shortlisted, rejected
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class CareerApplicationCreate(BaseModel):
     job_id: int
@@ -114,7 +114,7 @@ class Testimonial(BaseModel):
     content: str
     rating: int
     is_active: bool = True
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 # Blog Post Model (for admin management)
 class BlogPost(BaseModel):
@@ -126,8 +126,8 @@ class BlogPost(BaseModel):
     category: str
     image: str
     is_published: bool = False
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 # Job Posting Model
 class JobPosting(BaseModel):
@@ -138,4 +138,4 @@ class JobPosting(BaseModel):
     description: str
     requirements: List[str]
     is_active: bool = True
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
