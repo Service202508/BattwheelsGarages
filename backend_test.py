@@ -481,6 +481,12 @@ class BattwheelsAPITester:
         contact_id = self.test_create_contact_message()
         self.test_get_all_contact_messages()
         
+        # Test career applications
+        print("\n📄 Testing Career Applications...")
+        application_id = self.test_create_career_application()
+        self.test_get_all_career_applications()
+        self.test_career_file_validation()
+        
         # Summary
         print("\n" + "=" * 60)
         print("📊 TEST SUMMARY")
