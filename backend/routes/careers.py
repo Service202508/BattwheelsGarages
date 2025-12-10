@@ -64,7 +64,7 @@ async def create_career_application(
 
         # Save to database
         application_dict = application.dict()
-        result = await db.career_applications.insert_one(application_dict)
+        await db.career_applications.insert_one(application_dict)
 
         # Send email notification
         html_content = f"""

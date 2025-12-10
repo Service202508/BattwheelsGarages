@@ -17,7 +17,7 @@ async def create_fleet_enquiry(enquiry: FleetEnquiryCreate):
         
         # Save to database
         enquiry_dict = enquiry_obj.dict()
-        result = await db.fleet_enquiries.insert_one(enquiry_dict)
+        await db.fleet_enquiries.insert_one(enquiry_dict)
         
         # Send email notification
         await email_service.send_fleet_enquiry_notification(enquiry_dict)

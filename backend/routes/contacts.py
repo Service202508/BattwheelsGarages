@@ -17,7 +17,7 @@ async def create_contact_message(message: ContactMessageCreate):
         
         # Save to database
         message_dict = message_obj.dict()
-        result = await db.contact_messages.insert_one(message_dict)
+        await db.contact_messages.insert_one(message_dict)
         
         # Send email notification
         await email_service.send_contact_notification(message_dict)

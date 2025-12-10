@@ -20,7 +20,7 @@ async def create_booking(booking: ServiceBookingCreate):
         
         # Save to database (exclude _id field for MongoDB)
         booking_dict = booking_obj.dict()
-        result = await db.service_bookings.insert_one(booking_dict)
+        await db.service_bookings.insert_one(booking_dict)
         
         # Send email notification
         await email_service.send_booking_notification(booking_dict)
