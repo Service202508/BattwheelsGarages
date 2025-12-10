@@ -22,8 +22,8 @@ const HeroSection = () => {
         {/* Main Hero Image - Composite of Multiple EVs */}
         <div className="hero-image-overlay"></div>
         <img 
-          src="https://customer-assets.emergentagent.com/job_car-repair-zone-1/artifacts/kedzymrk_WhatsApp%20Image%202025-12-10%20at%201.16.11%20PM.jpeg" 
-          alt="Electric Vehicles Service - 2W & 3W EVs on Indian Streets"
+          src="https://customer-assets.emergentagent.com/job_car-repair-zone-1/artifacts/khzyy699_Gemini_Generated_Image_pb7w79pb7w79pb7w.png" 
+          alt="Electric Vehicles Service - Multiple EVs including Auto-Rickshaws"
           className="hero-main-image"
           loading="eager"
         />
