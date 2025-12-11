@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import SEO from '../components/common/SEO';
+import GearBackground from '../components/common/GearBackground';
 import { blogsApi } from '../utils/api';
 import { blogPosts as mockBlogs } from '../data/mockData';
 import { Calendar, User, ArrowRight, Loader2, Tag } from 'lucide-react';
