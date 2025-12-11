@@ -81,7 +81,7 @@ const PremiumHeroSection = () => {
               </div>
 
               {/* RIGHT COLUMN - Battwheels Difference Card */}
-              <div className="flex flex-col justify-center space-y-6 bg-gradient-to-br from-green-50/50 to-emerald-50/30 rounded-xl p-6 lg:p-8 border border-green-100"
+              <div className="flex flex-col justify-center space-y-6 bg-gradient-to-br from-green-50/50 to-emerald-50/30 rounded-xl p-6 lg:p-8 border border-green-100">
 
                   {/* The Battwheels Difference */}
                   <div className="mb-8">
