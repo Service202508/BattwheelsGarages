@@ -10,12 +10,12 @@ export const authService = {
       body: JSON.stringify({ email, password }),
     });
 
+    const data = await response.json();
+    
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Login failed');
+      throw new Error(data.detail || 'Login failed');
     }
 
-    const data = await response.json();
     localStorage.setItem('admin_token', data.access_token);
     localStorage.setItem('admin_user', JSON.stringify(data.user));
     return data;
