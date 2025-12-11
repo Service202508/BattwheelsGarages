@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Phone, Search, Wrench, Ban } from 'lucide-react';
+import { Calendar, Phone, Search, Wrench, Ban, CheckCircle2 } from 'lucide-react';
 
 const PremiumHeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
