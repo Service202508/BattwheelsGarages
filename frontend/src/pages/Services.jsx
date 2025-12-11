@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import SEO from '../components/common/SEO';
+import GearBackground from '../components/common/GearBackground';
 import { servicesApi } from '../utils/api';
 import { serviceCategories as mockServices } from '../data/mockData';
 import { Wrench, ArrowRight, Loader2, Zap, Battery, Settings, Truck } from 'lucide-react';
