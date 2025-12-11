@@ -131,6 +131,9 @@ backend:
         - working: true
           agent: "main"
           comment: "GET /api/blogs and /api/blogs/:slug endpoints created and tested."
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED: GET /api/blogs returns correct JSON structure {blogs: [], total: 0, skip: 0, limit: 20}. Category filter working with ?category=Fleet%20Ops. 200 OK status confirmed."
 
   - task: "Public Testimonials API"
     implemented: true
