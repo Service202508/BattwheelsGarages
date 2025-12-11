@@ -36,22 +36,22 @@ const HeroSection = () => {
             <div className="bg-gray-900 text-white p-6 rounded-lg border-l-4 border-green-500">
               <p className="text-sm uppercase tracking-wider text-green-400 font-semibold mb-2">The Battwheels Model</p>
               <p className="text-lg font-semibold">No Towing First → Diagnose → Repair Onsite → Resume Operations</p>
-              <p className="text-gray-300 text-sm mt-2">80-90% issues resolved on field. Maximum uptime for your fleet.</p>
+              <p className="text-gray-300 text-sm mt-2">85% issues resolved on field. Maximum uptime for your fleet.</p>
             </div>
 
             {/* Key Features */}
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
-                <div className="text-2xl font-bold text-green-600">90%</div>
+                <div className="text-2xl font-bold text-green-600">85%</div>
                 <div className="text-xs text-gray-600 mt-1">Onsite Resolution</div>
               </div>
               <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
-                <div className="text-2xl font-bold text-green-600">&lt;2hr</div>
-                <div className="text-xs text-gray-600 mt-1">Response Time</div>
+                <div className="text-2xl font-bold text-green-600">2hr</div>
+                <div className="text-xs text-gray-600 mt-1">Avg TAT</div>
               </div>
               <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
-                <div className="text-2xl font-bold text-green-600">100%</div>
-                <div className="text-xs text-gray-600 mt-1">EV-Only Focus</div>
+                <div className="text-2xl font-bold text-green-600">145+</div>
+                <div className="text-xs text-gray-600 mt-1">EV Models</div>
               </div>
             </div>
 

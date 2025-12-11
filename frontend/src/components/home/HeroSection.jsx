@@ -64,8 +64,8 @@ const HeroSection = () => {
                 </div>
                 
                 <div className="main-stat">
-                  <div className="main-stat-number">10,000+</div>
-                  <div className="main-stat-label">Electric Vehicles Serviced</div>
+                  <div className="main-stat-number">145+</div>
+                  <div className="main-stat-label">EV Models Serviced</div>
                 </div>
               </div>
             </div>
