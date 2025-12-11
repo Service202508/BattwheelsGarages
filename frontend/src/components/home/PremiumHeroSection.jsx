@@ -37,46 +37,51 @@ const PremiumHeroSection = () => {
   ];
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-green-50 via-white to-green-50 flex items-center">
-      {/* Animated Background Mesh - Subtle Green Tones */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-green-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
-        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
+    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50/50 to-green-50 flex items-center">
+      {/* Improved Background Mesh - Smooth Green Gradient */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-20 left-10 w-[500px] h-[500px] bg-green-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
+        <div className="absolute top-40 right-20 w-[600px] h-[600px] bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
+        <div className="absolute bottom-20 left-1/3 w-[550px] h-[550px] bg-green-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
       </div>
       
       {/* Top accent gradient */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-emerald-400 to-green-500" />
 
       <div className="relative container mx-auto px-4 py-12 lg:py-20 w-full">
-        <div className="max-w-5xl mx-auto">
-          {/* Center Premium Floating Card - Full Width */}
-          <div className={`transform transition-all duration-1000 ${
-            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-          }`}>
-            <div className="relative max-w-4xl mx-auto">
-              {/* Glassmorphic Card */}
-              <div className="relative backdrop-blur-2xl bg-white/95 rounded-3xl p-8 lg:p-12 shadow-2xl border border-white/50">
-                {/* Glow Effect */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-orange-600 rounded-3xl blur-2xl opacity-20 animate-pulse" />
+        {/* Full-Width Rectangular Hero Container */}
+        <div className={`transform transition-all duration-1000 ${
+          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+        }`}>
+          <div className="relative backdrop-blur-xl bg-white/90 rounded-2xl shadow-2xl border border-white/60 overflow-hidden">
+            {/* Subtle Inner Glow */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-green-500/10 to-emerald-500/10 blur-xl" />
+            
+            {/* Two-Column Layout */}
+            <div className="relative z-10 grid lg:grid-cols-2 gap-8 lg:gap-12 p-8 lg:p-12">
+              
+              {/* LEFT COLUMN - Text Content */}
+              <div className="flex flex-col justify-center space-y-6">
+                {/* Main Headline */}
+                <h1 className="text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 leading-tight" style={{ letterSpacing: '-0.5px' }}>
+                  EVs Don't Need Towing First.
+                </h1>
                 
-                <div className="relative z-10 text-center">
-                  {/* Main Headline */}
-                  <h1 className="text-4xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-4" style={{ letterSpacing: '-0.5px' }}>
-                    EVs Don't Need Towing First.
-                  </h1>
-                  
-                  <h2 className="text-3xl lg:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent mb-6">
-                    They Need Diagnosis & Repair Onsite.
-                  </h2>
+                <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
+                  They Need Diagnosis & Repair Onsite.
+                </h2>
 
-                  <div className="h-px bg-gradient-to-r from-transparent via-green-500 to-transparent mb-8 max-w-md mx-auto" />
+                <div className="h-px bg-gradient-to-r from-green-500 via-green-400 to-transparent w-24" />
 
-                  {/* Supporting Text */}
-                  <p className="text-lg md:text-xl text-gray-700 mb-10 leading-relaxed max-w-3xl mx-auto">
-                    India's first <span className="font-semibold text-gray-900">no-towing-first</span> EV service model. 
-                    We diagnose and fix your 2W, 3W, 4W & commercial EVs where they stop—maximizing uptime, minimizing costs.
-                  </p>
+                {/* Supporting Text */}
+                <p className="text-lg text-gray-700 leading-relaxed">
+                  India's first <span className="font-semibold text-gray-900">no-towing-first</span> EV service model. 
+                  We diagnose and fix your 2W, 3W, 4W & commercial EVs where they stop—maximizing uptime, minimizing costs.
+                </p>
+              </div>
+
+              {/* RIGHT COLUMN - Battwheels Difference Card */}
+              <div className="flex flex-col justify-center space-y-6 bg-gradient-to-br from-green-50/50 to-emerald-50/30 rounded-xl p-6 lg:p-8 border border-green-100"
 
                   {/* The Battwheels Difference */}
                   <div className="mb-8">
