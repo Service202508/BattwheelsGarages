@@ -11,8 +11,8 @@ from datetime import datetime
 import xml.etree.ElementTree as ET
 
 # Get backend URL from environment - using the same URL as frontend
-BACKEND_URL = "https://ev-rescue-hub.preview.emergentagent.com/api"
-FRONTEND_URL = "https://ev-rescue-hub.preview.emergentagent.com"
+BACKEND_URL = "https://battwheels-ev.preview.emergentagent.com/api"
+FRONTEND_URL = "https://battwheels-ev.preview.emergentagent.com"
 
 class PublicAPITester:
     def __init__(self):
