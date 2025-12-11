@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
+import GearBackground from '../components/common/GearBackground';
 import { Button } from '../components/ui/button';
 import { Monitor, Smartphone, BarChart3, Zap, Bell, Link as LinkIcon, CheckCircle } from 'lucide-react';
 
@@ -42,7 +43,10 @@ const BattwheelsOS = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      {/* Rotating Gears Background */}
+      <GearBackground variant="battwheels-os" />
+      
       <Header />
       <main>
         {/* Hero */}
