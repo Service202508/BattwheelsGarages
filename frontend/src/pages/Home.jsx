@@ -2,6 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
+import GearBackground from '../components/common/GearBackground';
 import PremiumHeroSection from '../components/home/PremiumHeroSection';
 import VehicleTypesSection from '../components/home/VehicleTypesSection';
 import RSAExplainedSection from '../components/home/RSAExplainedSection';
@@ -16,7 +17,9 @@ import { getLocalBusinessSchema } from '../utils/schema';
 
 const Home = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      {/* Rotating Gears Background */}
+      <GearBackground variant="home" />
       <Helmet>
         <title>Battwheels Garages | India&apos;s #1 EV Onsite Service & Repair</title>
         <meta name="description" content="India's first no-towing-first EV service model. Onsite diagnosis and repair for 2W, 3W, 4W and commercial EVs. 85% issues resolved on field. Open 365 days." />
