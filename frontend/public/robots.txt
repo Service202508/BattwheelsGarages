@@ -1,0 +1,23 @@
+# Battwheels Garages - robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://battwheelsgarages.in/sitemap.xml
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /admin/*
+
+# Allow search engines to crawl all public pages
+Allow: /about
+Allow: /services
+Allow: /blog
+Allow: /careers
+Allow: /contact
+Allow: /book-service
+Allow: /fleet-oem
+Allow: /battwheels-os
+Allow: /industries
+Allow: /plans
+Allow: /faq
