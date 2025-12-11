@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" preserveAspectRatio="xMidYMid meet">
+  <rect x="5" y="25" width="8" height="30" rx="2" fill="#78BE20"/>
+  <rect x="16" y="18" width="8" height="44" rx="2" fill="#78BE20"/>
+  <rect x="27" y="25" width="8" height="30" rx="2" fill="#78BE20"/>
+  <text x="45" y="52" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#FFFFFF">ATHER</text>
+</svg>
