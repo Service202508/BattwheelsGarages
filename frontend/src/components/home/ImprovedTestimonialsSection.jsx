@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
-import { Quote, Truck, Users, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Quote, Truck, Users, Building2, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { testimonialsApi } from '../../utils/api';
 
 const ImprovedTestimonialsSection = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(0);
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const testimonials = [
+  // Fallback hardcoded testimonials
+  const fallbackTestimonials = [
     {
       id: 1,
       name: "Rohit Malhotra",
@@ -21,7 +25,7 @@ const ImprovedTestimonialsSection = () => {
       role: "City Head",
       company: "Electric 3W Passenger Fleet",
       category: "3w-fleet",
-      quote: "Earlier, even small EV issues meant half-day downtime. Battwheels' team resolves most problems onsite for our e-rickshaw fleet. It's a huge operational win for us.",
+      quote: "Earlier, even small EV issues meant half-day downtime. Battwheels' team resolves most problems onsite for our e-rickshaw fleet. It is a huge operational win for us.",
       avatar: "AV"
     },
     {
@@ -66,7 +70,7 @@ const ImprovedTestimonialsSection = () => {
       role: "Independent EV Fleet Operator",
       company: "2W & 3W Mixed Fleet",
       category: "3w-fleet",
-      quote: "Unlike traditional garages, Battwheels doesn't experiment. They diagnose accurately and fix only what's needed. That transparency has saved us a lot of money.",
+      quote: "Unlike traditional garages, Battwheels does not experiment. They diagnose accurately and fix only what is needed. That transparency has saved us a lot of money.",
       avatar: "RG"
     },
     {
@@ -142,6 +146,46 @@ const ImprovedTestimonialsSection = () => {
       avatar: "RC"
     }
   ];
+
+  useEffect(() => {
+    fetchTestimonials();
+  }, [activeCategory]);
+
+  const fetchTestimonials = async () => {
+    try {
+      setLoading(true);
+      const data = await testimonialsApi.getAll(activeCategory);
+      
+      if (data.testimonials && data.testimonials.length > 0) {
+        // Map API data to component format
+        const mappedTestimonials = data.testimonials.map(t => ({
+          id: t.id,
+          name: t.name,
+          role: t.role,
+          company: t.company,
+          category: t.category,
+          quote: t.quote,
+          avatar: t.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'BW'
+        }));
+        setTestimonials(mappedTestimonials);
+      } else {
+        // Use fallback data
+        const filtered = activeCategory === 'all' 
+          ? fallbackTestimonials 
+          : fallbackTestimonials.filter(t => t.category === activeCategory);
+        setTestimonials(filtered);
+      }
+    } catch (err) {
+      console.error('Error fetching testimonials:', err);
+      // Use fallback data on error
+      const filtered = activeCategory === 'all' 
+        ? fallbackTestimonials 
+        : fallbackTestimonials.filter(t => t.category === activeCategory);
+      setTestimonials(filtered);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const categories = [
     { id: 'all', label: 'All Testimonials', icon: Users, count: 15 },
