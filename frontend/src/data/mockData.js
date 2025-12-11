@@ -26,7 +26,7 @@ export const whyChooseUs = [
   {
     id: 1,
     title: '100% Onsite First',
-    description: 'We fix your EV at your site or on the road — wherever it's safe. No unnecessary towing means lower downtime and lower cost.',
+    description: 'We fix your EV at your site or on the road — wherever it is safe. No unnecessary towing means lower downtime and lower cost.',
     icon: 'MapPin'
   },
   {
