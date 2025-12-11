@@ -19,13 +19,13 @@ const AboutSection = () => {
           {/* Main Content */}
           <div className="prose prose-lg max-w-none mb-12">
             <p className="text-gray-700 leading-relaxed mb-6">
-              Battwheels Garages is India's first EV-only, onsite roadside assistance (RSA) and aftersales service company. 
-              We exist to solve one core problem: <strong>EVs don't need towing first—they need diagnosis and repair on the spot.</strong>
+              Battwheels Garages is India's first EV-only onsite roadside assistance and aftersales service company. 
+              We exist to solve one simple problem: <strong>EVs don't need towing first — they need diagnosis and repair on the spot.</strong>
             </p>
             
             <p className="text-gray-700 leading-relaxed mb-6">
-              Traditional RSA models are fundamentally broken for electric vehicles. Towing wastes time, increases operational costs, 
-              and kills vehicle uptime—especially critical for high-utilization fleets running 10-14 hours daily.
+              Traditional RSA models are broken for electric vehicles. Towing wastes time, inflates costs, 
+              and kills vehicle uptime — especially critical for high-utilization fleets running 10–14 hours daily.
             </p>
 
             <p className="text-gray-700 leading-relaxed mb-6">
@@ -73,7 +73,7 @@ const AboutSection = () => {
           <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-8 rounded-lg">
             <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
             <p className="text-gray-300 leading-relaxed mb-4">
-              To build India's EV Aftersales Infrastructure—a scalable, tech-enabled platform that supports the EV revolution 
+              To build India's EV aftersales infrastructure — a scalable, tech-enabled platform that supports the EV revolution 
               with onsite diagnostics, rapid response, and fleet-grade reliability.
             </p>
             <p className="text-gray-300 leading-relaxed">

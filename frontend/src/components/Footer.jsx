@@ -23,7 +23,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-sm mb-4 text-gray-400">
-              India's first EV-only onsite roadside assistance and aftersales service company. No towing first—diagnose and repair on the spot.
+              India's first EV-only onsite roadside assistance and aftersales service company. No towing first — we diagnose and repair on the spot.
             </p>
           </div>
 
