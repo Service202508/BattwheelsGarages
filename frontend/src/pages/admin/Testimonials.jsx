@@ -120,6 +120,7 @@ const Testimonials = () => {
 
   const openCreateModal = () => {
     setEditingTestimonial(null);
+    setError('');
     setFormData({
       name: '',
       role: '',
@@ -128,13 +129,15 @@ const Testimonials = () => {
       rating: 5,
       category: '',
       avatar_url: '',
-      status: 'active'
+      status: 'active',
+      featured: false
     });
     setShowModal(true);
   };
 
   const openEditModal = (testimonial) => {
     setEditingTestimonial(testimonial);
+    setError('');
     setFormData({
       name: testimonial.name || '',
       role: testimonial.role || '',
@@ -142,8 +145,9 @@ const Testimonials = () => {
       quote: testimonial.quote || '',
       rating: testimonial.rating || 5,
       category: testimonial.category || '',
-      avatar_url: testimonial.avatar_url || '',
-      status: testimonial.status || 'active'
+      avatar_url: testimonial.avatar || '',
+      status: testimonial.status || 'active',
+      featured: testimonial.featured || false
     });
     setShowModal(true);
   };
@@ -151,6 +155,7 @@ const Testimonials = () => {
   const closeModal = () => {
     setShowModal(false);
     setEditingTestimonial(null);
+    setError('');
   };
 
   const categories = ['2w-fleet', '3w-fleet', '4w-fleet', 'logistics', 'oem', 'leasing', 'startup', 'individual'];
