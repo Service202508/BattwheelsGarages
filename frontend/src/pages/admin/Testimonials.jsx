@@ -12,7 +12,8 @@ import {
   Trash2,
   X,
   Save,
-  Quote
+  Quote,
+  AlertCircle
 } from 'lucide-react';
 
 const Testimonials = () => {
@@ -20,6 +21,8 @@ const Testimonials = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     role: '',
@@ -28,7 +31,8 @@ const Testimonials = () => {
     rating: 5,
     category: '',
     avatar_url: '',
-    status: 'active'
+    status: 'active',
+    featured: false
   });
 
   const API_URL = process.env.REACT_APP_BACKEND_URL;
