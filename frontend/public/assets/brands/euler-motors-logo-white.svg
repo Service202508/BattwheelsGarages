@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" preserveAspectRatio="xMidYMid meet">
+  <text x="20" y="48" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">EULER</text>
+  <text x="20" y="66" font-family="Arial, sans-serif" font-size="14" font-weight="500" fill="#0066CC">MOTORS</text>
+  <circle cx="170" cy="40" r="12" fill="none" stroke="#0066CC" stroke-width="2"/>
+  <path d="M164 40 h12 M170 34 v12" stroke="#0066CC" stroke-width="2"/>
+</svg>
