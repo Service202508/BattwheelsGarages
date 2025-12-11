@@ -63,7 +63,7 @@ const ContactSection = () => {
             Partner with Battwheels Garages
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Fleet operators, OEMs, and mobility platforms—let's build India's EV infrastructure together
+            Fleet operators, OEMs, and mobility platforms — let's build India's EV infrastructure together
           </p>
         </div>
 

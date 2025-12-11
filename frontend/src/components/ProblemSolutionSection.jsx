@@ -10,7 +10,7 @@ const ProblemSolutionSection = () => {
             Traditional RSA is Broken for EVs
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Towing-first models waste time, increase cost, and kill vehicle uptime—especially for high-utilization fleets
+            Towing-first models waste time, inflate costs, and kill vehicle uptime — especially for high-utilization fleets
           </p>
         </div>
 
@@ -66,7 +66,7 @@ const ProblemSolutionSection = () => {
               </li>
               <li className="flex items-start space-x-2">
                 <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-gray-300 text-sm">Fleet-first DNA, built for 10-14hr daily operations</span>
+                <span className="text-gray-300 text-sm">Fleet-first DNA, built for 10–14 hr daily operations</span>
               </li>
               <li className="flex items-start space-x-2">
                 <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />

@@ -19,7 +19,7 @@ const ServicesSection = () => {
             Services by EV Type
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Specialized onsite diagnostics and repair for all electric vehicle categories—from 2-wheelers to commercial 4-wheelers
+            Specialized onsite diagnostics and repair for all electric vehicle categories — from 2-wheelers to commercial 4-wheelers
           </p>
         </div>
 
