@@ -58,7 +58,7 @@ const ProblemSolutionSection = () => {
             <ul className="space-y-3">
               <li className="flex items-start space-x-2">
                 <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-gray-300 text-sm">Diagnose and repair onsite, 80-90% issues resolved on field</span>
+                <span className="text-gray-300 text-sm">Diagnose and repair onsite, 85% issues resolved on field</span>
               </li>
               <li className="flex items-start space-x-2">
                 <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />

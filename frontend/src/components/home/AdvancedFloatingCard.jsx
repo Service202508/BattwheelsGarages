@@ -20,8 +20,8 @@ const AdvancedFloatingCard = () => {
 
   const trustBadges = [
     'Open 365 Days',
-    '24/7 Emergency Support',
-    'Pan-India Coverage'
+    '11 Cities Covered',
+    '95% Uptime Guaranteed'
   ];
 
   return (
@@ -72,8 +72,8 @@ const AdvancedFloatingCard = () => {
 
             {/* Key Statistics */}
             <div className="stats-badges">
-              <span className="stat-badge">80-90% issues resolved on field</span>
-              <span className="stat-badge">Maximum uptime for your fleet</span>
+              <span className="stat-badge">85% issues resolved on field</span>
+              <span className="stat-badge">2 hrs Avg Breakdown TAT</span>
             </div>
           </div>
 
