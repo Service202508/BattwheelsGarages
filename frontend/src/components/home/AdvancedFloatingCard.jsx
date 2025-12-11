@@ -44,7 +44,7 @@ const AdvancedFloatingCard = () => {
 
           {/* Secondary Description */}
           <p className="card-description">
-            India's first <strong>no-towing-first</strong> EV service model. We diagnose and fix your 2W, 3W, 4W & commercial EVs where they stop—maximizing uptime, minimizing costs.
+            India's first <strong>no-towing-first</strong> EV service model. We come to you — diagnosing and fixing your 2W, 3W, 4W and commercial EVs right where they stop. More uptime, lower costs.
           </p>
 
           {/* Process Flow Section */}

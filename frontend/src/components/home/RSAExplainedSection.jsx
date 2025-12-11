@@ -16,7 +16,7 @@ const RSAExplainedSection = () => {
             Why Traditional RSA is Broken for EVs
           </h2>
           <p className="text-green-100 max-w-3xl mx-auto text-lg">
-            Towing-first models waste time, increase costs, and kill vehicle uptime—especially for high-utilization EV fleets running 10-14 hours daily
+            Towing-first models waste time, inflate costs, and kill vehicle uptime — especially for high-utilization EV fleets running 10–14 hours daily
           </p>
         </div>
 

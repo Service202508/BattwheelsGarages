@@ -76,7 +76,7 @@ const PremiumHeroSection = () => {
                 {/* Supporting Text */}
                 <p className="text-lg text-gray-700 leading-relaxed">
                   India&apos;s first <span className="font-semibold text-gray-900">no-towing-first</span> EV service model. 
-                  We diagnose and fix your 2W, 3W, 4W & commercial EVs where they stop—maximizing uptime, minimizing costs.
+                  We come to you — diagnosing and fixing your 2W, 3W, 4W and commercial EVs right where they stop. More uptime, lower costs.
                 </p>
 
                 {/* Premium CTA Buttons */}
