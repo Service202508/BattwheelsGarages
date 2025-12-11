@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from './components/ui/toaster';
 import FloatingWhatsApp from './components/common/FloatingWhatsApp';
 
@@ -45,8 +46,9 @@ const PlaceholderPage = ({ title }) => (
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
+    <HelmetProvider>
+      <div className="App">
+        <BrowserRouter>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
@@ -76,10 +78,11 @@ function App() {
           <Route path="/admin/testimonials" element={<ProtectedRoute><AdminTestimonials /></ProtectedRoute>} />
           <Route path="/admin/jobs" element={<ProtectedRoute><AdminJobs /></ProtectedRoute>} />
         </Routes>
-      </BrowserRouter>
-      <Toaster />
-      <FloatingWhatsApp />
-    </div>
+        </BrowserRouter>
+        <Toaster />
+        <FloatingWhatsApp />
+      </div>
+    </HelmetProvider>
   );
 }
 
