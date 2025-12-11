@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Phone, CheckCircle2, Search, Wrench, Ban } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Calendar, Phone, Search, Wrench, Ban } from 'lucide-react';
 
 const PremiumHeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -9,41 +8,6 @@ const PremiumHeroSection = () => {
   useEffect(() => {
     setIsVisible(true);
   }, []);
-
-  const vehicleTypes = [
-    {
-      id: '2w',
-      name: '2-Wheeler EVs',
-      category: 'Scooters & Bikes',
-      count: '50+ Models',
-      image: '/assets/2w-ev.png',
-      emoji: '🛵'
-    },
-    {
-      id: '3w',
-      name: '3-Wheeler EVs',
-      category: 'Auto Rickshaws',
-      count: '30+ Models',
-      image: '/assets/3w-ev.jpeg',
-      emoji: '🛺'
-    },
-    {
-      id: '4w',
-      name: '4-Wheeler EVs',
-      category: 'Cars & SUVs',
-      count: '40+ Models',
-      image: '/assets/4w-car.webp',
-      emoji: '🚗'
-    },
-    {
-      id: 'commercial',
-      name: 'Commercial EVs',
-      category: 'Trucks & Vans',
-      count: '25+ Models',
-      image: '/assets/commercial-ev.png',
-      emoji: '🚚'
-    }
-  ];
 
   const processSteps = [
     {
