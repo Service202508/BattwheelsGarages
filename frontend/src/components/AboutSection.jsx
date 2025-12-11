@@ -41,31 +41,31 @@ const AboutSection = () => {
                 <Wrench className="w-6 h-6 text-green-600" />
               </div>
               <div className="text-2xl font-bold text-gray-900">10,000+</div>
-              <div className="text-sm text-gray-600">Vehicles Serviced</div>
+              <div className="text-sm text-gray-600">EVs Serviced</div>
             </div>
 
             <div className="text-center p-6 bg-gray-50 rounded-lg">
               <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                 <TrendingUp className="w-6 h-6 text-green-600" />
               </div>
-              <div className="text-2xl font-bold text-gray-900">90%</div>
-              <div className="text-sm text-gray-600">Onsite Fix Rate</div>
+              <div className="text-2xl font-bold text-gray-900">85%</div>
+              <div className="text-sm text-gray-600">Onsite Resolution</div>
             </div>
 
             <div className="text-center p-6 bg-gray-50 rounded-lg">
               <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Users className="w-6 h-6 text-green-600" />
               </div>
-              <div className="text-2xl font-bold text-gray-900">50+</div>
-              <div className="text-sm text-gray-600">EV Technicians</div>
+              <div className="text-2xl font-bold text-gray-900">5,000+</div>
+              <div className="text-sm text-gray-600">Happy Customers</div>
             </div>
 
             <div className="text-center p-6 bg-gray-50 rounded-lg">
               <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Building className="w-6 h-6 text-green-600" />
               </div>
-              <div className="text-2xl font-bold text-gray-900">₹1Cr+</div>
-              <div className="text-sm text-gray-600">Revenue Y1</div>
+              <div className="text-2xl font-bold text-gray-900">11</div>
+              <div className="text-sm text-gray-600">Cities Covered</div>
             </div>
           </div>
 

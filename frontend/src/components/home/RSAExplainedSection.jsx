@@ -93,7 +93,7 @@ const RSAExplainedSection = () => {
                 <TrendingUp className="w-5 h-5 text-green-400 flex-shrink-0 mt-1" />
                 <div>
                   <p className="text-white font-semibold mb-1">Onsite Resolution</p>
-                  <p className="text-gray-300 text-sm">80-90% issues fixed on-spot. Vehicle back on road in &lt;2hrs</p>
+                  <p className="text-gray-300 text-sm">85% issues fixed on-spot. Vehicle back on road in &lt;2hrs</p>
                 </div>
               </div>
 

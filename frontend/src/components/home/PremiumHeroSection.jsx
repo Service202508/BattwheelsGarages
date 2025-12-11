@@ -156,8 +156,8 @@ const PremiumHeroSection = () => {
                 <div className="flex flex-wrap justify-center gap-3">
                   {[
                     { icon: '🗓️', text: 'Open 365 Days' },
-                    { icon: '⚡', text: '24/7 Emergency' },
-                    { icon: '🇮🇳', text: 'Pan-India Coverage' },
+                    { icon: '⚡', text: '2 hrs Avg TAT' },
+                    { icon: '🇮🇳', text: '11 Cities' },
                     { icon: '✅', text: '85% Onsite Resolution' }
                   ].map((badge) => (
                     <div
