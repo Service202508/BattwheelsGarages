@@ -262,21 +262,7 @@ const PremiumHeroSection = () => {
       </div>
 
       {/* Bottom Gradient Fade - Smooth transition to next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-green-900 via-green-800/50 to-transparent" />
-      
-      {/* Decorative wave transition */}
-      <div className="absolute bottom-0 left-0 right-0">
-        <svg className="w-full h-24 md:h-32" viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-          <path d="M0,50 C240,80 480,20 720,50 C960,80 1200,20 1440,50 L1440,100 L0,100 Z" fill="url(#gradient)" />
-          <defs>
-            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#064e3b" />
-              <stop offset="50%" stopColor="#065f46" />
-              <stop offset="100%" stopColor="#064e3b" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/50 to-transparent" />
     </section>
   );
 };
