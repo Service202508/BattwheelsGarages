@@ -16,7 +16,7 @@ const About = () => {
                 About Battwheels Garages
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
-                India's first EV-only, onsite roadside assistance (RSA) and aftersales service company, built to solve one core problem: EVs don't need towing first—they need diagnosis and repair on the spot.
+                India's first EV-only onsite roadside assistance and aftersales service company. We built Battwheels to solve one simple problem: EVs don't need towing first — they need diagnosis and repair on the spot.
               </p>
             </div>
           </div>
@@ -33,7 +33,7 @@ const About = () => {
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h3>
                   <p className="text-gray-700 leading-relaxed">
-                    Support India's EV revolution with high-uptime onsite after-sales service. Since our inception in 2024, we have served thousands of businesses and individual owners by offering reliable, swift, and expert services.
+                    We're here to support India's EV revolution with high-uptime onsite after-sales service. Since 2024, we've served thousands of businesses and individual owners with reliable, swift, and expert EV care.
                   </p>
                 </div>
 
@@ -43,7 +43,7 @@ const About = () => {
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Vision</h3>
                   <p className="text-gray-700 leading-relaxed">
-                    Nationwide onsite EV repair & maintenance network with COCO, FOCO, and FOFO garages plus a tech-driven field team to build India's EV aftersales infrastructure.
+                    To build India's EV aftersales infrastructure — a nationwide, tech-enabled platform with onsite repair and maintenance networks (COCO, FOCO, FOFO garages) and a skilled field team.
                   </p>
                 </div>
               </div>
@@ -126,7 +126,7 @@ const About = () => {
                   <h2 className="text-3xl font-bold">Sustainability That Serves You Better</h2>
                 </div>
                 <p className="text-green-50 leading-relaxed">
-                  Sustainability is the main factor in whatever we deliver to our customers. By choosing our eco-friendly EV repair and servicing, we conserve energy and create a greener future. Our commitment to creating a greener planet delivers better products, smarter services, and happy customers—because a healthier earth means a healthy life for everyone.
+                  Sustainability drives everything we do. When you choose our eco-friendly EV repair and servicing, you're helping create a greener future. Better products, smarter services, and happy customers — because a healthier planet means a better life for everyone.
                 </p>
               </div>
             </div>
