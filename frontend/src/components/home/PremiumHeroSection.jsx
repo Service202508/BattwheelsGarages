@@ -170,58 +170,6 @@ const PremiumHeroSection = () => {
               </div>
             </div>
           </div>
-
-          {/* Right Section - Vehicle Showcase */}
-          <div className={`lg:col-span-7 transform transition-all duration-1000 delay-300 ${
-            isVisible ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
-          }`}>
-            <div className="mb-6 text-center lg:text-left">
-              <h3 className="text-gray-900 text-2xl lg:text-3xl font-bold mb-2">We Service All EV Types</h3>
-              <p className="text-gray-700 text-lg">From 2-wheelers to commercial fleets</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 lg:gap-6">
-              {vehicleTypes.map((vehicle, index) => (
-                <div
-                  key={vehicle.id}
-                  className="group relative overflow-hidden rounded-2xl bg-white shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  {/* Vehicle Image */}
-                  <div className="relative h-40 lg:h-48 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-                    <img
-                      src={vehicle.image}
-                      alt={vehicle.name}
-                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                      loading="lazy"
-                    />
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-
-                  {/* Card Content */}
-                  <div className="p-5">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h4 className="text-lg font-bold text-gray-900 mb-1">{vehicle.name}</h4>
-                        <p className="text-sm text-gray-600">{vehicle.category}</p>
-                      </div>
-                      <span className="text-3xl">{vehicle.emoji}</span>
-                    </div>
-                    
-                    {/* Stats Chip */}
-                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold border border-green-200">
-                      <CheckCircle2 className="w-3 h-3 mr-1" />
-                      {vehicle.count}
-                    </div>
-                  </div>
-
-                  {/* Hover Glow Effect */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-500/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 
