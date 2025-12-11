@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="simpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0072CE"/>
+      <stop offset="100%" style="stop-color:#0058A0"/>
+    </linearGradient>
+  </defs>
+  <text x="20" y="48" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="url(#simpleGrad)">SIMPLE</text>
+  <text x="20" y="66" font-family="Arial, sans-serif" font-size="14" font-weight="500" fill="#666666">ENERGY</text>
+</svg>
