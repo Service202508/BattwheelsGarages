@@ -73,7 +73,7 @@ const PremiumHeroSection = () => {
   ];
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-green-50 via-white to-green-50">
+    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-green-50 via-white to-green-50 flex items-center">
       {/* Animated Background Mesh - Subtle Green Tones */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-0 left-0 w-96 h-96 bg-green-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
@@ -84,32 +84,32 @@ const PremiumHeroSection = () => {
       {/* Top accent gradient */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-emerald-400 to-green-500" />
 
-      <div className="relative container mx-auto px-4 py-12 lg:py-20">
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Section - Premium Floating Card */}
-          <div className={`lg:col-span-5 transform transition-all duration-1000 ${
+      <div className="relative container mx-auto px-4 py-12 lg:py-20 w-full">
+        <div className="max-w-5xl mx-auto">
+          {/* Center Premium Floating Card - Full Width */}
+          <div className={`transform transition-all duration-1000 ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
           }`}>
-            <div className="relative">
+            <div className="relative max-w-4xl mx-auto">
               {/* Glassmorphic Card */}
-              <div className="relative backdrop-blur-2xl bg-white/95 rounded-3xl p-8 lg:p-10 shadow-2xl border border-white/50">
+              <div className="relative backdrop-blur-2xl bg-white/95 rounded-3xl p-8 lg:p-12 shadow-2xl border border-white/50">
                 {/* Glow Effect */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-orange-600 rounded-3xl blur-2xl opacity-20 animate-pulse" />
                 
-                <div className="relative z-10">
+                <div className="relative z-10 text-center">
                   {/* Main Headline */}
-                  <h1 className="text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-4" style={{ letterSpacing: '-0.5px' }}>
+                  <h1 className="text-4xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-4" style={{ letterSpacing: '-0.5px' }}>
                     EVs Don't Need Towing First.
                   </h1>
                   
-                  <h2 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent mb-6">
+                  <h2 className="text-3xl lg:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent mb-6">
                     They Need Diagnosis & Repair Onsite.
                   </h2>
 
-                  <div className="h-px bg-gradient-to-r from-green-500/50 via-green-500 to-transparent mb-6" />
+                  <div className="h-px bg-gradient-to-r from-transparent via-green-500 to-transparent mb-8 max-w-md mx-auto" />
 
                   {/* Supporting Text */}
-                  <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+                  <p className="text-lg md:text-xl text-gray-700 mb-10 leading-relaxed max-w-3xl mx-auto">
                     India's first <span className="font-semibold text-gray-900">no-towing-first</span> EV service model. 
                     We diagnose and fix your 2W, 3W, 4W & commercial EVs where they stop—maximizing uptime, minimizing costs.
                   </p>
@@ -163,9 +163,9 @@ const PremiumHeroSection = () => {
                   </div>
 
                   {/* Premium CTA Buttons */}
-                  <div className="space-y-3 mb-8">
-                    <Link to="/book-service" className="block">
-                      <button className="relative w-full group overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 p-0.5 transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/50 hover:-translate-y-0.5">
+                  <div className="flex flex-col sm:flex-row gap-4 mb-10 max-w-2xl mx-auto">
+                    <Link to="/book-service" className="flex-1">
+                      <button className="relative w-full group overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 p-0.5 transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/50 hover:-translate-y-1">
                         <div className="relative bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl px-8 py-4 text-white font-bold text-lg flex items-center justify-center gap-3">
                           {/* Shine effect */}
                           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
@@ -175,29 +175,30 @@ const PremiumHeroSection = () => {
                       </button>
                     </Link>
 
-                    <Link to="/fleet-oem" className="block">
-                      <button className="relative w-full group overflow-hidden rounded-2xl bg-white border-2 border-orange-500 transition-all duration-300 hover:bg-orange-500 hover:shadow-xl hover:-translate-y-0.5">
+                    <Link to="/fleet-oem" className="flex-1">
+                      <button className="relative w-full group overflow-hidden rounded-2xl bg-white border-2 border-orange-500 transition-all duration-300 hover:bg-orange-500 hover:shadow-xl hover:-translate-y-1">
                         <div className="px-8 py-4 font-semibold text-lg flex items-center justify-center gap-3 text-orange-600 group-hover:text-white transition-colors">
                           <Phone className="w-5 h-5 transition-transform group-hover:rotate-12" />
-                          <span>Talk to Fleet & OEM Team</span>
+                          <span>Talk to Fleet Team</span>
                         </div>
                       </button>
                     </Link>
                   </div>
 
                   {/* Trust Badges */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="flex flex-wrap justify-center gap-4">
                     {[
                       { icon: '🗓️', text: 'Open 365 Days' },
                       { icon: '⚡', text: '24/7 Emergency' },
-                      { icon: '🇮🇳', text: 'Pan-India' }
+                      { icon: '🇮🇳', text: 'Pan-India Coverage' },
+                      { icon: '✅', text: '85% Onsite Resolution' }
                     ].map((badge) => (
                       <div
                         key={badge.text}
-                        className="flex flex-col items-center p-3 bg-white/80 border border-gray-200 rounded-xl hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                        className="flex items-center gap-2 px-4 py-2 bg-white/80 border border-gray-200 rounded-xl hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
                       >
-                        <span className="text-2xl mb-1">{badge.icon}</span>
-                        <span className="text-xs font-medium text-gray-700 text-center">{badge.text}</span>
+                        <span className="text-xl">{badge.icon}</span>
+                        <span className="text-sm font-medium text-gray-700">{badge.text}</span>
                       </div>
                     ))}
                   </div>
