@@ -55,6 +55,8 @@ const Testimonials = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
+    setError('');
     try {
       const headers = authService.getAuthHeaders();
       const url = editingTestimonial
@@ -62,18 +64,37 @@ const Testimonials = () => {
         : `${API_URL}/api/admin/testimonials/`;
       const method = editingTestimonial ? 'PUT' : 'POST';
 
+      // Map to backend model fields
+      const submitData = {
+        name: formData.name,
+        company: formData.company,
+        role: formData.role,
+        quote: formData.quote,
+        rating: parseInt(formData.rating) || 5,
+        featured: formData.featured || false,
+        category: formData.category,
+        status: formData.status,
+        avatar: formData.avatar_url || null
+      };
+
       const response = await fetch(url, {
         method,
         headers,
-        body: JSON.stringify(formData)
+        body: JSON.stringify(submitData)
       });
 
       if (response.ok) {
         fetchTestimonials();
         closeModal();
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Failed to save testimonial');
       }
     } catch (error) {
       console.error('Error saving testimonial:', error);
+      setError('Network error. Please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 
