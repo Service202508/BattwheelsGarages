@@ -770,9 +770,165 @@ class BattwheelsAPITester:
         
         return True
     
-    def run_all_tests(self):
-        """Run all API tests"""
-        print(f"🚀 Starting Battwheels Garages API Tests")
+    def test_public_services_api(self):
+        """Test GET /api/services - Should return 5 services with specific fields"""
+        try:
+            response = requests.get(f"{self.base_url}/services", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "services" not in data:
+                    self.log_test("Public Services API", False, "Missing 'services' key in response", data)
+                    return False
+                
+                services = data["services"]
+                
+                # Check count
+                if len(services) != 5:
+                    self.log_test("Public Services API", False, f"Expected 5 services, got {len(services)}", {"count": len(services)})
+                    return False
+                
+                # Check required fields in each service
+                required_fields = ["title", "slug", "short_description", "vehicle_segments"]
+                for i, service in enumerate(services):
+                    missing_fields = [field for field in required_fields if field not in service]
+                    if missing_fields:
+                        self.log_test("Public Services API", False, f"Service {i+1} missing fields: {missing_fields}", service)
+                        return False
+                
+                self.log_test("Public Services API", True, f"Successfully retrieved 5 services with all required fields", {"services_count": len(services)})
+                return True
+            else:
+                self.log_test("Public Services API", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Public Services API", False, f"Request failed: {str(e)}")
+        
+        return False
+    
+    def test_public_blogs_api(self):
+        """Test GET /api/blogs - Should return 3 blogs with specific fields"""
+        try:
+            response = requests.get(f"{self.base_url}/blogs", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "blogs" not in data:
+                    self.log_test("Public Blogs API", False, "Missing 'blogs' key in response", data)
+                    return False
+                
+                blogs = data["blogs"]
+                
+                # Check count
+                if len(blogs) != 3:
+                    self.log_test("Public Blogs API", False, f"Expected 3 blogs, got {len(blogs)}", {"count": len(blogs)})
+                    return False
+                
+                # Check required fields in each blog
+                required_fields = ["title", "slug", "excerpt", "category"]
+                for i, blog in enumerate(blogs):
+                    missing_fields = [field for field in required_fields if field not in blog]
+                    if missing_fields:
+                        self.log_test("Public Blogs API", False, f"Blog {i+1} missing fields: {missing_fields}", blog)
+                        return False
+                    
+                    # Check status is published (if present)
+                    if "status" in blog and blog["status"] != "published":
+                        self.log_test("Public Blogs API", False, f"Blog {i+1} status is not 'published': {blog['status']}", blog)
+                        return False
+                
+                self.log_test("Public Blogs API", True, f"Successfully retrieved 3 blogs with all required fields", {"blogs_count": len(blogs)})
+                return True
+            else:
+                self.log_test("Public Blogs API", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Public Blogs API", False, f"Request failed: {str(e)}")
+        
+        return False
+    
+    def test_public_testimonials_api(self):
+        """Test GET /api/testimonials - Should return 8 testimonials with specific fields"""
+        try:
+            response = requests.get(f"{self.base_url}/testimonials", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "testimonials" not in data:
+                    self.log_test("Public Testimonials API", False, "Missing 'testimonials' key in response", data)
+                    return False
+                
+                testimonials = data["testimonials"]
+                
+                # Check count
+                if len(testimonials) != 8:
+                    self.log_test("Public Testimonials API", False, f"Expected 8 testimonials, got {len(testimonials)}", {"count": len(testimonials)})
+                    return False
+                
+                # Check required fields in each testimonial
+                required_fields = ["name", "company", "role", "quote", "rating"]
+                for i, testimonial in enumerate(testimonials):
+                    missing_fields = [field for field in required_fields if field not in testimonial]
+                    if missing_fields:
+                        self.log_test("Public Testimonials API", False, f"Testimonial {i+1} missing fields: {missing_fields}", testimonial)
+                        return False
+                
+                self.log_test("Public Testimonials API", True, f"Successfully retrieved 8 testimonials with all required fields", {"testimonials_count": len(testimonials)})
+                return True
+            else:
+                self.log_test("Public Testimonials API", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Public Testimonials API", False, f"Request failed: {str(e)}")
+        
+        return False
+    
+    def test_specific_admin_login(self):
+        """Test admin login with specific credentials from review request"""
+        login_data = {
+            "email": "admin@battwheelsgarages.in",
+            "password": "adminpassword"
+        }
+        
+        try:
+            response = requests.post(
+                f"{self.base_url}/admin/auth/login",
+                json=login_data,
+                headers={"Content-Type": "application/json"},
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["access_token", "token_type", "user"]
+                
+                if all(field in data for field in required_fields):
+                    if data["token_type"] == "bearer" and data["access_token"]:
+                        self.admin_token = data["access_token"]
+                        self.log_test("Specific Admin Login", True, f"Login successful with specified credentials", {"user_email": data['user']['email']})
+                        return True
+                    else:
+                        self.log_test("Specific Admin Login", False, f"Invalid token format: {data}", data)
+                else:
+                    missing = [f for f in required_fields if f not in data]
+                    self.log_test("Specific Admin Login", False, f"Missing fields: {missing}", data)
+            else:
+                self.log_test("Specific Admin Login", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Specific Admin Login", False, f"Request failed: {str(e)}")
+        
+        return False
+    
+    def run_review_request_tests(self):
+        """Run tests specifically mentioned in the review request"""
+        print(f"🎯 Running Review Request Specific Tests")
         print(f"Backend URL: {self.base_url}")
         print("=" * 60)
         
@@ -780,6 +936,24 @@ class BattwheelsAPITester:
         if not self.test_health_check():
             print("❌ Health check failed - backend may not be running")
             return False
+        
+        # Test specific API requirements
+        print("\n🔍 Testing Specific API Requirements...")
+        self.test_public_services_api()
+        self.test_public_blogs_api()
+        self.test_public_testimonials_api()
+        self.test_specific_admin_login()
+        
+        return True
+    
+    def run_all_tests(self):
+        """Run all API tests"""
+        print(f"🚀 Starting Battwheels Garages API Tests")
+        print(f"Backend URL: {self.base_url}")
+        print("=" * 60)
+        
+        # First run the specific review request tests
+        self.run_review_request_tests()
         
         # Test service bookings
         print("\n📋 Testing Service Bookings...")
