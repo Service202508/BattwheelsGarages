@@ -1,84 +1,164 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import { serviceCategories } from '../data/mockData';
-import { Wrench, Cpu, Battery, Plug, CircleSlash, Paintbrush, AlertCircle, ClipboardCheck, ArrowRight } from 'lucide-react';
-
-const iconMap = {
-  Wrench,
-  Cpu,
-  Battery,
-  Plug,
-  CircleSlash,
-  Paintbrush,
-  AlertCircle,
-  ClipboardCheck
-};
+import SEO from '../components/common/SEO';
+import { servicesApi } from '../utils/api';
+import { serviceCategories as mockServices } from '../data/mockData';
+import { Wrench, ArrowRight, Loader2, Zap, Battery, Settings, Truck } from 'lucide-react';
 
 const Services = () => {
-  const navigate = useNavigate();
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      const data = await servicesApi.getAll();
+      
+      if (data.services && data.services.length > 0) {
+        setServices(data.services);
+      } else {
+        // Fallback to mock data if no services in DB
+        console.log('No services from API, using mock data');
+        setServices(mockServices);
+      }
+    } catch (err) {
+      console.error('Error fetching services:', err);
+      // Fallback to mock data on error
+      setServices(mockServices);
+      setError(null); // Don't show error, just use fallback
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getIcon = (iconName) => {
+    const icons = {
+      Wrench: Wrench,
+      Zap: Zap,
+      Battery: Battery,
+      Settings: Settings,
+      Truck: Truck,
+    };
+    return icons[iconName] || Wrench;
+  };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
+      <SEO 
+        title="EV Services | Battwheels Garages - Onsite EV Repair & Maintenance"
+        description="Comprehensive EV services including onsite repair, battery diagnostics, motor servicing, and fleet maintenance. 85% issues resolved on field."
+        url="/services"
+      />
+      
       <Header />
-      <main>
-        {/* Hero */}
-        <section className="py-20 bg-gradient-to-br from-green-50 to-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Complete EV After-Sales Services
-              </h1>
-              <p className="text-xl text-gray-600 leading-relaxed">
-                End-to-end EV maintenance and repair for 2W, 3W, 4W & Commercial EVs. From periodic services to emergency roadside assistance.
-              </p>
-            </div>
-          </div>
-        </section>
 
-        {/* Service Categories */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {serviceCategories.map((service) => {
-                const Icon = iconMap[service.icon];
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-green-600 to-emerald-700 py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Our EV Services
+          </h1>
+          <p className="text-xl text-green-100 max-w-3xl mx-auto">
+            Comprehensive onsite diagnostics, repair, and maintenance for all electric vehicle categories — from 2-wheelers to commercial fleets
+          </p>
+        </div>
+      </section>
+
+      {/* Services Grid */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="w-8 h-8 text-green-600 animate-spin" />
+              <span className="ml-3 text-gray-600">Loading services...</span>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((service) => {
+                const Icon = getIcon(service.icon);
                 return (
-                  <div 
+                  <div
                     key={service.id}
-                    className="bg-gray-50 border-2 border-gray-200 p-8 rounded-xl hover:border-green-500 hover:shadow-lg transition-all cursor-pointer group"
-                    onClick={() => navigate(service.link)}
+                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group"
                   >
-                    <div className="bg-green-100 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:bg-green-600 transition-colors">
-                      <Icon className="w-8 h-8 text-green-600 group-hover:text-white transition-colors" />
+                    {/* Service Header */}
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-6">
+                      <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4">
+                        <Icon className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-xl font-bold text-white">{service.title || service.name}</h3>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">{service.title}</h3>
-                    <p className="text-gray-600 mb-4">{service.description}</p>
-                    <div className="flex items-center text-green-600 font-medium text-sm group-hover:text-green-700">
-                      Learn More
-                      <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+
+                    {/* Service Body */}
+                    <div className="p-6">
+                      <p className="text-gray-600 mb-6 line-clamp-3">
+                        {service.short_description || service.description}
+                      </p>
+
+                      {/* Features */}
+                      {service.features && service.features.length > 0 && (
+                        <ul className="space-y-2 mb-6">
+                          {service.features.slice(0, 3).map((feature, idx) => (
+                            <li key={idx} className="flex items-center text-sm text-gray-600">
+                              <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-2" />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                      {/* CTA */}
+                      <div className="flex items-center justify-between">
+                        <Link
+                          to={`/book-service?service=${service.slug || service.id}`}
+                          className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                          Book Service
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Link>
+                        {service.slug && (
+                          <Link
+                            to={`/services/${service.slug}`}
+                            className="text-green-600 hover:text-green-700 text-sm font-medium"
+                          >
+                            Learn More
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
               })}
             </div>
-          </div>
-        </section>
+          )}
 
-        {/* CTA */}
-        <section className="py-16 bg-gradient-to-r from-green-600 to-green-500 text-white">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-4">Ready to Book Your EV Service?</h2>
-            <p className="text-green-50 mb-8">Open 365 days • 09:00 AM – 11:00 PM</p>
-            <button 
-              onClick={() => navigate('/book-service')}
-              className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          {/* CTA Section */}
+          <div className="mt-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-8 md:p-12 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              Need a Custom Solution for Your Fleet?
+            </h2>
+            <p className="text-orange-100 mb-6 max-w-2xl mx-auto">
+              We offer tailored maintenance programs for fleet operators, OEMs, and mobility platforms
+            </p>
+            <Link
+              to="/fleet-oem"
+              className="inline-flex items-center px-8 py-3 bg-white text-orange-600 font-bold rounded-xl hover:bg-orange-50 transition-colors"
             >
-              Book Service Now
-            </button>
+              Talk to Fleet Team
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Link>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
