@@ -68,7 +68,10 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      {/* Rotating Gears Background */}
+      <GearBackground variant="contact" />
+      
       <Header />
       <main>
         {/* Hero */}
