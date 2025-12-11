@@ -1,4 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" preserveAspectRatio="xMidYMid meet">
-  <rect width="200" height="80" fill="transparent"/>
-  <text x="100" y="52" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#003366" text-anchor="middle">PIAGGIO</text>
+  <defs>
+    <linearGradient id="piaggioGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00563F"/>
+      <stop offset="100%" style="stop-color:#004530"/>
+    </linearGradient>
+  </defs>
+  <text x="20" y="52" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="url(#piaggioGrad)">PIAGGIO</text>
 </svg>
