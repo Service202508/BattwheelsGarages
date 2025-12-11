@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from './components/ui/toaster';
 import FloatingWhatsApp from './components/common/FloatingWhatsApp';
 
-// Pages
+// Public Pages
 import Home from './pages/Home';
 import About from './pages/About';
 import Services from './pages/Services';
@@ -19,6 +19,19 @@ import Contact from './pages/Contact';
 import BookService from './pages/BookService';
 import FleetOEM from './pages/FleetOEM';
 import FAQ from './pages/FAQ';
+
+// Admin Pages
+import AdminLogin from './pages/admin/Login';
+import AdminDashboard from './pages/admin/Dashboard';
+import AdminBookings from './pages/admin/Bookings';
+import AdminContacts from './pages/admin/Contacts';
+import AdminServices from './pages/admin/Services';
+import AdminBlogs from './pages/admin/Blogs';
+import AdminTestimonials from './pages/admin/Testimonials';
+import AdminJobs from './pages/admin/Jobs';
+
+// Admin Route Protection
+import ProtectedRoute from './components/admin/ProtectedRoute';
 
 // Placeholder pages (Privacy & Terms)
 const PlaceholderPage = ({ title }) => (
@@ -35,6 +48,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
@@ -51,6 +65,16 @@ function App() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/privacy" element={<PlaceholderPage title="Privacy Policy" />} />
           <Route path="/terms" element={<PlaceholderPage title="Terms of Service" />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/bookings" element={<ProtectedRoute><AdminBookings /></ProtectedRoute>} />
+          <Route path="/admin/contacts" element={<ProtectedRoute><AdminContacts /></ProtectedRoute>} />
+          <Route path="/admin/services" element={<ProtectedRoute><AdminServices /></ProtectedRoute>} />
+          <Route path="/admin/blogs" element={<ProtectedRoute><AdminBlogs /></ProtectedRoute>} />
+          <Route path="/admin/testimonials" element={<ProtectedRoute><AdminTestimonials /></ProtectedRoute>} />
+          <Route path="/admin/jobs" element={<ProtectedRoute><AdminJobs /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
       <Toaster />
