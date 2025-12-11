@@ -18,7 +18,7 @@ const VehicleTypesSection = () => {
       id: '3w',
       name: '3-Wheeler EVs',
       category: 'Auto Rickshaws',
-      count: '30+ Models',
+      count: '14+ Models',
       image: '/assets/3w-ev.jpeg',
       emoji: '🛺'
     },
@@ -26,7 +26,7 @@ const VehicleTypesSection = () => {
       id: '4w',
       name: '4-Wheeler EVs',
       category: 'Cars & SUVs',
-      count: '40+ Models',
+      count: '6+ Models',
       image: '/assets/4w-car.webp',
       emoji: '🚗'
     },
@@ -34,7 +34,7 @@ const VehicleTypesSection = () => {
       id: 'commercial',
       name: 'Commercial EVs',
       category: 'Trucks & Vans',
-      count: '25+ Models',
+      count: '7+ Models',
       image: '/assets/commercial-ev.png',
       emoji: '🚚'
     }

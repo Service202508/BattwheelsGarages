@@ -320,8 +320,8 @@ const ImprovedTestimonialsSection = () => {
         {/* Stats Bar */}
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
           {[
-            { label: 'Fleet Operators', value: '100+' },
-            { label: 'Cities Covered', value: '25+' },
+            { label: 'Fleet Operators Served', value: '70+' },
+            { label: 'Cities Covered', value: '11+' },
             { label: 'Uptime Guaranteed', value: '95%' },
             { label: 'Customer Satisfaction', value: '4.8/5' }
           ].map((stat) => (

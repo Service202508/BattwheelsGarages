@@ -13,12 +13,12 @@ export const companyInfo = {
   }
 };
 
-// Stats
+// Stats - 2-Wheeler EVs (Scooters & Bikes)
 export const stats = [
   { id: 1, value: '10000', label: 'EVs Serviced', suffix: '+' },
   { id: 2, value: '5000', label: 'Happy Customers', suffix: '+' },
   { id: 3, value: '50', label: 'OEM & Fleet Partners', suffix: '+' },
-  { id: 4, value: '2', label: 'Avg Breakdown TAT', suffix: 'hrs' }
+  { id: 4, value: '2', label: 'Avg Breakdown TAT', suffix: ' hrs' }
 ];
 
 // Why Choose Us

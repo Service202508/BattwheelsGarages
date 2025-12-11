@@ -139,16 +139,16 @@ const PremiumHeroSection = () => {
                 {/* Stats Badges */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 p-4 border border-green-200/50">
-                    <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-1">80-90%</div>
+                    <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-1">85%</div>
                     <div className="h-1 w-3/4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mb-2" />
-                    <div className="text-xs font-medium text-gray-700">Issues Resolved</div>
-                    <div className="text-xs text-gray-500">On Field</div>
+                    <div className="text-xs font-medium text-gray-700">Onsite Resolution</div>
+                    <div className="text-xs text-gray-500">Rate</div>
                   </div>
                   <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-yellow-50 p-4 border border-orange-200/50">
-                    <div className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent mb-1">10,000+</div>
+                    <div className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent mb-1">145+</div>
                     <div className="h-1 w-3/4 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full mb-2" />
-                    <div className="text-xs font-medium text-gray-700">Maximum Uptime</div>
-                    <div className="text-xs text-gray-500">For Your Fleet</div>
+                    <div className="text-xs font-medium text-gray-700">EV Models</div>
+                    <div className="text-xs text-gray-500">Serviced</div>
                   </div>
                 </div>
 
