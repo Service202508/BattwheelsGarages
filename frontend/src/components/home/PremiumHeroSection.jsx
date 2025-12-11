@@ -38,7 +38,7 @@ const PremiumHeroSection = () => {
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50/50 to-green-50 flex items-center">
-      {/* Improved Background Mesh - Smooth Green Gradient */}
+      {/* Background Mesh - Smooth Green Gradient */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-20 left-10 w-[500px] h-[500px] bg-green-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
         <div className="absolute top-40 right-20 w-[600px] h-[600px] bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
@@ -53,7 +53,7 @@ const PremiumHeroSection = () => {
         <div className={`transform transition-all duration-1000 ${
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
         }`}>
-          <div className="relative backdrop-blur-xl bg-white/90 rounded-2xl shadow-2xl border border-white/60 overflow-hidden">
+          <div className="relative backdrop-blur-xl bg-white/90 rounded-3xl shadow-2xl border border-white/60 overflow-hidden">
             {/* Subtle Inner Glow */}
             <div className="absolute -inset-1 bg-gradient-to-r from-green-500/10 to-emerald-500/10 blur-xl" />
             
@@ -64,7 +64,7 @@ const PremiumHeroSection = () => {
               <div className="flex flex-col justify-center space-y-6">
                 {/* Main Headline */}
                 <h1 className="text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 leading-tight" style={{ letterSpacing: '-0.5px' }}>
-                  EVs Don't Need Towing First.
+                  EVs Don&apos;t Need Towing First.
                 </h1>
                 
                 <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
@@ -75,102 +75,99 @@ const PremiumHeroSection = () => {
 
                 {/* Supporting Text */}
                 <p className="text-lg text-gray-700 leading-relaxed">
-                  India's first <span className="font-semibold text-gray-900">no-towing-first</span> EV service model. 
+                  India&apos;s first <span className="font-semibold text-gray-900">no-towing-first</span> EV service model. 
                   We diagnose and fix your 2W, 3W, 4W & commercial EVs where they stop—maximizing uptime, minimizing costs.
                 </p>
+
+                {/* Premium CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <Link to="/book-service" className="flex-1">
+                    <button className="relative w-full group overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 p-0.5 transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/50 hover:-translate-y-1">
+                      <div className="relative bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl px-8 py-4 text-white font-bold text-lg flex items-center justify-center gap-3">
+                        {/* Shine effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                        <Calendar className="w-5 h-5" />
+                        <span>Book EV Service Now</span>
+                      </div>
+                    </button>
+                  </Link>
+
+                  <Link to="/fleet-oem" className="flex-1">
+                    <button className="relative w-full group overflow-hidden rounded-2xl bg-white border-2 border-orange-500 transition-all duration-300 hover:bg-orange-500 hover:shadow-xl hover:-translate-y-1">
+                      <div className="px-8 py-4 font-semibold text-lg flex items-center justify-center gap-3 text-orange-600 group-hover:text-white transition-colors">
+                        <Phone className="w-5 h-5 transition-transform group-hover:rotate-12" />
+                        <span>Talk to Fleet Team</span>
+                      </div>
+                    </button>
+                  </Link>
+                </div>
               </div>
 
               {/* RIGHT COLUMN - Battwheels Difference Card */}
-              <div className="flex flex-col justify-center space-y-6 bg-gradient-to-br from-green-50/50 to-emerald-50/30 rounded-xl p-6 lg:p-8 border border-green-100">
-
-                  {/* The Battwheels Difference */}
-                  <div className="mb-8">
-                    <h3 className="text-center text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">
-                      The Battwheels Difference
-                    </h3>
-                    
-                    {/* Process Flow */}
-                    <div className="grid grid-cols-4 gap-3 mb-6">
-                      {processSteps.map((step, index) => {
-                        const Icon = step.icon;
-                        return (
-                          <div
-                            key={step.title}
-                            className="flex flex-col items-center text-center group cursor-pointer"
-                            style={{ animationDelay: `${index * 150}ms` }}
-                          >
-                            <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${step.gradient} p-0.5 mb-2 transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 shadow-lg`}>
-                              <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center">
-                                <Icon className="w-7 h-7 text-gray-700" />
-                              </div>
-                            </div>
-                            <p className="text-xs font-semibold text-gray-800">{step.title}</p>
-                            <p className="text-xs text-gray-500">{step.description}</p>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Connecting Line */}
-                    <div className="relative h-1 bg-gradient-to-r from-red-500 via-blue-500 via-orange-500 to-green-500 rounded-full mb-6 opacity-30" />
-                  </div>
-
-                  {/* Stats Badges */}
-                  <div className="grid grid-cols-2 gap-4 mb-8">
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 p-4 border border-green-200/50">
-                      <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-1">80-90%</div>
-                      <div className="h-1 w-3/4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mb-2" />
-                      <div className="text-xs font-medium text-gray-700">Issues Resolved</div>
-                      <div className="text-xs text-gray-500">On Field</div>
-                    </div>
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-yellow-50 p-4 border border-orange-200/50">
-                      <div className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent mb-1">10,000+</div>
-                      <div className="h-1 w-3/4 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full mb-2" />
-                      <div className="text-xs font-medium text-gray-700">Maximum Uptime</div>
-                      <div className="text-xs text-gray-500">For Your Fleet</div>
-                    </div>
-                  </div>
-
-                  {/* Premium CTA Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-4 mb-10 max-w-2xl mx-auto">
-                    <Link to="/book-service" className="flex-1">
-                      <button className="relative w-full group overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 p-0.5 transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/50 hover:-translate-y-1">
-                        <div className="relative bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl px-8 py-4 text-white font-bold text-lg flex items-center justify-center gap-3">
-                          {/* Shine effect */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                          <Calendar className="w-5 h-5" />
-                          <span>Book EV Service Now</span>
-                        </div>
-                      </button>
-                    </Link>
-
-                    <Link to="/fleet-oem" className="flex-1">
-                      <button className="relative w-full group overflow-hidden rounded-2xl bg-white border-2 border-orange-500 transition-all duration-300 hover:bg-orange-500 hover:shadow-xl hover:-translate-y-1">
-                        <div className="px-8 py-4 font-semibold text-lg flex items-center justify-center gap-3 text-orange-600 group-hover:text-white transition-colors">
-                          <Phone className="w-5 h-5 transition-transform group-hover:rotate-12" />
-                          <span>Talk to Fleet Team</span>
-                        </div>
-                      </button>
-                    </Link>
-                  </div>
-
-                  {/* Trust Badges */}
-                  <div className="flex flex-wrap justify-center gap-4">
-                    {[
-                      { icon: '🗓️', text: 'Open 365 Days' },
-                      { icon: '⚡', text: '24/7 Emergency' },
-                      { icon: '🇮🇳', text: 'Pan-India Coverage' },
-                      { icon: '✅', text: '85% Onsite Resolution' }
-                    ].map((badge) => (
+              <div className="flex flex-col justify-center space-y-6 bg-gradient-to-br from-green-50/80 to-emerald-50/50 rounded-2xl p-6 lg:p-8 border border-green-100/80">
+                
+                {/* The Battwheels Difference Header */}
+                <h3 className="text-center text-sm font-semibold text-gray-500 uppercase tracking-wider">
+                  The Battwheels Difference
+                </h3>
+                
+                {/* Process Flow - 4 Steps */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {processSteps.map((step, index) => {
+                    const Icon = step.icon;
+                    return (
                       <div
-                        key={badge.text}
-                        className="flex items-center gap-2 px-4 py-2 bg-white/80 border border-gray-200 rounded-xl hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                        key={step.title}
+                        className="flex flex-col items-center text-center group cursor-pointer"
+                        style={{ animationDelay: `${index * 150}ms` }}
                       >
-                        <span className="text-xl">{badge.icon}</span>
-                        <span className="text-sm font-medium text-gray-700">{badge.text}</span>
+                        <div className={`w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-gradient-to-br ${step.gradient} p-0.5 mb-2 transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 shadow-lg`}>
+                          <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center">
+                            <Icon className="w-6 h-6 lg:w-7 lg:h-7 text-gray-700" />
+                          </div>
+                        </div>
+                        <p className="text-xs font-semibold text-gray-800">{step.title}</p>
+                        <p className="text-xs text-gray-500">{step.description}</p>
                       </div>
-                    ))}
+                    );
+                  })}
+                </div>
+
+                {/* Connecting Line */}
+                <div className="relative h-1 bg-gradient-to-r from-red-500 via-blue-500 via-orange-500 to-green-500 rounded-full opacity-40" />
+
+                {/* Stats Badges */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 p-4 border border-green-200/50">
+                    <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-1">80-90%</div>
+                    <div className="h-1 w-3/4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mb-2" />
+                    <div className="text-xs font-medium text-gray-700">Issues Resolved</div>
+                    <div className="text-xs text-gray-500">On Field</div>
                   </div>
+                  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-yellow-50 p-4 border border-orange-200/50">
+                    <div className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent mb-1">10,000+</div>
+                    <div className="h-1 w-3/4 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full mb-2" />
+                    <div className="text-xs font-medium text-gray-700">Maximum Uptime</div>
+                    <div className="text-xs text-gray-500">For Your Fleet</div>
+                  </div>
+                </div>
+
+                {/* Trust Badges */}
+                <div className="flex flex-wrap justify-center gap-3">
+                  {[
+                    { icon: '🗓️', text: 'Open 365 Days' },
+                    { icon: '⚡', text: '24/7 Emergency' },
+                    { icon: '🇮🇳', text: 'Pan-India Coverage' },
+                    { icon: '✅', text: '85% Onsite Resolution' }
+                  ].map((badge) => (
+                    <div
+                      key={badge.text}
+                      className="flex items-center gap-2 px-3 py-2 bg-white/80 border border-gray-200 rounded-xl hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                    >
+                      <span className="text-lg">{badge.icon}</span>
+                      <span className="text-xs font-medium text-gray-700">{badge.text}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
