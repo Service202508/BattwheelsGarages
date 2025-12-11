@@ -19,10 +19,15 @@ class BattwheelsAPITester:
     def __init__(self):
         self.base_url = BACKEND_URL
         self.test_results = []
+        self.admin_token = None
         self.created_ids = {
             'bookings': [],
             'fleet_enquiries': [],
-            'contacts': []
+            'contacts': [],
+            'services': [],
+            'blogs': [],
+            'testimonials': [],
+            'jobs': []
         }
     
     def log_test(self, test_name, success, message, response_data=None):
