@@ -26,13 +26,13 @@ export const whyChooseUs = [
   {
     id: 1,
     title: '100% Onsite First',
-    description: 'We fix the vehicle at your site or on the road wherever safe and feasible—no unnecessary towing, lower downtime, and lower cost.',
+    description: 'We fix your EV at your site or on the road — wherever it's safe. No unnecessary towing means lower downtime and lower cost.',
     icon: 'MapPin'
   },
   {
     id: 2,
     title: 'EV-Only Expertise',
-    description: 'Our engineers are trained specifically on EV motors, controllers, BMS, chargers, and high-voltage safety.',
+    description: 'Our engineers are trained specifically on EV motors, controllers, BMS, chargers, and high-voltage safety. No ICE distractions.',
     icon: 'Zap'
   },
   {
@@ -44,7 +44,7 @@ export const whyChooseUs = [
   {
     id: 4,
     title: 'Tech-Driven: Battwheels OS',
-    description: 'Live tracking of jobs, digital job cards, and GaragePRO-style EV diagnostics integrated into Battwheels OS.',
+    description: 'Track jobs in real-time, get digital job cards, and access GaragePRO-style EV diagnostics — all integrated into Battwheels OS.',
     icon: 'Monitor'
   }
 ];
