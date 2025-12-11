@@ -51,12 +51,33 @@ async def get_public_blogs(limit: int = 20, skip: int = 0, category: Optional[st
         if category:
             query["category"] = category
         
-        blogs = await db.blogs.find(
+        # Try blog_posts collection first (used by admin), then blogs collection
+        blogs = await db.blog_posts.find(
             query,
             {"_id": 0}
         ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
         
-        total = await db.blogs.count_documents(query)
+        # If no results, try with is_published field
+        if not blogs:
+            query_alt = {"is_published": True}
+            if category:
+                query_alt["category"] = category
+            blogs = await db.blog_posts.find(
+                query_alt,
+                {"_id": 0}
+            ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+        
+        # Also check legacy blogs collection
+        if not blogs:
+            query = {"status": "published"}
+            if category:
+                query["category"] = category
+            blogs = await db.blogs.find(
+                query,
+                {"_id": 0}
+            ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+        
+        total = len(blogs)
         
         return {"blogs": blogs, "total": total, "skip": skip, "limit": limit}
     except Exception as e:
@@ -66,10 +87,26 @@ async def get_public_blogs(limit: int = 20, skip: int = 0, category: Optional[st
 async def get_blog_by_slug(slug: str):
     """Get a single blog post by slug"""
     try:
-        blog = await db.blogs.find_one(
+        # Try blog_posts collection first with status field
+        blog = await db.blog_posts.find_one(
             {"slug": slug, "status": "published"},
             {"_id": 0}
         )
+        
+        # Try with is_published field
+        if not blog:
+            blog = await db.blog_posts.find_one(
+                {"slug": slug, "is_published": True},
+                {"_id": 0}
+            )
+        
+        # Try legacy blogs collection
+        if not blog:
+            blog = await db.blogs.find_one(
+                {"slug": slug, "status": "published"},
+                {"_id": 0}
+            )
+        
         if not blog:
             raise HTTPException(status_code=404, detail="Blog post not found")
         return blog
