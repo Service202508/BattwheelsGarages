@@ -2,6 +2,7 @@ import React from 'react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import PremiumHeroSection from '../components/home/PremiumHeroSection';
+import VehicleTypesSection from '../components/home/VehicleTypesSection';
 import RSAExplainedSection from '../components/home/RSAExplainedSection';
 import StatsSection from '../components/home/StatsSection';
 import WhyChooseSection from '../components/home/WhyChooseSection';
@@ -17,6 +18,7 @@ const Home = () => {
       <Header />
       <main>
         <PremiumHeroSection />
+        <VehicleTypesSection />
         <RSAExplainedSection />
         <StatsSection />
         <WhyChooseSection />
