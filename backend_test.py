@@ -668,8 +668,13 @@ class BattwheelsAPITester:
         service_data = {
             "title": "Battery Health Check",
             "slug": "battery-health-check",
-            "description": "Comprehensive battery health diagnostics",
-            "status": "active"
+            "short_description": "Quick battery diagnostics",
+            "long_description": "Comprehensive battery health diagnostics and performance analysis",
+            "vehicle_segments": ["2W", "3W", "4W"],
+            "pricing_model": "fixed",
+            "price": 299.0,
+            "display_order": 1,
+            "is_active": True
         }
         
         try:
