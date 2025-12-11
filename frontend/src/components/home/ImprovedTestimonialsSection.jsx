@@ -93,7 +93,7 @@ const ImprovedTestimonialsSection = () => {
       role: "Fleet Supervisor",
       company: "Electric 4W Corporate Transport",
       category: "4w-fleet",
-      quote: "Structured service, proper documentation, and reliable technicians—Battwheels brings discipline to EV maintenance, which is rare in this space.",
+      quote: "Structured service, proper documentation, and reliable technicians — Battwheels brings discipline to EV maintenance, which is rare in this space.",
       avatar: "DR"
     },
     {
@@ -138,7 +138,7 @@ const ImprovedTestimonialsSection = () => {
       role: "Senior Manager",
       company: "Urban Electric Mobility Program",
       category: "startup",
-      quote: "Battwheels is building what the EV ecosystem actually needs—reliable, onsite after-sales. Their model is clearly designed for scale and real-world operations.",
+      quote: "Battwheels is building what the EV ecosystem actually needs — reliable, onsite after-sales. Their model is clearly designed for scale and real-world operations.",
       avatar: "RC"
     }
   ];
