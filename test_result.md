@@ -102,134 +102,169 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Build Admin Dashboard UI for Battwheels Garages website"
+user_problem_statement: "Connect Frontend to Backend APIs, Implement SEO, Fix Linting"
 
 backend:
-  - task: "Admin Authentication API"
+  - task: "Public Services API"
     implemented: true
     working: true
-    file: "/app/backend/routes/admin_auth.py"
+    file: "/app/backend/routes/public_content.py"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: true
           agent: "main"
-          comment: "Login endpoint working. Password reset performed successfully."
+          comment: "GET /api/services and /api/services/:slug endpoints created and tested."
 
-  - task: "Admin Bookings CRUD API"
+  - task: "Public Blogs API"
     implemented: true
     working: true
-    file: "/app/backend/routes/admin_bookings.py"
+    file: "/app/backend/routes/public_content.py"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: true
           agent: "main"
-          comment: "All booking endpoints working - list, detail, status update, notes."
+          comment: "GET /api/blogs and /api/blogs/:slug endpoints created and tested."
+
+  - task: "Public Testimonials API"
+    implemented: true
+    working: true
+    file: "/app/backend/routes/public_content.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "GET /api/testimonials endpoint created and tested."
+
+  - task: "Public Jobs API"
+    implemented: true
+    working: true
+    file: "/app/backend/routes/public_content.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "GET /api/jobs and /api/jobs/:id endpoints created."
 
 frontend:
-  - task: "Admin Dashboard Page"
+  - task: "Services Page API Integration"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/admin/Dashboard.jsx"
+    file: "/app/frontend/src/pages/Services.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: true
           agent: "main"
-          comment: "Dashboard showing stats cards, recent bookings, quick actions. Screenshot verified."
+          comment: "Services page connected to /api/services with fallback to mock data."
 
-  - task: "Admin Bookings Page"
+  - task: "Blog Page API Integration"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/admin/Bookings.jsx"
+    file: "/app/frontend/src/pages/Blog.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: true
           agent: "main"
-          comment: "Bookings table with search, filters, status update, detail modal working. Screenshot verified."
+          comment: "Blog list page connected to /api/blogs with category filter and fallback."
 
-  - task: "Admin Contacts Page"
+  - task: "BlogPost Page API Integration + SEO"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/admin/Contacts.jsx"
+    file: "/app/frontend/src/pages/BlogPost.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: true
           agent: "main"
-          comment: "Contacts and Fleet Enquiries tabs implemented with table view and detail modal."
+          comment: "BlogPost fetches from API, includes full SEO meta tags, OG tags, and JSON-LD schema. Content sanitized with DOMPurify."
 
-  - task: "Admin Services Page"
+  - task: "Testimonials API Integration"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/admin/Services.jsx"
+    file: "/app/frontend/src/components/home/ImprovedTestimonialsSection.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: true
           agent: "main"
-          comment: "Services grid with Add/Edit/Delete functionality. Screenshot verified showing empty state."
+          comment: "Testimonials section connected to /api/testimonials with fallback to hardcoded data."
 
-  - task: "Admin Blogs Page"
+  - task: "Home Page SEO + JSON-LD"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/admin/Blogs.jsx"
+    file: "/app/frontend/src/pages/Home.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: true
           agent: "main"
-          comment: "Blog management with CRUD, publish/unpublish toggle, category selection."
+          comment: "Home page has complete SEO meta tags, OG tags, and LocalBusiness JSON-LD schema."
 
-  - task: "Admin Testimonials Page"
+  - task: "SEO Component"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/admin/Testimonials.jsx"
+    file: "/app/frontend/src/components/common/SEO.jsx"
     stuck_count: 0
-    priority: "high"
+    priority: "medium"
     needs_retesting: false
     status_history:
         - working: true
           agent: "main"
-          comment: "Testimonials grid with star rating selector, category, CRUD operations."
+          comment: "Reusable SEO component with meta, OG, Twitter cards support."
 
-  - task: "Admin Jobs Page"
+  - task: "JSON-LD Schemas"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/admin/Jobs.jsx"
+    file: "/app/frontend/src/utils/schema.js"
     stuck_count: 0
-    priority: "high"
+    priority: "medium"
     needs_retesting: false
     status_history:
         - working: true
           agent: "main"
-          comment: "Job listings management with CRUD, department/location/employment type fields."
+          comment: "LocalBusiness, Service, Blog, and FAQ JSON-LD schemas implemented."
+
+  - task: "Sitemap and Robots.txt"
+    implemented: true
+    working: true
+    file: "/app/frontend/public/sitemap.xml"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "sitemap.xml and robots.txt created for SEO."
 
 metadata:
   created_by: "main_agent"
-  version: "1.3"
-  test_sequence: 4
+  version: "1.4"
+  test_sequence: 5
   run_ui: true
 
 test_plan:
   current_focus:
-    - "Admin Dashboard UI complete"
-    - "All 7 admin pages implemented: Dashboard, Bookings, Contacts, Services, Blogs, Testimonials, Jobs"
-    - "JWT authentication working"
-    - "Protected routes functioning"
+    - "Frontend connected to backend APIs for Services, Blogs, Testimonials"
+    - "SEO meta tags and JSON-LD schemas implemented"
+    - "Fallback to mock data when API returns empty"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
     - agent: "main"
-      message: "Admin Dashboard UI complete. Created 7 pages: Dashboard (stats + recent bookings), Bookings (table + filters + detail modal), Contacts (tabs for contacts/fleet enquiries), Services (CRUD grid), Blogs (CRUD table with publish toggle), Testimonials (CRUD grid with ratings), Jobs (CRUD list). All pages integrated with existing backend APIs. Admin login working with credentials admin@battwheelsgarages.in / adminpassword."
+      message: "P0 Complete: Frontend→Backend connection implemented. Services, Blogs, and Testimonials pages now fetch from public APIs with graceful fallback to mock data. P1 Complete: SEO implemented with meta tags, OpenGraph, Twitter cards, and JSON-LD LocalBusiness schema on Home page. BlogPost has full article schema. sitemap.xml and robots.txt created."
