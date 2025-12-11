@@ -334,9 +334,9 @@ const Testimonials = () => {
 
               <div className="flex justify-end space-x-3 pt-4 border-t">
                 <Button type="button" variant="outline" onClick={closeModal}>Cancel</Button>
-                <Button type="submit" className="bg-green-600 hover:bg-green-700">
+                <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={saving}>
                   <Save className="w-4 h-4 mr-2" />
-                  {editingTestimonial ? 'Update' : 'Add Testimonial'}
+                  {saving ? 'Saving...' : editingTestimonial ? 'Update' : 'Add Testimonial'}
                 </Button>
               </div>
             </form>
