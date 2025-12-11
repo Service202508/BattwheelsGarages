@@ -455,6 +455,316 @@ class BattwheelsAPITester:
         
         return False
     
+    def test_admin_login(self):
+        """Test admin login with correct credentials"""
+        login_data = {
+            "email": "admin@battwheelsgarages.in",
+            "password": "adminpassword"
+        }
+        
+        try:
+            response = requests.post(
+                f"{self.base_url}/admin/auth/login",
+                json=login_data,
+                headers={"Content-Type": "application/json"},
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["access_token", "token_type", "user"]
+                
+                if all(field in data for field in required_fields):
+                    if data["token_type"] == "bearer" and data["access_token"]:
+                        self.admin_token = data["access_token"]
+                        self.log_test("Admin Login", True, f"Login successful for {data['user']['email']}", {"user": data["user"]})
+                        return True
+                    else:
+                        self.log_test("Admin Login", False, f"Invalid token format: {data}", data)
+                else:
+                    missing = [f for f in required_fields if f not in data]
+                    self.log_test("Admin Login", False, f"Missing fields: {missing}", data)
+            else:
+                self.log_test("Admin Login", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Admin Login", False, f"Request failed: {str(e)}")
+        
+        return False
+    
+    def get_admin_headers(self):
+        """Get headers with admin authorization"""
+        if not self.admin_token:
+            return {}
+        return {"Authorization": f"Bearer {self.admin_token}"}
+    
+    def test_admin_get_bookings(self):
+        """Test getting all bookings via admin API"""
+        try:
+            response = requests.get(
+                f"{self.base_url}/admin/bookings/",
+                headers=self.get_admin_headers(),
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["total", "bookings", "limit", "skip"]
+                
+                if all(field in data for field in required_fields):
+                    if isinstance(data["bookings"], list):
+                        self.log_test("Admin Get Bookings", True, f"Retrieved {data['total']} bookings", {"count": data["total"]})
+                        return data["bookings"]
+                    else:
+                        self.log_test("Admin Get Bookings", False, f"Bookings not a list: {type(data['bookings'])}", data)
+                else:
+                    missing = [f for f in required_fields if f not in data]
+                    self.log_test("Admin Get Bookings", False, f"Missing fields: {missing}", data)
+            else:
+                self.log_test("Admin Get Bookings", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Admin Get Bookings", False, f"Request failed: {str(e)}")
+        
+        return []
+    
+    def test_admin_get_contacts(self):
+        """Test getting all contacts via admin API"""
+        try:
+            response = requests.get(
+                f"{self.base_url}/admin/contacts/",
+                headers=self.get_admin_headers(),
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["total", "contacts", "limit", "skip"]
+                
+                if all(field in data for field in required_fields):
+                    if isinstance(data["contacts"], list):
+                        self.log_test("Admin Get Contacts", True, f"Retrieved {data['total']} contacts", {"count": data["total"]})
+                        return True
+                    else:
+                        self.log_test("Admin Get Contacts", False, f"Contacts not a list: {type(data['contacts'])}", data)
+                else:
+                    missing = [f for f in required_fields if f not in data]
+                    self.log_test("Admin Get Contacts", False, f"Missing fields: {missing}", data)
+            else:
+                self.log_test("Admin Get Contacts", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Admin Get Contacts", False, f"Request failed: {str(e)}")
+        
+        return False
+    
+    def test_admin_get_services(self):
+        """Test getting all services via admin API"""
+        try:
+            response = requests.get(
+                f"{self.base_url}/admin/services/",
+                headers=self.get_admin_headers(),
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "services" in data and isinstance(data["services"], list):
+                    self.log_test("Admin Get Services", True, f"Retrieved {len(data['services'])} services", {"count": len(data["services"])})
+                    return True
+                else:
+                    self.log_test("Admin Get Services", False, f"Invalid response format: {data}", data)
+            else:
+                self.log_test("Admin Get Services", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Admin Get Services", False, f"Request failed: {str(e)}")
+        
+        return False
+    
+    def test_admin_get_blogs(self):
+        """Test getting all blogs via admin API"""
+        try:
+            response = requests.get(
+                f"{self.base_url}/admin/blogs/",
+                headers=self.get_admin_headers(),
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["total", "blogs", "limit", "skip"]
+                
+                if all(field in data for field in required_fields):
+                    if isinstance(data["blogs"], list):
+                        self.log_test("Admin Get Blogs", True, f"Retrieved {data['total']} blogs", {"count": data["total"]})
+                        return True
+                    else:
+                        self.log_test("Admin Get Blogs", False, f"Blogs not a list: {type(data['blogs'])}", data)
+                else:
+                    missing = [f for f in required_fields if f not in data]
+                    self.log_test("Admin Get Blogs", False, f"Missing fields: {missing}", data)
+            else:
+                self.log_test("Admin Get Blogs", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Admin Get Blogs", False, f"Request failed: {str(e)}")
+        
+        return False
+    
+    def test_admin_get_testimonials(self):
+        """Test getting all testimonials via admin API"""
+        try:
+            response = requests.get(
+                f"{self.base_url}/admin/testimonials/",
+                headers=self.get_admin_headers(),
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "testimonials" in data and isinstance(data["testimonials"], list):
+                    self.log_test("Admin Get Testimonials", True, f"Retrieved {len(data['testimonials'])} testimonials", {"count": len(data["testimonials"])})
+                    return True
+                else:
+                    self.log_test("Admin Get Testimonials", False, f"Invalid response format: {data}", data)
+            else:
+                self.log_test("Admin Get Testimonials", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Admin Get Testimonials", False, f"Request failed: {str(e)}")
+        
+        return False
+    
+    def test_admin_get_jobs(self):
+        """Test getting all jobs via admin API"""
+        try:
+            response = requests.get(
+                f"{self.base_url}/admin/jobs/",
+                headers=self.get_admin_headers(),
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "jobs" in data and isinstance(data["jobs"], list):
+                    self.log_test("Admin Get Jobs", True, f"Retrieved {len(data['jobs'])} jobs", {"count": len(data["jobs"])})
+                    return True
+                else:
+                    self.log_test("Admin Get Jobs", False, f"Invalid response format: {data}", data)
+            else:
+                self.log_test("Admin Get Jobs", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Admin Get Jobs", False, f"Request failed: {str(e)}")
+        
+        return False
+    
+    def test_admin_create_service(self):
+        """Test creating a new service via admin API"""
+        service_data = {
+            "title": "Battery Health Check",
+            "slug": "battery-health-check",
+            "description": "Comprehensive battery health diagnostics",
+            "status": "active"
+        }
+        
+        try:
+            response = requests.post(
+                f"{self.base_url}/admin/services/",
+                json=service_data,
+                headers={**self.get_admin_headers(), "Content-Type": "application/json"},
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "service" in data and "message" in data:
+                    service = data["service"]
+                    if service.get("title") == service_data["title"] and service.get("slug") == service_data["slug"]:
+                        self.created_ids['services'].append(service.get("id"))
+                        self.log_test("Admin Create Service", True, f"Service created with ID: {service.get('id')}", service)
+                        return service.get("id")
+                    else:
+                        self.log_test("Admin Create Service", False, f"Service data mismatch: {service}", data)
+                else:
+                    self.log_test("Admin Create Service", False, f"Invalid response format: {data}", data)
+            else:
+                self.log_test("Admin Create Service", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Admin Create Service", False, f"Request failed: {str(e)}")
+        
+        return None
+    
+    def test_admin_update_booking_status(self, bookings):
+        """Test updating booking status via admin API"""
+        if not bookings:
+            self.log_test("Admin Update Booking Status", False, "No bookings available to test status update")
+            return False
+            
+        booking_id = bookings[0].get("id")
+        if not booking_id:
+            self.log_test("Admin Update Booking Status", False, "No booking ID found in first booking")
+            return False
+            
+        try:
+            response = requests.patch(
+                f"{self.base_url}/admin/bookings/{booking_id}/status",
+                params={"status": "confirmed"},
+                headers=self.get_admin_headers(),
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if data.get("status") == "confirmed" and "message" in data:
+                    self.log_test("Admin Update Booking Status", True, f"Status updated to confirmed for booking {booking_id}", data)
+                    return True
+                else:
+                    self.log_test("Admin Update Booking Status", False, f"Unexpected response: {data}", data)
+            else:
+                self.log_test("Admin Update Booking Status", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Admin Update Booking Status", False, f"Request failed: {str(e)}")
+        
+        return False
+    
+    def run_admin_tests(self):
+        """Run all admin dashboard tests"""
+        print(f"\n🔐 Testing Admin Dashboard APIs...")
+        print("=" * 60)
+        
+        # Test admin login first
+        if not self.test_admin_login():
+            print("❌ Admin login failed - cannot proceed with admin tests")
+            return False
+        
+        # Test all admin dashboard APIs
+        print("\n📊 Testing Admin Dashboard APIs...")
+        bookings = self.test_admin_get_bookings()
+        self.test_admin_get_contacts()
+        self.test_admin_get_services()
+        self.test_admin_get_blogs()
+        self.test_admin_get_testimonials()
+        self.test_admin_get_jobs()
+        
+        # Test CRUD operations
+        print("\n🔧 Testing Admin CRUD Operations...")
+        service_id = self.test_admin_create_service()
+        
+        # Test status updates
+        print("\n📝 Testing Admin Status Updates...")
+        self.test_admin_update_booking_status(bookings)
+        
+        return True
+    
     def run_all_tests(self):
         """Run all API tests"""
         print(f"🚀 Starting Battwheels Garages API Tests")
