@@ -18,7 +18,7 @@ db = client[os.environ['DB_NAME']]
 app = FastAPI(title="Battwheels Garages API", version="1.0.0")
 
 # Import routes
-from routes import bookings, fleet_enquiries, contacts, careers
+from routes import bookings, fleet_enquiries, contacts, careers, public_content
 from routes import admin_auth, admin_bookings, admin_contacts, admin_services, admin_blogs, admin_testimonials, admin_jobs
 
 # Health check route
@@ -31,6 +31,7 @@ app.include_router(bookings.router)
 app.include_router(fleet_enquiries.router)
 app.include_router(contacts.router)
 app.include_router(careers.router)
+app.include_router(public_content.router)
 
 # Include admin routers
 app.include_router(admin_auth.router)
