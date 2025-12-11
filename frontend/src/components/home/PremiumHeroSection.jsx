@@ -145,7 +145,7 @@ const PremiumHeroSection = () => {
                     <div className="text-xs text-gray-500">Rate</div>
                   </div>
                   <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-yellow-50 p-4 border border-orange-200/50">
-                    <div className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent mb-1">145+</div>
+                    <div className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent mb-1">105+</div>
                     <div className="h-1 w-3/4 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full mb-2" />
                     <div className="text-xs font-medium text-gray-700">EV Models</div>
                     <div className="text-xs text-gray-500">Serviced</div>
