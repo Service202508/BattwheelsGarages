@@ -58,7 +58,10 @@ const Blog = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Rotating Gears Background */}
+      <GearBackground variant="blog" />
+      
       <SEO 
         title="Blog | Battwheels Garages - EV Industry Insights & Tips"
         description="Latest insights on EV maintenance, fleet operations, industry news, and expert tips from Battwheels Garages."
