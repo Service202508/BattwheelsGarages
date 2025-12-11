@@ -188,17 +188,15 @@ const ImprovedTestimonialsSection = () => {
   };
 
   const categories = [
-    { id: 'all', label: 'All Testimonials', icon: Users, count: 15 },
-    { id: '2w-fleet', label: '2W Fleet', icon: Truck, count: 2 },
-    { id: '3w-fleet', label: '3W Fleet', icon: Truck, count: 3 },
-    { id: '4w-fleet', label: '4W Fleet', icon: Truck, count: 1 },
-    { id: 'logistics', label: 'Logistics', icon: Building2, count: 2 },
-    { id: 'leasing', label: 'Leasing', icon: Building2, count: 2 }
+    { id: 'all', label: 'All Testimonials', icon: Users, count: testimonials.length },
+    { id: '2w-fleet', label: '2W Fleet', icon: Truck, count: testimonials.filter(t => t.category === '2w-fleet').length },
+    { id: '3w-fleet', label: '3W Fleet', icon: Truck, count: testimonials.filter(t => t.category === '3w-fleet').length },
+    { id: '4w-fleet', label: '4W Fleet', icon: Truck, count: testimonials.filter(t => t.category === '4w-fleet').length },
+    { id: 'logistics', label: 'Logistics', icon: Building2, count: testimonials.filter(t => t.category === 'logistics').length },
+    { id: 'leasing', label: 'Leasing', icon: Building2, count: testimonials.filter(t => t.category === 'leasing').length }
   ];
 
-  const filteredTestimonials = activeCategory === 'all' 
-    ? testimonials 
-    : testimonials.filter(t => t.category === activeCategory);
+  const filteredTestimonials = testimonials;
 
   const itemsPerPage = 6;
   const totalPages = Math.ceil(filteredTestimonials.length / itemsPerPage);
