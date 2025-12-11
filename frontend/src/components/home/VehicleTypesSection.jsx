@@ -140,7 +140,7 @@ const VehicleTypesSection = () => {
           }`}
         >
           {[
-            { label: 'EV Models Serviced', value: '145+' },
+            { label: 'EV Models Serviced', value: '105+' },
             { label: 'Cities Covered', value: '11' },
             { label: 'Onsite Resolution', value: '85%' },
             { label: 'Customer Rating', value: '4.8/5' }
