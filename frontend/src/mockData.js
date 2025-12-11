@@ -86,7 +86,7 @@ export const comparisonData = [
   {
     feature: 'Service Model',
     traditional: 'Towing-first approach',
-    battwheels: '80-90% onsite resolution, no towing dependency'
+    battwheels: '85% onsite resolution, no towing dependency'
   },
   {
     feature: 'Fleet Understanding',
@@ -150,9 +150,9 @@ export const coreUSPs = [
   {
     id: 2,
     title: 'Onsite Resolution Model',
-    description: 'Diagnose and repair where the vehicle stops. 80-90% issues resolved on field without towing dependency.',
+    description: 'Diagnose and repair where the vehicle stops. 85% issues resolved on field without towing dependency.',
     icon: 'MapPin',
-    stats: '80-90% Onsite Fix Rate'
+    stats: '85% Onsite Fix Rate'
   },
   {
     id: 3,
@@ -233,7 +233,7 @@ export const faqs = [
   {
     id: 1,
     question: 'What makes Battwheels different from traditional RSA providers?',
-    answer: 'We are EV-only specialists with an onsite resolution model. Unlike traditional providers who tow-first, we diagnose and repair on the spot, achieving 80-90% onsite fix rates. This eliminates towing dependency and maximizes fleet uptime.'
+    answer: 'We are EV-only specialists with an onsite resolution model. Unlike traditional providers who tow-first, we diagnose and repair on the spot, achieving 85% onsite fix rates. This eliminates towing dependency and maximizes fleet uptime.'
   },
   {
     id: 2,
