@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Phone, Ban, Search, Wrench, CheckCircle2, Clock, MapPin, Target, Zap } from 'lucide-react';
+import { Calendar, Phone, Ban, Search, Wrench, CheckCircle2, MapPin, Target, Zap } from 'lucide-react';
 
 const PremiumHeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -14,15 +14,11 @@ const PremiumHeroSection = () => {
 
   // Auto-flip every 6 seconds
   useEffect(() => {
-    const startFlipInterval = () => {
-      flipIntervalRef.current = setInterval(() => {
-        if (!isPaused) {
-          setIsFlipped(prev => !prev);
-        }
-      }, 6000);
-    };
-
-    startFlipInterval();
+    flipIntervalRef.current = setInterval(() => {
+      if (!isPaused) {
+        setIsFlipped(prev => !prev);
+      }
+    }, 6000);
 
     return () => {
       if (flipIntervalRef.current) {
@@ -178,14 +174,13 @@ const PremiumHeroSection = () => {
 
             {/* RIGHT COLUMN - Flipping Stats Card */}
             <div 
-              className="order-1 lg:order-2 perspective-1000"
+              className="order-1 lg:order-2"
+              style={{ perspective: '1000px' }}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
               <div 
-                className={`relative w-full transition-transform duration-700 ease-in-out transform-style-3d ${
-                  isFlipped ? 'rotate-y-180' : ''
-                }`}
+                className="relative w-full min-h-[420px] lg:min-h-[450px]"
                 style={{
                   transformStyle: 'preserve-3d',
                   transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
@@ -194,10 +189,13 @@ const PremiumHeroSection = () => {
               >
                 {/* FRONT SIDE - Stats Card */}
                 <div 
-                  className="relative w-full backface-hidden"
-                  style={{ backfaceVisibility: 'hidden' }}
+                  className="absolute inset-0 w-full h-full"
+                  style={{ 
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden'
+                  }}
                 >
-                  <div className="flex flex-col justify-center space-y-6 bg-white/80 backdrop-blur-sm rounded-3xl p-6 lg:p-8 border border-green-100 shadow-xl">
+                  <div className="flex flex-col justify-center space-y-6 bg-white/80 backdrop-blur-sm rounded-3xl p-6 lg:p-8 border border-green-100 shadow-xl h-full">
                     
                     {/* The Real Road Side Assistance Header */}
                     <h3 className="text-center text-sm font-semibold text-gray-500 uppercase tracking-wider">
@@ -267,28 +265,34 @@ const PremiumHeroSection = () => {
 
                 {/* BACK SIDE - Technician Image */}
                 <div 
-                  className="absolute top-0 left-0 w-full h-full backface-hidden rotate-y-180"
+                  className="absolute inset-0 w-full h-full"
                   style={{ 
                     backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
                     transform: 'rotateY(180deg)'
                   }}
                 >
-                  <div className="relative w-full h-full min-h-[400px] lg:min-h-[450px] rounded-3xl overflow-hidden shadow-xl border border-green-100">
+                  <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-xl border border-green-100">
                     {/* Technician Image */}
                     <img 
                       src="https://customer-assets.emergentagent.com/job_battwheels-ev/artifacts/dbsgrks6_Gemini_Generated_Image_ain6amain6amain6%20%281%29.png"
                       alt="Battwheels onsite EV roadside assistance - technician on scooter with service vehicle"
                       className="w-full h-full object-cover"
-                      loading="lazy"
+                      loading="eager"
                     />
                     
                     {/* Soft Green Overlay Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0FA958]/30 via-transparent to-[#16B364]/10" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0FA958]/40 via-transparent to-[#16B364]/15" />
                     
                     {/* Bottom Text Overlay */}
-                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
-                      <p className="text-white font-bold text-lg">Onsite EV RSA</p>
-                      <p className="text-white/80 text-sm">Real technicians. Real service. On your location.</p>
+                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 via-black/40 to-transparent">
+                      <p className="text-white font-bold text-xl mb-1">Onsite EV RSA</p>
+                      <p className="text-white/90 text-sm">Real technicians. Real service. On your location.</p>
+                    </div>
+
+                    {/* Corner Badge */}
+                    <div className="absolute top-4 right-4 bg-[#0FA958] text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+                      Live Service
                     </div>
                   </div>
                 </div>
