@@ -11,7 +11,7 @@ const VehicleTypesSection = () => {
       name: '2-Wheeler EVs',
       category: 'Scooters & Bikes',
       count: '50+ Models',
-      image: '/assets/2w-ev.png',
+      image: '/assets/ev-categories/ev-2w-new.png',
       emoji: '🛵'
     },
     {
@@ -19,7 +19,7 @@ const VehicleTypesSection = () => {
       name: '3-Wheeler EVs',
       category: 'Auto Rickshaws',
       count: '14+ Models',
-      image: '/assets/3w-ev.jpeg',
+      image: '/assets/ev-categories/ev-3w-new.png',
       emoji: '🛺'
     },
     {
@@ -27,7 +27,7 @@ const VehicleTypesSection = () => {
       name: '4-Wheeler EVs',
       category: 'Cars & SUVs',
       count: '6+ Models',
-      image: '/assets/4w-car.webp',
+      image: '/assets/ev-categories/ev-4w-new.png',
       emoji: '🚗'
     },
     {
@@ -35,7 +35,7 @@ const VehicleTypesSection = () => {
       name: 'Commercial EVs',
       category: 'Trucks & Vans',
       count: '7+ Models',
-      image: '/assets/commercial-ev.png',
+      image: '/assets/ev-categories/ev-commercial-new.png',
       emoji: '🚚'
     }
   ];
