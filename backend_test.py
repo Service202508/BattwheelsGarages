@@ -802,6 +802,9 @@ class BattwheelsAPITester:
         self.test_get_all_career_applications()
         self.test_career_file_validation()
         
+        # Test admin dashboard
+        self.run_admin_tests()
+        
         # Summary
         print("\n" + "=" * 60)
         print("📊 TEST SUMMARY")
