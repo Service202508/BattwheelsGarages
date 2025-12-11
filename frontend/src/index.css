@@ -99,6 +99,16 @@
   animation: bounce-slow 3s ease-in-out infinite;
 }
 
+/* Hide scrollbar for mobile horizontal scroller */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
