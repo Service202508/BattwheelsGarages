@@ -52,7 +52,10 @@ const Services = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Rotating Gears Background */}
+      <GearBackground variant="services" />
+      
       <SEO 
         title="EV Services | Battwheels Garages - Onsite EV Repair & Maintenance"
         description="Comprehensive EV services including onsite repair, battery diagnostics, motor servicing, and fleet maintenance. 85% issues resolved on field."
