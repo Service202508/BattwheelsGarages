@@ -53,7 +53,7 @@ const ProblemSolutionSection = () => {
               <div className="bg-green-600 p-2 rounded">
                 <Check className="w-5 h-5 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-green-400">Battwheels Model</h3>
+              <h3 className="text-xl font-bold text-green-400">The Actual Roadside Assistance By Battwheels</h3>
             </div>
             <ul className="space-y-3">
               <li className="flex items-start space-x-2">
