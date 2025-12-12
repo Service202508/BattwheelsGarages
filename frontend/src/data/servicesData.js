@@ -198,7 +198,7 @@ export const roadsideService = {
     'Tyre change',
     'Software reset and troubleshooting',
     'Towing only if absolutely necessary',
-    'Live status updates via Battwheels OS'
+    'Live status updates via Battwheels OS™'
   ],
   idealFor: ['Individual owners', 'Fleet operators', 'Last-mile delivery companies']
 };

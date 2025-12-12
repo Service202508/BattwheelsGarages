@@ -43,8 +43,8 @@ export const whyChooseUs = [
   },
   {
     id: 4,
-    title: 'Tech-Driven: Battwheels OS',
-    description: 'Track jobs in real-time, get digital job cards, and access GaragePROEV-style EV diagnostics — all integrated into Battwheels OS.',
+    title: 'Tech-Driven: Battwheels OS™',
+    description: 'Track jobs in real-time, get digital job cards, and access GaragePROEV-style EV diagnostics — all integrated into Battwheels OS™.',
     icon: 'Monitor'
   }
 ];
@@ -363,7 +363,7 @@ export const faqs = [
   {
     id: 28,
     category: 'fleet',
-    question: 'Can fleet operators integrate with Battwheels OS?',
+    question: 'Can fleet operators integrate with Battwheels OS™?',
     answer: 'Yes. Fleets can access job tracking, technician updates, breakdown history and service logs through our digital platform.'
   },
   {
@@ -498,7 +498,7 @@ export const subscriptionPlans = [
       'Unlimited breakdown visits',
       'Dedicated service manager',
       'Custom SLAs and uptime guarantees',
-      'Battwheels OS integration',
+      'Battwheels OS™ integration',
       'Telematics integration',
       'Monthly performance reports',
       'Onsite dedicated team option'
