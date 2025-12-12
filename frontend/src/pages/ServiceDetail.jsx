@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
+import GearBackground from '../components/common/GearBackground';
 import { Button } from '../components/ui/button';
 import { periodicService, motorControllerService, batteryBMSService, chargerService, brakesTyresService, bodyPaintService, roadsideService, fleetService } from '../data/servicesData';
 import { CheckCircle } from 'lucide-react';
