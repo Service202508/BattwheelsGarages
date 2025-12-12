@@ -45,7 +45,7 @@ const About = () => {
     {
       icon: Cpu,
       title: 'Tech-Driven Operations',
-      description: 'Battwheels OS powers everything — from AI diagnostics to real-time job tracking, parts management, and fleet health dashboards for enterprise clients.',
+      description: 'Battwheels OS™ powers everything — from AI diagnostics to real-time job tracking, parts management, and fleet health dashboards for enterprise clients.',
       color: 'from-purple-500 to-violet-500'
     },
     {

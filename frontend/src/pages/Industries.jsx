@@ -77,7 +77,7 @@ const Industries = () => {
                           <li>• Fast onsite response minimizes downtime</li>
                           <li>• Specialized EV expertise for accurate diagnostics</li>
                           <li>• Custom SLAs and preventive maintenance programs</li>
-                          <li>• Real-time tracking and reporting via Battwheels OS</li>
+                          <li>• Real-time tracking and reporting via Battwheels OS™</li>
                         </ul>
                       </div>
                     </div>

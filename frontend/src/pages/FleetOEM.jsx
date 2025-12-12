@@ -299,7 +299,7 @@ const FleetOEM = () => {
                 <div>
                   <Label className="mb-3 block">Nature of Requirement (Select all that apply)</Label>
                   <div className="space-y-3">
-                    {['Periodic Maintenance', 'Breakdown Support', 'SLA Agreement', 'Dedicated Onsite Team', 'Battwheels OS Integration'].map((req) => (
+                    {['Periodic Maintenance', 'Breakdown Support', 'SLA Agreement', 'Dedicated Onsite Team', 'Battwheels OS™ Integration'].map((req) => (
                       <div key={req} className="flex items-center space-x-2">
                         <Checkbox 
                           id={req}
