@@ -41,9 +41,9 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <img 
-              src="/assets/battwheels-logo-main.png" 
+              src="/assets/battwheels-logo-color.svg" 
               alt="Battwheels Garages" 
-              className="h-12 md:h-14 lg:h-16 w-auto transition-all"
+              className="h-10 md:h-12 lg:h-14 w-auto transition-all"
             />
           </Link>
 
