@@ -27,9 +27,9 @@ const Footer = () => {
           <div>
             <div className="mb-4">
               <img 
-                src="/assets/battwheels-logo-main.png" 
+                src="/assets/battwheels-logo-white.svg" 
                 alt="Battwheels Garages" 
-                className="h-10 md:h-12 w-auto mb-3 brightness-0 invert"
+                className="h-10 md:h-12 w-auto mb-3"
               />
             </div>
             <p className="text-sm mb-4 text-gray-300 leading-relaxed">
