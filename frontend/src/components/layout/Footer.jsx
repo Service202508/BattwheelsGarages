@@ -90,7 +90,7 @@ const Footer = () => {
             </ul>
             
             {/* WhatsApp CTA */}
-            <div className="mt-6 p-4 bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
+            <div className="mt-6 p-4 bg-[#12B76A] rounded-lg hover:bg-[#0F9F5F] transition-colors">
               <a 
                 href="https://wa.me/918076331607" 
                 target="_blank" 
