@@ -53,7 +53,14 @@ const Plans = () => {
                     <CardTitle className="text-2xl mb-2">{plan.name}</CardTitle>
                     <CardDescription>{plan.subtitle}</CardDescription>
                     <div className="mt-4">
-                      <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                      <div className="text-sm text-gray-500 mb-1">Starting from</div>
+                      <div className="flex items-baseline justify-center gap-1">
+                        <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                        <span className="text-sm text-gray-600">{plan.priceUnit}</span>
+                      </div>
+                      <div className="mt-2 text-sm text-green-600 font-medium">
+                        or {plan.annualPrice}{plan.annualUnit}
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>
