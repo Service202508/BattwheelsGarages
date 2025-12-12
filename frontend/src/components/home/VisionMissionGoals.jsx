@@ -51,7 +51,7 @@ const VisionMissionGoals = () => {
   const goals = [
     { icon: TrendingUp, text: '95%+ fleet uptime through rapid response and smart maintenance', color: 'from-emerald-500 to-green-600' },
     { icon: MapPin, text: '50+ cities nationwide with reliable service coverage', color: 'from-blue-500 to-indigo-600' },
-    { icon: Cpu, text: 'Battwheels OS—our AI platform powering diagnostics, parts management, and real-time service', color: 'from-purple-500 to-violet-600' },
+    { icon: Cpu, text: 'Battwheels OS™—our AI platform powering diagnostics, parts management, and real-time service', color: 'from-purple-500 to-violet-600' },
     { icon: Award, text: 'Industry standards for EV service quality, parts, and technician certification', color: 'from-amber-500 to-orange-600' },
     { icon: Wrench, text: '90% onsite resolution—fix it where it breaks, minimal towing', color: 'from-rose-500 to-pink-600' },
     { icon: Users, text: "India's largest EV-trained workforce who understand motors, batteries, and controllers", color: 'from-cyan-500 to-teal-600' },
