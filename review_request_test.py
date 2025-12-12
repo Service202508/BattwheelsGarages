@@ -296,9 +296,12 @@ class ReviewRequestTester:
             "name": "Test User",
             "phone": "9876543210",
             "email": "test@example.com",
-            "vehicle_type": "2W",
-            "issue_description": "Test booking",
-            "location": "Test City"
+            "vehicle_category": "2w",
+            "customer_type": "individual",
+            "service_needed": "Test booking service",
+            "preferred_date": "2025-12-20",
+            "address": "Test Address",
+            "city": "Test City"
         }
         
         try:
