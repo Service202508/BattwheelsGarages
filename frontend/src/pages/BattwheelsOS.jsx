@@ -49,28 +49,81 @@ const BattwheelsOS = () => {
       
       <Header />
       <main>
-        {/* Hero */}
-        <section className="py-20 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-block bg-green-600 text-white px-4 py-2 rounded-full text-sm font-semibold mb-6">
+        {/* Hero with Dashboard Background */}
+        <section className="relative min-h-[85vh] flex items-center overflow-hidden">
+          {/* Background Image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: 'url(/assets/battwheels-os-dashboard.png)',
+            }}
+          />
+          
+          {/* Dark Overlay with Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-gray-900/85 to-gray-900/70" />
+          
+          {/* Content */}
+          <div className="relative z-10 container mx-auto px-4 py-20">
+            <div className="max-w-3xl">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2.5 rounded-full text-sm font-bold mb-8 shadow-lg shadow-green-500/30">
+                <Monitor className="w-4 h-4" />
                 Tech Platform
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Battwheels OS – The EV Aftersales Command Center
+              
+              {/* Main Heading */}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
+                Battwheels OS
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400 mt-2">
+                  The EV Aftersales Command Center
+                </span>
               </h1>
-              <p className="text-xl text-gray-300 leading-relaxed mb-8">
-                GaragePRO-grade diagnostics + field-force management + fleet dashboards in one EV-native platform.
+              
+              {/* Description */}
+              <p className="text-lg sm:text-xl text-gray-300 leading-relaxed mb-10 max-w-2xl">
+                GaragePRO-grade diagnostics + field-force management + fleet dashboards in one <span className="text-green-400 font-semibold">EV-native platform</span>.
               </p>
-              <Button 
-                size="lg"
-                className="bg-green-600 hover:bg-green-700"
-                onClick={() => navigate('/fleet-oem')}
-              >
-                Schedule a Demo
-              </Button>
+              
+              {/* Feature Pills */}
+              <div className="flex flex-wrap gap-3 mb-10">
+                <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white border border-white/20">
+                  🔧 Digital Job Cards
+                </span>
+                <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white border border-white/20">
+                  📊 Fleet Analytics
+                </span>
+                <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white border border-white/20">
+                  🔌 EV Diagnostics
+                </span>
+                <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white border border-white/20">
+                  📱 Technician App
+                </span>
+              </div>
+              
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold px-8 py-6 text-lg rounded-xl shadow-xl shadow-green-500/30 hover:shadow-green-500/50 transition-all hover:-translate-y-1"
+                  onClick={() => navigate('/fleet-oem')}
+                >
+                  <Zap className="w-5 h-5 mr-2" />
+                  Schedule a Demo
+                </Button>
+                <Button 
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-6 text-lg rounded-xl backdrop-blur-sm"
+                  onClick={() => navigate('/contact')}
+                >
+                  Learn More
+                </Button>
+              </div>
             </div>
           </div>
+          
+          {/* Bottom Gradient Fade */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
         </section>
 
         {/* Key Features */}
