@@ -185,9 +185,9 @@ const Footer = () => {
         <div className="border-t border-white/10 pt-8 text-center text-sm">
           <p className="text-gray-400">&copy; {new Date().getFullYear()} {companyInfo.name}. All rights reserved.</p>
           <div className="mt-2 space-x-4">
-            <Link to="/privacy" className="hover:text-green-500 transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-green-500 transition-colors">Terms of Service</Link>
-            <Link to="/faq" className="hover:text-green-500 transition-colors">FAQ</Link>
+            <Link to="/privacy" className="text-gray-400 hover:text-[#12B76A] transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="text-gray-400 hover:text-[#12B76A] transition-colors">Terms of Service</Link>
+            <Link to="/faq" className="text-gray-400 hover:text-[#12B76A] transition-colors">FAQ</Link>
           </div>
         </div>
       </div>
