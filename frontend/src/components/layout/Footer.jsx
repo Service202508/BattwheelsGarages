@@ -59,11 +59,11 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Our Services</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/services/periodic" className="hover:text-green-500 transition-colors">Periodic EV Service</Link></li>
-              <li><Link to="/services/motor-controller" className="hover:text-green-500 transition-colors">Motor & Controller</Link></li>
-              <li><Link to="/services/battery-bms" className="hover:text-green-500 transition-colors">Battery & BMS</Link></li>
-              <li><Link to="/services/roadside" className="hover:text-green-500 transition-colors">Roadside Assistance</Link></li>
-              <li><Link to="/services/fleet" className="hover:text-green-500 transition-colors">Fleet Programs</Link></li>
+              <li><Link to="/services/periodic" className="text-gray-300 hover:text-[#12B76A] transition-colors">Periodic EV Service</Link></li>
+              <li><Link to="/services/motor-controller" className="text-gray-300 hover:text-[#12B76A] transition-colors">Motor & Controller</Link></li>
+              <li><Link to="/services/battery-bms" className="text-gray-300 hover:text-[#12B76A] transition-colors">Battery & BMS</Link></li>
+              <li><Link to="/services/roadside" className="text-gray-300 hover:text-[#12B76A] transition-colors">Roadside Assistance</Link></li>
+              <li><Link to="/services/fleet" className="text-gray-300 hover:text-[#12B76A] transition-colors">Fleet Programs</Link></li>
             </ul>
           </div>
 
