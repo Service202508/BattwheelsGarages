@@ -26,6 +26,14 @@ const VehicleTypesSection = () => {
       emoji: '🛺'
     },
     {
+      id: '3w-loader',
+      name: '3-Wheeler EVs Loader',
+      category: 'Loader Cargos',
+      count: '10+ Models',
+      image: '/assets/ev-categories/ev-3w-loader.png',
+      emoji: '📦'
+    },
+    {
       id: '4w',
       name: '4-Wheeler EVs',
       category: 'Cars & SUVs',
