@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import DOMPurify from 'dompurify';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
+import GearBackground from '../components/common/GearBackground';
 import { blogsApi } from '../utils/api';
 import { getBlogSchema } from '../utils/schema';
 import { blogPosts as mockBlogs } from '../data/mockData';
