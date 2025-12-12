@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
+import GearBackground from '../components/common/GearBackground';
 import { Button } from '../components/ui/button';
 import { subscriptionPlans } from '../data/mockData';
 import { CheckCircle, Star } from 'lucide-react';
@@ -11,7 +12,8 @@ const Plans = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      <GearBackground variant="default" />
       <Header />
       <main>
         {/* Hero */}
