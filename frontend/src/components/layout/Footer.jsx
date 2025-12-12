@@ -101,7 +101,7 @@ const Footer = () => {
                 <MessageCircle className="w-5 h-5" />
                 <div>
                   <div className="font-semibold text-sm">Chat with us on WhatsApp</div>
-                  <div className="text-xs text-green-100">+91 80763 31607</div>
+                  <div className="text-xs text-white/90">+91 80763 31607</div>
                 </div>
               </a>
             </div>
