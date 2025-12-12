@@ -73,7 +73,17 @@ const Footer = () => {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start space-x-2">
                 <MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-[#12B76A]" />
-                <span className="text-gray-300">{companyInfo.address}</span>
+                <div className="text-gray-300">
+                  <span className="font-medium text-white text-xs uppercase tracking-wide">Registered Address:</span>
+                  <p className="mt-1">A 19 G/F FIEE Complex, Kartar Tower, Okhla Phase 2, Delhi 110020</p>
+                </div>
+              </li>
+              <li className="flex items-center space-x-2">
+                <Phone className="w-4 h-4 flex-shrink-0 text-[#12B76A]" />
+                <div className="text-gray-300">
+                  <span className="font-medium text-white text-xs uppercase tracking-wide">Helpline:</span>
+                  <a href="tel:+917696965096" className="block hover:text-[#12B76A] transition-colors">+91 7696965096</a>
+                </div>
               </li>
               <li className="flex items-center space-x-2">
                 <Phone className="w-4 h-4 flex-shrink-0 text-[#12B76A]" />
