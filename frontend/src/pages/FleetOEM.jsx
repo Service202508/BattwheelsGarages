@@ -106,7 +106,8 @@ const FleetOEM = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      <GearBackground variant="default" />
       <Header />
       <main>
         {/* Hero */}
