@@ -98,8 +98,10 @@ const VehicleTypesSection = () => {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-8 md:py-12 bg-gradient-to-b from-white to-green-50/50 overflow-hidden"
+      className="relative py-8 md:py-12 bg-gradient-to-b from-green-50/30 via-white to-green-50/50 overflow-hidden"
     >
+      {/* Top gradient fade from hero */}
+      <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white via-white/80 to-transparent pointer-events-none" />
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header - Compact for immediate below hero */}
         <div 
