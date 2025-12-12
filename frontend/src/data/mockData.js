@@ -180,36 +180,228 @@ export const testimonials = [
 ];
 
 // FAQs
+// FAQ Categories
+export const faqCategories = [
+  { id: 'general', name: 'General EV Service', icon: 'HelpCircle' },
+  { id: 'breakdown', name: 'Breakdown, RSA & Uptime', icon: 'AlertTriangle' },
+  { id: 'maintenance', name: 'Service, Maintenance & Warranty', icon: 'Wrench' },
+  { id: 'booking', name: 'Booking, Pricing & Coverage', icon: 'Calendar' },
+  { id: 'technical', name: 'Technical EV', icon: 'Cpu' },
+  { id: 'fleet', name: 'Fleet & Enterprise', icon: 'Building' },
+  { id: 'website', name: 'Website & Booking', icon: 'Globe' }
+];
+
 export const faqs = [
+  // General EV Service FAQs
   {
     id: 1,
-    question: 'What kind of maintenance does an electric vehicle require?',
-    answer: 'Electric vehicles require less maintenance than gasoline vehicles. Key areas include battery health checkups, motor and controller diagnostics, brake inspection (including regenerative braking), software updates, tyre rotation, and electrical system checks.'
+    category: 'general',
+    question: 'What is Battwheels Garages and what services do you provide?',
+    answer: 'Battwheels Garages is India\'s first no-towing-first EV service network focused on onsite diagnosis and repair for 2-wheelers, 3-wheelers, 4-wheelers and commercial EV fleets. We fix breakdowns, provide periodic service, run fleet uptime programs, and offer advanced EV diagnostics.'
   },
   {
     id: 2,
-    question: 'Do you provide onsite service for all EV categories?',
-    answer: 'Yes! We provide onsite service for electric 2-wheelers, 3-wheelers (including e-rickshaws), 4-wheelers, and commercial EVs. Our technicians come to your location with diagnostic equipment and tools.'
+    category: 'general',
+    question: 'Do you repair EVs onsite or do you tow the vehicle?',
+    answer: 'Our model is simple: no towing first. We always try to diagnose and fix your EV onsite. Only if the issue truly requires workshop-level repair do we arrange controlled logistics.'
   },
   {
     id: 3,
-    question: 'Which cities do you currently serve?',
-    answer: 'We are currently based in Delhi NCR with plans for pan-India expansion through COCO, FOCO, and FOFO garage models. Contact us to check service availability in your city.'
+    category: 'general',
+    question: 'Which EV brands do you service?',
+    answer: 'We service almost every major EV brand including Ather, Ola, TVS, Bajaj, Hero Electric, Revolt, Simple, Bounce, Piaggio, Chetak, Mahindra, Tata, MG, BYD, Euler Motors and many others.'
   },
   {
     id: 4,
-    question: 'Do you support fleet contracts and SLAs?',
-    answer: 'Absolutely! We specialize in fleet maintenance with custom SLAs, uptime guarantees, preventive maintenance schedules, and centralized invoicing. Contact our fleet team for a tailored solution.'
+    category: 'general',
+    question: 'Do you offer doorstep EV repair services?',
+    answer: 'Yes, we specialize in onsite EV repair. Our technicians come to your location with tools, spares and diagnostics.'
   },
   {
     id: 5,
-    question: 'Can you integrate with our telematics or OEM systems?',
-    answer: 'Yes, Battwheels OS is designed for integration with telematics platforms, OEM systems, and battery swap platforms. Schedule a demo to discuss your specific integration needs.'
+    category: 'general',
+    question: 'Are your technicians trained for EV high-voltage systems?',
+    answer: 'Absolutely. Every Battwheels technician undergoes certified EV training covering battery systems, BMS, controllers, motors and CAN diagnostics.'
   },
+  // Breakdown, RSA & Uptime FAQs
   {
     id: 6,
-    question: 'Do you provide emergency breakdown support?',
-    answer: 'Yes, we offer 24/7 emergency breakdown and roadside assistance. Our technicians diagnose and repair issues onsite wherever safe and feasible, minimizing towing and downtime.'
+    category: 'breakdown',
+    question: 'What should I do if my EV breaks down on the road?',
+    answer: 'Just book a breakdown request through the website or call us. A technician is dispatched immediately to diagnose the issue onsite.'
+  },
+  {
+    id: 7,
+    category: 'breakdown',
+    question: 'How fast does Battwheels respond to breakdown calls?',
+    answer: 'Our average breakdown response time is 2 hours, depending on your city and traffic conditions.'
+  },
+  {
+    id: 8,
+    category: 'breakdown',
+    question: 'What kind of issues can be fixed onsite?',
+    answer: 'Most EV faults — including wiring issues, controller errors, throttle issues, brake faults, BMS resets, battery connector repairs and software calibrations — can be handled onsite.'
+  },
+  {
+    id: 9,
+    category: 'breakdown',
+    question: 'Do you support EV fleets and delivery vehicles?',
+    answer: 'Yes, fleet support is one of our core strengths. We maintain uptime programs for logistics, e-commerce and last-mile mobility fleets.'
+  },
+  {
+    id: 10,
+    category: 'breakdown',
+    question: 'Do you provide 24/7 emergency EV assistance?',
+    answer: 'Yes, we operate 365 days with 24/7 emergency response for fleets and premium customers.'
+  },
+  // Service, Maintenance & Warranty FAQs
+  {
+    id: 11,
+    category: 'maintenance',
+    question: 'Do you perform periodic service for EVs?',
+    answer: 'Yes. We offer routine EV servicing, brake service, electrical checks, software diagnostics, tyre replacement and preventive maintenance packages.'
+  },
+  {
+    id: 12,
+    category: 'maintenance',
+    question: 'Will my EV warranty remain valid?',
+    answer: 'Our services do not interfere with OEM warranties. We follow brand-aligned procedures and standardized repair practices.'
+  },
+  {
+    id: 13,
+    category: 'maintenance',
+    question: 'Do you use genuine parts for replacement?',
+    answer: 'We use OEM-approved or high-quality compatible components that meet industry standards.'
+  },
+  {
+    id: 14,
+    category: 'maintenance',
+    question: 'How often should an EV be serviced?',
+    answer: 'Most EVs should undergo preventive service every 2,500–3,000 km or every 3 months, especially fleet vehicles.'
+  },
+  {
+    id: 15,
+    category: 'maintenance',
+    question: 'Do you service commercial EVs like loaders, cargo vans or L5 autos?',
+    answer: 'Yes. We repair and maintain L3/L5 autos, cargo EVs, loaders, delivery scooters and commercial four-wheelers.'
+  },
+  // Booking, Pricing & Coverage FAQs
+  {
+    id: 16,
+    category: 'booking',
+    question: 'How do I book an EV service with Battwheels?',
+    answer: 'Simply use the Book Service form on our website or contact our fleet support team.'
+  },
+  {
+    id: 17,
+    category: 'booking',
+    question: 'How much does an onsite EV service cost?',
+    answer: 'Pricing depends on the vehicle category and issue type. Diagnostics charges are minimal, and most repairs are offered upfront with transparent pricing.'
+  },
+  {
+    id: 18,
+    category: 'booking',
+    question: 'Which cities does Battwheels currently operate in?',
+    answer: 'We operate in 11+ cities including Delhi, Noida, Gurugram, Bengaluru, Chennai, Hyderabad, Jaipur, Lucknow, Pune, Ulhasnagar and more.'
+  },
+  {
+    id: 19,
+    category: 'booking',
+    question: 'Are there any hidden charges?',
+    answer: 'No, all charges are shared transparently before starting the repair.'
+  },
+  {
+    id: 20,
+    category: 'booking',
+    question: 'Do you offer subscription or AMC plans for fleets?',
+    answer: 'Yes, we have customizable AMC and uptime assurance programs for fleet operators.'
+  },
+  // Technical EV FAQs
+  {
+    id: 21,
+    category: 'technical',
+    question: 'My EV is showing an error code. Can Battwheels fix it?',
+    answer: 'Yes. Our advanced tools can read and reset error codes for most EV brands and diagnose underlying faults.'
+  },
+  {
+    id: 22,
+    category: 'technical',
+    question: 'Can you fix battery issues onsite?',
+    answer: 'Many BMS, connector and wiring-related issues can be fixed onsite. Deep battery repairs may require workshop handling.'
+  },
+  {
+    id: 23,
+    category: 'technical',
+    question: 'My EV is not turning on. What should I do?',
+    answer: 'This is usually due to fuse, wiring, controller or BMS issues. Book an inspection — 85% of such faults are fixed onsite.'
+  },
+  {
+    id: 24,
+    category: 'technical',
+    question: 'Do you repair EV chargers and onboard chargers?',
+    answer: 'We repair portable chargers, connectors, wiring failures, and charging-port issues.'
+  },
+  {
+    id: 25,
+    category: 'technical',
+    question: 'Do you handle motor controller replacements and calibrations?',
+    answer: 'Yes. We handle controller replacement, programming and motor alignment.'
+  },
+  // Fleet & Enterprise FAQs
+  {
+    id: 26,
+    category: 'fleet',
+    question: 'Do you offer uptime guarantees for fleets?',
+    answer: 'Yes — our fleet programs provide 95%+ uptime, SLA-based operations and dedicated technician support.'
+  },
+  {
+    id: 27,
+    category: 'fleet',
+    question: 'How do you support large EV fleets?',
+    answer: 'We deploy mobile technicians, run night-shift maintenance, create service schedules and offer backend analytics on breakdown patterns.'
+  },
+  {
+    id: 28,
+    category: 'fleet',
+    question: 'Can fleet operators integrate with Battwheels OS?',
+    answer: 'Yes. Fleets can access job tracking, technician updates, breakdown history and service logs through our digital platform.'
+  },
+  {
+    id: 29,
+    category: 'fleet',
+    question: 'Do you offer bulk pricing for large fleets?',
+    answer: 'Yes, fleet operators get customized pricing based on volume and service frequency.'
+  },
+  {
+    id: 30,
+    category: 'fleet',
+    question: 'Do you support battery-swapping fleets?',
+    answer: 'Absolutely. We regularly service swap-based e-rickshaws and commercial two-wheelers.'
+  },
+  {
+    id: 31,
+    category: 'fleet',
+    question: 'Can Battwheels station technicians inside fleet hubs?',
+    answer: 'Yes — we provide on-site stationed technicians for high-volume EV fleets.'
+  },
+  // Website & Booking FAQs
+  {
+    id: 32,
+    category: 'website',
+    question: 'Is online payment available for EV services?',
+    answer: 'Yes, we support online and offline payment methods.'
+  },
+  {
+    id: 33,
+    category: 'website',
+    question: 'Can I track my service request?',
+    answer: 'Yes, once your booking is created, you\'ll receive real-time updates from our team.'
+  },
+  {
+    id: 34,
+    category: 'website',
+    question: 'How do I contact support for urgent help?',
+    answer: 'You can reach us via the website, WhatsApp, or the emergency helpline mentioned in the footer.'
   }
 ];
 
