@@ -99,7 +99,8 @@ const BookService = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      <GearBackground variant="default" />
       <Header />
       <main className="py-20">
         <div className="container mx-auto px-4">
