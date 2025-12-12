@@ -2,27 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ========================================
+   BATTWHEELS GARAGES - COLOR SYSTEM
+   Official Brand Colors:
+   - Primary Green: #0B8A44 to #12B76A
+   - Dark Teal: #005E4C
+   - Accent Orange: #F97316
+   - Neutrals: Grays & Whites
+   ======================================== */
+
 @layer base {
   :root {
+    /* Battwheels Primary Green */
+    --bw-green-primary: 145 85% 29%;      /* #0B8A44 */
+    --bw-green-bright: 145 78% 40%;       /* #12B76A */
+    --bw-green-light: 145 60% 95%;        /* Light green for backgrounds */
+    
+    /* Battwheels Dark Teal */
+    --bw-teal-dark: 164 100% 18%;         /* #005E4C */
+    --bw-teal-medium: 164 80% 25%;        /* Medium teal */
+    
+    /* Accent Colors */
+    --bw-orange: 24 95% 53%;              /* #F97316 */
+    --bw-orange-light: 24 95% 60%;        /* Lighter orange */
+    
+    /* System Colors */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --primary: 145 85% 29%;               /* Battwheels Green */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 164 100% 18%;            /* Battwheels Teal */
+    --secondary-foreground: 0 0% 100%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 24 95% 53%;                 /* Orange Accent */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 145 85% 29%;                  /* Green ring */
     --radius: 0.5rem;
   }
 
@@ -33,19 +56,19 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
+    --primary: 145 78% 40%;
     --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 164 80% 25%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 24 95% 53%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --ring: 145 78% 40%;
   }
 }
 
@@ -58,7 +81,77 @@
   }
 }
 
-/* Custom animations */
+/* ========================================
+   BATTWHEELS CUSTOM UTILITY CLASSES
+   ======================================== */
+
+@layer utilities {
+  /* Battwheels Green Gradients */
+  .bg-bw-gradient {
+    background: linear-gradient(135deg, #0B8A44 0%, #12B76A 100%);
+  }
+  
+  .bg-bw-gradient-light {
+    background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 50%, #ffffff 100%);
+  }
+  
+  .bg-bw-gradient-hero {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 50%, #ecfdf5 100%);
+  }
+  
+  /* Text Gradients */
+  .text-bw-gradient {
+    background: linear-gradient(135deg, #0B8A44 0%, #12B76A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Button Styles */
+  .btn-bw-primary {
+    @apply bg-gradient-to-r from-[#0B8A44] to-[#12B76A] text-white font-semibold px-6 py-3 rounded-xl;
+    @apply hover:shadow-lg hover:shadow-green-500/30 hover:-translate-y-0.5 transition-all duration-300;
+  }
+  
+  .btn-bw-orange {
+    @apply bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold px-6 py-3 rounded-xl;
+    @apply hover:shadow-lg hover:shadow-orange-500/30 hover:-translate-y-0.5 transition-all duration-300;
+  }
+  
+  .btn-bw-outline {
+    @apply border-2 border-[#0B8A44] text-[#0B8A44] font-semibold px-6 py-3 rounded-xl;
+    @apply hover:bg-[#0B8A44] hover:text-white transition-all duration-300;
+  }
+  
+  /* Card Styles */
+  .card-bw {
+    @apply bg-white rounded-2xl border border-gray-100 shadow-sm;
+    @apply hover:shadow-lg hover:shadow-green-500/10 hover:border-green-200 transition-all duration-300;
+  }
+  
+  .card-bw-elevated {
+    @apply bg-white rounded-2xl shadow-xl border border-gray-100;
+    @apply hover:shadow-2xl hover:-translate-y-1 transition-all duration-300;
+  }
+  
+  /* Section Backgrounds */
+  .section-light {
+    @apply bg-gradient-to-b from-white to-gray-50;
+  }
+  
+  .section-green-light {
+    @apply bg-gradient-to-b from-green-50/50 to-white;
+  }
+  
+  .section-teal-dark {
+    @apply bg-gradient-to-br from-[#005E4C] to-[#003D32];
+  }
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
 @keyframes blob {
   0% {
     transform: translate(0px, 0px) scale(1);
@@ -99,6 +192,19 @@
   animation: bounce-slow 3s ease-in-out infinite;
 }
 
+@keyframes pulse-green {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(11, 138, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(11, 138, 68, 0);
+  }
+}
+
+.animate-pulse-green {
+  animation: pulse-green 2s infinite;
+}
+
 /* Hide scrollbar for mobile horizontal scroller */
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -114,7 +220,10 @@ html {
   scroll-behavior: smooth;
 }
 
-/* 3D Flip Card Animation */
+/* ========================================
+   3D FLIP CARD ANIMATION
+   ======================================== */
+
 .perspective-1000 {
   perspective: 1000px;
 }
@@ -132,7 +241,6 @@ html {
   transform: rotateY(180deg);
 }
 
-/* Flip card container */
 .flip-card {
   perspective: 1000px;
 }
@@ -143,10 +251,6 @@ html {
   height: 100%;
   transition: transform 0.7s ease-in-out;
   transform-style: preserve-3d;
-}
-
-.flip-card:hover .flip-card-inner {
-  /* Pause animation on hover - handled by JS */
 }
 
 .flip-card-front,
@@ -166,20 +270,35 @@ html {
   transform: rotateY(180deg);
 }
 
-/* Custom scrollbar */
+/* ========================================
+   CUSTOM SCROLLBAR
+   ======================================== */
+
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 5px;
+  background: linear-gradient(180deg, #0B8A44, #12B76A);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: linear-gradient(180deg, #0A7A3D, #10A35F);
+}
+
+/* ========================================
+   SECTION TRANSITIONS
+   ======================================== */
+
+.section-transition-down {
+  background: linear-gradient(180deg, transparent 0%, rgba(240, 253, 244, 0.5) 100%);
+}
+
+.section-transition-up {
+  background: linear-gradient(0deg, transparent 0%, rgba(240, 253, 244, 0.5) 100%);
 }
