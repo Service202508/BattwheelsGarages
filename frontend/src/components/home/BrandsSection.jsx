@@ -120,7 +120,7 @@ const BrandsSection = () => {
               href={brand.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative bg-white rounded-xl border border-gray-200 p-5 md:p-6 flex items-center justify-center hover:border-green-400 hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300 hover:-translate-y-1"
+              className="group relative bg-white rounded-xl border border-gray-200 p-5 md:p-6 flex items-center justify-center hover:border-[#12B76A] hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300 hover:-translate-y-1"
               aria-label={`Visit ${brand.name} website`}
               title={brand.name}
               style={{ animationDelay: `${index * 50}ms` }}
