@@ -114,7 +114,7 @@ const Footer = () => {
                   href="https://wa.me/918076331607" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="bg-gray-800 p-2.5 rounded-lg hover:bg-green-600 hover:scale-110 transition-all duration-300"
+                  className="bg-gray-800 p-2.5 rounded-lg hover:bg-[#12B76A] hover:scale-110 transition-all duration-300"
                   aria-label="WhatsApp - Chat with Battwheels Garages"
                 >
                   <MessageCircle className="w-5 h-5" />
