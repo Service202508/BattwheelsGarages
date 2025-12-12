@@ -55,8 +55,10 @@ const Industries = () => {
                   industryImage = '/assets/battery-swapping.jpg';
                 } else if (industry.id === 4) {
                   industryImage = '/assets/hyperlocal-delivery.png';
+                } else if (industry.id === 5) {
+                  industryImage = '/assets/individual-ev-owners.webp';
                 } else {
-                  industryImage = `https://images.unsplash.com/photo-${industry.id % 2 === 0 ? '1593941707882-a5bba14938c7' : '1581092160562-40aa08e78837'}?w=600&h=400&fit=crop`;
+                  industryImage = `https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=600&h=400&fit=crop`;
                 }
                 
                 return (
