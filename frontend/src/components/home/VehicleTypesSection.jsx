@@ -177,7 +177,7 @@ const VehicleTypesSection = () => {
             {vehicleTypes.map((_, index) => (
               <div
                 key={index}
-                className="w-2 h-2 rounded-full bg-green-300 transition-colors"
+                className="w-2 h-2 rounded-full bg-[#12B76A]/50 transition-colors"
               />
             ))}
           </div>
@@ -197,9 +197,9 @@ const VehicleTypesSection = () => {
           ].map((stat) => (
             <div 
               key={stat.label} 
-              className="text-center px-4 py-3 bg-white rounded-xl border border-green-100 shadow-sm hover:shadow-md transition-shadow"
+              className="text-center px-4 py-3 bg-white rounded-xl border border-[#12B76A]/20 shadow-sm hover:shadow-md hover:border-[#12B76A]/40 transition-all"
             >
-              <div className="text-xl md:text-2xl font-bold text-green-600">{stat.value}</div>
+              <div className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#0B8A44] to-[#12B76A] bg-clip-text text-transparent">{stat.value}</div>
               <div className="text-xs md:text-sm text-gray-600">{stat.label}</div>
             </div>
           ))}
