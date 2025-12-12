@@ -34,7 +34,7 @@ const HeroSection = () => {
 
             {/* Problem - Solution */}
             <div className="bg-gray-900 text-white p-6 rounded-lg border-l-4 border-green-500">
-              <p className="text-sm uppercase tracking-wider text-green-400 font-semibold mb-2">The Battwheels Model</p>
+              <p className="text-sm uppercase tracking-wider text-green-400 font-semibold mb-2">The Actual Roadside Assistance By Battwheels</p>
               <p className="text-lg font-semibold">No Towing First → Diagnose → Repair Onsite → Resume Operations</p>
               <p className="text-gray-300 text-sm mt-2">85% issues resolved on field. Maximum uptime for your fleet.</p>
             </div>
