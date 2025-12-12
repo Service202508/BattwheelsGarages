@@ -32,10 +32,10 @@ const Footer = () => {
                 className="h-10 md:h-12 w-auto mb-3 brightness-0 invert"
               />
             </div>
-            <p className="text-sm mb-4 text-gray-400">
+            <p className="text-sm mb-4 text-gray-300 leading-relaxed">
               {companyInfo.tagline}
             </p>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-300">
               India's onsite EV after-sales & maintenance leader
             </p>
           </div>
