@@ -126,7 +126,7 @@ const BrandsSection = () => {
               style={{ animationDelay: `${index * 50}ms` }}
             >
               {/* Brand Name Only */}
-              <span className="text-sm md:text-base font-semibold text-gray-700 group-hover:text-green-600 transition-colors text-center">
+              <span className="text-sm md:text-base font-semibold text-gray-700 group-hover:text-[#0B8A44] transition-colors text-center">
                 {brand.name}
               </span>
               
