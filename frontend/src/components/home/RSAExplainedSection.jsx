@@ -83,7 +83,7 @@ const RSAExplainedSection = () => {
                 <Check className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-green-400">Battwheels Model</h3>
+                <h3 className="text-2xl font-bold text-green-400">The Actual Roadside Assistance By Battwheels</h3>
                 <p className="text-green-300 text-sm">No-Towing-First Approach</p>
               </div>
             </div>
