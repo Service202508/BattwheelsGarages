@@ -169,7 +169,7 @@ const Footer = () => {
                 className="flex items-start space-x-3 p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
                 role="listitem"
               >
-                <MapPin className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                <MapPin className="w-4 h-4 text-[#12B76A] flex-shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-medium text-sm truncate">
                     {location.city}
