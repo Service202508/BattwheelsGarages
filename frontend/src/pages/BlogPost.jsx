@@ -95,7 +95,8 @@ const BlogPost = () => {
   const pageImage = blog.og_image || blog.thumbnail_image || `${siteUrl}/assets/battwheels-logo-new.png`;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      <GearBackground variant="default" />
       {/* SEO Meta Tags */}
       <Helmet>
         <title>{pageTitle} | Battwheels Garages Blog</title>
