@@ -10,7 +10,7 @@ const Header = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
+    { name: 'Battwheels OS', path: '/battwheels-os' },
     {
       name: 'Services',
       path: '/services',
@@ -26,9 +26,8 @@ const Header = () => {
         { name: 'Fleet Programs', path: '/services/fleet' }
       ]
     },
-    { name: 'Battwheels OS', path: '/battwheels-os' },
     { name: 'Industries', path: '/industries' },
-    { name: 'Plans', path: '/plans' },
+    { name: 'Subscriptions', path: '/plans' },
     { name: 'Blog', path: '/blog' },
     { name: 'Careers', path: '/careers' },
     { name: 'Contact', path: '/contact' }
