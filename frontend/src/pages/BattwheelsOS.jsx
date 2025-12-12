@@ -73,7 +73,7 @@ const BattwheelsOS = () => {
               
               {/* Main Heading */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
-                Battwheels OS
+                Battwheels OS<sup className="text-lg">™</sup>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400 mt-2">
                   The EV Aftersales Command Center
                 </span>
@@ -159,7 +159,7 @@ const BattwheelsOS = () => {
         <section className="py-20 bg-gray-50">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Who Benefits from Battwheels OS?</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Who Benefits from Battwheels OS™?</h2>
               
               <div className="space-y-6">
                 <div className="bg-white p-8 rounded-xl border-l-4 border-green-600">
@@ -225,7 +225,7 @@ const BattwheelsOS = () => {
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-4">Ready to Transform Your EV Operations?</h2>
             <p className="text-green-50 mb-8 max-w-2xl mx-auto">
-              Schedule a personalized demo of Battwheels OS and see how we can optimize your fleet management and service operations.
+              Schedule a personalized demo of Battwheels OS™ and see how we can optimize your fleet management and service operations.
             </p>
             <Button 
               size="lg"
