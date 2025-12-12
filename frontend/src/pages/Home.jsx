@@ -53,6 +53,7 @@ const Home = () => {
         <RSAExplainedSection />
         <StatsSection />
         <WhyChooseSection />
+        <VisionMissionGoals />
         <ServiceCategoriesSection />
         <IndustriesSlider />
         <BrandsSection />
