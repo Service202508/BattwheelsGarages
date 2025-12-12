@@ -51,6 +51,8 @@ const Industries = () => {
                   industryImage = '/assets/ev-oems.jpeg';
                 } else if (industry.id === 2) {
                   industryImage = '/assets/fleet-operators.png';
+                } else if (industry.id === 3) {
+                  industryImage = '/assets/battery-swapping.jpg';
                 } else {
                   industryImage = `https://images.unsplash.com/photo-${industry.id % 2 === 0 ? '1593941707882-a5bba14938c7' : '1581092160562-40aa08e78837'}?w=600&h=400&fit=crop`;
                 }
