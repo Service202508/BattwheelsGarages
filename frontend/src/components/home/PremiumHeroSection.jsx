@@ -174,27 +174,15 @@ const PremiumHeroSection = () => {
 
             {/* RIGHT COLUMN - Flipping Stats Card */}
             <div 
-              className="order-1 lg:order-2"
-              style={{ perspective: '1000px' }}
+              className="order-1 lg:order-2 flip-card-container"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
               <div 
-                className="relative w-full min-h-[420px] lg:min-h-[450px]"
-                style={{
-                  transformStyle: 'preserve-3d',
-                  transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                  transition: 'transform 0.7s ease-in-out'
-                }}
+                className={`flip-card relative w-full min-h-[420px] lg:min-h-[450px] ${isFlipped ? 'flipped' : ''}`}
               >
                 {/* FRONT SIDE - Stats Card */}
-                <div 
-                  className="absolute inset-0 w-full h-full"
-                  style={{ 
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden'
-                  }}
-                >
+                <div className="flip-card-front absolute inset-0 w-full h-full">
                   <div className="flex flex-col justify-center space-y-6 bg-white/80 backdrop-blur-sm rounded-3xl p-6 lg:p-8 border border-green-100 shadow-xl h-full">
                     
                     {/* The Real Road Side Assistance Header */}
@@ -264,14 +252,7 @@ const PremiumHeroSection = () => {
                 </div>
 
                 {/* BACK SIDE - Technician Image */}
-                <div 
-                  className="absolute inset-0 w-full h-full"
-                  style={{ 
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                    transform: 'rotateY(180deg)'
-                  }}
-                >
+                <div className="flip-card-back absolute inset-0 w-full h-full">
                   <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-xl border border-green-100">
                     {/* Technician Image */}
                     <img 
