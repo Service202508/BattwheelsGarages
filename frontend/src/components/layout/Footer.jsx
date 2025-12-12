@@ -44,14 +44,14 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/" className="hover:text-green-500 transition-colors">Home</Link></li>
-              <li><Link to="/about" className="hover:text-green-500 transition-colors">About Us</Link></li>
-              <li><Link to="/services" className="hover:text-green-500 transition-colors">Services</Link></li>
-              <li><Link to="/industries" className="hover:text-green-500 transition-colors">Industries</Link></li>
-              <li><Link to="/battwheels-os" className="hover:text-green-500 transition-colors">Battwheels OS</Link></li>
-              <li><Link to="/plans" className="hover:text-green-500 transition-colors">Subscription Plans</Link></li>
-              <li><Link to="/blog" className="hover:text-green-500 transition-colors">Blog</Link></li>
-              <li><Link to="/careers" className="hover:text-green-500 transition-colors">Careers</Link></li>
+              <li><Link to="/" className="text-gray-300 hover:text-[#12B76A] transition-colors">Home</Link></li>
+              <li><Link to="/about" className="text-gray-300 hover:text-[#12B76A] transition-colors">About Us</Link></li>
+              <li><Link to="/services" className="text-gray-300 hover:text-[#12B76A] transition-colors">Services</Link></li>
+              <li><Link to="/industries" className="text-gray-300 hover:text-[#12B76A] transition-colors">Industries</Link></li>
+              <li><Link to="/battwheels-os" className="text-gray-300 hover:text-[#12B76A] transition-colors">Battwheels OS</Link></li>
+              <li><Link to="/plans" className="text-gray-300 hover:text-[#12B76A] transition-colors">Subscription Plans</Link></li>
+              <li><Link to="/blog" className="text-gray-300 hover:text-[#12B76A] transition-colors">Blog</Link></li>
+              <li><Link to="/careers" className="text-gray-300 hover:text-[#12B76A] transition-colors">Careers</Link></li>
             </ul>
           </div>
 
