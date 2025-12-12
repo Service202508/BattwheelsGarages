@@ -241,16 +241,26 @@ html {
   transform: rotateY(180deg);
 }
 
-.flip-card {
-  perspective: 1000px;
+/* ========================================
+   FLIP CARD - Cross-browser compatible
+   ======================================== */
+.flip-card-container {
+  perspective: 1200px;
+  -webkit-perspective: 1200px;
 }
 
-.flip-card-inner {
+.flip-card {
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.7s ease-in-out;
+  transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.flip-card.flipped {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg);
 }
 
 .flip-card-front,
@@ -260,14 +270,34 @@ html {
   height: 100%;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  transform: rotateY(0deg);
+  -webkit-transform: rotateY(0deg);
 }
 
 .flip-card-back {
   transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg);
 }
 
-.flip-card-inner.flipped {
-  transform: rotateY(180deg);
+/* Mobile Safari fix */
+@supports (-webkit-touch-callout: none) {
+  .flip-card-container {
+    -webkit-perspective: 1200px;
+  }
+  .flip-card {
+    -webkit-transform-style: preserve-3d;
+  }
+  .flip-card.flipped {
+    -webkit-transform: rotateY(180deg);
+  }
+  .flip-card-front,
+  .flip-card-back {
+    -webkit-backface-visibility: hidden;
+  }
+  .flip-card-back {
+    -webkit-transform: rotateY(180deg);
+  }
 }
 
 /* ========================================
