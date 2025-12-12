@@ -25,11 +25,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
           <div>
-            <div className="mb-4">
+            <div className="mb-6">
               <img 
                 src="/assets/battwheels-logo-color.svg" 
                 alt="Battwheels Garages - India's #1 EV After-Sales Partner" 
-                className="h-12 md:h-14 w-auto mb-3 brightness-0 invert"
+                className="h-16 md:h-20 lg:h-24 w-auto mb-4 brightness-0 invert"
                 loading="lazy"
               />
             </div>
