@@ -21,7 +21,11 @@ app = FastAPI(title="Battwheels Garages API", version="1.0.0")
 from routes import bookings, fleet_enquiries, contacts, careers, public_content
 from routes import admin_auth, admin_bookings, admin_contacts, admin_services, admin_blogs, admin_testimonials, admin_jobs
 
-# Health check route
+# Health check routes (both /health and /api/health for Kubernetes compatibility)
+@app.get("/health")
+async def health_check_root():
+    return {"status": "healthy", "message": "Battwheels Garages API is running"}
+
 @app.get("/api/health")
 async def health_check():
     return {"status": "healthy", "message": "Battwheels Garages API is running"}
