@@ -73,7 +73,7 @@ const BattwheelsOS = () => {
               
               {/* Main Heading */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
-                Battwheels OS<sup className="text-lg">™</sup>
+                Battwheels OS<sup className="text-xs align-super relative -top-1">™</sup>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400 mt-2">
                   The EV Aftersales Command Center
                 </span>
