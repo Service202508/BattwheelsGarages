@@ -45,10 +45,15 @@ const Industries = () => {
             <div className="max-w-5xl mx-auto space-y-16">
               {industries.map((industry) => {
                 const Icon = iconMap[industry.icon];
-                // Use custom image for EV OEMs
-                const industryImage = industry.id === 1 
-                  ? '/assets/ev-oems.jpeg'
-                  : `https://images.unsplash.com/photo-${industry.id % 2 === 0 ? '1593941707882-a5bba14938c7' : '1581092160562-40aa08e78837'}?w=600&h=400&fit=crop`;
+                // Use custom images for specific industries
+                let industryImage;
+                if (industry.id === 1) {
+                  industryImage = '/assets/ev-oems.jpeg';
+                } else if (industry.id === 2) {
+                  industryImage = '/assets/fleet-operators.png';
+                } else {
+                  industryImage = `https://images.unsplash.com/photo-${industry.id % 2 === 0 ? '1593941707882-a5bba14938c7' : '1581092160562-40aa08e78837'}?w=600&h=400&fit=crop`;
+                }
                 
                 return (
                   <div key={industry.id} className="grid md:grid-cols-2 gap-12 items-center">
