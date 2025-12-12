@@ -143,7 +143,7 @@ const BrandsSection = () => {
           }`}
         >
           <p className="text-sm text-gray-500">
-            And many more... <span className="text-green-600 font-medium">Contact us</span> for your specific EV brand
+            And many more... <span className="text-[#0B8A44] font-medium">Contact us</span> for your specific EV brand
           </p>
         </div>
       </div>
