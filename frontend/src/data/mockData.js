@@ -44,7 +44,7 @@ export const whyChooseUs = [
   {
     id: 4,
     title: 'Tech-Driven: Battwheels OS',
-    description: 'Track jobs in real-time, get digital job cards, and access GaragePRO-style EV diagnostics — all integrated into Battwheels OS.',
+    description: 'Track jobs in real-time, get digital job cards, and access GaragePROEV-style EV diagnostics — all integrated into Battwheels OS.',
     icon: 'Monitor'
   }
 ];

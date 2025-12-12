@@ -18,7 +18,7 @@ const BattwheelsOS = () => {
     {
       icon: Zap,
       title: 'EV Diagnostics Integration',
-      description: 'OBD/diagnostic integration for controllers, BMS, motors, and other EV systems with GaragePRO-grade diagnostics.'
+      description: 'OBD/diagnostic integration for controllers, BMS, motors, and other EV systems with GaragePROEV-grade diagnostics.'
     },
     {
       icon: Smartphone,
@@ -81,7 +81,7 @@ const BattwheelsOS = () => {
               
               {/* Description */}
               <p className="text-lg sm:text-xl text-gray-300 leading-relaxed mb-10 max-w-2xl">
-                GaragePRO-grade diagnostics + field-force management + fleet dashboards in one <span className="text-green-400 font-semibold">EV-native platform</span>.
+                GaragePROEV-grade diagnostics + field-force management + fleet dashboards in one <span className="text-green-400 font-semibold">EV-native platform</span>.
               </p>
               
               {/* Feature Pills */}
