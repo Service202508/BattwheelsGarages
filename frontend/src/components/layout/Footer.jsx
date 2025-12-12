@@ -72,20 +72,20 @@ const Footer = () => {
             <h3 className="text-white font-semibold mb-4">Contact Us</h3>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start space-x-2">
-                <MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-green-500" />
-                <span>{companyInfo.address}</span>
+                <MapPin className="w-4 h-4 mt-1 flex-shrink-0 text-[#12B76A]" />
+                <span className="text-gray-300">{companyInfo.address}</span>
               </li>
               <li className="flex items-center space-x-2">
-                <Phone className="w-4 h-4 flex-shrink-0 text-green-500" />
-                <a href={`tel:${companyInfo.phone}`} className="hover:text-green-500">{companyInfo.phone}</a>
+                <Phone className="w-4 h-4 flex-shrink-0 text-[#12B76A]" />
+                <a href={`tel:${companyInfo.phone}`} className="text-gray-300 hover:text-[#12B76A] transition-colors">{companyInfo.phone}</a>
               </li>
               <li className="flex items-center space-x-2">
-                <Mail className="w-4 h-4 flex-shrink-0 text-green-500" />
-                <a href={`mailto:${companyInfo.email}`} className="hover:text-green-500">{companyInfo.email}</a>
+                <Mail className="w-4 h-4 flex-shrink-0 text-[#12B76A]" />
+                <a href={`mailto:${companyInfo.email}`} className="text-gray-300 hover:text-[#12B76A] transition-colors">{companyInfo.email}</a>
               </li>
               <li className="flex items-start space-x-2">
-                <Clock className="w-4 h-4 mt-1 flex-shrink-0 text-green-500" />
-                <span>{companyInfo.hours}</span>
+                <Clock className="w-4 h-4 mt-1 flex-shrink-0 text-[#12B76A]" />
+                <span className="text-gray-300">{companyInfo.hours}</span>
               </li>
             </ul>
             
