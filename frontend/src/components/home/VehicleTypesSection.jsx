@@ -236,14 +236,14 @@ const VehicleCard = ({ vehicle }) => {
         </div>
         
         {/* Stats Chip */}
-        <div className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold border border-green-200">
+        <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#0B8A44]/10 text-[#0B8A44] text-xs font-semibold border border-[#0B8A44]/20">
           <CheckCircle2 className="w-3 h-3 mr-1" />
           {vehicle.count}
         </div>
       </div>
 
       {/* Hover Glow Effect */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#0B8A44]/10 to-[#12B76A]/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
     </div>
   );
 };
