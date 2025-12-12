@@ -152,7 +152,7 @@ const Footer = () => {
         </div>
 
         {/* Operational Cities Section */}
-        <div className="border-t border-gray-800 pt-8 mb-8">
+        <div className="border-t border-white/10 pt-8 mb-8">
           <div className="text-center mb-6">
             <h3 className="text-white text-xl font-bold mb-2">Pan-India Service Locations</h3>
             <p className="text-gray-400 text-sm">Serving EV fleets and owners across these operational cities</p>
