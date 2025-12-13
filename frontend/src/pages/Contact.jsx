@@ -144,9 +144,35 @@ const Contact = () => {
                   </div>
                 </div>
 
-                {/* Map Placeholder */}
-                <div className="bg-gray-200 h-64 rounded-xl flex items-center justify-center">
-                  <p className="text-gray-600">Google Maps Integration</p>
+                {/* Google Maps */}
+                <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200">
+                  <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3504.8975753792347!2d77.27084937536945!3d28.53607408877982!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce3e564daac1d%3A0x2c582e340e7bc556!2sFIEE%20Complex%2C%20Okhla%20Phase%20II%2C%20Okhla%20Industrial%20Estate%2C%20New%20Delhi%2C%20Delhi%20110020!5e0!3m2!1sen!2sin!4v1702469547890!5m2!1sen!2sin"
+                    width="100%"
+                    height="300"
+                    style={{ border: 0 }}
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Battwheels Garages Location - FIEE Complex, Okhla Phase 2, Delhi"
+                    className="w-full"
+                  ></iframe>
+                  <div className="bg-white p-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold text-gray-900 text-sm">Battwheels Garages</p>
+                        <p className="text-xs text-gray-500">A-19 G/F, FIEE Complex, Okhla Phase 2</p>
+                      </div>
+                      <a 
+                        href="https://www.google.com/maps/dir//FIEE+Complex,+Okhla+Phase+II,+Okhla+Industrial+Estate,+New+Delhi,+Delhi+110020"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-green-600 hover:text-green-700 font-medium flex items-center gap-1"
+                      >
+                        Get Directions →
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
 
