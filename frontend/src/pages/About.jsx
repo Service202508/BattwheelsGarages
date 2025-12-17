@@ -71,6 +71,11 @@ const About = () => {
 
   return (
     <div className="min-h-screen relative">
+      <SEO 
+        title="About Us - India's First No-Towing EV Service"
+        description="Learn about Battwheels Garages - India's #1 EV service partner. 10,000+ EVs serviced, 85% onsite resolution rate. Expert technicians for 2W, 3W, and 4W EVs."
+        url="/about"
+      />
       {/* Rotating Gears Background */}
       <GearBackground variant="default" />
       

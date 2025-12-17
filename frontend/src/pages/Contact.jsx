@@ -70,6 +70,11 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen relative">
+      <SEO 
+        title="Contact Us - Get EV Service Support"
+        description="Contact Battwheels Garages for EV service, roadside assistance, and support. Call our helpline or visit our service centers across India."
+        url="/contact"
+      />
       {/* Rotating Gears Background */}
       <GearBackground variant="contact" />
       

@@ -14,6 +14,11 @@ const Plans = () => {
 
   return (
     <div className="min-h-screen relative">
+      <SEO 
+        title="Subscription Plans - EV Service Packages"
+        description="Choose from our range of EV subscription plans. Get priority service, roadside assistance, and annual maintenance packages for your electric vehicle."
+        url="/plans"
+      />
       <GearBackground variant="default" />
       <Header />
       <main>
