@@ -20,10 +20,21 @@ const AdminLogin = () => {
     setError('');
     setLoading(true);
 
+    // Trim whitespace from credentials
+    const email = formData.email.trim().toLowerCase();
+    const password = formData.password;
+
+    if (!email || !password) {
+      setError('Please enter both email and password.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      await authService.login(formData.email, formData.password);
+      await authService.login(email, password);
       navigate('/admin');
     } catch (err) {
+      console.error('Login error:', err);
       setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
