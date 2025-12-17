@@ -21,6 +21,11 @@ const Industries = () => {
 
   return (
     <div className="min-h-screen relative">
+      <SEO 
+        title="Industries We Serve - EV Fleet & OEM Services"
+        description="Battwheels Garages serves multiple industries - Fleet Operators, Logistics Companies, EV OEMs, E-commerce, and Individual EV owners across India."
+        url="/industries"
+      />
       {/* Rotating Gears Background */}
       <GearBackground variant="industries" />
       

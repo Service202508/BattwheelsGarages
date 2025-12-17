@@ -36,6 +36,11 @@ const FAQ = () => {
 
   return (
     <div className="min-h-screen relative">
+      <SEO 
+        title="FAQ - EV Service Questions Answered"
+        description="Find answers to common questions about EV servicing, battery maintenance, roadside assistance, and Battwheels Garages services."
+        url="/faq"
+      />
       <GearBackground variant="default" />
       <Header />
       <main>
