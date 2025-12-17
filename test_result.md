@@ -116,7 +116,7 @@
 ### 🎯 REVIEW REQUEST API TESTING - COMPLETED ✅
 
 **Test Date**: December 19, 2024  
-**Backend URL**: https://battwheels-ev-1.preview.emergentagent.com/api  
+**Backend URL**: https://garage-rescue-1.preview.emergentagent.com/api  
 **Total Tests**: 12  
 **Success Rate**: 100%  
 

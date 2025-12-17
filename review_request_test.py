@@ -11,7 +11,7 @@ from datetime import datetime
 import uuid
 
 # Get backend URL from environment
-BACKEND_URL = "https://battwheels-ev-1.preview.emergentagent.com"
+BACKEND_URL = "https://garage-rescue-1.preview.emergentagent.com"
 
 class ReviewRequestTester:
     def __init__(self):

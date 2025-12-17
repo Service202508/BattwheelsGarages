@@ -13,7 +13,7 @@ import io
 import os
 
 # Get backend URL from environment
-BACKEND_URL = "https://battwheels-ev-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://garage-rescue-1.preview.emergentagent.com/api"
 
 class BattwheelsAPITester:
     def __init__(self):
