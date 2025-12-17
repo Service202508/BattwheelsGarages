@@ -135,10 +135,19 @@ async def get_public_testimonials(category: Optional[str] = None, limit: int = 5
 async def get_public_jobs():
     """Get all active job listings for public display"""
     try:
+        # Try with is_active field first
         jobs = await db.jobs.find(
-            {"status": "active"},
+            {"is_active": True},
             {"_id": 0}
         ).sort("created_at", -1).to_list(50)
+        
+        # Fallback to status field
+        if not jobs:
+            jobs = await db.jobs.find(
+                {"status": "active"},
+                {"_id": 0}
+            ).sort("created_at", -1).to_list(50)
+        
         return {"jobs": jobs, "total": len(jobs)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -148,9 +157,14 @@ async def get_job_by_id(job_id: str):
     """Get a single job by ID"""
     try:
         job = await db.jobs.find_one(
-            {"id": job_id, "status": "active"},
+            {"id": job_id, "is_active": True},
             {"_id": 0}
         )
+        if not job:
+            job = await db.jobs.find_one(
+                {"id": job_id, "status": "active"},
+                {"_id": 0}
+            )
         if not job:
             raise HTTPException(status_code=404, detail="Job not found")
         return job
