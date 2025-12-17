@@ -126,6 +126,11 @@ const Careers = () => {
 
   return (
     <div className="min-h-screen relative">
+      <SEO 
+        title="Careers - Join India's EV Revolution"
+        description="Join Battwheels Garages team. We're hiring EV technicians, service managers, and operations professionals. Work with cutting-edge EV technology."
+        url="/careers"
+      />
       <GearBackground variant="default" />
       <Header />
       <main>

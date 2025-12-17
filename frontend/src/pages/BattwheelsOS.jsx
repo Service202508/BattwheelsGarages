@@ -45,6 +45,11 @@ const BattwheelsOS = () => {
 
   return (
     <div className="min-h-screen relative">
+      <SEO 
+        title="Battwheels OS™ - Garage Management Platform"
+        description="Battwheels OS™ is our comprehensive garage management platform. Digital job cards, EV diagnostics, technician apps, and analytics for modern EV service centers."
+        url="/battwheels-os"
+      />
       {/* Rotating Gears Background */}
       <GearBackground variant="battwheels-os" />
       
