@@ -2,23 +2,34 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const authService = {
   async login(email, password) {
-    const response = await fetch(`${API_URL}/api/admin/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    // Ensure credentials are trimmed
+    const trimmedEmail = email.trim().toLowerCase();
+    const trimmedPassword = password;
 
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.detail || 'Login failed');
+    try {
+      const response = await fetch(`${API_URL}/api/admin/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: trimmedEmail, password: trimmedPassword }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.detail || 'Login failed');
+      }
+
+      localStorage.setItem('admin_token', data.access_token);
+      localStorage.setItem('admin_user', JSON.stringify(data.user));
+      return data;
+    } catch (err) {
+      if (err.message === 'Failed to fetch') {
+        throw new Error('Unable to connect to server. Please check your internet connection.');
+      }
+      throw err;
     }
-
-    localStorage.setItem('admin_token', data.access_token);
-    localStorage.setItem('admin_user', JSON.stringify(data.user));
-    return data;
   },
 
   logout() {
