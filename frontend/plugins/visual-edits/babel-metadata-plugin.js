@@ -131,7 +131,7 @@ function fileExportHasPortals({
   });
 
   // Find the component declaration for exportName
-  let compPaths = [];
+  const compPaths = [];
 
   traverse(ast, {
     ExportDefaultDeclaration(p) {

@@ -284,7 +284,7 @@ function setupDevServer(config) {
                   );
 
                   // Find existing className attribute
-                  let classAttr = path.node.attributes.find(
+                  const classAttr = path.node.attributes.find(
                     (attr) =>
                       t.isJSXAttribute(attr) &&
                       attr.name.name === "className",
