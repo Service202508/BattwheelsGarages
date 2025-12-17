@@ -108,6 +108,11 @@ const FleetOEM = () => {
 
   return (
     <div className="min-h-screen relative">
+      <SEO 
+        title="Fleet & OEM Partnership - Enterprise EV Solutions"
+        description="Partner with Battwheels Garages for fleet management and OEM support. Custom SLAs, dedicated teams, and pan-India coverage for enterprise EV operations."
+        url="/fleet-oem"
+      />
       <GearBackground variant="default" />
       <Header />
       <main>
