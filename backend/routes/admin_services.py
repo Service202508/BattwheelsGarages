@@ -11,7 +11,7 @@ security = HTTPBearer()
 from server import db
 
 
-@router.get("/")
+@router.get("")
 async def get_all_services(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     is_active: Optional[bool] = Query(None),
@@ -37,7 +37,7 @@ async def get_all_services(
         raise HTTPException(status_code=500, detail=f"Error fetching services: {str(e)}")
 
 
-@router.post("/")
+@router.post("")
 async def create_service(
     service_data: ServiceCreate,
     credentials: HTTPAuthorizationCredentials = Depends(security)
