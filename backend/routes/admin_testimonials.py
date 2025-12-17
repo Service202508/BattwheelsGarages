@@ -10,7 +10,7 @@ security = HTTPBearer()
 from server import db
 
 
-@router.get("/")
+@router.get("")
 async def get_all_testimonials(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     featured: Optional[bool] = Query(None),
@@ -36,7 +36,7 @@ async def get_all_testimonials(
         raise HTTPException(status_code=500, detail=f"Error fetching testimonials: {str(e)}")
 
 
-@router.post("/")
+@router.post("")
 async def create_testimonial(
     testimonial_data: TestimonialCreate,
     credentials: HTTPAuthorizationCredentials = Depends(security)

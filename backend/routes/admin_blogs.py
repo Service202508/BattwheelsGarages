@@ -11,7 +11,7 @@ security = HTTPBearer()
 from server import db
 
 
-@router.get("/")
+@router.get("")
 async def get_all_blogs(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     category: Optional[str] = Query(None),
@@ -47,7 +47,7 @@ async def get_all_blogs(
         raise HTTPException(status_code=500, detail=f"Error fetching blogs: {str(e)}")
 
 
-@router.post("/")
+@router.post("")
 async def create_blog(
     blog_data: BlogPostCreate,
     credentials: HTTPAuthorizationCredentials = Depends(security)

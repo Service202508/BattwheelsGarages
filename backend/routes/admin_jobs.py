@@ -11,7 +11,7 @@ security = HTTPBearer()
 from server import db
 
 
-@router.get("/")
+@router.get("")
 async def get_all_jobs(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     is_active: Optional[bool] = Query(None),
@@ -40,7 +40,7 @@ async def get_all_jobs(
         raise HTTPException(status_code=500, detail=f"Error fetching jobs: {str(e)}")
 
 
-@router.post("/")
+@router.post("")
 async def create_job(
     job_data: JobCreate,
     credentials: HTTPAuthorizationCredentials = Depends(security)

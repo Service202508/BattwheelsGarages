@@ -10,7 +10,7 @@ security = HTTPBearer()
 from server import db
 
 
-@router.get("/")
+@router.get("")
 async def get_all_bookings(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     status: Optional[str] = Query(None),

@@ -9,7 +9,7 @@ security = HTTPBearer()
 from server import db
 
 
-@router.get("/")
+@router.get("")
 async def get_all_contacts(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     status: Optional[str] = Query(None),
