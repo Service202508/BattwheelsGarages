@@ -34,11 +34,11 @@ export default [
       "react/prop-types": "off",
       "react/display-name": "off",
       "react/no-unescaped-entities": "off",
-      "react/no-unknown-property": ["error", { ignore: ["jsx", "cmdk-input-wrapper"] }],
+      "react/no-unknown-property": ["error", { ignore: ["jsx", "cmdk-input-wrapper", "global"] }],
       "react/no-unstable-nested-components": "off",
 
       // General rules
-      "no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+      "no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_|^React$" }],
       "no-console": "off",
       "prefer-const": "warn",
       "no-var": "error",
@@ -47,6 +47,7 @@ export default [
       // React Hooks rules
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "off",
+      "react-hooks/set-state-in-effect": "off",
     },
   },
   {
