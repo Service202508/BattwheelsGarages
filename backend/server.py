@@ -14,8 +14,12 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app
-app = FastAPI(title="Battwheels Garages API", version="1.0.0")
+# Create the main app with redirect_slashes disabled to avoid 307 redirects
+app = FastAPI(
+    title="Battwheels Garages API", 
+    version="1.0.0",
+    redirect_slashes=False
+)
 
 # Import routes
 from routes import bookings, fleet_enquiries, contacts, careers, public_content
