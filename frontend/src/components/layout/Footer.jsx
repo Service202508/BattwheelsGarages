@@ -27,9 +27,9 @@ const Footer = () => {
           <div>
             <div className="mb-6">
               <img 
-                src="/assets/battwheels-logo-white.svg" 
+                src="/assets/battwheels-logo-color.svg" 
                 alt="Battwheels Garages - India's #1 EV Service Partner" 
-                className="h-20 md:h-24 w-auto"
+                className="h-20 md:h-24 w-auto brightness-0 invert"
               />
             </div>
             <p className="text-sm mb-4 text-gray-300 leading-relaxed">
