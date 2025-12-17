@@ -101,6 +101,11 @@ const BookService = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
+      <SEO 
+        title="Book EV Service - Schedule Your Appointment"
+        description="Book EV service online. Schedule onsite or garage service for your 2W, 3W, or 4W electric vehicle. Quick response within 2 hours."
+        url="/book-service"
+      />
       <GearBackground variant="default" />
       <Header />
       <main className="py-20">
