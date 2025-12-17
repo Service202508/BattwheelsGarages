@@ -3,6 +3,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import GearBackground from '../components/common/GearBackground';
 import VisionMissionGoals from '../components/home/VisionMissionGoals';
+import SEO from '../components/common/SEO';
 import { 
   Wrench, 
   Zap, 
