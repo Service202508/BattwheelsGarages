@@ -223,7 +223,7 @@ JOBS = [
 ]
 
 async def seed_jobs():
-    client = AsyncIOMotorClient("mongodb://localhost:27017")
+    client = AsyncIOMotorClient("os.environ.get("MONGO_URL", "mongodb://localhost:27017")")
     db = client["test_database"]
     
     # Clear existing jobs
