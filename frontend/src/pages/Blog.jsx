@@ -114,67 +114,111 @@ const Blog = () => {
               <p className="text-gray-500 text-lg">No blog posts found in this category.</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {blogs.map((blog) => (
-                <article
-                  key={blog.id}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group"
-                >
-                  {/* Thumbnail */}
-                  <div className="relative h-48 bg-gradient-to-br from-purple-100 to-indigo-100 overflow-hidden">
-                    {blog.thumbnail_image || blog.image ? (
-                      <img
-                        src={blog.thumbnail_image || blog.image}
-                        alt={blog.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-6xl">📝</span>
-                      </div>
-                    )}
-                    {blog.category && (
-                      <span className="absolute top-4 left-4 px-3 py-1 bg-purple-600 text-white text-xs font-medium rounded-full">
-                        {blog.category}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-purple-600 transition-colors">
-                      {blog.title}
-                    </h2>
-                    <p className="text-gray-600 mb-4 line-clamp-3">
-                      {blog.excerpt || blog.content?.substring(0, 150)}...
-                    </p>
-
-                    {/* Meta */}
-                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                      <span className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        {formatDate(blog.created_at || blog.published_at || blog.date)}
-                      </span>
-                      {blog.author && (
-                        <span className="flex items-center">
-                          <User className="w-4 h-4 mr-1" />
-                          {blog.author}
+            <>
+              {/* Posts Count */}
+              <div className="text-center mb-8">
+                <p className="text-gray-600">
+                  Showing {Math.min((currentPage - 1) * postsPerPage + 1, blogs.length)} - {Math.min(currentPage * postsPerPage, blogs.length)} of {blogs.length} articles
+                </p>
+              </div>
+              
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {blogs.slice((currentPage - 1) * postsPerPage, currentPage * postsPerPage).map((blog) => (
+                  <article
+                    key={blog.id}
+                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group"
+                  >
+                    {/* Thumbnail */}
+                    <div className="relative h-48 bg-gradient-to-br from-purple-100 to-indigo-100 overflow-hidden">
+                      {blog.thumbnail_image || blog.image ? (
+                        <img
+                          src={blog.thumbnail_image || blog.image}
+                          alt={blog.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-6xl">📝</span>
+                        </div>
+                      )}
+                      {blog.category && (
+                        <span className="absolute top-4 left-4 px-3 py-1 bg-purple-600 text-white text-xs font-medium rounded-full">
+                          {blog.category}
                         </span>
                       )}
                     </div>
 
-                    {/* Read More */}
-                    <Link
-                      to={`/blog/${blog.slug}`}
-                      className="inline-flex items-center text-purple-600 font-medium hover:text-purple-700"
+                    {/* Content */}
+                    <div className="p-6">
+                      <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-purple-600 transition-colors">
+                        {blog.title}
+                      </h2>
+                      <p className="text-gray-600 mb-4 line-clamp-3">
+                        {blog.excerpt || blog.content?.substring(0, 150)}...
+                      </p>
+
+                      {/* Meta */}
+                      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <span className="flex items-center">
+                          <Calendar className="w-4 h-4 mr-1" />
+                          {formatDate(blog.created_at || blog.published_at || blog.date)}
+                        </span>
+                        {blog.author && (
+                          <span className="flex items-center">
+                            <User className="w-4 h-4 mr-1" />
+                            {blog.author}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Read More */}
+                      <Link
+                        to={`/blog/${blog.slug}`}
+                        className="inline-flex items-center text-purple-600 font-medium hover:text-purple-700"
+                      >
+                        Read More
+                        <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {blogs.length > postsPerPage && (
+                <div className="flex justify-center items-center gap-2 mt-12">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Previous
+                  </button>
+                  
+                  {Array.from({ length: Math.ceil(blogs.length / postsPerPage) }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`w-10 h-10 rounded-lg font-medium transition-colors ${
+                        currentPage === page 
+                          ? 'bg-purple-600 text-white' 
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
                     >
-                      Read More
-                      <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
+                      {page}
+                    </button>
+                  ))}
+                  
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(Math.ceil(blogs.length / postsPerPage), p + 1))}
+                    disabled={currentPage === Math.ceil(blogs.length / postsPerPage)}
+                    className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
