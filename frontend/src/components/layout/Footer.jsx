@@ -65,6 +65,14 @@ const Footer = () => {
               <li><Link to="/services/roadside" className="text-gray-300 hover:text-[#12B76A] transition-colors">Roadside Assistance</Link></li>
               <li><Link to="/services/fleet" className="text-gray-300 hover:text-[#12B76A] transition-colors">Fleet Programs</Link></li>
             </ul>
+            
+            {/* Featured Blog Posts - For SEO Internal Linking */}
+            <h3 className="text-white font-semibold mt-6 mb-3">Featured Articles</h3>
+            <ul className="space-y-2 text-sm">
+              <li><Link to="/blog/onsite-ev-repair-near-me-delhi-ncr" className="text-gray-300 hover:text-[#12B76A] transition-colors">Onsite EV Repair Delhi NCR</Link></li>
+              <li><Link to="/blog/ev-battery-health-check-diagnostics-costs" className="text-gray-300 hover:text-[#12B76A] transition-colors">EV Battery Health Guide</Link></li>
+              <li><Link to="/blog/ev-roadside-assistance-fleet-operators-guide" className="text-gray-300 hover:text-[#12B76A] transition-colors">Fleet RSA Guide</Link></li>
+            </ul>
           </div>
 
           {/* Contact Info */}
