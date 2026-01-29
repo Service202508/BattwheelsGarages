@@ -21,6 +21,7 @@ class EmailService:
         self.smtp_password = os.environ.get('SMTP_PASSWORD', '')
         self.from_email = os.environ.get('SMTP_FROM_EMAIL', self.smtp_user)
         self.environment = os.environ.get('ENVIRONMENT', 'development')
+        self.notification_email = os.environ.get('NOTIFICATION_EMAIL', 'service@battwheelsgarages.in')
 
     async def send_email(
         self,
