@@ -36,6 +36,7 @@ app.include_router(fleet_enquiries.router)
 app.include_router(contacts.router)
 app.include_router(careers.router)
 app.include_router(public_content.router)
+app.include_router(seo.router)
 
 # Include admin routers
 app.include_router(admin_auth.router)
