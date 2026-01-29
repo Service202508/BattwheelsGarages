@@ -10,6 +10,7 @@ const Header = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
+    { name: 'About Us', path: '/about' },
     { name: 'Battwheels OS™', path: '/battwheels-os' },
     {
       name: 'Services',
