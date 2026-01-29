@@ -13,7 +13,7 @@ const Blog = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const categories = ['all', 'Fleet Ops', 'EV Tech Deep Dive', 'Industry News', 'Company Updates', 'Tips & Guides'];
+  const categories = ['all', 'Fleet Ops', 'EV Tech Deep Dive', 'Local Services', 'Tips & Guides', 'Case Studies', 'Product Features', 'Service Plans', 'Safety & Awareness', 'Customer Stories', 'Thought Leadership'];
 
   useEffect(() => {
     fetchBlogs();
