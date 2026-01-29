@@ -1,23 +1,32 @@
 # Battwheels Garages - robots.txt
+# Last Updated: 2025-01-29
+
 User-agent: *
 Allow: /
 
-# Sitemap
-Sitemap: https://battwheelsgarages.in/sitemap.xml
+# Explicitly allow blog crawling
+Allow: /blog
+Allow: /blog/
 
 # Disallow admin pages
 Disallow: /admin/
 Disallow: /admin/*
 
-# Allow search engines to crawl all public pages
-Allow: /about
-Allow: /services
-Allow: /blog
-Allow: /careers
-Allow: /contact
-Allow: /book-service
-Allow: /fleet-oem
-Allow: /battwheels-os
-Allow: /industries
-Allow: /plans
-Allow: /faq
+# Sitemap locations
+Sitemap: https://battwheelsgarages.in/sitemap.xml
+
+# Allow all major crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Crawl-delay for polite crawling (optional)
+Crawl-delay: 1
