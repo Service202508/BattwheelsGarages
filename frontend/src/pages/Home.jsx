@@ -54,7 +54,6 @@ const Home = () => {
         <StatsSection />
         <AchievementsSection />
         <WhyChooseSection />
-        <VisionMissionGoals />
         <ServiceCategoriesSection />
         <IndustriesSlider />
         <BrandsSection />
