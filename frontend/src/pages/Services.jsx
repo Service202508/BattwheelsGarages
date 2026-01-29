@@ -71,7 +71,7 @@ const Services = () => {
             Our EV Services
           </h1>
           <p className="text-xl text-green-100 max-w-3xl mx-auto">
-            Comprehensive onsite diagnostics, repair, and maintenance for all electric vehicle categories — from 2-wheelers to commercial fleets
+            Comprehensive onsite diagnostics, repair, and maintenance for all electric vehicle categories - from 2-wheelers to commercial fleets
           </p>
         </div>
       </section>

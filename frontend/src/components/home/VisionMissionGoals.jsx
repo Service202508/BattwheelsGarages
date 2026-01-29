@@ -51,9 +51,9 @@ const VisionMissionGoals = () => {
   const goals = [
     { icon: TrendingUp, text: '95%+ fleet uptime through rapid response and smart maintenance', color: 'from-emerald-500 to-green-600' },
     { icon: MapPin, text: '50+ cities nationwide with reliable service coverage', color: 'from-blue-500 to-indigo-600' },
-    { icon: Cpu, text: 'Battwheels OS™—our AI platform powering diagnostics, parts management, and real-time service', color: 'from-purple-500 to-violet-600' },
+    { icon: Cpu, text: 'Battwheels OS™-our AI platform powering diagnostics, parts management, and real-time service', color: 'from-purple-500 to-violet-600' },
     { icon: Award, text: 'Industry standards for EV service quality, parts, and technician certification', color: 'from-amber-500 to-orange-600' },
-    { icon: Wrench, text: '90% onsite resolution—fix it where it breaks, minimal towing', color: 'from-rose-500 to-pink-600' },
+    { icon: Wrench, text: '90% onsite resolution-fix it where it breaks, minimal towing', color: 'from-rose-500 to-pink-600' },
     { icon: Users, text: "India's largest EV-trained workforce who understand motors, batteries, and controllers", color: 'from-cyan-500 to-teal-600' },
     { icon: Handshake, text: 'Strong OEM partnerships as the national aftersales backbone', color: 'from-green-500 to-emerald-600' },
   ];
@@ -151,11 +151,11 @@ const VisionMissionGoals = () => {
                 {/* Content */}
                 <div className="p-8 md:p-10 space-y-6">
                   <p className="text-lg md:text-xl text-gray-700 leading-relaxed font-medium">
-                    We&apos;re building an India where EV breakdowns don&apos;t ruin your day. Where uptime isn&apos;t just promised—it&apos;s delivered.
+                    We&apos;re building an India where EV breakdowns don&apos;t ruin your day. Where uptime isn&apos;t just promised-it&apos;s delivered.
                   </p>
                   
                   <p className="text-gray-600 leading-relaxed">
-                    Right now, breakdowns mean towing, workshop delays, and days without your vehicle. We&apos;re changing that. We fix EVs where they stop. 2-wheelers, autos, cars, commercial fleets—all of them.
+                    Right now, breakdowns mean towing, workshop delays, and days without your vehicle. We&apos;re changing that. We fix EVs where they stop. 2-wheelers, autos, cars, commercial fleets-all of them.
                   </p>
                   
                   <p className="text-gray-600 leading-relaxed">
@@ -294,7 +294,7 @@ const VisionMissionGoals = () => {
                   <div className="mt-8 pt-6 border-t border-gray-100">
                     <p className="text-orange-600 font-semibold text-lg flex items-center gap-2">
                       <TrendingUp className="w-5 h-5" />
-                      We&apos;re building infrastructure that scales with India&apos;s EV future. Not catching up—staying ahead.
+                      We&apos;re building infrastructure that scales with India&apos;s EV future. Not catching up-staying ahead.
                     </p>
                   </div>
                 </div>

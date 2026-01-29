@@ -34,7 +34,7 @@ const About = () => {
     {
       icon: Zap,
       title: 'EV-Only Focus',
-      description: 'We don\'t do ICE vehicles. Our entire team, training, tools, and parts inventory are 100% focused on electric vehicles — 2W, 3W, 4W, and commercial.',
+      description: 'We don\'t do ICE vehicles. Our entire team, training, tools, and parts inventory are 100% focused on electric vehicles - 2W, 3W, 4W, and commercial.',
       color: 'from-yellow-500 to-orange-500'
     },
     {
@@ -46,7 +46,7 @@ const About = () => {
     {
       icon: Cpu,
       title: 'Tech-Driven Operations',
-      description: 'Battwheels OS™ powers everything — from AI diagnostics to real-time job tracking, parts management, and fleet health dashboards for enterprise clients.',
+      description: 'Battwheels OS™ powers everything - from AI diagnostics to real-time job tracking, parts management, and fleet health dashboards for enterprise clients.',
       color: 'from-purple-500 to-violet-500'
     },
     {
@@ -101,7 +101,7 @@ const About = () => {
               </h1>
               
               <p className="text-xl md:text-2xl text-gray-600 leading-relaxed mb-8">
-                We built Battwheels to solve one simple problem: <strong className="text-gray-900">EVs don&apos;t need towing first — they need diagnosis and repair on the spot.</strong>
+                We built Battwheels to solve one simple problem: <strong className="text-gray-900">EVs don&apos;t need towing first - they need diagnosis and repair on the spot.</strong>
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -138,13 +138,13 @@ const About = () => {
                   </h2>
                   <div className="space-y-4 text-gray-600 leading-relaxed">
                     <p>
-                      India&apos;s EV revolution is accelerating — but after-sales infrastructure hasn&apos;t kept pace. Traditional garages don&apos;t understand EVs. OEM networks are limited. And when your EV breaks down, you&apos;re stuck waiting for tow trucks and workshop queues.
+                      India&apos;s EV revolution is accelerating - but after-sales infrastructure hasn&apos;t kept pace. Traditional garages don&apos;t understand EVs. OEM networks are limited. And when your EV breaks down, you&apos;re stuck waiting for tow trucks and workshop queues.
                     </p>
                     <p>
-                      <strong className="text-gray-900">Battwheels Garages was founded in 2024</strong> to change this. We&apos;re building India&apos;s largest EV-focused service network — with onsite repair as our core philosophy.
+                      <strong className="text-gray-900">Battwheels Garages was founded in 2024</strong> to change this. We&apos;re building India&apos;s largest EV-focused service network - with onsite repair as our core philosophy.
                     </p>
                     <p>
-                      From Ather scooters to Tata Nexon EVs, from delivery fleets to corporate cars — we service them all. Our technicians come to you, diagnose on-spot, and fix 85% of issues without towing.
+                      From Ather scooters to Tata Nexon EVs, from delivery fleets to corporate cars - we service them all. Our technicians come to you, diagnose on-spot, and fix 85% of issues without towing.
                     </p>
                   </div>
                 </div>
@@ -253,7 +253,7 @@ const About = () => {
                 Sustainability at Our Core
               </h2>
               <p className="text-xl text-green-50 leading-relaxed mb-8">
-                Every EV we service is a step toward a cleaner India. We&apos;re not just fixing vehicles — we&apos;re keeping the electric revolution moving. Our commitment extends beyond service: we use eco-friendly practices, minimize waste, and train technicians to handle EV components responsibly.
+                Every EV we service is a step toward a cleaner India. We&apos;re not just fixing vehicles - we&apos;re keeping the electric revolution moving. Our commitment extends beyond service: we use eco-friendly practices, minimize waste, and train technicians to handle EV components responsibly.
               </p>
               <div className="flex flex-wrap justify-center gap-6">
                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">

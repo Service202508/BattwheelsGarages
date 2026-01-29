@@ -26,7 +26,7 @@ export const whyChooseUs = [
   {
     id: 1,
     title: '100% Onsite First',
-    description: 'We fix your EV at your site or on the road — wherever it is safe. No unnecessary towing means lower downtime and lower cost.',
+    description: 'We fix your EV at your site or on the road - wherever it is safe. No unnecessary towing means lower downtime and lower cost.',
     icon: 'MapPin'
   },
   {
@@ -44,7 +44,7 @@ export const whyChooseUs = [
   {
     id: 4,
     title: 'Tech-Driven: Battwheels OS™',
-    description: 'Track jobs in real-time, get digital job cards, and access GaragePROEV-style EV diagnostics — all integrated into Battwheels OS™.',
+    description: 'Track jobs in real-time, get digital job cards, and access GaragePROEV-style EV diagnostics - all integrated into Battwheels OS™.',
     icon: 'Monitor'
   }
 ];
@@ -240,7 +240,7 @@ export const faqs = [
     id: 8,
     category: 'breakdown',
     question: 'What kind of issues can be fixed onsite?',
-    answer: 'Most EV faults — including wiring issues, controller errors, throttle issues, brake faults, BMS resets, battery connector repairs and software calibrations — can be handled onsite.'
+    answer: 'Most EV faults - including wiring issues, controller errors, throttle issues, brake faults, BMS resets, battery connector repairs and software calibrations - can be handled onsite.'
   },
   {
     id: 9,
@@ -333,7 +333,7 @@ export const faqs = [
     id: 23,
     category: 'technical',
     question: 'My EV is not turning on. What should I do?',
-    answer: 'This is usually due to fuse, wiring, controller or BMS issues. Book an inspection — 85% of such faults are fixed onsite.'
+    answer: 'This is usually due to fuse, wiring, controller or BMS issues. Book an inspection - 85% of such faults are fixed onsite.'
   },
   {
     id: 24,
@@ -352,7 +352,7 @@ export const faqs = [
     id: 26,
     category: 'fleet',
     question: 'Do you offer uptime guarantees for fleets?',
-    answer: 'Yes — our fleet programs provide 95%+ uptime, SLA-based operations and dedicated technician support.'
+    answer: 'Yes - our fleet programs provide 95%+ uptime, SLA-based operations and dedicated technician support.'
   },
   {
     id: 27,
@@ -382,7 +382,7 @@ export const faqs = [
     id: 31,
     category: 'fleet',
     question: 'Can Battwheels station technicians inside fleet hubs?',
-    answer: 'Yes — we provide on-site stationed technicians for high-volume EV fleets.'
+    answer: 'Yes - we provide on-site stationed technicians for high-volume EV fleets.'
   },
   // Website & Booking FAQs
   {
