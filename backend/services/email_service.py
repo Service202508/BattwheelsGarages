@@ -139,7 +139,7 @@ class EmailService:
         """
 
         return await self.send_email(
-            to_email='service@battwheelsgarages.in',
+            to_email=self.notification_email,
             subject=subject,
             html_content=html_content,
             text_content=text_content
@@ -208,7 +208,7 @@ class EmailService:
         """
 
         return await self.send_email(
-            to_email='service@battwheelsgarages.in',
+            to_email=self.notification_email,
             subject=subject,
             html_content=html_content,
             text_content=text_content
@@ -252,7 +252,7 @@ class EmailService:
         """
 
         return await self.send_email(
-            to_email='service@battwheelsgarages.in',
+            to_email=self.notification_email,
             subject=subject,
             html_content=html_content,
             text_content=text_content
