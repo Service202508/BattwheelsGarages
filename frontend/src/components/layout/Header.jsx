@@ -42,7 +42,7 @@ const Header = () => {
             <img 
               src="/assets/battwheels-logo-new-transparent.png" 
               alt="Battwheels Garages" 
-              className="h-20 md:h-24 lg:h-28 w-auto transition-all"
+              className="h-14 md:h-16 lg:h-18 w-auto transition-all"
             />
           </Link>
 
