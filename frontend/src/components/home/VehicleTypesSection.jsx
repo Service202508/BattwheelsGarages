@@ -3,6 +3,8 @@ import { CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const VehicleTypesSection = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -51,6 +53,7 @@ const VehicleTypesSection = () => {
     }
   ];
 
+  // Intersection Observer for visibility
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -72,11 +75,26 @@ const VehicleTypesSection = () => {
     };
   }, []);
 
+  // Auto-scroll carousel every 3 seconds
+  useEffect(() => {
+    if (!isPaused && isVisible) {
+      const interval = setInterval(() => {
+        scrollToNext();
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [isPaused, isVisible, activeIndex]);
+
   const checkScrollButtons = () => {
     if (scrollContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
       setCanScrollLeft(scrollLeft > 0);
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+      
+      // Calculate active index based on scroll position
+      const cardWidth = 320;
+      const newIndex = Math.round(scrollLeft / cardWidth);
+      setActiveIndex(Math.min(newIndex, vehicleTypes.length - 1));
     }
   };
 
@@ -93,11 +111,41 @@ const VehicleTypesSection = () => {
     }
   }, []);
 
+  const scrollToNext = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      const cardWidth = 320;
+      
+      // If at the end, scroll back to start
+      if (scrollLeft >= scrollWidth - clientWidth - 10) {
+        scrollContainerRef.current.scrollTo({
+          left: 0,
+          behavior: 'smooth'
+        });
+      } else {
+        scrollContainerRef.current.scrollBy({
+          left: cardWidth,
+          behavior: 'smooth'
+        });
+      }
+    }
+  };
+
   const scroll = (direction) => {
     if (scrollContainerRef.current) {
-      const scrollAmount = 320; // Card width + gap
+      const scrollAmount = 320;
       scrollContainerRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const scrollToIndex = (index) => {
+    if (scrollContainerRef.current) {
+      const cardWidth = 320;
+      scrollContainerRef.current.scrollTo({
+        left: index * cardWidth,
         behavior: 'smooth'
       });
     }
@@ -107,11 +155,13 @@ const VehicleTypesSection = () => {
     <section 
       ref={sectionRef}
       className="relative py-8 md:py-12 bg-gradient-to-b from-green-50/30 via-white to-green-50/50 overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
     >
       {/* Top gradient fade from hero */}
       <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white via-white/80 to-transparent pointer-events-none" />
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header - Compact for immediate below hero */}
+        {/* Section Header */}
         <div 
           className={`text-center mb-6 transform transition-all duration-700 ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
@@ -125,7 +175,7 @@ const VehicleTypesSection = () => {
           </p>
         </div>
 
-        {/* Horizontal Scroller Container */}
+        {/* Carousel Container */}
         <div className="relative">
           {/* Navigation Arrows - Desktop */}
           <button
@@ -133,7 +183,7 @@ const VehicleTypesSection = () => {
             className={`hidden md:flex absolute -left-4 lg:-left-6 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white shadow-lg border border-gray-200 items-center justify-center transition-all duration-300 ${
               canScrollLeft 
                 ? 'opacity-100 hover:bg-green-50 hover:border-green-300 hover:shadow-xl' 
-                : 'opacity-0 pointer-events-none'
+                : 'opacity-30 pointer-events-none'
             }`}
             aria-label="Scroll left"
           >
@@ -145,7 +195,7 @@ const VehicleTypesSection = () => {
             className={`hidden md:flex absolute -right-4 lg:-right-6 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white shadow-lg border border-gray-200 items-center justify-center transition-all duration-300 ${
               canScrollRight 
                 ? 'opacity-100 hover:bg-green-50 hover:border-green-300 hover:shadow-xl' 
-                : 'opacity-0 pointer-events-none'
+                : 'opacity-30 pointer-events-none'
             }`}
             aria-label="Scroll right"
           >
@@ -174,7 +224,7 @@ const VehicleTypesSection = () => {
                   scrollSnapAlign: 'start'
                 }}
               >
-                <VehicleCard vehicle={vehicle} />
+                <VehicleCard vehicle={vehicle} isActive={index === activeIndex} />
               </div>
             ))}
             
@@ -182,14 +232,27 @@ const VehicleTypesSection = () => {
             <div className="flex-shrink-0 w-1" aria-hidden="true" />
           </div>
 
-          {/* Scroll Indicator Dots - Mobile */}
-          <div className="flex md:hidden justify-center mt-3 space-x-2">
+          {/* Carousel Indicator Dots */}
+          <div className="flex justify-center mt-4 space-x-2">
             {vehicleTypes.map((_, index) => (
-              <div
+              <button
                 key={index}
-                className="w-2 h-2 rounded-full bg-[#12B76A]/50 transition-colors"
+                onClick={() => scrollToIndex(index)}
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                  index === activeIndex 
+                    ? 'bg-[#0B8A44] w-8' 
+                    : 'bg-[#12B76A]/30 hover:bg-[#12B76A]/50'
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
               />
             ))}
+          </div>
+
+          {/* Auto-scroll indicator */}
+          <div className="text-center mt-2">
+            <span className="text-xs text-gray-400">
+              {isPaused ? '⏸ Paused' : '▶ Auto-scrolling'}
+            </span>
           </div>
         </div>
 
@@ -220,9 +283,9 @@ const VehicleTypesSection = () => {
 };
 
 // Vehicle Card Component
-const VehicleCard = ({ vehicle }) => {
+const VehicleCard = ({ vehicle, isActive }) => {
   return (
-    <div className="group relative overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer h-full border border-gray-100">
+    <div className={`group relative overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer h-full border ${isActive ? 'border-[#0B8A44] ring-2 ring-[#0B8A44]/20' : 'border-gray-100'}`}>
       {/* Vehicle Image */}
       <div className="relative h-44 overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100">
         <img
