@@ -24,6 +24,13 @@ const AdminLogin = () => {
     const email = formData.email.trim().toLowerCase();
     const password = formData.password;
 
+    // Debug logging for troubleshooting
+    console.log('=== Admin Login Debug ===');
+    console.log('Email:', email);
+    console.log('Password length:', password.length);
+    console.log('API URL:', process.env.REACT_APP_BACKEND_URL);
+    console.log('========================');
+
     if (!email || !password) {
       setError('Please enter both email and password.');
       setLoading(false);
@@ -31,10 +38,13 @@ const AdminLogin = () => {
     }
 
     try {
+      console.log('Attempting login...');
       await authService.login(email, password);
+      console.log('Login successful! Navigating to admin...');
       navigate('/admin');
     } catch (err) {
-      console.error('Login error:', err);
+      console.error('Login error details:', err);
+      console.error('Error message:', err.message);
       setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
