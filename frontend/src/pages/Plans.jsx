@@ -40,7 +40,7 @@ const plansByCategory = {
       annualUnit: '/annually/vehicle',
       features: [
         'Everything in Starter, plus:',
-        'Priority support (4-hour response)',
+        'Priority support (30-minute response)',
         'Fleet dashboard access',
         'Preventive maintenance scheduling',
         'Centralized invoicing',
@@ -98,7 +98,7 @@ const plansByCategory = {
       annualUnit: '/annually/vehicle',
       features: [
         'Everything in Starter, plus:',
-        'Priority support (4-hour response)',
+        'Priority support (30-minute response)',
         'Fleet dashboard access',
         'Preventive maintenance scheduling',
         'Centralized invoicing',
@@ -156,7 +156,7 @@ const plansByCategory = {
       annualUnit: '/annually/vehicle',
       features: [
         'Everything in Starter, plus:',
-        'Priority support (4-hour response)',
+        'Priority support (30-minute response)',
         'Fleet dashboard access',
         'Preventive maintenance scheduling',
         'Centralized invoicing',
