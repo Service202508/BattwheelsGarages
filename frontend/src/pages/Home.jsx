@@ -7,6 +7,7 @@ import PremiumHeroSection from '../components/home/PremiumHeroSection';
 import VehicleTypesSection from '../components/home/VehicleTypesSection';
 import RSAExplainedSection from '../components/home/RSAExplainedSection';
 import StatsSection from '../components/home/StatsSection';
+import AchievementsSection from '../components/home/AchievementsSection';
 import WhyChooseSection from '../components/home/WhyChooseSection';
 import VisionMissionGoals from '../components/home/VisionMissionGoals';
 import ServiceCategoriesSection from '../components/home/ServiceCategoriesSection';
