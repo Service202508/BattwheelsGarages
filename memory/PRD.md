@@ -1,0 +1,113 @@
+# Battwheels Garages - Product Requirements Document
+
+## Overview
+Battwheels Garages is India's first no-towing-first EV service network. The website serves as the digital presence for the company, providing information about services, allowing bookings, and showcasing the company's offerings.
+
+## Target Audience
+- EV Fleet Operators (2W, 3W, 4W commercial vehicles)
+- Individual EV Owners
+- EV OEMs seeking aftersales partnerships
+- Quick Commerce & Hyperlocal Delivery companies
+
+## Core Features
+
+### Public Website
+- **Home Page**: Hero section, stats, services overview, testimonials, FAQs
+- **About Us**: Company vision, mission, and goals
+- **Services**: 8 service categories (Periodic EV Service, Motor & Controller, Battery & BMS, etc.)
+- **Industries**: Target industry segments served
+- **Subscriptions/Plans**: Dynamic pricing for 2W/3W/4W vehicle categories
+- **Blog**: SEO-optimized articles with category filtering and pagination (20 articles)
+- **Careers**: Job listings
+- **Contact**: Contact form, Google Maps integration
+
+### Admin Panel
+- Dashboard with stats overview
+- Bookings management
+- Services management
+- Blog management
+- Testimonials management
+- Job listings management
+- Contact enquiries management
+
+## Technical Stack
+- **Frontend**: React 18, Tailwind CSS, Shadcn/UI components
+- **Backend**: FastAPI (Python)
+- **Database**: MongoDB
+- **Authentication**: JWT for admin panel
+
+## Completed Features (as of Jan 29, 2025)
+
+### Blog Section - COMPLETED
+- [x] 20 SEO-optimized blog articles loaded from mockData.js
+- [x] Category filtering (11 categories: Fleet Ops, EV Tech Deep Dive, Local Services, etc.)
+- [x] Pagination (9 posts per page)
+- [x] Post cards with images, dates, authors, excerpts
+- [x] Read More links to individual blog posts
+
+### Subscription Page - COMPLETED
+- [x] Vehicle category selector (2W/3W/4W)
+- [x] Dynamic pricing updates
+- [x] Three plans: Starter, Fleet Essential, Fleet Essential Pro
+
+### Homepage - COMPLETED
+- [x] Achievements/Awards section
+- [x] Vehicle types carousel (auto-scrolling)
+- [x] Vision/Mission moved to About Us page
+
+### Navigation - COMPLETED
+- [x] About Us added to header
+- [x] Header logo (transparent PNG)
+
+### Admin Panel - COMPLETED
+- [x] Admin login with JWT authentication
+- [x] Dashboard with stats
+- [x] CRUD for services, blogs, testimonials, jobs, bookings
+
+## Known Issues
+
+### Admin Login (User-Reported)
+- User reports intermittent "Incorrect email or password" errors
+- Automated tests pass consistently
+- Debug logging added to frontend
+- **Possible causes**: Browser caching, environment differences
+- **Credentials**: admin@battwheelsgarages.in / Admin@123
+
+### ESLint Warnings
+- 500+ ESLint warnings (mostly unused variables)
+- Non-critical but should be cleaned up
+
+## Data Architecture
+
+### Blog Data (Currently Mocked)
+- Blog posts stored in `/app/frontend/src/data/mockData.js`
+- Future: Move to MongoDB collection with backend API
+
+### Admin Users
+- Collection: `admin_users`
+- Fields: email, hashed_password, name, role, is_active, last_login
+
+## API Endpoints
+
+### Public
+- `POST /api/bookings` - Create service booking
+- `GET /api/blogs` - Get published blogs
+- `GET /api/services` - Get active services
+
+### Admin
+- `POST /api/admin/auth/login` - Admin authentication
+- `GET /api/admin/bookings` - Get all bookings
+- `GET/POST/PUT/DELETE /api/admin/services` - Services CRUD
+- `GET/POST/PUT/DELETE /api/admin/blogs` - Blogs CRUD
+
+## Upcoming Tasks
+1. Complete Admin CRUD functionality
+2. Move blog data to MongoDB
+3. Fix ESLint warnings
+4. GA4 full event tracking
+
+## Future/Backlog
+- Domain binding (battwheelsgarages.in)
+- Sentry error monitoring
+- Content humanization review
+- SEO meta tags optimization
