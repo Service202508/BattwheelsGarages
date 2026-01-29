@@ -97,13 +97,14 @@ export const getBlogSchema = (blog) => ({
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   "headline": blog.title,
-  "description": blog.excerpt || blog.meta_desc,
-  "image": blog.thumbnail_image || blog.og_image,
-  "datePublished": blog.created_at || blog.published_at,
-  "dateModified": blog.updated_at || blog.created_at,
+  "description": blog.excerpt || blog.meta_desc || blog.metaDescription,
+  "image": blog.thumbnail_image || blog.og_image || blog.image,
+  "datePublished": blog.date || blog.created_at || blog.published_at,
+  "dateModified": blog.updated_at || blog.date || blog.created_at,
   "author": {
     "@type": "Organization",
-    "name": "Battwheels Garages"
+    "name": "Battwheels Garages",
+    "url": "https://battwheelsgarages.in"
   },
   "publisher": {
     "@type": "Organization",
@@ -116,7 +117,24 @@ export const getBlogSchema = (blog) => ({
   "mainEntityOfPage": {
     "@type": "WebPage",
     "@id": `https://battwheelsgarages.in/blog/${blog.slug}`
-  }
+  },
+  "keywords": blog.tags?.join(', ') || '',
+  "articleSection": blog.category,
+  "wordCount": blog.content?.split(/\s+/).length || 1000
+});
+
+/**
+ * JSON-LD Schema for Breadcrumbs
+ */
+export const getBreadcrumbSchema = (items) => ({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": items.map((item, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "name": item.name,
+    "item": item.url
+  }))
 });
 
 /**
