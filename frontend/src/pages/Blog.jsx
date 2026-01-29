@@ -12,11 +12,14 @@ const Blog = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 9;
 
   const categories = ['all', 'Fleet Ops', 'EV Tech Deep Dive', 'Local Services', 'Tips & Guides', 'Case Studies', 'Product Features', 'Service Plans', 'Safety & Awareness', 'Customer Stories', 'Thought Leadership'];
 
   useEffect(() => {
     fetchBlogs();
+    setCurrentPage(1); // Reset to first page when category changes
   }, [selectedCategory]);
 
   const fetchBlogs = async () => {
