@@ -116,7 +116,7 @@
 ### 🎯 REVIEW REQUEST API TESTING - COMPLETED ✅
 
 **Test Date**: December 19, 2024  
-**Backend URL**: https://garage-rescue-1.preview.emergentagent.com/api  
+**Backend URL**: https://auto-service-app-24.preview.emergentagent.com/api  
 **Total Tests**: 12  
 **Success Rate**: 100%  
 
@@ -258,7 +258,7 @@ The form at /book-service submits to /api/bookings/ and works correctly
 ### 🎯 COMPREHENSIVE BACKEND API TESTING - COMPLETED ✅
 
 **Test Date**: December 19, 2024  
-**Backend URL**: https://garage-rescue-1.preview.emergentagent.com/api  
+**Backend URL**: https://auto-service-app-24.preview.emergentagent.com/api  
 **Total Review Request Tests**: 5  
 **Success Rate**: 100%  
 

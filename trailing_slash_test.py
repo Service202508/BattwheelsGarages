@@ -6,7 +6,7 @@ Test to verify trailing slash behavior
 import requests
 import json
 
-BACKEND_URL = "https://garage-rescue-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://auto-service-app-24.preview.emergentagent.com/api"
 
 def test_trailing_slash_behavior():
     # First login to get token

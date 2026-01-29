@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://garage-rescue-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://auto-service-app-24.preview.emergentagent.com/api"
 
 class ReviewRequestTester:
     def __init__(self):
