@@ -26,13 +26,20 @@ const Blog = () => {
     try {
       setLoading(true);
       
-      // Always use mockData as the primary source (contains 20 SEO-optimized articles)
-      // Filter by category if needed
-      const filtered = selectedCategory === 'all' 
-        ? mockBlogs 
-        : mockBlogs.filter(b => b.category === selectedCategory);
-      setBlogs(filtered);
+      // Fetch from API (MongoDB)
+      const params = selectedCategory !== 'all' ? { category: selectedCategory } : {};
+      const data = await blogsApi.getAll(params);
       
+      if (data.blogs && data.blogs.length > 0) {
+        setBlogs(data.blogs);
+      } else {
+        // Fallback to mock data if API returns empty
+        console.log('No blogs from API, using mock data');
+        const filtered = selectedCategory === 'all' 
+          ? mockBlogs 
+          : mockBlogs.filter(b => b.category === selectedCategory);
+        setBlogs(filtered);
+      }
     } catch (err) {
       console.error('Error fetching blogs:', err);
       // Fallback to mock data on error
