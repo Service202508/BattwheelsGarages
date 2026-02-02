@@ -42,7 +42,7 @@ const Blogs = () => {
     try {
       setLoading(true);
       const headers = authService.getAuthHeaders();
-      const response = await fetch(`${API_URL}/api/admin/blogs/`, { headers });
+      const response = await fetch(`${API_URL}/api/admin/blogs`, { headers });
       if (response.ok) {
         const data = await response.json();
         setBlogs(data.blogs || []);
