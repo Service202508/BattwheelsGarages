@@ -35,7 +35,7 @@ const Bookings = () => {
     try {
       setLoading(true);
       const headers = authService.getAuthHeaders();
-      let url = `${API_URL}/api/admin/bookings/?limit=100`;
+      let url = `${API_URL}/api/admin/bookings?limit=100`;
       if (statusFilter) url += `&status=${statusFilter}`;
       if (search) url += `&search=${search}`;
 
@@ -60,7 +60,7 @@ const Bookings = () => {
     try {
       const headers = authService.getAuthHeaders();
       const response = await fetch(
-        `${API_URL}/api/admin/bookings/${bookingId}/status?status=${newStatus}`,
+        `${API_URL}/api/admin/bookings${bookingId}/status?status=${newStatus}`,
         { method: 'PATCH', headers }
       );
       if (response.ok) {

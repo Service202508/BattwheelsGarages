@@ -59,7 +59,7 @@ const Services = () => {
     try {
       setLoading(true);
       const headers = authService.getAuthHeaders();
-      const response = await fetch(`${API_URL}/api/admin/services/`, { headers });
+      const response = await fetch(`${API_URL}/api/admin/services`, { headers });
       if (response.ok) {
         const data = await response.json();
         setServices(data.services || []);
@@ -79,8 +79,8 @@ const Services = () => {
     try {
       const headers = authService.getAuthHeaders();
       const url = editingService
-        ? `${API_URL}/api/admin/services/${editingService.id}`
-        : `${API_URL}/api/admin/services/`;
+        ? `${API_URL}/api/admin/services${editingService.id}`
+        : `${API_URL}/api/admin/services`;
       const method = editingService ? 'PUT' : 'POST';
 
       // Prepare data matching backend model
@@ -122,7 +122,7 @@ const Services = () => {
     if (!window.confirm('Are you sure you want to delete this service?')) return;
     try {
       const headers = authService.getAuthHeaders();
-      const response = await fetch(`${API_URL}/api/admin/services/${serviceId}`, {
+      const response = await fetch(`${API_URL}/api/admin/services${serviceId}`, {
         method: 'DELETE',
         headers
       });

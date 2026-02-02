@@ -44,7 +44,7 @@ const Jobs = () => {
     try {
       setLoading(true);
       const headers = authService.getAuthHeaders();
-      const response = await fetch(`${API_URL}/api/admin/jobs/`, { headers });
+      const response = await fetch(`${API_URL}/api/admin/jobs`, { headers });
       if (response.ok) {
         const data = await response.json();
         setJobs(data.jobs || []);
@@ -61,8 +61,8 @@ const Jobs = () => {
     try {
       const headers = authService.getAuthHeaders();
       const url = editingJob
-        ? `${API_URL}/api/admin/jobs/${editingJob.id}`
-        : `${API_URL}/api/admin/jobs/`;
+        ? `${API_URL}/api/admin/jobs${editingJob.id}`
+        : `${API_URL}/api/admin/jobs`;
       const method = editingJob ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -84,7 +84,7 @@ const Jobs = () => {
     if (!window.confirm('Are you sure you want to delete this job posting?')) return;
     try {
       const headers = authService.getAuthHeaders();
-      const response = await fetch(`${API_URL}/api/admin/jobs/${jobId}`, {
+      const response = await fetch(`${API_URL}/api/admin/jobs${jobId}`, {
         method: 'DELETE',
         headers
       });
