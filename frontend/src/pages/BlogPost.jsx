@@ -211,7 +211,7 @@ const BlogPost = () => {
       {/* Enhanced SEO Meta Tags */}
       <Helmet>
         {/* Primary Meta Tags */}
-        <title>{pageTitle} | Battwheels Garages Blog</title>
+        <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
         <meta name="keywords" content={blog.tags?.join(', ') || 'EV service, electric vehicle repair, EV maintenance'} />
         <link rel="canonical" href={pageUrl} />
