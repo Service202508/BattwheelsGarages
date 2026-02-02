@@ -45,7 +45,7 @@ const Testimonials = () => {
     try {
       setLoading(true);
       const headers = authService.getAuthHeaders();
-      const response = await fetch(`${API_URL}/api/admin/testimonials/`, { headers });
+      const response = await fetch(`${API_URL}/api/admin/testimonials`, { headers });
       if (response.ok) {
         const data = await response.json();
         setTestimonials(data.testimonials || []);
@@ -64,8 +64,8 @@ const Testimonials = () => {
     try {
       const headers = authService.getAuthHeaders();
       const url = editingTestimonial
-        ? `${API_URL}/api/admin/testimonials/${editingTestimonial.id}`
-        : `${API_URL}/api/admin/testimonials/`;
+        ? `${API_URL}/api/admin/testimonials${editingTestimonial.id}`
+        : `${API_URL}/api/admin/testimonials`;
       const method = editingTestimonial ? 'PUT' : 'POST';
 
       // Map to backend model fields
@@ -106,7 +106,7 @@ const Testimonials = () => {
     if (!window.confirm('Are you sure you want to delete this testimonial?')) return;
     try {
       const headers = authService.getAuthHeaders();
-      const response = await fetch(`${API_URL}/api/admin/testimonials/${testimonialId}`, {
+      const response = await fetch(`${API_URL}/api/admin/testimonials${testimonialId}`, {
         method: 'DELETE',
         headers
       });

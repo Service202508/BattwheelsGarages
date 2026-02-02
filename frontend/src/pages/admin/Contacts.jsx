@@ -33,7 +33,7 @@ const Contacts = () => {
       const headers = authService.getAuthHeaders();
 
       // Fetch contacts
-      const contactsRes = await fetch(`${API_URL}/api/admin/contacts/`, { headers });
+      const contactsRes = await fetch(`${API_URL}/api/admin/contacts`, { headers });
       if (contactsRes.ok) {
         const data = await contactsRes.json();
         setContacts(data.contacts || []);
@@ -56,7 +56,7 @@ const Contacts = () => {
     try {
       const headers = authService.getAuthHeaders();
       const response = await fetch(
-        `${API_URL}/api/admin/contacts/${contactId}`,
+        `${API_URL}/api/admin/contacts${contactId}`,
         {
           method: 'PUT',
           headers,
