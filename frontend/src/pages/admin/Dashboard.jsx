@@ -38,7 +38,7 @@ const Dashboard = () => {
       const headers = authService.getAuthHeaders();
 
       // Fetch bookings
-      const bookingsRes = await fetch(`${API_URL}/api/admin/bookings/?limit=5`, { headers });
+      const bookingsRes = await fetch(`${API_URL}/api/admin/bookings?limit=5`, { headers });
       if (bookingsRes.ok) {
         const bookingsData = await bookingsRes.json();
         setRecentBookings(bookingsData.bookings || []);
@@ -52,7 +52,7 @@ const Dashboard = () => {
       }
 
       // Fetch contacts
-      const contactsRes = await fetch(`${API_URL}/api/admin/contacts/`, { headers });
+      const contactsRes = await fetch(`${API_URL}/api/admin/contacts`, { headers });
       if (contactsRes.ok) {
         const contactsData = await contactsRes.json();
         setStats(prev => ({
@@ -65,7 +65,7 @@ const Dashboard = () => {
       }
 
       // Fetch services
-      const servicesRes = await fetch(`${API_URL}/api/admin/services/`, { headers });
+      const servicesRes = await fetch(`${API_URL}/api/admin/services`, { headers });
       if (servicesRes.ok) {
         const servicesData = await servicesRes.json();
         setStats(prev => ({
@@ -75,20 +75,20 @@ const Dashboard = () => {
       }
 
       // Fetch blogs
-      const blogsRes = await fetch(`${API_URL}/api/admin/blogs/`, { headers });
+      const blogsRes = await fetch(`${API_URL}/api/admin/blogs`, { headers });
       if (blogsRes.ok) {
         const blogsData = await blogsRes.json();
         setStats(prev => ({
           ...prev,
           blogs: {
             total: blogsData.total || 0,
-            published: (blogsData.blogs || []).filter(b => b.status === 'published').length
+            published: (blogsData.blogs || []).filter(b => b.is_published === true).length
           }
         }));
       }
 
       // Fetch testimonials
-      const testimonialsRes = await fetch(`${API_URL}/api/admin/testimonials/`, { headers });
+      const testimonialsRes = await fetch(`${API_URL}/api/admin/testimonials`, { headers });
       if (testimonialsRes.ok) {
         const testimonialsData = await testimonialsRes.json();
         setStats(prev => ({
@@ -98,7 +98,7 @@ const Dashboard = () => {
       }
 
       // Fetch jobs
-      const jobsRes = await fetch(`${API_URL}/api/admin/jobs/`, { headers });
+      const jobsRes = await fetch(`${API_URL}/api/admin/jobs`, { headers });
       if (jobsRes.ok) {
         const jobsData = await jobsRes.json();
         setStats(prev => ({
