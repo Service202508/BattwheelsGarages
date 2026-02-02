@@ -60,7 +60,7 @@ const Blogs = () => {
       const headers = authService.getAuthHeaders();
       const url = editingBlog
         ? `${API_URL}/api/admin/blogs/${editingBlog.id}`
-        : `${API_URL}/api/admin/blogs/`;
+        : `${API_URL}/api/admin/blogs`;
       const method = editingBlog ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
