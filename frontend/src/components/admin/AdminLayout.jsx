@@ -60,7 +60,7 @@ const AdminLayout = ({ children }) => {
                 alt="Battwheels Admin"
                 className="h-10 w-auto"
               />
-            />
+            </Link>
             <button
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden text-gray-400 hover:text-white"
