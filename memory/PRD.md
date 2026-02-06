@@ -137,27 +137,15 @@ Battwheels Garages is India's first no-towing-first EV service network. The webs
 - [x] Admin login with JWT authentication
 - [x] Dashboard with stats
 - [x] CRUD for services, blogs, testimonials, jobs, bookings
+- [x] Fixed API path issues in Bookings and Services (missing `/` before IDs) - Feb 6, 2025
 
 ## Known Issues
 
-### Admin Login (User-Reported)
-- User reports intermittent "Incorrect email or password" errors
-- Automated tests pass consistently
-- Debug logging added to frontend
-- **Possible causes**: Browser caching, environment differences
-- **Credentials**: admin@battwheelsgarages.in / Admin@123
-
 ### ESLint Warnings
-- 500+ ESLint warnings (mostly unused variables)
-- Non-critical but should be cleaned up
+- Reduced from 500+ to 7 warnings (Feb 6, 2025)
+- Remaining 7 are useEffect dependency warnings (intentional to prevent infinite loops)
 
 ## Data Architecture
-
-### Blog Data (Currently Mocked)
-- Blog posts stored in `/app/frontend/src/data/mockData.js`
-- Future: Move to MongoDB collection with backend API
-
-### Admin Users
 - Collection: `admin_users`
 - Fields: email, hashed_password, name, role, is_active, last_login
 

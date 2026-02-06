@@ -67,7 +67,7 @@ const TrustedPartnersSection = () => {
         {/* Stats Bar */}
         <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-[#12B76A]">35+</div>
+            <div className="text-3xl md:text-4xl font-bold text-[#12B76A]">50+</div>
             <div className="text-gray-400 text-sm mt-1">OEM & Fleet Partners</div>
           </div>
           <div className="text-center">
