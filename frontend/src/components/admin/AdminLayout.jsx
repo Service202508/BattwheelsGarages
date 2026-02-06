@@ -54,10 +54,12 @@ const AdminLayout = ({ children }) => {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-6 bg-gray-800">
-            <img
-              src="/assets/battwheels-logo-main.png"
-              alt="Battwheels Admin"
-              className="h-8 w-auto brightness-0 invert"
+            <Link to="/admin" className="flex items-center">
+              <img
+                src="/assets/battwheels-logo-new-transparent.png"
+                alt="Battwheels Admin"
+                className="h-10 w-auto"
+              />
             />
             <button
               onClick={() => setSidebarOpen(false)}
