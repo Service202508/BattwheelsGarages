@@ -1,7 +1,7 @@
 import React from 'react';
 
 const TrustedPartnersSection = () => {
-  // Partner logos with actual image files
+  // Partner logos with actual image files - 24 partners total
   const partners = [
     { name: 'Altigreen', logo: '/assets/partners/altigreen.jpg' },
     { name: 'Exponent', logo: '/assets/partners/exponent.jpeg' },
@@ -22,6 +22,11 @@ const TrustedPartnersSection = () => {
     { name: 'MoEVing', logo: '/assets/partners/moeving.png' },
     { name: 'Piaggio', logo: '/assets/partners/piaggio.png' },
     { name: 'Quantum', logo: '/assets/partners/quantum.webp' },
+    { name: 'Ola Electric', logo: '/assets/partners/ola-electric.jpeg' },
+    { name: 'OPG Mobility', logo: '/assets/partners/opg-mobility.jpg' },
+    { name: 'Yulu', logo: '/assets/partners/yulu.png' },
+    { name: 'Jupiter', logo: '/assets/partners/jupiter.png' },
+    { name: 'Lithium', logo: '/assets/partners/lithium.png' },
   ];
 
   return (
@@ -35,7 +40,7 @@ const TrustedPartnersSection = () => {
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Fleets Already Trust Us to Keep Wheels Turning
+            OEMs & Fleets Already Trust Us to Keep Wheels Turning
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
             Leading EV fleets, OEMs, and logistics companies rely on Battwheels for their service needs
@@ -43,16 +48,16 @@ const TrustedPartnersSection = () => {
         </div>
 
         {/* Logo Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-5 max-w-6xl mx-auto">
           {partners.map((partner, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl p-4 md:p-5 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-[80px] md:h-[100px]"
+              className="bg-white rounded-xl p-3 md:p-4 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-[70px] md:h-[85px]"
             >
               <img
                 src={partner.logo}
                 alt={partner.name}
-                className="max-h-[50px] md:max-h-[65px] max-w-full object-contain"
+                className="max-h-[45px] md:max-h-[55px] max-w-full object-contain"
                 loading="lazy"
               />
             </div>
@@ -62,8 +67,8 @@ const TrustedPartnersSection = () => {
         {/* Stats Bar */}
         <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-[#12B76A]">19+</div>
-            <div className="text-gray-400 text-sm mt-1">Fleet Partners</div>
+            <div className="text-3xl md:text-4xl font-bold text-[#12B76A]">24+</div>
+            <div className="text-gray-400 text-sm mt-1">OEM & Fleet Partners</div>
           </div>
           <div className="text-center">
             <div className="text-3xl md:text-4xl font-bold text-[#12B76A]">50K+</div>
