@@ -25,8 +25,9 @@ const TrustedPartnersSection = () => {
     { name: 'Ola Electric', logo: '/assets/partners/ola-electric.jpeg' },
     { name: 'OPG Mobility', logo: '/assets/partners/opg-mobility.jpg' },
     { name: 'Yulu', logo: '/assets/partners/yulu.png' },
-    { name: 'Jupiter', logo: '/assets/partners/jupiter.png' },
+    { name: 'JEM', logo: '/assets/partners/jem.png' },
     { name: 'Lithium', logo: '/assets/partners/lithium.png' },
+    { name: 'Bajaj', logo: '/assets/partners/bajaj.webp' },
   ];
 
   return (
