@@ -27,7 +27,6 @@ const TrustedPartnersSection = () => {
     { name: 'Yulu', logo: '/assets/partners/yulu.png' },
     { name: 'JEM', logo: '/assets/partners/jem.png' },
     { name: 'Lithium', logo: '/assets/partners/lithium.png' },
-    { name: 'Bajaj', logo: '/assets/partners/bajaj.webp' },
   ];
 
   return (
@@ -68,11 +67,11 @@ const TrustedPartnersSection = () => {
         {/* Stats Bar */}
         <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-[#12B76A]">25+</div>
+            <div className="text-3xl md:text-4xl font-bold text-[#12B76A]">35+</div>
             <div className="text-gray-400 text-sm mt-1">OEM & Fleet Partners</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-[#12B76A]">50K+</div>
+            <div className="text-3xl md:text-4xl font-bold text-[#12B76A]">10K+</div>
             <div className="text-gray-400 text-sm mt-1">Vehicles Serviced</div>
           </div>
           <div className="text-center">
@@ -80,7 +79,7 @@ const TrustedPartnersSection = () => {
             <div className="text-gray-400 text-sm mt-1">Cities Covered</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-[#12B76A]">98%</div>
+            <div className="text-3xl md:text-4xl font-bold text-[#12B76A]">95%</div>
             <div className="text-gray-400 text-sm mt-1">Client Retention</div>
           </div>
         </div>
