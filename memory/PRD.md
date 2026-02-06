@@ -126,6 +126,8 @@ Battwheels Garages is India's first no-towing-first EV service network. The webs
 - [x] Achievements/Awards section
 - [x] Vehicle types carousel (auto-scrolling)
 - [x] Vision/Mission moved to About Us page
+- [x] Trusted Partners section with 25 OEM/Fleet logos (Feb 6, 2025)
+  - Includes: Bajaj, JEM, Altigreen, Exponent, Indofast, Shiplog, Alt Mobility, Gentari, Magenta, Sun Mobility, Bounce, Lectrix, OSM, Zypp Electric, Delhivery, eBlu, Euler, Log9, MoEVing, Piaggio, Quantum, Ola Electric, OPG Mobility, Yulu, Lithium
 
 ### Navigation - COMPLETED
 - [x] About Us added to header
