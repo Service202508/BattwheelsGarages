@@ -8,6 +8,7 @@ import VehicleTypesSection from '../components/home/VehicleTypesSection';
 import RSAExplainedSection from '../components/home/RSAExplainedSection';
 import StatsSection from '../components/home/StatsSection';
 import AchievementsSection from '../components/home/AchievementsSection';
+import TrustedPartnersSection from '../components/home/TrustedPartnersSection';
 import WhyChooseSection from '../components/home/WhyChooseSection';
 import ServiceCategoriesSection from '../components/home/ServiceCategoriesSection';
 import IndustriesSlider from '../components/home/IndustriesSlider';
