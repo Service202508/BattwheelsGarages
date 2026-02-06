@@ -53,6 +53,7 @@ const Home = () => {
         <VehicleTypesSection />
         <RSAExplainedSection />
         <StatsSection />
+        <TrustedPartnersSection />
         <AchievementsSection />
         <WhyChooseSection />
         <ServiceCategoriesSection />
