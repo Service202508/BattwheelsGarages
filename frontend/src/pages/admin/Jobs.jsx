@@ -157,7 +157,7 @@ const Jobs = () => {
             <div className="text-center py-12 text-gray-500">Loading...</div>
           ) : jobs.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center text-gray-500">
-              No job listings yet. Click "Post Job" to create one.
+              No job listings yet. Click &quot;Post Job&quot; to create one.
             </div>
           ) : (
             jobs.map((job) => (

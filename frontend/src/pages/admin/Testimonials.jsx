@@ -181,7 +181,7 @@ const Testimonials = () => {
             <div className="col-span-full text-center py-12 text-gray-500">Loading...</div>
           ) : testimonials.length === 0 ? (
             <div className="col-span-full text-center py-12 text-gray-500">
-              No testimonials yet. Click "Add Review" to create one.
+              No testimonials yet. Click &quot;Add Review&quot; to create one.
             </div>
           ) : (
             testimonials.map((testimonial) => (
@@ -204,7 +204,7 @@ const Testimonials = () => {
                 </div>
                 <div className="relative">
                   <Quote className="absolute -top-2 -left-2 w-8 h-8 text-gray-200" />
-                  <p className="text-gray-700 italic pl-6">"{testimonial.quote}"</p>
+                  <p className="text-gray-700 italic pl-6">&quot;{testimonial.quote}&quot;</p>
                 </div>
                 <div className="flex items-center justify-between mt-4 pt-4 border-t">
                   <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">
