@@ -60,7 +60,7 @@ const Bookings = () => {
     try {
       const headers = authService.getAuthHeaders();
       const response = await fetch(
-        `${API_URL}/api/admin/bookings${bookingId}/status?status=${newStatus}`,
+        `${API_URL}/api/admin/bookings/${bookingId}/status?status=${newStatus}`,
         { method: 'PATCH', headers }
       );
       if (response.ok) {

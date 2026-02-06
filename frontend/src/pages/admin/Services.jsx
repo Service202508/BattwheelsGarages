@@ -79,7 +79,7 @@ const Services = () => {
     try {
       const headers = authService.getAuthHeaders();
       const url = editingService
-        ? `${API_URL}/api/admin/services${editingService.id}`
+        ? `${API_URL}/api/admin/services/${editingService.id}`
         : `${API_URL}/api/admin/services`;
       const method = editingService ? 'PUT' : 'POST';
 
@@ -122,7 +122,7 @@ const Services = () => {
     if (!window.confirm('Are you sure you want to delete this service?')) return;
     try {
       const headers = authService.getAuthHeaders();
-      const response = await fetch(`${API_URL}/api/admin/services${serviceId}`, {
+      const response = await fetch(`${API_URL}/api/admin/services/${serviceId}`, {
         method: 'DELETE',
         headers
       });
