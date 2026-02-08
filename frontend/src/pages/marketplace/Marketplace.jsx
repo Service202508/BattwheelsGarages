@@ -11,6 +11,7 @@ import GearBackground from '../../components/common/GearBackground';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { useMarketplace } from '../../context/MarketplaceContext';
+import { useToast } from '../../components/ui/use-toast';
 import {
   Search,
   Filter,
@@ -27,7 +28,8 @@ import {
   AlertCircle,
   Settings,
   Bike,
-  Car
+  Car,
+  Plus
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -47,6 +49,7 @@ const SPARES_CATEGORIES = ['2W Parts', '3W Parts', '4W Parts', 'Batteries', 'Dia
 const SparesAndComponents = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToCart, getCartCount, userRole } = useMarketplace();
+  const { toast } = useToast();
   
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
