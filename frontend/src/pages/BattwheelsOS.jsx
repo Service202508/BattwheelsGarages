@@ -76,75 +76,87 @@ const BattwheelsOS = () => {
       
       <Header />
       <main>
-        {/* Hero with Dashboard Background */}
-        <section className="relative min-h-[85vh] flex items-center overflow-hidden">
-          {/* Background Image */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: 'url(/assets/battwheels-os-dashboard-new.png)',
-            }}
-          />
-          
-          {/* Dark Overlay with Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-gray-900/85 to-gray-900/70" />
+        {/* Hero with MacBook Dashboard */}
+        <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          {/* Subtle Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-20 left-20 w-96 h-96 bg-green-500 rounded-full blur-3xl" />
+            <div className="absolute bottom-20 right-20 w-80 h-80 bg-emerald-500 rounded-full blur-3xl" />
+          </div>
           
           {/* Content */}
           <div className="relative z-10 container mx-auto px-4 py-20">
-            <div className="max-w-3xl">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2.5 rounded-full text-sm font-bold mb-8 shadow-lg shadow-green-500/30">
-                <Monitor className="w-4 h-4" />
-                Tech Platform
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Left Content */}
+              <div className="order-2 lg:order-1">
+                {/* Badge */}
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2.5 rounded-full text-sm font-bold mb-8 shadow-lg shadow-green-500/30">
+                  <Monitor className="w-4 h-4" />
+                  Tech Platform
+                </div>
+                
+                {/* Main Heading */}
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
+                  Battwheels OS<sup className="text-xs align-super relative -top-1">™</sup>
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400 mt-2">
+                    The EV Aftersales Command Center
+                  </span>
+                </h1>
+                
+                {/* Description */}
+                <p className="text-lg sm:text-xl text-gray-300 leading-relaxed mb-10 max-w-xl">
+                  GaragePROEV-grade diagnostics + field-force management + fleet dashboards in one <span className="text-green-400 font-semibold">EV-native platform</span>.
+                </p>
+                
+                {/* Feature Pills */}
+                <div className="flex flex-wrap gap-3 mb-10">
+                  <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white border border-white/20">
+                    🔧 Digital Job Cards
+                  </span>
+                  <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white border border-white/20">
+                    📊 Fleet Analytics
+                  </span>
+                  <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white border border-white/20">
+                    🔌 EV Diagnostics
+                  </span>
+                  <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white border border-white/20">
+                    📱 Technician App
+                  </span>
+                </div>
+                
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button 
+                    size="lg"
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold px-8 py-6 text-lg rounded-xl shadow-xl shadow-green-500/30 hover:shadow-green-500/50 transition-all hover:-translate-y-1"
+                    onClick={() => navigate('/fleet-oem')}
+                  >
+                    <Zap className="w-5 h-5 mr-2" />
+                    Schedule a Demo
+                  </Button>
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-6 text-lg rounded-xl backdrop-blur-sm"
+                    onClick={() => navigate('/contact')}
+                  >
+                    Learn More
+                  </Button>
+                </div>
               </div>
               
-              {/* Main Heading */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
-                Battwheels OS<sup className="text-xs align-super relative -top-1">™</sup>
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400 mt-2">
-                  The EV Aftersales Command Center
-                </span>
-              </h1>
-              
-              {/* Description */}
-              <p className="text-lg sm:text-xl text-gray-300 leading-relaxed mb-10 max-w-2xl">
-                GaragePROEV-grade diagnostics + field-force management + fleet dashboards in one <span className="text-green-400 font-semibold">EV-native platform</span>.
-              </p>
-              
-              {/* Feature Pills */}
-              <div className="flex flex-wrap gap-3 mb-10">
-                <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white border border-white/20">
-                  🔧 Digital Job Cards
-                </span>
-                <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white border border-white/20">
-                  📊 Fleet Analytics
-                </span>
-                <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white border border-white/20">
-                  🔌 EV Diagnostics
-                </span>
-                <span className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white border border-white/20">
-                  📱 Technician App
-                </span>
-              </div>
-              
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg"
-                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold px-8 py-6 text-lg rounded-xl shadow-xl shadow-green-500/30 hover:shadow-green-500/50 transition-all hover:-translate-y-1"
-                  onClick={() => navigate('/fleet-oem')}
-                >
-                  <Zap className="w-5 h-5 mr-2" />
-                  Schedule a Demo
-                </Button>
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-6 text-lg rounded-xl backdrop-blur-sm"
-                  onClick={() => navigate('/contact')}
-                >
-                  Learn More
-                </Button>
+              {/* Right - MacBook Image */}
+              <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
+                <div className="relative">
+                  {/* Glow Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 blur-3xl scale-110" />
+                  {/* MacBook Image */}
+                  <img 
+                    src="/assets/battwheels-os-macbook.png" 
+                    alt="Battwheels OS Dashboard on MacBook" 
+                    className="relative z-10 w-full max-w-2xl drop-shadow-2xl"
+                  />
+                </div>
               </div>
             </div>
           </div>
