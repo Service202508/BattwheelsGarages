@@ -23,7 +23,9 @@ import FleetOEM from './pages/FleetOEM';
 import FAQ from './pages/FAQ';
 
 // Marketplace Pages
-import Marketplace from './pages/marketplace/Marketplace';
+import MarketplaceLanding from './pages/marketplace/MarketplaceLanding';
+import SparesAndComponents from './pages/marketplace/Marketplace';
+import ElectricVehicles from './pages/marketplace/ElectricVehicles';
 import ProductDetail from './pages/marketplace/ProductDetail';
 import Cart from './pages/marketplace/Cart';
 import Checkout from './pages/marketplace/Checkout';
