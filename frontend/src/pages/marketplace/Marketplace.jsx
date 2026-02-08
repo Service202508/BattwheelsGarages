@@ -628,4 +628,4 @@ const ProductCard = ({ product, onAddToCart }) => {
   );
 };
 
-export default Marketplace;
+export default SparesAndComponents;
