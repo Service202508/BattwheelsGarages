@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from './components/ui/toaster';
 import FloatingWhatsApp from './components/common/FloatingWhatsApp';
+import { MarketplaceProvider } from './context/MarketplaceContext';
 
 // Public Pages
 import Home from './pages/Home';
@@ -20,6 +21,14 @@ import Contact from './pages/Contact';
 import BookService from './pages/BookService';
 import FleetOEM from './pages/FleetOEM';
 import FAQ from './pages/FAQ';
+
+// Marketplace Pages
+import Marketplace from './pages/marketplace/Marketplace';
+import ProductDetail from './pages/marketplace/ProductDetail';
+import Cart from './pages/marketplace/Cart';
+import Checkout from './pages/marketplace/Checkout';
+import TechnicianMode from './pages/marketplace/TechnicianMode';
+import MarketplaceLogin from './pages/marketplace/Login';
 
 // Admin Pages
 import AdminLogin from './pages/admin/Login';
