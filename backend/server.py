@@ -48,6 +48,10 @@ app.include_router(admin_blogs.router)
 app.include_router(admin_testimonials.router)
 app.include_router(admin_jobs.router)
 
+# Include marketplace routers
+app.include_router(marketplace.router)
+app.include_router(marketplace_auth.router)
+
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
