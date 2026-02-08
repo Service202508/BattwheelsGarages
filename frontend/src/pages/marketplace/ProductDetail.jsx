@@ -43,16 +43,14 @@ const ProductDetail = () => {
     const fetchProduct = async () => {
       setLoading(true);
       try {
-        // Fetch product by slug (need to search)
-        const response = await fetch(`${API_URL}/api/marketplace/products?search=${slug}&role=${userRole}`);
-        const data = await response.json();
+        // Fetch product by slug using dedicated endpoint
+        const response = await fetch(`${API_URL}/api/marketplace/products/slug/${slug}?role=${userRole}`);
         
-        // Find exact match by slug
-        const found = data.products?.find(p => p.slug === slug);
-        if (found) {
-          setProduct(found);
+        if (response.ok) {
+          const productData = await response.json();
+          setProduct(productData);
           // Fetch inventory
-          const invResponse = await fetch(`${API_URL}/api/marketplace/inventory/${found.id}`);
+          const invResponse = await fetch(`${API_URL}/api/marketplace/inventory/${productData.id}`);
           const invData = await invResponse.json();
           setInventory(invData);
         }
