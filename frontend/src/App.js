@@ -56,41 +56,51 @@ const PlaceholderPage = ({ title }) => (
 function App() {
   return (
     <HelmetProvider>
-      <div className="App">
-        <BrowserRouter>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/services/:slug" element={<ServiceDetail />} />
-          <Route path="/battwheels-os" element={<BattwheelsOS />} />
-          <Route path="/industries" element={<Industries />} />
-          <Route path="/plans" element={<Plans />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/careers" element={<Careers />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/book-service" element={<BookService />} />
-          <Route path="/fleet-oem" element={<FleetOEM />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/privacy" element={<PlaceholderPage title="Privacy Policy" />} />
-          <Route path="/terms" element={<PlaceholderPage title="Terms of Service" />} />
-          
-          {/* Admin Routes */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-          <Route path="/admin/bookings" element={<ProtectedRoute><AdminBookings /></ProtectedRoute>} />
-          <Route path="/admin/contacts" element={<ProtectedRoute><AdminContacts /></ProtectedRoute>} />
-          <Route path="/admin/services" element={<ProtectedRoute><AdminServices /></ProtectedRoute>} />
-          <Route path="/admin/blogs" element={<ProtectedRoute><AdminBlogs /></ProtectedRoute>} />
-          <Route path="/admin/testimonials" element={<ProtectedRoute><AdminTestimonials /></ProtectedRoute>} />
-          <Route path="/admin/jobs" element={<ProtectedRoute><AdminJobs /></ProtectedRoute>} />
-        </Routes>
-        </BrowserRouter>
-        <Toaster />
-        <FloatingWhatsApp />
-      </div>
+      <MarketplaceProvider>
+        <div className="App">
+          <BrowserRouter>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/services/:slug" element={<ServiceDetail />} />
+            <Route path="/battwheels-os" element={<BattwheelsOS />} />
+            <Route path="/industries" element={<Industries />} />
+            <Route path="/plans" element={<Plans />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/book-service" element={<BookService />} />
+            <Route path="/fleet-oem" element={<FleetOEM />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/privacy" element={<PlaceholderPage title="Privacy Policy" />} />
+            <Route path="/terms" element={<PlaceholderPage title="Terms of Service" />} />
+            
+            {/* Marketplace Routes */}
+            <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/marketplace/product/:slug" element={<ProductDetail />} />
+            <Route path="/marketplace/cart" element={<Cart />} />
+            <Route path="/marketplace/checkout" element={<Checkout />} />
+            <Route path="/marketplace/technician" element={<TechnicianMode />} />
+            <Route path="/marketplace/login" element={<MarketplaceLogin />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/bookings" element={<ProtectedRoute><AdminBookings /></ProtectedRoute>} />
+            <Route path="/admin/contacts" element={<ProtectedRoute><AdminContacts /></ProtectedRoute>} />
+            <Route path="/admin/services" element={<ProtectedRoute><AdminServices /></ProtectedRoute>} />
+            <Route path="/admin/blogs" element={<ProtectedRoute><AdminBlogs /></ProtectedRoute>} />
+            <Route path="/admin/testimonials" element={<ProtectedRoute><AdminTestimonials /></ProtectedRoute>} />
+            <Route path="/admin/jobs" element={<ProtectedRoute><AdminJobs /></ProtectedRoute>} />
+          </Routes>
+          </BrowserRouter>
+          <Toaster />
+          <FloatingWhatsApp />
+        </div>
+      </MarketplaceProvider>
     </HelmetProvider>
   );
 }
