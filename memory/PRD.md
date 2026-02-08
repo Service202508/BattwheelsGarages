@@ -1,18 +1,19 @@
 # Battwheels Garages - Product Requirements Document
 
 ## Overview
-Battwheels Garages is India's first no-towing-first EV service network. The website serves as the digital presence for the company, providing information about services, allowing bookings, and showcasing the company's offerings.
+Battwheels Garages is India's first no-towing-first EV service network. The website serves as the digital presence for the company, providing information about services, allowing bookings, showcasing offerings, and now includes a **Marketplace Module** for EV spare parts sales.
 
 ## Target Audience
 - EV Fleet Operators (2W, 3W, 4W commercial vehicles)
 - Individual EV Owners
 - EV OEMs seeking aftersales partnerships
 - Quick Commerce & Hyperlocal Delivery companies
+- **EV Service Technicians** (internal marketplace users)
 
 ## Core Features
 
 ### Public Website
-- **Home Page**: Hero section, stats, services overview, testimonials, FAQs
+- **Home Page**: Hero section, stats, services overview, testimonials, Trusted Partners section, FAQs
 - **About Us**: Company vision, mission, and goals
 - **Services**: 8 service categories (Periodic EV Service, Motor & Controller, Battery & BMS, etc.)
 - **Industries**: Target industry segments served
@@ -20,6 +21,17 @@ Battwheels Garages is India's first no-towing-first EV service network. The webs
 - **Blog**: SEO-optimized articles with category filtering and pagination (20 articles)
 - **Careers**: Job listings
 - **Contact**: Contact form, Google Maps integration
+
+### Marketplace Module (NEW - Feb 8, 2025)
+- **Product Catalog**: 15 seed products across 6 categories
+- **Categories**: 2W Parts, 3W Parts, 4W Parts, Batteries, Diagnostic Tools, Refurbished Components
+- **Filters**: Vehicle Type (2W/3W/4W), Part Type (OEM/Aftermarket/Refurbished), Certified, Price Range
+- **Search**: Full-text search by name, SKU, vehicle compatibility
+- **Cart System**: localStorage-based with quantity management
+- **Checkout**: Address form with Razorpay + COD payment options
+- **Role-Based Pricing**: Public (0%), Fleet (15% discount), Technician (20% discount)
+- **Technician Quick-Order Mode**: Fast search interface for field operations
+- **Phone OTP Authentication**: Indian market standard login
 
 ### Admin Panel
 - Dashboard with stats overview (Bookings, Contacts, Services, Blogs, Testimonials, Jobs)
@@ -34,9 +46,25 @@ Battwheels Garages is India's first no-towing-first EV service network. The webs
 - **Frontend**: React 18, Tailwind CSS, Shadcn/UI components
 - **Backend**: FastAPI (Python)
 - **Database**: MongoDB
-- **Authentication**: JWT for admin panel
+- **Authentication**: JWT for admin panel, Phone OTP for marketplace
+- **Payments**: Razorpay (simulated) + COD
 
-## Completed Features (as of Feb 2, 2025)
+## Completed Features
+
+### Marketplace Module - COMPLETED (Feb 8, 2025)
+- [x] Product catalog with 15 seed products
+- [x] 6 product categories with counts
+- [x] Filter system (vehicle type, part type, certified, price)
+- [x] Full-text search functionality
+- [x] Product detail pages with specifications
+- [x] Shopping cart with quantity controls
+- [x] Checkout with address form validation
+- [x] Payment options: Razorpay (simulated) + COD
+- [x] Role-based pricing (public/fleet/technician)
+- [x] Technician Quick-Order Mode
+- [x] Phone OTP authentication
+- [x] API-first architecture (ready for Battwheels OS integration)
+- [x] Backend tests: 22/22 passed
 
 ### Blog SEO Optimization - COMPLETED (Feb 2, 2025)
 - [x] All 20 blogs have optimized meta_title (≤60 chars)
