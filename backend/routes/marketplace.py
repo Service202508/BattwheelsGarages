@@ -165,6 +165,8 @@ async def get_products(
     max_price: Optional[float] = None,
     search: Optional[str] = None,
     compatibility: Optional[str] = None,
+    exclude_category: Optional[str] = None,
+    brand: Optional[str] = None,
     sort_by: str = "created_at",
     sort_order: str = "desc",
     page: int = 1,
@@ -176,8 +178,12 @@ async def get_products(
     
     if category:
         query["category"] = category
+    if exclude_category:
+        query["category"] = {"$ne": exclude_category}
     if vehicle_category:
         query["vehicle_category"] = vehicle_category
+    if brand:
+        query["brand"] = brand
     if oem_aftermarket:
         query["oem_aftermarket"] = oem_aftermarket
     if is_certified is not None:
