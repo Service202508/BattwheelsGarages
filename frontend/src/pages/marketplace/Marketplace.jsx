@@ -431,7 +431,7 @@ const SparesAndComponents = () => {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                     {products.map((product) => (
-                      <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
+                      <ProductCard key={product.id} product={product} onAddToCart={addToCart} toast={toast} />
                     ))}
                   </div>
                 )}
@@ -510,11 +510,19 @@ const SparesAndComponents = () => {
 };
 
 // Product Card Component
-const ProductCard = ({ product, onAddToCart }) => {
+const ProductCard = ({ product, onAddToCart, toast }) => {
   const stockStyles = {
     in_stock: 'bg-green-50 text-green-700',
     low_stock: 'bg-amber-50 text-amber-700',
     out_of_stock: 'bg-red-50 text-red-700'
+  };
+
+  const handleAddToCart = () => {
+    onAddToCart(product);
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart.`,
+    });
   };
 
   return (
@@ -586,10 +594,11 @@ const ProductCard = ({ product, onAddToCart }) => {
           <Button
             size="sm"
             disabled={product.stock_status === 'out_of_stock'}
-            onClick={() => onAddToCart(product)}
+            onClick={handleAddToCart}
             className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-sm"
+            data-testid={`add-to-cart-${product.sku}`}
           >
-            <ShoppingCart className="w-4 h-4 mr-1.5" />
+            <Plus className="w-4 h-4 mr-1.5" />
             Add
           </Button>
         </div>
