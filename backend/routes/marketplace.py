@@ -220,6 +220,17 @@ async def get_products(
         "pages": (total + limit - 1) // limit
     }
 
+@router.get("/products/slug/{slug}")
+async def get_product_by_slug(slug: str, role: str = "public"):
+    """Get product by slug - for product detail pages"""
+    product = await db.marketplace_products.find_one({"slug": slug, "is_active": True})
+    if not product:
+        # Also check vehicles collection
+        product = await db.marketplace_vehicles.find_one({"slug": slug, "is_active": True})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return serialize_product(product, role)
+
 @router.get("/products/{product_id}")
 async def get_product(product_id: str, role: str = "public"):
     """Get single product details"""
