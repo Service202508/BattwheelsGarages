@@ -145,17 +145,37 @@ const BattwheelsOS = () => {
                 </div>
               </div>
               
-              {/* Right - MacBook Image */}
+              {/* Right - MacBook Frame with Dashboard */}
               <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
                 <div className="relative">
                   {/* Glow Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 blur-3xl scale-110" />
-                  {/* MacBook Image */}
-                  <img 
-                    src="/assets/battwheels-os-macbook.png" 
-                    alt="Battwheels OS Dashboard on MacBook" 
-                    className="relative z-10 w-full max-w-2xl drop-shadow-2xl"
-                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/30 to-emerald-500/30 blur-3xl scale-110" />
+                  
+                  {/* MacBook Frame */}
+                  <div className="relative z-10">
+                    {/* MacBook Body */}
+                    <div className="bg-gradient-to-b from-gray-700 to-gray-800 rounded-t-2xl p-2 shadow-2xl max-w-2xl">
+                      {/* Screen Bezel */}
+                      <div className="bg-black rounded-lg p-1">
+                        {/* Camera Notch */}
+                        <div className="flex justify-center mb-1">
+                          <div className="w-2 h-2 rounded-full bg-gray-700" />
+                        </div>
+                        {/* Screen Content */}
+                        <div className="rounded-md overflow-hidden">
+                          <img 
+                            src="/assets/battwheels-os-dashboard-screen.png" 
+                            alt="Battwheels OS Dashboard" 
+                            className="w-full h-auto"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    {/* MacBook Base/Hinge */}
+                    <div className="bg-gradient-to-b from-gray-600 to-gray-700 h-4 rounded-b-lg mx-8 shadow-xl" />
+                    {/* MacBook Bottom */}
+                    <div className="bg-gradient-to-b from-gray-700 to-gray-800 h-2 rounded-b-xl mx-4" />
+                  </div>
                 </div>
               </div>
             </div>
