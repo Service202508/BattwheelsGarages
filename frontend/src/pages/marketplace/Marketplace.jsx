@@ -69,13 +69,17 @@ const SparesAndComponents = () => {
     sort: searchParams.get('sort') || 'created_at'
   });
 
-  // Fetch categories
+  // Fetch categories - Only spares categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch(`${API_URL}/api/marketplace/categories`);
         const data = await response.json();
-        setCategories(data.categories || []);
+        // Filter to only show spares categories (exclude Electric Vehicles)
+        const sparesCategories = (data.categories || []).filter(cat => 
+          SPARES_CATEGORIES.includes(cat.name)
+        );
+        setCategories(sparesCategories);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -83,7 +87,7 @@ const SparesAndComponents = () => {
     fetchCategories();
   }, []);
 
-  // Fetch products
+  // Fetch products - Exclude Electric Vehicles category
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -101,6 +105,7 @@ const SparesAndComponents = () => {
         params.append('page', currentPage);
         params.append('limit', 12);
         params.append('role', userRole);
+        params.append('exclude_category', 'Electric Vehicles'); // Exclude vehicles
 
         const response = await fetch(`${API_URL}/api/marketplace/products?${params}`);
         const data = await response.json();
