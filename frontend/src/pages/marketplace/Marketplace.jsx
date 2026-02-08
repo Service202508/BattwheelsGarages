@@ -159,30 +159,38 @@ const SparesAndComponents = () => {
   return (
     <>
       <Helmet>
-        <title>EV Parts Marketplace | Battwheels Garages</title>
-        <meta name="description" content="Shop genuine EV spare parts, batteries, controllers, and diagnostic tools. Certified components for 2W, 3W, 4W electric vehicles." />
+        <title>Spares & Components | Battwheels Marketplace</title>
+        <meta name="description" content="Shop genuine EV spare parts, batteries, controllers, motors, and diagnostic tools. Certified components for 2W, 3W, 4W electric vehicles." />
       </Helmet>
 
       <Header />
 
       <main className="min-h-screen bg-gray-50">
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-12 md:py-16">
+        <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-12">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center gap-2 bg-[#12B76A]/20 text-[#12B76A] px-4 py-2 rounded-full text-sm font-medium mb-4">
-                <Zap className="w-4 h-4" />
-                Powered by Battwheels OS
+            {/* Breadcrumb */}
+            <div className="flex items-center gap-2 text-gray-400 text-sm mb-4">
+              <Link to="/marketplace" className="hover:text-white">Marketplace</Link>
+              <span>/</span>
+              <span className="text-white">Spares & Components</span>
+            </div>
+            
+            <div className="max-w-4xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="bg-[#12B76A]/30 p-2 rounded-lg">
+                  <Wrench className="w-8 h-8" />
+                </div>
+                <h1 className="text-3xl md:text-4xl font-bold">
+                  Spares & <span className="text-[#12B76A]">Components</span>
+                </h1>
               </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                EV Parts <span className="text-[#12B76A]">Marketplace</span>
-              </h1>
-              <p className="text-gray-300 text-lg mb-8">
-                Certified spare parts, batteries & diagnostic tools for your electric vehicles
+              <p className="text-gray-300 text-lg mb-6">
+                Certified EV spare parts, batteries, controllers & diagnostic tools
               </p>
               
               {/* Search Bar */}
-              <div className="max-w-2xl mx-auto">
+              <div className="max-w-xl">
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
@@ -190,7 +198,7 @@ const SparesAndComponents = () => {
                     placeholder="Search by part name, SKU, or vehicle model..."
                     value={filters.search}
                     onChange={(e) => handleFilterChange('search', e.target.value)}
-                    className="pl-12 pr-4 py-6 text-lg bg-white text-gray-900 border-0 rounded-xl shadow-lg"
+                    className="pl-12 pr-4 py-5 text-base bg-white text-gray-900 border-0 rounded-xl"
                   />
                 </div>
               </div>
