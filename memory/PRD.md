@@ -66,6 +66,18 @@ Battwheels Garages is India's first no-towing-first EV service network. The webs
 - [x] API-first architecture (ready for Battwheels OS integration)
 - [x] Backend tests: 22/22 passed
 
+### Marketplace Bifurcation - COMPLETED (Feb 8, 2025)
+- [x] Split marketplace into two categories (no duplicates)
+- [x] **Spares & Components** (/marketplace/spares): 15 products
+  - 2W Parts, 3W Parts, 4W Parts, Batteries, Diagnostic Tools, Refurbished Components
+- [x] **Electric Vehicles** (/marketplace/vehicles): 13 vehicles
+  - New & Certified Refurbished
+  - 2W (6), 3W (3), 4W (4)
+  - OEMs: Ather, Bajaj, MG, Mahindra, Ola, Piaggio, TVS, Tata
+- [x] Landing page with category selection
+- [x] OEM-based filtering for vehicles
+- [x] New/Refurbished condition filters
+
 ### Blog SEO Optimization - COMPLETED (Feb 2, 2025)
 - [x] All 20 blogs have optimized meta_title (≤60 chars)
 - [x] All 20 blogs have optimized meta_desc (≤160 chars)
