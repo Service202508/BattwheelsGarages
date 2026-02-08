@@ -28,9 +28,9 @@ const Header = () => {
       ]
     },
     { name: 'Industries', path: '/industries' },
+    { name: 'Marketplace', path: '/marketplace' },
     { name: 'Subscriptions', path: '/plans' },
     { name: 'Blog', path: '/blog' },
-    { name: 'Careers', path: '/careers' },
     { name: 'Contact', path: '/contact' }
   ];
 
