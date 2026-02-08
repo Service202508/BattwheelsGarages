@@ -9,6 +9,7 @@ import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { Button } from '../../components/ui/button';
 import { useMarketplace } from '../../context/MarketplaceContext';
+import { useToast } from '../../components/ui/use-toast';
 import {
   ShoppingCart,
   Package,
@@ -30,6 +31,7 @@ const ProductDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { addToCart, userRole, isAuthenticated } = useMarketplace();
+  const { toast } = useToast();
   
   const [product, setProduct] = useState(null);
   const [inventory, setInventory] = useState(null);
@@ -66,13 +68,20 @@ const ProductDetail = () => {
   const handleAddToCart = () => {
     if (product) {
       addToCart(product, quantity);
-      // Show toast or navigate to cart
+      toast({
+        title: "Added to Cart",
+        description: `${quantity}x ${product.name} has been added to your cart.`,
+      });
     }
   };
 
   const handleBuyNow = () => {
     if (product) {
       addToCart(product, quantity);
+      toast({
+        title: "Proceeding to Checkout",
+        description: `${quantity}x ${product.name} added.`,
+      });
       navigate('/marketplace/checkout');
     }
   };
