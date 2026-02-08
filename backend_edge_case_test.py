@@ -9,7 +9,7 @@ import json
 import sys
 
 # Get backend URL from environment
-BACKEND_URL = "https://battwheels-upgrade.preview.emergentagent.com/api"
+BACKEND_URL = "https://ev-marketplace-8.preview.emergentagent.com/api"
 
 class EdgeCaseTester:
     def __init__(self):

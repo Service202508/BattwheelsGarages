@@ -142,7 +142,7 @@ A comprehensive audit and remediation was performed on the Battwheels Garages we
 - [x] JWT authentication working
 
 ### Final URLs
-- **Preview:** https://battwheels-upgrade.preview.emergentagent.com
+- **Preview:** https://ev-marketplace-8.preview.emergentagent.com
 - **Custom Domain:** battwheelsgarages.in (requires linking via Emergent)
 
 ---
