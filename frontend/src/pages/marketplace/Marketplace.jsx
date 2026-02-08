@@ -1,6 +1,7 @@
 /**
- * Marketplace Main Page - Product Catalog with Filters
- * Extends Battwheels design system - industrial EV-tech aesthetic
+ * Spares & Components Marketplace
+ * EV spare parts, batteries, controllers, diagnostic tools
+ * Excludes Electric Vehicles (separate page)
  */
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -24,12 +25,13 @@ import {
   ChevronDown,
   X,
   Zap,
-  AlertCircle
+  AlertCircle,
+  ArrowLeft
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Category Icons
+// Category Icons - Only for Spares & Components (excludes Electric Vehicles)
 const categoryIcons = {
   '2W Parts': <Zap className="w-5 h-5" />,
   '3W Parts': <Truck className="w-5 h-5" />,
@@ -39,7 +41,10 @@ const categoryIcons = {
   'Refurbished Components': <Recycle className="w-5 h-5" />
 };
 
-const Marketplace = () => {
+// Categories that belong to Spares & Components (exclude Electric Vehicles)
+const SPARES_CATEGORIES = ['2W Parts', '3W Parts', '4W Parts', 'Batteries', 'Diagnostic Tools', 'Refurbished Components'];
+
+const SparesAndComponents = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToCart, getCartCount, userRole } = useMarketplace();
   
