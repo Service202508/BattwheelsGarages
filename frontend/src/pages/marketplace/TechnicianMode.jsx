@@ -11,6 +11,7 @@ import Footer from '../../components/layout/Footer';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { useMarketplace } from '../../context/MarketplaceContext';
+import { useToast } from '../../components/ui/use-toast';
 import {
   Search,
   Zap,
@@ -50,6 +51,7 @@ const VEHICLE_MODELS = [
 const TechnicianMode = () => {
   const navigate = useNavigate();
   const { addToCart, getCartCount, userRole, isAuthenticated } = useMarketplace();
+  const { toast } = useToast();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedVehicle, setSelectedVehicle] = useState('');
@@ -99,7 +101,10 @@ const TechnicianMode = () => {
 
   const handleQuickAdd = (product) => {
     addToCart(product, 1);
-    // Visual feedback could be added here
+    toast({
+      title: "Added to Job",
+      description: `${product.name} added to cart.`,
+    });
   };
 
   const clearFilters = () => {
