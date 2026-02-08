@@ -20,6 +20,7 @@ app = FastAPI(title="Battwheels Garages API", version="1.0.0")
 # Import routes
 from routes import bookings, fleet_enquiries, contacts, careers, public_content, seo
 from routes import admin_auth, admin_bookings, admin_contacts, admin_services, admin_blogs, admin_testimonials, admin_jobs
+from routes import marketplace, marketplace_auth
 
 # Health check routes (both /health and /api/health for Kubernetes compatibility)
 @app.get("/health")
