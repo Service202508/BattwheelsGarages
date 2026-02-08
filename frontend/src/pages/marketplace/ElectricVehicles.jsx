@@ -1,12 +1,13 @@
 /**
- * Electric Vehicles Marketplace
- * New & Certified Refurbished EVs organized by OEM and vehicle type
+ * Electric Vehicles Marketplace - Premium Design
+ * New & Certified Refurbished EVs organized by OEM
  */
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
+import GearBackground from '../../components/common/GearBackground';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { useMarketplace } from '../../context/MarketplaceContext';
@@ -15,58 +16,53 @@ import {
   Car,
   Bike,
   Truck,
-  ShoppingCart,
   CheckCircle,
   Shield,
-  ArrowLeft,
   Filter,
   X,
-  Zap,
+  ChevronRight,
   Battery,
   Gauge,
-  MapPin,
-  Calendar,
-  Star,
   Phone,
-  ChevronDown
+  Sparkles,
+  AlertCircle,
+  Zap
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Vehicle type icons
-const vehicleTypeIcons = {
-  '2W': <Bike className="w-5 h-5" />,
-  '3W': <Truck className="w-5 h-5" />,
-  '4W': <Car className="w-5 h-5" />
+// Vehicle type config
+const vehicleTypeConfig = {
+  '2W': { icon: Bike, label: '2-Wheelers', color: 'from-blue-500 to-blue-600' },
+  '3W': { icon: Truck, label: '3-Wheelers', color: 'from-orange-500 to-orange-600' },
+  '4W': { icon: Car, label: '4-Wheelers', color: 'from-purple-500 to-purple-600' }
 };
 
-// OEM logos/colors
-const oemColors = {
-  'Ather': 'bg-teal-500',
-  'Ola': 'bg-blue-500',
-  'TVS': 'bg-red-500',
-  'Bajaj': 'bg-blue-600',
-  'Hero': 'bg-red-600',
-  'Tata': 'bg-blue-700',
-  'Mahindra': 'bg-red-700',
-  'MG': 'bg-gray-700',
-  'Hyundai': 'bg-blue-800',
-  'Piaggio': 'bg-green-600'
+// OEM brand colors
+const oemBrands = {
+  'Ather': { color: '#00A86B', bg: 'bg-teal-500' },
+  'Ola': { color: '#1E90FF', bg: 'bg-blue-500' },
+  'TVS': { color: '#E31937', bg: 'bg-red-500' },
+  'Bajaj': { color: '#004B93', bg: 'bg-blue-700' },
+  'Hero': { color: '#CC0000', bg: 'bg-red-600' },
+  'Tata': { color: '#1C3664', bg: 'bg-blue-900' },
+  'Mahindra': { color: '#C41230', bg: 'bg-red-700' },
+  'MG': { color: '#B71234', bg: 'bg-red-700' },
+  'Piaggio': { color: '#006847', bg: 'bg-green-700' }
 };
 
 const ElectricVehicles = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const { addToCart, getCartCount } = useMarketplace();
+  const [searchParams] = useSearchParams();
+  const { getCartCount } = useMarketplace();
   
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalVehicles, setTotalVehicles] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [oems, setOems] = useState([]);
   
-  // Filters
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
     vehicleType: searchParams.get('type') || '',
@@ -83,7 +79,6 @@ const ElectricVehicles = () => {
       setLoading(true);
       try {
         const params = new URLSearchParams();
-        params.append('category', 'Electric Vehicles');
         if (filters.search) params.append('search', filters.search);
         if (filters.vehicleType) params.append('vehicle_category', filters.vehicleType);
         if (filters.oem) params.append('brand', filters.oem);
@@ -99,10 +94,6 @@ const ElectricVehicles = () => {
         setVehicles(data.vehicles || []);
         setTotalVehicles(data.total || 0);
         setTotalPages(data.pages || 1);
-        
-        // Extract unique OEMs
-        const uniqueOems = [...new Set(data.vehicles?.map(v => v.brand).filter(Boolean))];
-        if (uniqueOems.length > 0) setOems(uniqueOems);
       } catch (error) {
         console.error('Error fetching vehicles:', error);
       } finally {
@@ -112,7 +103,7 @@ const ElectricVehicles = () => {
     fetchVehicles();
   }, [filters, currentPage]);
 
-  // Fetch OEMs list
+  // Fetch OEMs
   useEffect(() => {
     const fetchOems = async () => {
       try {
@@ -133,13 +124,8 @@ const ElectricVehicles = () => {
 
   const clearFilters = () => {
     setFilters({
-      search: '',
-      vehicleType: '',
-      oem: '',
-      condition: '',
-      minPrice: '',
-      maxPrice: '',
-      sort: 'created_at'
+      search: '', vehicleType: '', oem: '', condition: '',
+      minPrice: '', maxPrice: '', sort: 'created_at'
     });
     setCurrentPage(1);
   };
@@ -147,7 +133,9 @@ const ElectricVehicles = () => {
   const hasActiveFilters = filters.vehicleType || filters.oem || filters.condition || filters.minPrice || filters.maxPrice;
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50 relative">
+      <GearBackground variant="industries" />
+      
       <Helmet>
         <title>Electric Vehicles - New & Refurbished | Battwheels Marketplace</title>
         <meta name="description" content="Browse certified new and refurbished electric vehicles. 2W, 3W, 4W EVs from top OEMs like Ather, Ola, TVS, Tata, Mahindra." />
@@ -155,27 +143,33 @@ const ElectricVehicles = () => {
 
       <Header />
 
-      <main className="min-h-screen bg-gray-50">
+      <main>
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 text-white py-12">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center gap-2 text-blue-300 text-sm mb-4">
-              <Link to="/marketplace" className="hover:text-white">Marketplace</Link>
-              <span>/</span>
-              <span className="text-white">Electric Vehicles</span>
-            </div>
+        <section className="bg-gradient-to-br from-blue-600 to-indigo-700 py-12 md:py-16 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-10 right-10 w-64 h-64 bg-white rounded-full blur-3xl" />
+            <div className="absolute bottom-10 left-10 w-48 h-48 bg-blue-300 rounded-full blur-3xl" />
+          </div>
+          
+          <div className="container mx-auto px-4 relative z-10">
+            {/* Breadcrumb */}
+            <nav className="flex items-center gap-2 text-blue-200 text-sm mb-6">
+              <Link to="/marketplace" className="hover:text-white transition-colors">Marketplace</Link>
+              <ChevronRight className="w-4 h-4" />
+              <span className="text-white font-medium">Electric Vehicles</span>
+            </nav>
             
             <div className="max-w-4xl">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="bg-blue-500/30 p-2 rounded-lg">
-                  <Car className="w-8 h-8" />
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+                  <Car className="w-7 h-7 text-white" />
                 </div>
-                <h1 className="text-3xl md:text-4xl font-bold">
+                <h1 className="text-3xl md:text-4xl font-bold text-white">
                   Electric Vehicles
                 </h1>
               </div>
-              <p className="text-blue-200 text-lg mb-6">
-                New & Certified Refurbished EVs from Top OEMs
+              <p className="text-blue-100 text-lg mb-8 max-w-2xl">
+                New & Certified Refurbished EVs from India&apos;s top OEMs
               </p>
               
               {/* Search Bar */}
@@ -187,7 +181,7 @@ const ElectricVehicles = () => {
                     placeholder="Search by vehicle name, model, or OEM..."
                     value={filters.search}
                     onChange={(e) => handleFilterChange('search', e.target.value)}
-                    className="pl-12 pr-4 py-5 text-base bg-white text-gray-900 border-0 rounded-xl"
+                    className="pl-12 pr-4 py-4 text-base bg-white text-gray-900 border-0 rounded-xl shadow-lg focus:ring-2 focus:ring-blue-300"
                   />
                 </div>
               </div>
@@ -195,55 +189,59 @@ const ElectricVehicles = () => {
           </div>
         </section>
 
-        {/* Vehicle Type Tabs */}
-        <section className="bg-white border-b border-gray-200 sticky top-[72px] z-40">
+        {/* Filter Tabs */}
+        <section className="bg-white border-b border-gray-200 sticky top-[72px] z-40 shadow-sm">
           <div className="container mx-auto px-4">
-            <div className="flex items-center gap-2 py-4 overflow-x-auto">
+            <div className="flex items-center gap-3 py-4 overflow-x-auto scrollbar-hide">
+              {/* Vehicle Types */}
               <button
                 onClick={() => handleFilterChange('vehicleType', '')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
                   !filters.vehicleType
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 All Vehicles
               </button>
-              {['2W', '3W', '4W'].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => handleFilterChange('vehicleType', type)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                    filters.vehicleType === type
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {vehicleTypeIcons[type]}
-                  {type === '2W' ? '2-Wheelers' : type === '3W' ? '3-Wheelers' : '4-Wheelers'}
-                </button>
-              ))}
+              {Object.entries(vehicleTypeConfig).map(([key, config]) => {
+                const Icon = config.icon;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => handleFilterChange('vehicleType', key)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+                      filters.vehicleType === key
+                        ? `bg-gradient-to-r ${config.color} text-white shadow-md`
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {config.label}
+                  </button>
+                );
+              })}
               
-              <div className="h-6 w-px bg-gray-300 mx-2" />
+              <div className="h-8 w-px bg-gray-200 mx-2" />
               
-              {/* Condition Filter */}
+              {/* Condition Filters */}
               <button
                 onClick={() => handleFilterChange('condition', filters.condition === 'new' ? '' : 'new')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
                   filters.condition === 'new'
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md'
+                    : 'bg-green-50 text-green-700 hover:bg-green-100'
                 }`}
               >
-                <CheckCircle className="w-4 h-4" />
+                <Sparkles className="w-4 h-4" />
                 New
               </button>
               <button
                 onClick={() => handleFilterChange('condition', filters.condition === 'refurbished' ? '' : 'refurbished')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
                   filters.condition === 'refurbished'
-                    ? 'bg-purple-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md'
+                    : 'bg-purple-50 text-purple-700 hover:bg-purple-100'
                 }`}
               >
                 <Shield className="w-4 h-4" />
@@ -258,12 +256,15 @@ const ElectricVehicles = () => {
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row gap-8">
               {/* Filters Sidebar */}
-              <aside className="hidden lg:block w-64 flex-shrink-0">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-[160px]">
+              <aside className="hidden lg:block w-72 flex-shrink-0">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-[160px]">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-semibold text-gray-900">Filters</h3>
+                    <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                      <Filter className="w-5 h-5 text-blue-600" />
+                      Filters
+                    </h3>
                     {hasActiveFilters && (
-                      <button onClick={clearFilters} className="text-sm text-blue-500 hover:underline">
+                      <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                         Clear all
                       </button>
                     )}
@@ -271,31 +272,32 @@ const ElectricVehicles = () => {
 
                   {/* OEM Filter */}
                   <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
-                      Brand / OEM
-                    </label>
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {oems.map((oem) => (
-                        <label key={oem} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="oem"
-                            checked={filters.oem === oem}
-                            onChange={() => handleFilterChange('oem', oem)}
-                            className="text-blue-500 focus:ring-blue-500"
-                          />
-                          <span className={`w-3 h-3 rounded-full ${oemColors[oem] || 'bg-gray-400'}`} />
-                          <span className="text-sm text-gray-600">{oem}</span>
-                        </label>
-                      ))}
+                    <label className="block text-sm font-semibold text-gray-800 mb-3">Brand / OEM</label>
+                    <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+                      {oems.map((oem) => {
+                        const brand = oemBrands[oem] || { bg: 'bg-gray-500' };
+                        return (
+                          <label key={oem} className="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-gray-50">
+                            <input
+                              type="radio"
+                              name="oem"
+                              checked={filters.oem === oem}
+                              onChange={() => handleFilterChange('oem', oem)}
+                              className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                            />
+                            <span className={`w-3 h-3 rounded-full ${brand.bg}`} />
+                            <span className="text-sm text-gray-700 group-hover:text-gray-900 font-medium">{oem}</span>
+                          </label>
+                        );
+                      })}
                       {filters.oem && (
-                        <label className="flex items-center gap-2 cursor-pointer">
+                        <label className="flex items-center gap-3 cursor-pointer p-2">
                           <input
                             type="radio"
                             name="oem"
                             checked={!filters.oem}
                             onChange={() => handleFilterChange('oem', '')}
-                            className="text-blue-500 focus:ring-blue-500"
+                            className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                           />
                           <span className="text-sm text-gray-600">All Brands</span>
                         </label>
@@ -304,10 +306,8 @@ const ElectricVehicles = () => {
                   </div>
 
                   {/* Price Range */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Price Range (₹)
-                    </label>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800 mb-3">Price Range (₹)</label>
                     <div className="flex items-center gap-2">
                       <Input
                         type="number"
@@ -316,7 +316,7 @@ const ElectricVehicles = () => {
                         onChange={(e) => handleFilterChange('minPrice', e.target.value)}
                         className="text-sm"
                       />
-                      <span className="text-gray-400">-</span>
+                      <span className="text-gray-400">—</span>
                       <Input
                         type="number"
                         placeholder="Max"
@@ -329,20 +329,29 @@ const ElectricVehicles = () => {
                 </div>
               </aside>
 
+              {/* Mobile Filter Button */}
+              <div className="lg:hidden flex items-center justify-between mb-4">
+                <Button variant="outline" onClick={() => setShowMobileFilters(true)} className="flex items-center gap-2">
+                  <Filter className="w-4 h-4" />
+                  Filters
+                  {hasActiveFilters && <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">Active</span>}
+                </Button>
+              </div>
+
               {/* Vehicles Grid */}
               <div className="flex-1">
                 {/* Results Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                   <p className="text-gray-600">
-                    Showing <span className="font-medium text-gray-900">{vehicles.length}</span> of{' '}
-                    <span className="font-medium text-gray-900">{totalVehicles}</span> vehicles
+                    Showing <span className="font-semibold text-gray-900">{vehicles.length}</span> of{' '}
+                    <span className="font-semibold text-gray-900">{totalVehicles}</span> vehicles
                   </p>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">Sort by:</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-500">Sort:</span>
                     <select
                       value={filters.sort}
                       onChange={(e) => handleFilterChange('sort', e.target.value)}
-                      className="text-sm border border-gray-300 rounded-lg px-3 py-2"
+                      className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 bg-white"
                     >
                       <option value="created_at">Newest First</option>
                       <option value="price_asc">Price: Low to High</option>
@@ -353,26 +362,26 @@ const ElectricVehicles = () => {
 
                 {/* Vehicles */}
                 {loading ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {[...Array(6)].map((_, i) => (
-                      <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 animate-pulse">
-                        <div className="bg-gray-200 h-48 rounded-lg mb-4" />
+                      <div key={i} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-pulse">
+                        <div className="bg-gray-200 aspect-[4/3] rounded-xl mb-4" />
                         <div className="bg-gray-200 h-5 rounded w-3/4 mb-2" />
                         <div className="bg-gray-200 h-4 rounded w-1/2" />
                       </div>
                     ))}
                   </div>
                 ) : vehicles.length === 0 ? (
-                  <div className="text-center py-16">
+                  <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
                     <Car className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">No vehicles found</h3>
-                    <p className="text-gray-600 mb-4">Try adjusting your filters or check back later</p>
-                    <Button onClick={clearFilters} className="bg-blue-500 hover:bg-blue-600">
+                    <p className="text-gray-600 mb-6">Try adjusting your filters or check back later</p>
+                    <Button onClick={clearFilters} className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
                       Clear Filters
                     </Button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {vehicles.map((vehicle) => (
                       <VehicleCard key={vehicle.id} vehicle={vehicle} />
                     ))}
@@ -381,22 +390,14 @@ const ElectricVehicles = () => {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-2 mt-8">
-                    <Button
-                      variant="outline"
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage(p => p - 1)}
-                    >
+                  <div className="flex items-center justify-center gap-3 mt-8">
+                    <Button variant="outline" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="shadow-sm">
                       Previous
                     </Button>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-gray-600 bg-white px-4 py-2 rounded-lg border border-gray-200">
                       Page {currentPage} of {totalPages}
                     </span>
-                    <Button
-                      variant="outline"
-                      disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage(p => p + 1)}
-                    >
+                    <Button variant="outline" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="shadow-sm">
                       Next
                     </Button>
                   </div>
@@ -408,23 +409,61 @@ const ElectricVehicles = () => {
       </main>
 
       <Footer />
-    </>
+
+      {/* Mobile Filters Modal */}
+      {showMobileFilters && (
+        <div className="fixed inset-0 bg-black/50 z-50 lg:hidden">
+          <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+              <h3 className="font-bold text-gray-900">Filters</h3>
+              <button onClick={() => setShowMobileFilters(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+            <div className="p-4">
+              {/* OEM Filter */}
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-800 mb-3">Brand / OEM</label>
+                <div className="space-y-2">
+                  {oems.slice(0, 6).map((oem) => (
+                    <label key={oem} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="mobileOem"
+                        checked={filters.oem === oem}
+                        onChange={() => handleFilterChange('oem', oem)}
+                        className="w-4 h-4 text-blue-600"
+                      />
+                      <span className="text-sm text-gray-600">{oem}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div className="flex gap-2 pt-4 border-t">
+                <Button variant="outline" onClick={clearFilters} className="flex-1">Clear</Button>
+                <Button onClick={() => setShowMobileFilters(false)} className="flex-1 bg-blue-600 hover:bg-blue-700">Apply</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
 // Vehicle Card Component
 const VehicleCard = ({ vehicle }) => {
+  const brand = oemBrands[vehicle.brand] || { bg: 'bg-gray-500' };
+  const typeConfig = vehicleTypeConfig[vehicle.vehicle_category?.[0]] || { icon: Car };
+  const TypeIcon = typeConfig.icon;
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all group">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 group">
       {/* Image */}
       <Link to={`/marketplace/vehicle/${vehicle.slug}`} className="block relative">
-        <div className="aspect-[4/3] bg-gray-100 flex items-center justify-center overflow-hidden">
+        <div className="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden">
           {vehicle.images?.[0] ? (
-            <img
-              src={vehicle.images[0]}
-              alt={vehicle.name}
-              className="object-cover w-full h-full group-hover:scale-105 transition-transform"
-            />
+            <img src={vehicle.images[0]} alt={vehicle.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300" />
           ) : (
             <Car className="w-20 h-20 text-gray-300" />
           )}
@@ -433,83 +472,79 @@ const VehicleCard = ({ vehicle }) => {
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {vehicle.oem_aftermarket === 'oem' && (
-            <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-              <CheckCircle className="w-3 h-3" />
-              New
+            <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+              <Sparkles className="w-3 h-3" /> New
             </span>
           )}
           {vehicle.oem_aftermarket === 'refurbished' && (
-            <span className="bg-purple-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-              <Shield className="w-3 h-3" />
-              Refurbished
+            <span className="bg-gradient-to-r from-purple-500 to-purple-600 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+              <Shield className="w-3 h-3" /> Refurbished
             </span>
           )}
         </div>
         
-        {/* Vehicle Type Badge */}
+        {/* Vehicle Type */}
         <div className="absolute top-3 right-3">
-          <span className="bg-white/90 backdrop-blur text-gray-700 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-            {vehicleTypeIcons[vehicle.vehicle_category?.[0]]}
+          <span className="bg-white/95 backdrop-blur text-gray-700 text-xs px-2.5 py-1.5 rounded-full flex items-center gap-1 shadow-sm font-medium">
+            <TypeIcon className="w-3.5 h-3.5" />
             {vehicle.vehicle_category?.[0]}
           </span>
         </div>
       </Link>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-5">
         {/* OEM Badge */}
         <div className="flex items-center gap-2 mb-2">
-          <span className={`w-2 h-2 rounded-full ${oemColors[vehicle.brand] || 'bg-gray-400'}`} />
-          <span className="text-sm font-medium text-gray-500">{vehicle.brand}</span>
+          <span className={`w-2.5 h-2.5 rounded-full ${brand.bg}`} />
+          <span className="text-sm font-semibold text-gray-600">{vehicle.brand}</span>
         </div>
         
         <Link to={`/marketplace/vehicle/${vehicle.slug}`}>
-          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-500 transition-colors">
+          <h3 className="font-bold text-gray-900 mb-3 line-clamp-2 hover:text-blue-600 transition-colors text-lg leading-snug">
             {vehicle.name}
           </h3>
         </Link>
 
         {/* Specs */}
-        <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
+        <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
           {vehicle.specifications?.range && (
-            <span className="flex items-center gap-1">
-              <Gauge className="w-3 h-3" />
+            <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full">
+              <Gauge className="w-3.5 h-3.5 text-blue-500" />
               {vehicle.specifications.range}
             </span>
           )}
           {vehicle.specifications?.battery && (
-            <span className="flex items-center gap-1">
-              <Battery className="w-3 h-3" />
+            <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full">
+              <Battery className="w-3.5 h-3.5 text-green-500" />
               {vehicle.specifications.battery}
             </span>
           )}
         </div>
 
         {/* Price */}
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-xl font-bold text-gray-900">
-              ₹{(vehicle.final_price || vehicle.base_price)?.toLocaleString()}
+        <div className="mb-4">
+          <span className="text-2xl font-bold text-gray-900">
+            ₹{(vehicle.final_price || vehicle.base_price)?.toLocaleString()}
+          </span>
+          {vehicle.oem_aftermarket === 'refurbished' && vehicle.original_price && (
+            <span className="text-sm text-gray-400 line-through ml-2">
+              ₹{vehicle.original_price?.toLocaleString()}
             </span>
-            {vehicle.oem_aftermarket === 'refurbished' && vehicle.original_price && (
-              <span className="text-sm text-gray-400 line-through ml-2">
-                ₹{vehicle.original_price?.toLocaleString()}
-              </span>
-            )}
-          </div>
+          )}
         </div>
 
         {/* CTA */}
-        <div className="mt-4 flex gap-2">
+        <div className="flex gap-2">
           <Link
             to={`/marketplace/vehicle/${vehicle.slug}`}
-            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-center py-2 rounded-lg text-sm font-medium transition-colors"
+            className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-center py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm"
           >
             View Details
           </Link>
           <a
             href="tel:+919876543210"
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-4 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center"
           >
             <Phone className="w-4 h-4 text-gray-600" />
           </a>
@@ -517,9 +552,9 @@ const VehicleCard = ({ vehicle }) => {
 
         {/* Warranty */}
         {vehicle.warranty_months > 0 && (
-          <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-1 text-xs text-gray-500">
-            <Shield className="w-3 h-3 text-green-500" />
-            {vehicle.warranty_months} months warranty
+          <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-1.5 text-xs text-gray-500">
+            <Shield className="w-3.5 h-3.5 text-green-500" />
+            {vehicle.warranty_months} months warranty included
           </div>
         )}
       </div>
