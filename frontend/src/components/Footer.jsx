@@ -90,7 +90,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 pt-8 text-center text-sm">
-          <p className="text-gray-400">&copy; {new Date().getFullYear()} Battwheels Garages. All rights reserved.</p>
+          <p className="text-gray-400">&copy; {new Date().getFullYear()} BATTWHEELS SERVICES PRIVATE LIMITED. All rights reserved.</p>
           <p className="text-gray-500 text-xs mt-2">Built for India's EV Revolution</p>
         </div>
       </div>
