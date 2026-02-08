@@ -182,6 +182,153 @@ const BattwheelsOS = () => {
           </div>
         </section>
 
+        {/* EV Failure Intelligence Section */}
+        <section className="py-20 bg-gradient-to-b from-gray-900 to-gray-800 relative overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-0 left-0 w-96 h-96 bg-green-500 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald-500 rounded-full blur-3xl" />
+          </div>
+          
+          <div className="container mx-auto px-4 relative z-10">
+            {/* Section Header */}
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-400 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+                <Brain className="w-4 h-4" />
+                Core Differentiator
+              </div>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-6">
+                EV Failure Intelligence
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400 mt-2 text-2xl md:text-3xl">
+                  One EV Failure Solved. Thousands Prevented.
+                </span>
+              </h2>
+              <p className="text-lg text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                Every undocumented EV failure in the field is analyzed, converted into structured repair intelligence, 
+                and shared across our technician network through Battwheels OS — making the entire system smarter with every repair.
+              </p>
+            </div>
+
+            {/* Short Explanation */}
+            <div className="max-w-4xl mx-auto mb-16">
+              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 md:p-10">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
+                  <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                    <Target className="w-5 h-5 text-green-400" />
+                  </div>
+                  How Failure Intelligence Works
+                </h3>
+                <p className="text-gray-300 leading-relaxed mb-6">
+                  When a new or undocumented EV issue occurs in the field, our expert team performs root cause analysis 
+                  and documents the solution as a structured <span className="text-green-400 font-semibold">"Failure Card"</span>. 
+                  These cards are stored inside Battwheels OS, where AI-assisted matching automatically suggests solutions 
+                  for similar future cases — enabling faster, more accurate repairs across the network.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <span className="px-3 py-1.5 bg-green-500/10 border border-green-500/30 rounded-full text-sm text-green-400">
+                    Root Cause Analysis
+                  </span>
+                  <span className="px-3 py-1.5 bg-green-500/10 border border-green-500/30 rounded-full text-sm text-green-400">
+                    Structured Knowledge Base
+                  </span>
+                  <span className="px-3 py-1.5 bg-green-500/10 border border-green-500/30 rounded-full text-sm text-green-400">
+                    AI-Assisted Matching
+                  </span>
+                  <span className="px-3 py-1.5 bg-green-500/10 border border-green-500/30 rounded-full text-sm text-green-400">
+                    Continuous Learning
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Visual Workflow */}
+            <div className="mb-20">
+              <h3 className="text-2xl font-bold text-white text-center mb-12">
+                The Intelligence Pipeline
+              </h3>
+              <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-6xl mx-auto">
+                {[
+                  { icon: AlertTriangle, title: 'New EV Failure', subtitle: 'Detected in field', color: 'from-red-500 to-orange-500' },
+                  { icon: Search, title: 'Root Cause', subtitle: 'Expert analysis', color: 'from-orange-500 to-amber-500' },
+                  { icon: FileText, title: 'Failure Card', subtitle: 'Documented', color: 'from-amber-500 to-yellow-500' },
+                  { icon: Database, title: 'Stored in OS', subtitle: 'Battwheels OS', color: 'from-yellow-500 to-green-500' },
+                  { icon: Share2, title: 'Network Sync', subtitle: 'All technicians', color: 'from-green-500 to-emerald-500' },
+                  { icon: Zap, title: 'Faster Repairs', subtitle: 'Future cases', color: 'from-emerald-500 to-teal-500' },
+                ].map((step, index) => {
+                  const Icon = step.icon;
+                  return (
+                    <div key={index} className="relative group">
+                      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center hover:bg-white/10 transition-all hover:-translate-y-1">
+                        <div className={`w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center shadow-lg`}>
+                          <Icon className="w-7 h-7 text-white" />
+                        </div>
+                        <h4 className="text-white font-semibold text-sm mb-1">{step.title}</h4>
+                        <p className="text-gray-500 text-xs">{step.subtitle}</p>
+                      </div>
+                      {index < 5 && (
+                        <div className="hidden lg:block absolute top-1/2 -right-2 transform -translate-y-1/2 z-10">
+                          <ArrowRight className="w-4 h-4 text-gray-600" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Benefits Grid */}
+            <div className="mb-16">
+              <h3 className="text-2xl font-bold text-white text-center mb-12">
+                Why Failure Intelligence Matters
+              </h3>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {[
+                  { icon: Clock, title: 'Faster First-Time Fix', description: 'Reduce diagnostic time with instant access to proven solutions for similar failures.' },
+                  { icon: TrendingUp, title: 'Reduced Fleet Downtime', description: 'Get vehicles back on the road faster with pre-validated repair procedures.' },
+                  { icon: Shield, title: 'Consistent Service Quality', description: 'Every technician benefits from the collective knowledge of the entire network.' },
+                  { icon: Repeat, title: 'Continuous Learning', description: 'The system improves with every repair, creating compounding intelligence.' },
+                  { icon: Users, title: 'Reduced Dependency', description: 'Scale service capacity without relying on individual technician experience.' },
+                  { icon: Brain, title: 'Scalable Intelligence', description: 'Turn field experience into enterprise-grade service knowledge.' },
+                ].map((benefit, index) => {
+                  const Icon = benefit.icon;
+                  return (
+                    <div key={index} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-green-500/30 transition-all">
+                      <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mb-4">
+                        <Icon className="w-6 h-6 text-green-400" />
+                      </div>
+                      <h4 className="text-white font-semibold mb-2">{benefit.title}</h4>
+                      <p className="text-gray-400 text-sm leading-relaxed">{benefit.description}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Technical Credibility */}
+            <div className="max-w-3xl mx-auto text-center mb-12">
+              <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-xl p-6">
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  <span className="text-green-400 font-semibold">Technical Foundation:</span> Battwheels OS uses structured failure knowledge, 
+                  AI-assisted diagnosis, and continuous feedback loops to improve repair accuracy over time — 
+                  creating a self-improving system that gets smarter with every service interaction.
+                </p>
+              </div>
+            </div>
+
+            {/* CTA */}
+            <div className="text-center">
+              <Button 
+                size="lg"
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold px-10 py-6 text-lg rounded-xl shadow-xl shadow-green-500/30 hover:shadow-green-500/50 transition-all hover:-translate-y-1"
+                onClick={() => navigate('/fleet-oem')}
+              >
+                <Brain className="w-5 h-5 mr-2" />
+                Experience Intelligence-Driven EV Service
+              </Button>
+            </div>
+          </div>
+        </section>
+
         {/* Benefits */}
         <section className="py-20 bg-gray-50">
           <div className="container mx-auto px-4">
