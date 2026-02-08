@@ -5,7 +5,28 @@ import Footer from '../components/layout/Footer';
 import GearBackground from '../components/common/GearBackground';
 import SEO from '../components/common/SEO';
 import { Button } from '../components/ui/button';
-import { Monitor, Smartphone, BarChart3, Zap, Bell, Link as LinkIcon, CheckCircle } from 'lucide-react';
+import { 
+  Monitor, 
+  Smartphone, 
+  BarChart3, 
+  Zap, 
+  Bell, 
+  Link as LinkIcon, 
+  CheckCircle,
+  Brain,
+  AlertTriangle,
+  Search,
+  FileText,
+  Database,
+  Share2,
+  Clock,
+  TrendingUp,
+  Shield,
+  Users,
+  Repeat,
+  Target,
+  ArrowRight
+} from 'lucide-react';
 
 const BattwheelsOS = () => {
   const navigate = useNavigate();
