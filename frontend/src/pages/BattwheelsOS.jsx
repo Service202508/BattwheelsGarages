@@ -82,7 +82,7 @@ const BattwheelsOS = () => {
           <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{
-              backgroundImage: 'url(/assets/battwheels-os-dashboard.png)',
+              backgroundImage: 'url(/assets/battwheels-os-dashboard-new.png)',
             }}
           />
           
