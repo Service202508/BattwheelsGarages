@@ -57,7 +57,7 @@ Battwheels Garages is India's first no-towing-first EV service network. The webs
 - [x] Filter system (vehicle type, part type, certified, price)
 - [x] Full-text search functionality
 - [x] Product detail pages with specifications
-- [x] Shopping cart with quantity controls
+- [x] Shopping cart with quantity controls - **Bug Fixed Feb 8**: Added toast notifications
 - [x] Checkout with address form validation
 - [x] Payment options: Razorpay (simulated) + COD
 - [x] Role-based pricing (public/fleet/technician)
@@ -65,6 +65,7 @@ Battwheels Garages is India's first no-towing-first EV service network. The webs
 - [x] Phone OTP authentication
 - [x] API-first architecture (ready for Battwheels OS integration)
 - [x] Backend tests: 22/22 passed
+- [x] **GET /products/slug/{slug}** endpoint for product detail pages
 
 ### Marketplace Bifurcation - COMPLETED (Feb 8, 2025)
 - [x] Split marketplace into two categories (no duplicates)
