@@ -243,6 +243,89 @@ async def get_product_by_sku(sku: str, role: str = "public"):
 
 # ============== INVENTORY ENDPOINTS ==============
 
+# ============== ELECTRIC VEHICLES ENDPOINTS ==============
+
+@router.get("/vehicles")
+async def get_vehicles(
+    vehicle_category: Optional[str] = None,
+    brand: Optional[str] = None,
+    oem_aftermarket: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    search: Optional[str] = None,
+    sort_by: str = "created_at",
+    sort_order: str = "desc",
+    page: int = 1,
+    limit: int = 12,
+    role: str = "public"
+):
+    """Get electric vehicles - New & Refurbished"""
+    query = {"is_active": True, "category": "Electric Vehicles"}
+    
+    if vehicle_category:
+        query["vehicle_category"] = vehicle_category
+    if brand:
+        query["brand"] = brand
+    if oem_aftermarket:
+        query["oem_aftermarket"] = oem_aftermarket
+    if min_price is not None:
+        query["base_price"] = {"$gte": min_price}
+    if max_price is not None:
+        if "base_price" in query:
+            query["base_price"]["$lte"] = max_price
+        else:
+            query["base_price"] = {"$lte": max_price}
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"brand": {"$regex": search, "$options": "i"}},
+            {"description": {"$regex": search, "$options": "i"}}
+        ]
+    
+    sort_direction = -1 if sort_order == "desc" else 1
+    skip = (page - 1) * limit
+    
+    total = await db.marketplace_products.count_documents(query)
+    vehicles_cursor = db.marketplace_products.find(query).sort(sort_by, sort_direction).skip(skip).limit(limit)
+    vehicles = await vehicles_cursor.to_list(length=limit)
+    
+    return {
+        "vehicles": [serialize_product(v, role) for v in vehicles],
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "pages": (total + limit - 1) // limit
+    }
+
+@router.get("/vehicles/oems")
+async def get_vehicle_oems():
+    """Get list of available OEMs/brands for vehicles"""
+    pipeline = [
+        {"$match": {"is_active": True, "category": "Electric Vehicles"}},
+        {"$group": {"_id": "$brand"}},
+        {"$sort": {"_id": 1}}
+    ]
+    oems = await db.marketplace_products.aggregate(pipeline).to_list(length=50)
+    return {"oems": [oem["_id"] for oem in oems if oem["_id"]]}
+
+@router.get("/vehicles/{vehicle_id}")
+async def get_vehicle(vehicle_id: str, role: str = "public"):
+    """Get single vehicle details"""
+    try:
+        vehicle = await db.marketplace_products.find_one({
+            "_id": ObjectId(vehicle_id),
+            "category": "Electric Vehicles"
+        })
+    except:
+        raise HTTPException(status_code=400, detail="Invalid vehicle ID")
+    
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+    
+    return serialize_product(vehicle, role)
+
+# ============== INVENTORY ENDPOINTS ==============
+
 @router.get("/inventory/{product_id}")
 async def get_inventory(product_id: str):
     """Get real-time inventory status - simulates Battwheels OS inventory"""
