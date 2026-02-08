@@ -1,6 +1,6 @@
 // Company Info
 export const companyInfo = {
-  name: 'Battwheels Garages',
+  name: 'BATTWHEELS SERVICES PRIVATE LIMITED',
   tagline: 'Your 100% Onsite EV Issues Resolution Partner',
   phone: '+91 8076331607',
   email: 'service@battwheelsgarages.in',
