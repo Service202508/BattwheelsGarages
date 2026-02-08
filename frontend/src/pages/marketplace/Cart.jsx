@@ -58,7 +58,7 @@ const Cart = () => {
   return (
     <>
       <Helmet>
-        <title>Shopping Cart ({getCartCount()}) | Battwheels Marketplace</title>
+        <title>{`Shopping Cart (${getCartCount()}) | Battwheels Marketplace`}</title>
       </Helmet>
 
       <Header />
