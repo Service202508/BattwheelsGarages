@@ -164,7 +164,7 @@ const BattwheelsOS = () => {
                         {/* Screen Content */}
                         <div className="rounded-md overflow-hidden">
                           <img 
-                            src="/assets/battwheels-os-dashboard-screen.png" 
+                            src="/assets/battwheels-os-dashboard-new.png" 
                             alt="Battwheels OS Dashboard" 
                             className="w-full h-auto"
                           />
