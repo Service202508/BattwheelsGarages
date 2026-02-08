@@ -193,16 +193,33 @@ const BattwheelsOS = () => {
           <div className="container mx-auto px-4 relative z-10">
             {/* Section Header */}
             <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-400 px-4 py-2 rounded-full text-sm font-semibold mb-6">
-                <Brain className="w-4 h-4" />
-                Core Differentiator
+              {/* Patent & Differentiator Badges */}
+              <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-400 px-4 py-2 rounded-full text-sm font-semibold">
+                  <Brain className="w-4 h-4" />
+                  Core Differentiator
+                </div>
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 border border-blue-400/40 text-blue-400 px-4 py-2 rounded-full text-sm font-bold">
+                  <Shield className="w-4 h-4" />
+                  Patented Technology
+                </div>
               </div>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-6">
-                EV Failure Intelligence
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400 mt-2 text-2xl md:text-3xl">
-                  One EV Failure Solved. Thousands Prevented.
-                </span>
+              
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4">
+                EV Failure Intelligence<sup className="text-blue-400 text-lg ml-1">®</sup>
               </h2>
+              <p className="text-xl md:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400 font-bold mb-6">
+                One EV Failure Solved. Thousands Prevented.
+              </p>
+              
+              {/* Patent Notice */}
+              <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-2 mb-8">
+                <svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                </svg>
+                <span className="text-blue-300 text-sm">Protected under Indian Patent Law • Proprietary to Battwheels Services Pvt. Ltd.</span>
+              </div>
+              
               <p className="text-lg text-gray-400 max-w-3xl mx-auto leading-relaxed">
                 Every undocumented EV failure in the field is analyzed, converted into structured repair intelligence, 
                 and shared across our technician network through Battwheels OS — making the entire system smarter with every repair.
