@@ -9,7 +9,7 @@ import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { Button } from '../../components/ui/button';
 import { useMarketplace } from '../../context/MarketplaceContext';
-import { useToast } from '../../components/ui/use-toast';
+import { useToast } from '../../hooks/use-toast';
 import {
   ShoppingCart,
   Package,

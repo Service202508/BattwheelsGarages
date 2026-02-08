@@ -11,7 +11,7 @@ import Footer from '../../components/layout/Footer';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { useMarketplace } from '../../context/MarketplaceContext';
-import { useToast } from '../../components/ui/use-toast';
+import { useToast } from '../../hooks/use-toast';
 import {
   Search,
   Zap,
