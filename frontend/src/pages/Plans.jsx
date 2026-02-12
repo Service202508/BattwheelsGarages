@@ -378,12 +378,18 @@ const Plans = () => {
             {/* Trust Badges */}
             <div className="mt-16 text-center">
               <p className="text-sm text-gray-500 mb-6">Trusted by leading EV brands and fleet operators</p>
-              <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-                <div className="text-gray-400 font-semibold">Ather</div>
-                <div className="text-gray-400 font-semibold">Ola Electric</div>
-                <div className="text-gray-400 font-semibold">TVS iQube</div>
-                <div className="text-gray-400 font-semibold">Bajaj Chetak</div>
-                <div className="text-gray-400 font-semibold">Hero Electric</div>
+              <div className="flex flex-wrap justify-center items-center gap-6 opacity-70">
+                <div className="text-gray-400 font-semibold text-sm">Indofast Energy</div>
+                <div className="text-gray-400 font-semibold text-sm">Magenta Mobility</div>
+                <div className="text-gray-400 font-semibold text-sm">Lithium</div>
+                <div className="text-gray-400 font-semibold text-sm">Exponent Energy</div>
+                <div className="text-gray-400 font-semibold text-sm">Omega Seiki</div>
+                <div className="text-gray-400 font-semibold text-sm">Sun Mobility</div>
+                <div className="text-gray-400 font-semibold text-sm">Zypp Electric</div>
+                <div className="text-gray-400 font-semibold text-sm">Driveo Electric</div>
+                <div className="text-gray-400 font-semibold text-sm">Indus Green</div>
+                <div className="text-gray-400 font-semibold text-sm">Turno</div>
+                <div className="text-gray-500 font-medium text-sm">and many more...</div>
               </div>
             </div>
           </div>
