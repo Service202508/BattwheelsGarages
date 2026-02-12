@@ -254,7 +254,7 @@ const PremiumHeroSection = () => {
                 </div>
 
                 {/* BACK SIDE - Technician Image */}
-                <div className="flip-card-back absolute inset-0 w-full h-full">
+                <div className="flip-card-back absolute inset-0 w-full h-full" style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}>
                   <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-xl border border-green-100">
                     {/* Technician Image */}
                     <img 
