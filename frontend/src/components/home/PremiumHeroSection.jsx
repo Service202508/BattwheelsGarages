@@ -177,12 +177,14 @@ const PremiumHeroSection = () => {
               className="order-1 lg:order-2 flip-card-container"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
+              style={{ transformStyle: 'preserve-3d' }}
             >
               <div 
                 className={`flip-card relative w-full min-h-[420px] lg:min-h-[450px] ${isFlipped ? 'flipped' : ''}`}
+                style={{ transformStyle: 'preserve-3d' }}
               >
                 {/* FRONT SIDE - Stats Card */}
-                <div className="flip-card-front absolute inset-0 w-full h-full">
+                <div className="flip-card-front absolute inset-0 w-full h-full" style={{ transform: 'rotateY(0deg)', backfaceVisibility: 'hidden' }}>
                   <div className="flex flex-col justify-center space-y-6 bg-white/80 backdrop-blur-sm rounded-3xl p-6 lg:p-8 border border-green-100 shadow-xl h-full">
                     
                     {/* The Real Road Side Assistance Header */}
