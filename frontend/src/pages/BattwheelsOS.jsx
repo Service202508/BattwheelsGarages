@@ -108,7 +108,7 @@ const BattwheelsOS = () => {
               
               {/* Description */}
               <p className="text-lg sm:text-xl text-gray-300 leading-relaxed mb-10 max-w-2xl">
-                GaragePROEV-grade diagnostics + field-force management + fleet dashboards in one <span className="text-green-400 font-semibold">EV-native platform</span>.
+                EFI-Electric Vehicle Failure Intelligence + field-force management + fleet dashboards in one <span className="text-green-400 font-semibold">EV-native platform</span>.
               </p>
               
               {/* Feature Pills */}
