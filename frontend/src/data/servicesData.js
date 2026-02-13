@@ -189,11 +189,13 @@ export const bodyPaintService = {
 export const roadsideService = {
   title: 'Onsite Breakdown & Roadside Assistance',
   subtitle: '24/7 emergency EV breakdown support',
-  description: 'Fast-response onsite diagnostics and repair to get you back on the road with minimal downtime.',
+  description: 'Fast-response onsite diagnostics and comprehensive repair to get you back on the road with minimal downtime.',
   services: [
     '24/7 emergency response',
     'Onsite diagnostics with professional tools',
-    'Minor repairs on-site',
+    'Critical electrical & electronics repairs on-site',
+    'Motor, controller & BMS repairs on-site',
+    'Mechanical repairs on-site',
     'Emergency charging/jump-start',
     'Tyre change',
     'Software reset and troubleshooting',
