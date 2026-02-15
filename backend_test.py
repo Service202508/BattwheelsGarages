@@ -220,7 +220,7 @@ def main():
         ("Auth Me", tester.test_auth_me),
         ("Dashboard Stats", tester.test_dashboard_stats),
         ("Get Users", tester.test_get_users),
-        ("Get Technicians", tester.test_technicians),
+        ("Get Technicians", tester.test_get_technicians),
         ("Get Vehicles", tester.test_get_vehicles),
         ("Create Vehicle", tester.test_create_vehicle),
         ("Get Tickets", tester.test_get_tickets),
