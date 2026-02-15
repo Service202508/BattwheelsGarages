@@ -3036,8 +3036,11 @@ async def generate_payroll(
                 {"$set": payroll_data}
             )
         else:
-            await db.payroll.insert_one(payroll_data)
+            await db.payroll.insert_one(payroll_data.copy())
         
+        # Remove _id if present for response
+        if "_id" in payroll_data:
+            del payroll_data["_id"]
         payroll_records.append(payroll_data)
     
     return {
