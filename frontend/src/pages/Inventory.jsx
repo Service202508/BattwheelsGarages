@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, Search, Package, Edit, Trash2, AlertTriangle } from "lucide-react";
+import { Plus, Search, Package, Edit, Trash2, AlertTriangle, Link as LinkIcon, ArrowUpDown } from "lucide-react";
 import { API } from "@/App";
 
 const categories = [
@@ -21,22 +22,28 @@ const categories = [
 
 export default function Inventory({ user }) {
   const [items, setItems] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
+    sku: "",
     category: "",
     quantity: 0,
     unit_price: 0,
+    cost_price: 0,
     min_stock_level: 0,
-    supplier: "",
+    max_stock_level: 1000,
+    reorder_quantity: 10,
+    supplier_id: "",
     location: "",
   });
 
   useEffect(() => {
     fetchInventory();
+    fetchSuppliers();
   }, []);
 
   const fetchInventory = async () => {
@@ -54,6 +61,22 @@ export default function Inventory({ user }) {
       console.error("Failed to fetch inventory:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSuppliers = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API}/suppliers`, {
+        credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setSuppliers(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch suppliers:", error);
     }
   };
 
@@ -110,11 +133,15 @@ export default function Inventory({ user }) {
   const resetForm = () => {
     setFormData({
       name: "",
+      sku: "",
       category: "",
       quantity: 0,
       unit_price: 0,
+      cost_price: 0,
       min_stock_level: 0,
-      supplier: "",
+      max_stock_level: 1000,
+      reorder_quantity: 10,
+      supplier_id: "",
       location: "",
     });
     setEditItem(null);
@@ -125,29 +152,36 @@ export default function Inventory({ user }) {
     setEditItem(item);
     setFormData({
       name: item.name,
+      sku: item.sku || "",
       category: item.category,
       quantity: item.quantity,
       unit_price: item.unit_price,
+      cost_price: item.cost_price || 0,
       min_stock_level: item.min_stock_level,
-      supplier: item.supplier || "",
+      max_stock_level: item.max_stock_level || 1000,
+      reorder_quantity: item.reorder_quantity || 10,
+      supplier_id: item.supplier_id || "",
       location: item.location || "",
     });
     setIsAddOpen(true);
   };
 
   const filteredItems = items.filter(item =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.sku?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const lowStockItems = items.filter(item => item.quantity < item.min_stock_level);
+  const totalValue = items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
+  const totalCost = items.reduce((sum, item) => sum + (item.quantity * (item.cost_price || 0)), 0);
 
   return (
     <div className="space-y-6 animate-fadeIn" data-testid="inventory-page">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">Inventory</h1>
-          <p className="text-muted-foreground mt-1">Manage parts and equipment stock.</p>
+          <h1 className="text-4xl font-bold tracking-tight">Inventory Management</h1>
+          <p className="text-muted-foreground mt-1">Track stock, allocate materials, manage suppliers.</p>
         </div>
         {(user?.role === "admin" || user?.role === "technician") && (
           <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
@@ -157,7 +191,7 @@ export default function Inventory({ user }) {
                 Add Item
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-card border-white/10">
+            <DialogContent className="bg-card border-white/10 max-w-2xl">
               <DialogHeader>
                 <DialogTitle>{editItem ? "Edit Item" : "Add New Item"}</DialogTitle>
                 <DialogDescription>
@@ -176,6 +210,17 @@ export default function Inventory({ user }) {
                     />
                   </div>
                   <div className="space-y-2">
+                    <Label>SKU</Label>
+                    <Input
+                      value={formData.sku}
+                      onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                      className="bg-background/50"
+                      placeholder="e.g., BAT-48V-001"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
                     <Label>Category *</Label>
                     <Select
                       value={formData.category}
@@ -191,8 +236,25 @@ export default function Inventory({ user }) {
                       </SelectContent>
                     </Select>
                   </div>
+                  <div className="space-y-2">
+                    <Label>Supplier</Label>
+                    <Select
+                      value={formData.supplier_id}
+                      onValueChange={(value) => setFormData({ ...formData, supplier_id: value })}
+                    >
+                      <SelectTrigger className="bg-background/50">
+                        <SelectValue placeholder="Select supplier" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">None</SelectItem>
+                        {suppliers.map((sup) => (
+                          <SelectItem key={sup.supplier_id} value={sup.supplier_id}>{sup.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-4 gap-4">
                   <div className="space-y-2">
                     <Label>Quantity</Label>
                     <Input
@@ -204,7 +266,16 @@ export default function Inventory({ user }) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Unit Price (₹)</Label>
+                    <Label>Cost Price (₹)</Label>
+                    <Input
+                      type="number"
+                      value={formData.cost_price}
+                      onChange={(e) => setFormData({ ...formData, cost_price: parseFloat(e.target.value) || 0 })}
+                      className="bg-background/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Sale Price (₹)</Label>
                     <Input
                       type="number"
                       value={formData.unit_price}
@@ -213,6 +284,17 @@ export default function Inventory({ user }) {
                       data-testid="item-price-input"
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label>Location</Label>
+                    <Input
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      className="bg-background/50"
+                      placeholder="e.g., Warehouse A"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label>Min Stock</Label>
                     <Input
@@ -223,21 +305,21 @@ export default function Inventory({ user }) {
                       data-testid="item-min-stock-input"
                     />
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Supplier</Label>
+                    <Label>Max Stock</Label>
                     <Input
-                      value={formData.supplier}
-                      onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
+                      type="number"
+                      value={formData.max_stock_level}
+                      onChange={(e) => setFormData({ ...formData, max_stock_level: parseInt(e.target.value) || 0 })}
                       className="bg-background/50"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Location</Label>
+                    <Label>Reorder Qty</Label>
                     <Input
-                      value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      type="number"
+                      value={formData.reorder_quantity}
+                      onChange={(e) => setFormData({ ...formData, reorder_quantity: parseInt(e.target.value) || 0 })}
                       className="bg-background/50"
                     />
                   </div>
@@ -256,13 +338,43 @@ export default function Inventory({ user }) {
         )}
       </div>
 
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="metric-card">
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground">Total Items</p>
+            <p className="text-2xl font-bold mono">{items.length}</p>
+          </CardContent>
+        </Card>
+        <Card className="metric-card">
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground">Inventory Value</p>
+            <p className="text-2xl font-bold mono">₹{totalValue.toLocaleString()}</p>
+          </CardContent>
+        </Card>
+        <Card className="metric-card">
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground">Cost Value</p>
+            <p className="text-2xl font-bold mono">₹{totalCost.toLocaleString()}</p>
+          </CardContent>
+        </Card>
+        <Card className={`metric-card ${lowStockItems.length > 0 ? 'border-orange-500/30' : ''}`}>
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground">Low Stock Items</p>
+            <p className={`text-2xl font-bold mono ${lowStockItems.length > 0 ? 'text-orange-400' : ''}`}>
+              {lowStockItems.length}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Low Stock Alert */}
       {lowStockItems.length > 0 && (
         <Card className="border-orange-500/30 bg-orange-500/10">
           <CardContent className="p-4 flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-orange-400" />
             <p className="text-sm text-orange-400">
-              <span className="font-semibold">{lowStockItems.length} items</span> are below minimum stock level
+              <span className="font-semibold">{lowStockItems.length} items</span> are below minimum stock level. Consider creating a purchase order.
             </p>
           </CardContent>
         </Card>
@@ -274,7 +386,7 @@ export default function Inventory({ user }) {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search inventory..."
+              placeholder="Search by name or SKU..."
               className="pl-10 bg-background/50"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -298,10 +410,14 @@ export default function Inventory({ user }) {
               <TableHeader>
                 <TableRow className="border-white/10 hover:bg-transparent">
                   <TableHead>Item</TableHead>
+                  <TableHead>SKU</TableHead>
                   <TableHead>Category</TableHead>
-                  <TableHead className="text-right">Quantity</TableHead>
-                  <TableHead className="text-right">Unit Price</TableHead>
-                  <TableHead>Location</TableHead>
+                  <TableHead className="text-right">In Stock</TableHead>
+                  <TableHead className="text-right">Reserved</TableHead>
+                  <TableHead className="text-right">Available</TableHead>
+                  <TableHead className="text-right">Cost</TableHead>
+                  <TableHead className="text-right">Price</TableHead>
+                  <TableHead>Supplier</TableHead>
                   <TableHead>Status</TableHead>
                   {(user?.role === "admin" || user?.role === "technician") && (
                     <TableHead className="text-right">Actions</TableHead>
@@ -318,17 +434,25 @@ export default function Inventory({ user }) {
                         </div>
                         <div>
                           <p className="font-medium">{item.name}</p>
-                          <p className="text-xs text-muted-foreground mono">{item.item_id}</p>
+                          <p className="text-xs text-muted-foreground">{item.location || 'No location'}</p>
                         </div>
                       </div>
                     </TableCell>
+                    <TableCell className="mono text-sm">{item.sku || '-'}</TableCell>
                     <TableCell className="capitalize">{item.category.replace("_", " ")}</TableCell>
                     <TableCell className="text-right mono">{item.quantity}</TableCell>
+                    <TableCell className="text-right mono text-muted-foreground">{item.reserved_quantity || 0}</TableCell>
+                    <TableCell className="text-right mono font-semibold">
+                      {item.quantity - (item.reserved_quantity || 0)}
+                    </TableCell>
+                    <TableCell className="text-right mono text-muted-foreground">₹{(item.cost_price || 0).toLocaleString()}</TableCell>
                     <TableCell className="text-right mono">₹{item.unit_price.toLocaleString()}</TableCell>
-                    <TableCell>{item.location || "-"}</TableCell>
+                    <TableCell className="text-sm">{item.supplier_name || '-'}</TableCell>
                     <TableCell>
                       {item.quantity < item.min_stock_level ? (
                         <Badge className="badge-danger" variant="outline">Low Stock</Badge>
+                      ) : item.quantity > item.max_stock_level ? (
+                        <Badge className="badge-warning" variant="outline">Overstocked</Badge>
                       ) : (
                         <Badge className="badge-success" variant="outline">In Stock</Badge>
                       )}
