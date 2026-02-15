@@ -594,12 +594,16 @@ class TicketCreate(BaseModel):
 
 class TicketUpdate(BaseModel):
     assigned_technician_id: Optional[str] = None
+    assigned_technician_name: Optional[str] = None
     status: Optional[str] = None
     resolution: Optional[str] = None
     priority: Optional[str] = None
     estimated_cost: Optional[float] = None
     resolution_type: Optional[str] = None
     incident_location: Optional[str] = None
+    estimated_items: Optional[dict] = None  # {parts: [], services: []}
+    actual_items: Optional[dict] = None  # {parts: [], services: []}
+    status_history: Optional[list] = None
 
 # ==================== CUSTOMER MODELS (NEW) ====================
 
