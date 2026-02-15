@@ -2207,6 +2207,309 @@ async def reseed_missing_data():
     
     return {"message": "Missing data reseeded", "added": results}
 
+# ==================== CUSTOMER ROUTES ====================
+
+@api_router.post("/customers")
+async def create_customer(data: CustomerCreate, request: Request):
+    await require_technician_or_admin(request)
+    customer = Customer(**data.model_dump())
+    doc = customer.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.customers.insert_one(doc)
+    return customer.model_dump()
+
+@api_router.get("/customers")
+async def get_customers(request: Request, search: Optional[str] = None, status: Optional[str] = None):
+    await require_auth(request)
+    query = {}
+    if search:
+        query["$or"] = [
+            {"display_name": {"$regex": search, "$options": "i"}},
+            {"company_name": {"$regex": search, "$options": "i"}},
+            {"email": {"$regex": search, "$options": "i"}}
+        ]
+    if status:
+        query["status"] = status
+    customers = await db.customers.find(query, {"_id": 0}).to_list(1000)
+    return customers
+
+@api_router.get("/customers/{customer_id}")
+async def get_customer(customer_id: str, request: Request):
+    await require_auth(request)
+    customer = await db.customers.find_one({"customer_id": customer_id}, {"_id": 0})
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    return customer
+
+@api_router.put("/customers/{customer_id}")
+async def update_customer(customer_id: str, update: CustomerUpdate, request: Request):
+    await require_technician_or_admin(request)
+    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.customers.update_one({"customer_id": customer_id}, {"$set": update_dict})
+    customer = await db.customers.find_one({"customer_id": customer_id}, {"_id": 0})
+    return customer
+
+# ==================== EXPENSE ROUTES ====================
+
+@api_router.post("/expenses")
+async def create_expense(data: ExpenseCreate, request: Request):
+    user = await require_technician_or_admin(request)
+    expense = Expense(
+        expense_date=datetime.fromisoformat(data.expense_date),
+        description=data.description,
+        expense_account=data.expense_account,
+        vendor_id=data.vendor_id,
+        amount=data.amount,
+        tax_amount=data.tax_amount,
+        reference_number=data.reference_number,
+        is_billable=data.is_billable,
+        created_by=user.user_id
+    )
+    doc = expense.model_dump()
+    doc['expense_date'] = doc['expense_date'].isoformat()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.expenses.insert_one(doc)
+    
+    # Create ledger entry
+    await create_ledger_entry(
+        account_type="expense",
+        account_name=data.expense_account,
+        description=data.description or f"Expense: {data.expense_account}",
+        reference_type="expense",
+        reference_id=expense.expense_id,
+        debit=data.amount,
+        credit=0,
+        created_by=user.user_id
+    )
+    
+    return expense.model_dump()
+
+@api_router.get("/expenses")
+async def get_expenses(
+    request: Request,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    account: Optional[str] = None
+):
+    await require_auth(request)
+    query = {}
+    if start_date:
+        query["expense_date"] = {"$gte": start_date}
+    if end_date:
+        if "expense_date" in query:
+            query["expense_date"]["$lte"] = end_date
+        else:
+            query["expense_date"] = {"$lte": end_date}
+    if account:
+        query["expense_account"] = account
+    
+    expenses = await db.expenses.find(query, {"_id": 0}).sort("expense_date", -1).to_list(1000)
+    return expenses
+
+@api_router.get("/expenses/summary")
+async def get_expense_summary(request: Request):
+    await require_admin(request)
+    
+    pipeline = [
+        {"$group": {
+            "_id": "$expense_account",
+            "total": {"$sum": "$amount"},
+            "count": {"$sum": 1}
+        }},
+        {"$sort": {"total": -1}}
+    ]
+    
+    summary = await db.expenses.aggregate(pipeline).to_list(50)
+    total = sum(item["total"] for item in summary)
+    
+    return {
+        "by_account": summary,
+        "total_expenses": total,
+        "expense_count": sum(item["count"] for item in summary)
+    }
+
+# ==================== CHART OF ACCOUNTS ROUTES ====================
+
+@api_router.get("/chart-of-accounts")
+async def get_chart_of_accounts(request: Request):
+    await require_auth(request)
+    accounts = await db.chart_of_accounts.find({}, {"_id": 0}).to_list(500)
+    return accounts
+
+@api_router.get("/chart-of-accounts/by-type/{account_type}")
+async def get_accounts_by_type(account_type: str, request: Request):
+    await require_auth(request)
+    accounts = await db.chart_of_accounts.find(
+        {"account_type": account_type, "is_active": True},
+        {"_id": 0}
+    ).to_list(100)
+    return accounts
+
+# ==================== MIGRATION ROUTES ====================
+
+@api_router.post("/migration/upload")
+async def upload_migration_file(request: Request):
+    """Upload and extract legacy backup file"""
+    user = await require_admin(request)
+    
+    # This endpoint would handle file upload
+    # For now, we assume files are manually placed in /tmp/legacy_data
+    import os
+    data_dir = "/tmp/legacy_data"
+    
+    if not os.path.exists(data_dir):
+        raise HTTPException(status_code=400, detail="Migration data directory not found. Please extract backup to /tmp/legacy_data")
+    
+    files = os.listdir(data_dir)
+    xls_files = [f for f in files if f.endswith('.xls')]
+    
+    return {
+        "message": "Migration data directory found",
+        "files_found": len(xls_files),
+        "files": xls_files[:20]  # Show first 20 files
+    }
+
+@api_router.post("/migration/run")
+async def run_migration(request: Request):
+    """Run full legacy data migration"""
+    user = await require_admin(request)
+    
+    import sys
+    sys.path.insert(0, str(ROOT_DIR))
+    
+    try:
+        from migration.legacy_migrator import LegacyDataMigrator
+        
+        data_dir = "/tmp/legacy_data"
+        migrator = LegacyDataMigrator(data_dir, db)
+        stats = await migrator.run_full_migration()
+        
+        return {
+            "message": "Migration completed",
+            "statistics": stats
+        }
+    except ImportError as e:
+        raise HTTPException(status_code=500, detail=f"Migration module not found: {str(e)}")
+    except Exception as e:
+        logger.error(f"Migration error: {e}")
+        raise HTTPException(status_code=500, detail=f"Migration failed: {str(e)}")
+
+@api_router.post("/migration/customers")
+async def migrate_customers_only(request: Request):
+    """Migrate only customers from legacy data"""
+    user = await require_admin(request)
+    
+    import sys
+    sys.path.insert(0, str(ROOT_DIR))
+    
+    try:
+        from migration.legacy_migrator import LegacyDataMigrator
+        
+        data_dir = "/tmp/legacy_data"
+        migrator = LegacyDataMigrator(data_dir, db)
+        count = await migrator.migrate_customers()
+        
+        return {"message": f"Migrated {count} customers", "count": count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/migration/suppliers")
+async def migrate_suppliers_only(request: Request):
+    """Migrate only suppliers/vendors from legacy data"""
+    user = await require_admin(request)
+    
+    import sys
+    sys.path.insert(0, str(ROOT_DIR))
+    
+    try:
+        from migration.legacy_migrator import LegacyDataMigrator
+        
+        data_dir = "/tmp/legacy_data"
+        migrator = LegacyDataMigrator(data_dir, db)
+        count = await migrator.migrate_suppliers()
+        
+        return {"message": f"Migrated {count} suppliers", "count": count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/migration/inventory")
+async def migrate_inventory_only(request: Request):
+    """Migrate only inventory items from legacy data"""
+    user = await require_admin(request)
+    
+    import sys
+    sys.path.insert(0, str(ROOT_DIR))
+    
+    try:
+        from migration.legacy_migrator import LegacyDataMigrator
+        
+        data_dir = "/tmp/legacy_data"
+        migrator = LegacyDataMigrator(data_dir, db)
+        await migrator.migrate_suppliers()  # Need suppliers first for references
+        count = await migrator.migrate_inventory()
+        
+        return {"message": f"Migrated {count} inventory items", "count": count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/migration/invoices")
+async def migrate_invoices_only(request: Request):
+    """Migrate only invoices from legacy data"""
+    user = await require_admin(request)
+    
+    import sys
+    sys.path.insert(0, str(ROOT_DIR))
+    
+    try:
+        from migration.legacy_migrator import LegacyDataMigrator
+        
+        data_dir = "/tmp/legacy_data"
+        migrator = LegacyDataMigrator(data_dir, db)
+        await migrator.migrate_customers()  # Need customers first
+        count = await migrator.migrate_invoices()
+        
+        return {"message": f"Migrated {count} invoices", "count": count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/migration/status")
+async def get_migration_status(request: Request):
+    """Get current migration status and data counts"""
+    await require_admin(request)
+    
+    # Count migrated records
+    counts = {
+        "customers": await db.customers.count_documents({"migrated_from": "legacy_zoho"}),
+        "suppliers": await db.suppliers.count_documents({"migrated_from": "legacy_zoho"}),
+        "inventory": await db.inventory.count_documents({"migrated_from": "legacy_zoho"}),
+        "invoices": await db.invoices.count_documents({"migrated_from": "legacy_zoho"}),
+        "sales_orders": await db.sales_orders.count_documents({"migrated_from": "legacy_zoho"}),
+        "purchase_orders": await db.purchase_orders.count_documents({"migrated_from": "legacy_zoho"}),
+        "payments": await db.payments.count_documents({"migrated_from": "legacy_zoho"}),
+        "expenses": await db.expenses.count_documents({"migrated_from": "legacy_zoho"}),
+        "accounts": await db.chart_of_accounts.count_documents({"migrated_from": "legacy_zoho"})
+    }
+    
+    # Total counts
+    totals = {
+        "customers": await db.customers.count_documents({}),
+        "suppliers": await db.suppliers.count_documents({}),
+        "inventory": await db.inventory.count_documents({}),
+        "invoices": await db.invoices.count_documents({}),
+        "sales_orders": await db.sales_orders.count_documents({}),
+        "purchase_orders": await db.purchase_orders.count_documents({}),
+        "payments": await db.payments.count_documents({}),
+        "expenses": await db.expenses.count_documents({}),
+        "accounts": await db.chart_of_accounts.count_documents({})
+    }
+    
+    return {
+        "migrated_records": counts,
+        "total_records": totals,
+        "migration_complete": all(counts[k] > 0 for k in ["customers", "suppliers", "inventory"])
+    }
+
 # Root endpoint
 @api_router.get("/")
 async def root():
