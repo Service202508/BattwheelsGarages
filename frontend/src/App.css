@@ -1,16 +1,9 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+.App {
+    min-height: 100vh;
 }
 
 .App-header {
-    background-color: #0f0f10;
+    background-color: hsl(222 47% 11%);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -21,14 +14,22 @@
 }
 
 .App-link {
-    color: #61dafb;
+    color: hsl(186 70% 50%);
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+/* Recharts customization */
+.recharts-default-tooltip {
+    background-color: hsl(217 33% 17%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+}
+
+.recharts-tooltip-label {
+    color: white !important;
+}
+
+/* Custom selection */
+::selection {
+    background-color: hsl(186 70% 50%);
+    color: hsl(222 47% 11%);
 }
