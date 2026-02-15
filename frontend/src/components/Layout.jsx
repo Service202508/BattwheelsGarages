@@ -1,0 +1,222 @@
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { 
+  LayoutDashboard, 
+  Ticket, 
+  Package, 
+  Bot, 
+  Users, 
+  Car, 
+  Bell, 
+  Settings, 
+  LogOut, 
+  ChevronLeft,
+  ChevronRight,
+  Menu,
+  X,
+  Wrench,
+  FileText,
+  TrendingUp,
+  UserCircle
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
+const navItems = [
+  { section: "General", items: [
+    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+    { name: "Data Insights", path: "/insights", icon: TrendingUp },
+  ]},
+  { section: "Operations", items: [
+    { name: "New Ticket", path: "/tickets/new", icon: Ticket },
+    { name: "Complaint Dashboard", path: "/tickets", icon: FileText },
+    { name: "Predictive Maintenance", path: "/ai-assistant", icon: Bot },
+    { name: "Inventory", path: "/inventory", icon: Package },
+    { name: "Vehicles", path: "/vehicles", icon: Car },
+    { name: "Alerts", path: "/alerts", icon: Bell },
+  ]},
+  { section: "Administration", items: [
+    { name: "Users", path: "/users", icon: Users, adminOnly: true },
+  ]},
+];
+
+const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) => {
+  const location = useLocation();
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="p-4 border-b border-white/10">
+        <div className="flex items-center justify-between">
+          {!collapsed && (
+            <h1 className="text-xl font-bold text-foreground tracking-tight" data-testid="sidebar-title">
+              Battwheels OS
+            </h1>
+          )}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setCollapsed?.(!collapsed)}
+            className="text-muted-foreground hover:text-foreground hidden lg:flex"
+            data-testid="collapse-sidebar-btn"
+          >
+            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </Button>
+          {onClose && (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={onClose}
+              className="text-muted-foreground hover:text-foreground lg:hidden"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <ScrollArea className="flex-1 py-4">
+        <nav className="space-y-6 px-3">
+          {navItems.map((section) => (
+            <div key={section.section}>
+              {!collapsed && (
+                <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3 px-3">
+                  {section.section}
+                </p>
+              )}
+              <div className="space-y-1">
+                {section.items.map((item) => {
+                  if (item.adminOnly && user?.role !== "admin") return null;
+                  const isActive = location.pathname === item.path;
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={onClose}
+                      data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                        isActive
+                          ? "sidebar-item-active"
+                          : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                      } ${collapsed ? "justify-center" : ""}`}
+                    >
+                      <Icon className="h-5 w-5 flex-shrink-0" strokeWidth={1.5} />
+                      {!collapsed && <span className="text-sm font-medium">{item.name}</span>}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </nav>
+      </ScrollArea>
+
+      {/* User Profile */}
+      <div className="border-t border-white/10 p-4">
+        {!collapsed ? (
+          <div className="flex items-center gap-3 mb-4">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={user?.picture} />
+              <AvatarFallback className="bg-primary/20 text-primary">
+                {user?.name?.charAt(0) || "U"}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{user?.name || "User"}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-center mb-4">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={user?.picture} />
+              <AvatarFallback className="bg-primary/20 text-primary">
+                {user?.name?.charAt(0) || "U"}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        )}
+        
+        <div className={`flex ${collapsed ? "flex-col gap-2 items-center" : "gap-2"}`}>
+          <Link 
+            to="/settings" 
+            onClick={onClose}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors ${collapsed ? "justify-center w-full" : "flex-1"}`}
+            data-testid="nav-settings"
+          >
+            <Settings className="h-4 w-4" strokeWidth={1.5} />
+            {!collapsed && <span className="text-sm">Settings</span>}
+          </Link>
+          <Button 
+            variant="ghost" 
+            onClick={() => { onLogout(); onClose?.(); }}
+            className={`text-muted-foreground hover:text-foreground hover:bg-white/5 ${collapsed ? "w-full justify-center" : ""}`}
+            data-testid="logout-btn"
+          >
+            <LogOut className="h-4 w-4" strokeWidth={1.5} />
+            {!collapsed && <span className="ml-2 text-sm">Logout</span>}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default function Layout({ children, user, onLogout }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-background flex">
+      {/* Desktop Sidebar */}
+      <aside 
+        className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen glass border-r border-white/10 transition-all duration-300 z-50 ${
+          collapsed ? "w-20" : "w-64"
+        }`}
+        data-testid="desktop-sidebar"
+      >
+        <SidebarContent 
+          user={user} 
+          collapsed={collapsed} 
+          setCollapsed={setCollapsed} 
+          onLogout={onLogout} 
+        />
+      </aside>
+
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 glass border-b border-white/10 flex items-center px-4 z-40">
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" data-testid="mobile-menu-btn">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0 bg-background border-r border-white/10">
+            <SidebarContent 
+              user={user} 
+              collapsed={false} 
+              onLogout={onLogout}
+              onClose={() => setMobileOpen(false)}
+            />
+          </SheetContent>
+        </Sheet>
+        <h1 className="ml-4 text-lg font-bold">Battwheels OS</h1>
+      </div>
+
+      {/* Main Content */}
+      <main 
+        className={`flex-1 transition-all duration-300 ${
+          collapsed ? "lg:ml-20" : "lg:ml-64"
+        } mt-16 lg:mt-0`}
+      >
+        <div className="p-6 md:p-8 max-w-7xl mx-auto">
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+}
