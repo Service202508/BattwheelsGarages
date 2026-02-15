@@ -458,6 +458,114 @@ class TicketUpdate(BaseModel):
     priority: Optional[str] = None
     estimated_cost: Optional[float] = None
 
+# ==================== CUSTOMER MODELS (NEW) ====================
+
+class Customer(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    customer_id: str = Field(default_factory=lambda: f"cust_{uuid.uuid4().hex[:12]}")
+    legacy_id: Optional[str] = None
+    customer_number: Optional[str] = None
+    display_name: str
+    company_name: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    mobile: Optional[str] = None
+    gst_number: Optional[str] = None
+    gst_treatment: Optional[str] = None
+    pan_number: Optional[str] = None
+    billing_address: Optional[dict] = None
+    shipping_address: Optional[dict] = None
+    currency_code: str = "INR"
+    payment_terms: str = "Due on Receipt"
+    credit_limit: float = 0.0
+    opening_balance: float = 0.0
+    outstanding_balance: float = 0.0
+    notes: Optional[str] = None
+    status: str = "active"
+    portal_enabled: bool = False
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: Optional[datetime] = None
+    migrated_from: Optional[str] = None
+
+class CustomerCreate(BaseModel):
+    display_name: str
+    company_name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    gst_number: Optional[str] = None
+    billing_address: Optional[dict] = None
+    payment_terms: str = "Due on Receipt"
+    credit_limit: float = 0.0
+
+class CustomerUpdate(BaseModel):
+    display_name: Optional[str] = None
+    company_name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    gst_number: Optional[str] = None
+    billing_address: Optional[dict] = None
+    status: Optional[str] = None
+
+# ==================== EXPENSE MODELS (NEW) ====================
+
+class Expense(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    expense_id: str = Field(default_factory=lambda: f"exp_{uuid.uuid4().hex[:12]}")
+    legacy_id: Optional[str] = None
+    expense_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    description: Optional[str] = None
+    expense_account: str
+    expense_account_code: Optional[str] = None
+    paid_through: Optional[str] = None
+    paid_through_code: Optional[str] = None
+    vendor_id: Optional[str] = None
+    vendor_name: Optional[str] = None
+    amount: float
+    subtotal: float = 0.0
+    tax_amount: float = 0.0
+    cgst: float = 0.0
+    sgst: float = 0.0
+    igst: float = 0.0
+    hsn_sac: Optional[str] = None
+    gst_treatment: Optional[str] = None
+    gst_number: Optional[str] = None
+    currency_code: str = "INR"
+    reference_number: Optional[str] = None
+    is_billable: bool = False
+    customer_name: Optional[str] = None
+    project_name: Optional[str] = None
+    location_name: Optional[str] = None
+    created_by: str = "system"
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    migrated_from: Optional[str] = None
+
+class ExpenseCreate(BaseModel):
+    expense_date: str
+    description: Optional[str] = None
+    expense_account: str
+    vendor_id: Optional[str] = None
+    amount: float
+    tax_amount: float = 0.0
+    reference_number: Optional[str] = None
+    is_billable: bool = False
+
+# ==================== CHART OF ACCOUNTS MODEL (NEW) ====================
+
+class ChartOfAccount(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    account_id: str = Field(default_factory=lambda: f"acc_{uuid.uuid4().hex[:12]}")
+    account_name: str
+    account_code: Optional[str] = None
+    description: Optional[str] = None
+    account_type: str  # Asset, Liability, Equity, Income, Expense
+    parent_account: Optional[str] = None
+    is_active: bool = True
+    currency: str = "INR"
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    migrated_from: Optional[str] = None
+
 # ==================== OTHER MODELS ====================
 
 class AIQuery(BaseModel):
