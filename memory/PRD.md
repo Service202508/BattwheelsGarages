@@ -5,42 +5,48 @@ Build a full-stack EV Command Center operation system (Battwheels OS) with integ
 
 ## What's Been Implemented (Feb 15, 2026)
 
-### HR & Payroll Module (NEW)
-- **Attendance Management**
-  - Clock In/Out with real-time tracking
-  - Standard work hours: 9:00 AM - 6:00 PM (9 hours)
-  - Late arrival detection (>15 min after 9 AM)
-  - Early departure warnings (<15 min before 6 PM)
-  - Overtime calculation (hours > 9)
-  - Monthly attendance summary with productivity metrics
-  - Team overview for managers/admin
+### New Service Ticket Form (Updated)
+Comprehensive ticket submission form with sections:
+1. **Vehicle Information**
+   - Vehicle Type (Two Wheeler, Three Wheeler, Four Wheeler, Commercial)
+   - Vehicle Model
+   - Vehicle Number (auto-uppercase)
 
-- **Leave Management**
-  - 5 Leave Types: CL (12), SL (12), EL (15), LWP (365), CO (10)
-  - Leave request workflow with manager approval
-  - Leave balance tracking
-  - Pending/Approved/Rejected status
-  - Automatic attendance marking for approved leaves
+2. **Customer Details**
+   - Customer Type (Individual, Business, Fleet, Dealer, Rental)
+   - Full Name
+   - Contact Number (+91 prefix)
+   - Email Address
 
-- **Payroll Integration**
-  - Auto-calculate based on attendance
-  - Base salary = Hourly rate × 9 hours × working days
-  - Overtime pay = 1.5× hourly rate
-  - Deductions: Absence + Late penalty (₹100/day)
-  - Monthly payroll generation (admin)
-  - Individual payslip view
+3. **Complaint Specifics**
+   - Issue Title
+   - Issue Type (Battery, Motor, Charging, Controller, etc.)
+   - Resolution Type (Workshop, On-Site, Pickup & Drop, Remote)
+   - Priority (Low, Medium, High, Critical)
+   - Detailed Description
 
-### Data Migration (Completed)
+4. **Incident Location**
+   - Text address input
+   - Search/Map integration placeholder
+   - Map picker placeholder
+
+5. **Attachments**
+   - Multi-file upload (images, documents)
+   - Preview for images
+   - File size display
+
+### HR & Payroll Module
+- Attendance Management (Clock In/Out, 9hr standard)
+- Leave Management (5 leave types with approval)
+- Payroll Integration (auto-calculate from attendance)
+
+### Data Migration
 - ~10,000 records migrated from Zoho Books
-- Customers, Suppliers, Inventory, Invoices, Sales/Purchase Orders, Payments, Expenses, Chart of Accounts
 
 ### Core ERP Modules
 - Ticket/Complaint Management
-- Inventory Management
-- Supplier/Vendor Management
-- Sales & Purchase Orders
-- Invoices & Payments
-- Accounting/Ledger
+- Inventory, Suppliers, PO, Sales Orders
+- Invoices, Expenses, Accounting
 - AI Diagnostic Assistant (GPT-5.2)
 
 ## Tech Stack
@@ -52,44 +58,42 @@ Build a full-stack EV Command Center operation system (Battwheels OS) with integ
 ## Test Credentials
 - **Admin:** admin@battwheels.in / admin123
 
-## API Endpoints - HR Module
-- `POST /api/attendance/clock-in` - Clock in
-- `POST /api/attendance/clock-out` - Clock out with break time
-- `GET /api/attendance/today` - Today's attendance
-- `GET /api/attendance/my-records` - Monthly records with summary
-- `GET /api/attendance/team-summary` - Team metrics (admin)
-- `GET /api/leave/types` - Leave types
-- `GET /api/leave/balance` - User's leave balance
-- `POST /api/leave/request` - Apply for leave
-- `GET /api/leave/my-requests` - User's leave requests
-- `GET /api/leave/pending-approvals` - Pending approvals (admin)
-- `PUT /api/leave/{id}/approve` - Approve/reject leave
-- `POST /api/payroll/generate` - Generate monthly payroll (admin)
-- `GET /api/payroll/records` - All payroll records (admin)
-- `GET /api/payroll/my-records` - User's payslips
-
-## Test Results (Feb 15, 2026)
-- Backend: **100% (16/16 tests passed)**
-- Frontend: **100% (all pages working)**
-- Test file: `/app/backend/tests/test_hr_module.py`
+## New Ticket API Fields
+```json
+{
+  "vehicle_type": "two_wheeler|three_wheeler|four_wheeler|commercial|other",
+  "vehicle_model": "string",
+  "vehicle_number": "string",
+  "customer_type": "individual|business|fleet|dealer|rental",
+  "customer_name": "string",
+  "contact_number": "string",
+  "customer_email": "string",
+  "title": "string",
+  "description": "string",
+  "category": "string",
+  "issue_type": "battery|motor|charging|controller|electrical|...",
+  "resolution_type": "workshop|onsite|pickup|remote",
+  "priority": "low|medium|high|critical",
+  "incident_location": "string",
+  "attachments_count": 0
+}
+```
 
 ## Prioritized Backlog
 
 ### P0 (Completed)
 - [x] ERP System with all modules
 - [x] Legacy data migration
-- [x] Attendance tracking with clock in/out
-- [x] Leave management with approval workflow
-- [x] Payroll calculation and generation
+- [x] HR & Payroll module
+- [x] Enhanced service ticket form
 
 ### P1 (Next Phase)
+- [ ] Google Maps integration for location picker
+- [ ] File upload to cloud storage
 - [ ] Invoice PDF generation
-- [ ] Shift management (multiple shift timings)
-- [ ] Biometric integration
-- [ ] Email notifications for approvals
+- [ ] Email notifications
 
 ### P2 (Future)
-- [ ] Payment gateway integration
-- [ ] Real-time WebSocket updates
-- [ ] Mobile app for attendance
-- [ ] Advanced payroll features (tax, PF, ESI)
+- [ ] Mobile app for field technicians
+- [ ] Customer portal
+- [ ] Real-time tracking
