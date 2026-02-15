@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
@@ -14,6 +14,11 @@ import Users from "@/pages/Users";
 import Vehicles from "@/pages/Vehicles";
 import Alerts from "@/pages/Alerts";
 import Settings from "@/pages/Settings";
+import Suppliers from "@/pages/Suppliers";
+import PurchaseOrders from "@/pages/PurchaseOrders";
+import SalesOrders from "@/pages/SalesOrders";
+import Invoices from "@/pages/Invoices";
+import Accounting from "@/pages/Accounting";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
@@ -176,6 +181,42 @@ function AppRouter() {
         <ProtectedRoute user={auth.user} loading={auth.loading}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Settings user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      {/* New ERP Modules */}
+      <Route path="/suppliers" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Suppliers user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/purchases" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <PurchaseOrders user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/sales" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <SalesOrders user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/invoices" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Invoices user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/accounting" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Accounting user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
