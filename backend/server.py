@@ -525,16 +525,35 @@ class VehicleCreate(BaseModel):
 class Ticket(BaseModel):
     model_config = ConfigDict(extra="ignore")
     ticket_id: str = Field(default_factory=lambda: f"tkt_{uuid.uuid4().hex[:12]}")
-    vehicle_id: str
-    customer_id: str
+    # Vehicle Info
+    vehicle_id: Optional[str] = None
+    vehicle_type: Optional[str] = None
+    vehicle_model: Optional[str] = None
+    vehicle_number: Optional[str] = None
+    # Customer Info
+    customer_id: Optional[str] = None
+    customer_type: Optional[str] = None
     customer_name: Optional[str] = None
+    contact_number: Optional[str] = None
+    customer_email: Optional[str] = None
+    # Assignment
     assigned_technician_id: Optional[str] = None
     assigned_technician_name: Optional[str] = None
+    # Complaint Details
     title: str
     description: str
     category: str
+    issue_type: Optional[str] = None
+    resolution_type: Optional[str] = None  # workshop, onsite, pickup, remote
     priority: str = "medium"
     status: str = "open"
+    # Location
+    incident_location: Optional[str] = None
+    location_coordinates: Optional[dict] = None
+    # Attachments
+    attachments: List[dict] = []
+    attachments_count: int = 0
+    # Diagnosis & Resolution
     ai_diagnosis: Optional[str] = None
     resolution: Optional[str] = None
     # Financial tracking
@@ -550,11 +569,27 @@ class Ticket(BaseModel):
     resolved_at: Optional[datetime] = None
 
 class TicketCreate(BaseModel):
-    vehicle_id: str
+    # Vehicle Info
+    vehicle_id: Optional[str] = None
+    vehicle_type: Optional[str] = None
+    vehicle_model: Optional[str] = None
+    vehicle_number: Optional[str] = None
+    # Customer Info
+    customer_type: Optional[str] = None
+    customer_name: Optional[str] = None
+    contact_number: Optional[str] = None
+    customer_email: Optional[str] = None
+    # Complaint Details
     title: str
     description: str
     category: str
+    issue_type: Optional[str] = None
+    resolution_type: Optional[str] = None
     priority: str = "medium"
+    # Location
+    incident_location: Optional[str] = None
+    # Attachments
+    attachments_count: int = 0
     estimated_cost: float = 0.0
 
 class TicketUpdate(BaseModel):
@@ -563,6 +598,8 @@ class TicketUpdate(BaseModel):
     resolution: Optional[str] = None
     priority: Optional[str] = None
     estimated_cost: Optional[float] = None
+    resolution_type: Optional[str] = None
+    incident_location: Optional[str] = None
 
 # ==================== CUSTOMER MODELS (NEW) ====================
 
