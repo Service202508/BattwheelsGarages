@@ -1,0 +1,132 @@
+{
+  "identity": {
+    "name": "Battwheels OS",
+    "persona": "E1 - The Anti-AI Designer",
+    "tone": "Technical, Authoritative, Futuristic, Operational",
+    "aesthetic": "Dark Mode Command Center, Glassmorphism, Neon Accents"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Barlow, sans-serif",
+      "body": "Manrope, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "weights": {
+      "headings": "700",
+      "subheadings": "600",
+      "body": "400",
+      "bold": "700"
+    },
+    "sizes": {
+      "h1": "text-4xl md:text-5xl tracking-tight",
+      "h2": "text-3xl tracking-tight",
+      "h3": "text-2xl tracking-tight",
+      "body": "text-base leading-relaxed",
+      "small": "text-sm text-muted-foreground",
+      "tiny": "text-xs uppercase tracking-widest"
+    },
+    "installation": "Import fonts via Google Fonts in index.css: @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400&display=swap');"
+  },
+  "colors": {
+    "palette": {
+      "background": "hsl(222, 47%, 11%)",
+      "foreground": "hsl(210, 40%, 98%)",
+      "card": "hsl(217, 33%, 17%)",
+      "card_foreground": "hsl(210, 40%, 98%)",
+      "popover": "hsl(222, 47%, 11%)",
+      "popover_foreground": "hsl(210, 40%, 98%)",
+      "primary": "hsl(186, 70%, 50%)",
+      "primary_foreground": "hsl(222, 47%, 11%)",
+      "secondary": "hsl(217, 33%, 17%)",
+      "secondary_foreground": "hsl(210, 40%, 98%)",
+      "muted": "hsl(217, 33%, 17%)",
+      "muted_foreground": "hsl(215, 20%, 65%)",
+      "accent": "hsl(186, 70%, 50%)",
+      "accent_foreground": "hsl(222, 47%, 11%)",
+      "destructive": "hsl(0, 84%, 60%)",
+      "destructive_foreground": "hsl(210, 40%, 98%)",
+      "border": "hsl(217, 33%, 25%)",
+      "input": "hsl(217, 33%, 25%)",
+      "ring": "hsl(186, 70%, 50%)",
+      "chart_1": "hsl(186, 70%, 50%)",
+      "chart_2": "hsl(24, 95%, 53%)",
+      "chart_3": "hsl(262, 83%, 58%)",
+      "chart_4": "hsl(47, 95%, 58%)",
+      "chart_5": "hsl(340, 75%, 55%)"
+    },
+    "usage": {
+      "background": "Deep Navy Blue (#0f172a)",
+      "primary": "Electric Cyan (#22d3ee) - Use for CTAs, active states, and key metrics",
+      "secondary": "Slate Blue - Use for card backgrounds and secondary elements",
+      "accent": "Warning Orange (#f97316) - Use for alerts, warnings, and attention-grabbing highlights",
+      "text": "Off-white for readability, never pure white on dark backgrounds"
+    }
+  },
+  "layout": {
+    "grid_system": "Bento Grid Protocol",
+    "spacing": {
+      "container_padding": "p-6 md:p-8 lg:p-12",
+      "element_gap": "gap-6",
+      "section_spacing": "py-12"
+    },
+    "structure": {
+      "sidebar": "Fixed left sidebar, glassmorphism effect (bg-background/80 backdrop-blur-md), border-r border-border/50",
+      "main_content": "Scrollable area, max-w-7xl mx-auto",
+      "cards": "Rounded-xl border border-white/10 bg-card/50 backdrop-blur-sm shadow-lg hover:border-primary/50 transition-colors duration-300"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-300 rounded-md font-semibold tracking-wide",
+      "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-white/10 rounded-md font-medium",
+      "ghost": "hover:bg-white/5 text-muted-foreground hover:text-foreground rounded-md"
+    },
+    "cards": {
+      "dashboard_metric": "p-6 flex flex-col justify-between h-full relative overflow-hidden group",
+      "chart_container": "p-6 min-h-[300px] flex flex-col"
+    },
+    "inputs": {
+      "default": "bg-background/50 border-border focus:border-primary focus:ring-1 focus:ring-primary/50 rounded-md"
+    },
+    "navigation": {
+      "sidebar_item": "flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors",
+      "sidebar_item_active": "bg-primary/10 text-primary border-r-2 border-primary"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-md bg-background/70 border border-white/10",
+    "gradients": "Use subtle radial gradients in backgrounds to create depth. Avoid linear gradients on text.",
+    "shadows": "shadow-lg shadow-black/20",
+    "borders": "1px solid rgba(255, 255, 255, 0.1)",
+    "icons": "Lucide React (default). Use thin strokes (1.5px) for a technical look."
+  },
+  "motion": {
+    "transitions": "transition-all duration-300 ease-out",
+    "hover_effects": "translate-y-[-2px] shadow-xl",
+    "loading": "Pulse effects on skeletons, spinning loaders for data fetching"
+  },
+  "images": {
+    "hero_bg": "https://images.unsplash.com/photo-1639060015191-9d83063eab2a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzh8MHwxfHNlYXJjaHwyfHxmdXR1cmlzdGljJTIwY2FyJTIwZGFzaGJvYXJkJTIwaW50ZXJmYWNlfGVufDB8fHx8MTc3MTE4OTI3NXww&ixlib=rb-4.1.0&q=85",
+    "charging_station": "https://images.unsplash.com/photo-1765272088009-100c96a4cd4e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwxfHxlbGVjdHJpYyUyMHZlaGljbGUlMjBjaGFyZ2luZyUyMHN0YXRpb24lMjBtb2Rlcm58ZW58MHx8fHwxNzcxMTg5MjY3fDA&ixlib=rb-4.1.0&q=85",
+    "mechanic": "https://images.unsplash.com/photo-1545732870-5dced7323d26?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwxfHxtZWNoYW5pYyUyMHdvcmtpbmclMjBvbiUyMGVsZWN0cmljJTIwY2FyJTIwd29ya3Nob3B8ZW58MHx8fHwxNzcxMTg5MjcxfDA&ixlib=rb-4.1.0&q=85",
+    "logo_placeholder": "https://via.placeholder.com/150x50?text=Battwheels+OS"
+  },
+  "instructions_to_main_agent": [
+    "1. THEME SETUP: Update tailwind.config.js with the colors defined in 'colors.palette'. Ensure 'darkMode' is set to 'class'.",
+    "2. FONTS: Add the Google Fonts import to src/index.css immediately.",
+    "3. LAYOUT: Create a 'Layout' component that includes the Sidebar and a scrollable main content area. Use the 'glassmorphism' styles for the sidebar.",
+    "4. DASHBOARD: Implement the dashboard using the 'Bento Grid' layout. Use the 'dashboard_metric' card style for the top stats.",
+    "5. CHARTS: Use Recharts for the 'Vehicle Status Distribution' (Donut) and 'Repair Time Trend' (Bar). Style them with the 'chart_*' colors.",
+    "6. AI MODULE: For the 'Answer Module', create a chat-like interface or a search-bar style input that expands into a solution card. Use 'primary' color for the AI's responses to highlight intelligence.",
+    "7. TABLES: For 'Vehicles in Workshop', use a clean table with 'border-b border-white/10' for rows. No vertical borders.",
+    "8. MOBILE: Ensure the sidebar collapses into a hamburger menu on mobile screens.",
+    "9. DATA-TESTID: Add 'data-testid' to all interactive elements (buttons, inputs, sidebar links) as per the critical rules."
+  ],
+  "universal_guidelines": [
+    "Avoid generic 'Bootstrap' looks. Use custom spacing and typography.",
+    "Dark mode is the DEFAULT and ONLY mode for this application (as per user request).",
+    "Use 'sonner' for toast notifications.",
+    "Do not use 'alert()' or native confirm dialogs. Use Shadcn Dialogs.",
+    "Ensure all text has sufficient contrast against the dark background (APCA/WCAG AA)."
+  ]
+}
