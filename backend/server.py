@@ -564,6 +564,11 @@ class Ticket(BaseModel):
     has_sales_order: bool = False
     has_invoice: bool = False
     invoice_id: Optional[str] = None
+    # Job Card - Costing & History
+    estimated_items: dict = Field(default_factory=lambda: {"parts": [], "services": []})
+    actual_items: dict = Field(default_factory=lambda: {"parts": [], "services": []})
+    status_history: List[dict] = Field(default_factory=list)
+    # Timestamps
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     resolved_at: Optional[datetime] = None
