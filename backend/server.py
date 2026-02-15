@@ -78,6 +78,111 @@ class UserUpdate(BaseModel):
     designation: Optional[str] = None
     phone: Optional[str] = None
     is_active: Optional[bool] = None
+    manager_id: Optional[str] = None
+    department: Optional[str] = None
+    hourly_rate: Optional[float] = None
+
+# ==================== ATTENDANCE MODELS ====================
+
+class AttendanceRecord(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    attendance_id: str = Field(default_factory=lambda: f"att_{uuid.uuid4().hex[:12]}")
+    user_id: str
+    user_name: Optional[str] = None
+    date: str  # YYYY-MM-DD format
+    clock_in: Optional[str] = None  # ISO datetime
+    clock_out: Optional[str] = None  # ISO datetime
+    break_minutes: int = 0
+    total_hours: float = 0.0
+    overtime_hours: float = 0.0
+    status: str = "absent"  # present, absent, half_day, on_leave, holiday
+    early_departure: bool = False
+    late_arrival: bool = False
+    remarks: Optional[str] = None
+    location: Optional[str] = None
+    ip_address: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: Optional[datetime] = None
+
+class ClockInRequest(BaseModel):
+    location: Optional[str] = None
+    remarks: Optional[str] = None
+
+class ClockOutRequest(BaseModel):
+    break_minutes: int = 0
+    remarks: Optional[str] = None
+
+# ==================== LEAVE MODELS ====================
+
+class LeaveType(BaseModel):
+    leave_type_id: str = Field(default_factory=lambda: f"lt_{uuid.uuid4().hex[:8]}")
+    name: str
+    code: str  # CL, SL, EL, etc.
+    days_allowed: int
+    carry_forward: bool = False
+    is_paid: bool = True
+    description: Optional[str] = None
+
+class LeaveBalance(BaseModel):
+    user_id: str
+    year: int
+    balances: dict = {}  # {leave_type_code: {total: x, used: y, pending: z}}
+
+class LeaveRequest(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    leave_id: str = Field(default_factory=lambda: f"lv_{uuid.uuid4().hex[:12]}")
+    user_id: str
+    user_name: Optional[str] = None
+    leave_type: str  # CL, SL, EL, etc.
+    start_date: str  # YYYY-MM-DD
+    end_date: str  # YYYY-MM-DD
+    days: float = 1.0
+    reason: str
+    status: str = "pending"  # pending, approved, rejected, cancelled
+    manager_id: Optional[str] = None
+    manager_name: Optional[str] = None
+    approved_by: Optional[str] = None
+    approved_at: Optional[str] = None
+    rejection_reason: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: Optional[datetime] = None
+
+class LeaveRequestCreate(BaseModel):
+    leave_type: str
+    start_date: str
+    end_date: str
+    reason: str
+
+class LeaveApproval(BaseModel):
+    status: str  # approved, rejected
+    rejection_reason: Optional[str] = None
+
+# ==================== PAYROLL MODELS ====================
+
+class PayrollRecord(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    payroll_id: str = Field(default_factory=lambda: f"pay_{uuid.uuid4().hex[:12]}")
+    user_id: str
+    user_name: Optional[str] = None
+    month: int  # 1-12
+    year: int
+    working_days: int = 0
+    days_present: int = 0
+    days_absent: int = 0
+    days_leave: int = 0
+    days_half: int = 0
+    total_hours: float = 0.0
+    overtime_hours: float = 0.0
+    attendance_percentage: float = 0.0
+    productivity_score: float = 0.0
+    base_salary: float = 0.0
+    overtime_pay: float = 0.0
+    deductions: float = 0.0
+    net_salary: float = 0.0
+    status: str = "draft"  # draft, processed, paid
+    processed_by: Optional[str] = None
+    processed_at: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 # ==================== SUPPLIER/VENDOR MODELS ====================
 
