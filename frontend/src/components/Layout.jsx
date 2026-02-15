@@ -14,10 +14,14 @@ import {
   ChevronRight,
   Menu,
   X,
-  Wrench,
   FileText,
   TrendingUp,
-  UserCircle
+  ShoppingCart,
+  Receipt,
+  Calculator,
+  Truck,
+  Building2,
+  DollarSign
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -36,6 +40,15 @@ const navItems = [
     { name: "Inventory", path: "/inventory", icon: Package },
     { name: "Vehicles", path: "/vehicles", icon: Car },
     { name: "Alerts", path: "/alerts", icon: Bell },
+  ]},
+  { section: "Finance", items: [
+    { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
+    { name: "Invoices", path: "/invoices", icon: Receipt },
+    { name: "Accounting", path: "/accounting", icon: Calculator },
+  ]},
+  { section: "Procurement", items: [
+    { name: "Purchase Orders", path: "/purchases", icon: Truck },
+    { name: "Suppliers", path: "/suppliers", icon: Building2 },
   ]},
   { section: "Administration", items: [
     { name: "Users", path: "/users", icon: Users, adminOnly: true },
