@@ -21,7 +21,8 @@ import {
   Calculator,
   Truck,
   Building2,
-  DollarSign
+  DollarSign,
+  Database
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
