@@ -22,7 +22,10 @@ import {
   Truck,
   Building2,
   DollarSign,
-  Database
+  Database,
+  Clock,
+  Calendar,
+  Wallet
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -41,6 +44,11 @@ const navItems = [
     { name: "Inventory", path: "/inventory", icon: Package },
     { name: "Vehicles", path: "/vehicles", icon: Car },
     { name: "Alerts", path: "/alerts", icon: Bell },
+  ]},
+  { section: "HR & Payroll", items: [
+    { name: "Attendance", path: "/attendance", icon: Clock },
+    { name: "Leave Management", path: "/leave", icon: Calendar },
+    { name: "Payroll", path: "/payroll", icon: Wallet },
   ]},
   { section: "Finance", items: [
     { name: "Customers", path: "/customers", icon: Users },
