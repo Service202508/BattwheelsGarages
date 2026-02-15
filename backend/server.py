@@ -2312,6 +2312,771 @@ async def reseed_missing_data():
     
     return {"message": "Missing data reseeded", "added": results}
 
+# ==================== ATTENDANCE CONFIGURATION ====================
+STANDARD_WORK_HOURS = 9.0
+STANDARD_START_TIME = "09:00"  # 9 AM
+STANDARD_END_TIME = "18:00"    # 6 PM
+LATE_THRESHOLD_MINUTES = 15
+EARLY_DEPARTURE_THRESHOLD_MINUTES = 15
+OVERTIME_MULTIPLIER = 1.5
+
+# Leave Types Configuration
+DEFAULT_LEAVE_TYPES = [
+    {"code": "CL", "name": "Casual Leave", "days_allowed": 12, "carry_forward": False, "is_paid": True},
+    {"code": "SL", "name": "Sick Leave", "days_allowed": 12, "carry_forward": False, "is_paid": True},
+    {"code": "EL", "name": "Earned Leave", "days_allowed": 15, "carry_forward": True, "is_paid": True},
+    {"code": "LWP", "name": "Leave Without Pay", "days_allowed": 365, "carry_forward": False, "is_paid": False},
+    {"code": "CO", "name": "Compensatory Off", "days_allowed": 10, "carry_forward": False, "is_paid": True},
+]
+
+# ==================== ATTENDANCE ROUTES ====================
+
+@api_router.post("/attendance/clock-in")
+async def clock_in(data: ClockInRequest, request: Request):
+    """Clock in for the day"""
+    user = await require_auth(request)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    now = datetime.now(timezone.utc)
+    
+    # Check if already clocked in today
+    existing = await db.attendance.find_one(
+        {"user_id": user.user_id, "date": today}, {"_id": 0}
+    )
+    
+    if existing and existing.get("clock_in"):
+        raise HTTPException(status_code=400, detail="Already clocked in today")
+    
+    # Check for late arrival
+    current_time = now.strftime("%H:%M")
+    standard_start = datetime.strptime(STANDARD_START_TIME, "%H:%M")
+    actual_start = datetime.strptime(current_time, "%H:%M")
+    late_arrival = (actual_start - standard_start).total_seconds() > LATE_THRESHOLD_MINUTES * 60
+    
+    attendance_doc = {
+        "attendance_id": f"att_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "user_name": user.name,
+        "date": today,
+        "clock_in": now.isoformat(),
+        "clock_out": None,
+        "break_minutes": 0,
+        "total_hours": 0.0,
+        "overtime_hours": 0.0,
+        "status": "present",
+        "early_departure": False,
+        "late_arrival": late_arrival,
+        "remarks": data.remarks,
+        "location": data.location,
+        "ip_address": request.client.host if request.client else None,
+        "created_at": now.isoformat()
+    }
+    
+    if existing:
+        await db.attendance.update_one(
+            {"user_id": user.user_id, "date": today},
+            {"$set": attendance_doc}
+        )
+    else:
+        await db.attendance.insert_one(attendance_doc)
+    
+    return {
+        "message": "Clocked in successfully",
+        "clock_in": now.isoformat(),
+        "late_arrival": late_arrival,
+        "late_by_minutes": int((actual_start - standard_start).total_seconds() / 60) if late_arrival else 0
+    }
+
+@api_router.post("/attendance/clock-out")
+async def clock_out(data: ClockOutRequest, request: Request):
+    """Clock out for the day"""
+    user = await require_auth(request)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    now = datetime.now(timezone.utc)
+    
+    # Find today's attendance
+    existing = await db.attendance.find_one(
+        {"user_id": user.user_id, "date": today}, {"_id": 0}
+    )
+    
+    if not existing:
+        raise HTTPException(status_code=400, detail="Not clocked in today")
+    
+    if existing.get("clock_out"):
+        raise HTTPException(status_code=400, detail="Already clocked out today")
+    
+    # Calculate hours worked
+    clock_in_time = datetime.fromisoformat(existing["clock_in"].replace('Z', '+00:00'))
+    total_minutes = (now - clock_in_time).total_seconds() / 60
+    break_minutes = data.break_minutes or 0
+    worked_minutes = total_minutes - break_minutes
+    total_hours = round(worked_minutes / 60, 2)
+    
+    # Check for early departure
+    current_time = now.strftime("%H:%M")
+    standard_end = datetime.strptime(STANDARD_END_TIME, "%H:%M")
+    actual_end = datetime.strptime(current_time, "%H:%M")
+    early_departure = (standard_end - actual_end).total_seconds() > EARLY_DEPARTURE_THRESHOLD_MINUTES * 60
+    
+    # Calculate overtime
+    overtime_hours = max(0, total_hours - STANDARD_WORK_HOURS)
+    
+    # Determine status
+    status = "present"
+    if total_hours < 4:
+        status = "half_day"
+    elif total_hours < STANDARD_WORK_HOURS - 1:
+        status = "short_day"
+    
+    update_data = {
+        "clock_out": now.isoformat(),
+        "break_minutes": break_minutes,
+        "total_hours": total_hours,
+        "overtime_hours": round(overtime_hours, 2),
+        "status": status,
+        "early_departure": early_departure,
+        "remarks": data.remarks or existing.get("remarks"),
+        "updated_at": now.isoformat()
+    }
+    
+    await db.attendance.update_one(
+        {"user_id": user.user_id, "date": today},
+        {"$set": update_data}
+    )
+    
+    # Prepare response with warnings
+    warnings = []
+    if early_departure:
+        early_by = int((standard_end - actual_end).total_seconds() / 60)
+        warnings.append(f"Early departure by {early_by} minutes. Standard end time is {STANDARD_END_TIME}.")
+    if total_hours < STANDARD_WORK_HOURS:
+        shortage = round(STANDARD_WORK_HOURS - total_hours, 2)
+        warnings.append(f"Work hours shortage: {shortage} hours below the standard {STANDARD_WORK_HOURS} hours.")
+    
+    return {
+        "message": "Clocked out successfully",
+        "clock_out": now.isoformat(),
+        "total_hours": total_hours,
+        "overtime_hours": overtime_hours,
+        "early_departure": early_departure,
+        "status": status,
+        "warnings": warnings if warnings else None
+    }
+
+@api_router.get("/attendance/today")
+async def get_today_attendance(request: Request):
+    """Get current user's attendance for today"""
+    user = await require_auth(request)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    attendance = await db.attendance.find_one(
+        {"user_id": user.user_id, "date": today}, {"_id": 0}
+    )
+    
+    return {
+        "date": today,
+        "attendance": attendance,
+        "standard_hours": STANDARD_WORK_HOURS,
+        "standard_start": STANDARD_START_TIME,
+        "standard_end": STANDARD_END_TIME
+    }
+
+@api_router.get("/attendance/my-records")
+async def get_my_attendance(
+    request: Request,
+    month: Optional[int] = None,
+    year: Optional[int] = None
+):
+    """Get current user's attendance records"""
+    user = await require_auth(request)
+    
+    now = datetime.now(timezone.utc)
+    month = month or now.month
+    year = year or now.year
+    
+    # Build date range
+    start_date = f"{year}-{month:02d}-01"
+    if month == 12:
+        end_date = f"{year + 1}-01-01"
+    else:
+        end_date = f"{year}-{month + 1:02d}-01"
+    
+    records = await db.attendance.find(
+        {
+            "user_id": user.user_id,
+            "date": {"$gte": start_date, "$lt": end_date}
+        },
+        {"_id": 0}
+    ).sort("date", -1).to_list(100)
+    
+    # Calculate summary
+    total_days = len(records)
+    present_days = len([r for r in records if r["status"] == "present"])
+    half_days = len([r for r in records if r["status"] == "half_day"])
+    absent_days = len([r for r in records if r["status"] == "absent"])
+    leave_days = len([r for r in records if r["status"] == "on_leave"])
+    total_hours = sum(r.get("total_hours", 0) for r in records)
+    overtime_hours = sum(r.get("overtime_hours", 0) for r in records)
+    late_arrivals = len([r for r in records if r.get("late_arrival")])
+    early_departures = len([r for r in records if r.get("early_departure")])
+    
+    # Calculate attendance percentage
+    working_days = total_days - leave_days
+    if working_days > 0:
+        attendance_pct = round((present_days + half_days * 0.5) / working_days * 100, 1)
+    else:
+        attendance_pct = 0
+    
+    # Calculate productivity (hours worked vs expected)
+    expected_hours = working_days * STANDARD_WORK_HOURS
+    productivity_pct = round(total_hours / expected_hours * 100, 1) if expected_hours > 0 else 0
+    
+    return {
+        "month": month,
+        "year": year,
+        "records": records,
+        "summary": {
+            "total_days": total_days,
+            "present_days": present_days,
+            "half_days": half_days,
+            "absent_days": absent_days,
+            "leave_days": leave_days,
+            "late_arrivals": late_arrivals,
+            "early_departures": early_departures,
+            "total_hours": round(total_hours, 2),
+            "overtime_hours": round(overtime_hours, 2),
+            "expected_hours": expected_hours,
+            "attendance_percentage": attendance_pct,
+            "productivity_percentage": productivity_pct
+        }
+    }
+
+@api_router.get("/attendance/all")
+async def get_all_attendance(
+    request: Request,
+    date: Optional[str] = None,
+    user_id: Optional[str] = None
+):
+    """Get all attendance records (admin/manager only)"""
+    user = await require_technician_or_admin(request)
+    
+    query = {}
+    if date:
+        query["date"] = date
+    else:
+        query["date"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    if user_id:
+        query["user_id"] = user_id
+    
+    records = await db.attendance.find(query, {"_id": 0}).sort("user_name", 1).to_list(500)
+    
+    # Get all employees for comparison
+    employees = await db.users.find(
+        {"role": {"$in": ["admin", "technician"]}},
+        {"_id": 0, "user_id": 1, "name": 1, "role": 1, "designation": 1}
+    ).to_list(100)
+    
+    # Mark who hasn't clocked in
+    clocked_in_ids = {r["user_id"] for r in records}
+    not_clocked_in = [e for e in employees if e["user_id"] not in clocked_in_ids]
+    
+    return {
+        "date": query.get("date"),
+        "records": records,
+        "not_clocked_in": not_clocked_in,
+        "summary": {
+            "total_employees": len(employees),
+            "present": len([r for r in records if r["status"] == "present"]),
+            "half_day": len([r for r in records if r["status"] == "half_day"]),
+            "on_leave": len([r for r in records if r["status"] == "on_leave"]),
+            "absent": len(not_clocked_in)
+        }
+    }
+
+@api_router.get("/attendance/team-summary")
+async def get_team_attendance_summary(
+    request: Request,
+    month: Optional[int] = None,
+    year: Optional[int] = None
+):
+    """Get team attendance summary with productivity metrics (admin only)"""
+    user = await require_admin(request)
+    
+    now = datetime.now(timezone.utc)
+    month = month or now.month
+    year = year or now.year
+    
+    start_date = f"{year}-{month:02d}-01"
+    if month == 12:
+        end_date = f"{year + 1}-01-01"
+    else:
+        end_date = f"{year}-{month + 1:02d}-01"
+    
+    # Get all employees
+    employees = await db.users.find(
+        {"role": {"$in": ["admin", "technician"]}},
+        {"_id": 0}
+    ).to_list(100)
+    
+    team_stats = []
+    for emp in employees:
+        records = await db.attendance.find(
+            {
+                "user_id": emp["user_id"],
+                "date": {"$gte": start_date, "$lt": end_date}
+            },
+            {"_id": 0}
+        ).to_list(100)
+        
+        present = len([r for r in records if r["status"] == "present"])
+        half = len([r for r in records if r["status"] == "half_day"])
+        total_hours = sum(r.get("total_hours", 0) for r in records)
+        overtime = sum(r.get("overtime_hours", 0) for r in records)
+        late = len([r for r in records if r.get("late_arrival")])
+        early = len([r for r in records if r.get("early_departure")])
+        
+        working_days = len(records)
+        expected_hours = working_days * STANDARD_WORK_HOURS
+        attendance_pct = round((present + half * 0.5) / working_days * 100, 1) if working_days > 0 else 0
+        productivity_pct = round(total_hours / expected_hours * 100, 1) if expected_hours > 0 else 0
+        
+        team_stats.append({
+            "user_id": emp["user_id"],
+            "name": emp["name"],
+            "role": emp["role"],
+            "designation": emp.get("designation"),
+            "days_present": present,
+            "days_half": half,
+            "total_hours": round(total_hours, 2),
+            "overtime_hours": round(overtime, 2),
+            "late_arrivals": late,
+            "early_departures": early,
+            "attendance_percentage": attendance_pct,
+            "productivity_percentage": productivity_pct
+        })
+    
+    # Sort by productivity
+    team_stats.sort(key=lambda x: x["productivity_percentage"], reverse=True)
+    
+    return {
+        "month": month,
+        "year": year,
+        "team_stats": team_stats,
+        "averages": {
+            "avg_attendance": round(sum(s["attendance_percentage"] for s in team_stats) / len(team_stats), 1) if team_stats else 0,
+            "avg_productivity": round(sum(s["productivity_percentage"] for s in team_stats) / len(team_stats), 1) if team_stats else 0,
+            "total_overtime": round(sum(s["overtime_hours"] for s in team_stats), 2)
+        }
+    }
+
+# ==================== LEAVE MANAGEMENT ROUTES ====================
+
+@api_router.get("/leave/types")
+async def get_leave_types(request: Request):
+    """Get all leave types"""
+    await require_auth(request)
+    
+    types = await db.leave_types.find({}, {"_id": 0}).to_list(20)
+    if not types:
+        # Seed default leave types
+        for lt in DEFAULT_LEAVE_TYPES:
+            lt_doc = {
+                "leave_type_id": f"lt_{uuid.uuid4().hex[:8]}",
+                **lt
+            }
+            await db.leave_types.insert_one(lt_doc)
+        types = await db.leave_types.find({}, {"_id": 0}).to_list(20)
+    
+    return types
+
+@api_router.get("/leave/balance")
+async def get_leave_balance(request: Request):
+    """Get current user's leave balance"""
+    user = await require_auth(request)
+    year = datetime.now(timezone.utc).year
+    
+    balance = await db.leave_balances.find_one(
+        {"user_id": user.user_id, "year": year}, {"_id": 0}
+    )
+    
+    if not balance:
+        # Initialize balance for new user
+        leave_types = await get_leave_types(request)
+        balances = {}
+        for lt in leave_types:
+            balances[lt["code"]] = {
+                "total": lt["days_allowed"],
+                "used": 0,
+                "pending": 0,
+                "available": lt["days_allowed"]
+            }
+        
+        balance_doc = {
+            "user_id": user.user_id,
+            "year": year,
+            "balances": balances
+        }
+        await db.leave_balances.insert_one(balance_doc)
+        balance = balance_doc
+    
+    return balance
+
+@api_router.post("/leave/request")
+async def create_leave_request(data: LeaveRequestCreate, request: Request):
+    """Create a new leave request"""
+    user = await require_auth(request)
+    
+    # Calculate days
+    start = datetime.strptime(data.start_date, "%Y-%m-%d")
+    end = datetime.strptime(data.end_date, "%Y-%m-%d")
+    days = (end - start).days + 1
+    
+    if days <= 0:
+        raise HTTPException(status_code=400, detail="Invalid date range")
+    
+    # Check leave balance
+    year = datetime.now(timezone.utc).year
+    balance = await db.leave_balances.find_one(
+        {"user_id": user.user_id, "year": year}, {"_id": 0}
+    )
+    
+    if balance:
+        leave_balance = balance.get("balances", {}).get(data.leave_type, {})
+        available = leave_balance.get("available", 0)
+        if data.leave_type != "LWP" and days > available:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Insufficient leave balance. Available: {available} days"
+            )
+    
+    # Get manager info (for now, use first admin)
+    manager = await db.users.find_one({"role": "admin"}, {"_id": 0})
+    
+    leave_doc = {
+        "leave_id": f"lv_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "user_name": user.name,
+        "leave_type": data.leave_type,
+        "start_date": data.start_date,
+        "end_date": data.end_date,
+        "days": days,
+        "reason": data.reason,
+        "status": "pending",
+        "manager_id": manager["user_id"] if manager else None,
+        "manager_name": manager["name"] if manager else None,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.leave_requests.insert_one(leave_doc)
+    
+    # Update pending in balance
+    if balance:
+        await db.leave_balances.update_one(
+            {"user_id": user.user_id, "year": year},
+            {"$inc": {f"balances.{data.leave_type}.pending": days}}
+        )
+    
+    return {"message": "Leave request submitted", "leave": leave_doc}
+
+@api_router.get("/leave/my-requests")
+async def get_my_leave_requests(request: Request):
+    """Get current user's leave requests"""
+    user = await require_auth(request)
+    
+    requests = await db.leave_requests.find(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return requests
+
+@api_router.get("/leave/pending-approvals")
+async def get_pending_approvals(request: Request):
+    """Get pending leave requests for approval (manager/admin)"""
+    user = await require_technician_or_admin(request)
+    
+    query = {"status": "pending"}
+    if user.role != "admin":
+        query["manager_id"] = user.user_id
+    
+    requests = await db.leave_requests.find(query, {"_id": 0}).sort("created_at", 1).to_list(100)
+    
+    return requests
+
+@api_router.put("/leave/{leave_id}/approve")
+async def approve_leave(leave_id: str, data: LeaveApproval, request: Request):
+    """Approve or reject a leave request"""
+    user = await require_technician_or_admin(request)
+    
+    leave_req = await db.leave_requests.find_one({"leave_id": leave_id}, {"_id": 0})
+    if not leave_req:
+        raise HTTPException(status_code=404, detail="Leave request not found")
+    
+    if leave_req["status"] != "pending":
+        raise HTTPException(status_code=400, detail="Leave request already processed")
+    
+    now = datetime.now(timezone.utc)
+    year = now.year
+    
+    update_data = {
+        "status": data.status,
+        "approved_by": user.user_id,
+        "approved_at": now.isoformat(),
+        "updated_at": now.isoformat()
+    }
+    
+    if data.status == "rejected":
+        update_data["rejection_reason"] = data.rejection_reason
+    
+    await db.leave_requests.update_one(
+        {"leave_id": leave_id},
+        {"$set": update_data}
+    )
+    
+    # Update leave balance
+    leave_type = leave_req["leave_type"]
+    days = leave_req["days"]
+    
+    if data.status == "approved":
+        # Move from pending to used
+        await db.leave_balances.update_one(
+            {"user_id": leave_req["user_id"], "year": year},
+            {
+                "$inc": {
+                    f"balances.{leave_type}.pending": -days,
+                    f"balances.{leave_type}.used": days,
+                    f"balances.{leave_type}.available": -days
+                }
+            }
+        )
+        
+        # Mark attendance as on_leave for those dates
+        start = datetime.strptime(leave_req["start_date"], "%Y-%m-%d")
+        for i in range(int(days)):
+            date = (start + timedelta(days=i)).strftime("%Y-%m-%d")
+            await db.attendance.update_one(
+                {"user_id": leave_req["user_id"], "date": date},
+                {
+                    "$set": {
+                        "user_id": leave_req["user_id"],
+                        "user_name": leave_req["user_name"],
+                        "date": date,
+                        "status": "on_leave",
+                        "remarks": f"On {leave_type} leave"
+                    }
+                },
+                upsert=True
+            )
+    else:
+        # Remove from pending
+        await db.leave_balances.update_one(
+            {"user_id": leave_req["user_id"], "year": year},
+            {"$inc": {f"balances.{leave_type}.pending": -days}}
+        )
+    
+    return {"message": f"Leave request {data.status}", "leave_id": leave_id}
+
+@api_router.delete("/leave/{leave_id}")
+async def cancel_leave_request(leave_id: str, request: Request):
+    """Cancel a pending leave request"""
+    user = await require_auth(request)
+    
+    leave_req = await db.leave_requests.find_one({"leave_id": leave_id}, {"_id": 0})
+    if not leave_req:
+        raise HTTPException(status_code=404, detail="Leave request not found")
+    
+    if leave_req["user_id"] != user.user_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    if leave_req["status"] != "pending":
+        raise HTTPException(status_code=400, detail="Can only cancel pending requests")
+    
+    # Update status
+    await db.leave_requests.update_one(
+        {"leave_id": leave_id},
+        {"$set": {"status": "cancelled", "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    # Restore balance
+    year = datetime.now(timezone.utc).year
+    await db.leave_balances.update_one(
+        {"user_id": user.user_id, "year": year},
+        {"$inc": {f"balances.{leave_req['leave_type']}.pending": -leave_req['days']}}
+    )
+    
+    return {"message": "Leave request cancelled"}
+
+# ==================== PAYROLL ROUTES ====================
+
+@api_router.get("/payroll/calculate/{user_id}")
+async def calculate_payroll(
+    user_id: str,
+    month: int,
+    year: int,
+    request: Request
+):
+    """Calculate payroll for an employee"""
+    await require_admin(request)
+    
+    # Get employee details
+    employee = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    # Get attendance records
+    start_date = f"{year}-{month:02d}-01"
+    if month == 12:
+        end_date = f"{year + 1}-01-01"
+    else:
+        end_date = f"{year}-{month + 1:02d}-01"
+    
+    records = await db.attendance.find(
+        {
+            "user_id": user_id,
+            "date": {"$gte": start_date, "$lt": end_date}
+        },
+        {"_id": 0}
+    ).to_list(50)
+    
+    # Calculate metrics
+    days_present = len([r for r in records if r["status"] == "present"])
+    days_half = len([r for r in records if r["status"] == "half_day"])
+    days_leave = len([r for r in records if r["status"] == "on_leave"])
+    total_hours = sum(r.get("total_hours", 0) for r in records)
+    overtime_hours = sum(r.get("overtime_hours", 0) for r in records)
+    
+    # Calculate working days in month
+    import calendar
+    working_days = sum(1 for day in range(1, calendar.monthrange(year, month)[1] + 1)
+                       if datetime(year, month, day).weekday() < 5)  # Mon-Fri
+    
+    days_absent = working_days - days_present - days_half - days_leave
+    days_absent = max(0, days_absent)
+    
+    # Calculate salary (simplified)
+    hourly_rate = employee.get("hourly_rate", 250)  # Default ₹250/hr
+    base_salary = hourly_rate * STANDARD_WORK_HOURS * working_days
+    overtime_pay = overtime_hours * hourly_rate * OVERTIME_MULTIPLIER
+    
+    # Deductions for absence
+    daily_rate = base_salary / working_days if working_days > 0 else 0
+    absence_deduction = days_absent * daily_rate + (days_half * daily_rate * 0.5)
+    
+    # Late penalty (example: ₹100 per late arrival)
+    late_arrivals = len([r for r in records if r.get("late_arrival")])
+    late_penalty = late_arrivals * 100
+    
+    total_deductions = absence_deduction + late_penalty
+    net_salary = base_salary + overtime_pay - total_deductions
+    
+    # Productivity metrics
+    expected_hours = working_days * STANDARD_WORK_HOURS
+    attendance_pct = round((days_present + days_half * 0.5) / working_days * 100, 1) if working_days > 0 else 0
+    productivity_pct = round(total_hours / expected_hours * 100, 1) if expected_hours > 0 else 0
+    
+    payroll_data = {
+        "payroll_id": f"pay_{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "user_name": employee["name"],
+        "month": month,
+        "year": year,
+        "working_days": working_days,
+        "days_present": days_present,
+        "days_absent": days_absent,
+        "days_leave": days_leave,
+        "days_half": days_half,
+        "total_hours": round(total_hours, 2),
+        "overtime_hours": round(overtime_hours, 2),
+        "late_arrivals": late_arrivals,
+        "attendance_percentage": attendance_pct,
+        "productivity_score": productivity_pct,
+        "hourly_rate": hourly_rate,
+        "base_salary": round(base_salary, 2),
+        "overtime_pay": round(overtime_pay, 2),
+        "deductions": round(total_deductions, 2),
+        "deduction_breakdown": {
+            "absence": round(absence_deduction, 2),
+            "late_penalty": late_penalty
+        },
+        "net_salary": round(net_salary, 2),
+        "status": "draft"
+    }
+    
+    return payroll_data
+
+@api_router.post("/payroll/generate")
+async def generate_payroll(
+    month: int,
+    year: int,
+    request: Request
+):
+    """Generate payroll for all employees"""
+    await require_admin(request)
+    
+    employees = await db.users.find(
+        {"role": {"$in": ["admin", "technician"]}},
+        {"_id": 0}
+    ).to_list(100)
+    
+    payroll_records = []
+    for emp in employees:
+        payroll_data = await calculate_payroll(emp["user_id"], month, year, request)
+        payroll_data["created_at"] = datetime.now(timezone.utc).isoformat()
+        
+        # Check if already exists
+        existing = await db.payroll.find_one(
+            {"user_id": emp["user_id"], "month": month, "year": year},
+            {"_id": 0}
+        )
+        
+        if existing:
+            await db.payroll.update_one(
+                {"user_id": emp["user_id"], "month": month, "year": year},
+                {"$set": payroll_data}
+            )
+        else:
+            await db.payroll.insert_one(payroll_data)
+        
+        payroll_records.append(payroll_data)
+    
+    return {
+        "message": f"Payroll generated for {len(payroll_records)} employees",
+        "month": month,
+        "year": year,
+        "records": payroll_records
+    }
+
+@api_router.get("/payroll/records")
+async def get_payroll_records(
+    month: Optional[int] = None,
+    year: Optional[int] = None,
+    request: Request = None
+):
+    """Get payroll records"""
+    await require_admin(request)
+    
+    query = {}
+    if month:
+        query["month"] = month
+    if year:
+        query["year"] = year
+    
+    records = await db.payroll.find(query, {"_id": 0}).to_list(500)
+    
+    return records
+
+@api_router.get("/payroll/my-records")
+async def get_my_payroll(request: Request):
+    """Get current user's payroll records"""
+    user = await require_auth(request)
+    
+    records = await db.payroll.find(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    ).sort([("year", -1), ("month", -1)]).to_list(24)
+    
+    return records
+
 # ==================== CUSTOMER ROUTES ====================
 
 @api_router.post("/customers")
