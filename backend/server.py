@@ -2048,6 +2048,57 @@ async def seed_data():
     
     return {"message": "Data seeded successfully"}
 
+@api_router.post("/reseed")
+async def reseed_missing_data():
+    """Reseed missing data (suppliers, services) without deleting existing data"""
+    results = {"suppliers": 0, "services": 0}
+    
+    # Check and seed suppliers if empty
+    supplier_count = await db.suppliers.count_documents({})
+    if supplier_count == 0:
+        suppliers = [
+            {"name": "EV Parts India", "contact_person": "Rajesh Kumar", "email": "rajesh@evpartsindia.com", "phone": "+91 9876543211", "category": "parts", "payment_terms": "net_30"},
+            {"name": "BatteryWorld", "contact_person": "Anita Singh", "email": "anita@batteryworld.in", "phone": "+91 9876543212", "category": "parts", "payment_terms": "net_15"},
+            {"name": "AutoTools Pro", "contact_person": "Vikram Mehta", "email": "vikram@autotoolspro.com", "phone": "+91 9876543213", "category": "equipment", "payment_terms": "net_45"},
+        ]
+        for sup in suppliers:
+            sup_doc = {
+                "supplier_id": f"sup_{uuid.uuid4().hex[:12]}",
+                **sup,
+                "address": "Mumbai, Maharashtra",
+                "gst_number": f"27AABCU{uuid.uuid4().hex[:4].upper()}B1Z5",
+                "rating": 4.5,
+                "total_orders": 0,
+                "total_value": 0,
+                "is_active": True,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.suppliers.insert_one(sup_doc)
+            results["suppliers"] += 1
+    
+    # Check and seed services if empty
+    service_count = await db.services.count_documents({})
+    if service_count == 0:
+        services = [
+            {"name": "Battery Health Check", "category": "inspection", "base_price": 1500, "estimated_hours": 1.0, "description": "Complete battery diagnostic and health report"},
+            {"name": "Motor Service", "category": "motor_service", "base_price": 3500, "estimated_hours": 2.0, "description": "Motor inspection, cleaning and maintenance"},
+            {"name": "Full EV Service", "category": "maintenance", "base_price": 8000, "estimated_hours": 4.0, "description": "Comprehensive EV maintenance package"},
+            {"name": "Charging System Repair", "category": "charging_service", "base_price": 5000, "estimated_hours": 2.5, "description": "Diagnose and repair charging issues"},
+            {"name": "Battery Replacement", "category": "battery_service", "base_price": 50000, "estimated_hours": 3.0, "description": "Full battery pack replacement service"},
+        ]
+        for srv in services:
+            srv_doc = {
+                "service_id": f"srv_{uuid.uuid4().hex[:12]}",
+                **srv,
+                "parts_included": [],
+                "is_active": True,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.services.insert_one(srv_doc)
+            results["services"] += 1
+    
+    return {"message": "Missing data reseeded", "added": results}
+
 # Root endpoint
 @api_router.get("/")
 async def root():
