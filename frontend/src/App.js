@@ -22,6 +22,9 @@ import Accounting from "@/pages/Accounting";
 import Customers from "@/pages/Customers";
 import Expenses from "@/pages/Expenses";
 import DataMigration from "@/pages/DataMigration";
+import Attendance from "@/pages/Attendance";
+import LeaveManagement from "@/pages/LeaveManagement";
+import Payroll from "@/pages/Payroll";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
