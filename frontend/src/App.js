@@ -223,6 +223,27 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/customers" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Customers user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/expenses" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Expenses user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/data-migration" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <DataMigration user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
