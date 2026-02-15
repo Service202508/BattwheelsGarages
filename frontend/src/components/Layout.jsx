@@ -42,8 +42,10 @@ const navItems = [
     { name: "Alerts", path: "/alerts", icon: Bell },
   ]},
   { section: "Finance", items: [
+    { name: "Customers", path: "/customers", icon: Users },
     { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
     { name: "Invoices", path: "/invoices", icon: Receipt },
+    { name: "Expenses", path: "/expenses", icon: Receipt },
     { name: "Accounting", path: "/accounting", icon: Calculator },
   ]},
   { section: "Procurement", items: [
@@ -52,6 +54,7 @@ const navItems = [
   ]},
   { section: "Administration", items: [
     { name: "Users", path: "/users", icon: Users, adminOnly: true },
+    { name: "Data Migration", path: "/data-migration", icon: Database, adminOnly: true },
   ]},
 ];
 
