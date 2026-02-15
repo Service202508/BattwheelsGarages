@@ -1123,18 +1123,40 @@ async def update_vehicle_status(vehicle_id: str, status: str, request: Request):
 async def create_ticket(ticket_data: TicketCreate, request: Request):
     user = await require_auth(request)
     
-    # Get customer name from vehicle
-    vehicle = await db.vehicles.find_one({"vehicle_id": ticket_data.vehicle_id}, {"_id": 0})
-    customer_name = vehicle.get("owner_name") if vehicle else None
+    # Get or create customer
+    customer_id = user.user_id
+    customer_name = ticket_data.customer_name
     
+    # If vehicle_id provided, get customer from vehicle
+    if ticket_data.vehicle_id:
+        vehicle = await db.vehicles.find_one({"vehicle_id": ticket_data.vehicle_id}, {"_id": 0})
+        if vehicle:
+            customer_name = customer_name or vehicle.get("owner_name")
+    
+    # Create ticket with all new fields
     ticket = Ticket(
+        # Vehicle Info
         vehicle_id=ticket_data.vehicle_id,
-        customer_id=user.user_id,
+        vehicle_type=ticket_data.vehicle_type,
+        vehicle_model=ticket_data.vehicle_model,
+        vehicle_number=ticket_data.vehicle_number,
+        # Customer Info
+        customer_id=customer_id,
+        customer_type=ticket_data.customer_type,
         customer_name=customer_name,
+        contact_number=ticket_data.contact_number,
+        customer_email=ticket_data.customer_email,
+        # Complaint Details
         title=ticket_data.title,
         description=ticket_data.description,
         category=ticket_data.category,
+        issue_type=ticket_data.issue_type or ticket_data.category,
+        resolution_type=ticket_data.resolution_type,
         priority=ticket_data.priority,
+        # Location
+        incident_location=ticket_data.incident_location,
+        # Attachments
+        attachments_count=ticket_data.attachments_count,
         estimated_cost=ticket_data.estimated_cost
     )
     doc = ticket.model_dump()
@@ -1142,11 +1164,12 @@ async def create_ticket(ticket_data: TicketCreate, request: Request):
     doc['updated_at'] = doc['updated_at'].isoformat()
     await db.tickets.insert_one(doc)
     
-    # Update vehicle status
-    await db.vehicles.update_one(
-        {"vehicle_id": ticket_data.vehicle_id},
-        {"$set": {"current_status": "in_workshop"}, "$inc": {"total_visits": 1}}
-    )
+    # Update vehicle status if vehicle_id provided
+    if ticket_data.vehicle_id:
+        await db.vehicles.update_one(
+            {"vehicle_id": ticket_data.vehicle_id},
+            {"$set": {"current_status": "in_workshop"}, "$inc": {"total_visits": 1}}
+        )
     
     return ticket.model_dump()
 
