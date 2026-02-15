@@ -2527,9 +2527,9 @@ async def get_my_attendance(
     else:
         attendance_pct = 0
     
-    # Calculate productivity (hours worked vs expected)
+    # Calculate productivity (hours worked vs expected) - cap at 0 minimum
     expected_hours = working_days * STANDARD_WORK_HOURS
-    productivity_pct = round(total_hours / expected_hours * 100, 1) if expected_hours > 0 else 0
+    productivity_pct = max(0, round(total_hours / expected_hours * 100, 1)) if expected_hours > 0 else 0
     
     return {
         "month": month,
@@ -2543,10 +2543,10 @@ async def get_my_attendance(
             "leave_days": leave_days,
             "late_arrivals": late_arrivals,
             "early_departures": early_departures,
-            "total_hours": round(total_hours, 2),
-            "overtime_hours": round(overtime_hours, 2),
+            "total_hours": max(0, round(total_hours, 2)),
+            "overtime_hours": max(0, round(overtime_hours, 2)),
             "expected_hours": expected_hours,
-            "attendance_percentage": attendance_pct,
+            "attendance_percentage": max(0, attendance_pct),
             "productivity_percentage": productivity_pct
         }
     }
