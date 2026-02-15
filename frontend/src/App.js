@@ -247,6 +247,27 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/attendance" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Attendance user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/leave" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <LeaveManagement user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/payroll" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Payroll user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
