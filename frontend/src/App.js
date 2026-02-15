@@ -19,6 +19,9 @@ import PurchaseOrders from "@/pages/PurchaseOrders";
 import SalesOrders from "@/pages/SalesOrders";
 import Invoices from "@/pages/Invoices";
 import Accounting from "@/pages/Accounting";
+import Customers from "@/pages/Customers";
+import Expenses from "@/pages/Expenses";
+import DataMigration from "@/pages/DataMigration";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
