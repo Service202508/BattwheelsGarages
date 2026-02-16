@@ -66,7 +66,10 @@ const navItems = [
     { name: "Projects", path: "/projects", icon: FolderKanban },
   ]},
   { section: "Catalog & Inventory", items: [
+    { name: "Items", path: "/items", icon: Tag },
     { name: "Services & Parts", path: "/inventory", icon: Package },
+    { name: "Price Lists", path: "/price-lists", icon: List },
+    { name: "Inventory Adjustments", path: "/inventory-adjustments", icon: ClipboardList },
   ]},
   { section: "HR & Payroll", items: [
     { name: "Employees", path: "/employees", icon: Users },
