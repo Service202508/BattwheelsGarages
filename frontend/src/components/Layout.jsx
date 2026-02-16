@@ -64,8 +64,9 @@ const navItems = [
   ]},
   { section: "Finance", items: [
     { name: "Customers", path: "/customers", icon: Users },
-    { name: "Invoices", path: "/invoices", icon: Receipt },
+    { name: "Quotes", path: "/quotes", icon: FileText },
     { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
+    { name: "Invoices", path: "/invoices", icon: Receipt },
     { name: "Expenses", path: "/expenses", icon: Receipt },
     { name: "Accounting", path: "/accounting", icon: Calculator },
   ]},
