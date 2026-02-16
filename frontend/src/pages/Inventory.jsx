@@ -239,8 +239,8 @@ export default function Inventory({ user }) {
                   <div className="space-y-2">
                     <Label>Supplier</Label>
                     <Select
-                      value={formData.supplier_id}
-                      onValueChange={(value) => setFormData({ ...formData, supplier_id: value })}
+                      value={formData.supplier_id || "none"}
+                      onValueChange={(value) => setFormData({ ...formData, supplier_id: value === "none" ? "" : value })}
                     >
                       <SelectTrigger className="bg-background/50">
                         <SelectValue placeholder="Select supplier" />
