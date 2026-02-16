@@ -247,6 +247,11 @@ class TicketService:
         # Store ticket
         await self.db.tickets.insert_one(ticket_doc)
         
+        # Get the stored ticket without _id for response
+        stored_ticket = await self.db.tickets.find_one(
+            {"ticket_id": ticket_id}, {"_id": 0}
+        )
+        
         # EMIT TICKET_CREATED EVENT
         # This triggers: AI matching -> suggested_failure_cards population
         await self.dispatcher.emit(
@@ -269,7 +274,7 @@ class TicketService:
         
         logger.info(f"Created ticket {ticket_id}, emitted TICKET_CREATED")
         
-        return ticket_doc
+        return stored_ticket
     
     # ==================== TICKET UPDATE ====================
     
