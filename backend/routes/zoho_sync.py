@@ -33,7 +33,7 @@ class ZohoOAuth:
         self.accounts_url = os.environ.get("ZOHO_ACCOUNTS_URL", "https://accounts.zoho.in")
         self.access_token = None
         self.token_expiry = None
-        self.organization_id = None
+        self.organization_id = os.environ.get("ZOHO_ORGANIZATION_ID", "")
     
     async def get_access_token(self) -> str:
         """Get valid access token, refreshing if necessary"""
