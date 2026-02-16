@@ -132,7 +132,7 @@ export default function Vehicles({ user }) {
               Add Vehicle
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-card border-white/10">
+          <DialogContent className="bg-card border-white/10 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add New Vehicle</DialogTitle>
               <DialogDescription>Register a new EV in the system.</DialogDescription>
