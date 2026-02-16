@@ -366,6 +366,7 @@ export default function Login({ onLogin }) {
             </CardContent>
           </Card>
         </div>
+        </div>
       </div>
     </div>
   );
