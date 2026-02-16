@@ -4180,14 +4180,17 @@ async def get_migration_status(request: Request):
 async def root():
     return {"message": "Battwheels OS API", "version": "2.0.0"}
 
-# ==================== NOTIFICATION SERVICE ====================
+# ==================== EV FAILURE INTELLIGENCE (EFI) ENGINE ====================
 
+from routes.failure_intelligence import router as efi_router, init_router as init_efi_router
 from services.notification_service import router as notification_router, init_router as init_notification_router
 
-# Initialize notification service with database
+# Initialize EFI engine with database
+init_efi_router(db)
 init_notification_router(db)
 
-# Include notification router (invoice routes are already in main server)
+# Include EFI routes (core intelligence engine)
+api_router.include_router(efi_router)
 api_router.include_router(notification_router)
 
 # Include main router
