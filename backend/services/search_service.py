@@ -202,25 +202,27 @@ class AdvancedSearchService:
         
         expanded_tokens = self.expand_query(query_tokens)
         
-        # Build MongoDB query
-        search_patterns = []
+        # Build MongoDB query - use $or with $regex for each field
+        or_conditions = []
         for token in expanded_tokens:
             if fuzzy:
-                # Fuzzy regex pattern
                 pattern = f".*{token}.*"
             else:
                 pattern = f"\\b{token}\\b"
-            search_patterns.append({"$regex": pattern, "$options": "i"})
+            
+            or_conditions.extend([
+                {"title": {"$regex": pattern, "$options": "i"}},
+                {"description": {"$regex": pattern, "$options": "i"}},
+                {"symptom_text": {"$regex": pattern, "$options": "i"}},
+                {"root_cause": {"$regex": pattern, "$options": "i"}}
+            ])
+        
+        # Add keyword matches
+        or_conditions.append({"keywords": {"$in": expanded_tokens}})
         
         mongo_query = {
             **filter_query,
-            "$or": [
-                {"title": {"$in": search_patterns}},
-                {"description": {"$in": search_patterns}},
-                {"symptom_text": {"$in": search_patterns}},
-                {"root_cause": {"$in": search_patterns}},
-                {"keywords": {"$in": expanded_tokens}}
-            ]
+            "$or": or_conditions
         }
         
         # Fallback to simpler query if regex fails
