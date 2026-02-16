@@ -647,9 +647,23 @@ async def generate_embeddings(request: Request, background_tasks: BackgroundTask
     """
     Generate vector embeddings for all failure cards.
     This enables semantic search in the AI matching pipeline.
+    
+    Note: Requires OPENAI_API_KEY in environment. Emergent LLM key does not support embeddings.
     """
     try:
-        from services.embedding_service import get_card_embedder
+        from services.embedding_service import get_card_embedder, get_embedding_service
+        
+        embedding_service = get_embedding_service()
+        
+        # Check if embeddings are available
+        if embedding_service.client is None:
+            return {
+                "message": "Embedding service not available",
+                "reason": "OPENAI_API_KEY not configured. Emergent LLM key does not support embeddings.",
+                "alternative": "The system will use keyword-based matching (BM25) which is still effective.",
+                "status": "disabled"
+            }
+        
         embedder = get_card_embedder()
         
         # Run in background to not block
@@ -684,6 +698,14 @@ async def get_embedding_status(request: Request):
     """Check embedding generation status for failure cards."""
     service = get_service()
     
+    # Check if embedding service is available
+    try:
+        from services.embedding_service import get_embedding_service
+        embedding_service = get_embedding_service()
+        embeddings_enabled = embedding_service.client is not None
+    except:
+        embeddings_enabled = False
+    
     total_cards = await service.db.failure_cards.count_documents({})
     cards_with_embeddings = await service.db.failure_cards.count_documents({
         "embedding_vector": {"$exists": True, "$ne": None}
@@ -694,6 +716,8 @@ async def get_embedding_status(request: Request):
     cache_count = await service.db.embedding_cache.count_documents({})
     
     return {
+        "embeddings_enabled": embeddings_enabled,
+        "note": "Requires OPENAI_API_KEY (Emergent LLM key does not support embeddings)" if not embeddings_enabled else None,
         "total_cards": total_cards,
         "cards_with_embeddings": cards_with_embeddings,
         "cards_without_embeddings": cards_without_embeddings,
