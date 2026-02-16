@@ -525,7 +525,7 @@ export default function Employees({ user }) {
 
       {/* Add/Edit Employee Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{isEditing ? "Edit Employee" : "Add New Employee"}</DialogTitle>
             <DialogDescription>
