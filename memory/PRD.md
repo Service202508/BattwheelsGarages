@@ -7,6 +7,33 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
+### Customer Portal (Feb 16, 2026) ✅ NEW
+
+**Features:**
+- **Role-based access control** - Same login, JWT redirect by role (customer→/customer, admin→/dashboard)
+- **Customer Dashboard** - Vehicle count, active services, pending payments, AMC status
+- **My Vehicles** - Vehicle cards with service history, AMC status, battery info
+- **Service History** - Ticket timeline view with status badges and detail dialog
+- **Invoices** - View and download invoices with payment status
+- **Payments Due** - Outstanding balance tracking (online payment P1)
+- **AMC Plans** - Active subscriptions with usage counters, available plans for purchase
+
+**Security:**
+- Strict RBAC enforced on all admin routes (customers cannot access /dashboard, /tickets, etc.)
+- Customer portal APIs return only customer's own data
+
+**AMC System:**
+- Admin-configurable plans (Basic/Plus/Premium stored as data, not constants)
+- Subscription tracking with usage counters
+- Auto-expiry detection (active/expiring/expired status)
+- Renewal workflow
+
+**Demo Credentials:**
+| Role | Email | Password |
+|------|-------|----------|
+| Customer | customer@demo.com | customer123 |
+| Admin | admin@battwheels.in | admin123 |
+
 ### Complete Event-Driven Architecture (Feb 16, 2026) ✅
 
 All major modules migrated to event-driven architecture with thin routes and service layers.
