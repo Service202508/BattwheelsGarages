@@ -1157,6 +1157,314 @@ async def write_off_invoice(invoice_id: str, amount: float = 0):
     )
     return {"code": 0, "message": f"Invoice written off for {write_off}"}
 
+@router.post("/invoices/{invoice_id}/payments")
+async def record_invoice_payment(invoice_id: str, amount: float, payment_mode: str = "cash", reference_number: str = "", date: str = ""):
+    """Record a payment directly against an invoice"""
+    db = get_db()
+    invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    if invoice["status"] in ["void", "paid"]:
+        raise HTTPException(status_code=400, detail=f"Cannot record payment for {invoice['status']} invoice")
+    
+    if amount > invoice["balance"]:
+        raise HTTPException(status_code=400, detail="Payment amount exceeds invoice balance")
+    
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    payment_id = f"CPMT-{uuid.uuid4().hex[:12].upper()}"
+    payment_number = await get_next_number(db, "customerpayments", "CPMT")
+    
+    payment_dict = {
+        "payment_id": payment_id,
+        "payment_number": payment_number,
+        "customer_id": invoice["customer_id"],
+        "customer_name": invoice["customer_name"],
+        "payment_mode": payment_mode,
+        "amount": amount,
+        "unused_amount": 0,
+        "date": date or today,
+        "reference_number": reference_number,
+        "invoices": [{"invoice_id": invoice_id, "invoice_number": invoice.get("invoice_number"), "amount_applied": amount}],
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.customerpayments.insert_one(payment_dict)
+    
+    new_balance = invoice["balance"] - amount
+    new_status = "paid" if new_balance <= 0 else "partial"
+    
+    await db.invoices.update_one(
+        {"invoice_id": invoice_id},
+        {"$set": {"balance": new_balance, "status": new_status, "last_modified_time": datetime.now(timezone.utc).isoformat()},
+         "$push": {"payments": {"payment_id": payment_id, "amount": amount, "date": date or today}}}
+    )
+    
+    # Update customer outstanding
+    await db.contacts.update_one(
+        {"contact_id": invoice["customer_id"]},
+        {"$inc": {"outstanding_receivable_amount": -amount}}
+    )
+    
+    del payment_dict["_id"]
+    return {"code": 0, "message": "Payment recorded", "payment": payment_dict, "invoice_balance": new_balance}
+
+@router.get("/invoices/{invoice_id}/payments")
+async def get_invoice_payments(invoice_id: str):
+    """Get all payments applied to an invoice"""
+    db = get_db()
+    payments = await db.customerpayments.find(
+        {"invoices.invoice_id": invoice_id},
+        {"_id": 0}
+    ).to_list(length=100)
+    return {"code": 0, "payments": payments}
+
+@router.post("/invoices/{invoice_id}/email")
+async def email_invoice(invoice_id: str, to_emails: str = "", cc_emails: str = "", subject: str = "", body: str = ""):
+    """Email invoice to customer"""
+    db = get_db()
+    invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Get customer email if to_emails not provided
+    if not to_emails:
+        customer = await db.contacts.find_one({"contact_id": invoice["customer_id"]}, {"_id": 0})
+        to_emails = customer.get("email", "") if customer else ""
+    
+    if not to_emails:
+        raise HTTPException(status_code=400, detail="No email address provided")
+    
+    # Generate email subject and body
+    default_subject = f"Invoice {invoice.get('invoice_number')} from Battwheels"
+    default_body = f"""Dear {invoice.get('customer_name')},
+
+Please find attached Invoice {invoice.get('invoice_number')} for ₹{invoice.get('total', 0):,.2f}.
+
+Invoice Date: {invoice.get('date')}
+Due Date: {invoice.get('due_date')}
+Amount Due: ₹{invoice.get('balance', 0):,.2f}
+
+Thank you for your business.
+
+Best regards,
+Battwheels Team"""
+    
+    # Log email activity (actual sending would require email service integration)
+    email_log = {
+        "email_id": f"EMAIL-{uuid.uuid4().hex[:12].upper()}",
+        "entity_type": "invoice",
+        "entity_id": invoice_id,
+        "to_emails": to_emails.split(","),
+        "cc_emails": cc_emails.split(",") if cc_emails else [],
+        "subject": subject or default_subject,
+        "body": body or default_body,
+        "status": "queued",  # Would be 'sent' after actual email integration
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.email_logs.insert_one(email_log)
+    
+    # Mark invoice as sent if still draft
+    if invoice.get("status") == "draft":
+        await db.invoices.update_one(
+            {"invoice_id": invoice_id},
+            {"$set": {"status": "sent", "last_modified_time": datetime.now(timezone.utc).isoformat()}}
+        )
+    
+    return {
+        "code": 0,
+        "message": "Invoice email queued. Configure email service for actual delivery.",
+        "email": {"to": to_emails, "subject": subject or default_subject}
+    }
+
+@router.post("/invoices/{invoice_id}/clone")
+async def clone_invoice(invoice_id: str):
+    """Create a copy of an existing invoice"""
+    db = get_db()
+    invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    new_invoice_id = f"INV-{uuid.uuid4().hex[:12].upper()}"
+    new_invoice_number = await get_next_number(db, "invoices", "INV")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    due_date = (datetime.now(timezone.utc) + timedelta(days=invoice.get("payment_terms", 30))).strftime("%Y-%m-%d")
+    
+    new_invoice = {
+        **invoice,
+        "invoice_id": new_invoice_id,
+        "invoice_number": new_invoice_number,
+        "date": today,
+        "due_date": due_date,
+        "status": "draft",
+        "balance": invoice.get("total", 0),
+        "payments": [],
+        "created_time": datetime.now(timezone.utc).isoformat(),
+        "last_modified_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Remove fields that shouldn't be copied
+    new_invoice.pop("_id", None)
+    new_invoice.pop("from_estimate_id", None)
+    new_invoice.pop("from_salesorder_id", None)
+    
+    await db.invoices.insert_one(new_invoice)
+    del new_invoice["_id"]
+    
+    return {"code": 0, "message": "Invoice cloned", "invoice": new_invoice}
+
+@router.get("/invoices/{invoice_id}/pdf")
+async def get_invoice_pdf(invoice_id: str):
+    """Generate PDF for invoice (returns HTML for now, can be converted to PDF)"""
+    db = get_db()
+    invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Get organization settings
+    org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
+    
+    # Generate HTML invoice template
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{ font-family: Arial, sans-serif; margin: 40px; }}
+            .header {{ display: flex; justify-content: space-between; margin-bottom: 30px; }}
+            .company {{ font-size: 24px; font-weight: bold; color: #22EDA9; }}
+            .invoice-title {{ font-size: 28px; color: #333; }}
+            .details {{ margin-bottom: 20px; }}
+            .details table {{ width: 100%; }}
+            .details td {{ padding: 5px 0; }}
+            .items {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+            .items th, .items td {{ border: 1px solid #ddd; padding: 10px; text-align: left; }}
+            .items th {{ background: #f5f5f5; }}
+            .items .amount {{ text-align: right; }}
+            .totals {{ float: right; width: 300px; }}
+            .totals table {{ width: 100%; }}
+            .totals td {{ padding: 5px; }}
+            .totals .total {{ font-weight: bold; font-size: 18px; border-top: 2px solid #333; }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="company">{org_settings.get('company_name', 'Battwheels')}</div>
+            <div class="invoice-title">INVOICE</div>
+        </div>
+        <div class="details">
+            <table>
+                <tr>
+                    <td><strong>Invoice #:</strong> {invoice.get('invoice_number')}</td>
+                    <td><strong>Date:</strong> {invoice.get('date')}</td>
+                </tr>
+                <tr>
+                    <td><strong>Customer:</strong> {invoice.get('customer_name')}</td>
+                    <td><strong>Due Date:</strong> {invoice.get('due_date')}</td>
+                </tr>
+            </table>
+        </div>
+        <table class="items">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th class="amount">Qty</th>
+                    <th class="amount">Rate</th>
+                    <th class="amount">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+    """
+    
+    for item in invoice.get("line_items", []):
+        html_content += f"""
+                <tr>
+                    <td>{item.get('name', '')}</td>
+                    <td>{item.get('description', '')}</td>
+                    <td class="amount">{item.get('quantity', 0)}</td>
+                    <td class="amount">₹{item.get('rate', 0):,.2f}</td>
+                    <td class="amount">₹{item.get('item_total', 0):,.2f}</td>
+                </tr>
+        """
+    
+    html_content += f"""
+            </tbody>
+        </table>
+        <div class="totals">
+            <table>
+                <tr><td>Subtotal:</td><td class="amount">₹{invoice.get('sub_total', 0):,.2f}</td></tr>
+                <tr><td>Tax:</td><td class="amount">₹{invoice.get('tax_total', 0):,.2f}</td></tr>
+                <tr><td>Discount:</td><td class="amount">-₹{invoice.get('discount_total', 0):,.2f}</td></tr>
+                <tr class="total"><td>Total:</td><td class="amount">₹{invoice.get('total', 0):,.2f}</td></tr>
+                <tr><td>Balance Due:</td><td class="amount">₹{invoice.get('balance', 0):,.2f}</td></tr>
+            </table>
+        </div>
+        <div style="clear: both; margin-top: 50px;">
+            <p><strong>Notes:</strong> {invoice.get('notes', '')}</p>
+            <p><strong>Terms:</strong> {invoice.get('terms', '')}</p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return {
+        "code": 0,
+        "invoice_id": invoice_id,
+        "html": html_content,
+        "message": "Use this HTML to generate PDF via browser print or wkhtmltopdf"
+    }
+
+@router.post("/invoices/bulk-action")
+async def bulk_invoice_action(invoice_ids: List[str], action: str):
+    """Perform bulk action on multiple invoices"""
+    db = get_db()
+    
+    valid_actions = ["mark_sent", "void", "delete"]
+    if action not in valid_actions:
+        raise HTTPException(status_code=400, detail=f"Invalid action. Valid: {valid_actions}")
+    
+    results = {"success": 0, "failed": 0, "errors": []}
+    
+    for invoice_id in invoice_ids:
+        try:
+            invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+            if not invoice:
+                results["failed"] += 1
+                results["errors"].append({"invoice_id": invoice_id, "error": "Not found"})
+                continue
+            
+            if action == "mark_sent":
+                if invoice["status"] == "draft":
+                    await db.invoices.update_one({"invoice_id": invoice_id}, {"$set": {"status": "sent"}})
+                    results["success"] += 1
+                else:
+                    results["failed"] += 1
+                    results["errors"].append({"invoice_id": invoice_id, "error": "Not in draft status"})
+            
+            elif action == "void":
+                if invoice["status"] in ["sent", "partial", "overdue"]:
+                    await db.invoices.update_one({"invoice_id": invoice_id}, {"$set": {"status": "void", "balance": 0}})
+                    results["success"] += 1
+                else:
+                    results["failed"] += 1
+                    results["errors"].append({"invoice_id": invoice_id, "error": f"Cannot void {invoice['status']} invoice"})
+            
+            elif action == "delete":
+                if invoice["status"] == "draft":
+                    await db.invoices.delete_one({"invoice_id": invoice_id})
+                    results["success"] += 1
+                else:
+                    results["failed"] += 1
+                    results["errors"].append({"invoice_id": invoice_id, "error": "Can only delete draft invoices"})
+        
+        except Exception as e:
+            results["failed"] += 1
+            results["errors"].append({"invoice_id": invoice_id, "error": str(e)})
+    
+    return {"code": 0, "message": f"Bulk action completed", "results": results}
+
 # ============== SALES ORDERS MODULE ==============
 # Workflow: Create -> Confirm -> Convert to Invoice -> Mark Delivered -> Close
 
