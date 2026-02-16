@@ -21,31 +21,33 @@ code, .mono {
 
 @layer base {
     :root {
-        --background: 222 47% 11%;
-        --foreground: 210 40% 98%;
-        --card: 217 33% 17%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222 47% 11%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 186 70% 50%;
-        --primary-foreground: 222 47% 11%;
-        --secondary: 217 33% 17%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 217 33% 17%;
-        --muted-foreground: 215 20% 65%;
-        --accent: 186 70% 50%;
-        --accent-foreground: 222 47% 11%;
-        --destructive: 0 84% 60%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 217 33% 25%;
-        --input: 217 33% 25%;
-        --ring: 186 70% 50%;
-        --chart-1: 186 70% 50%;
-        --chart-2: 24 95% 53%;
-        --chart-3: 262 83% 58%;
-        --chart-4: 47 95% 58%;
-        --chart-5: 340 75% 55%;
-        --radius: 0.5rem;
+        /* Battwheels OS - Industrial Intelligence Theme */
+        /* Deep Obsidian base with Vibrant Green accents */
+        --background: 150 10% 2%;          /* #050505 - Deep Obsidian */
+        --foreground: 0 0% 100%;           /* #FFFFFF - Pure White */
+        --card: 156 29% 7%;                /* #0B1210 - Paper Dark */
+        --card-foreground: 0 0% 100%;      /* #FFFFFF */
+        --popover: 156 29% 7%;             /* #0B1210 */
+        --popover-foreground: 0 0% 100%;   /* #FFFFFF */
+        --primary: 155 74% 16%;            /* #0B462F - Dark Green Brand */
+        --primary-foreground: 0 0% 100%;   /* #FFFFFF */
+        --secondary: 156 21% 9%;           /* #121A16 - Subtle Dark */
+        --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+        --muted: 156 21% 9%;               /* #121A16 */
+        --muted-foreground: 240 4% 46%;    /* #71717A */
+        --accent: 148 58% 57%;             /* #65D396 - Vibrant Green */
+        --accent-foreground: 150 10% 2%;   /* #050505 */
+        --destructive: 0 84% 60%;          /* #EF4444 - Error Red */
+        --destructive-foreground: 0 0% 100%;
+        --border: 217 19% 17%;             /* #1F2937 */
+        --input: 217 19% 17%;              /* #1F2937 */
+        --ring: 148 58% 57%;               /* #65D396 - Vibrant Green */
+        --chart-1: 148 58% 57%;            /* #65D396 - Vibrant Green */
+        --chart-2: 38 92% 50%;             /* #F59E0B - Warning Amber */
+        --chart-3: 217 91% 60%;            /* #3B82F6 - Info Blue */
+        --chart-4: 262 83% 58%;            /* Purple */
+        --chart-5: 0 84% 60%;              /* #EF4444 - Error Red */
+        --radius: 0.25rem;                 /* Sharp corners for industrial look */
     }
 }
 
