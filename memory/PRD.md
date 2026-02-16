@@ -163,6 +163,7 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [x] BM25 + Hybrid Search Service
 - [x] Embedding Service (structure ready)
 - [x] **UI/UX Theme Overhaul (Feb 16, 2026)** - Industrial Intelligence Theme
+- [x] **Modal Scrollability Fix (Feb 16, 2026)** - Fixed all DialogContent components across the app to use max-h-[90vh] overflow-y-auto. Verified: Tickets JobCard modal, Employees, PurchaseOrders, Users, Suppliers, Inventory, Vehicles modals all scroll properly
 
 ### P0 (Next)
 - [ ] Enable vector embeddings with OPENAI_API_KEY
