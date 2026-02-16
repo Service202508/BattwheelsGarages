@@ -82,7 +82,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           {!collapsed && (
-            <h1 className="text-xl font-bold text-[#0B462F] tracking-tight" data-testid="sidebar-title">
+            <h1 className="text-xl font-bold text-gray-900 tracking-tight" data-testid="sidebar-title">
               Battwheels OS
             </h1>
           )}
@@ -131,11 +131,11 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
                       data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                         isActive
-                          ? "bg-[#0B462F]/10 text-[#0B462F] font-medium"
+                          ? "bg-[#22EDA9]/15 text-gray-900 font-medium"
                           : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                       } ${collapsed ? "justify-center" : ""}`}
                     >
-                      <Icon className="h-5 w-5 flex-shrink-0" strokeWidth={1.5} />
+                      <Icon className={`h-5 w-5 flex-shrink-0 ${isActive ? "text-[#22EDA9]" : ""}`} strokeWidth={1.5} />
                       {!collapsed && <span className="text-sm">{item.name}</span>}
                     </Link>
                   );
@@ -152,7 +152,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
           <div className="flex items-center gap-3 mb-4">
             <Avatar className="h-10 w-10">
               <AvatarImage src={user?.picture} />
-              <AvatarFallback className="bg-[#0B462F] text-white">
+              <AvatarFallback className="bg-[#22EDA9] text-black font-semibold">
                 {user?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
@@ -165,7 +165,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
           <div className="flex justify-center mb-4">
             <Avatar className="h-10 w-10">
               <AvatarImage src={user?.picture} />
-              <AvatarFallback className="bg-[#0B462F] text-white">
+              <AvatarFallback className="bg-[#22EDA9] text-black font-semibold">
                 {user?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
