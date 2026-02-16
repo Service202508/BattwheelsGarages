@@ -154,7 +154,7 @@ function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={
-        auth.user ? <Navigate to="/dashboard" replace /> : <Login onLogin={auth.login} />
+        auth.user ? <RoleBasedRedirect user={auth.user} /> : <Login onLogin={auth.login} />
       } />
       <Route path="/dashboard" element={
         <ProtectedRoute user={auth.user} loading={auth.loading}>
