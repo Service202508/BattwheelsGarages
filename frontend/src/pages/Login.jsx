@@ -152,7 +152,7 @@ export default function Login({ onLogin }) {
       </div>
 
       {/* Right Panel - Auth Form */}
-      <div className="flex-1 flex flex-col p-6 sm:p-8 bg-gray-50 relative">
+      <div className="flex-1 flex flex-col bg-white relative">
         {/* Top Right Logo */}
         <div className="hidden lg:flex justify-end mb-4 bg-white -mx-6 sm:-mx-8 px-6 sm:px-8 py-4">
           <img 
