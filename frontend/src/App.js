@@ -290,6 +290,55 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/vendor-credits" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <VendorCredits user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/chart-of-accounts" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <ChartOfAccounts user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/journal-entries" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <JournalEntries user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/recurring-transactions" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <RecurringTransactions user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/projects" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Projects user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/taxes" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Taxes user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/delivery-challans" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <DeliveryChallans user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/invoices" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
