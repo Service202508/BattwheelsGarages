@@ -157,63 +157,63 @@ function AppRouter() {
         auth.user ? <RoleBasedRedirect user={auth.user} /> : <Login onLogin={auth.login} />
       } />
       <Route path="/dashboard" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Dashboard user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/tickets" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Tickets user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/tickets/new" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <NewTicket user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/inventory" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Inventory user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/ai-assistant" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <AIAssistant user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/vehicles" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Vehicles user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/users" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Users user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/alerts" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Alerts user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/settings" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Settings user={auth.user} />
           </Layout>
@@ -221,7 +221,7 @@ function AppRouter() {
       } />
       {/* New ERP Modules */}
       <Route path="/suppliers" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Suppliers user={auth.user} />
           </Layout>
