@@ -91,59 +91,61 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-[#050505] flex">
       {/* Left Panel - Branding */}
       <div 
         className="hidden lg:flex lg:w-1/2 relative overflow-hidden"
         style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1639060015191-9d83063eab2a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzh8MHwxfHNlYXJjaHwyfHxmdXR1cmlzdGljJTIwY2FyJTIwZGFzaGJvYXJkJTIwaW50ZXJmYWNlfGVufDB8fHx8MTc3MTE4OTI3NXww&ixlib=rb-4.1.0&q=85')`,
+          backgroundImage: `url('https://images.unsplash.com/photo-1767990495521-95cceb571125?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwxfHxFViUyMGJhdHRlcnklMjBwYWNrJTIwdGVjaG5vbG9neXxlbnwwfHx8fDE3NzEyMzYyNzV8MA&ixlib=rb-4.1.0&q=85')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-[#050505]/90 to-transparent" />
         <div className="relative z-10 flex flex-col justify-center p-12">
           <div className="flex items-center gap-3 mb-8">
-            <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center">
-              <Zap className="h-7 w-7 text-primary" />
+            <div className="h-12 w-12 rounded-sm bg-[#0B462F] flex items-center justify-center shadow-[0_0_20px_rgba(101,211,150,0.2)]">
+              <Zap className="h-7 w-7 text-[#65D396]" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight">Battwheels OS</h1>
+            <h1 className="text-3xl font-bold tracking-tight uppercase">Battwheels OS</h1>
           </div>
-          <h2 className="text-4xl font-bold mb-4 tracking-tight">
+          <h2 className="text-4xl font-bold mb-4 tracking-tight uppercase">
             EV Command Center
           </h2>
-          <p className="text-xl text-muted-foreground max-w-md leading-relaxed">
+          <p className="text-xl text-gray-400 max-w-md leading-relaxed">
             Integrated AI-powered Electric Failure Intelligence for comprehensive EV workshop management.
           </p>
           <div className="mt-12 grid grid-cols-2 gap-6">
-            <div className="p-4 rounded-xl glass">
-              <p className="text-3xl font-bold text-primary mono">745+</p>
-              <p className="text-sm text-muted-foreground">Vehicles Serviced</p>
+            <div className="p-4 rounded-sm bg-[#0B1210]/80 backdrop-blur-md border border-white/10">
+              <p className="text-3xl font-bold text-[#65D396] font-mono">745+</p>
+              <p className="text-sm text-gray-400 uppercase tracking-wide">Vehicles Serviced</p>
             </div>
-            <div className="p-4 rounded-xl glass">
-              <p className="text-3xl font-bold text-primary mono">98%</p>
-              <p className="text-sm text-muted-foreground">Success Rate</p>
+            <div className="p-4 rounded-sm bg-[#0B1210]/80 backdrop-blur-md border border-white/10">
+              <p className="text-3xl font-bold text-[#65D396] font-mono">98%</p>
+              <p className="text-sm text-gray-400 uppercase tracking-wide">Success Rate</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Right Panel - Auth Forms */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <Card className="w-full max-w-md border-white/10 bg-card/50 backdrop-blur-sm">
+      <div className="flex-1 flex items-center justify-center p-6 bg-[#050505]">
+        <Card className="w-full max-w-md border-white/10 bg-[#0B1210]/80 backdrop-blur-md rounded-sm">
           <CardHeader className="text-center">
             <div className="lg:hidden flex items-center justify-center gap-2 mb-4">
-              <Zap className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold">Battwheels OS</span>
+              <div className="h-10 w-10 rounded-sm bg-[#0B462F] flex items-center justify-center">
+                <Zap className="h-6 w-6 text-[#65D396]" />
+              </div>
+              <span className="text-2xl font-bold uppercase">Battwheels OS</span>
             </div>
-            <CardTitle className="text-2xl">Welcome</CardTitle>
-            <CardDescription>Sign in to access your EV Command Center</CardDescription>
+            <CardTitle className="text-2xl font-bold">Welcome</CardTitle>
+            <CardDescription className="text-gray-400">Sign in to access your EV Command Center</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="login" data-testid="login-tab">Login</TabsTrigger>
-                <TabsTrigger value="register" data-testid="register-tab">Register</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-[#050505] rounded-sm">
+                <TabsTrigger value="login" data-testid="login-tab" className="rounded-sm data-[state=active]:bg-[#0B462F] data-[state=active]:text-white">Login</TabsTrigger>
+                <TabsTrigger value="register" data-testid="register-tab" className="rounded-sm data-[state=active]:bg-[#0B462F] data-[state=active]:text-white">Register</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
