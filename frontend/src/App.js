@@ -228,91 +228,91 @@ function AppRouter() {
         </ProtectedRoute>
       } />
       <Route path="/purchases" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <PurchaseOrders user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/sales" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <SalesOrders user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/invoices" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Invoices user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/accounting" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Accounting user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/customers" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Customers user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/expenses" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Expenses user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/data-migration" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <DataMigration user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/attendance" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Attendance user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/leave" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <LeaveManagement user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/payroll" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Payroll user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/employees" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Employees user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/failure-intelligence" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <FailureIntelligence user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/fault-tree-import" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <FaultTreeImport user={auth.user} />
           </Layout>
