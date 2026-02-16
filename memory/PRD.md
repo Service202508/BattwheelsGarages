@@ -181,34 +181,27 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 
 ## UI/UX Design System (Feb 16, 2026)
 
-### Theme: Industrial Intelligence
-- **Archetype**: The Performance Pro
-- **Style**: Dark Mode First, Industrial/Technical
+### Theme: Light Professional (Current)
+- **Style**: Clean, Modern SaaS
+- **Mode**: Light Theme
 
 ### Color Palette
 | Color | Hex | Usage |
 |-------|-----|-------|
-| Deep Obsidian | #050505 | Main background |
-| Dark Green | #0B462F | Brand primary, headers |
-| Paper Dark | #0B1210 | Cards, sidebar |
-| Vibrant Green | #65D396 | Accent, CTAs, active states |
-| White | #FFFFFF | Primary text |
-| Gray 400 | #9CA3AF | Secondary text |
-| Gray 500 | #6B7280 | Muted text |
-
-### Typography
-- **Headings**: Barlow (bold, uppercase for H1)
-- **Body**: Manrope (high legibility)
-- **Data/Mono**: JetBrains Mono
+| White | #FFFFFF | Main background, cards |
+| Gray 50 | #F9FAFB | Page background |
+| Dark Green | #0B462F | Brand primary, sidebar title, buttons |
+| Green 600 | #2F8F5C | Accent, active states |
+| Gray 200 | #E5E7EB | Borders |
+| Gray 600 | #4B5563 | Secondary text |
+| Gray 900 | #111827 | Primary text |
 
 ### Components
-- **Border Radius**: Sharp (0.25rem) for industrial look
-- **Cards**: bg-[#0B1210] with 1px borders
-- **Buttons**: Vibrant green with glow effect
-- **Active States**: Green accent with border highlight
-
-### Design Guidelines File
-- Location: `/app/design_guidelines.json`
+- **Border Radius**: 0.375rem (rounded-lg)
+- **Cards**: White with gray-200 borders, shadow-sm
+- **Buttons**: Dark green (#0B462F) with white text
+- **Active States**: Green background tint with dark green text
+- **Sidebar**: White background, gray borders
 
 - [ ] Knowledge Graph visualization
 
