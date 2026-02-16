@@ -470,17 +470,6 @@ class TestFailureCardCRUDExtended:
             "root_cause": "Cell degradation due to thermal cycling",
             "root_cause_details": "Repeated charge/discharge cycles at high temperatures",
             "secondary_causes": ["Manufacturing defect", "Improper storage"],
-            "diagnostic_tree": {
-                "root": "Check battery voltage",
-                "branches": [
-                    {"condition": "Voltage low", "action": "Check individual cells"},
-                    {"condition": "Voltage normal", "action": "Check BMS communication"}
-                ]
-            },
-            "verification_steps": [
-                {"step": 1, "description": "Measure cell voltages", "expected": "All cells within 0.1V"},
-                {"step": 2, "description": "Check BMS logs", "expected": "No error codes"}
-            ],
             "resolution_steps": [
                 {"step_number": 1, "action": "Check cell voltages", "duration_minutes": 15},
                 {"step_number": 2, "action": "Perform cell balancing", "duration_minutes": 30},
@@ -494,11 +483,6 @@ class TestFailureCardCRUDExtended:
                 {"make": "Ola", "model": "S1 Pro", "year_start": 2021}
             ],
             "universal_failure": False,
-            "failure_conditions": [
-                {"condition_type": "temperature", "value": "high"},
-                {"condition_type": "load", "value": "heavy"},
-                {"condition_type": "age", "value": "2+ years"}
-            ],
             "keywords": ["battery", "cell", "imbalance", "voltage", "range", "search", "test"],
             "tags": ["battery", "bms", "cell-balancing", "search-test"],
             "source_type": "field_discovery"
