@@ -46,6 +46,7 @@ const navItems = [
     { name: "Alerts", path: "/alerts", icon: Bell },
   ]},
   { section: "HR & Payroll", items: [
+    { name: "Employees", path: "/employees", icon: Users },
     { name: "Attendance", path: "/attendance", icon: Clock },
     { name: "Leave Management", path: "/leave", icon: Calendar },
     { name: "Payroll", path: "/payroll", icon: Wallet },
