@@ -110,7 +110,7 @@ async def upload_from_url(
     # Get user info
     token = request.cookies.get("session_token") or request.headers.get("Authorization", "").replace("Bearer ", "")
     user_id = "system"
-    if token and db:
+    if token and db is not None:
         session = await db.user_sessions.find_one({"session_token": token})
         if session:
             user_id = session.get("user_id", "system")
