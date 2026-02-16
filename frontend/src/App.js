@@ -30,6 +30,7 @@ import FailureIntelligence from "@/pages/FailureIntelligence";
 import FaultTreeImport from "@/pages/FaultTreeImport";
 import AMCManagement from "@/pages/AMCManagement";
 import TechnicianProductivity from "@/pages/TechnicianProductivity";
+import Quotes from "@/pages/Quotes";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
