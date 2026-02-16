@@ -486,7 +486,10 @@ class TestExistingEFIModule:
         response = requests.get(f"{BASE_URL}/api/efi/failure-cards", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
-        assert isinstance(data, list)
+        # Response is paginated with items, total, skip, limit
+        assert "items" in data
+        assert isinstance(data["items"], list)
+        assert "total" in data
     
     def test_get_efi_analytics(self, auth_headers):
         """Test GET /api/efi/analytics/overview - Get EFI analytics"""
