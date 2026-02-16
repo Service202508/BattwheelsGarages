@@ -1,12 +1,15 @@
 """
 Battwheels OS - Vector Embedding Service
-Production-grade semantic search using OpenAI embeddings via Emergent Proxy
+Production-grade semantic search using OpenAI embeddings
 
 Features:
 - OpenAI text-embedding-3-small (1536 dimensions)
 - Batch embedding generation
 - Caching for cost optimization
 - MongoDB vector search integration
+
+Note: Embeddings require a direct OpenAI API key (OPENAI_API_KEY).
+The Emergent LLM key only supports chat completions.
 """
 import os
 import hashlib
@@ -27,36 +30,27 @@ EMBEDDING_DIMENSIONS = 1536
 BATCH_SIZE = 100  # OpenAI batch limit
 CACHE_TTL_HOURS = 168  # 7 days
 
-# Emergent Proxy URL for LLM integrations
-EMERGENT_PROXY_URL = "https://integrations.emergentagent.com"
-
 
 class EmbeddingService:
     """
-    Production vector embedding service using OpenAI via Emergent Proxy.
+    Production vector embedding service using OpenAI.
     
-    Uses Emergent LLM Key for authentication.
+    Requires direct OpenAI API key (OPENAI_API_KEY env var).
     Implements caching to reduce API costs.
     """
     
     def __init__(self, db=None):
         self.db = db
-        self.api_key = os.environ.get("EMERGENT_LLM_KEY") or os.environ.get("OPENAI_API_KEY")
+        # Only use OPENAI_API_KEY for embeddings (Emergent key doesn't support embeddings)
+        self.api_key = os.environ.get("OPENAI_API_KEY")
         
         if not self.api_key:
-            logger.warning("No embedding API key found. Embeddings will be disabled.")
+            logger.warning("OPENAI_API_KEY not found. Vector embeddings disabled - using keyword search only.")
+            logger.info("To enable semantic search, add OPENAI_API_KEY to .env file.")
             self.client = None
         else:
-            # Use OpenAI client with Emergent proxy if using Emergent key
-            if self.api_key.startswith("sk-emergent"):
-                self.client = AsyncOpenAI(
-                    api_key=self.api_key,
-                    base_url=f"{EMERGENT_PROXY_URL}/openai/v1"
-                )
-                logger.info("EmbeddingService initialized with Emergent proxy")
-            else:
-                self.client = AsyncOpenAI(api_key=self.api_key)
-                logger.info("EmbeddingService initialized with direct OpenAI client")
+            self.client = AsyncOpenAI(api_key=self.api_key)
+            logger.info("EmbeddingService initialized with OpenAI client")
     
     def _compute_text_hash(self, text: str) -> str:
         """Generate deterministic hash for text caching."""
