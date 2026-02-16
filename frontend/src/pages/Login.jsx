@@ -175,7 +175,7 @@ export default function Login({ onLogin }) {
 
           <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
             <CardHeader className="text-center pt-8 pb-4 px-8">
-              <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
+              <CardTitle className="text-2xl font-bold text-gray-900">Battwheels OS</CardTitle>
               <CardDescription className="text-gray-500">Sign in to your account</CardDescription>
             </CardHeader>
             
