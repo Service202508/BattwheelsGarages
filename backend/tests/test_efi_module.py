@@ -497,16 +497,14 @@ class TestEFIAnalytics:
         
         # Verify analytics structure
         assert "total_failure_cards" in data
-        assert "by_status" in data
         assert "by_subsystem" in data
-        assert "by_confidence_level" in data
-        assert "avg_confidence_score" in data
-        assert "avg_effectiveness_score" in data
+        assert "by_source_type" in data
+        assert "approved_cards" in data
+        assert "draft_cards" in data
         
         print(f"✓ Analytics overview retrieved:")
         print(f"  - Total failure cards: {data['total_failure_cards']}")
-        print(f"  - Avg confidence: {data['avg_confidence_score']:.2f}")
-        print(f"  - By status: {data['by_status']}")
+        print(f"  - Approved: {data['approved_cards']}, Draft: {data['draft_cards']}")
     
     def test_get_effectiveness_report(self, auth_headers):
         """Test getting effectiveness report"""
@@ -791,8 +789,9 @@ class TestEventIntegration:
             f"{BASE_URL}/api/tickets/{ticket_id}/close",
             headers=auth_headers,
             json={
-                "resolution_notes": "Motor bearing replaced, vibration resolved",
-                "resolution_type": "repaired"
+                "resolution": "Motor bearing replaced, vibration resolved",
+                "resolution_outcome": "success",
+                "resolution_notes": "Replaced worn bearing"
             }
         )
         assert close_response.status_code == 200
