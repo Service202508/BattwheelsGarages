@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Zap, Mail, Lock, User } from "lucide-react";
+import { Mail, Lock, User, Zap, Shield, Clock } from "lucide-react";
 import { API } from "@/App";
 
 export default function Login({ onLogin }) {
@@ -21,7 +21,6 @@ export default function Login({ onLogin }) {
   });
 
   const handleGoogleLogin = () => {
-    // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
     const redirectUrl = window.location.origin + '/dashboard';
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
@@ -91,367 +90,272 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex relative">
-      {/* Top Right Logo */}
-      <div className="absolute top-6 right-6 z-50">
-        <img 
-          src="https://customer-assets.emergentagent.com/job_335b5085-49dc-4853-90f5-28d59181be65/artifacts/d9i6j4g3_Battwheels%20Logo%20New%20Transparent.png" 
-          alt="Battwheels Garages" 
-          className="h-16 w-auto"
-        />
-      </div>
-      
-      {/* Left Panel - Hero Section - Dark Theme */}
-      <div className="hidden lg:flex lg:w-[58%] relative overflow-hidden bg-[#0a0a0a]">
-        {/* Decorative Background Elements */}
+    <div className="min-h-screen flex">
+      {/* Left Panel - Clean Hero */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-[#0a0a0a] overflow-hidden">
+        {/* Subtle gradient background */}
         <div className="absolute inset-0">
-          <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-[#22EDA9]/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 -right-40 w-[500px] h-[500px] bg-[#22EDA9]/5 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-[#22EDA9]/3 rounded-full blur-2xl"></div>
-          
-          {/* Subtle grid pattern */}
-          <div className="absolute inset-0 opacity-[0.06]" style={{
-            backgroundImage: `linear-gradient(rgba(34,237,169,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(34,237,169,0.3) 1px, transparent 1px)`,
-            backgroundSize: '40px 40px'
-          }}></div>
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#22EDA9]/8 via-transparent to-transparent"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#22EDA9]/5 rounded-full blur-3xl"></div>
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center px-14 py-10 w-full">
-          {/* Main Heading */}
-          <h1 className="text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 tracking-tight">
-            EV Failure Intelligence
-          </h1>
-          
-          {/* Tagline */}
-          <p className="text-lg text-gray-400 max-w-md leading-relaxed mb-6">
-            Transform every repair into <span className="font-semibold text-[#22EDA9]">enterprise-grade knowledge</span> that makes your entire service network smarter.
+        <div className="relative z-10 flex flex-col justify-between p-12 w-full">
+          {/* Logo */}
+          <div>
+            <img 
+              src="https://customer-assets.emergentagent.com/job_335b5085-49dc-4853-90f5-28d59181be65/artifacts/d9i6j4g3_Battwheels%20Logo%20New%20Transparent.png" 
+              alt="Battwheels Garages" 
+              className="h-14 w-auto"
+            />
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col justify-center max-w-lg">
+            <h1 className="text-4xl font-bold text-white leading-tight mb-4">
+              EV Failure Intelligence
+            </h1>
+            <p className="text-lg text-gray-400 leading-relaxed mb-10">
+              Transform every repair into knowledge that makes your entire service network smarter.
+            </p>
+
+            {/* Key Features - Clean & Minimal */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-[#22EDA9]/15 flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-5 h-5 text-[#22EDA9]" />
+                </div>
+                <div>
+                  <h3 className="text-white font-medium">Instant Solutions</h3>
+                  <p className="text-gray-500 text-sm">Access proven fixes from the network</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-[#22EDA9]/15 flex items-center justify-center flex-shrink-0">
+                  <Clock className="w-5 h-5 text-[#22EDA9]" />
+                </div>
+                <div>
+                  <h3 className="text-white font-medium">Faster Repairs</h3>
+                  <p className="text-gray-500 text-sm">Reduce downtime with AI-powered matching</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-[#22EDA9]/15 flex items-center justify-center flex-shrink-0">
+                  <Shield className="w-5 h-5 text-[#22EDA9]" />
+                </div>
+                <div>
+                  <h3 className="text-white font-medium">Enterprise Knowledge</h3>
+                  <p className="text-gray-500 text-sm">Structured failure data across all locations</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <p className="text-gray-600 text-sm">
+            © 2026 Battwheels Garages. All rights reserved.
           </p>
-          
-          {/* Intelligence Pipeline - Horizontal Flow */}
-          <div className="mb-6">
-            <p className="text-xs uppercase tracking-wider text-gray-500 mb-3 font-medium">The Intelligence Pipeline</p>
-            <div className="flex items-center gap-1">
-              {/* Step 1 */}
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                </div>
-                <span className="text-[10px] text-gray-500 mt-1 text-center">Detect</span>
-              </div>
-              <div className="text-gray-600 text-xs">→</div>
-              {/* Step 2 */}
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-400 to-yellow-500 flex items-center justify-center shadow-lg shadow-yellow-500/20">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <span className="text-[10px] text-gray-500 mt-1 text-center">Analyze</span>
-              </div>
-              <div className="text-gray-600 text-xs">→</div>
-              {/* Step 3 */}
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-green-400 flex items-center justify-center shadow-lg shadow-green-500/20">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <span className="text-[10px] text-gray-500 mt-1 text-center">Document</span>
-              </div>
-              <div className="text-gray-600 text-xs">→</div>
-              {/* Step 4 */}
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
-                  </svg>
-                </div>
-                <span className="text-[10px] text-gray-500 mt-1 text-center">Store</span>
-              </div>
-              <div className="text-gray-600 text-xs">→</div>
-              {/* Step 5 */}
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-400 to-[#22EDA9] flex items-center justify-center shadow-lg shadow-[#22EDA9]/20">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                  </svg>
-                </div>
-                <span className="text-[10px] text-gray-500 mt-1 text-center">Sync</span>
-              </div>
-              <div className="text-gray-600 text-xs">→</div>
-              {/* Step 6 */}
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#22EDA9] to-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <span className="text-[10px] text-gray-500 mt-1 text-center">Repair</span>
-              </div>
-            </div>
-          </div>
-          
-          {/* Benefit Cards - 2x3 Grid */}
-          <div className="grid grid-cols-3 gap-3">
-            {/* Card 1 - Faster First-Time Fix */}
-            <div className="bg-[#22EDA9]/10 backdrop-blur-sm rounded-xl p-4 border border-[#22EDA9]/20 hover:bg-[#22EDA9]/15 hover:border-[#22EDA9]/40 transition-all duration-300 group">
-              <div className="w-9 h-9 rounded-lg bg-[#22EDA9]/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                <svg className="w-5 h-5 text-[#22EDA9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-1">Faster Fix</h3>
-              <p className="text-[10px] text-gray-500 leading-relaxed">Instant access to proven solutions</p>
-            </div>
-            
-            {/* Card 2 - Reduced Downtime */}
-            <div className="bg-[#22EDA9]/10 backdrop-blur-sm rounded-xl p-4 border border-[#22EDA9]/20 hover:bg-[#22EDA9]/15 hover:border-[#22EDA9]/40 transition-all duration-300 group">
-              <div className="w-9 h-9 rounded-lg bg-[#22EDA9]/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                <svg className="w-5 h-5 text-[#22EDA9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-1">Less Downtime</h3>
-              <p className="text-[10px] text-gray-500 leading-relaxed">Pre-validated repair procedures</p>
-            </div>
-            
-            {/* Card 3 - Consistent Quality */}
-            <div className="bg-[#22EDA9]/10 backdrop-blur-sm rounded-xl p-4 border border-[#22EDA9]/20 hover:bg-[#22EDA9]/15 hover:border-[#22EDA9]/40 transition-all duration-300 group">
-              <div className="w-9 h-9 rounded-lg bg-[#22EDA9]/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                <svg className="w-5 h-5 text-[#22EDA9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-1">Quality</h3>
-              <p className="text-[10px] text-gray-500 leading-relaxed">Network-wide knowledge</p>
-            </div>
-            
-            {/* Card 4 - Continuous Learning */}
-            <div className="bg-[#22EDA9]/10 backdrop-blur-sm rounded-xl p-4 border border-[#22EDA9]/20 hover:bg-[#22EDA9]/15 hover:border-[#22EDA9]/40 transition-all duration-300 group">
-              <div className="w-9 h-9 rounded-lg bg-[#22EDA9]/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                <svg className="w-5 h-5 text-[#22EDA9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-1">Learning</h3>
-              <p className="text-[10px] text-gray-500 leading-relaxed">Compounding intelligence</p>
-            </div>
-            
-            {/* Card 5 - Reduced Dependency */}
-            <div className="bg-[#22EDA9]/10 backdrop-blur-sm rounded-xl p-4 border border-[#22EDA9]/20 hover:bg-[#22EDA9]/15 hover:border-[#22EDA9]/40 transition-all duration-300 group">
-              <div className="w-9 h-9 rounded-lg bg-[#22EDA9]/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                <svg className="w-5 h-5 text-[#22EDA9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-1">Scale</h3>
-              <p className="text-[10px] text-gray-500 leading-relaxed">No single-point dependency</p>
-            </div>
-            
-            {/* Card 6 - Scalable Intelligence */}
-            <div className="bg-[#22EDA9]/10 backdrop-blur-sm rounded-xl p-4 border border-[#22EDA9]/20 hover:bg-[#22EDA9]/15 hover:border-[#22EDA9]/40 transition-all duration-300 group">
-              <div className="w-9 h-9 rounded-lg bg-[#22EDA9]/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                <svg className="w-5 h-5 text-[#22EDA9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-1">AI Brain</h3>
-              <p className="text-[10px] text-gray-500 leading-relaxed">Enterprise-grade knowledge</p>
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Right Panel - Auth Forms */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-gray-50">
-        <Card className="w-full max-w-md border-0 bg-white shadow-2xl rounded-3xl overflow-hidden">
-          {/* Mobile Logo Header */}
-          <div className="lg:hidden bg-gradient-to-r from-[#22EDA9] to-[#1DD69A] p-6">
+      {/* Right Panel - Auth Form */}
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-8 bg-gray-50">
+        <div className="w-full max-w-md">
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex justify-center mb-8">
             <img 
-              src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/3abu9yqt_68469546%20%283%29.png" 
-              alt="Battwheels Logo" 
-              className="h-12 mx-auto"
+              src="https://customer-assets.emergentagent.com/job_335b5085-49dc-4853-90f5-28d59181be65/artifacts/d9i6j4g3_Battwheels%20Logo%20New%20Transparent.png" 
+              alt="Battwheels Garages" 
+              className="h-12 w-auto"
             />
           </div>
-          
-          <CardHeader className="text-center pt-8 pb-4">
-            <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
-            <CardDescription className="text-gray-500">Sign in to access your EV Command Center</CardDescription>
-          </CardHeader>
-          <CardContent className="px-8 pb-8">
-            <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 rounded-xl p-1 h-12">
-                <TabsTrigger value="login" data-testid="login-tab" className="rounded-lg font-medium data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black data-[state=active]:shadow-md transition-all h-10">Login</TabsTrigger>
-                <TabsTrigger value="register" data-testid="register-tab" className="rounded-lg font-medium data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black data-[state=active]:shadow-md transition-all h-10">Register</TabsTrigger>
-              </TabsList>
 
-              <TabsContent value="login">
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="login-email" className="text-gray-700">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="login-email"
-                        type="email"
-                        placeholder="you@example.com"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] focus:ring-[#22EDA9] rounded-lg"
-                        value={loginData.email}
-                        onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                        required
-                        data-testid="login-email-input"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password" className="text-gray-700">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="login-password"
-                        type="password"
-                        placeholder="••••••••"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] focus:ring-[#22EDA9] rounded-lg"
-                        value={loginData.password}
-                        onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                        required
-                        data-testid="login-password-input"
-                      />
-                    </div>
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-[#22EDA9] text-black hover:bg-[#1DD69A] font-semibold rounded-lg" 
-                    disabled={isLoading}
-                    data-testid="login-submit-btn"
+          <Card className="border-0 shadow-xl rounded-2xl overflow-hidden">
+            <CardHeader className="text-center pt-8 pb-4 px-8">
+              <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
+              <CardDescription className="text-gray-500">Sign in to your account</CardDescription>
+            </CardHeader>
+            
+            <CardContent className="px-8 pb-8">
+              <Tabs defaultValue="login" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 rounded-xl p-1 h-11">
+                  <TabsTrigger 
+                    value="login" 
+                    data-testid="login-tab" 
+                    className="rounded-lg font-medium data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black data-[state=active]:shadow-sm transition-all h-9"
                   >
-                    {isLoading ? "Signing in..." : "Sign In"}
-                  </Button>
-                </form>
-
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-200" />
-                  </div>
-                  <div className="relative flex justify-center text-xs">
-                    <span className="bg-white px-2 text-gray-500">or continue with</span>
-                  </div>
-                </div>
-
-                <Button 
-                  variant="outline" 
-                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg"
-                  onClick={handleGoogleLogin}
-                  data-testid="google-login-btn"
-                >
-                  <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
-                    <path
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                      fill="#4285F4"
-                    />
-                    <path
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                      fill="#34A853"
-                    />
-                    <path
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                      fill="#FBBC05"
-                    />
-                    <path
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                      fill="#EA4335"
-                    />
-                  </svg>
-                  Continue with Google
-                </Button>
-
-                <p className="mt-4 text-xs text-center text-gray-500">
-                  Demo credentials: admin@battwheels.in / admin123
-                </p>
-              </TabsContent>
-
-              <TabsContent value="register">
-                <form onSubmit={handleRegister} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="register-name" className="text-gray-700">Full Name</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="register-name"
-                        type="text"
-                        placeholder="John Doe"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] rounded-lg"
-                        value={registerData.name}
-                        onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
-                        required
-                        data-testid="register-name-input"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-email" className="text-gray-700">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="register-email"
-                        type="email"
-                        placeholder="you@example.com"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] rounded-lg"
-                        value={registerData.email}
-                        onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
-                        required
-                        data-testid="register-email-input"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-password" className="text-gray-700">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="register-password"
-                        type="password"
-                        placeholder="••••••••"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] rounded-lg"
-                        value={registerData.password}
-                        onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                        required
-                        data-testid="register-password-input"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-confirm" className="text-gray-700">Confirm Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="register-confirm"
-                        type="password"
-                        placeholder="••••••••"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] rounded-lg"
-                        value={registerData.confirmPassword}
-                        onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
-                        required
-                        data-testid="register-confirm-input"
-                      />
-                    </div>
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-[#22EDA9] text-black hover:bg-[#1DD69A] font-semibold rounded-lg" 
-                    disabled={isLoading}
-                    data-testid="register-submit-btn"
+                    Login
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="register" 
+                    data-testid="register-tab" 
+                    className="rounded-lg font-medium data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black data-[state=active]:shadow-sm transition-all h-9"
                   >
-                    {isLoading ? "Creating Account..." : "Create Account"}
+                    Register
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="login">
+                  <form onSubmit={handleLogin} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="login-email" className="text-gray-700 text-sm">Email</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          id="login-email"
+                          type="email"
+                          placeholder="you@example.com"
+                          className="pl-10 h-11 bg-white border-gray-200 focus:border-[#22EDA9] focus:ring-[#22EDA9] rounded-lg"
+                          value={loginData.email}
+                          onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                          required
+                          data-testid="login-email-input"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="login-password" className="text-gray-700 text-sm">Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          id="login-password"
+                          type="password"
+                          placeholder="••••••••"
+                          className="pl-10 h-11 bg-white border-gray-200 focus:border-[#22EDA9] focus:ring-[#22EDA9] rounded-lg"
+                          value={loginData.password}
+                          onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                          required
+                          data-testid="login-password-input"
+                        />
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full h-11 bg-[#22EDA9] text-black hover:bg-[#1DD69A] font-semibold rounded-lg transition-colors" 
+                      disabled={isLoading}
+                      data-testid="login-submit-btn"
+                    >
+                      {isLoading ? "Signing in..." : "Sign In"}
+                    </Button>
+                  </form>
+
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200" />
+                    </div>
+                    <div className="relative flex justify-center text-xs">
+                      <span className="bg-white px-3 text-gray-400">or</span>
+                    </div>
+                  </div>
+
+                  <Button 
+                    variant="outline" 
+                    className="w-full h-11 border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
+                    onClick={handleGoogleLogin}
+                    data-testid="google-login-btn"
+                  >
+                    <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
+                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    Continue with Google
                   </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+
+                  <p className="mt-6 text-xs text-center text-gray-400">
+                    Demo: admin@battwheels.in / admin123
+                  </p>
+                </TabsContent>
+
+                <TabsContent value="register">
+                  <form onSubmit={handleRegister} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="register-name" className="text-gray-700 text-sm">Full Name</Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          id="register-name"
+                          type="text"
+                          placeholder="John Doe"
+                          className="pl-10 h-11 bg-white border-gray-200 focus:border-[#22EDA9] rounded-lg"
+                          value={registerData.name}
+                          onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
+                          required
+                          data-testid="register-name-input"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="register-email" className="text-gray-700 text-sm">Email</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          id="register-email"
+                          type="email"
+                          placeholder="you@example.com"
+                          className="pl-10 h-11 bg-white border-gray-200 focus:border-[#22EDA9] rounded-lg"
+                          value={registerData.email}
+                          onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                          required
+                          data-testid="register-email-input"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="register-password" className="text-gray-700 text-sm">Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          id="register-password"
+                          type="password"
+                          placeholder="••••••••"
+                          className="pl-10 h-11 bg-white border-gray-200 focus:border-[#22EDA9] rounded-lg"
+                          value={registerData.password}
+                          onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
+                          required
+                          data-testid="register-password-input"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="register-confirm" className="text-gray-700 text-sm">Confirm Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          id="register-confirm"
+                          type="password"
+                          placeholder="••••••••"
+                          className="pl-10 h-11 bg-white border-gray-200 focus:border-[#22EDA9] rounded-lg"
+                          value={registerData.confirmPassword}
+                          onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
+                          required
+                          data-testid="register-confirm-input"
+                        />
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full h-11 bg-[#22EDA9] text-black hover:bg-[#1DD69A] font-semibold rounded-lg transition-colors" 
+                      disabled={isLoading}
+                      data-testid="register-submit-btn"
+                    >
+                      {isLoading ? "Creating Account..." : "Create Account"}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
