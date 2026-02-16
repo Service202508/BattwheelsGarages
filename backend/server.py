@@ -4185,8 +4185,17 @@ async def root():
 from routes.failure_intelligence import router as efi_router, init_router as init_efi_router
 from services.notification_service import router as notification_router, init_router as init_notification_router
 
-# Initialize EFI engine with database
-init_efi_router(db)
+# Import event processor for EFI workflows
+try:
+    from services.event_processor import EFIEventProcessor
+    efi_event_processor = EFIEventProcessor(db)
+    logger.info("EFI Event Processor initialized")
+except ImportError as e:
+    logger.warning(f"EFI Event Processor not available: {e}")
+    efi_event_processor = None
+
+# Initialize EFI engine with database and event processor
+init_efi_router(db, efi_event_processor)
 init_notification_router(db)
 
 # Include EFI routes (core intelligence engine)
