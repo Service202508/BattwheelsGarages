@@ -56,6 +56,7 @@ class EventType(str, Enum):
     # Technician Events
     TECHNICIAN_ACTION_STARTED = "technician.action_started"
     TECHNICIAN_ACTION_COMPLETED = "technician.action_completed"
+    ACTION_COMPLETED = "technician.action_completed"  # Alias
     
     # Inventory Events
     INVENTORY_LOW = "inventory.low_stock"
