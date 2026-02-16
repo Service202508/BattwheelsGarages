@@ -253,7 +253,8 @@ async def create_amc_subscription(sub_data: AMCSubscriptionCreate, request: Requ
     }
     
     await db.amc_subscriptions.insert_one(subscription)
-    del subscription["_id"] if "_id" in subscription else None
+    if "_id" in subscription:
+        del subscription["_id"]
     
     return subscription
 
