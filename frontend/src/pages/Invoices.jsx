@@ -1,538 +1,604 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, Search, Receipt, Eye, Send, DollarSign, CreditCard, Banknote, Smartphone } from "lucide-react";
+import { 
+  Search, Plus, FileText, IndianRupee, Calendar, User, 
+  CheckCircle, Clock, AlertCircle, Eye, Download, Send, Trash2
+} from "lucide-react";
 import { API } from "@/App";
 
 const statusColors = {
-  draft: "bg-muted text-muted-foreground",
-  sent: "badge-info",
-  partially_paid: "badge-warning",
-  paid: "badge-success",
-  overdue: "badge-danger",
-  cancelled: "badge-danger"
+  draft: "bg-gray-100 text-gray-700",
+  sent: "bg-blue-100 text-blue-700",
+  viewed: "bg-purple-100 text-purple-700",
+  paid: "bg-green-100 text-green-700",
+  partially_paid: "bg-yellow-100 text-yellow-700",
+  overdue: "bg-red-100 text-red-700",
+  void: "bg-gray-200 text-gray-500"
 };
 
-const paymentMethods = [
-  { value: "cash", label: "Cash", icon: Banknote },
-  { value: "card", label: "Card", icon: CreditCard },
-  { value: "upi", label: "UPI", icon: Smartphone },
-  { value: "bank_transfer", label: "Bank Transfer", icon: DollarSign },
-];
-
-export default function Invoices({ user }) {
+export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
-  const [tickets, setTickets] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [services, setServices] = useState([]);
+  const [parts, setParts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
-  const [formData, setFormData] = useState({
-    ticket_id: "",
+  const [analytics, setAnalytics] = useState(null);
+
+  const [newInvoice, setNewInvoice] = useState({
+    customer_id: "",
+    customer_name: "",
     line_items: [],
-    discount_amount: 0,
-    due_days: 30,
-    notes: ""
+    place_of_supply: "DL",
+    gst_treatment: "business_gst",
+    notes: "",
+    terms: ""
   });
-  const [paymentData, setPaymentData] = useState({
-    amount: 0,
-    payment_method: "cash",
-    reference_number: "",
-    notes: ""
+
+  const [newLineItem, setNewLineItem] = useState({
+    item_id: "",
+    item_name: "",
+    quantity: 1,
+    rate: 0,
+    discount_percent: 0,
+    tax_rate: 18
   });
-  const [newItem, setNewItem] = useState({ description: "", quantity: 1, rate: 0 });
 
   useEffect(() => {
-    fetchInvoices();
-    fetchTickets();
-  }, []);
+    fetchData();
+  }, [statusFilter]);
 
-  const fetchInvoices = async () => {
+  const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/invoices`, {
-        credentials: "include",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (response.ok) {
-        setInvoices(await response.json());
-      }
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const [invRes, custRes, srvRes, prtRes, analyticsRes] = await Promise.all([
+        fetch(`${API}/books/invoices?status=${statusFilter}&limit=100`, { headers }),
+        fetch(`${API}/books/customers?limit=200`, { headers }),
+        fetch(`${API}/books/services?limit=200`, { headers }),
+        fetch(`${API}/books/parts?limit=200`, { headers }),
+        fetch(`${API}/books/analytics/summary`, { headers })
+      ]);
+
+      const [invData, custData, srvData, prtData, analyticsData] = await Promise.all([
+        invRes.json(),
+        custRes.json(),
+        srvRes.json(),
+        prtRes.json(),
+        analyticsRes.json()
+      ]);
+
+      setInvoices(invData.invoices || []);
+      setCustomers(custData.customers || []);
+      setServices(srvData.items || []);
+      setParts(prtData.items || []);
+      setAnalytics(analyticsData);
     } catch (error) {
-      console.error("Failed to fetch invoices:", error);
+      console.error("Failed to fetch data:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchTickets = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/tickets`, {
-        credentials: "include",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setTickets(data.filter(t => !t.has_invoice && (t.status === "resolved" || t.status === "closed")));
-      }
-    } catch (error) {
-      console.error("Failed to fetch tickets:", error);
-    }
-  };
-
-  const addLineItem = () => {
-    if (!newItem.description || newItem.rate <= 0) {
-      toast.error("Enter description and rate");
+  const handleAddLineItem = () => {
+    if (!newLineItem.item_name || newLineItem.rate <= 0) {
+      toast.error("Please select an item");
       return;
     }
-    setFormData({
-      ...formData,
-      line_items: [...formData.line_items, {
-        description: newItem.description,
-        quantity: newItem.quantity,
-        rate: newItem.rate,
-        amount: newItem.quantity * newItem.rate
-      }]
+    setNewInvoice({
+      ...newInvoice,
+      line_items: [...newInvoice.line_items, { ...newLineItem }]
     });
-    setNewItem({ description: "", quantity: 1, rate: 0 });
+    setNewLineItem({ item_id: "", item_name: "", quantity: 1, rate: 0, discount_percent: 0, tax_rate: 18 });
   };
 
-  const removeLineItem = (idx) => {
-    setFormData({ ...formData, line_items: formData.line_items.filter((_, i) => i !== idx) });
+  const handleRemoveLineItem = (index) => {
+    setNewInvoice({
+      ...newInvoice,
+      line_items: newInvoice.line_items.filter((_, i) => i !== index)
+    });
+  };
+
+  const handleSelectItem = (itemId, type) => {
+    const items = type === 'service' ? services : parts;
+    const item = items.find(i => i.item_id === itemId);
+    if (item) {
+      setNewLineItem({
+        ...newLineItem,
+        item_id: item.item_id,
+        item_name: item.name,
+        rate: item.rate || 0,
+        tax_rate: item.tax_rate || 18
+      });
+    }
+  };
+
+  const handleSelectCustomer = (customerId) => {
+    const customer = customers.find(c => c.customer_id === customerId);
+    if (customer) {
+      setNewInvoice({
+        ...newInvoice,
+        customer_id: customer.customer_id,
+        customer_name: customer.display_name
+      });
+    }
+  };
+
+  const calculateTotal = () => {
+    return newInvoice.line_items.reduce((sum, item) => {
+      const subtotal = item.quantity * item.rate;
+      const discount = subtotal * (item.discount_percent / 100);
+      const taxable = subtotal - discount;
+      const tax = taxable * (item.tax_rate / 100);
+      return sum + taxable + tax;
+    }, 0);
   };
 
   const handleCreateInvoice = async () => {
-    if (!formData.ticket_id) {
-      toast.error("Select a ticket");
+    if (!newInvoice.customer_id) {
+      toast.error("Please select a customer");
       return;
     }
-    if (formData.line_items.length === 0) {
-      toast.error("Add at least one line item");
+    if (newInvoice.line_items.length === 0) {
+      toast.error("Please add at least one item");
       return;
     }
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/invoices`, {
+      const res = await fetch(`${API}/books/invoices`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          Authorization: `Bearer ${token}`
         },
-        credentials: "include",
-        body: JSON.stringify(formData),
+        body: JSON.stringify(newInvoice)
       });
 
-      if (response.ok) {
-        toast.success("Invoice created!");
-        fetchInvoices();
-        fetchTickets();
-        resetForm();
+      if (res.ok) {
+        toast.success("Invoice created successfully");
+        setShowCreateDialog(false);
+        setNewInvoice({
+          customer_id: "", customer_name: "", line_items: [],
+          place_of_supply: "DL", gst_treatment: "business_gst", notes: "", terms: ""
+        });
+        fetchData();
       } else {
         toast.error("Failed to create invoice");
       }
     } catch (error) {
-      toast.error("Network error");
+      toast.error("Error creating invoice");
     }
   };
 
-  const handleRecordPayment = async () => {
-    if (!selectedInvoice || paymentData.amount <= 0) {
-      toast.error("Enter a valid amount");
-      return;
-    }
-
+  const handleUpdateStatus = async (invoiceId, status) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/payments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          invoice_id: selectedInvoice.invoice_id,
-          ...paymentData
-        }),
+      const res = await fetch(`${API}/books/invoices/${invoiceId}/status?status=${status}`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` }
       });
 
-      if (response.ok) {
-        toast.success("Payment recorded!");
-        fetchInvoices();
-        setIsPaymentOpen(false);
-        setSelectedInvoice(null);
-        setPaymentData({ amount: 0, payment_method: "cash", reference_number: "", notes: "" });
-      } else {
-        toast.error("Failed to record payment");
+      if (res.ok) {
+        toast.success(`Invoice marked as ${status}`);
+        fetchData();
       }
     } catch (error) {
-      toast.error("Network error");
+      toast.error("Failed to update status");
     }
   };
 
-  const resetForm = () => {
-    setFormData({ ticket_id: "", line_items: [], discount_amount: 0, due_days: 30, notes: "" });
-    setNewItem({ description: "", quantity: 1, rate: 0 });
-    setIsCreateOpen(false);
-  };
-
-  const openPayment = (invoice) => {
-    setSelectedInvoice(invoice);
-    setPaymentData({ ...paymentData, amount: invoice.balance_due });
-    setIsPaymentOpen(true);
-  };
-
-  const filteredInvoices = invoices.filter(inv =>
-    inv.invoice_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    inv.customer_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const subtotal = formData.line_items.reduce((s, item) => s + item.amount, 0);
-  const taxAmount = (subtotal - formData.discount_amount) * 0.18;
-  const total = subtotal - formData.discount_amount + taxAmount;
-
-  const totalReceivables = invoices.filter(i => i.payment_status !== "paid").reduce((s, i) => s + (i.balance_due || 0), 0);
-  const totalCollected = invoices.reduce((s, i) => s + (i.amount_paid || 0), 0);
-
   return (
-    <div className="space-y-6 animate-fadeIn" data-testid="invoices-page">
+    <div className="space-y-6" data-testid="invoices-page">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">Invoices</h1>
-          <p className="text-muted-foreground mt-1">Generate invoices and track payments.</p>
+          <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
+          <p className="text-gray-500 text-sm mt-1">Manage your sales invoices</p>
         </div>
-        {(user?.role === "admin" || user?.role === "technician") && (
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-              <Button className="glow-primary" data-testid="create-invoice-btn">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Invoice
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-card border-white/10 max-w-3xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Create Invoice</DialogTitle>
-                <DialogDescription>Generate an invoice from a completed ticket.</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Select Ticket *</Label>
-                    <Select
-                      value={formData.ticket_id}
-                      onValueChange={(value) => setFormData({ ...formData, ticket_id: value })}
-                    >
-                      <SelectTrigger className="bg-background/50">
-                        <SelectValue placeholder="Select a completed ticket" />
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogTrigger asChild>
+            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-invoice-btn">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Invoice
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create New Invoice</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6 py-4">
+              {/* Customer Selection */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Customer *</Label>
+                  <Select onValueChange={handleSelectCustomer}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select customer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {customers.map(c => (
+                        <SelectItem key={c.customer_id} value={c.customer_id}>
+                          {c.display_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Place of Supply</Label>
+                  <Select value={newInvoice.place_of_supply} onValueChange={(v) => setNewInvoice({...newInvoice, place_of_supply: v})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="DL">Delhi</SelectItem>
+                      <SelectItem value="HR">Haryana</SelectItem>
+                      <SelectItem value="UP">Uttar Pradesh</SelectItem>
+                      <SelectItem value="RJ">Rajasthan</SelectItem>
+                      <SelectItem value="MH">Maharashtra</SelectItem>
+                      <SelectItem value="KA">Karnataka</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Add Line Items */}
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h3 className="font-medium mb-4">Add Items</h3>
+                <Tabs defaultValue="services">
+                  <TabsList className="mb-4">
+                    <TabsTrigger value="services">Services</TabsTrigger>
+                    <TabsTrigger value="parts">Parts</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="services">
+                    <Select onValueChange={(v) => handleSelectItem(v, 'service')}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a service" />
                       </SelectTrigger>
                       <SelectContent>
-                        {tickets.map((t) => (
-                          <SelectItem key={t.ticket_id} value={t.ticket_id}>
-                            {t.ticket_id} - {t.title}
+                        {services.map(s => (
+                          <SelectItem key={s.item_id} value={s.item_id}>
+                            {s.name} - ₹{s.rate}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Due in (days)</Label>
-                    <Input
-                      type="number"
-                      value={formData.due_days}
-                      onChange={(e) => setFormData({ ...formData, due_days: parseInt(e.target.value) || 30 })}
-                      className="bg-background/50"
-                    />
-                  </div>
-                </div>
+                  </TabsContent>
+                  <TabsContent value="parts">
+                    <Select onValueChange={(v) => handleSelectItem(v, 'part')}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a part" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {parts.map(p => (
+                          <SelectItem key={p.item_id} value={p.item_id}>
+                            {p.name} - ₹{p.rate}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </TabsContent>
+                </Tabs>
 
-                {/* Line Items */}
-                <div className="p-4 rounded-lg bg-background/50 space-y-3">
-                  <Label>Line Items</Label>
-                  <div className="grid grid-cols-4 gap-2">
-                    <Input
-                      placeholder="Description"
-                      value={newItem.description}
-                      onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
-                      className="bg-background/50 col-span-2"
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Qty"
-                      value={newItem.quantity || ""}
-                      onChange={(e) => setNewItem({ ...newItem, quantity: parseInt(e.target.value) || 1 })}
-                      className="bg-background/50"
-                    />
-                    <div className="flex gap-2">
+                {newLineItem.item_name && (
+                  <div className="mt-4 grid grid-cols-4 gap-4">
+                    <div>
+                      <Label>Item</Label>
+                      <Input value={newLineItem.item_name} readOnly className="bg-white" />
+                    </div>
+                    <div>
+                      <Label>Qty</Label>
                       <Input
                         type="number"
-                        placeholder="Rate"
-                        value={newItem.rate || ""}
-                        onChange={(e) => setNewItem({ ...newItem, rate: parseFloat(e.target.value) || 0 })}
-                        className="bg-background/50"
+                        value={newLineItem.quantity}
+                        onChange={(e) => setNewLineItem({...newLineItem, quantity: parseFloat(e.target.value)})}
                       />
-                      <Button onClick={addLineItem} variant="outline" className="border-white/10">Add</Button>
+                    </div>
+                    <div>
+                      <Label>Rate (₹)</Label>
+                      <Input
+                        type="number"
+                        value={newLineItem.rate}
+                        onChange={(e) => setNewLineItem({...newLineItem, rate: parseFloat(e.target.value)})}
+                      />
+                    </div>
+                    <div className="flex items-end">
+                      <Button onClick={handleAddLineItem} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
+                        Add Item
+                      </Button>
                     </div>
                   </div>
-
-                  {formData.line_items.length > 0 && (
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="border-white/10">
-                          <TableHead>Description</TableHead>
-                          <TableHead className="text-right">Qty</TableHead>
-                          <TableHead className="text-right">Rate</TableHead>
-                          <TableHead className="text-right">Amount</TableHead>
-                          <TableHead></TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {formData.line_items.map((item, idx) => (
-                          <TableRow key={idx} className="border-white/10">
-                            <TableCell>{item.description}</TableCell>
-                            <TableCell className="text-right mono">{item.quantity}</TableCell>
-                            <TableCell className="text-right mono">₹{item.rate}</TableCell>
-                            <TableCell className="text-right mono">₹{item.amount.toLocaleString()}</TableCell>
-                            <TableCell>
-                              <Button size="sm" variant="ghost" onClick={() => removeLineItem(idx)}>×</Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Discount (₹)</Label>
-                    <Input
-                      type="number"
-                      value={formData.discount_amount}
-                      onChange={(e) => setFormData({ ...formData, discount_amount: parseFloat(e.target.value) || 0 })}
-                      className="bg-background/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Notes</Label>
-                    <Input
-                      value={formData.notes}
-                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                      className="bg-background/50"
-                    />
-                  </div>
-                </div>
-
-                {/* Summary */}
-                <div className="p-4 rounded-lg bg-primary/10 border border-primary/20 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotal</span>
-                    <span className="mono">₹{subtotal.toLocaleString()}</span>
-                  </div>
-                  {formData.discount_amount > 0 && (
-                    <div className="flex justify-between text-sm text-emerald-400">
-                      <span>Discount</span>
-                      <span className="mono">-₹{formData.discount_amount.toLocaleString()}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">GST (18%)</span>
-                    <span className="mono">₹{taxAmount.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-lg font-bold border-t border-white/10 pt-2">
-                    <span>Total</span>
-                    <span className="mono text-primary">₹{total.toLocaleString()}</span>
-                  </div>
-                </div>
+                )}
               </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={resetForm} className="border-white/10">Cancel</Button>
-                <Button onClick={handleCreateInvoice} className="glow-primary">Create Invoice</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="metric-card">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Total Invoices</p>
-            <p className="text-2xl font-bold mono">{invoices.length}</p>
-          </CardContent>
-        </Card>
-        <Card className="metric-card">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Total Collected</p>
-            <p className="text-2xl font-bold mono text-emerald-400">₹{totalCollected.toLocaleString()}</p>
-          </CardContent>
-        </Card>
-        <Card className={`metric-card ${totalReceivables > 0 ? 'border-orange-500/30' : ''}`}>
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Outstanding</p>
-            <p className={`text-2xl font-bold mono ${totalReceivables > 0 ? 'text-orange-400' : ''}`}>
-              ₹{totalReceivables.toLocaleString()}
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="metric-card">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Paid Invoices</p>
-            <p className="text-2xl font-bold mono">{invoices.filter(i => i.payment_status === "paid").length}</p>
-          </CardContent>
-        </Card>
-      </div>
+              {/* Line Items Table */}
+              {newInvoice.line_items.length > 0 && (
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
+                        <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Qty</th>
+                        <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Rate</th>
+                        <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Tax</th>
+                        <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Amount</th>
+                        <th className="px-4 py-2"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {newInvoice.line_items.map((item, idx) => {
+                        const subtotal = item.quantity * item.rate;
+                        const tax = subtotal * (item.tax_rate / 100);
+                        return (
+                          <tr key={idx} className="border-t">
+                            <td className="px-4 py-2 text-sm">{item.item_name}</td>
+                            <td className="px-4 py-2 text-sm text-right">{item.quantity}</td>
+                            <td className="px-4 py-2 text-sm text-right">₹{item.rate.toLocaleString('en-IN')}</td>
+                            <td className="px-4 py-2 text-sm text-right">{item.tax_rate}%</td>
+                            <td className="px-4 py-2 text-sm text-right font-medium">₹{(subtotal + tax).toLocaleString('en-IN')}</td>
+                            <td className="px-4 py-2">
+                              <Button variant="ghost" size="icon" onClick={() => handleRemoveLineItem(idx)}>
+                                <Trash2 className="h-4 w-4 text-red-500" />
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                    <tfoot className="bg-gray-50">
+                      <tr className="border-t">
+                        <td colSpan={4} className="px-4 py-3 text-right font-semibold">Total:</td>
+                        <td className="px-4 py-3 text-right font-bold text-lg">₹{calculateTotal().toLocaleString('en-IN')}</td>
+                        <td></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              )}
 
-      {/* Search */}
-      <Card className="border-white/10 bg-card/50">
-        <CardContent className="p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search invoices..."
-              className="pl-10 bg-background/50"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Invoices Table */}
-      <Card className="border-white/10 bg-card/50">
-        <CardContent className="p-0">
-          {loading ? (
-            <div className="p-8 text-center text-muted-foreground">Loading invoices...</div>
-          ) : filteredInvoices.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
-              No invoices found. Create your first invoice from a completed ticket.
+              {/* Notes */}
+              <div>
+                <Label>Notes</Label>
+                <Input
+                  value={newInvoice.notes}
+                  onChange={(e) => setNewInvoice({...newInvoice, notes: e.target.value})}
+                  placeholder="Additional notes..."
+                />
+              </div>
             </div>
-          ) : (
-            <Table className="data-table">
-              <TableHeader>
-                <TableRow className="border-white/10 hover:bg-transparent">
-                  <TableHead>Invoice #</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Vehicle</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead className="text-right">Paid</TableHead>
-                  <TableHead className="text-right">Balance</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredInvoices.map((invoice) => (
-                  <TableRow key={invoice.invoice_id} className="border-white/10">
-                    <TableCell className="mono font-semibold">{invoice.invoice_number}</TableCell>
-                    <TableCell>{invoice.customer_name || '-'}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{invoice.vehicle_details || '-'}</TableCell>
-                    <TableCell className="text-right mono">₹{(invoice.total_amount || 0).toLocaleString()}</TableCell>
-                    <TableCell className="text-right mono text-emerald-400">₹{(invoice.amount_paid || 0).toLocaleString()}</TableCell>
-                    <TableCell className="text-right mono font-semibold">₹{(invoice.balance_due || 0).toLocaleString()}</TableCell>
-                    <TableCell>
-                      <Badge className={statusColors[invoice.status]} variant="outline">
-                        {invoice.status?.replace("_", " ")}
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
+              <Button onClick={handleCreateInvoice} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
+                Create Invoice
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Analytics Cards */}
+      {analytics && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">Total Revenue</p>
+                  <p className="text-2xl font-bold text-gray-900">₹{analytics.revenue.total.toLocaleString('en-IN')}</p>
+                </div>
+                <IndianRupee className="h-8 w-8 text-[#22EDA9]" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">Collected</p>
+                  <p className="text-2xl font-bold text-green-600">₹{analytics.revenue.collected.toLocaleString('en-IN')}</p>
+                </div>
+                <CheckCircle className="h-8 w-8 text-green-500" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">Outstanding</p>
+                  <p className="text-2xl font-bold text-orange-600">₹{analytics.revenue.outstanding.toLocaleString('en-IN')}</p>
+                </div>
+                <Clock className="h-8 w-8 text-orange-500" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">Total Invoices</p>
+                  <p className="text-2xl font-bold text-gray-900">{analytics.invoices.total}</p>
+                </div>
+                <FileText className="h-8 w-8 text-blue-500" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="flex gap-2">
+        <Button
+          variant={statusFilter === "" ? "default" : "outline"}
+          size="sm"
+          onClick={() => setStatusFilter("")}
+          className={statusFilter === "" ? "bg-[#22EDA9] text-black hover:bg-[#1DD69A]" : ""}
+        >
+          All
+        </Button>
+        {["draft", "sent", "paid", "partially_paid", "overdue"].map(status => (
+          <Button
+            key={status}
+            variant={statusFilter === status ? "default" : "outline"}
+            size="sm"
+            onClick={() => setStatusFilter(status)}
+            className={statusFilter === status ? "bg-[#22EDA9] text-black hover:bg-[#1DD69A]" : ""}
+          >
+            {status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+          </Button>
+        ))}
+      </div>
+
+      {/* Invoice List */}
+      {loading ? (
+        <div className="text-center py-12 text-gray-500">Loading invoices...</div>
+      ) : invoices.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center text-gray-500">
+            No invoices found. Create your first invoice to get started.
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {invoices.map((invoice) => (
+            <Card key={invoice.invoice_id} className="hover:shadow-md transition-shadow" data-testid={`invoice-card-${invoice.invoice_id}`}>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="font-semibold text-gray-900">{invoice.invoice_number}</h3>
+                      <Badge className={statusColors[invoice.status]}>
+                        {invoice.status.replace('_', ' ')}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        {invoice.balance_due > 0 && (
-                          <Button size="sm" variant="outline" onClick={() => openPayment(invoice)} className="border-white/10">
-                            <DollarSign className="h-4 w-4 mr-1" /> Pay
+                    </div>
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                      <span className="flex items-center gap-1">
+                        <User className="h-3.5 w-3.5" />
+                        {invoice.customer_name}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-3.5 w-3.5" />
+                        {invoice.invoice_date}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <FileText className="h-3.5 w-3.5" />
+                        {invoice.line_items?.length || 0} items
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <p className="text-xs text-gray-400">Total</p>
+                      <p className="font-bold text-lg">₹{invoice.total?.toLocaleString('en-IN')}</p>
+                      {invoice.balance_due > 0 && (
+                        <p className="text-xs text-orange-600">Due: ₹{invoice.balance_due?.toLocaleString('en-IN')}</p>
+                      )}
+                    </div>
+                    <div className="flex gap-1">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="icon" onClick={() => setSelectedInvoice(invoice)}>
+                            <Eye className="h-4 w-4" />
                           </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Invoice {invoice.invoice_number}</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <p className="text-gray-400">Customer</p>
+                                <p className="font-medium">{invoice.customer_name}</p>
+                              </div>
+                              <div>
+                                <p className="text-gray-400">Status</p>
+                                <Badge className={statusColors[invoice.status]}>{invoice.status}</Badge>
+                              </div>
+                              <div>
+                                <p className="text-gray-400">Invoice Date</p>
+                                <p className="font-medium">{invoice.invoice_date}</p>
+                              </div>
+                              <div>
+                                <p className="text-gray-400">Due Date</p>
+                                <p className="font-medium">{invoice.due_date}</p>
+                              </div>
+                            </div>
 
-      {/* Payment Dialog */}
-      <Dialog open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
-        <DialogContent className="bg-card border-white/10">
-          <DialogHeader>
-            <DialogTitle>Record Payment</DialogTitle>
-            <DialogDescription>
-              Invoice: {selectedInvoice?.invoice_number} | Balance: ₹{selectedInvoice?.balance_due?.toLocaleString()}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label>Amount (₹)</Label>
-              <Input
-                type="number"
-                value={paymentData.amount}
-                onChange={(e) => setPaymentData({ ...paymentData, amount: parseFloat(e.target.value) || 0 })}
-                className="bg-background/50"
-                max={selectedInvoice?.balance_due}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Payment Method</Label>
-              <div className="grid grid-cols-4 gap-2">
-                {paymentMethods.map((method) => {
-                  const Icon = method.icon;
-                  return (
-                    <button
-                      key={method.value}
-                      type="button"
-                      onClick={() => setPaymentData({ ...paymentData, payment_method: method.value })}
-                      className={`p-3 rounded-lg border transition-all ${
-                        paymentData.payment_method === method.value
-                          ? "border-primary bg-primary/10"
-                          : "border-white/10 hover:border-white/20"
-                      }`}
-                    >
-                      <Icon className={`h-5 w-5 mx-auto mb-1 ${
-                        paymentData.payment_method === method.value ? "text-primary" : "text-muted-foreground"
-                      }`} />
-                      <p className="text-xs">{method.label}</p>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Reference Number</Label>
-              <Input
-                value={paymentData.reference_number}
-                onChange={(e) => setPaymentData({ ...paymentData, reference_number: e.target.value })}
-                className="bg-background/50"
-                placeholder="Transaction ID, Cheque #, etc."
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Notes</Label>
-              <Textarea
-                value={paymentData.notes}
-                onChange={(e) => setPaymentData({ ...paymentData, notes: e.target.value })}
-                className="bg-background/50"
-                rows={2}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsPaymentOpen(false)} className="border-white/10">Cancel</Button>
-            <Button onClick={handleRecordPayment} className="glow-primary">Record Payment</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+                            <div className="border rounded-lg overflow-hidden">
+                              <table className="w-full">
+                                <thead className="bg-gray-50">
+                                  <tr>
+                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
+                                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Qty</th>
+                                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Rate</th>
+                                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Amount</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {invoice.line_items?.map((item, idx) => (
+                                    <tr key={idx} className="border-t">
+                                      <td className="px-4 py-2 text-sm">{item.item_name}</td>
+                                      <td className="px-4 py-2 text-sm text-right">{item.quantity}</td>
+                                      <td className="px-4 py-2 text-sm text-right">₹{item.rate?.toLocaleString('en-IN')}</td>
+                                      <td className="px-4 py-2 text-sm text-right">₹{item.total?.toLocaleString('en-IN')}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                                <tfoot className="bg-gray-50">
+                                  <tr className="border-t">
+                                    <td colSpan={3} className="px-4 py-2 text-right text-sm">Subtotal:</td>
+                                    <td className="px-4 py-2 text-right">₹{invoice.subtotal?.toLocaleString('en-IN')}</td>
+                                  </tr>
+                                  <tr>
+                                    <td colSpan={3} className="px-4 py-2 text-right text-sm">Tax:</td>
+                                    <td className="px-4 py-2 text-right">₹{invoice.tax_total?.toLocaleString('en-IN')}</td>
+                                  </tr>
+                                  <tr className="font-bold">
+                                    <td colSpan={3} className="px-4 py-2 text-right">Total:</td>
+                                    <td className="px-4 py-2 text-right text-lg">₹{invoice.total?.toLocaleString('en-IN')}</td>
+                                  </tr>
+                                </tfoot>
+                              </table>
+                            </div>
+
+                            <div className="flex gap-2 justify-end pt-4">
+                              {invoice.status === "draft" && (
+                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "sent")} className="bg-blue-500 hover:bg-blue-600 text-white">
+                                  <Send className="h-4 w-4 mr-2" />
+                                  Mark as Sent
+                                </Button>
+                              )}
+                              {["draft", "sent", "partially_paid"].includes(invoice.status) && (
+                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "paid")} className="bg-green-500 hover:bg-green-600 text-white">
+                                  <CheckCircle className="h-4 w-4 mr-2" />
+                                  Mark as Paid
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
