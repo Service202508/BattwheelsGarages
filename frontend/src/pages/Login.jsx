@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,8 +6,99 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Mail, Lock, User, Zap, Shield, Clock } from "lucide-react";
+import { Mail, Lock, User, Zap, Bike, Car } from "lucide-react";
 import { API } from "@/App";
+
+// Animated EV Icons Component
+const AnimatedEVIcons = () => {
+  const [icons, setIcons] = useState([]);
+
+  useEffect(() => {
+    // Generate random icons
+    const generateIcon = () => {
+      const types = ['2W', '3W', '4W', 'bolt'];
+      const type = types[Math.floor(Math.random() * types.length)];
+      return {
+        id: Math.random(),
+        type,
+        left: Math.random() * 80 + 10,
+        top: Math.random() * 80 + 10,
+        delay: Math.random() * 2,
+        duration: 3 + Math.random() * 2,
+      };
+    };
+
+    // Initial icons
+    const initialIcons = Array.from({ length: 8 }, generateIcon);
+    setIcons(initialIcons);
+
+    // Add new icons periodically
+    const interval = setInterval(() => {
+      setIcons(prev => {
+        const newIcons = prev.filter(icon => icon.id > Date.now() - 5000);
+        return [...newIcons, generateIcon()];
+      });
+    }, 1500);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const renderIcon = (type) => {
+    switch (type) {
+      case '2W':
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full">
+            <circle cx="5" cy="17" r="3" />
+            <circle cx="19" cy="17" r="3" />
+            <path d="M12 17V5l4 4" />
+            <path d="M8 17h8" />
+            <path d="M5 14l7-9" />
+          </svg>
+        );
+      case '3W':
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full">
+            <circle cx="6" cy="18" r="2" />
+            <circle cx="18" cy="18" r="2" />
+            <circle cx="18" cy="10" r="2" />
+            <path d="M6 18h8M18 12v4M8 18V8h8" />
+            <rect x="7" y="6" width="6" height="4" rx="1" />
+          </svg>
+        );
+      case '4W':
+        return (
+          <Car className="w-full h-full" />
+        );
+      case 'bolt':
+        return (
+          <Zap className="w-full h-full" />
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {icons.map((icon) => (
+        <div
+          key={icon.id}
+          className="absolute animate-float-fade"
+          style={{
+            left: `${icon.left}%`,
+            top: `${icon.top}%`,
+            animationDelay: `${icon.delay}s`,
+            animationDuration: `${icon.duration}s`,
+          }}
+        >
+          <div className={`w-10 h-10 ${icon.type === 'bolt' ? 'text-[#22EDA9]' : 'text-gray-300'}`}>
+            {renderIcon(icon.type)}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default function Login({ onLogin }) {
   const navigate = useNavigate();
@@ -90,64 +181,67 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Panel - Clean Hero */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-[#0a0a0a] overflow-hidden">
-        {/* Subtle gradient background */}
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#22EDA9]/8 via-transparent to-transparent"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#22EDA9]/5 rounded-full blur-3xl"></div>
-        </div>
+    <div className="min-h-screen flex bg-white">
+      {/* Left Panel - Clean Hero with Animated Icons */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-gray-50 to-white">
+        {/* Animated Background Icons */}
+        <AnimatedEVIcons />
+        
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `radial-gradient(circle, #22EDA9 1px, transparent 1px)`,
+          backgroundSize: '40px 40px'
+        }}></div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-          {/* Main Content */}
-          <div className="flex-1 flex flex-col justify-center max-w-lg">
-            <h1 className="text-4xl font-bold text-white leading-tight mb-4">
-              EV Failure Intelligence
-            </h1>
-            <p className="text-lg text-gray-400 leading-relaxed mb-10">
-              Transform every repair into knowledge that makes your entire service network smarter.
-            </p>
-
-            {/* Key Features - Clean & Minimal */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg bg-[#22EDA9]/15 flex items-center justify-center flex-shrink-0">
-                  <Zap className="w-5 h-5 text-[#22EDA9]" />
-                </div>
-                <div>
-                  <h3 className="text-white font-medium">Instant Solutions</h3>
-                  <p className="text-gray-500 text-sm">Access proven fixes from the network</p>
-                </div>
+        <div className="relative z-10 flex flex-col justify-center items-center w-full px-12">
+          {/* Main Heading */}
+          <div className="text-center max-w-md">
+            {/* EV Vehicle Icons Row */}
+            <div className="flex justify-center items-center gap-6 mb-8">
+              <div className="w-12 h-12 text-gray-400 hover:text-[#22EDA9] transition-colors duration-300">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="5" cy="17" r="3" />
+                  <circle cx="19" cy="17" r="3" />
+                  <path d="M12 17V5l4 4" />
+                  <path d="M8 17h8" />
+                  <path d="M5 14l7-9" />
+                </svg>
               </div>
-
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg bg-[#22EDA9]/15 flex items-center justify-center flex-shrink-0">
-                  <Clock className="w-5 h-5 text-[#22EDA9]" />
-                </div>
-                <div>
-                  <h3 className="text-white font-medium">Faster Repairs</h3>
-                  <p className="text-gray-500 text-sm">Reduce downtime with AI-powered matching</p>
-                </div>
+              <div className="w-14 h-14 text-gray-400 hover:text-[#22EDA9] transition-colors duration-300">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="6" cy="18" r="2" />
+                  <circle cx="18" cy="18" r="2" />
+                  <circle cx="18" cy="10" r="2" />
+                  <path d="M6 18h8M18 12v4M8 18V8h8" />
+                  <rect x="7" y="6" width="6" height="4" rx="1" />
+                </svg>
               </div>
-
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg bg-[#22EDA9]/15 flex items-center justify-center flex-shrink-0">
-                  <Shield className="w-5 h-5 text-[#22EDA9]" />
-                </div>
-                <div>
-                  <h3 className="text-white font-medium">Enterprise Knowledge</h3>
-                  <p className="text-gray-500 text-sm">Structured failure data across all locations</p>
-                </div>
+              <div className="w-16 h-16 text-gray-400 hover:text-[#22EDA9] transition-colors duration-300">
+                <Car className="w-full h-full" />
               </div>
             </div>
-          </div>
 
-          {/* Footer */}
-          <p className="text-gray-600 text-sm">
-            © 2026 Battwheels Garages. All rights reserved.
-          </p>
+            {/* Bolt Icon */}
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 bg-[#22EDA9]/10 rounded-2xl flex items-center justify-center">
+                <Zap className="w-8 h-8 text-[#22EDA9]" />
+              </div>
+            </div>
+
+            <h1 className="text-3xl font-bold text-gray-900 mb-3">
+              EV Failure Intelligence
+            </h1>
+            
+            <p className="text-lg text-[#22EDA9] font-medium mb-4">
+              Your Onsite EV Resolution Partner
+            </p>
+            
+            <p className="text-gray-500 text-sm leading-relaxed">
+              AI-powered diagnostics for 2W, 3W & 4W electric vehicles. 
+              Transform every repair into enterprise-grade knowledge.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -359,6 +453,31 @@ export default function Login({ onLogin }) {
         </div>
         </div>
       </div>
+
+      {/* Global Styles for Animation */}
+      <style>{`
+        @keyframes float-fade {
+          0% {
+            opacity: 0;
+            transform: translateY(20px) scale(0.8);
+          }
+          20% {
+            opacity: 0.6;
+            transform: translateY(0) scale(1);
+          }
+          80% {
+            opacity: 0.6;
+            transform: translateY(-10px) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-30px) scale(0.8);
+          }
+        }
+        .animate-float-fade {
+          animation: float-fade 4s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }
