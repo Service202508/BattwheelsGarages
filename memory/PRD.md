@@ -43,6 +43,57 @@ A full-featured Zoho Books v3 compatible API has been implemented with 51 tested
 
 ---
 
+### Frontend Pages for ERP Modules (Feb 16, 2026) ✅ COMPLETE
+
+**New Pages Created:**
+| Page | Route | Features |
+|------|-------|----------|
+| **Bills** | `/bills` | List vendor bills, create bill, status filters, record payments |
+| **Credit Notes** | `/credit-notes` | Create credit notes, apply to invoices |
+| **Banking** | `/banking` | Bank accounts list, transactions, deposits/withdrawals |
+| **Reports** | `/reports` | 5-tab dashboard (Dashboard, P&L, Receivables, Payables, GST) |
+
+**Updated Navigation:**
+- Sales: Customers, Quotes, Sales Orders, Invoices, Credit Notes
+- Purchases: Vendors, Purchase Orders, Bills
+- Finance: Expenses, Banking, Reports, Accounting
+
+---
+
+### Event-Driven Notifications (Feb 16, 2026) ✅ COMPLETE
+
+**Backend API (`/api/notifications/`):**
+- Create, list, mark as read notifications
+- Notification types: invoice_paid, invoice_overdue, amc_expiring, low_stock, ticket_update
+- Priority levels: low, normal, high, urgent
+- Scheduled checks for overdue invoices, expiring AMCs, low stock
+- User notification preferences
+
+**Frontend:**
+- Notification bell icon in header with unread badge
+- Popover showing notification list with icons
+- Mark as read, mark all read functionality
+
+---
+
+### E-Invoice & Tally Export (Feb 16, 2026) ✅ COMPLETE
+
+**Backend API (`/api/export/`):**
+| Endpoint | Description |
+|----------|-------------|
+| `GET /einvoice/{id}` | Generate GST-compliant e-invoice JSON |
+| `GET /einvoice/{id}/download` | Download e-invoice as JSON file |
+| `GET /tally/invoices` | Export sales invoices as Tally XML |
+| `GET /tally/bills` | Export purchase bills as Tally XML |
+| `GET /tally/payments` | Export payments as Tally XML |
+| `GET /tally/ledgers` | Export contacts as Tally ledgers |
+| `GET /bulk/invoices?format=csv` | Bulk export invoices as CSV |
+| `GET /bulk/expenses?format=csv` | Bulk export expenses as CSV |
+
+**Test Results: 21/21 tests passed (100%)**
+
+---
+
 ### Legacy ERP System (`/api/erp/`) ✅
 
 **Backend API Modules:**
