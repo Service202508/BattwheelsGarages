@@ -235,7 +235,7 @@ export default function Layout({ children, user, onLogout }) {
             />
           </SheetContent>
         </Sheet>
-        <h1 className="ml-4 text-lg font-bold text-[#0B462F]">Battwheels OS</h1>
+        <h1 className="ml-4 text-lg font-bold text-gray-900">Battwheels OS</h1>
       </div>
 
       {/* Main Content */}
