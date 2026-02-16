@@ -14,22 +14,27 @@ import { toast } from "sonner";
 import { 
   Plus, Download, Upload, Car, Bike, Truck, Shield, Calendar,
   CheckCircle, AlertCircle, Clock, Pencil, Trash2, RefreshCw,
-  Search, Filter, MoreVertical
+  Search, Filter, Zap, Users, Phone, FileText, Settings,
+  IndianRupee, Sparkles
 } from "lucide-react";
 import { API } from "@/App";
 
 export default function AMCManagement({ user }) {
-  const [plans, setPlans] = useState([]);
+  const [plansByCategory, setPlansByCategory] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("subscriptions");
   
+  // Vehicle category and billing filters
+  const [vehicleCategory, setVehicleCategory] = useState("2W");
+  const [billingFrequency, setBillingFrequency] = useState("monthly");
+  
   // Dialog states
   const [showAddPlan, setShowAddPlan] = useState(false);
   const [showAddSubscription, setShowAddSubscription] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
-  const [selectedSubscription, setSelectedSubscription] = useState(null);
+  const [showSeedDialog, setShowSeedDialog] = useState(false);
   
   // Filter states
   const [statusFilter, setStatusFilter] = useState("all");
@@ -39,14 +44,26 @@ export default function AMCManagement({ user }) {
   const [planForm, setPlanForm] = useState({
     name: "",
     description: "",
-    tier: "basic",
-    duration_months: 12,
+    tier: "starter",
+    vehicle_category: "2W",
+    billing_frequency: "monthly",
+    duration_months: 1,
     price: 0,
-    max_service_visits: 4,
+    annual_price: 0,
+    periodic_services_per_month: 1,
+    breakdown_visits_per_month: 2,
+    max_service_visits: 12,
     includes_parts: false,
     parts_discount_percent: 0,
     priority_support: false,
-    roadside_assistance: false
+    priority_response_minutes: 0,
+    roadside_assistance: true,
+    fleet_dashboard: false,
+    dedicated_manager: false,
+    custom_sla: false,
+    telematics_integration: false,
+    digital_service_history: true,
+    oem_support: "standard"
   });
   
   const [subscriptionForm, setSubscriptionForm] = useState({
@@ -72,9 +89,9 @@ export default function AMCManagement({ user }) {
       const token = localStorage.getItem("token");
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       
-      // Fetch plans
-      const plansRes = await fetch(`${API}/amc/plans?include_inactive=true`, { headers, credentials: "include" });
-      if (plansRes.ok) setPlans(await plansRes.json());
+      // Fetch plans by category
+      const plansRes = await fetch(`${API}/amc/plans-by-category`, { headers, credentials: "include" });
+      if (plansRes.ok) setPlansByCategory(await plansRes.json());
       
       // Fetch subscriptions
       const subsRes = await fetch(`${API}/amc/subscriptions`, { headers, credentials: "include" });
@@ -100,78 +117,25 @@ export default function AMCManagement({ user }) {
     }
   };
 
-  const handleCreatePlan = async () => {
+  const handleSeedOfficialPlans = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/amc/plans`, {
+      const response = await fetch(`${API}/amc/seed-official-plans`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        credentials: "include",
-        body: JSON.stringify(planForm)
-      });
-      
-      if (response.ok) {
-        toast.success("AMC Plan created successfully");
-        setShowAddPlan(false);
-        resetPlanForm();
-        fetchData();
-      } else {
-        const error = await response.json();
-        toast.error(error.detail || "Failed to create plan");
-      }
-    } catch (error) {
-      toast.error("Failed to create plan");
-    }
-  };
-
-  const handleUpdatePlan = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/amc/plans/${editingPlan.plan_id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        credentials: "include",
-        body: JSON.stringify(planForm)
-      });
-      
-      if (response.ok) {
-        toast.success("AMC Plan updated successfully");
-        setEditingPlan(null);
-        resetPlanForm();
-        fetchData();
-      } else {
-        toast.error("Failed to update plan");
-      }
-    } catch (error) {
-      toast.error("Failed to update plan");
-    }
-  };
-
-  const handleDeletePlan = async (planId) => {
-    if (!confirm("Are you sure you want to deactivate this plan?")) return;
-    
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/amc/plans/${planId}`, {
-        method: "DELETE",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         credentials: "include"
       });
       
       if (response.ok) {
-        toast.success("Plan deactivated");
+        const result = await response.json();
+        toast.success(`${result.plans_created} official plans imported!`);
+        setShowSeedDialog(false);
         fetchData();
       } else {
-        toast.error("Failed to deactivate plan");
+        toast.error("Failed to import plans");
       }
     } catch (error) {
-      toast.error("Failed to deactivate plan");
+      toast.error("Failed to import plans");
     }
   };
 
@@ -253,21 +217,6 @@ export default function AMCManagement({ user }) {
     }
   };
 
-  const resetPlanForm = () => {
-    setPlanForm({
-      name: "",
-      description: "",
-      tier: "basic",
-      duration_months: 12,
-      price: 0,
-      max_service_visits: 4,
-      includes_parts: false,
-      parts_discount_percent: 0,
-      priority_support: false,
-      roadside_assistance: false
-    });
-  };
-
   const resetSubscriptionForm = () => {
     setSubscriptionForm({
       plan_id: "",
@@ -290,6 +239,26 @@ export default function AMCManagement({ user }) {
     return <Badge className={config.color}>{config.label}</Badge>;
   };
 
+  const getTierColor = (tier) => {
+    const colors = {
+      starter: "from-gray-600 to-gray-700",
+      fleet_essential: "from-blue-600 to-blue-700",
+      fleet_pro: "from-purple-600 to-purple-700",
+      enterprise: "from-emerald-600 to-emerald-700"
+    };
+    return colors[tier] || colors.starter;
+  };
+
+  const getTierLabel = (tier) => {
+    const labels = {
+      starter: "Starter",
+      fleet_essential: "Fleet Essential",
+      fleet_pro: "Fleet Essential Pro",
+      enterprise: "Enterprise"
+    };
+    return labels[tier] || tier;
+  };
+
   const filteredSubscriptions = subscriptions.filter(sub => {
     const matchesStatus = statusFilter === "all" || sub.status === statusFilter;
     const matchesSearch = !searchTerm || 
@@ -299,10 +268,19 @@ export default function AMCManagement({ user }) {
     return matchesStatus && matchesSearch;
   });
 
-  // Count subscriptions by vehicle type (simplified - based on plan tier for demo)
-  const fourWheelerCount = subscriptions.filter(s => s.status === "active" && s.vehicle_model?.includes("Nexon")).length;
-  const twoWheelerCount = subscriptions.filter(s => s.status === "active" && s.vehicle_model?.includes("Ather")).length;
-  const commercialCount = 0;
+  // Get current plans based on selected category and billing
+  const currentPlans = plansByCategory?.[vehicleCategory]?.[billingFrequency] || [];
+
+  // Count subscriptions by vehicle type
+  const twoWheelerCount = subscriptions.filter(s => 
+    s.status === "active" && (s.vehicle_category === "2W" || s.vehicle_model?.toLowerCase().includes("ather") || s.vehicle_model?.toLowerCase().includes("ola"))
+  ).length;
+  const threeWheelerCount = subscriptions.filter(s => 
+    s.status === "active" && s.vehicle_category === "3W"
+  ).length;
+  const fourWheelerCount = subscriptions.filter(s => 
+    s.status === "active" && (s.vehicle_category === "4W" || s.vehicle_model?.toLowerCase().includes("nexon") || s.vehicle_model?.toLowerCase().includes("tata"))
+  ).length;
 
   if (loading) {
     return (
@@ -318,12 +296,12 @@ export default function AMCManagement({ user }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Annual Maintenance Contracts (AMC)</h1>
-          <p className="text-gray-600">Manage all active and expired AMCs.</p>
+          <p className="text-gray-600">Manage subscription plans from battwheelsgarages.in</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => setShowSeedDialog(true)}>
             <Download className="h-4 w-4 mr-2" />
-            Download CSV
+            Import Official Plans
           </Button>
           <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => setShowAddSubscription(true)}>
             <Plus className="h-4 w-4 mr-2" />
@@ -333,32 +311,47 @@ export default function AMCManagement({ user }) {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <Car className="h-5 w-5 text-gray-400" />
-              <span className="text-gray-600">4-Wheeler AMCs</span>
-            </div>
-            <p className="text-3xl font-bold mt-2">{fourWheelerCount}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <Bike className="h-5 w-5 text-gray-400" />
+              <Bike className="h-5 w-5 text-blue-500" />
               <span className="text-gray-600">2-Wheeler AMCs</span>
             </div>
             <p className="text-3xl font-bold mt-2">{twoWheelerCount}</p>
+            <p className="text-xs text-gray-500">Ather, Ola, TVS, Hero</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <Truck className="h-5 w-5 text-gray-400" />
-              <span className="text-gray-600">Commercial AMCs</span>
+              <Truck className="h-5 w-5 text-orange-500" />
+              <span className="text-gray-600">3-Wheeler AMCs</span>
             </div>
-            <p className="text-3xl font-bold mt-2">{commercialCount}</p>
+            <p className="text-3xl font-bold mt-2">{threeWheelerCount}</p>
+            <p className="text-xs text-gray-500">E-Rickshaws, Cargo</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Car className="h-5 w-5 text-purple-500" />
+              <span className="text-gray-600">4-Wheeler AMCs</span>
+            </div>
+            <p className="text-3xl font-bold mt-2">{fourWheelerCount}</p>
+            <p className="text-xs text-gray-500">Tata, MG, Hyundai</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-emerald-50 border-emerald-200">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <IndianRupee className="h-5 w-5 text-emerald-600" />
+              <span className="text-gray-600">Total Revenue</span>
+            </div>
+            <p className="text-3xl font-bold mt-2 text-emerald-700">
+              ₹{(analytics?.total_revenue || 0).toLocaleString()}
+            </p>
+            <p className="text-xs text-gray-500">{analytics?.total_active || 0} active subscriptions</p>
           </CardContent>
         </Card>
       </div>
@@ -418,6 +411,8 @@ export default function AMCManagement({ user }) {
                       <TableHead>Customer</TableHead>
                       <TableHead>Vehicle No.</TableHead>
                       <TableHead>Plan</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Billing</TableHead>
                       <TableHead>Start Date</TableHead>
                       <TableHead>End Date</TableHead>
                       <TableHead>Usage</TableHead>
@@ -431,6 +426,14 @@ export default function AMCManagement({ user }) {
                         <TableCell className="font-medium">{sub.customer_name}</TableCell>
                         <TableCell className="font-mono">{sub.vehicle_number}</TableCell>
                         <TableCell>{sub.plan_name}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{sub.vehicle_category || "2W"}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className="capitalize">
+                            {sub.billing_frequency || "monthly"}
+                          </Badge>
+                        </TableCell>
                         <TableCell>{new Date(sub.start_date).toLocaleDateString()}</TableCell>
                         <TableCell>{new Date(sub.end_date).toLocaleDateString()}</TableCell>
                         <TableCell>{sub.services_used}/{sub.max_services}</TableCell>
@@ -468,85 +471,210 @@ export default function AMCManagement({ user }) {
 
         {/* Plans Tab */}
         <TabsContent value="plans" className="space-y-4">
-          <div className="flex justify-end">
-            <Button onClick={() => setShowAddPlan(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Plan
+          {/* Category and Billing Selectors */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                {["2W", "3W", "4W"].map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setVehicleCategory(cat)}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      vehicleCategory === cat 
+                        ? "bg-white text-gray-900 shadow-sm" 
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    {cat === "2W" && <Bike className="h-4 w-4 inline mr-1" />}
+                    {cat === "3W" && <Truck className="h-4 w-4 inline mr-1" />}
+                    {cat === "4W" && <Car className="h-4 w-4 inline mr-1" />}
+                    {cat === "2W" ? "2 Wheeler" : cat === "3W" ? "3 Wheeler" : "4 Wheeler"}
+                  </button>
+                ))}
+              </div>
+              
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setBillingFrequency("monthly")}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    billingFrequency === "monthly" 
+                      ? "bg-white text-gray-900 shadow-sm" 
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setBillingFrequency("annual")}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    billingFrequency === "annual" 
+                      ? "bg-emerald-600 text-white shadow-sm" 
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  <Sparkles className="h-3 w-3 inline mr-1" />
+                  Annual Save 25%
+                </button>
+              </div>
+            </div>
+            
+            <Button variant="outline" onClick={() => setShowSeedDialog(true)}>
+              <Download className="h-4 w-4 mr-2" />
+              Sync from battwheelsgarages.in
             </Button>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6">
-            {plans.map((plan) => (
-              <Card key={plan.plan_id} className={`overflow-hidden ${!plan.is_active ? 'opacity-60' : ''}`}>
-                <div className={`p-4 text-white ${
-                  plan.tier === 'premium' ? 'bg-purple-600' :
-                  plan.tier === 'plus' ? 'bg-blue-600' : 'bg-gray-600'
-                }`}>
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-lg">{plan.name}</h3>
-                    {!plan.is_active && <Badge variant="secondary">Inactive</Badge>}
+          {/* Plans Grid */}
+          {currentPlans.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <Shield className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Plans Found</h3>
+                <p className="text-gray-600 mb-4">
+                  Import official Battwheels plans to get started.
+                </p>
+                <Button onClick={() => setShowSeedDialog(true)}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Import Official Plans
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-6">
+              {currentPlans.map((plan) => (
+                <Card key={plan.plan_id} className={`overflow-hidden ${!plan.is_active ? 'opacity-60' : ''}`}>
+                  {plan.tier === "fleet_essential" && (
+                    <div className="bg-blue-600 text-white text-center text-xs font-bold py-1">
+                      MOST POPULAR
+                    </div>
+                  )}
+                  {plan.tier === "fleet_pro" && (
+                    <div className="bg-purple-600 text-white text-center text-xs font-bold py-1">
+                      ENTERPRISE GRADE
+                    </div>
+                  )}
+                  
+                  <div className={`bg-gradient-to-r ${getTierColor(plan.tier)} p-5 text-white`}>
+                    <h3 className="font-bold text-lg">{getTierLabel(plan.tier)}</h3>
+                    <p className="text-sm opacity-80 mt-1">{plan.description}</p>
                   </div>
-                  <p className="text-sm opacity-80 capitalize">{plan.tier} Tier</p>
-                </div>
-                <CardContent className="p-4 space-y-3">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold">₹{plan.price.toLocaleString()}</p>
-                    <p className="text-sm text-gray-500">{plan.duration_months} months</p>
-                  </div>
-                  <ul className="text-sm space-y-2">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      {plan.max_service_visits} Free Services
-                    </li>
-                    {plan.includes_parts && (
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        {plan.parts_discount_percent}% Parts Discount
+                  
+                  <CardContent className="p-5 space-y-4">
+                    {/* Pricing */}
+                    <div className="text-center">
+                      <div className="flex items-baseline justify-center gap-1">
+                        <span className="text-sm text-gray-500">₹</span>
+                        <span className="text-4xl font-bold">{plan.price.toLocaleString()}</span>
+                      </div>
+                      <p className="text-sm text-gray-500">
+                        /{billingFrequency === "monthly" ? "month" : "year"}/vehicle
+                      </p>
+                      {billingFrequency === "monthly" && plan.annual_price && (
+                        <p className="text-xs text-emerald-600 mt-1">
+                          or ₹{plan.annual_price.toLocaleString()} annually
+                        </p>
+                      )}
+                    </div>
+                    
+                    {/* Features */}
+                    <ul className="space-y-2.5 text-sm">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                        <span>{plan.periodic_services_per_month} periodic service{plan.periodic_services_per_month > 1 ? 's' : ''}/month</span>
                       </li>
-                    )}
-                    {plan.priority_support && (
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        Priority Support
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                        <span>
+                          {plan.breakdown_visits_per_month >= 999 
+                            ? "Unlimited breakdown visits" 
+                            : `${plan.breakdown_visits_per_month} breakdown visits/month`
+                          }
+                        </span>
                       </li>
-                    )}
-                    {plan.roadside_assistance && (
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        Roadside Assistance
-                      </li>
-                    )}
-                  </ul>
-                  <p className="text-xs text-gray-500">
-                    {plan.active_subscriptions || 0} active subscriptions
-                  </p>
-                  <div className="flex gap-2 pt-2">
+                      {plan.digital_service_history && (
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <span>Digital service history</span>
+                        </li>
+                      )}
+                      {plan.priority_support && (
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <span>Priority support ({plan.priority_response_minutes}-min response)</span>
+                        </li>
+                      )}
+                      {plan.fleet_dashboard && (
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <span>Fleet dashboard access</span>
+                        </li>
+                      )}
+                      {plan.dedicated_manager && (
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <span>Dedicated service manager</span>
+                        </li>
+                      )}
+                      {plan.custom_sla && (
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <span>Custom SLAs & uptime guarantees</span>
+                        </li>
+                      )}
+                      {plan.telematics_integration && (
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <span>Telematics integration</span>
+                        </li>
+                      )}
+                    </ul>
+                    
+                    {/* Stats */}
+                    <div className="pt-3 border-t">
+                      <p className="text-xs text-gray-500">
+                        {plan.active_subscriptions || 0} active subscriptions
+                      </p>
+                    </div>
+                    
+                    {/* Actions */}
                     <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="flex-1"
+                      className={`w-full ${
+                        plan.tier === "fleet_pro" 
+                          ? "bg-purple-600 hover:bg-purple-700" 
+                          : plan.tier === "fleet_essential"
+                          ? "bg-blue-600 hover:bg-blue-700"
+                          : "bg-gray-800 hover:bg-gray-900"
+                      }`}
                       onClick={() => {
-                        setEditingPlan(plan);
-                        setPlanForm(plan);
+                        setSubscriptionForm({ ...subscriptionForm, plan_id: plan.plan_id });
+                        setShowAddSubscription(true);
                       }}
                     >
-                      <Pencil className="h-4 w-4 mr-1" />
-                      Edit
+                      {plan.tier === "fleet_pro" ? "Contact Sales" : "Subscribe Customer"}
                     </Button>
-                    {plan.is_active && (
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleDeletePlan(plan.plan_id)}
-                      >
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+          
+          {/* Enterprise Card */}
+          <Card className="bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold">Need a Custom Enterprise Plan?</h3>
+                  <p className="text-gray-300 mt-1">
+                    For large fleets (50+ vehicles), custom SLAs, dedicated onsite teams, or OEM partnerships.
+                  </p>
+                </div>
+                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-gray-900">
+                  <Phone className="h-4 w-4 mr-2" />
+                  Contact Sales Team
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Bulk Upload Tab */}
@@ -555,7 +683,7 @@ export default function AMCManagement({ user }) {
             <CardHeader>
               <CardTitle>Bulk Upload AMCs</CardTitle>
               <CardDescription>
-                Upload a CSV file to add multiple AMCs at once. Required columns: CustomerId, VehicleNumber, PlanName, StartDate.
+                Upload a CSV file to add multiple AMCs at once. Required columns: CustomerId, VehicleNumber, PlanId, StartDate.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -571,135 +699,42 @@ export default function AMCManagement({ user }) {
         </TabsContent>
       </Tabs>
 
-      {/* Add/Edit Plan Dialog */}
-      <Dialog open={showAddPlan || !!editingPlan} onOpenChange={(open) => {
-        if (!open) {
-          setShowAddPlan(false);
-          setEditingPlan(null);
-          resetPlanForm();
-        }
-      }}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      {/* Seed Official Plans Dialog */}
+      <Dialog open={showSeedDialog} onOpenChange={setShowSeedDialog}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingPlan ? "Edit AMC Plan" : "Create AMC Plan"}</DialogTitle>
+            <DialogTitle>Import Official Battwheels Plans</DialogTitle>
             <DialogDescription>
-              Configure the plan details and pricing.
+              Import subscription plans from battwheelsgarages.in. This will create plans for all vehicle categories (2W, 3W, 4W) with monthly and annual billing options.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Plan Name</Label>
-                <Input 
-                  value={planForm.name}
-                  onChange={(e) => setPlanForm({...planForm, name: e.target.value})}
-                  placeholder="e.g., Premium Shield"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Tier</Label>
-                <Select 
-                  value={planForm.tier} 
-                  onValueChange={(v) => setPlanForm({...planForm, tier: v})}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="basic">Basic</SelectItem>
-                    <SelectItem value="plus">Plus</SelectItem>
-                    <SelectItem value="premium">Premium</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          <div className="py-4 space-y-4">
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-blue-900">Plans to be imported:</h4>
+              <ul className="text-sm text-blue-800 mt-2 space-y-1">
+                <li>• <strong>Starter</strong> - ₹499/mo or ₹4,499/year (2W pricing)</li>
+                <li>• <strong>Fleet Essential</strong> - ₹699/mo or ₹5,599/year (2W pricing)</li>
+                <li>• <strong>Fleet Essential Pro</strong> - ₹799/mo or ₹6,499/year (2W pricing)</li>
+              </ul>
+              <p className="text-xs text-blue-600 mt-2">
+                * 3W plans are 1.5x, 4W plans are 2x the 2W pricing
+              </p>
             </div>
             
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea 
-                value={planForm.description}
-                onChange={(e) => setPlanForm({...planForm, description: e.target.value})}
-                placeholder="Plan description..."
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Price (₹)</Label>
-                <Input 
-                  type="number"
-                  value={planForm.price}
-                  onChange={(e) => setPlanForm({...planForm, price: parseFloat(e.target.value) || 0})}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Duration (months)</Label>
-                <Input 
-                  type="number"
-                  value={planForm.duration_months}
-                  onChange={(e) => setPlanForm({...planForm, duration_months: parseInt(e.target.value) || 12})}
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Max Service Visits</Label>
-                <Input 
-                  type="number"
-                  value={planForm.max_service_visits}
-                  onChange={(e) => setPlanForm({...planForm, max_service_visits: parseInt(e.target.value) || 0})}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Parts Discount (%)</Label>
-                <Input 
-                  type="number"
-                  value={planForm.parts_discount_percent}
-                  onChange={(e) => setPlanForm({...planForm, parts_discount_percent: parseFloat(e.target.value) || 0})}
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label>Include Parts Discount</Label>
-                <Switch 
-                  checked={planForm.includes_parts}
-                  onCheckedChange={(v) => setPlanForm({...planForm, includes_parts: v})}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label>Priority Support</Label>
-                <Switch 
-                  checked={planForm.priority_support}
-                  onCheckedChange={(v) => setPlanForm({...planForm, priority_support: v})}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label>Roadside Assistance</Label>
-                <Switch 
-                  checked={planForm.roadside_assistance}
-                  onCheckedChange={(v) => setPlanForm({...planForm, roadside_assistance: v})}
-                />
-              </div>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Zap className="h-4 w-4 text-emerald-500" />
+              <span>Source: battwheelsgarages.in/plans</span>
             </div>
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setShowAddPlan(false);
-              setEditingPlan(null);
-              resetPlanForm();
-            }}>
+            <Button variant="outline" onClick={() => setShowSeedDialog(false)}>
               Cancel
             </Button>
-            <Button 
-              className="bg-emerald-600 hover:bg-emerald-700"
-              onClick={editingPlan ? handleUpdatePlan : handleCreatePlan}
-            >
-              {editingPlan ? "Update Plan" : "Create Plan"}
+            <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={handleSeedOfficialPlans}>
+              <Download className="h-4 w-4 mr-2" />
+              Import Plans
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -726,11 +761,15 @@ export default function AMCManagement({ user }) {
                   <SelectValue placeholder="Select a plan" />
                 </SelectTrigger>
                 <SelectContent>
-                  {plans.filter(p => p.is_active).map((plan) => (
-                    <SelectItem key={plan.plan_id} value={plan.plan_id}>
-                      {plan.name} - ₹{plan.price.toLocaleString()}
-                    </SelectItem>
-                  ))}
+                  {Object.entries(plansByCategory || {}).flatMap(([cat, freqs]) => 
+                    Object.entries(freqs).flatMap(([freq, plans]) =>
+                      plans.filter(p => p.is_active).map((plan) => (
+                        <SelectItem key={plan.plan_id} value={plan.plan_id}>
+                          {plan.name} - ₹{plan.price.toLocaleString()}/{freq === "monthly" ? "mo" : "yr"}
+                        </SelectItem>
+                      ))
+                    )
+                  )}
                 </SelectContent>
               </Select>
             </div>
