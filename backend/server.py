@@ -4194,6 +4194,15 @@ except ImportError as e:
     logger.warning(f"EFI Event Processor not available: {e}")
     efi_event_processor = None
 
+# Import Fault Tree Import routes
+try:
+    from routes.fault_tree_import import router as import_router, init_router as init_import_router
+    init_import_router(db)
+    logger.info("Fault Tree Import Service initialized")
+except ImportError as e:
+    logger.warning(f"Fault Tree Import not available: {e}")
+    import_router = None
+
 # Initialize EFI engine with database and event processor
 init_efi_router(db, efi_event_processor)
 init_notification_router(db)
@@ -4201,6 +4210,10 @@ init_notification_router(db)
 # Include EFI routes (core intelligence engine)
 api_router.include_router(efi_router)
 api_router.include_router(notification_router)
+
+# Include import routes
+if import_router:
+    api_router.include_router(import_router)
 
 # Include main router
 app.include_router(api_router)
