@@ -109,15 +109,6 @@ export default function Login({ onLogin }) {
 
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-center px-14 py-10 w-full">
-          {/* Large Logo */}
-          <div className="mb-6">
-            <img 
-              src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/3abu9yqt_68469546%20%283%29.png" 
-              alt="Battwheels Logo" 
-              className="h-36 w-auto drop-shadow-[0_4px_25px_rgba(34,237,169,0.3)]"
-            />
-          </div>
-          
           {/* Main Heading */}
           <h1 className="text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 tracking-tight">
             EV Failure Intelligence
