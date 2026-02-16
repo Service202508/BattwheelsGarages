@@ -4177,17 +4177,14 @@ async def get_migration_status(request: Request):
 async def root():
     return {"message": "Battwheels OS API", "version": "2.0.0"}
 
-# ==================== INVOICE PDF SERVICE ====================
+# ==================== NOTIFICATION SERVICE ====================
 
-from services.invoice_service import router as invoice_router, init_router as init_invoice_router
 from services.notification_service import router as notification_router, init_router as init_notification_router
 
-# Initialize service routers with database
-init_invoice_router(db)
+# Initialize notification service with database
 init_notification_router(db)
 
-# Include service routers
-api_router.include_router(invoice_router)
+# Include notification router (invoice routes are already in main server)
 api_router.include_router(notification_router)
 
 # Include main router
