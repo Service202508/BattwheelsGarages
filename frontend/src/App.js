@@ -31,6 +31,10 @@ import FaultTreeImport from "@/pages/FaultTreeImport";
 import AMCManagement from "@/pages/AMCManagement";
 import TechnicianProductivity from "@/pages/TechnicianProductivity";
 import Quotes from "@/pages/Quotes";
+import Bills from "@/pages/Bills";
+import CreditNotes from "@/pages/CreditNotes";
+import Banking from "@/pages/Banking";
+import Reports from "@/pages/Reports";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
