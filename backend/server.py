@@ -4410,6 +4410,14 @@ try:
 except Exception as e:
     logger.warning(f"Could not load AMC router: {e}")
 
+# Include Zoho Books routes
+try:
+    from routes.books import router as books_router
+    api_router.include_router(books_router)
+    logger.info("Zoho Books router included")
+except Exception as e:
+    logger.warning(f"Could not load Books router: {e}")
+
 # Include tickets routes (event-driven module)
 if tickets_router:
     api_router.include_router(tickets_router)
