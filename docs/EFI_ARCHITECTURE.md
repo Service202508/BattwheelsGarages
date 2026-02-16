@@ -484,10 +484,13 @@ class RejectedHypothesis:
 
 ### 3.4 PART_USAGE (Parts Consumption Tracking)
 
+**Detects wrong diagnosis and hidden failure patterns.**
+
 ```python
 class PartUsage:
     """
-    Tracks parts consumption - feeds into inventory and cost analysis
+    Tracks parts consumption linked to failure cards
+    Enhanced v2.0 with expectation tracking for pattern detection
     """
     # === IDENTIFICATION ===
     usage_id: str             # use_abc123
@@ -509,11 +512,19 @@ class PartUsage:
     unit_cost: float
     total_cost: float
     
-    # === FAILURE CARD LINK ===
+    # === FAILURE CARD LINK (for intelligence) ===
     failure_card_id: str      # Which card recommended this part
     was_recommended: bool     # Was this part in the card's required_parts?
     is_substitute: bool       # Was this a substitute for recommended part?
     substitute_for: str       # Original part it replaced
+    
+    # === EXPECTATION VS REALITY (NEW) ===
+    expected_vs_actual: bool  # True if part usage matched expectation
+    expectation_notes: str    # Why it didn't match (if False)
+    # This helps detect:
+    #   - Wrong diagnosis patterns
+    #   - Hidden failure correlations
+    #   - Card accuracy issues
     
     # === STATUS ===
     status: str               # allocated, used, returned, damaged
