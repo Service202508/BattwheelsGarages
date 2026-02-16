@@ -84,7 +84,7 @@ async def upload_fault_tree(
             try:
                 os.remove(temp_path)
                 os.rmdir(temp_dir)
-            except:
+            except OSError:
                 pass
     
     background_tasks.add_task(process_file)
