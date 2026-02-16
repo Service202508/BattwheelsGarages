@@ -243,7 +243,7 @@ export default function Login({ onLogin }) {
                         id="register-name"
                         type="text"
                         placeholder="John Doe"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#0B462F] rounded-lg"
+                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] rounded-lg"
                         value={registerData.name}
                         onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
                         required
@@ -259,7 +259,7 @@ export default function Login({ onLogin }) {
                         id="register-email"
                         type="email"
                         placeholder="you@example.com"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#0B462F] rounded-lg"
+                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] rounded-lg"
                         value={registerData.email}
                         onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
                         required
@@ -275,7 +275,7 @@ export default function Login({ onLogin }) {
                         id="register-password"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#0B462F] rounded-lg"
+                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] rounded-lg"
                         value={registerData.password}
                         onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
                         required
@@ -291,7 +291,7 @@ export default function Login({ onLogin }) {
                         id="register-confirm"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#0B462F] rounded-lg"
+                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] rounded-lg"
                         value={registerData.confirmPassword}
                         onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
                         required
@@ -301,7 +301,7 @@ export default function Login({ onLogin }) {
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full bg-[#0B462F] text-white hover:bg-[#0a3d28] font-semibold rounded-lg" 
+                    className="w-full bg-[#22EDA9] text-black hover:bg-[#1DD69A] font-semibold rounded-lg" 
                     disabled={isLoading}
                     data-testid="register-submit-btn"
                   >
