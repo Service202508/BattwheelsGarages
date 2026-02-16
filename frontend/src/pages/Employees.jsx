@@ -149,8 +149,8 @@ export default function Employees({ user }) {
       const token = localStorage.getItem("token");
       let url = `${API}/employees`;
       const params = new URLSearchParams();
-      if (departmentFilter) params.append("department", departmentFilter);
-      if (statusFilter) params.append("status", statusFilter);
+      if (departmentFilter && departmentFilter !== "all") params.append("department", departmentFilter);
+      if (statusFilter && statusFilter !== "all") params.append("status", statusFilter);
       if (params.toString()) url += `?${params.toString()}`;
       
       const response = await fetch(url, {
