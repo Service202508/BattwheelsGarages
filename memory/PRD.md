@@ -7,6 +7,40 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
+### EFI Master Fault Tree Import Engine (Feb 16, 2026) ✅ NEW
+
+**Complete structured data ingestion pipeline for importing EV failure intelligence from Excel files.**
+
+Components:
+- **Parsing Engine**: Reads Excel, detects sections (vehicle category + subsystem), splits multi-value fields
+- **Validation Pipeline**: Required field checks, quality validation, warning/error flagging
+- **Field Mapping**: Converts Excel columns to FAILURE_CARD schema with intelligent inference
+- **Deduplication**: Signature hash + title similarity matching
+- **Version Control**: Increments version for updates, tracks source reference
+- **Batch Processing**: Progress tracking, rollback on failure
+
+Import Results from Battwheels Master Fault Tree:
+- **251 rows parsed** from Excel
+- **63 new failure cards created**
+- **4 existing cards updated**
+- **184 duplicates skipped**
+- **0 errors**
+
+Excel Column Mappings:
+- `Complaint Description` → `title`, `symptom_text`, `failure_signature`
+- `Root Causes (Probability Order)` → `root_cause`, `secondary_causes`, `probable_causes`
+- `Diagnostic Steps` → `diagnostic_tree` (structured nodes)
+- `Fault Tree Logic` → `fault_tree_logic` (parsed JSON)
+- `Resolution Steps` → `resolution_steps[]`
+- `Prevention Tips` → `prevention_guidelines[]`
+
+Admin UI Features:
+- Quick Import (one-click for default file)
+- Custom file upload
+- Preview before import
+- Progress tracking
+- Results summary
+
 ### EV Failure Intelligence Engine v2.0 (Feb 16, 2026) ✅ ENHANCED
 
 **Core Entity: FAILURE_CARD (Central Intelligence Object)**
