@@ -580,6 +580,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
               </ul>
             </CardContent>
           </Card>
+        </div>
 
       {/* Action Buttons */}
       <div className="pt-4 flex flex-wrap justify-end gap-2 border-t bg-background p-4">
