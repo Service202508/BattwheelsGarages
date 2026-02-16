@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,12 +10,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Package, Wrench, Search, Edit, Trash2, Tag, IndianRupee } from "lucide-react";
+import { Plus, Package, Wrench, Search, Edit, Trash2, Tag, Upload, Download, FileSpreadsheet, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { API } from "@/App";
 
 const itemTypeColors = {
   goods: "bg-blue-100 text-blue-700",
-  service: "bg-green-100 text-green-700"
+  service: "bg-green-100 text-green-700",
+  inventory: "bg-blue-100 text-blue-700",
+  sales: "bg-green-100 text-green-700",
+  sales_and_purchases: "bg-purple-100 text-purple-700"
 };
 
 export default function Items() {
@@ -24,7 +27,11 @@ export default function Items() {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [importResult, setImportResult] = useState(null);
+  const [importing, setImporting] = useState(false);
   const [editItem, setEditItem] = useState(null);
+  const fileInputRef = useRef(null);
 
   const [newItem, setNewItem] = useState({
     name: "", sku: "", description: "", item_type: "goods",
@@ -46,6 +53,80 @@ export default function Items() {
       setItems(data.items || []);
     } catch (error) { console.error("Failed to fetch:", error); }
     finally { setLoading(false); }
+  };
+
+  const handleExport = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API}/zoho/items/export?format=csv`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'items_export.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+      toast.success("Items exported successfully");
+    } catch (error) {
+      toast.error("Failed to export items");
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API}/zoho/items/import-template`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'items_import_template.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+      toast.success("Template downloaded");
+    } catch (error) {
+      toast.error("Failed to download template");
+    }
+  };
+
+  const handleImport = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImporting(true);
+    setImportResult(null);
+
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch(`${API}/zoho/items/bulk-import`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
+      });
+
+      const data = await res.json();
+      setImportResult(data);
+      
+      if (data.summary?.created > 0 || data.summary?.updated > 0) {
+        toast.success(data.message);
+        fetchItems();
+      } else if (data.summary?.errors > 0) {
+        toast.error(`Import completed with ${data.summary.errors} errors`);
+      }
+    } catch (error) {
+      toast.error("Failed to import items");
+      setImportResult({ error: error.message });
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   // Filter items based on active tab (client-side filtering for Zoho data compatibility)
