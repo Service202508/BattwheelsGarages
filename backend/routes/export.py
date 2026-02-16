@@ -539,8 +539,8 @@ async def bulk_export_expenses(format: str = "csv", start_date: str = "", end_da
         csv_lines = ["Date,Account,Vendor,Amount,Tax,Total,Description"]
         for exp in expenses:
             csv_lines.append(
-                f'{exp.get("date","")},{exp.get("expense_account_name","").replace(",","")},{exp.get("vendor_name","").replace(",","")},'
-                f'{exp.get("amount",0)},{exp.get("tax_amount",0)},{exp.get("total",0)},{exp.get("description","").replace(",","")}'
+                f'{exp.get("date","")},{(exp.get("expense_account_name") or "").replace(",","")},{(exp.get("vendor_name") or "").replace(",","")},'
+                f'{exp.get("amount",0)},{exp.get("tax_amount",0)},{exp.get("total",0)},{(exp.get("description") or "").replace(",","")}'
             )
         
         csv_content = "\n".join(csv_lines)
