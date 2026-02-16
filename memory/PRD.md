@@ -21,11 +21,28 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 | Module | Routes | Service | Tests | Status |
 |--------|--------|---------|-------|--------|
 | **Tickets** | `/routes/tickets.py` (380 lines) | `/services/ticket_service.py` (760 lines) | 25/25 ✅ | Complete |
-| **EFI** | `/routes/failure_intelligence.py` (640 lines) | `/services/failure_intelligence_service.py` (900 lines) | 22/22 ✅ | Complete |
+| **EFI** | `/routes/failure_intelligence.py` (700 lines) | `/services/failure_intelligence_service.py` (980 lines) | 43/43 ✅ | Complete |
 | **Inventory** | `/routes/inventory.py` (150 lines) | `/services/inventory_service.py` (220 lines) | 10/10 ✅ | Complete |
 | **HR** | `/routes/hr.py` (350 lines) | `/services/hr_service.py` (400 lines) | 23/23 ✅ | Complete |
 
-**Total Tests: 80/80 passed (100%)**
+**Total Tests: 101/101 passed (100%)**
+
+### Production Search System (Feb 16, 2026) ✅
+
+**5-Stage AI Matching Pipeline:**
+1. **Signature Match** (Stage 1) - Hash-based exact match, 0.95 score, fastest
+2. **Subsystem + Vehicle Filter** (Stage 2) - Filters by subsystem/vehicle, 0.85 max score
+3. **Vector Semantic Search** (Stage 3) - OpenAI embeddings (requires OPENAI_API_KEY)
+4. **Hybrid Text+BM25 Search** (Stage 4) - Text search with BM25 scoring
+5. **Keyword Fallback** (Stage 5) - Simple keyword matching, 0.5 max score
+
+**Search Features:**
+- BM25 probabilistic ranking
+- EV-specific synonym expansion (battery→bms,cell,pack,soc,voltage,charge etc.)
+- Fuzzy matching with Levenshtein distance
+- Error code matching boost
+- Vehicle make/model matching boost
+- Query tokenization and stopword removal
 
 ### Event System
 
@@ -44,16 +61,6 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 | `attendance.marked` | Clock in/out | Logging |
 | `leave.requested` | Leave request | Logging |
 | `payroll.processed` | Payroll generation | Logging |
-
-### EFI Features
-- **4-Stage AI Matching Pipeline** (~4ms processing)
-  1. Signature match (0.95 score)
-  2. Subsystem + vehicle filtering (0.85 max)
-  3. Semantic similarity (0.7 max)
-  4. Keyword fallback (0.5 max)
-- **Confidence Engine** - Updates scores on ticket closure
-- **Fault Tree Import** - Excel to failure cards
-- **Knowledge Graph** - Entity relationships
 
 ### HR Features (Indian Compliance)
 - **Employee Management** - PF, ESI, PAN, Aadhaar
@@ -86,6 +93,8 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 ├── services/
 │   ├── ticket_service.py
 │   ├── failure_intelligence_service.py
+│   ├── embedding_service.py   ✅ NEW - Vector embeddings
+│   ├── search_service.py      ✅ NEW - BM25 + hybrid search
 │   ├── inventory_service.py
 │   ├── hr_service.py
 │   ├── invoice_service.py
@@ -93,11 +102,22 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 ├── tests/
 │   ├── test_tickets_module.py      (25 tests)
 │   ├── test_efi_module.py          (22 tests)
+│   ├── test_efi_search_embeddings.py (21 tests)
 │   └── test_inventory_hr_modules.py (33 tests)
 └── server.py
 ```
 
 ## API Endpoints Summary
+
+### EFI `/api/efi`
+- `POST /match` - AI-powered failure matching (5-stage pipeline)
+- `POST /failure-cards` - Create
+- `GET /failure-cards` - List with filters
+- `PUT /failure-cards/{id}` - Update
+- `POST /failure-cards/{id}/approve` - Approve
+- `GET /embeddings/status` - Check embedding status
+- `POST /embeddings/generate` - Generate embeddings (requires OPENAI_API_KEY)
+- `GET /analytics/overview` - Analytics
 
 ### Tickets `/api/tickets`
 - `POST /` - Create (emits TICKET_CREATED)
@@ -108,14 +128,6 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - `POST /{id}/assign` - Assign (emits TICKET_ASSIGNED)
 - `GET /{id}/matches` - Get AI suggestions
 - `POST /{id}/select-card` - Select failure card
-
-### EFI `/api/efi`
-- `POST /failure-cards` - Create
-- `GET /failure-cards` - List
-- `PUT /failure-cards/{id}` - Update
-- `POST /failure-cards/{id}/approve` - Approve
-- `POST /match` - AI matching
-- `GET /analytics/overview` - Analytics
 
 ### Inventory `/api/inventory`
 - `POST /` - Create
@@ -146,32 +158,47 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [x] EFI Module Migration
 - [x] Inventory Module Migration
 - [x] HR Module Migration
-- [x] AI Matching Pipeline
+- [x] AI Matching Pipeline (5-stage)
 - [x] Fault Tree Import Engine
+- [x] BM25 + Hybrid Search Service
+- [x] Embedding Service (structure ready)
 
-### P1 (Next)
+### P0 (Next)
+- [ ] Enable vector embeddings with OPENAI_API_KEY
+- [ ] Frontend integration with EFI matching UI
+
+### P1 (Future)
+- [ ] Elasticsearch for production-scale search
+- [ ] Location Agent & Offline Mode
+- [ ] Kafka for real-time sync
 - [ ] Event handlers for HR events
-- [ ] Invoice PDF generation integration
-- [ ] Frontend integration with new routes
 
-### P2 (Future)
+### P2 (Backlog)
+- [ ] Kubernetes migration with HPA
+- [ ] Migrate remaining monolith routes (Customers, Sales)
 - [ ] UI Theme Overhaul
-- [ ] Mobile app
 - [ ] Knowledge Graph visualization
 
 ## Test Results
 - **Tickets**: 25/25 (100%)
-- **EFI**: 22/22 (100%)
+- **EFI Core**: 22/22 (100%)
+- **EFI Search/Embeddings**: 21/21 (100%)
 - **Inventory**: 10/10 (100%)
 - **HR**: 23/23 (100%)
-- **Total**: 80/80 (100%)
+- **Total**: 101/101 (100%)
 
 ## 3rd Party Integrations
-- Emergent LLM Key - AI features
-- Emergent Google Auth - Social login
-- Resend - Email (requires API key)
-- Twilio - WhatsApp (requires API key)
+- **Emergent LLM Key** - AI chat features (does NOT support embeddings)
+- **OpenAI API Key** - Required for vector embeddings (OPENAI_API_KEY env var)
+- **Emergent Google Auth** - Social login
+- **Resend** - Email (requires API key)
+- **Twilio** - WhatsApp (requires API key)
 
 ## Test Credentials
 - **Email:** `admin@battwheels.in`
 - **Password:** `admin123`
+
+## Key Technical Notes
+1. **Embeddings require OPENAI_API_KEY** - Emergent LLM key only supports chat completions, not embeddings
+2. **Search fallback** - When embeddings disabled, system uses keyword/BM25 search (Stage 4-5)
+3. **Processing time** - AI matching averages 2-10ms per query
