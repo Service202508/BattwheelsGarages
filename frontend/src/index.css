@@ -124,11 +124,11 @@ code, .mono {
     animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* Sidebar active state - Green */
+/* Sidebar active state - Emerald Green */
 .sidebar-item-active {
-    background: rgba(11, 70, 47, 0.1);
-    color: #0B462F;
-    border-right: 2px solid #0B462F;
+    background: rgba(34, 237, 169, 0.15);
+    color: #0F0F0F;
+    border-right: 2px solid #22EDA9;
 }
 
 /* Metric card styles - Light */
