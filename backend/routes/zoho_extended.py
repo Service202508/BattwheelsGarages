@@ -1124,3 +1124,436 @@ async def update_number_series(entity_type: str, settings: NumberSeriesSettings)
         upsert=True
     )
     return {"code": 0, "message": "Number series updated"}
+
+
+# ============== RECURRING EXPENSES ==============
+
+class RecurringExpenseCreate(BaseModel):
+    vendor_id: Optional[str] = ""
+    vendor_name: Optional[str] = ""
+    account_id: str
+    account_name: str
+    recurrence_name: str
+    recurrence_frequency: str = "monthly"
+    repeat_every: int = 1
+    start_date: str
+    end_date: Optional[str] = None
+    never_expires: bool = False
+    amount: float
+    tax_percentage: float = 0
+    description: Optional[str] = ""
+    is_billable: bool = False
+    customer_id: Optional[str] = ""
+    project_id: Optional[str] = ""
+
+@router.post("/recurring-expenses")
+async def create_recurring_expense(re: RecurringExpenseCreate):
+    """Create a recurring expense profile"""
+    db = get_db()
+    re_id = f"RE-{uuid.uuid4().hex[:12].upper()}"
+    
+    tax_amount = re.amount * (re.tax_percentage / 100)
+    total = re.amount + tax_amount
+    
+    re_dict = {
+        "recurring_expense_id": re_id,
+        **re.dict(),
+        "tax_amount": tax_amount,
+        "total": total,
+        "next_expense_date": re.start_date,
+        "status": "active",
+        "expenses_generated": 0,
+        "last_expense_date": None,
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.recurring_expenses.insert_one(re_dict)
+    del re_dict["_id"]
+    return {"code": 0, "message": "Recurring expense created", "recurring_expense": re_dict}
+
+@router.get("/recurring-expenses")
+async def list_recurring_expenses(status: str = "", vendor_id: str = ""):
+    """List all recurring expenses"""
+    db = get_db()
+    query = {}
+    if status:
+        query["status"] = status
+    if vendor_id:
+        query["vendor_id"] = vendor_id
+    
+    cursor = db.recurring_expenses.find(query, {"_id": 0}).sort("created_time", -1)
+    items = await cursor.to_list(length=200)
+    return {"code": 0, "recurring_expenses": items}
+
+@router.post("/recurring-expenses/{re_id}/stop")
+async def stop_recurring_expense(re_id: str):
+    """Stop a recurring expense"""
+    db = get_db()
+    result = await db.recurring_expenses.update_one(
+        {"recurring_expense_id": re_id},
+        {"$set": {"status": "stopped"}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Recurring expense not found")
+    return {"code": 0, "message": "Recurring expense stopped"}
+
+@router.post("/recurring-expenses/{re_id}/resume")
+async def resume_recurring_expense(re_id: str):
+    """Resume a stopped recurring expense"""
+    db = get_db()
+    result = await db.recurring_expenses.update_one(
+        {"recurring_expense_id": re_id},
+        {"$set": {"status": "active"}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Recurring expense not found")
+    return {"code": 0, "message": "Recurring expense resumed"}
+
+@router.delete("/recurring-expenses/{re_id}")
+async def delete_recurring_expense(re_id: str):
+    """Delete a recurring expense"""
+    db = get_db()
+    result = await db.recurring_expenses.delete_one({"recurring_expense_id": re_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Recurring expense not found")
+    return {"code": 0, "message": "Recurring expense deleted"}
+
+@router.post("/recurring-expenses/generate")
+async def generate_due_expenses():
+    """Generate expenses for all due recurring profiles"""
+    db = get_db()
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    res = await db.recurring_expenses.find({
+        "status": "active",
+        "next_expense_date": {"$lte": today}
+    }, {"_id": 0}).to_list(length=1000)
+    
+    generated = 0
+    for re in res:
+        try:
+            expense_id = f"EXP-{uuid.uuid4().hex[:12].upper()}"
+            
+            expense_dict = {
+                "expense_id": expense_id,
+                "vendor_id": re.get("vendor_id", ""),
+                "vendor_name": re.get("vendor_name", ""),
+                "account_id": re["account_id"],
+                "account_name": re["account_name"],
+                "date": today,
+                "amount": re["amount"],
+                "tax_percentage": re.get("tax_percentage", 0),
+                "tax_amount": re.get("tax_amount", 0),
+                "total": re["total"],
+                "description": re.get("description", ""),
+                "is_billable": re.get("is_billable", False),
+                "customer_id": re.get("customer_id", ""),
+                "project_id": re.get("project_id", ""),
+                "from_recurring_expense_id": re["recurring_expense_id"],
+                "status": "unbilled",
+                "created_time": datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.expenses.insert_one(expense_dict)
+            
+            next_date = calculate_next_date(
+                re["next_expense_date"],
+                re["recurrence_frequency"],
+                re["repeat_every"]
+            )
+            
+            new_status = re["status"]
+            if re.get("end_date") and next_date > re["end_date"]:
+                new_status = "expired"
+            
+            await db.recurring_expenses.update_one(
+                {"recurring_expense_id": re["recurring_expense_id"]},
+                {"$set": {"next_expense_date": next_date, "last_expense_date": today, "status": new_status},
+                 "$inc": {"expenses_generated": 1}}
+            )
+            
+            generated += 1
+        except Exception as e:
+            logger.error(f"Error generating expense for {re['recurring_expense_id']}: {e}")
+    
+    return {"code": 0, "message": f"Generated {generated} expenses"}
+
+# ============== PROJECT TASKS ==============
+
+class ProjectTaskCreate(BaseModel):
+    project_id: str
+    task_name: str
+    description: Optional[str] = ""
+    rate: float = 0
+    budget_hours: float = 0
+    is_billable: bool = True
+
+@router.post("/projects/{project_id}/tasks")
+async def create_project_task(project_id: str, task: ProjectTaskCreate):
+    """Create a task for a project"""
+    db = get_db()
+    task_id = f"TSK-{uuid.uuid4().hex[:12].upper()}"
+    
+    task_dict = {
+        "task_id": task_id,
+        "project_id": project_id,
+        **task.dict(),
+        "status": "active",
+        "logged_hours": 0,
+        "billed_hours": 0,
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.project_tasks.insert_one(task_dict)
+    del task_dict["_id"]
+    return {"code": 0, "message": "Task created", "task": task_dict}
+
+@router.get("/projects/{project_id}/tasks")
+async def list_project_tasks(project_id: str):
+    """List all tasks for a project"""
+    db = get_db()
+    cursor = db.project_tasks.find({"project_id": project_id}, {"_id": 0})
+    items = await cursor.to_list(length=200)
+    return {"code": 0, "tasks": items}
+
+@router.put("/projects/{project_id}/tasks/{task_id}")
+async def update_project_task(project_id: str, task_id: str, task: ProjectTaskCreate):
+    """Update a project task"""
+    db = get_db()
+    result = await db.project_tasks.update_one(
+        {"task_id": task_id, "project_id": project_id},
+        {"$set": task.dict()}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return {"code": 0, "message": "Task updated"}
+
+@router.delete("/projects/{project_id}/tasks/{task_id}")
+async def delete_project_task(project_id: str, task_id: str):
+    """Delete a project task"""
+    db = get_db()
+    result = await db.project_tasks.delete_one({"task_id": task_id, "project_id": project_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return {"code": 0, "message": "Task deleted"}
+
+# ============== OPENING BALANCES ==============
+
+class OpeningBalanceCreate(BaseModel):
+    entity_type: str  # customer, vendor, account
+    entity_id: str
+    entity_name: str
+    opening_balance: float
+    as_of_date: str
+    notes: Optional[str] = ""
+
+@router.post("/opening-balances")
+async def create_opening_balance(ob: OpeningBalanceCreate):
+    """Set opening balance for a customer, vendor, or account"""
+    db = get_db()
+    ob_id = f"OB-{uuid.uuid4().hex[:12].upper()}"
+    
+    ob_dict = {
+        "opening_balance_id": ob_id,
+        **ob.dict(),
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.opening_balances.insert_one(ob_dict)
+    
+    # Update entity's opening balance
+    collection_map = {
+        "customer": "contacts",
+        "vendor": "contacts",
+        "account": "chartofaccounts"
+    }
+    id_field_map = {
+        "customer": "contact_id",
+        "vendor": "contact_id",
+        "account": "account_id"
+    }
+    
+    collection = collection_map.get(ob.entity_type)
+    id_field = id_field_map.get(ob.entity_type)
+    
+    if collection and id_field:
+        await db[collection].update_one(
+            {id_field: ob.entity_id},
+            {"$set": {"opening_balance": ob.opening_balance, "opening_balance_date": ob.as_of_date}}
+        )
+    
+    del ob_dict["_id"]
+    return {"code": 0, "message": "Opening balance set", "opening_balance": ob_dict}
+
+@router.get("/opening-balances")
+async def list_opening_balances(entity_type: str = ""):
+    """List all opening balances"""
+    db = get_db()
+    query = {}
+    if entity_type:
+        query["entity_type"] = entity_type
+    
+    cursor = db.opening_balances.find(query, {"_id": 0}).sort("as_of_date", -1)
+    items = await cursor.to_list(length=500)
+    return {"code": 0, "opening_balances": items}
+
+# ============== PAYMENT LINKS ==============
+
+@router.post("/invoices/{invoice_id}/payment-link")
+async def generate_payment_link(invoice_id: str):
+    """Generate a payment link for an invoice"""
+    db = get_db()
+    
+    invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    if invoice.get("balance", 0) <= 0:
+        raise HTTPException(status_code=400, detail="Invoice is already paid")
+    
+    # Generate unique payment token
+    payment_token = f"PAY-{uuid.uuid4().hex[:16].upper()}"
+    expiry_date = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
+    
+    payment_link_data = {
+        "payment_link_id": payment_token,
+        "invoice_id": invoice_id,
+        "invoice_number": invoice.get("invoice_number"),
+        "customer_id": invoice.get("customer_id"),
+        "customer_name": invoice.get("customer_name"),
+        "amount": invoice.get("balance"),
+        "currency": "INR",
+        "status": "active",
+        "expiry_date": expiry_date,
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.payment_links.insert_one(payment_link_data)
+    
+    # Update invoice with payment link
+    await db.invoices.update_one(
+        {"invoice_id": invoice_id},
+        {"$set": {"payment_link_id": payment_token, "has_payment_link": True}}
+    )
+    
+    return {
+        "code": 0,
+        "message": "Payment link generated",
+        "payment_link": {
+            "token": payment_token,
+            "amount": invoice.get("balance"),
+            "expiry_date": expiry_date
+        }
+    }
+
+@router.get("/payment-links")
+async def list_payment_links(status: str = "", customer_id: str = ""):
+    """List all payment links"""
+    db = get_db()
+    query = {}
+    if status:
+        query["status"] = status
+    if customer_id:
+        query["customer_id"] = customer_id
+    
+    cursor = db.payment_links.find(query, {"_id": 0}).sort("created_time", -1)
+    items = await cursor.to_list(length=200)
+    return {"code": 0, "payment_links": items}
+
+@router.post("/payment-links/{token}/pay")
+async def process_payment_link(token: str, payment_method: str = "card"):
+    """Process payment via payment link (stub for integration)"""
+    db = get_db()
+    
+    link = await db.payment_links.find_one({"payment_link_id": token}, {"_id": 0})
+    if not link:
+        raise HTTPException(status_code=404, detail="Payment link not found")
+    
+    if link.get("status") != "active":
+        raise HTTPException(status_code=400, detail="Payment link is not active")
+    
+    # This is a stub - actual payment processing would integrate with Razorpay/Stripe
+    return {
+        "code": 0,
+        "message": "Payment link is valid. Integrate with payment gateway to process.",
+        "invoice_id": link.get("invoice_id"),
+        "amount": link.get("amount"),
+        "currency": link.get("currency")
+    }
+
+# ============== CURRENCY EXCHANGE RATES ==============
+
+class ExchangeRateCreate(BaseModel):
+    from_currency: str
+    to_currency: str
+    rate: float
+    effective_date: str
+
+@router.post("/settings/exchange-rates")
+async def set_exchange_rate(rate: ExchangeRateCreate):
+    """Set currency exchange rate"""
+    db = get_db()
+    rate_id = f"ER-{uuid.uuid4().hex[:8].upper()}"
+    
+    rate_dict = {
+        "exchange_rate_id": rate_id,
+        **rate.dict(),
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.exchange_rates.insert_one(rate_dict)
+    del rate_dict["_id"]
+    return {"code": 0, "message": "Exchange rate set", "exchange_rate": rate_dict}
+
+@router.get("/settings/exchange-rates")
+async def list_exchange_rates(from_currency: str = "", to_currency: str = ""):
+    """List exchange rates"""
+    db = get_db()
+    query = {}
+    if from_currency:
+        query["from_currency"] = from_currency
+    if to_currency:
+        query["to_currency"] = to_currency
+    
+    cursor = db.exchange_rates.find(query, {"_id": 0}).sort("effective_date", -1)
+    items = await cursor.to_list(length=100)
+    return {"code": 0, "exchange_rates": items}
+
+# ============== AUDIT TRAIL / ACTIVITY LOG ==============
+
+@router.get("/activity-logs")
+async def list_activity_logs(entity_type: str = "", entity_id: str = "", user_id: str = "", page: int = 1, per_page: int = 50):
+    """List activity logs for audit trail"""
+    db = get_db()
+    query = {}
+    if entity_type:
+        query["entity_type"] = entity_type
+    if entity_id:
+        query["entity_id"] = entity_id
+    if user_id:
+        query["user_id"] = user_id
+    
+    skip = (page - 1) * per_page
+    cursor = db.activity_logs.find(query, {"_id": 0}).sort("timestamp", -1).skip(skip).limit(per_page)
+    items = await cursor.to_list(length=per_page)
+    total = await db.activity_logs.count_documents(query)
+    
+    return {
+        "code": 0,
+        "activity_logs": items,
+        "page_context": {"page": page, "per_page": per_page, "total": total}
+    }
+
+async def log_activity(db, entity_type: str, entity_id: str, action: str, user_id: str = "", user_name: str = "", details: dict = None):
+    """Helper to log activity"""
+    log_entry = {
+        "log_id": f"LOG-{uuid.uuid4().hex[:12].upper()}",
+        "entity_type": entity_type,
+        "entity_id": entity_id,
+        "action": action,
+        "user_id": user_id,
+        "user_name": user_name,
+        "details": details or {},
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+    await db.activity_logs.insert_one(log_entry)
