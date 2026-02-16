@@ -544,7 +544,7 @@ export default function Attendance({ user }) {
 
       {/* Clock Out Dialog */}
       <Dialog open={showClockOutDialog} onOpenChange={setShowClockOutDialog}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Clock Out</DialogTitle>
           </DialogHeader>
