@@ -269,16 +269,16 @@ export default function Login({ onLogin }) {
 
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-200" />
+                    <div className="w-full border-t border-gray-700" />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-white px-2 text-gray-500">or continue with</span>
+                    <span className="bg-[#111111] px-2 text-gray-500">or continue with</span>
                   </div>
                 </div>
 
                 <Button 
                   variant="outline" 
-                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg"
+                  className="w-full border-gray-700 text-gray-300 hover:bg-[#1a1a1a] hover:text-white rounded-lg"
                   onClick={handleGoogleLogin}
                   data-testid="google-login-btn"
                 >
