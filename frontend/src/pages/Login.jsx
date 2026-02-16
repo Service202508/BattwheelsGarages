@@ -161,7 +161,17 @@ export default function Login({ onLogin }) {
       </div>
 
       {/* Right Panel - Auth Form */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-8 bg-gray-50">
+      <div className="flex-1 flex flex-col p-6 sm:p-8 bg-gray-50 relative">
+        {/* Top Right Logo */}
+        <div className="hidden lg:flex justify-end mb-4">
+          <img 
+            src="https://customer-assets.emergentagent.com/job_335b5085-49dc-4853-90f5-28d59181be65/artifacts/d9i6j4g3_Battwheels%20Logo%20New%20Transparent.png" 
+            alt="Battwheels Garages" 
+            className="h-12 w-auto"
+          />
+        </div>
+
+        <div className="flex-1 flex items-center justify-center">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden flex justify-center mb-8">
