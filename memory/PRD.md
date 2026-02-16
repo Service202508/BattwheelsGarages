@@ -162,6 +162,7 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [x] Fault Tree Import Engine
 - [x] BM25 + Hybrid Search Service
 - [x] Embedding Service (structure ready)
+- [x] **UI/UX Theme Overhaul (Feb 16, 2026)** - Industrial Intelligence Theme
 
 ### P0 (Next)
 - [ ] Enable vector embeddings with OPENAI_API_KEY
