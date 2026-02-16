@@ -1,132 +1,171 @@
 {
-  "identity": {
-    "name": "Battwheels OS",
-    "persona": "E1 - The Anti-AI Designer",
-    "tone": "Technical, Authoritative, Futuristic, Operational",
-    "aesthetic": "Dark Mode Command Center, Glassmorphism, Neon Accents"
-  },
-  "typography": {
-    "font_family": {
-      "headings": "Barlow, sans-serif",
-      "body": "Manrope, sans-serif",
-      "mono": "JetBrains Mono, monospace"
+  "design_system": {
+    "name": "Battwheels OS - Industrial Intelligence",
+    "version": "1.0.0",
+    "description": "A high-performance, industrial-grade design system for EV failure intelligence. Combines the raw utility of F1 telemetry with the clean precision of modern SaaS.",
+    "archetype": "The Performance Pro (Archetype 2)",
+    "emotional_tone": "Precision, Reliability, Intelligence, Speed",
+    "theme_strategy": "Dark Mode First (Industrial)",
+    "typography": {
+      "font_family": {
+        "heading": "Barlow, sans-serif",
+        "body": "Manrope, sans-serif",
+        "mono": "JetBrains Mono, monospace"
+      },
+      "scale": {
+        "h1": "text-4xl md:text-5xl font-bold tracking-tight uppercase",
+        "h2": "text-3xl md:text-4xl font-semibold tracking-tight",
+        "h3": "text-2xl font-semibold tracking-tight",
+        "h4": "text-xl font-medium tracking-wide uppercase text-muted-foreground",
+        "body": "text-base leading-relaxed",
+        "small": "text-sm font-medium tracking-wide uppercase text-muted-foreground",
+        "mono": "text-sm font-mono tracking-tight"
+      },
+      "usage_rules": [
+        "Headings MUST use 'Barlow' and be uppercase for H1/H4 to convey industrial strength.",
+        "Body text MUST use 'Manrope' for high legibility.",
+        "Data values, IDs, and code snippets MUST use 'JetBrains Mono'.",
+        "Use 'tracking-tight' for large headings to create density."
+      ]
     },
-    "weights": {
-      "headings": "700",
-      "subheadings": "600",
-      "body": "400",
-      "bold": "700"
+    "colors": {
+      "palette": {
+        "background": {
+          "default": "#050505",
+          "paper": "#0B1210",
+          "subtle": "#121A16"
+        },
+        "primary": {
+          "DEFAULT": "#0B462F",
+          "foreground": "#FFFFFF",
+          "hover": "#0F5A3D"
+        },
+        "accent": {
+          "DEFAULT": "#65D396",
+          "foreground": "#050505",
+          "hover": "#4ADE80",
+          "glow": "rgba(101, 211, 150, 0.2)"
+        },
+        "text": {
+          "primary": "#FFFFFF",
+          "secondary": "#A1A1AA",
+          "muted": "#52525B"
+        },
+        "status": {
+          "success": "#65D396",
+          "warning": "#F59E0B",
+          "error": "#EF4444",
+          "info": "#3B82F6"
+        },
+        "border": {
+          "default": "#1F2937",
+          "active": "#65D396"
+        }
+      },
+      "usage_rules": [
+        "Backgrounds are Deep Obsidian (#050505), NOT pure black.",
+        "Primary Brand (#0B462F) is used for structural elements (headers, sidebars).",
+        "Accent (#65D396) is the 'Live Wire' - used for CTAs, active states, and high-confidence AI matches.",
+        "NEVER use gradients for backgrounds. Use solid colors or subtle noise textures.",
+        "Borders are critical. Use 1px borders to define hierarchy instead of shadows."
+      ]
     },
-    "sizes": {
-      "h1": "text-4xl md:text-5xl tracking-tight",
-      "h2": "text-3xl tracking-tight",
-      "h3": "text-2xl tracking-tight",
-      "body": "text-base leading-relaxed",
-      "small": "text-sm text-muted-foreground",
-      "tiny": "text-xs uppercase tracking-widest"
+    "layout": {
+      "grid_system": "Bento Grid Mode B (High Density)",
+      "spacing": {
+        "container_padding": "p-6 md:p-8",
+        "element_gap": "gap-4 md:gap-6",
+        "section_gap": "gap-8 md:gap-12"
+      },
+      "border_radius": {
+        "default": "rounded-sm",
+        "card": "rounded-md",
+        "button": "rounded-sm"
+      },
+      "rules": [
+        "Use 'grid-cols-12' for dashboard layouts.",
+        "Cards should have sharp or slightly rounded corners (max 4px).",
+        "Avoid large empty spaces in dashboards; aim for data density.",
+        "Use 'border-r' and 'border-b' on grid items to create a 'technical' look."
+      ]
     },
-    "installation": "Import fonts via Google Fonts in index.css: @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400&display=swap');"
-  },
-  "colors": {
-    "palette": {
-      "background": "hsl(222, 47%, 11%)",
-      "foreground": "hsl(210, 40%, 98%)",
-      "card": "hsl(217, 33%, 17%)",
-      "card_foreground": "hsl(210, 40%, 98%)",
-      "popover": "hsl(222, 47%, 11%)",
-      "popover_foreground": "hsl(210, 40%, 98%)",
-      "primary": "hsl(186, 70%, 50%)",
-      "primary_foreground": "hsl(222, 47%, 11%)",
-      "secondary": "hsl(217, 33%, 17%)",
-      "secondary_foreground": "hsl(210, 40%, 98%)",
-      "muted": "hsl(217, 33%, 17%)",
-      "muted_foreground": "hsl(215, 20%, 65%)",
-      "accent": "hsl(186, 70%, 50%)",
-      "accent_foreground": "hsl(222, 47%, 11%)",
-      "destructive": "hsl(0, 84%, 60%)",
-      "destructive_foreground": "hsl(210, 40%, 98%)",
-      "border": "hsl(217, 33%, 25%)",
-      "input": "hsl(217, 33%, 25%)",
-      "ring": "hsl(186, 70%, 50%)",
-      "chart_1": "hsl(186, 70%, 50%)",
-      "chart_2": "hsl(24, 95%, 53%)",
-      "chart_3": "hsl(262, 83%, 58%)",
-      "chart_4": "hsl(47, 95%, 58%)",
-      "chart_5": "hsl(340, 75%, 55%)"
+    "components": {
+      "buttons": {
+        "primary": "bg-[#65D396] text-[#050505] hover:bg-[#4ADE80] font-bold uppercase tracking-wide rounded-sm shadow-[0_0_15px_rgba(101,211,150,0.3)] transition-all",
+        "secondary": "bg-transparent border border-[#65D396] text-[#65D396] hover:bg-[#65D396]/10 font-medium uppercase tracking-wide rounded-sm",
+        "ghost": "text-gray-400 hover:text-white hover:bg-white/5"
+      },
+      "cards": {
+        "default": "bg-[#0B1210] border border-white/10 rounded-md p-6 relative overflow-hidden",
+        "interactive": "hover:border-[#65D396]/50 transition-colors cursor-pointer",
+        "glass": "bg-[#0B1210]/80 backdrop-blur-md border border-white/10"
+      },
+      "inputs": {
+        "default": "bg-[#050505] border border-white/20 focus:border-[#65D396] focus:ring-1 focus:ring-[#65D396] rounded-sm text-white placeholder:text-gray-600"
+      },
+      "badges": {
+        "success": "bg-[#65D396]/10 text-[#65D396] border border-[#65D396]/20",
+        "warning": "bg-amber-500/10 text-amber-500 border border-amber-500/20",
+        "error": "bg-red-500/10 text-red-500 border border-red-500/20"
+      }
     },
-    "usage": {
-      "background": "Deep Navy Blue (#0f172a)",
-      "primary": "Electric Cyan (#22d3ee) - Use for CTAs, active states, and key metrics",
-      "secondary": "Slate Blue - Use for card backgrounds and secondary elements",
-      "accent": "Warning Orange (#f97316) - Use for alerts, warnings, and attention-grabbing highlights",
-      "text": "Off-white for readability, never pure white on dark backgrounds"
+    "visual_enhancers": {
+      "scanlines": "background: repeating-linear-gradient(0deg, transparent, transparent 2px, #000 3px); opacity: 0.1; pointer-events: none;",
+      "glow": "box-shadow: 0 0 20px rgba(101, 211, 150, 0.15);",
+      "noise": "background-image: url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/200' opacity='0.05'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\");"
+    },
+    "motion": {
+      "hover": "transition-all duration-200 ease-out",
+      "enter": "animate-in fade-in zoom-in-95 duration-300",
+      "rules": [
+        "Micro-interactions ONLY. No bouncy or springy animations.",
+        "Transitions should be fast (150ms-200ms) and linear or ease-out.",
+        "Hover states should be instant and clear."
+      ]
+    },
+    "accessibility": {
+      "contrast": "Ensure text contrast ratio is at least 4.5:1 against the dark background.",
+      "focus": "Focus rings MUST be visible and use the Accent color (#65D396).",
+      "reduced_motion": "Respect 'prefers-reduced-motion' media query."
     }
   },
-  "layout": {
-    "grid_system": "Bento Grid Protocol",
-    "spacing": {
-      "container_padding": "p-6 md:p-8 lg:p-12",
-      "element_gap": "gap-6",
-      "section_spacing": "py-12"
+  "assets": {
+    "images": {
+      "hero_bg": "https://images.unsplash.com/photo-1767990495521-95cceb571125?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwxfHxFViUyMGJhdHRlcnklMjBwYWNrJTIwdGVjaG5vbG9neXxlbnwwfHx8fDE3NzEyMzYyNzV8MA&ixlib=rb-4.1.0&q=85",
+      "mechanic_avatar": "https://images.unsplash.com/photo-1720640783586-d38fd324d43a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MTJ8MHwxfHNlYXJjaHwyfHxtZWNoYW5pYyUyMHdvcmtpbmclMjBvbiUyMGNhcnxlbnwwfHx8fDE3NzEyMzYyOTF8MA&ixlib=rb-4.1.0&q=85",
+      "ev_charging": "https://images.unsplash.com/photo-1763543007050-4dac73ffc67f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwyfHxFViUyMGJhdHRlcnklMjBwYWNrJTIwdGVjaG5vbG9neXxlbnwwfHx8fDE3NzEyMzYyNzV8MA&ixlib=rb-4.1.0&q=85",
+      "workshop_bg": "https://images.unsplash.com/photo-1619505372149-07875c35b313?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MTJ8MHwxfHNlYXJjaHwxfHxtZWNoYW5pYyUyMHdvcmtpbmclMjBvbiUyMGNhcnxlbnwwfHx8fDE3NzEyMzYyOTF8MA&ixlib=rb-4.1.0&q=85"
     },
-    "structure": {
-      "sidebar": "Fixed left sidebar, glassmorphism effect (bg-background/80 backdrop-blur-md), border-r border-border/50",
-      "main_content": "Scrollable area, max-w-7xl mx-auto",
-      "cards": "Rounded-xl border border-white/10 bg-card/50 backdrop-blur-sm shadow-lg hover:border-primary/50 transition-colors duration-300"
-    }
-  },
-  "components": {
-    "buttons": {
-      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-300 rounded-md font-semibold tracking-wide",
-      "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-white/10 rounded-md font-medium",
-      "ghost": "hover:bg-white/5 text-muted-foreground hover:text-foreground rounded-md"
-    },
-    "cards": {
-      "dashboard_metric": "p-6 flex flex-col justify-between h-full relative overflow-hidden group",
-      "chart_container": "p-6 min-h-[300px] flex flex-col"
-    },
-    "inputs": {
-      "default": "bg-background/50 border-border focus:border-primary focus:ring-1 focus:ring-primary/50 rounded-md"
-    },
-    "navigation": {
-      "sidebar_item": "flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors",
-      "sidebar_item_active": "bg-primary/10 text-primary border-r-2 border-primary"
-    }
-  },
-  "visual_enhancers": {
-    "glassmorphism": "backdrop-blur-md bg-background/70 border border-white/10",
-    "gradients": "Use subtle radial gradients in backgrounds to create depth. Avoid linear gradients on text.",
-    "shadows": "shadow-lg shadow-black/20",
-    "borders": "1px solid rgba(255, 255, 255, 0.1)",
-    "icons": "Lucide React (default). Use thin strokes (1.5px) for a technical look."
-  },
-  "motion": {
-    "transitions": "transition-all duration-300 ease-out",
-    "hover_effects": "translate-y-[-2px] shadow-xl",
-    "loading": "Pulse effects on skeletons, spinning loaders for data fetching"
-  },
-  "images": {
-    "hero_bg": "https://images.unsplash.com/photo-1639060015191-9d83063eab2a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzh8MHwxfHNlYXJjaHwyfHxmdXR1cmlzdGljJTIwY2FyJTIwZGFzaGJvYXJkJTIwaW50ZXJmYWNlfGVufDB8fHx8MTc3MTE4OTI3NXww&ixlib=rb-4.1.0&q=85",
-    "charging_station": "https://images.unsplash.com/photo-1765272088009-100c96a4cd4e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwxfHxlbGVjdHJpYyUyMHZlaGljbGUlMjBjaGFyZ2luZyUyMHN0YXRpb24lMjBtb2Rlcm58ZW58MHx8fHwxNzcxMTg5MjY3fDA&ixlib=rb-4.1.0&q=85",
-    "mechanic": "https://images.unsplash.com/photo-1545732870-5dced7323d26?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwxfHxtZWNoYW5pYyUyMHdvcmtpbmclMjBvbiUyMGVsZWN0cmljJTIwY2FyJTIwd29ya3Nob3B8ZW58MHx8fHwxNzcxMTg5MjcxfDA&ixlib=rb-4.1.0&q=85",
-    "logo_placeholder": "https://via.placeholder.com/150x50?text=Battwheels+OS"
+    "icons": "Use 'lucide-react' for all icons. Style them with 'stroke-width={1.5}' for a technical look."
   },
   "instructions_to_main_agent": [
-    "1. THEME SETUP: Update tailwind.config.js with the colors defined in 'colors.palette'. Ensure 'darkMode' is set to 'class'.",
-    "2. FONTS: Add the Google Fonts import to src/index.css immediately.",
-    "3. LAYOUT: Create a 'Layout' component that includes the Sidebar and a scrollable main content area. Use the 'glassmorphism' styles for the sidebar.",
-    "4. DASHBOARD: Implement the dashboard using the 'Bento Grid' layout. Use the 'dashboard_metric' card style for the top stats.",
-    "5. CHARTS: Use Recharts for the 'Vehicle Status Distribution' (Donut) and 'Repair Time Trend' (Bar). Style them with the 'chart_*' colors.",
-    "6. AI MODULE: For the 'Answer Module', create a chat-like interface or a search-bar style input that expands into a solution card. Use 'primary' color for the AI's responses to highlight intelligence.",
-    "7. TABLES: For 'Vehicles in Workshop', use a clean table with 'border-b border-white/10' for rows. No vertical borders.",
-    "8. MOBILE: Ensure the sidebar collapses into a hamburger menu on mobile screens.",
-    "9. DATA-TESTID: Add 'data-testid' to all interactive elements (buttons, inputs, sidebar links) as per the critical rules."
+    "1. SETUP: Update 'tailwind.config.js' to include the new color palette (Deep Obsidian, Dark Green, Vibrant Green).",
+    "2. GLOBAL STYLES: Update 'index.css' to set the default background to #050505 and text to #FFFFFF. Add the 'scanlines' and 'noise' utility classes.",
+    "3. COMPONENTS: Customize Shadcn components. Remove large border-radius (set to '0.25rem' or '0px'). Add 1px borders to cards.",
+    "4. LAYOUT: Implement the 'Bento Grid' for the dashboard. Ensure high data density.",
+    "5. CHARTS: Use Recharts. Style them to match the dark theme (dark tooltips, green lines/bars).",
+    "6. AI FEATURES: Highlight AI suggestions with the Vibrant Green accent and a subtle glow effect.",
+    "7. TESTING: Add 'data-testid' to all interactive elements."
   ],
-  "universal_guidelines": [
-    "Avoid generic 'Bootstrap' looks. Use custom spacing and typography.",
-    "Dark mode is the DEFAULT and ONLY mode for this application (as per user request).",
-    "Use 'sonner' for toast notifications.",
-    "Do not use 'alert()' or native confirm dialogs. Use Shadcn Dialogs.",
-    "Ensure all text has sufficient contrast against the dark background (APCA/WCAG AA)."
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. In frontend design, this creates what users call the 'AI slop' aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "You MUST NOT apply universal transition. Eg: 'transition: all'. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms.",
+    "You MUST NOT center align the app container, ie do not add '.App { text-align: center; }' in the css file. This disrupts the human natural reading flow of text.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style.",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN.",
+    "Prioritize using pre-existing components from src/components/ui when applicable.",
+    "Create new components that match the style and conventions of existing components when needed.",
+    "Examine existing components to understand the project's component patterns before creating new ones.",
+    "Components MUST use named exports (export const ComponentName = ...).",
+    "Pages MUST use default exports (export default function PageName() {...}).",
+    "Use 'sonner' for toasts. Sonner component are located in '/app/src/components/ui/sonner.tsx'."
   ]
 }
