@@ -127,7 +127,8 @@ async def create_amc_plan(plan_data: AMCPlanCreate, request: Request):
     }
     
     await db.amc_plans.insert_one(plan)
-    del plan["_id"] if "_id" in plan else None
+    if "_id" in plan:
+        del plan["_id"]
     
     return plan
 
