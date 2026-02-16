@@ -91,60 +91,136 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#22EDA9] flex">
+    <div className="min-h-screen bg-[#0a0a0a] flex relative overflow-hidden">
+      {/* Animated PCB Circuit Background */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Circuit SVG Pattern */}
+        <svg className="absolute inset-0 w-full h-full opacity-30" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="circuit-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+              <path d="M10 10 L10 30 L30 30" stroke="#22EDA9" strokeWidth="1" fill="none" opacity="0.5"/>
+              <path d="M50 10 L50 50 L90 50" stroke="#22EDA9" strokeWidth="1" fill="none" opacity="0.5"/>
+              <path d="M70 10 L70 30 L90 30 L90 70" stroke="#22EDA9" strokeWidth="1" fill="none" opacity="0.5"/>
+              <path d="M10 70 L30 70 L30 90" stroke="#22EDA9" strokeWidth="1" fill="none" opacity="0.5"/>
+              <path d="M50 70 L50 90" stroke="#22EDA9" strokeWidth="1" fill="none" opacity="0.5"/>
+              <circle cx="10" cy="10" r="2" fill="#22EDA9" opacity="0.8"/>
+              <circle cx="30" cy="30" r="2" fill="#22EDA9" opacity="0.8"/>
+              <circle cx="50" cy="10" r="2" fill="#22EDA9" opacity="0.8"/>
+              <circle cx="90" cy="50" r="2" fill="#22EDA9" opacity="0.8"/>
+              <circle cx="70" cy="10" r="2" fill="#22EDA9" opacity="0.8"/>
+              <circle cx="90" cy="70" r="2" fill="#22EDA9" opacity="0.8"/>
+              <circle cx="10" cy="70" r="2" fill="#22EDA9" opacity="0.8"/>
+              <circle cx="30" cy="90" r="2" fill="#22EDA9" opacity="0.8"/>
+              <circle cx="50" cy="90" r="2" fill="#22EDA9" opacity="0.8"/>
+            </pattern>
+            {/* Glowing effect */}
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#circuit-pattern)"/>
+        </svg>
+        
+        {/* Animated glowing circuits */}
+        <div className="absolute inset-0">
+          <svg className="w-full h-full" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+            {/* Horizontal lines */}
+            <line x1="0" y1="200" x2="600" y2="200" stroke="#22EDA9" strokeWidth="2" className="animate-circuit-1" filter="url(#glow)"/>
+            <line x1="0" y1="400" x2="400" y2="400" stroke="#22EDA9" strokeWidth="2" className="animate-circuit-2" filter="url(#glow)"/>
+            <line x1="0" y1="600" x2="500" y2="600" stroke="#22EDA9" strokeWidth="2" className="animate-circuit-3" filter="url(#glow)"/>
+            <line x1="0" y1="800" x2="350" y2="800" stroke="#22EDA9" strokeWidth="2" className="animate-circuit-4" filter="url(#glow)"/>
+            
+            {/* Vertical connectors */}
+            <line x1="600" y1="200" x2="600" y2="350" stroke="#22EDA9" strokeWidth="2" className="animate-circuit-1" filter="url(#glow)"/>
+            <line x1="400" y1="400" x2="400" y2="500" stroke="#22EDA9" strokeWidth="2" className="animate-circuit-2" filter="url(#glow)"/>
+            <line x1="500" y1="600" x2="500" y2="750" stroke="#22EDA9" strokeWidth="2" className="animate-circuit-3" filter="url(#glow)"/>
+            
+            {/* Glowing endpoints */}
+            <circle cx="600" cy="350" r="6" fill="#22EDA9" className="animate-pulse-glow" filter="url(#glow)"/>
+            <circle cx="400" cy="500" r="6" fill="#22EDA9" className="animate-pulse-glow" filter="url(#glow)"/>
+            <circle cx="500" cy="750" r="6" fill="#22EDA9" className="animate-pulse-glow" filter="url(#glow)"/>
+            <circle cx="350" cy="800" r="6" fill="#22EDA9" className="animate-pulse-glow" filter="url(#glow)"/>
+          </svg>
+        </div>
+      </div>
+
       {/* Left Panel - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#22EDA9]">
+      <div className="hidden lg:flex lg:w-1/2 relative z-10">
         <div className="absolute inset-0 flex flex-col items-center justify-center p-12">
-          {/* Logo */}
-          <img 
-            src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/ygo0wrln_68469546%20%281%29.png" 
-            alt="Battwheels Logo" 
-            className="w-80 h-auto mb-8 drop-shadow-lg"
-          />
+          {/* Logo with glow */}
+          <div className="relative mb-8">
+            <div className="absolute inset-0 bg-[#22EDA9] blur-3xl opacity-30 rounded-full scale-150"></div>
+            <img 
+              src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/ygo0wrln_68469546%20%281%29.png" 
+              alt="Battwheels Logo" 
+              className="relative w-72 h-auto drop-shadow-[0_0_30px_rgba(34,237,169,0.5)]"
+            />
+          </div>
           <h2 className="text-4xl font-bold mb-4 tracking-tight text-white text-center">
             EV Command Center
           </h2>
-          <p className="text-xl text-white/90 max-w-md leading-relaxed text-center">
-            Integrated AI-powered Electric Failure Intelligence for comprehensive EV workshop management.
+          <p className="text-lg text-gray-400 max-w-md leading-relaxed text-center">
+            AI-Powered Electric Failure Intelligence for next-generation EV workshop management.
           </p>
-          <div className="mt-12 grid grid-cols-2 gap-6">
-            <div className="p-5 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-center">
-              <p className="text-4xl font-bold text-white font-mono">745+</p>
-              <p className="text-sm text-white/80 mt-1">Vehicles Serviced</p>
+          <div className="mt-10 grid grid-cols-2 gap-5">
+            <div className="p-5 rounded-xl bg-[#22EDA9]/10 backdrop-blur-md border border-[#22EDA9]/30 text-center hover:border-[#22EDA9]/60 transition-all hover:shadow-[0_0_30px_rgba(34,237,169,0.2)]">
+              <p className="text-4xl font-bold text-[#22EDA9] font-mono">745+</p>
+              <p className="text-sm text-gray-400 mt-1">Vehicles Serviced</p>
             </div>
-            <div className="p-5 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-center">
-              <p className="text-4xl font-bold text-white font-mono">98%</p>
-              <p className="text-sm text-white/80 mt-1">Success Rate</p>
+            <div className="p-5 rounded-xl bg-[#22EDA9]/10 backdrop-blur-md border border-[#22EDA9]/30 text-center hover:border-[#22EDA9]/60 transition-all hover:shadow-[0_0_30px_rgba(34,237,169,0.2)]">
+              <p className="text-4xl font-bold text-[#22EDA9] font-mono">98%</p>
+              <p className="text-sm text-gray-400 mt-1">Success Rate</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Right Panel - Auth Forms */}
-      <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
-        <Card className="w-full max-w-md border-gray-200 bg-white shadow-2xl rounded-2xl">
-          <CardHeader className="text-center pb-2">
-            <div className="lg:hidden flex flex-col items-center mb-4">
+      <div className="flex-1 flex items-center justify-center p-6 relative z-10">
+        <Card className="w-full max-w-md border-0 bg-[#111111] shadow-2xl rounded-2xl overflow-hidden">
+          {/* Green Header with Logo */}
+          <div className="bg-[#22EDA9] p-6 text-center relative overflow-hidden">
+            {/* Subtle circuit pattern in header */}
+            <div className="absolute inset-0 opacity-20">
+              <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <pattern id="header-circuit" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M5 5 L5 15 L15 15" stroke="white" strokeWidth="1" fill="none"/>
+                  <path d="M25 5 L25 25 L35 25" stroke="white" strokeWidth="1" fill="none"/>
+                  <circle cx="5" cy="5" r="2" fill="white"/>
+                  <circle cx="15" cy="15" r="2" fill="white"/>
+                  <circle cx="35" cy="25" r="2" fill="white"/>
+                </pattern>
+                <rect width="100%" height="100%" fill="url(#header-circuit)"/>
+              </svg>
+            </div>
+            {/* Logo in header */}
+            <div className="relative">
               <img 
                 src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/ygo0wrln_68469546%20%281%29.png" 
-                alt="Battwheels Logo" 
-                className="w-48 h-auto mb-2 bg-[#22EDA9] p-3 rounded-xl"
+                alt="Battwheels" 
+                className="h-12 mx-auto mb-3 brightness-0 invert"
               />
+              <div className="flex items-center justify-center gap-2 text-black">
+                <Zap className="h-5 w-5" />
+                <span className="text-sm font-medium uppercase tracking-wider">AI-Powered EV Intelligence</span>
+                <Zap className="h-5 w-5" />
+              </div>
             </div>
-            <div className="hidden lg:block">
-              <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
-              <CardDescription className="text-gray-500">Sign in to access your EV Command Center</CardDescription>
-            </div>
-            <div className="lg:hidden">
-              <CardTitle className="text-2xl font-bold text-gray-900">Welcome</CardTitle>
-              <CardDescription className="text-gray-500">Sign in to continue</CardDescription>
-            </div>
+          </div>
+          
+          <CardHeader className="text-center pt-6 pb-2">
+            <CardTitle className="text-2xl font-bold text-white">Welcome Back</CardTitle>
+            <CardDescription className="text-gray-400">Sign in to access your EV Command Center</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-8">
             <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 rounded-xl p-1">
-                <TabsTrigger value="login" data-testid="login-tab" className="rounded-lg data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black data-[state=active]:shadow-md transition-all">Login</TabsTrigger>
-                <TabsTrigger value="register" data-testid="register-tab" className="rounded-lg data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black data-[state=active]:shadow-md transition-all">Register</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-[#1a1a1a] rounded-xl p-1">
+                <TabsTrigger value="login" data-testid="login-tab" className="rounded-lg text-gray-400 data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black data-[state=active]:shadow-md transition-all">Login</TabsTrigger>
+                <TabsTrigger value="register" data-testid="register-tab" className="rounded-lg text-gray-400 data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black data-[state=active]:shadow-md transition-all">Register</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
