@@ -255,6 +255,34 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/bills" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Bills user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/credit-notes" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <CreditNotes user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/banking" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Banking user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/reports" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Reports user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/invoices" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
