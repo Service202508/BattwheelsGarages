@@ -48,10 +48,12 @@ const navItems = [
     { name: "New Ticket", path: "/tickets/new", icon: Ticket },
     { name: "Complaint Dashboard", path: "/tickets", icon: FileText },
     { name: "Predictive Maintenance", path: "/ai-assistant", icon: Bot },
-    { name: "Inventory", path: "/inventory", icon: Package },
     { name: "Vehicles", path: "/vehicles", icon: Car },
     { name: "AMC Management", path: "/amc", icon: Shield },
     { name: "Alerts", path: "/alerts", icon: Bell },
+  ]},
+  { section: "Catalog & Inventory", items: [
+    { name: "Services & Parts", path: "/inventory", icon: Package },
   ]},
   { section: "HR & Payroll", items: [
     { name: "Employees", path: "/employees", icon: Users },
@@ -62,8 +64,8 @@ const navItems = [
   ]},
   { section: "Finance", items: [
     { name: "Customers", path: "/customers", icon: Users },
-    { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
     { name: "Invoices", path: "/invoices", icon: Receipt },
+    { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
     { name: "Expenses", path: "/expenses", icon: Receipt },
     { name: "Accounting", path: "/accounting", icon: Calculator },
   ]},
