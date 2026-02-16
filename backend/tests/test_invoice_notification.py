@@ -376,7 +376,7 @@ class TestTechnicalSpecDocument:
 
 
 class TestEmailTemplates:
-    """Test that all email templates are properly defined"""
+    """Test that all email templates are properly defined (subject is auto-generated from template)"""
     
     @pytest.fixture(autouse=True)
     def setup(self):
@@ -390,7 +390,7 @@ class TestEmailTemplates:
         self.headers = {"Authorization": f"Bearer {self.token}"}
     
     def test_ticket_created_template(self):
-        """Test ticket_created email template"""
+        """Test ticket_created email template (subject auto-generated)"""
         email_data = {
             "recipient_email": "test@example.com",
             "template": "ticket_created",
@@ -404,10 +404,12 @@ class TestEmailTemplates:
         }
         response = requests.post(f"{BASE_URL}/api/notifications/send-email", json=email_data, headers=self.headers)
         assert response.status_code == 200, f"ticket_created template failed: {response.text}"
-        print("✓ ticket_created template works")
+        result = response.json()
+        assert result.get("status") == "queued"
+        print("✓ ticket_created template works (subject auto-generated)")
     
     def test_ticket_assigned_template(self):
-        """Test ticket_assigned email template"""
+        """Test ticket_assigned email template (subject auto-generated)"""
         email_data = {
             "recipient_email": "test@example.com",
             "template": "ticket_assigned",
@@ -420,10 +422,12 @@ class TestEmailTemplates:
         }
         response = requests.post(f"{BASE_URL}/api/notifications/send-email", json=email_data, headers=self.headers)
         assert response.status_code == 200, f"ticket_assigned template failed: {response.text}"
-        print("✓ ticket_assigned template works")
+        result = response.json()
+        assert result.get("status") == "queued"
+        print("✓ ticket_assigned template works (subject auto-generated)")
     
     def test_estimate_shared_template(self):
-        """Test estimate_shared email template"""
+        """Test estimate_shared email template (subject auto-generated)"""
         email_data = {
             "recipient_email": "test@example.com",
             "template": "estimate_shared",
@@ -437,10 +441,12 @@ class TestEmailTemplates:
         }
         response = requests.post(f"{BASE_URL}/api/notifications/send-email", json=email_data, headers=self.headers)
         assert response.status_code == 200, f"estimate_shared template failed: {response.text}"
-        print("✓ estimate_shared template works")
+        result = response.json()
+        assert result.get("status") == "queued"
+        print("✓ estimate_shared template works (subject auto-generated)")
     
     def test_invoice_generated_template(self):
-        """Test invoice_generated email template"""
+        """Test invoice_generated email template (subject auto-generated)"""
         email_data = {
             "recipient_email": "test@example.com",
             "template": "invoice_generated",
@@ -455,10 +461,12 @@ class TestEmailTemplates:
         }
         response = requests.post(f"{BASE_URL}/api/notifications/send-email", json=email_data, headers=self.headers)
         assert response.status_code == 200, f"invoice_generated template failed: {response.text}"
-        print("✓ invoice_generated template works")
+        result = response.json()
+        assert result.get("status") == "queued"
+        print("✓ invoice_generated template works (subject auto-generated)")
     
     def test_ticket_resolved_template(self):
-        """Test ticket_resolved email template"""
+        """Test ticket_resolved email template (subject auto-generated)"""
         email_data = {
             "recipient_email": "test@example.com",
             "template": "ticket_resolved",
@@ -471,7 +479,9 @@ class TestEmailTemplates:
         }
         response = requests.post(f"{BASE_URL}/api/notifications/send-email", json=email_data, headers=self.headers)
         assert response.status_code == 200, f"ticket_resolved template failed: {response.text}"
-        print("✓ ticket_resolved template works")
+        result = response.json()
+        assert result.get("status") == "queued"
+        print("✓ ticket_resolved template works (subject auto-generated)")
 
 
 if __name__ == "__main__":
