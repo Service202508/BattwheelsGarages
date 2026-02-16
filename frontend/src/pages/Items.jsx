@@ -274,7 +274,7 @@ export default function Items() {
 
         <TabsContent value={activeTab} className="mt-6">
           {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
-            items.length === 0 ? (
+            filteredItems.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center text-gray-500">
                   <Package className="h-12 w-12 mx-auto mb-4 text-gray-300" />
@@ -295,7 +295,7 @@ export default function Items() {
                     </tr>
                   </thead>
                   <tbody>
-                    {items.map(item => (
+                    {filteredItems.map(item => (
                       <tr key={item.item_id} className="border-t hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div>
@@ -305,7 +305,7 @@ export default function Items() {
                         </td>
                         <td className="px-4 py-3 text-gray-600">{item.sku || '-'}</td>
                         <td className="px-4 py-3">
-                          <Badge className={itemTypeColors[item.item_type]}>{item.item_type}</Badge>
+                          <Badge className={itemTypeColors[item.item_type] || "bg-gray-100 text-gray-700"}>{item.item_type}</Badge>
                         </td>
                         <td className="px-4 py-3 text-right font-medium">₹{item.rate?.toLocaleString('en-IN')}</td>
                         <td className="px-4 py-3 text-right">
