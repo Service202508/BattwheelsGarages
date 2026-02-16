@@ -1212,6 +1212,11 @@ async def get_ticket(ticket_id: str, request: Request):
 async def update_ticket(ticket_id: str, update: TicketUpdate, request: Request):
     user = await require_technician_or_admin(request)
     
+    # Get existing ticket first
+    existing_ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    if not existing_ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
     update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
     update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
     
@@ -1221,13 +1226,22 @@ async def update_ticket(ticket_id: str, update: TicketUpdate, request: Request):
         if tech:
             update_dict["assigned_technician_name"] = tech.get("name")
     
+    # Append to status history if status is changing
+    if update.status and update.status != existing_ticket.get("status"):
+        current_history = existing_ticket.get("status_history", [])
+        current_history.append({
+            "status": update.status,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "updated_by": user.name if hasattr(user, "name") else "System"
+        })
+        update_dict["status_history"] = current_history
+    
     if update.status == "resolved":
         update_dict["resolved_at"] = datetime.now(timezone.utc).isoformat()
         # Update vehicle status
-        ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
-        if ticket:
+        if existing_ticket.get("vehicle_id"):
             await db.vehicles.update_one(
-                {"vehicle_id": ticket["vehicle_id"]},
+                {"vehicle_id": existing_ticket["vehicle_id"]},
                 {"$set": {"current_status": "serviced"}}
             )
     
