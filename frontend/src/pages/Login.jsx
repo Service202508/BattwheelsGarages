@@ -91,38 +91,30 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-[#22EDA9] flex">
       {/* Left Panel - Branding */}
-      <div 
-        className="hidden lg:flex lg:w-1/2 relative overflow-hidden"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1767990495521-95cceb571125?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwxfHxFViUyMGJhdHRlcnklMjBwYWNrJTIwdGVjaG5vbG9neXxlbnwwfHx8fDE3NzEyMzYyNzV8MA&ixlib=rb-4.1.0&q=85')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0F0F0F] via-[#0F0F0F]/90 to-transparent" />
-        <div className="relative z-10 flex flex-col justify-center p-12 text-white">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="h-12 w-12 rounded-lg bg-[#22EDA9] flex items-center justify-center shadow-lg">
-              <Zap className="h-7 w-7 text-black" />
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight">Battwheels OS</h1>
-          </div>
-          <h2 className="text-4xl font-bold mb-4 tracking-tight">
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#22EDA9]">
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-12">
+          {/* Logo */}
+          <img 
+            src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/ygo0wrln_68469546%20%281%29.png" 
+            alt="Battwheels Logo" 
+            className="w-80 h-auto mb-8 drop-shadow-lg"
+          />
+          <h2 className="text-4xl font-bold mb-4 tracking-tight text-white text-center">
             EV Command Center
           </h2>
-          <p className="text-xl text-white/80 max-w-md leading-relaxed">
+          <p className="text-xl text-white/90 max-w-md leading-relaxed text-center">
             Integrated AI-powered Electric Failure Intelligence for comprehensive EV workshop management.
           </p>
           <div className="mt-12 grid grid-cols-2 gap-6">
-            <div className="p-4 rounded-lg bg-white/10 backdrop-blur-md border border-white/20">
-              <p className="text-3xl font-bold text-[#22EDA9] font-mono">745+</p>
-              <p className="text-sm text-white/70">Vehicles Serviced</p>
+            <div className="p-5 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-center">
+              <p className="text-4xl font-bold text-white font-mono">745+</p>
+              <p className="text-sm text-white/80 mt-1">Vehicles Serviced</p>
             </div>
-            <div className="p-4 rounded-lg bg-white/10 backdrop-blur-md border border-white/20">
-              <p className="text-3xl font-bold text-[#22EDA9] font-mono">98%</p>
-              <p className="text-sm text-white/70">Success Rate</p>
+            <div className="p-5 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-center">
+              <p className="text-4xl font-bold text-white font-mono">98%</p>
+              <p className="text-sm text-white/80 mt-1">Success Rate</p>
             </div>
           </div>
         </div>
@@ -130,22 +122,29 @@ export default function Login({ onLogin }) {
 
       {/* Right Panel - Auth Forms */}
       <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
-        <Card className="w-full max-w-md border-gray-200 bg-white shadow-lg rounded-xl">
-          <CardHeader className="text-center">
-            <div className="lg:hidden flex items-center justify-center gap-2 mb-4">
-              <div className="h-10 w-10 rounded-lg bg-[#22EDA9] flex items-center justify-center">
-                <Zap className="h-6 w-6 text-black" />
-              </div>
-              <span className="text-2xl font-bold text-gray-900">Battwheels OS</span>
+        <Card className="w-full max-w-md border-gray-200 bg-white shadow-2xl rounded-2xl">
+          <CardHeader className="text-center pb-2">
+            <div className="lg:hidden flex flex-col items-center mb-4">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/ygo0wrln_68469546%20%281%29.png" 
+                alt="Battwheels Logo" 
+                className="w-48 h-auto mb-2 bg-[#22EDA9] p-3 rounded-xl"
+              />
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-900">Welcome</CardTitle>
-            <CardDescription className="text-gray-500">Sign in to access your EV Command Center</CardDescription>
+            <div className="hidden lg:block">
+              <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
+              <CardDescription className="text-gray-500">Sign in to access your EV Command Center</CardDescription>
+            </div>
+            <div className="lg:hidden">
+              <CardTitle className="text-2xl font-bold text-gray-900">Welcome</CardTitle>
+              <CardDescription className="text-gray-500">Sign in to continue</CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 rounded-lg">
-                <TabsTrigger value="login" data-testid="login-tab" className="rounded-lg data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black">Login</TabsTrigger>
-                <TabsTrigger value="register" data-testid="register-tab" className="rounded-lg data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black">Register</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 rounded-xl p-1">
+                <TabsTrigger value="login" data-testid="login-tab" className="rounded-lg data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black data-[state=active]:shadow-md transition-all">Login</TabsTrigger>
+                <TabsTrigger value="register" data-testid="register-tab" className="rounded-lg data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black data-[state=active]:shadow-md transition-all">Register</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
