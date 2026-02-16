@@ -37,6 +37,19 @@ from models.failure_intelligence import (
     FailureSignature
 )
 
+# Optional imports for enhanced search
+try:
+    from services.embedding_service import get_embedding_service, get_card_embedder
+    EMBEDDINGS_AVAILABLE = True
+except ImportError:
+    EMBEDDINGS_AVAILABLE = False
+
+try:
+    from services.search_service import get_search_service
+    ADVANCED_SEARCH_AVAILABLE = True
+except ImportError:
+    ADVANCED_SEARCH_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
 
 
