@@ -675,23 +675,42 @@ class DeduplicationEngine:
         """Find potential duplicate cards"""
         duplicates = []
         
-        # Check by signature hash
+        # Check by signature hash (fastest)
         sig_match = await self.db.failure_cards.find_one(
             {"signature_hash": card.get("signature_hash")},
             {"_id": 0, "failure_id": 1, "title": 1, "version": 1}
         )
         if sig_match:
             duplicates.append({**sig_match, "match_type": "signature_exact"})
+            return duplicates  # Exact match found, no need for more checks
         
-        # Check by similar title
-        title_matches = await self.db.failure_cards.find(
-            {"$text": {"$search": card.get("title", "")}},
-            {"_id": 0, "failure_id": 1, "title": 1, "version": 1, "score": {"$meta": "textScore"}}
-        ).sort([("score", {"$meta": "textScore"})]).limit(3).to_list(3)
-        
-        for match in title_matches:
-            if match["failure_id"] not in [d["failure_id"] for d in duplicates]:
-                duplicates.append({**match, "match_type": "title_similarity"})
+        # Check by similar title using regex (fallback if text index unavailable)
+        try:
+            title_matches = await self.db.failure_cards.find(
+                {"$text": {"$search": card.get("title", "")}},
+                {"_id": 0, "failure_id": 1, "title": 1, "version": 1, "score": {"$meta": "textScore"}}
+            ).sort([("score", {"$meta": "textScore"})]).limit(3).to_list(3)
+            
+            for match in title_matches:
+                if match["failure_id"] not in [d["failure_id"] for d in duplicates]:
+                    duplicates.append({**match, "match_type": "title_similarity"})
+        except Exception as e:
+            # Fallback to regex if text index not available
+            logger.warning(f"Text search failed, using regex fallback: {e}")
+            title = card.get("title", "")
+            if title:
+                # Simple keyword extraction
+                words = [w for w in title.lower().split() if len(w) > 3][:3]
+                if words:
+                    regex_pattern = "|".join(words)
+                    title_matches = await self.db.failure_cards.find(
+                        {"title": {"$regex": regex_pattern, "$options": "i"}},
+                        {"_id": 0, "failure_id": 1, "title": 1, "version": 1}
+                    ).limit(3).to_list(3)
+                    
+                    for match in title_matches:
+                        if match["failure_id"] not in [d["failure_id"] for d in duplicates]:
+                            duplicates.append({**match, "match_type": "title_similarity"})
         
         return duplicates
     
