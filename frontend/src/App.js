@@ -27,6 +27,7 @@ import LeaveManagement from "@/pages/LeaveManagement";
 import Payroll from "@/pages/Payroll";
 import Employees from "@/pages/Employees";
 import FailureIntelligence from "@/pages/FailureIntelligence";
+import FaultTreeImport from "@/pages/FaultTreeImport";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
