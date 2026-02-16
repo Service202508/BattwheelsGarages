@@ -875,6 +875,83 @@ class EFIEventType(Enum):
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+#### Workflow 4: Emerging Pattern Detection (Scheduled Job)
+
+**EFI must discover intelligence, not only react.**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              WORKFLOW: EMERGING_PATTERN_DETECTION               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  TRIGGER: Scheduled background process (daily/hourly)           │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │ PHASE 1: Detect Repeating Symptoms Without Solution      │  │
+│  │                                                          │  │
+│  │  Query: Tickets from last 30 days where:                 │  │
+│  │    - suggested_failure_cards is empty OR                 │  │
+│  │    - no failure_card_used in technician_action           │  │
+│  │                                                          │  │
+│  │  Group by: category + extracted_symptoms                 │  │
+│  │  Threshold: >= 3 occurrences                             │  │
+│  │                                                          │  │
+│  │  Output: Symptom clusters needing documentation          │  │
+│  └────────────────────────┬─────────────────────────────────┘  │
+│                           │                                     │
+│                           ▼                                     │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │ PHASE 2: Detect Abnormal Part Replacement Patterns       │  │
+│  │                                                          │  │
+│  │  Query: PartUsage from last 30 days where:               │  │
+│  │    - expected_vs_actual = False                          │  │
+│  │                                                          │  │
+│  │  Group by: part_id + failure_card_id                     │  │
+│  │  Threshold: >= 2 unexpected usages                       │  │
+│  │                                                          │  │
+│  │  Output: Parts not matching failure card recommendations │  │
+│  └────────────────────────┬─────────────────────────────────┘  │
+│                           │                                     │
+│                           ▼                                     │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │ PHASE 3: Store Detected Patterns                         │  │
+│  │                                                          │  │
+│  │  Create EmergingPattern record:                          │  │
+│  │    - pattern_type: symptom_cluster | part_anomaly        │  │
+│  │    - detected_symptoms: [...]                            │  │
+│  │    - affected_vehicles: [{make, model, count}]           │  │
+│  │    - occurrence_count: N                                 │  │
+│  │    - confidence_score: calculated                        │  │
+│  │    - status: "detected"                                  │  │
+│  └────────────────────────┬─────────────────────────────────┘  │
+│                           │                                     │
+│                           ▼                                     │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │ PHASE 4: Queue for Expert Review                         │  │
+│  │                                                          │  │
+│  │  Emit: PATTERN_DETECTED event                            │  │
+│  │  Priority: 3-4 (higher = needs attention)                │  │
+│  │                                                          │  │
+│  │  Expert actions:                                         │  │
+│  │    - confirm: Mark as valid pattern                      │  │
+│  │    - dismiss: Mark as noise                              │  │
+│  │    - create_card: Auto-generate draft failure card       │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                 │
+│  OUTPUT: EmergingPattern records for expert review              │
+│                                                                 │
+│  DETECTION FORMULA:                                             │
+│  ══════════════════                                             │
+│  confidence = min(0.9, occurrence_count / 10)                   │
+│                                                                 │
+│  Pattern types:                                                 │
+│    - symptom_cluster: Repeating symptoms without solution       │
+│    - part_anomaly: Parts not matching expectations              │
+│    - failure_trend: Increasing failure rate in vehicle/part     │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ### 4.3 Event Processing Implementation
 
 ```python
