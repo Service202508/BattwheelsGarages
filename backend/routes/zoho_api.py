@@ -403,6 +403,165 @@ async def mark_item_inactive(item_id: str):
     await db.items.update_one({"item_id": item_id}, {"$set": {"status": "inactive"}})
     return {"code": 0, "message": "Item marked as inactive"}
 
+@router.post("/items/bulk-import")
+async def bulk_import_items(file: UploadFile = File(...)):
+    """
+    Bulk import items from CSV file.
+    Expected CSV columns: name, sku, description, rate, purchase_rate, item_type, unit, hsn_or_sac, tax_percentage, stock_on_hand, reorder_level
+    """
+    import csv
+    import io
+    
+    db = get_db()
+    
+    # Read file content
+    content = await file.read()
+    try:
+        decoded = content.decode('utf-8')
+    except UnicodeDecodeError:
+        decoded = content.decode('latin-1')
+    
+    # Parse CSV
+    reader = csv.DictReader(io.StringIO(decoded))
+    
+    items_created = []
+    items_updated = []
+    errors = []
+    row_num = 1
+    
+    for row in reader:
+        row_num += 1
+        try:
+            name = row.get('name', '').strip()
+            if not name:
+                errors.append({"row": row_num, "error": "Name is required"})
+                continue
+            
+            sku = row.get('sku', '').strip()
+            
+            # Check if item exists by SKU or name
+            existing = None
+            if sku:
+                existing = await db.items.find_one({"sku": sku})
+            if not existing:
+                existing = await db.items.find_one({"name": name})
+            
+            item_data = {
+                "name": name,
+                "sku": sku,
+                "description": row.get('description', '').strip(),
+                "rate": float(row.get('rate', 0) or 0),
+                "purchase_rate": float(row.get('purchase_rate', 0) or 0),
+                "item_type": row.get('item_type', 'sales').strip() or 'sales',
+                "product_type": row.get('product_type', 'goods').strip() or 'goods',
+                "unit": row.get('unit', 'pcs').strip() or 'pcs',
+                "hsn_or_sac": row.get('hsn_or_sac', '').strip(),
+                "tax_percentage": float(row.get('tax_percentage', 18) or 18),
+                "stock_on_hand": float(row.get('stock_on_hand', 0) or 0),
+                "reorder_level": float(row.get('reorder_level', 0) or 0),
+                "last_modified_time": datetime.now(timezone.utc).isoformat()
+            }
+            
+            if existing:
+                # Update existing item
+                await db.items.update_one(
+                    {"_id": existing["_id"]},
+                    {"$set": item_data}
+                )
+                items_updated.append({"row": row_num, "name": name, "item_id": existing.get("item_id")})
+            else:
+                # Create new item
+                item_id = f"I-{uuid.uuid4().hex[:12].upper()}"
+                item_data.update({
+                    "item_id": item_id,
+                    "status": "active",
+                    "available_stock": item_data["stock_on_hand"],
+                    "actual_available_stock": item_data["stock_on_hand"],
+                    "created_time": datetime.now(timezone.utc).isoformat()
+                })
+                await db.items.insert_one(item_data)
+                items_created.append({"row": row_num, "name": name, "item_id": item_id})
+                
+        except Exception as e:
+            errors.append({"row": row_num, "error": str(e)})
+    
+    return {
+        "code": 0,
+        "message": f"Import completed. Created: {len(items_created)}, Updated: {len(items_updated)}, Errors: {len(errors)}",
+        "summary": {
+            "total_rows": row_num - 1,
+            "created": len(items_created),
+            "updated": len(items_updated),
+            "errors": len(errors)
+        },
+        "created_items": items_created,
+        "updated_items": items_updated,
+        "errors": errors
+    }
+
+@router.get("/items/export")
+async def export_items(format: str = "csv"):
+    """Export all items as CSV"""
+    from fastapi.responses import StreamingResponse
+    import csv
+    import io
+    
+    db = get_db()
+    items = await db.items.find({"status": "active"}, {"_id": 0}).to_list(None)
+    
+    if format == "csv":
+        output = io.StringIO()
+        fieldnames = ["name", "sku", "description", "rate", "purchase_rate", "item_type", 
+                      "product_type", "unit", "hsn_or_sac", "tax_percentage", "stock_on_hand", "reorder_level"]
+        writer = csv.DictWriter(output, fieldnames=fieldnames, extrasaction='ignore')
+        writer.writeheader()
+        for item in items:
+            writer.writerow(item)
+        
+        output.seek(0)
+        return StreamingResponse(
+            iter([output.getvalue()]),
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=items_export.csv"}
+        )
+    
+    return {"items": items}
+
+@router.get("/items/import-template")
+async def get_import_template():
+    """Get CSV template for bulk import"""
+    from fastapi.responses import StreamingResponse
+    import csv
+    import io
+    
+    output = io.StringIO()
+    fieldnames = ["name", "sku", "description", "rate", "purchase_rate", "item_type", 
+                  "product_type", "unit", "hsn_or_sac", "tax_percentage", "stock_on_hand", "reorder_level"]
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+    # Add sample row
+    writer.writerow({
+        "name": "Sample Product",
+        "sku": "SKU-001",
+        "description": "Sample product description",
+        "rate": "1000",
+        "purchase_rate": "800",
+        "item_type": "sales_and_purchases",
+        "product_type": "goods",
+        "unit": "pcs",
+        "hsn_or_sac": "84714100",
+        "tax_percentage": "18",
+        "stock_on_hand": "100",
+        "reorder_level": "10"
+    })
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=items_import_template.csv"}
+    )
+
 # ============== ESTIMATES MODULE ==============
 # Workflow: Create -> Mark Sent -> Mark Accepted/Declined -> Convert to Invoice/SO -> Delete
 
