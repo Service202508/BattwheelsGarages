@@ -1390,8 +1390,11 @@ async def clone_invoice(invoice_id: str):
     return {"code": 0, "message": "Invoice cloned", "invoice": new_invoice}
 
 @router.get("/invoices/{invoice_id}/pdf")
-async def get_invoice_pdf(invoice_id: str):
-    """Generate PDF for invoice (returns HTML for now, can be converted to PDF)"""
+async def get_invoice_pdf(invoice_id: str, format: str = "pdf"):
+    """Generate PDF for invoice using WeasyPrint"""
+    from fastapi.responses import Response
+    from services.pdf_service import generate_invoice_html, generate_pdf_from_html
+    
     db = get_db()
     invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
     if not invoice:
@@ -1400,96 +1403,24 @@ async def get_invoice_pdf(invoice_id: str):
     # Get organization settings
     org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
     
-    # Generate HTML invoice template
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body {{ font-family: Arial, sans-serif; margin: 40px; }}
-            .header {{ display: flex; justify-content: space-between; margin-bottom: 30px; }}
-            .company {{ font-size: 24px; font-weight: bold; color: #22EDA9; }}
-            .invoice-title {{ font-size: 28px; color: #333; }}
-            .details {{ margin-bottom: 20px; }}
-            .details table {{ width: 100%; }}
-            .details td {{ padding: 5px 0; }}
-            .items {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-            .items th, .items td {{ border: 1px solid #ddd; padding: 10px; text-align: left; }}
-            .items th {{ background: #f5f5f5; }}
-            .items .amount {{ text-align: right; }}
-            .totals {{ float: right; width: 300px; }}
-            .totals table {{ width: 100%; }}
-            .totals td {{ padding: 5px; }}
-            .totals .total {{ font-weight: bold; font-size: 18px; border-top: 2px solid #333; }}
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            <div class="company">{org_settings.get('company_name', 'Battwheels')}</div>
-            <div class="invoice-title">INVOICE</div>
-        </div>
-        <div class="details">
-            <table>
-                <tr>
-                    <td><strong>Invoice #:</strong> {invoice.get('invoice_number')}</td>
-                    <td><strong>Date:</strong> {invoice.get('date')}</td>
-                </tr>
-                <tr>
-                    <td><strong>Customer:</strong> {invoice.get('customer_name')}</td>
-                    <td><strong>Due Date:</strong> {invoice.get('due_date')}</td>
-                </tr>
-            </table>
-        </div>
-        <table class="items">
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Description</th>
-                    <th class="amount">Qty</th>
-                    <th class="amount">Rate</th>
-                    <th class="amount">Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-    """
+    # Generate HTML
+    html_content = generate_invoice_html(invoice, org_settings)
     
-    for item in invoice.get("line_items", []):
-        html_content += f"""
-                <tr>
-                    <td>{item.get('name', '')}</td>
-                    <td>{item.get('description', '')}</td>
-                    <td class="amount">{item.get('quantity', 0)}</td>
-                    <td class="amount">₹{item.get('rate', 0):,.2f}</td>
-                    <td class="amount">₹{item.get('item_total', 0):,.2f}</td>
-                </tr>
-        """
+    if format == "html":
+        return {"code": 0, "invoice_id": invoice_id, "html": html_content}
     
-    html_content += f"""
-            </tbody>
-        </table>
-        <div class="totals">
-            <table>
-                <tr><td>Subtotal:</td><td class="amount">₹{invoice.get('sub_total', 0):,.2f}</td></tr>
-                <tr><td>Tax:</td><td class="amount">₹{invoice.get('tax_total', 0):,.2f}</td></tr>
-                <tr><td>Discount:</td><td class="amount">-₹{invoice.get('discount_total', 0):,.2f}</td></tr>
-                <tr class="total"><td>Total:</td><td class="amount">₹{invoice.get('total', 0):,.2f}</td></tr>
-                <tr><td>Balance Due:</td><td class="amount">₹{invoice.get('balance', 0):,.2f}</td></tr>
-            </table>
-        </div>
-        <div style="clear: both; margin-top: 50px;">
-            <p><strong>Notes:</strong> {invoice.get('notes', '')}</p>
-            <p><strong>Terms:</strong> {invoice.get('terms', '')}</p>
-        </div>
-    </body>
-    </html>
-    """
-    
-    return {
-        "code": 0,
-        "invoice_id": invoice_id,
-        "html": html_content,
-        "message": "Use this HTML to generate PDF via browser print or wkhtmltopdf"
-    }
+    # Generate PDF
+    try:
+        pdf_bytes = generate_pdf_from_html(html_content)
+        filename = f"Invoice_{invoice.get('invoice_number', invoice_id)}.pdf"
+        
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
 
 @router.post("/invoices/bulk-action")
 async def bulk_invoice_action(invoice_ids: List[str], action: str):
