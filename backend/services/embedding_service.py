@@ -1,6 +1,6 @@
 """
 Battwheels OS - Vector Embedding Service
-Production-grade semantic search using OpenAI embeddings
+Production-grade semantic search using OpenAI embeddings via Emergent Proxy
 
 Features:
 - OpenAI text-embedding-3-small (1536 dimensions)
@@ -27,10 +27,13 @@ EMBEDDING_DIMENSIONS = 1536
 BATCH_SIZE = 100  # OpenAI batch limit
 CACHE_TTL_HOURS = 168  # 7 days
 
+# Emergent Proxy URL for LLM integrations
+EMERGENT_PROXY_URL = "https://integrations.emergentagent.com"
+
 
 class EmbeddingService:
     """
-    Production vector embedding service using OpenAI.
+    Production vector embedding service using OpenAI via Emergent Proxy.
     
     Uses Emergent LLM Key for authentication.
     Implements caching to reduce API costs.
@@ -44,9 +47,16 @@ class EmbeddingService:
             logger.warning("No embedding API key found. Embeddings will be disabled.")
             self.client = None
         else:
-            # Use OpenAI client with Emergent key
-            self.client = AsyncOpenAI(api_key=self.api_key)
-            logger.info("EmbeddingService initialized with OpenAI client")
+            # Use OpenAI client with Emergent proxy if using Emergent key
+            if self.api_key.startswith("sk-emergent"):
+                self.client = AsyncOpenAI(
+                    api_key=self.api_key,
+                    base_url=f"{EMERGENT_PROXY_URL}/openai/v1"
+                )
+                logger.info("EmbeddingService initialized with Emergent proxy")
+            else:
+                self.client = AsyncOpenAI(api_key=self.api_key)
+                logger.info("EmbeddingService initialized with direct OpenAI client")
     
     def _compute_text_hash(self, text: str) -> str:
         """Generate deterministic hash for text caching."""
