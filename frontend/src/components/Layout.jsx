@@ -256,10 +256,8 @@ export default function Layout({ children, user, onLogout }) {
       </div>
 
       {/* Desktop Top Bar (optional - for notifications) */}
-      <div className={`hidden lg:flex fixed top-0 right-0 h-16 items-center px-6 z-30 ${collapsed ? "left-20" : "left-64"}`}>
-        <div className="ml-auto">
-          <NotificationBell user={user} />
-        </div>
+      <div className="hidden lg:flex fixed top-4 right-6 z-30">
+        <NotificationBell user={user} />
       </div>
 
       {/* Main Content */}
