@@ -177,6 +177,32 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - `GET /payroll/calculate/{id}` - Calculate payroll
 - `POST /payroll/generate` - Generate batch payroll
 
+### Customer Portal `/api/customer`
+- `GET /dashboard` - Customer dashboard summary
+- `GET /vehicles` - Customer's registered vehicles
+- `GET /service-history` - Service ticket history
+- `GET /service-history/{ticket_id}` - Service detail with timeline
+- `GET /invoices` - Customer invoices
+- `GET /invoices/{invoice_id}` - Invoice detail
+- `GET /payments-due` - Outstanding payments
+- `GET /amc` - Customer's AMC subscriptions
+- `GET /amc/{subscription_id}` - AMC detail with usage
+- `GET /amc-plans` - Available AMC plans
+- `POST /request-callback` - Request callback
+- `POST /request-appointment` - Book service appointment
+
+### AMC Management `/api/amc` (Admin)
+- `POST /plans` - Create AMC plan
+- `GET /plans` - List all plans
+- `PUT /plans/{plan_id}` - Update plan
+- `DELETE /plans/{plan_id}` - Deactivate plan
+- `POST /subscriptions` - Create subscription
+- `GET /subscriptions` - List subscriptions
+- `PUT /subscriptions/{id}/use-service` - Record service usage
+- `PUT /subscriptions/{id}/cancel` - Cancel subscription
+- `POST /subscriptions/{id}/renew` - Renew subscription
+- `GET /analytics` - AMC analytics
+
 ## Prioritized Backlog
 
 ### Completed ✅
@@ -190,11 +216,15 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [x] BM25 + Hybrid Search Service
 - [x] Embedding Service (structure ready)
 - [x] **UI/UX Theme Overhaul (Feb 16, 2026)** - Industrial Intelligence Theme
-- [x] **Modal Scrollability Fix (Feb 16, 2026)** - Fixed all DialogContent components across the app to use max-h-[90vh] overflow-y-auto. Verified: Tickets JobCard modal, Employees, PurchaseOrders, Users, Suppliers, Inventory, Vehicles modals all scroll properly
+- [x] **Modal Scrollability Fix (Feb 16, 2026)** - Fixed all DialogContent components
+- [x] **Customer Portal (Feb 16, 2026)** - Full customer portal with My Vehicles, Service History, Invoices, Payments Due, AMC Plans
+- [x] **AMC System (Feb 16, 2026)** - Admin-configurable plans, subscriptions, usage tracking
+- [x] **Role-Based Access Control (Feb 16, 2026)** - Strict RBAC on all routes
 
 ### P0 (Next)
 - [ ] Enable vector embeddings with OPENAI_API_KEY
-- [ ] Frontend integration with EFI matching UI
+- [ ] Online payments via Razorpay (currently view-only)
+- [ ] Customer notifications (ticket status, invoice, AMC expiry alerts)
 
 ### P1 (Future)
 - [ ] Elasticsearch for production-scale search
