@@ -246,7 +246,7 @@ export default function Inventory({ user }) {
                         <SelectValue placeholder="Select supplier" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
                         {suppliers.map((sup) => (
                           <SelectItem key={sup.supplier_id} value={sup.supplier_id}>{sup.name}</SelectItem>
                         ))}
