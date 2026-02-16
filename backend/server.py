@@ -4442,6 +4442,14 @@ try:
 except Exception as e:
     logger.warning(f"Could not load Notifications router: {e}")
 
+# Include Export routes (E-Invoice & Tally)
+try:
+    from routes.export import router as export_router
+    api_router.include_router(export_router)
+    logger.info("Export router included")
+except Exception as e:
+    logger.warning(f"Could not load Export router: {e}")
+
 # Include tickets routes (event-driven module)
 if tickets_router:
     api_router.include_router(tickets_router)
