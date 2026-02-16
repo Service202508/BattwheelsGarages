@@ -4434,6 +4434,14 @@ try:
 except Exception as e:
     logger.warning(f"Could not load Zoho API router: {e}")
 
+# Include Notifications routes
+try:
+    from routes.notifications import router as notifications_router
+    api_router.include_router(notifications_router)
+    logger.info("Notifications router included")
+except Exception as e:
+    logger.warning(f"Could not load Notifications router: {e}")
+
 # Include tickets routes (event-driven module)
 if tickets_router:
     api_router.include_router(tickets_router)
