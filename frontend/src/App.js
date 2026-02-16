@@ -285,6 +285,13 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/fault-tree-import" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <FaultTreeImport user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
