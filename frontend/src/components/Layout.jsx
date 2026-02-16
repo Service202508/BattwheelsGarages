@@ -62,17 +62,23 @@ const navItems = [
     { name: "Leave Management", path: "/leave", icon: Calendar },
     { name: "Payroll", path: "/payroll", icon: Wallet },
   ]},
-  { section: "Finance", items: [
+  { section: "Sales", items: [
     { name: "Customers", path: "/customers", icon: Users },
     { name: "Quotes", path: "/quotes", icon: FileText },
     { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
     { name: "Invoices", path: "/invoices", icon: Receipt },
-    { name: "Expenses", path: "/expenses", icon: Receipt },
-    { name: "Accounting", path: "/accounting", icon: Calculator },
+    { name: "Credit Notes", path: "/credit-notes", icon: FileText },
   ]},
-  { section: "Procurement", items: [
+  { section: "Purchases", items: [
+    { name: "Vendors", path: "/suppliers", icon: Building2 },
     { name: "Purchase Orders", path: "/purchases", icon: Truck },
-    { name: "Suppliers", path: "/suppliers", icon: Building2 },
+    { name: "Bills", path: "/bills", icon: Receipt },
+  ]},
+  { section: "Finance", items: [
+    { name: "Expenses", path: "/expenses", icon: Receipt },
+    { name: "Banking", path: "/banking", icon: Wallet },
+    { name: "Reports", path: "/reports", icon: BarChart3 },
+    { name: "Accounting", path: "/accounting", icon: Calculator },
   ]},
   { section: "Administration", items: [
     { name: "Users", path: "/users", icon: Users, adminOnly: true },
