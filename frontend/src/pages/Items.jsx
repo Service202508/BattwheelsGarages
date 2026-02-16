@@ -106,8 +106,8 @@ export default function Items() {
     });
   };
 
-  const goodsCount = items.filter(i => i.item_type === "goods").length;
-  const servicesCount = items.filter(i => i.item_type === "service").length;
+  const goodsCount = items.filter(i => i.item_type === "goods" || i.item_type === "inventory" || i.item_type === "sales_and_purchases").length;
+  const servicesCount = items.filter(i => i.item_type === "service" || i.item_type === "sales").length;
 
   return (
     <div className="space-y-6" data-testid="items-page">
