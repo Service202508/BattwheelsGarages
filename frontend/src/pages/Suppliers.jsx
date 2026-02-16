@@ -153,7 +153,7 @@ export default function Suppliers({ user }) {
                 Add Supplier
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-card border-white/10 max-w-2xl">
+            <DialogContent className="bg-card border-white/10 max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{editSupplier ? "Edit Supplier" : "Add New Supplier"}</DialogTitle>
                 <DialogDescription>

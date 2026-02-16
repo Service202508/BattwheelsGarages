@@ -198,7 +198,7 @@ export default function Users({ user }) {
 
       {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="bg-card border-white/10">
+        <DialogContent className="bg-card border-white/10 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit User</DialogTitle>
             <DialogDescription>Update user details and permissions.</DialogDescription>
