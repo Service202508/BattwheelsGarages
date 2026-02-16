@@ -662,30 +662,11 @@ class EFIService:
         
         # Stage 5: Keyword fallback
         if not all_matches or all_matches[0].match_score < 0.5:
-            stages_used.append("keyword")
-                    
-                    if card.get("symptom_text"):
-                        text_sim = compute_text_similarity(query_text, card["symptom_text"])
-                        score = max(score, text_sim * 0.75)
-                    
-                    if score > 0.35:
-                        all_matches.append(FailureMatchResult(
-                            failure_id=card["failure_id"],
-                            title=card["title"],
-                            match_score=score,
-                            match_type="semantic",
-                            match_stage=3,
-                            matched_symptoms=list(card_keywords & query_keywords)[:5],
-                            confidence_level=calculate_confidence_level(card.get("confidence_score", 0.5)),
-                            effectiveness_score=card.get("effectiveness_score", 0)
-                        ))
-        
-        # Stage 4: Keyword fallback
-        if not all_matches or all_matches[0].match_score < 0.5:
-            stages_used.append("keyword")
+            if "keyword" not in stages_used:
+                stages_used.append("keyword")
             
             try:
-                stage4_cards = await self.db.failure_cards.find(
+                stage5_cards = await self.db.failure_cards.find(
                     {
                         "status": {"$in": ["approved", "draft"]},
                         "$text": {"$search": query_text}
@@ -693,11 +674,21 @@ class EFIService:
                     {"_id": 0, "embedding_vector": 0, "score": {"$meta": "textScore"}}
                 ).sort([("score", {"$meta": "textScore"})]).limit(5).to_list(5)
                 
-                for card in stage4_cards:
+                for card in stage5_cards:
                     if card["failure_id"] in [m.failure_id for m in all_matches]:
                         continue
                     
                     all_matches.append(FailureMatchResult(
+                        failure_id=card["failure_id"],
+                        title=card["title"],
+                        match_score=min(0.5, card.get("score", 0) / 10),
+                        match_type="keyword",
+                        match_stage=5,
+                        confidence_level=calculate_confidence_level(card.get("confidence_score", 0.5)),
+                        effectiveness_score=card.get("effectiveness_score", 0)
+                    ))
+            except Exception as e:
+                logger.warning(f"Text search failed: {e}")
                         failure_id=card["failure_id"],
                         title=card["title"],
                         match_score=min(0.5, card.get("score", 0) / 10),
