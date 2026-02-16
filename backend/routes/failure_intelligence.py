@@ -638,7 +638,7 @@ async def get_knowledge_relations(
     return relations
 
 @router.get("/graph/{entity_type}/{entity_id}")
-async def get_entity_graph(entity_type: str, entity_id: str, depth: int = 2, request: Request):
+async def get_entity_graph(entity_type: str, entity_id: str, request: Request, depth: int = 2):
     """Get knowledge graph around an entity"""
     # Get relations where entity is source or target
     relations = await db.knowledge_relations.find({
