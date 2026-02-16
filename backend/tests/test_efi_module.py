@@ -93,9 +93,9 @@ class TestFailureCardCRUD:
             "root_cause": "Cell degradation due to thermal cycling",
             "root_cause_details": "Repeated charge/discharge cycles at high temperatures cause cell capacity mismatch",
             "resolution_steps": [
-                {"step_number": 1, "description": "Check cell voltages with BMS diagnostic tool", "duration_minutes": 15},
-                {"step_number": 2, "description": "Perform cell balancing procedure", "duration_minutes": 30},
-                {"step_number": 3, "description": "Replace degraded cells if variance > 0.2V", "duration_minutes": 60}
+                {"step_number": 1, "action": "Check cell voltages with BMS diagnostic tool", "duration_minutes": 15},
+                {"step_number": 2, "action": "Perform cell balancing procedure", "duration_minutes": 30},
+                {"step_number": 3, "action": "Replace degraded cells if variance > 0.2V", "duration_minutes": 60}
             ],
             "required_parts": [
                 {"part_id": "CELL_18650", "part_name": "18650 Li-ion Cell", "quantity": 4, "estimated_cost": 500}
@@ -129,9 +129,9 @@ class TestFailureCardCRUD:
             "error_codes": ["MC_TEMP_HIGH", "POWER_LIMIT"],
             "root_cause": "Insufficient cooling or thermal paste degradation",
             "resolution_steps": [
-                {"step_number": 1, "description": "Check cooling fan operation", "duration_minutes": 10},
-                {"step_number": 2, "description": "Clean heat sink fins", "duration_minutes": 20},
-                {"step_number": 3, "description": "Replace thermal paste", "duration_minutes": 30}
+                {"step_number": 1, "action": "Check cooling fan operation", "duration_minutes": 10},
+                {"step_number": 2, "action": "Clean heat sink fins", "duration_minutes": 20},
+                {"step_number": 3, "action": "Replace thermal paste", "duration_minutes": 30}
             ],
             "keywords": ["motor", "controller", "overheating", "temperature"]
         }
@@ -556,8 +556,8 @@ class TestFailureCardApproval:
             "error_codes": ["CHARGE_CONN_FAIL"],
             "root_cause": "Physical damage to charging port",
             "resolution_steps": [
-                {"step_number": 1, "description": "Inspect charging port", "duration_minutes": 10},
-                {"step_number": 2, "description": "Replace charging port assembly", "duration_minutes": 45}
+                {"step_number": 1, "action": "Inspect charging port", "duration_minutes": 10},
+                {"step_number": 2, "action": "Replace charging port assembly", "duration_minutes": 45}
             ]
         }
         
@@ -640,7 +640,7 @@ class TestFailureCardDeprecation:
             "failure_mode": "software_bug",
             "root_cause": "Old firmware bug",
             "resolution_steps": [
-                {"step_number": 1, "description": "Update firmware", "duration_minutes": 15}
+                {"step_number": 1, "action": "Update firmware", "duration_minutes": 15}
             ]
         }
         
