@@ -240,6 +240,13 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 
 ## UI/UX Design System (Feb 16, 2026)
 
+### Login Page Redesign (Feb 16, 2026) ✅
+- Simplified from cluttered 6-card layout to clean 3-feature design
+- Logo positioned in top-left of hero panel
+- Removed pipeline icons and excess benefit cards
+- Clean vertical feature list with icons
+- Polished form with improved spacing
+
 ### Theme: Light Professional (Current)
 - **Style**: Clean, Modern SaaS
 - **Mode**: Light Theme
