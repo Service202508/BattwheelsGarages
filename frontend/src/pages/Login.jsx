@@ -101,15 +101,6 @@ export default function Login({ onLogin }) {
 
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-          {/* Logo */}
-          <div>
-            <img 
-              src="https://customer-assets.emergentagent.com/job_335b5085-49dc-4853-90f5-28d59181be65/artifacts/d9i6j4g3_Battwheels%20Logo%20New%20Transparent.png" 
-              alt="Battwheels Garages" 
-              className="h-14 w-auto"
-            />
-          </div>
-
           {/* Main Content */}
           <div className="flex-1 flex flex-col justify-center max-w-lg">
             <h1 className="text-4xl font-bold text-white leading-tight mb-4">
