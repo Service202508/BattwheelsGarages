@@ -4100,6 +4100,24 @@ except ImportError as e:
     logger.warning(f"Tickets module not available: {e}")
     tickets_router = None
 
+# Import modular inventory router (event-driven)
+try:
+    from routes.inventory import router as inventory_router, init_router as init_inventory_router
+    init_inventory_router(db)
+    logger.info("Inventory module (event-driven) initialized")
+except ImportError as e:
+    logger.warning(f"Inventory module not available: {e}")
+    inventory_router = None
+
+# Import modular HR router (event-driven)
+try:
+    from routes.hr import router as hr_router, init_router as init_hr_router
+    init_hr_router(db)
+    logger.info("HR module (event-driven) initialized")
+except ImportError as e:
+    logger.warning(f"HR module not available: {e}")
+    hr_router = None
+
 # Initialize EFI engine with database and event processor
 init_efi_router(db, efi_event_processor)
 init_notification_router(db)
@@ -4112,6 +4130,16 @@ api_router.include_router(notification_router)
 if tickets_router:
     api_router.include_router(tickets_router)
     logger.info("Tickets router included")
+
+# Include inventory routes (event-driven module)
+if inventory_router:
+    api_router.include_router(inventory_router)
+    logger.info("Inventory router included")
+
+# Include HR routes (event-driven module)
+if hr_router:
+    api_router.include_router(hr_router)
+    logger.info("HR router included")
 
 # Include import routes
 if import_router:
