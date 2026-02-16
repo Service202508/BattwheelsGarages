@@ -204,60 +204,144 @@ export default function Items() {
           <h1 className="text-2xl font-bold text-gray-900">Items</h1>
           <p className="text-gray-500 text-sm mt-1">Manage products and services</p>
         </div>
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-item-btn">
-              <Plus className="h-4 w-4 mr-2" /> New Item
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader><DialogTitle>Create Item</DialogTitle></DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Item Type *</Label>
-                  <Select value={newItem.item_type} onValueChange={(v) => setNewItem({ ...newItem, item_type: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="goods">Goods</SelectItem>
-                      <SelectItem value="service">Service</SelectItem>
-                    </SelectContent>
-                  </Select>
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" onClick={handleDownloadTemplate} data-testid="download-template-btn">
+            <FileSpreadsheet className="h-4 w-4 mr-2" /> Template
+          </Button>
+          <Button variant="outline" onClick={handleExport} data-testid="export-items-btn">
+            <Download className="h-4 w-4 mr-2" /> Export
+          </Button>
+          <Dialog open={showImportDialog} onOpenChange={setShowImportDialog}>
+            <DialogTrigger asChild>
+              <Button variant="outline" data-testid="import-items-btn">
+                <Upload className="h-4 w-4 mr-2" /> Import
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-xl">
+              <DialogHeader><DialogTitle>Bulk Import Items</DialogTitle></DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="border-2 border-dashed rounded-lg p-6 text-center bg-gray-50">
+                  <Upload className="h-10 w-10 mx-auto mb-3 text-gray-400" />
+                  <p className="text-sm text-gray-600 mb-2">Upload a CSV file with your items</p>
+                  <p className="text-xs text-gray-500 mb-4">
+                    Columns: name, sku, description, rate, purchase_rate, item_type, unit, hsn_or_sac, tax_percentage, stock_on_hand, reorder_level
+                  </p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".csv"
+                    onChange={handleImport}
+                    className="hidden"
+                    id="import-file"
+                  />
+                  <div className="flex gap-2 justify-center">
+                    <Button 
+                      onClick={() => fileInputRef.current?.click()} 
+                      disabled={importing}
+                      className="bg-[#22EDA9] text-black"
+                    >
+                      {importing ? "Importing..." : "Select CSV File"}
+                    </Button>
+                    <Button variant="outline" onClick={handleDownloadTemplate}>
+                      <Download className="h-4 w-4 mr-1" /> Get Template
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <Label>Name *</Label>
-                  <Input value={newItem.name} onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} placeholder="Item name" />
-                </div>
+
+                {importResult && (
+                  <div className="space-y-3">
+                    {importResult.summary && (
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                          <CheckCircle className="h-5 w-5 text-green-600 mx-auto mb-1" />
+                          <p className="text-lg font-bold text-green-700">{importResult.summary.created}</p>
+                          <p className="text-xs text-green-600">Created</p>
+                        </div>
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
+                          <AlertCircle className="h-5 w-5 text-blue-600 mx-auto mb-1" />
+                          <p className="text-lg font-bold text-blue-700">{importResult.summary.updated}</p>
+                          <p className="text-xs text-blue-600">Updated</p>
+                        </div>
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+                          <XCircle className="h-5 w-5 text-red-600 mx-auto mb-1" />
+                          <p className="text-lg font-bold text-red-700">{importResult.summary.errors}</p>
+                          <p className="text-xs text-red-600">Errors</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {importResult.errors?.length > 0 && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3 max-h-40 overflow-y-auto">
+                        <p className="text-sm font-medium text-red-700 mb-2">Errors:</p>
+                        {importResult.errors.map((err, idx) => (
+                          <p key={idx} className="text-xs text-red-600">Row {err.row}: {err.error}</p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label>SKU</Label>
-                  <Input value={newItem.sku} onChange={(e) => setNewItem({ ...newItem, sku: e.target.value })} placeholder="SKU code" />
-                </div>
-                <div>
-                  <Label>HSN/SAC</Label>
-                  <Input value={newItem.hsn_or_sac} onChange={(e) => setNewItem({ ...newItem, hsn_or_sac: e.target.value })} placeholder="HSN/SAC code" />
-                </div>
-                <div>
-                  <Label>Unit</Label>
-                  <Select value={newItem.unit} onValueChange={(v) => setNewItem({ ...newItem, unit: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pcs">Pieces</SelectItem>
-                      <SelectItem value="nos">Numbers</SelectItem>
-                      <SelectItem value="hrs">Hours</SelectItem>
-                      <SelectItem value="kg">Kilograms</SelectItem>
-                      <SelectItem value="ltr">Liters</SelectItem>
-                      <SelectItem value="mtr">Meters</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="flex justify-end">
+                <Button variant="outline" onClick={() => { setShowImportDialog(false); setImportResult(null); }}>
+                  Close
+                </Button>
               </div>
-              <div>
-                <Label>Description</Label>
-                <Textarea value={newItem.description} onChange={(e) => setNewItem({ ...newItem, description: e.target.value })} placeholder="Item description" />
-              </div>
-              <div className="grid grid-cols-3 gap-4">
+            </DialogContent>
+          </Dialog>
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-item-btn">
+                <Plus className="h-4 w-4 mr-2" /> New Item
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader><DialogTitle>Create Item</DialogTitle></DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Item Type *</Label>
+                    <Select value={newItem.item_type} onValueChange={(v) => setNewItem({ ...newItem, item_type: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="goods">Goods</SelectItem>
+                        <SelectItem value="service">Service</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Name *</Label>
+                    <Input value={newItem.name} onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} placeholder="Item name" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label>SKU</Label>
+                    <Input value={newItem.sku} onChange={(e) => setNewItem({ ...newItem, sku: e.target.value })} placeholder="SKU code" />
+                  </div>
+                  <div>
+                    <Label>HSN/SAC</Label>
+                    <Input value={newItem.hsn_or_sac} onChange={(e) => setNewItem({ ...newItem, hsn_or_sac: e.target.value })} placeholder="HSN/SAC code" />
+                  </div>
+                  <div>
+                    <Label>Unit</Label>
+                    <Select value={newItem.unit} onValueChange={(v) => setNewItem({ ...newItem, unit: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pcs">Pieces</SelectItem>
+                        <SelectItem value="nos">Numbers</SelectItem>
+                        <SelectItem value="hrs">Hours</SelectItem>
+                        <SelectItem value="kg">Kilograms</SelectItem>
+                        <SelectItem value="ltr">Liters</SelectItem>
+                        <SelectItem value="mtr">Meters</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div>
+                  <Label>Description</Label>
+                  <Textarea value={newItem.description} onChange={(e) => setNewItem({ ...newItem, description: e.target.value })} placeholder="Item description" />
+                </div>
+                <div className="grid grid-cols-3 gap-4">
                 <div>
                   <Label>Selling Rate *</Label>
                   <Input type="number" value={newItem.rate} onChange={(e) => setNewItem({ ...newItem, rate: parseFloat(e.target.value) })} />
