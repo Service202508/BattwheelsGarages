@@ -771,12 +771,12 @@ export default function Employees({ user }) {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="reporting_manager">Reporting Manager</Label>
-                    <Select value={formData.reporting_manager_id} onValueChange={(v) => setFormData({...formData, reporting_manager_id: v})}>
+                    <Select value={formData.reporting_manager_id || "none"} onValueChange={(v) => setFormData({...formData, reporting_manager_id: v === "none" ? "" : v})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select manager" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
                         {managers.map(m => (
                           <SelectItem key={m.employee_id} value={m.employee_id}>
                             {m.full_name} - {m.designation}
