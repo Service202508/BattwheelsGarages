@@ -167,9 +167,9 @@ export default function Login({ onLogin }) {
           {/* Mobile Logo Header */}
           <div className="lg:hidden bg-gradient-to-r from-[#22EDA9] to-[#1DD69A] p-6">
             <img 
-              src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/0momdtv4_68469546%20%282%29.png" 
+              src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/3abu9yqt_68469546%20%283%29.png" 
               alt="Battwheels Logo" 
-              className="h-10 mx-auto"
+              className="h-12 mx-auto"
             />
           </div>
           
