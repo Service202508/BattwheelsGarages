@@ -83,7 +83,9 @@ export default function Tickets({ user }) {
       });
       
       if (response.ok) {
-        let data = await response.json();
+        const responseData = await response.json();
+        // Handle both array and {tickets: [...]} response formats
+        let data = Array.isArray(responseData) ? responseData : (responseData.tickets || []);
         
         // Filter for resolved this week if needed
         if (statusFilter === "resolved_this_week") {
