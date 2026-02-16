@@ -27,7 +27,8 @@ import {
   Calendar,
   Wallet,
   Brain,
-  Shield
+  Shield,
+  BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -54,6 +55,7 @@ const navItems = [
   ]},
   { section: "HR & Payroll", items: [
     { name: "Employees", path: "/employees", icon: Users },
+    { name: "Technician Productivity", path: "/productivity", icon: BarChart3 },
     { name: "Attendance", path: "/attendance", icon: Clock },
     { name: "Leave Management", path: "/leave", icon: Calendar },
     { name: "Payroll", path: "/payroll", icon: Wallet },
