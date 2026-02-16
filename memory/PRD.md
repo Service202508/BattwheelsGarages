@@ -29,7 +29,16 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 | **Organization Settings** | `/settings` | `/api/zoho/settings/organization` | ✅ |
 | **Number Series** | (via API) | `/api/zoho/settings/number-series` | ✅ |
 
-**Test Results: 29/29 API tests passed (100%)**
+**Test Results: 35+ API endpoints tested (100%)**
+
+**New Backend Features Added (Feb 16, 2026):**
+- **Recurring Expenses:** Full CRUD + auto-generation via `/recurring-expenses/generate`
+- **Project Tasks:** Task management within projects
+- **Opening Balances:** Set initial balances for customers, vendors, accounts
+- **Payment Links:** Generate shareable payment links for invoices
+- **Currency Exchange Rates:** Multi-currency support with rate management
+- **Activity Logs/Audit Trail:** Track all entity changes
+- **Contacts Bulk Import/Export:** CSV import/export with template
 
 **Updated Navigation Sidebar:**
 - **Catalog & Inventory:** Items, Services & Parts, Price Lists, Inventory Adjustments
