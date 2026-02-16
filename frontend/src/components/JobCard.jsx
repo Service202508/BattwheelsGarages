@@ -288,9 +288,8 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
   const isCustomer = user?.role === "customer";
 
   return (
-    <div className="flex flex-col h-full bg-muted/20" data-testid="job-card">
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4">
+    <div className="flex flex-col bg-muted/20" data-testid="job-card">
+      <div className="p-4 space-y-4">
           {/* Header */}
           <div className="flex justify-between items-start">
             <div>
@@ -581,11 +580,9 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
               </ul>
             </CardContent>
           </Card>
-        </div>
-      </ScrollArea>
 
       {/* Action Buttons */}
-      <div className="mt-auto pt-4 flex justify-end gap-2 border-t bg-background p-4">
+      <div className="pt-4 flex flex-wrap justify-end gap-2 border-t bg-background p-4">
         {/* Assign Technician - Admin only, when Open */}
         {isAdmin && localTicket.status === "open" && (
           <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>

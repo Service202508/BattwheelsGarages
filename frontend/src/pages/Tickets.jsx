@@ -433,16 +433,16 @@ export default function Tickets({ user }) {
 
       {/* Job Card Dialog */}
       <Dialog open={!!selectedTicket} onOpenChange={(open) => !open && handleCloseDialog()}>
-        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0" data-testid="job-card-dialog">
           <DialogHeader className="px-6 pt-6 pb-4 border-b flex-shrink-0">
             <DialogTitle>Job Card / Service Ticket</DialogTitle>
             <DialogDescription>
               Manage all aspects of the service ticket from assignment to resolution.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-y-auto min-h-0">
             {detailsLoading ? (
-              <div className="flex h-full items-center justify-center">
+              <div className="flex h-64 items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin" />
               </div>
             ) : selectedTicket ? (
