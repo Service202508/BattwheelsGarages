@@ -229,7 +229,7 @@ class EmbeddingService:
         
         Uses MongoDB $vectorSearch if available, falls back to in-memory.
         """
-        if not self.db or not query_embedding:
+        if self.db is None or not query_embedding:
             return []
         
         filter_query = filter_query or {}
