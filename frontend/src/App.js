@@ -312,14 +312,66 @@ function AppRouter() {
         </ProtectedRoute>
       } />
       <Route path="/fault-tree-import" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <FaultTreeImport user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      
+      {/* Customer Portal Routes */}
+      <Route path="/customer" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <CustomerLayout user={auth.user} onLogout={auth.logout}>
+            <CustomerDashboard user={auth.user} />
+          </CustomerLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/customer/vehicles" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <CustomerLayout user={auth.user} onLogout={auth.logout}>
+            <CustomerVehicles user={auth.user} />
+          </CustomerLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/customer/service-history" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <CustomerLayout user={auth.user} onLogout={auth.logout}>
+            <CustomerServiceHistory user={auth.user} />
+          </CustomerLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/customer/service-history/:ticketId" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <CustomerLayout user={auth.user} onLogout={auth.logout}>
+            <CustomerServiceHistory user={auth.user} />
+          </CustomerLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/customer/invoices" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <CustomerLayout user={auth.user} onLogout={auth.logout}>
+            <CustomerInvoices user={auth.user} />
+          </CustomerLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/customer/payments" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <CustomerLayout user={auth.user} onLogout={auth.logout}>
+            <CustomerPayments user={auth.user} />
+          </CustomerLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/customer/amc" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <CustomerLayout user={auth.user} onLogout={auth.logout}>
+            <CustomerAMC user={auth.user} />
+          </CustomerLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/" element={auth.user ? <RoleBasedRedirect user={auth.user} /> : <Navigate to="/login" replace />} />
+      <Route path="*" element={auth.user ? <RoleBasedRedirect user={auth.user} /> : <Navigate to="/login" replace />} />
     </Routes>
   );
 }
