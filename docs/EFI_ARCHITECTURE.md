@@ -672,6 +672,11 @@ class EFIEventType(Enum):
     CONFIDENCE_UPDATED = "confidence.updated"
     EFFECTIVENESS_RECALCULATED = "effectiveness.recalculated"
     
+    # === PATTERN DETECTION (NEW) ===
+    PATTERN_DETECTED = "pattern.detected"
+    PATTERN_REVIEWED = "pattern.reviewed"
+    PATTERN_ACTIONED = "pattern.actioned"
+    
     # === NETWORK SYNC ===
     SYNC_REQUESTED = "sync.requested"
     SYNC_COMPLETED = "sync.completed"
