@@ -36,6 +36,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 const navItems = [
   { section: "Intelligence", items: [
     { name: "Failure Intelligence", path: "/failure-intelligence", icon: Brain },
+    { name: "Fault Tree Import", path: "/fault-tree-import", icon: FileText },
   ]},
   { section: "General", items: [
     { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
