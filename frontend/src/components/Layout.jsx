@@ -202,10 +202,10 @@ export default function Layout({ children, user, onLogout }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#050505] flex">
+    <div className="min-h-screen bg-gray-50 flex">
       {/* Desktop Sidebar */}
       <aside 
-        className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-[#0B1210] border-r border-white/10 transition-all duration-300 z-50 ${
+        className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-white border-r border-gray-200 transition-all duration-300 z-50 ${
           collapsed ? "w-20" : "w-64"
         }`}
         data-testid="desktop-sidebar"
@@ -219,14 +219,14 @@ export default function Layout({ children, user, onLogout }) {
       </aside>
 
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#0B1210] border-b border-white/10 flex items-center px-4 z-40">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 flex items-center px-4 z-40 shadow-sm">
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white" data-testid="mobile-menu-btn">
+            <Button variant="ghost" size="icon" className="text-gray-600 hover:text-gray-900" data-testid="mobile-menu-btn">
               <Menu className="h-6 w-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-64 p-0 bg-[#0B1210] border-r border-white/10">
+          <SheetContent side="left" className="w-64 p-0 bg-white border-r border-gray-200">
             <SidebarContent 
               user={user} 
               collapsed={false} 
@@ -235,7 +235,7 @@ export default function Layout({ children, user, onLogout }) {
             />
           </SheetContent>
         </Sheet>
-        <h1 className="ml-4 text-lg font-bold uppercase text-white">Battwheels OS</h1>
+        <h1 className="ml-4 text-lg font-bold text-[#0B462F]">Battwheels OS</h1>
       </div>
 
       {/* Main Content */}
