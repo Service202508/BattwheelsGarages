@@ -28,7 +28,13 @@ import {
   Wallet,
   Brain,
   Shield,
-  BarChart3
+  BarChart3,
+  Repeat,
+  FolderKanban,
+  Percent,
+  BookOpen,
+  Layers,
+  CreditCard
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
