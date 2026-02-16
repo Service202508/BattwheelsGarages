@@ -4418,6 +4418,14 @@ try:
 except Exception as e:
     logger.warning(f"Could not load Books router: {e}")
 
+# Include ERP routes (Zoho Books-like operations)
+try:
+    from routes.erp import router as erp_router
+    api_router.include_router(erp_router)
+    logger.info("ERP router included")
+except Exception as e:
+    logger.warning(f"Could not load ERP router: {e}")
+
 # Include tickets routes (event-driven module)
 if tickets_router:
     api_router.include_router(tickets_router)
