@@ -2537,6 +2537,246 @@ async def seed_data():
     
     return {"message": "Data seeded successfully"}
 
+@api_router.post("/seed-customer-demo")
+async def seed_customer_demo():
+    """Seed demo customer account, vehicles, and AMC plans for testing customer portal"""
+    
+    # Check if demo customer exists
+    existing = await db.users.find_one({"email": "customer@demo.com"}, {"_id": 0})
+    if existing:
+        return {"message": "Customer demo data already exists", "customer_id": existing["user_id"]}
+    
+    # Create demo customer
+    customer_id = f"user_{uuid.uuid4().hex[:12]}"
+    customer_doc = {
+        "user_id": customer_id,
+        "email": "customer@demo.com",
+        "password_hash": hash_password("test_pwd_placeholder"),
+        "name": "Demo Customer",
+        "role": "customer",
+        "phone": "+91 9876500000",
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.users.insert_one(customer_doc)
+    
+    # Create demo vehicles
+    vehicles = [
+        {
+            "vehicle_id": f"veh_{uuid.uuid4().hex[:12]}",
+            "owner_id": customer_id,
+            "owner_name": "Demo Customer",
+            "owner_email": "customer@demo.com",
+            "owner_phone": "+91 9876500000",
+            "make": "Ather",
+            "model": "450X",
+            "year": 2024,
+            "registration_number": "MH01EV1234",
+            "battery_capacity": 3.7,
+            "current_status": "active",
+            "total_service_cost": 0,
+            "total_visits": 0,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "vehicle_id": f"veh_{uuid.uuid4().hex[:12]}",
+            "owner_id": customer_id,
+            "owner_name": "Demo Customer",
+            "owner_email": "customer@demo.com",
+            "make": "Tata",
+            "model": "Nexon EV",
+            "year": 2023,
+            "registration_number": "MH01EV5678",
+            "battery_capacity": 40.5,
+            "current_status": "active",
+            "total_service_cost": 5500,
+            "total_visits": 2,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    for v in vehicles:
+        await db.vehicles.insert_one(v)
+    
+    # Create AMC Plans
+    amc_plans = [
+        {
+            "plan_id": f"amc_plan_{uuid.uuid4().hex[:8]}",
+            "name": "Basic Care",
+            "description": "Essential maintenance coverage for your EV",
+            "tier": "basic",
+            "duration_months": 12,
+            "price": 4999,
+            "services_included": [{"service_name": "Basic Service", "quantity": 2}],
+            "max_service_visits": 2,
+            "includes_parts": False,
+            "parts_discount_percent": 5,
+            "priority_support": False,
+            "roadside_assistance": False,
+            "is_active": True,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "plan_id": f"amc_plan_{uuid.uuid4().hex[:8]}",
+            "name": "Plus Protection",
+            "description": "Enhanced coverage with parts discount",
+            "tier": "plus",
+            "duration_months": 12,
+            "price": 8999,
+            "services_included": [
+                {"service_name": "Basic Service", "quantity": 4},
+                {"service_name": "Battery Health Check", "quantity": 2}
+            ],
+            "max_service_visits": 4,
+            "includes_parts": True,
+            "parts_discount_percent": 15,
+            "priority_support": True,
+            "roadside_assistance": False,
+            "is_active": True,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "plan_id": f"amc_plan_{uuid.uuid4().hex[:8]}",
+            "name": "Premium Shield",
+            "description": "Complete peace of mind with all benefits",
+            "tier": "premium",
+            "duration_months": 12,
+            "price": 14999,
+            "services_included": [
+                {"service_name": "Full EV Service", "quantity": 4},
+                {"service_name": "Battery Health Check", "quantity": 4},
+                {"service_name": "Motor Service", "quantity": 2}
+            ],
+            "max_service_visits": 6,
+            "includes_parts": True,
+            "parts_discount_percent": 25,
+            "priority_support": True,
+            "roadside_assistance": True,
+            "is_active": True,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    for plan in amc_plans:
+        await db.amc_plans.insert_one(plan)
+    
+    # Create a sample AMC subscription for demo vehicle
+    sample_subscription = {
+        "subscription_id": f"amc_sub_{uuid.uuid4().hex[:12]}",
+        "plan_id": amc_plans[1]["plan_id"],
+        "plan_name": "Plus Protection",
+        "plan_tier": "plus",
+        "customer_id": customer_id,
+        "customer_name": "Demo Customer",
+        "customer_email": "customer@demo.com",
+        "vehicle_id": vehicles[1]["vehicle_id"],
+        "vehicle_number": "MH01EV5678",
+        "vehicle_model": "Tata Nexon EV",
+        "start_date": "2024-06-01",
+        "end_date": "2025-06-01",
+        "duration_months": 12,
+        "services_used": 1,
+        "max_services": 4,
+        "services_included": amc_plans[1]["services_included"],
+        "includes_parts": True,
+        "parts_discount_percent": 15,
+        "status": "active",
+        "amount": 8999,
+        "amount_paid": 8999,
+        "payment_status": "paid",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.amc_subscriptions.insert_one(sample_subscription)
+    
+    # Create sample service tickets
+    sample_tickets = [
+        {
+            "ticket_id": f"tkt_{uuid.uuid4().hex[:12]}",
+            "vehicle_id": vehicles[1]["vehicle_id"],
+            "vehicle_type": "car",
+            "vehicle_model": "Tata Nexon EV",
+            "vehicle_number": "MH01EV5678",
+            "customer_id": customer_id,
+            "customer_name": "Demo Customer",
+            "customer_email": "customer@demo.com",
+            "contact_number": "+91 9876500000",
+            "title": "Battery charging slower than usual",
+            "description": "The vehicle takes longer to charge compared to when it was new",
+            "category": "battery",
+            "issue_type": "charging",
+            "priority": "medium",
+            "status": "resolved",
+            "assigned_technician_name": "Deepak Tiwary",
+            "resolution": "Cleaned charging port and updated firmware",
+            "estimated_cost": 1500,
+            "final_amount": 1200,
+            "status_history": [
+                {"status": "open", "timestamp": "2024-12-01T10:00:00Z", "updated_by": "System"},
+                {"status": "technician_assigned", "timestamp": "2024-12-01T11:00:00Z", "updated_by": "Admin"},
+                {"status": "in_progress", "timestamp": "2024-12-01T14:00:00Z", "updated_by": "Deepak Tiwary"},
+                {"status": "resolved", "timestamp": "2024-12-01T16:00:00Z", "updated_by": "Deepak Tiwary"}
+            ],
+            "created_at": "2024-12-01T10:00:00Z",
+            "updated_at": "2024-12-01T16:00:00Z"
+        },
+        {
+            "ticket_id": f"tkt_{uuid.uuid4().hex[:12]}",
+            "vehicle_id": vehicles[0]["vehicle_id"],
+            "vehicle_type": "two_wheeler",
+            "vehicle_model": "Ather 450X",
+            "vehicle_number": "MH01EV1234",
+            "customer_id": customer_id,
+            "customer_name": "Demo Customer",
+            "customer_email": "customer@demo.com",
+            "title": "Regular service due",
+            "description": "6-month periodic maintenance",
+            "category": "maintenance",
+            "issue_type": "scheduled",
+            "priority": "low",
+            "status": "in_progress",
+            "assigned_technician_name": "Rahul Sharma",
+            "estimated_cost": 2500,
+            "status_history": [
+                {"status": "open", "timestamp": "2025-02-15T09:00:00Z", "updated_by": "System"},
+                {"status": "technician_assigned", "timestamp": "2025-02-15T09:30:00Z", "updated_by": "Admin"},
+                {"status": "in_progress", "timestamp": "2025-02-16T10:00:00Z", "updated_by": "Rahul Sharma"}
+            ],
+            "created_at": "2025-02-15T09:00:00Z",
+            "updated_at": "2025-02-16T10:00:00Z"
+        }
+    ]
+    for ticket in sample_tickets:
+        await db.tickets.insert_one(ticket)
+    
+    # Create sample invoice
+    sample_invoice = {
+        "invoice_id": f"inv_{uuid.uuid4().hex[:12]}",
+        "invoice_number": f"INV-{datetime.now().strftime('%Y%m')}-0001",
+        "ticket_id": sample_tickets[0]["ticket_id"],
+        "customer_id": customer_id,
+        "customer_name": "Demo Customer",
+        "customer_email": "customer@demo.com",
+        "vehicle_number": "MH01EV5678",
+        "items": [
+            {"name": "Charging Port Cleaning", "quantity": 1, "unit_price": 500},
+            {"name": "Firmware Update", "quantity": 1, "unit_price": 700}
+        ],
+        "subtotal": 1200,
+        "tax_amount": 216,
+        "total_amount": 1416,
+        "amount_paid": 1416,
+        "payment_status": "paid",
+        "created_at": "2024-12-01T16:30:00Z"
+    }
+    await db.invoices.insert_one(sample_invoice)
+    
+    return {
+        "message": "Customer demo data seeded successfully",
+        "customer_email": "customer@demo.com",
+        "customer_password": "test_pwd_placeholder",
+        "vehicles": 2,
+        "amc_plans": 3,
+        "tickets": 2
+    }
+
 @api_router.post("/reseed")
 async def reseed_missing_data():
     """Reseed missing data (suppliers, services) without deleting existing data"""
