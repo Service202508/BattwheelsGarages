@@ -83,6 +83,226 @@ class UserUpdate(BaseModel):
     department: Optional[str] = None
     hourly_rate: Optional[float] = None
 
+# ==================== EMPLOYEE MODELS ====================
+
+EMPLOYEE_ROLES = ["admin", "manager", "technician", "accountant", "customer_support"]
+EMPLOYMENT_TYPES = ["full_time", "part_time", "contract", "intern", "probation"]
+DEPARTMENTS = ["operations", "hr", "finance", "service", "sales", "administration"]
+
+class EmployeeSalaryStructure(BaseModel):
+    basic_salary: float = 0.0
+    hra: float = 0.0  # House Rent Allowance
+    da: float = 0.0  # Dearness Allowance
+    conveyance: float = 0.0
+    medical_allowance: float = 0.0
+    special_allowance: float = 0.0
+    other_allowances: float = 0.0
+    gross_salary: float = 0.0  # Calculated
+    # Deductions
+    pf_deduction: float = 0.0  # 12% of basic
+    esi_deduction: float = 0.0  # 0.75% if gross <= 21000
+    professional_tax: float = 0.0  # State-wise
+    tds: float = 0.0  # Based on tax slab
+    other_deductions: float = 0.0
+    net_salary: float = 0.0  # Calculated
+
+class EmployeeCompliance(BaseModel):
+    pan_number: Optional[str] = None
+    aadhaar_number: Optional[str] = None
+    pf_number: Optional[str] = None  # Provident Fund
+    uan: Optional[str] = None  # Universal Account Number
+    esi_number: Optional[str] = None  # Employee State Insurance
+    pf_enrolled: bool = False
+    esi_enrolled: bool = False
+
+class EmployeeBankDetails(BaseModel):
+    bank_name: Optional[str] = None
+    account_number: Optional[str] = None
+    ifsc_code: Optional[str] = None
+    branch_name: Optional[str] = None
+    account_type: str = "savings"  # savings, current
+
+class Employee(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    employee_id: str = Field(default_factory=lambda: f"emp_{uuid.uuid4().hex[:12]}")
+    user_id: Optional[str] = None  # Linked user account
+    
+    # Personal Information
+    first_name: str
+    last_name: str
+    full_name: Optional[str] = None
+    date_of_birth: Optional[str] = None  # YYYY-MM-DD
+    gender: Optional[str] = None  # male, female, other
+    photo_url: Optional[str] = None
+    personal_email: Optional[str] = None
+    phone: Optional[str] = None
+    alternate_phone: Optional[str] = None
+    # Address
+    current_address: Optional[str] = None
+    permanent_address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    pincode: Optional[str] = None
+    # Emergency Contact
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
+    emergency_contact_relation: Optional[str] = None
+    
+    # Employment Details
+    employee_code: Optional[str] = None  # Custom employee ID like EMP001
+    work_email: Optional[str] = None
+    department: str = "operations"
+    designation: str
+    employment_type: str = "full_time"
+    joining_date: str  # YYYY-MM-DD
+    confirmation_date: Optional[str] = None
+    probation_period_months: int = 0
+    reporting_manager_id: Optional[str] = None
+    reporting_manager_name: Optional[str] = None
+    work_location: str = "office"
+    shift: str = "general"  # general, morning, evening, night
+    
+    # Role & Access
+    system_role: str = "technician"  # admin, manager, technician, accountant, customer_support
+    
+    # Salary Structure
+    salary: EmployeeSalaryStructure = Field(default_factory=EmployeeSalaryStructure)
+    
+    # Compliance
+    compliance: EmployeeCompliance = Field(default_factory=EmployeeCompliance)
+    
+    # Bank Details
+    bank_details: EmployeeBankDetails = Field(default_factory=EmployeeBankDetails)
+    
+    # Status
+    status: str = "active"  # active, inactive, terminated, resigned, on_notice
+    termination_date: Optional[str] = None
+    termination_reason: Optional[str] = None
+    
+    # Metadata
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: Optional[datetime] = None
+    created_by: Optional[str] = None
+
+class EmployeeCreate(BaseModel):
+    # Personal Information
+    first_name: str
+    last_name: str
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
+    personal_email: Optional[str] = None
+    phone: Optional[str] = None
+    alternate_phone: Optional[str] = None
+    current_address: Optional[str] = None
+    permanent_address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    pincode: Optional[str] = None
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
+    emergency_contact_relation: Optional[str] = None
+    
+    # Employment Details
+    employee_code: Optional[str] = None
+    work_email: str
+    department: str = "operations"
+    designation: str
+    employment_type: str = "full_time"
+    joining_date: str
+    probation_period_months: int = 0
+    reporting_manager_id: Optional[str] = None
+    work_location: str = "office"
+    shift: str = "general"
+    
+    # Role & Access
+    system_role: str = "technician"
+    password: str  # For creating user account
+    
+    # Salary Structure
+    basic_salary: float = 0.0
+    hra: float = 0.0
+    da: float = 0.0
+    conveyance: float = 0.0
+    medical_allowance: float = 0.0
+    special_allowance: float = 0.0
+    other_allowances: float = 0.0
+    
+    # Compliance
+    pan_number: Optional[str] = None
+    aadhaar_number: Optional[str] = None
+    pf_number: Optional[str] = None
+    uan: Optional[str] = None
+    esi_number: Optional[str] = None
+    pf_enrolled: bool = False
+    esi_enrolled: bool = False
+    
+    # Bank Details
+    bank_name: Optional[str] = None
+    account_number: Optional[str] = None
+    ifsc_code: Optional[str] = None
+    branch_name: Optional[str] = None
+    account_type: str = "savings"
+
+class EmployeeUpdate(BaseModel):
+    # Personal Information
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
+    personal_email: Optional[str] = None
+    phone: Optional[str] = None
+    alternate_phone: Optional[str] = None
+    current_address: Optional[str] = None
+    permanent_address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    pincode: Optional[str] = None
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
+    emergency_contact_relation: Optional[str] = None
+    
+    # Employment Details
+    department: Optional[str] = None
+    designation: Optional[str] = None
+    employment_type: Optional[str] = None
+    confirmation_date: Optional[str] = None
+    reporting_manager_id: Optional[str] = None
+    work_location: Optional[str] = None
+    shift: Optional[str] = None
+    
+    # Role & Access
+    system_role: Optional[str] = None
+    
+    # Salary Structure
+    basic_salary: Optional[float] = None
+    hra: Optional[float] = None
+    da: Optional[float] = None
+    conveyance: Optional[float] = None
+    medical_allowance: Optional[float] = None
+    special_allowance: Optional[float] = None
+    other_allowances: Optional[float] = None
+    
+    # Compliance
+    pan_number: Optional[str] = None
+    aadhaar_number: Optional[str] = None
+    pf_number: Optional[str] = None
+    uan: Optional[str] = None
+    esi_number: Optional[str] = None
+    pf_enrolled: Optional[bool] = None
+    esi_enrolled: Optional[bool] = None
+    
+    # Bank Details
+    bank_name: Optional[str] = None
+    account_number: Optional[str] = None
+    ifsc_code: Optional[str] = None
+    branch_name: Optional[str] = None
+    account_type: Optional[str] = None
+    
+    # Status
+    status: Optional[str] = None
+    termination_date: Optional[str] = None
+    termination_reason: Optional[str] = None
+
 # ==================== ATTENDANCE MODELS ====================
 
 class AttendanceRecord(BaseModel):
