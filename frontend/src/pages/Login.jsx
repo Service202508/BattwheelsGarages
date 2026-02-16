@@ -93,69 +93,173 @@ export default function Login({ onLogin }) {
   return (
     <div className="min-h-screen flex">
       {/* Left Panel - Hero Section */}
-      <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden bg-gradient-to-br from-[#22EDA9] via-[#1DD69A] to-[#19C98D]">
+      <div className="hidden lg:flex lg:w-[58%] relative overflow-hidden bg-gradient-to-br from-[#22EDA9] via-[#1DD69A] to-[#17B589]">
         {/* Decorative Background Elements */}
         <div className="absolute inset-0">
-          {/* Large decorative circles */}
-          <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 -right-32 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-white/5 rounded-full blur-2xl"></div>
+          <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-white/8 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 -right-40 w-[500px] h-[500px] bg-white/8 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-white/5 rounded-full blur-2xl"></div>
           
           {/* Subtle grid pattern */}
           <div className="absolute inset-0 opacity-[0.04]" style={{
             backgroundImage: `linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)`,
-            backgroundSize: '50px 50px'
+            backgroundSize: '40px 40px'
           }}></div>
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center px-16 py-12 w-full">
-          {/* Large Logo - More Prominent */}
-          <div className="mb-8">
+        <div className="relative z-10 flex flex-col justify-center px-14 py-10 w-full">
+          {/* Large Logo */}
+          <div className="mb-6">
             <img 
               src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/3abu9yqt_68469546%20%283%29.png" 
               alt="Battwheels Logo" 
-              className="h-28 w-auto drop-shadow-[0_4px_20px_rgba(0,0,0,0.15)]"
+              className="h-36 w-auto drop-shadow-[0_4px_25px_rgba(0,0,0,0.2)]"
             />
           </div>
           
           {/* Main Heading */}
-          <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-5 tracking-tight">
-            EV Command<br />
-            <span className="text-white/95">Center</span>
+          <h1 className="text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 tracking-tight">
+            EV Failure Intelligence
           </h1>
           
           {/* Tagline */}
-          <p className="text-xl text-white/90 max-w-lg leading-relaxed mb-8">
-            Next-generation <span className="font-semibold text-white">AI-powered</span> Electric Failure Intelligence for comprehensive EV workshop management.
+          <p className="text-lg text-white/90 max-w-md leading-relaxed mb-6">
+            Transform every repair into <span className="font-semibold text-white">enterprise-grade knowledge</span> that makes your entire service network smarter.
           </p>
           
-          {/* Feature Pills */}
-          <div className="flex flex-wrap gap-3 mb-10">
-            <span className="px-4 py-2.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium text-white border border-white/30 shadow-sm">
-              🤖 AI Diagnostics
-            </span>
-            <span className="px-4 py-2.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium text-white border border-white/30 shadow-sm">
-              ⚡ Real-time Tracking
-            </span>
-            <span className="px-4 py-2.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium text-white border border-white/30 shadow-sm">
-              📊 Smart Analytics
-            </span>
+          {/* Intelligence Pipeline - Horizontal Flow */}
+          <div className="mb-6">
+            <p className="text-xs uppercase tracking-wider text-white/70 mb-3 font-medium">The Intelligence Pipeline</p>
+            <div className="flex items-center gap-1">
+              {/* Step 1 */}
+              <div className="flex flex-col items-center">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-lg">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <span className="text-[10px] text-white/80 mt-1 text-center">Detect</span>
+              </div>
+              <div className="text-white/40 text-xs">→</div>
+              {/* Step 2 */}
+              <div className="flex flex-col items-center">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-400 to-yellow-500 flex items-center justify-center shadow-lg">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <span className="text-[10px] text-white/80 mt-1 text-center">Analyze</span>
+              </div>
+              <div className="text-white/40 text-xs">→</div>
+              {/* Step 3 */}
+              <div className="flex flex-col items-center">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-green-400 flex items-center justify-center shadow-lg">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <span className="text-[10px] text-white/80 mt-1 text-center">Document</span>
+              </div>
+              <div className="text-white/40 text-xs">→</div>
+              {/* Step 4 */}
+              <div className="flex flex-col items-center">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                  </svg>
+                </div>
+                <span className="text-[10px] text-white/80 mt-1 text-center">Store</span>
+              </div>
+              <div className="text-white/40 text-xs">→</div>
+              {/* Step 5 */}
+              <div className="flex flex-col items-center">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                </div>
+                <span className="text-[10px] text-white/80 mt-1 text-center">Sync</span>
+              </div>
+              <div className="text-white/40 text-xs">→</div>
+              {/* Step 6 */}
+              <div className="flex flex-col items-center">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center shadow-lg">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <span className="text-[10px] text-white/80 mt-1 text-center">Repair</span>
+              </div>
+            </div>
           </div>
           
-          {/* Stats Cards */}
-          <div className="flex gap-4">
-            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-5 border border-white/30 shadow-lg hover:bg-white/25 transition-all duration-300 hover:scale-[1.02] cursor-default flex-1 max-w-[150px]">
-              <p className="text-3xl font-bold text-white mb-0.5">745+</p>
-              <p className="text-xs text-white/80 font-medium">Vehicles Serviced</p>
+          {/* Benefit Cards - 2x3 Grid */}
+          <div className="grid grid-cols-3 gap-3">
+            {/* Card 1 - Faster First-Time Fix */}
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 group">
+              <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-semibold text-white mb-1">Faster Fix</h3>
+              <p className="text-[10px] text-white/70 leading-relaxed">Instant access to proven solutions</p>
             </div>
-            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-5 border border-white/30 shadow-lg hover:bg-white/25 transition-all duration-300 hover:scale-[1.02] cursor-default flex-1 max-w-[150px]">
-              <p className="text-3xl font-bold text-white mb-0.5">98%</p>
-              <p className="text-xs text-white/80 font-medium">Success Rate</p>
+            
+            {/* Card 2 - Reduced Downtime */}
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 group">
+              <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-semibold text-white mb-1">Less Downtime</h3>
+              <p className="text-[10px] text-white/70 leading-relaxed">Pre-validated repair procedures</p>
             </div>
-            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-5 border border-white/30 shadow-lg hover:bg-white/25 transition-all duration-300 hover:scale-[1.02] cursor-default flex-1 max-w-[150px]">
-              <p className="text-3xl font-bold text-white mb-0.5">24/7</p>
-              <p className="text-xs text-white/80 font-medium">Support Available</p>
+            
+            {/* Card 3 - Consistent Quality */}
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 group">
+              <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-semibold text-white mb-1">Quality</h3>
+              <p className="text-[10px] text-white/70 leading-relaxed">Network-wide knowledge</p>
+            </div>
+            
+            {/* Card 4 - Continuous Learning */}
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 group">
+              <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-semibold text-white mb-1">Learning</h3>
+              <p className="text-[10px] text-white/70 leading-relaxed">Compounding intelligence</p>
+            </div>
+            
+            {/* Card 5 - Reduced Dependency */}
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 group">
+              <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-semibold text-white mb-1">Scale</h3>
+              <p className="text-[10px] text-white/70 leading-relaxed">No single-point dependency</p>
+            </div>
+            
+            {/* Card 6 - Scalable Intelligence */}
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 group">
+              <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-semibold text-white mb-1">AI Brain</h3>
+              <p className="text-[10px] text-white/70 leading-relaxed">Enterprise-grade knowledge</p>
             </div>
           </div>
         </div>
