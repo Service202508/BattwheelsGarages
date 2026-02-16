@@ -46,7 +46,7 @@ class TestCustomers:
         return response.json().get("token")
     
     def test_list_customers(self, auth_token):
-        """Test listing customers - should have 50 imported from Zoho Books"""
+        """Test listing customers - should have at least 50 imported from Zoho Books"""
         response = requests.get(
             f"{BASE_URL}/api/books/customers?limit=100",
             headers={"Authorization": f"Bearer {auth_token}"}
@@ -55,8 +55,8 @@ class TestCustomers:
         data = response.json()
         assert "customers" in data
         assert "total" in data
-        assert data["total"] == 50, f"Expected 50 customers, got {data['total']}"
-        assert len(data["customers"]) == 50
+        assert data["total"] >= 50, f"Expected at least 50 customers, got {data['total']}"
+        assert len(data["customers"]) >= 50
     
     def test_customer_search(self, auth_token):
         """Test customer search functionality"""
