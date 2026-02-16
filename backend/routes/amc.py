@@ -505,10 +505,311 @@ async def get_amc_analytics(request: Request):
     ]
     plan_dist = await db.amc_subscriptions.aggregate(plan_pipeline).to_list(100)
     
+    # Vehicle category distribution
+    vehicle_pipeline = [
+        {"$match": {"status": {"$in": ["active", "expiring"]}}},
+        {"$group": {"_id": "$vehicle_category", "count": {"$sum": 1}}}
+    ]
+    vehicle_dist = await db.amc_subscriptions.aggregate(vehicle_pipeline).to_list(10)
+    
+    # Billing frequency distribution
+    billing_pipeline = [
+        {"$match": {"status": {"$in": ["active", "expiring"]}}},
+        {"$group": {"_id": "$billing_frequency", "count": {"$sum": 1}}}
+    ]
+    billing_dist = await db.amc_subscriptions.aggregate(billing_pipeline).to_list(10)
+    
     return {
         "total_active": total_active,
         "expiring_soon": expiring_soon,
         "expired": expired,
         "total_revenue": total_revenue,
-        "plan_distribution": {p["_id"]: p["count"] for p in plan_dist if p["_id"]}
+        "plan_distribution": {p["_id"]: p["count"] for p in plan_dist if p["_id"]},
+        "vehicle_category_distribution": {v["_id"]: v["count"] for v in vehicle_dist if v["_id"]},
+        "billing_frequency_distribution": {b["_id"]: b["count"] for b in billing_dist if b["_id"]}
     }
+
+@router.post("/seed-official-plans")
+async def seed_official_battwheels_plans(request: Request):
+    """
+    Seed official Battwheels Garages subscription plans
+    Source: https://battwheelsgarages.in/plans
+    """
+    user = await require_admin(request)
+    
+    # Clear existing plans (optional - comment out to keep existing)
+    # await db.amc_plans.delete_many({})
+    
+    # Official Battwheels Plans for each vehicle category
+    vehicle_categories = ["2W", "3W", "4W"]
+    
+    plans_created = 0
+    
+    for category in vehicle_categories:
+        # Pricing multipliers based on vehicle type
+        price_multiplier = 1.0 if category == "2W" else (1.5 if category == "3W" else 2.0)
+        
+        base_plans = [
+            {
+                "name": f"Starter - {category}",
+                "description": "Perfect for individual EV owners",
+                "tier": "starter",
+                "vehicle_category": category,
+                "billing_frequency": "monthly",
+                "duration_months": 1,
+                "price": round(499 * price_multiplier),
+                "annual_price": round(4499 * price_multiplier),
+                "periodic_services_per_month": 1,
+                "breakdown_visits_per_month": 2,
+                "max_service_visits": 12,  # annual equivalent
+                "includes_parts": False,
+                "parts_discount_percent": 0,
+                "priority_support": False,
+                "priority_response_minutes": None,
+                "roadside_assistance": True,
+                "fleet_dashboard": False,
+                "dedicated_manager": False,
+                "custom_sla": False,
+                "telematics_integration": False,
+                "digital_service_history": True,
+                "oem_support": "standard",
+                "services_included": [
+                    {"service_name": "Periodic Service", "quantity_monthly": 1, "quantity_annual": 6},
+                    {"service_name": "Breakdown Visit", "quantity_monthly": 2, "quantity_annual": "unlimited"},
+                    {"service_name": "Standard Diagnostics", "quantity_monthly": 1, "quantity_annual": 12}
+                ],
+                "is_active": True,
+                "source": "battwheelsgarages.in"
+            },
+            {
+                "name": f"Starter Annual - {category}",
+                "description": "Perfect for individual EV owners - Annual (Save 25%)",
+                "tier": "starter",
+                "vehicle_category": category,
+                "billing_frequency": "annual",
+                "duration_months": 12,
+                "price": round(4499 * price_multiplier),
+                "annual_price": round(4499 * price_multiplier),
+                "periodic_services_per_month": 1,
+                "breakdown_visits_per_month": 999,  # Unlimited
+                "max_service_visits": 999,
+                "includes_parts": False,
+                "parts_discount_percent": 0,
+                "priority_support": False,
+                "priority_response_minutes": None,
+                "roadside_assistance": True,
+                "fleet_dashboard": False,
+                "dedicated_manager": False,
+                "custom_sla": False,
+                "telematics_integration": False,
+                "digital_service_history": True,
+                "oem_support": "standard",
+                "services_included": [
+                    {"service_name": "Periodic Service", "quantity": 6},
+                    {"service_name": "Breakdown Visit", "quantity": "unlimited"},
+                    {"service_name": "Standard Diagnostics", "quantity": 12}
+                ],
+                "is_active": True,
+                "source": "battwheelsgarages.in"
+            },
+            {
+                "name": f"Fleet Essential - {category}",
+                "description": "For growing fleet operations",
+                "tier": "fleet_essential",
+                "vehicle_category": category,
+                "billing_frequency": "monthly",
+                "duration_months": 1,
+                "price": round(699 * price_multiplier),
+                "annual_price": round(5599 * price_multiplier),
+                "periodic_services_per_month": 1,
+                "breakdown_visits_per_month": 2,
+                "max_service_visits": 12,
+                "includes_parts": False,
+                "parts_discount_percent": 10,
+                "priority_support": True,
+                "priority_response_minutes": 30,
+                "roadside_assistance": True,
+                "fleet_dashboard": True,
+                "dedicated_manager": True,
+                "custom_sla": False,
+                "telematics_integration": False,
+                "digital_service_history": True,
+                "oem_support": "priority",
+                "services_included": [
+                    {"service_name": "Periodic Service", "quantity_monthly": 1, "quantity_annual": 6},
+                    {"service_name": "Breakdown Visit", "quantity_monthly": 2, "quantity_annual": "unlimited"},
+                    {"service_name": "Preventive Maintenance", "quantity_monthly": 1, "quantity_annual": 12},
+                    {"service_name": "Fleet Dashboard Access", "included": True},
+                    {"service_name": "Centralized Invoicing", "included": True}
+                ],
+                "is_active": True,
+                "source": "battwheelsgarages.in"
+            },
+            {
+                "name": f"Fleet Essential Annual - {category}",
+                "description": "For growing fleet operations - Annual (Save 25%)",
+                "tier": "fleet_essential",
+                "vehicle_category": category,
+                "billing_frequency": "annual",
+                "duration_months": 12,
+                "price": round(5599 * price_multiplier),
+                "annual_price": round(5599 * price_multiplier),
+                "periodic_services_per_month": 1,
+                "breakdown_visits_per_month": 999,
+                "max_service_visits": 999,
+                "includes_parts": False,
+                "parts_discount_percent": 10,
+                "priority_support": True,
+                "priority_response_minutes": 30,
+                "roadside_assistance": True,
+                "fleet_dashboard": True,
+                "dedicated_manager": True,
+                "custom_sla": False,
+                "telematics_integration": False,
+                "digital_service_history": True,
+                "oem_support": "priority",
+                "services_included": [
+                    {"service_name": "Periodic Service", "quantity": 6},
+                    {"service_name": "Breakdown Visit", "quantity": "unlimited"},
+                    {"service_name": "Preventive Maintenance", "quantity": 12},
+                    {"service_name": "Fleet Dashboard Access", "included": True},
+                    {"service_name": "Centralized Invoicing", "included": True}
+                ],
+                "is_active": True,
+                "source": "battwheelsgarages.in"
+            },
+            {
+                "name": f"Fleet Essential Pro - {category}",
+                "description": "Enterprise-grade fleet management",
+                "tier": "fleet_pro",
+                "vehicle_category": category,
+                "billing_frequency": "monthly",
+                "duration_months": 1,
+                "price": round(799 * price_multiplier),
+                "annual_price": round(6499 * price_multiplier),
+                "periodic_services_per_month": 2,
+                "breakdown_visits_per_month": 999,
+                "max_service_visits": 999,
+                "includes_parts": True,
+                "parts_discount_percent": 15,
+                "priority_support": True,
+                "priority_response_minutes": 15,
+                "roadside_assistance": True,
+                "fleet_dashboard": True,
+                "dedicated_manager": True,
+                "custom_sla": True,
+                "telematics_integration": True,
+                "digital_service_history": True,
+                "oem_support": "custom",
+                "services_included": [
+                    {"service_name": "Periodic Service", "quantity_monthly": 2, "quantity_annual": 24},
+                    {"service_name": "Breakdown Visit", "quantity": "unlimited"},
+                    {"service_name": "Custom SLA Guarantees", "included": True},
+                    {"service_name": "Battwheels OS™ Integration", "included": True},
+                    {"service_name": "Telematics Integration", "included": True},
+                    {"service_name": "Monthly Performance Reports", "included": True},
+                    {"service_name": "Onsite Dedicated Team Option", "included": True}
+                ],
+                "is_active": True,
+                "source": "battwheelsgarages.in"
+            },
+            {
+                "name": f"Fleet Essential Pro Annual - {category}",
+                "description": "Enterprise-grade fleet management - Annual (Save 25%)",
+                "tier": "fleet_pro",
+                "vehicle_category": category,
+                "billing_frequency": "annual",
+                "duration_months": 12,
+                "price": round(6499 * price_multiplier),
+                "annual_price": round(6499 * price_multiplier),
+                "periodic_services_per_month": 2,
+                "breakdown_visits_per_month": 999,
+                "max_service_visits": 999,
+                "includes_parts": True,
+                "parts_discount_percent": 15,
+                "priority_support": True,
+                "priority_response_minutes": 15,
+                "roadside_assistance": True,
+                "fleet_dashboard": True,
+                "dedicated_manager": True,
+                "custom_sla": True,
+                "telematics_integration": True,
+                "digital_service_history": True,
+                "oem_support": "custom",
+                "services_included": [
+                    {"service_name": "Periodic Service", "quantity": 24},
+                    {"service_name": "Breakdown Visit", "quantity": "unlimited"},
+                    {"service_name": "Custom SLA Guarantees", "included": True},
+                    {"service_name": "Battwheels OS™ Integration", "included": True},
+                    {"service_name": "Telematics Integration", "included": True},
+                    {"service_name": "Monthly Performance Reports", "included": True},
+                    {"service_name": "Onsite Dedicated Team Option", "included": True}
+                ],
+                "is_active": True,
+                "source": "battwheelsgarages.in"
+            }
+        ]
+        
+        for plan in base_plans:
+            # Check if plan already exists
+            existing = await db.amc_plans.find_one({
+                "name": plan["name"],
+                "vehicle_category": plan["vehicle_category"],
+                "billing_frequency": plan["billing_frequency"]
+            })
+            
+            if not existing:
+                plan["plan_id"] = f"amc_plan_{uuid.uuid4().hex[:8]}"
+                plan["created_at"] = datetime.now(timezone.utc).isoformat()
+                plan["created_by"] = user["user_id"]
+                await db.amc_plans.insert_one(plan)
+                plans_created += 1
+    
+    return {
+        "message": f"Official Battwheels plans seeded successfully",
+        "plans_created": plans_created,
+        "vehicle_categories": vehicle_categories,
+        "tiers": ["starter", "fleet_essential", "fleet_pro"],
+        "billing_frequencies": ["monthly", "annual"]
+    }
+
+@router.get("/plans-by-category")
+async def get_plans_by_category(
+    request: Request,
+    vehicle_category: Optional[str] = None,
+    billing_frequency: Optional[str] = None
+):
+    """Get AMC plans grouped by vehicle category and billing frequency"""
+    user = await require_admin_or_technician(request)
+    
+    query = {"is_active": True}
+    if vehicle_category:
+        query["vehicle_category"] = vehicle_category
+    if billing_frequency:
+        query["billing_frequency"] = billing_frequency
+    
+    plans = await db.amc_plans.find(query, {"_id": 0}).sort([
+        ("vehicle_category", 1),
+        ("tier", 1),
+        ("billing_frequency", 1)
+    ]).to_list(100)
+    
+    # Group by category
+    grouped = {
+        "2W": {"monthly": [], "annual": []},
+        "3W": {"monthly": [], "annual": []},
+        "4W": {"monthly": [], "annual": []}
+    }
+    
+    for plan in plans:
+        cat = plan.get("vehicle_category", "2W")
+        freq = plan.get("billing_frequency", "monthly")
+        if cat in grouped and freq in grouped[cat]:
+            # Add subscription count
+            plan["active_subscriptions"] = await db.amc_subscriptions.count_documents({
+                "plan_id": plan["plan_id"],
+                "status": {"$in": ["active", "expiring"]}
+            })
+            grouped[cat][freq].append(plan)
+    
+    return grouped
