@@ -494,11 +494,11 @@ class TestFailureCardCRUDExtended:
                 {"make": "Ola", "model": "S1 Pro", "year_start": 2021}
             ],
             "universal_failure": False,
-            "failure_conditions": {
-                "temperature": "high",
-                "load": "heavy",
-                "age": "2+ years"
-            },
+            "failure_conditions": [
+                {"condition_type": "temperature", "value": "high"},
+                {"condition_type": "load", "value": "heavy"},
+                {"condition_type": "age", "value": "2+ years"}
+            ],
             "keywords": ["battery", "cell", "imbalance", "voltage", "range", "search", "test"],
             "tags": ["battery", "bms", "cell-balancing", "search-test"],
             "source_type": "field_discovery"
