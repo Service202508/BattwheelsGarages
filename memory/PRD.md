@@ -182,6 +182,18 @@ Admin UI Features:
 | `/api/efi/events` | GET | List events |
 | `/api/efi/events/process` | POST | Process pending events |
 
+### Fault Tree Import Endpoints (NEW)
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/import/upload` | POST | Upload Excel file |
+| `/api/import/upload-url` | POST | Import from URL |
+| `/api/import/quick` | POST | Quick import from default file |
+| `/api/import/jobs` | GET | List import jobs |
+| `/api/import/jobs/{id}` | GET | Get job status |
+| `/api/import/jobs/{id}/preview` | GET | Preview parsed data |
+| `/api/import/jobs/{id}/execute` | POST | Execute import |
+| `/api/import/jobs/{id}/results` | GET | Get import results |
+
 ## Key Database Collections
 - `failure_cards` - Core knowledge objects
 - `technician_actions` - Repair records with reasoning
