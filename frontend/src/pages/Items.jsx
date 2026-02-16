@@ -33,14 +33,13 @@ export default function Items() {
     is_taxable: true
   });
 
-  useEffect(() => { fetchItems(); }, [search, activeTab]);
+  useEffect(() => { fetchItems(); }, [search]);
 
   const fetchItems = async () => {
     try {
       const token = localStorage.getItem("token");
-      let url = `${API}/zoho/items?per_page=200`;
+      let url = `${API}/zoho/items?per_page=500`;
       if (search) url += `&search_text=${encodeURIComponent(search)}`;
-      if (activeTab !== "all") url += `&item_type=${activeTab}`;
       
       const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
@@ -48,6 +47,14 @@ export default function Items() {
     } catch (error) { console.error("Failed to fetch:", error); }
     finally { setLoading(false); }
   };
+
+  // Filter items based on active tab (client-side filtering for Zoho data compatibility)
+  const isGoodsType = (type) => ["goods", "inventory", "sales_and_purchases"].includes(type);
+  const isServiceType = (type) => ["service", "sales"].includes(type);
+
+  const filteredItems = activeTab === "all" ? items 
+    : activeTab === "goods" ? items.filter(i => isGoodsType(i.item_type))
+    : items.filter(i => isServiceType(i.item_type));
 
   const handleCreate = async () => {
     if (!newItem.name) return toast.error("Enter item name");
