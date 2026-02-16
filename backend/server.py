@@ -4146,6 +4146,22 @@ init_notification_router(db)
 api_router.include_router(efi_router)
 api_router.include_router(notification_router)
 
+# Include Customer Portal routes
+try:
+    from routes.customer_portal import router as customer_router
+    api_router.include_router(customer_router)
+    logger.info("Customer Portal router included")
+except Exception as e:
+    logger.warning(f"Could not load customer portal router: {e}")
+
+# Include AMC routes
+try:
+    from routes.amc import router as amc_router
+    api_router.include_router(amc_router)
+    logger.info("AMC router included")
+except Exception as e:
+    logger.warning(f"Could not load AMC router: {e}")
+
 # Include tickets routes (event-driven module)
 if tickets_router:
     api_router.include_router(tickets_router)
