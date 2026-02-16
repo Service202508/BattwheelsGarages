@@ -840,9 +840,10 @@ class TestZohoReports:
         assert response.status_code == 200
         data = response.json()
         assert data["code"] == 0
-        # Check actual structure
-        assert "output_gst" in data or "gst_summary" in data or "summary" in data
-        print(f"✓ GST Report retrieved")
+        # Check actual structure - API returns gstr3b_summary with output_gst
+        assert "gstr3b_summary" in data or "gstr1_outward_supplies" in data
+        if "gstr3b_summary" in data:
+            print(f"✓ GST Report: Output GST={data['gstr3b_summary']['output_gst']}, Input GST={data['gstr3b_summary']['input_gst_credit']}")
 
 
 class TestZohoWorkflows:
