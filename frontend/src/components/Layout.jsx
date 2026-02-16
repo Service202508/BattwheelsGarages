@@ -77,12 +77,12 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
   const location = useLocation();
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-[#0B1210]">
       {/* Header */}
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between">
           {!collapsed && (
-            <h1 className="text-xl font-bold text-foreground tracking-tight" data-testid="sidebar-title">
+            <h1 className="text-xl font-bold text-white tracking-tight uppercase" data-testid="sidebar-title">
               Battwheels OS
             </h1>
           )}
@@ -90,7 +90,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
             variant="ghost" 
             size="icon" 
             onClick={() => setCollapsed?.(!collapsed)}
-            className="text-muted-foreground hover:text-foreground hidden lg:flex"
+            className="text-gray-400 hover:text-white hover:bg-white/5 hidden lg:flex"
             data-testid="collapse-sidebar-btn"
           >
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
@@ -100,7 +100,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
               variant="ghost" 
               size="icon" 
               onClick={onClose}
-              className="text-muted-foreground hover:text-foreground lg:hidden"
+              className="text-gray-400 hover:text-white lg:hidden"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -114,7 +114,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
           {navItems.map((section) => (
             <div key={section.section}>
               {!collapsed && (
-                <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3 px-3">
+                <p className="text-xs uppercase tracking-widest text-gray-500 mb-3 px-3 font-medium">
                   {section.section}
                 </p>
               )}
@@ -129,10 +129,10 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
                       to={item.path}
                       onClick={onClose}
                       data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
-                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-sm transition-colors ${
                         isActive
-                          ? "sidebar-item-active"
-                          : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                          ? "bg-[#65D396]/10 text-[#65D396] border-r-2 border-[#65D396]"
+                          : "text-gray-400 hover:text-white hover:bg-white/5"
                       } ${collapsed ? "justify-center" : ""}`}
                     >
                       <Icon className="h-5 w-5 flex-shrink-0" strokeWidth={1.5} />
@@ -152,20 +152,20 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
           <div className="flex items-center gap-3 mb-4">
             <Avatar className="h-10 w-10">
               <AvatarImage src={user?.picture} />
-              <AvatarFallback className="bg-primary/20 text-primary">
+              <AvatarFallback className="bg-[#0B462F] text-[#65D396]">
                 {user?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{user?.name || "User"}</p>
-              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+              <p className="text-sm font-medium truncate text-white">{user?.name || "User"}</p>
+              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
           </div>
         ) : (
           <div className="flex justify-center mb-4">
             <Avatar className="h-10 w-10">
               <AvatarImage src={user?.picture} />
-              <AvatarFallback className="bg-primary/20 text-primary">
+              <AvatarFallback className="bg-[#0B462F] text-[#65D396]">
                 {user?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
@@ -176,7 +176,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
           <Link 
             to="/settings" 
             onClick={onClose}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors ${collapsed ? "justify-center w-full" : "flex-1"}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors ${collapsed ? "justify-center w-full" : "flex-1"}`}
             data-testid="nav-settings"
           >
             <Settings className="h-4 w-4" strokeWidth={1.5} />
@@ -185,7 +185,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
           <Button 
             variant="ghost" 
             onClick={() => { onLogout(); onClose?.(); }}
-            className={`text-muted-foreground hover:text-foreground hover:bg-white/5 ${collapsed ? "w-full justify-center" : ""}`}
+            className={`text-gray-400 hover:text-white hover:bg-white/5 ${collapsed ? "w-full justify-center" : ""}`}
             data-testid="logout-btn"
           >
             <LogOut className="h-4 w-4" strokeWidth={1.5} />
