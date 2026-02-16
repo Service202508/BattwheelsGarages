@@ -101,11 +101,11 @@ export default function Login({ onLogin }) {
           backgroundPosition: 'center'
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B462F] via-[#0B462F]/90 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0F0F0F] via-[#0F0F0F]/90 to-transparent" />
         <div className="relative z-10 flex flex-col justify-center p-12 text-white">
           <div className="flex items-center gap-3 mb-8">
-            <div className="h-12 w-12 rounded-lg bg-white/20 flex items-center justify-center shadow-lg">
-              <Zap className="h-7 w-7 text-white" />
+            <div className="h-12 w-12 rounded-lg bg-[#22EDA9] flex items-center justify-center shadow-lg">
+              <Zap className="h-7 w-7 text-black" />
             </div>
             <h1 className="text-3xl font-bold tracking-tight">Battwheels OS</h1>
           </div>
@@ -117,11 +117,11 @@ export default function Login({ onLogin }) {
           </p>
           <div className="mt-12 grid grid-cols-2 gap-6">
             <div className="p-4 rounded-lg bg-white/10 backdrop-blur-md border border-white/20">
-              <p className="text-3xl font-bold text-white font-mono">745+</p>
+              <p className="text-3xl font-bold text-[#22EDA9] font-mono">745+</p>
               <p className="text-sm text-white/70">Vehicles Serviced</p>
             </div>
             <div className="p-4 rounded-lg bg-white/10 backdrop-blur-md border border-white/20">
-              <p className="text-3xl font-bold text-white font-mono">98%</p>
+              <p className="text-3xl font-bold text-[#22EDA9] font-mono">98%</p>
               <p className="text-sm text-white/70">Success Rate</p>
             </div>
           </div>
@@ -130,11 +130,11 @@ export default function Login({ onLogin }) {
 
       {/* Right Panel - Auth Forms */}
       <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
-        <Card className="w-full max-w-md border-gray-200 bg-white shadow-lg rounded-lg">
+        <Card className="w-full max-w-md border-gray-200 bg-white shadow-lg rounded-xl">
           <CardHeader className="text-center">
             <div className="lg:hidden flex items-center justify-center gap-2 mb-4">
-              <div className="h-10 w-10 rounded-lg bg-[#0B462F] flex items-center justify-center">
-                <Zap className="h-6 w-6 text-white" />
+              <div className="h-10 w-10 rounded-lg bg-[#22EDA9] flex items-center justify-center">
+                <Zap className="h-6 w-6 text-black" />
               </div>
               <span className="text-2xl font-bold text-gray-900">Battwheels OS</span>
             </div>
@@ -144,8 +144,8 @@ export default function Login({ onLogin }) {
           <CardContent>
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 rounded-lg">
-                <TabsTrigger value="login" data-testid="login-tab" className="rounded-lg data-[state=active]:bg-[#0B462F] data-[state=active]:text-white">Login</TabsTrigger>
-                <TabsTrigger value="register" data-testid="register-tab" className="rounded-lg data-[state=active]:bg-[#0B462F] data-[state=active]:text-white">Register</TabsTrigger>
+                <TabsTrigger value="login" data-testid="login-tab" className="rounded-lg data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black">Login</TabsTrigger>
+                <TabsTrigger value="register" data-testid="register-tab" className="rounded-lg data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black">Register</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
