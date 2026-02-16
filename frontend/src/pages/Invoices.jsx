@@ -214,9 +214,10 @@ export default function Invoices() {
               Create Invoice
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" aria-describedby="create-invoice-description">
             <DialogHeader>
               <DialogTitle>Create New Invoice</DialogTitle>
+              <p id="create-invoice-description" className="text-sm text-gray-500">Add customer and line items to generate a GST invoice</p>
             </DialogHeader>
             <div className="space-y-6 py-4">
               {/* Customer Selection */}
