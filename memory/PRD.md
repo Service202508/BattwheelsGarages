@@ -7,7 +7,35 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
-### Customer Portal (Feb 16, 2026) ✅ NEW
+### Zoho Books Integration (Feb 16, 2026) ✅ NEW
+
+**Imported Data from Zoho Books Backup:**
+- **100 Services** - EV repair services with rates (T-Rod Repair, Controller Repair, etc.)
+- **200 Parts** - Inventory items (Headlights, Mudguards, Shock Absorbers, etc.)
+- **50 Customers** - Customer master data with GST details
+- **50 Vendors** - Vendor master data
+- **109 Chart of Accounts** - Full accounting structure
+
+**New API Endpoints (`/api/books/`):**
+- `GET/POST /services` - Service items management
+- `GET/POST /parts` - Parts/inventory management
+- `GET/POST /customers` - Customer management
+- `GET/POST /vendors` - Vendor management
+- `GET/POST /accounts` - Chart of accounts
+- `GET/POST /invoices` - Invoice creation with GST calculation
+- `PUT /invoices/{id}/status` - Update invoice status
+- `GET/POST /payments` - Payment recording with auto-apply to invoices
+- `POST /import` - Bulk import from Zoho Books backup
+- `GET /analytics/summary` - Financial summary
+
+**Features:**
+- Auto GST calculation (18% default)
+- Invoice numbering (INV-000001)
+- Payment auto-apply to invoices
+- Customer outstanding balance tracking
+- Revenue analytics
+
+### Customer Portal (Feb 16, 2026) ✅
 
 **Features:**
 - **Role-based access control** - Same login, JWT redirect by role (customer→/customer, admin→/dashboard)
