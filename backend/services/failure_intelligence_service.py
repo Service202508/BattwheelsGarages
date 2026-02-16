@@ -492,13 +492,14 @@ class EFIService:
     
     async def match_failure(self, data: FailureMatchRequest) -> FailureMatchResponse:
         """
-        AI-powered failure matching - 4-stage pipeline
+        AI-powered failure matching - Enhanced 5-stage pipeline
         
         Priority order:
         1. Failure signature match (fastest, highest confidence)
         2. Subsystem + vehicle filtering
-        3. Semantic similarity
-        4. Keyword fallback
+        3. Vector semantic search (if embeddings available)
+        4. Hybrid text+vector search
+        5. Keyword fallback
         """
         start_time = time.time()
         
@@ -520,7 +521,7 @@ class EFIService:
         all_matches = []
         stages_used = []
         
-        # Stage 1: Signature match
+        # Stage 1: Signature match (exact hash match)
         signature_matches = await self.db.failure_cards.find(
             {"signature_hash": signature_hash, "status": {"$in": ["approved", "draft"]}},
             {"_id": 0, "embedding_vector": 0}
@@ -585,31 +586,83 @@ class EFIService:
                         effectiveness_score=card.get("effectiveness_score", 0)
                     ))
         
-        # Stage 3: Semantic similarity
-        if not all_matches or all_matches[0].match_score < 0.7:
-            stages_used.append("semantic")
-            
-            keywords = extract_keywords(query_text)
-            if keywords:
-                stage3_cards = await self.db.failure_cards.find(
-                    {
-                        "status": {"$in": ["approved", "draft"]},
-                        "$or": [
-                            {"keywords": {"$in": keywords}},
-                            {"symptom_text": {"$regex": "|".join(keywords[:5]), "$options": "i"}}
-                        ]
-                    },
-                    {"_id": 0, "embedding_vector": 0}
-                ).limit(10).to_list(10)
+        # Stage 3: Vector Semantic Search (if available)
+        if EMBEDDINGS_AVAILABLE and (not all_matches or all_matches[0].match_score < 0.8):
+            try:
+                embedding_service = get_embedding_service()
+                query_embedding = await embedding_service.get_embedding(query_text)
                 
-                for card in stage3_cards:
-                    if card["failure_id"] in [m.failure_id for m in all_matches]:
-                        continue
+                if query_embedding:
+                    stages_used.append("vector_semantic")
                     
-                    card_keywords = set(card.get("keywords", []))
-                    query_keywords = set(keywords)
-                    overlap = len(card_keywords & query_keywords)
-                    score = min(0.7, 0.3 + (overlap * 0.08))
+                    vector_results = await embedding_service.find_similar(
+                        query_embedding=query_embedding,
+                        collection="failure_cards",
+                        embedding_field="embedding_vector",
+                        filter_query={"status": {"$in": ["approved", "draft"]}},
+                        limit=10,
+                        min_score=0.6
+                    )
+                    
+                    for card in vector_results:
+                        if card["failure_id"] in [m.failure_id for m in all_matches]:
+                            # Update existing match score if vector score is higher
+                            for m in all_matches:
+                                if m.failure_id == card["failure_id"]:
+                                    vector_score = card.get("score", 0) * 0.85
+                                    if vector_score > m.match_score:
+                                        m.match_score = vector_score
+                                        m.match_type = "hybrid"
+                            continue
+                        
+                        all_matches.append(FailureMatchResult(
+                            failure_id=card["failure_id"],
+                            title=card["title"],
+                            match_score=card.get("score", 0.6) * 0.85,
+                            match_type="vector_semantic",
+                            match_stage=3,
+                            matched_symptoms=extract_keywords(card.get("symptom_text", ""))[:5],
+                            confidence_level=calculate_confidence_level(card.get("confidence_score", 0.5)),
+                            effectiveness_score=card.get("effectiveness_score", 0)
+                        ))
+            except Exception as e:
+                logger.warning(f"Vector search failed, continuing with fallback: {e}")
+        
+        # Stage 4: Hybrid Text+Vector Search (if advanced search available)
+        if ADVANCED_SEARCH_AVAILABLE and (not all_matches or all_matches[0].match_score < 0.7):
+            try:
+                search_service = get_search_service()
+                hybrid_results = await search_service.hybrid_search(
+                    query=query_text,
+                    error_codes=data.error_codes,
+                    subsystem=data.subsystem_hint.value if data.subsystem_hint else None,
+                    vehicle_make=data.vehicle_make,
+                    vehicle_model=data.vehicle_model,
+                    limit=10
+                )
+                
+                if hybrid_results:
+                    stages_used.append("hybrid")
+                    
+                    for card in hybrid_results:
+                        if card["failure_id"] in [m.failure_id for m in all_matches]:
+                            continue
+                        
+                        all_matches.append(FailureMatchResult(
+                            failure_id=card["failure_id"],
+                            title=card["title"],
+                            match_score=min(0.75, card.get("hybrid_score", 0.5)),
+                            match_type="hybrid",
+                            match_stage=4,
+                            confidence_level=calculate_confidence_level(card.get("confidence_score", 0.5)),
+                            effectiveness_score=card.get("effectiveness_score", 0)
+                        ))
+            except Exception as e:
+                logger.warning(f"Hybrid search failed: {e}")
+        
+        # Stage 5: Keyword fallback
+        if not all_matches or all_matches[0].match_score < 0.5:
+            stages_used.append("keyword")
                     
                     if card.get("symptom_text"):
                         text_sim = compute_text_similarity(query_text, card["symptom_text"])
