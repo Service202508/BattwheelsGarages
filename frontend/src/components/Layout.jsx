@@ -26,7 +26,8 @@ import {
   Clock,
   Calendar,
   Wallet,
-  Brain
+  Brain,
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -48,6 +49,7 @@ const navItems = [
     { name: "Predictive Maintenance", path: "/ai-assistant", icon: Bot },
     { name: "Inventory", path: "/inventory", icon: Package },
     { name: "Vehicles", path: "/vehicles", icon: Car },
+    { name: "AMC Management", path: "/amc", icon: Shield },
     { name: "Alerts", path: "/alerts", icon: Bell },
   ]},
   { section: "HR & Payroll", items: [
