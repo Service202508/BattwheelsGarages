@@ -128,7 +128,9 @@ export default function Tickets({ user }) {
       });
       
       if (response.ok) {
-        const data = await response.json();
+        const responseData = await response.json();
+        // Handle both array and {tickets: [...]} response formats
+        const data = Array.isArray(responseData) ? responseData : (responseData.tickets || []);
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
         
