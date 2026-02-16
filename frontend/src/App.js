@@ -28,6 +28,7 @@ import Payroll from "@/pages/Payroll";
 import Employees from "@/pages/Employees";
 import FailureIntelligence from "@/pages/FailureIntelligence";
 import FaultTreeImport from "@/pages/FaultTreeImport";
+import AMCManagement from "@/pages/AMCManagement";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
