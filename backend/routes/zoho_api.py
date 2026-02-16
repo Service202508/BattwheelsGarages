@@ -924,6 +924,81 @@ async def convert_estimate_to_salesorder(estimate_id: str):
     del so_dict["_id"]
     return {"code": 0, "message": "Sales order created from estimate", "salesorder": so_dict}
 
+@router.post("/estimates/{estimate_id}/email")
+async def email_estimate(estimate_id: str, to_emails: str = "", subject: str = "", body: str = ""):
+    """Email estimate to customer"""
+    db = get_db()
+    estimate = await db.estimates.find_one({"estimate_id": estimate_id}, {"_id": 0})
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found")
+    
+    if not to_emails:
+        customer = await db.contacts.find_one({"contact_id": estimate["customer_id"]}, {"_id": 0})
+        to_emails = customer.get("email", "") if customer else ""
+    
+    if not to_emails:
+        raise HTTPException(status_code=400, detail="No email address provided")
+    
+    default_subject = f"Estimate {estimate.get('estimate_number')} from Battwheels"
+    default_body = f"""Dear {estimate.get('customer_name')},
+
+Please find attached Estimate {estimate.get('estimate_number')} for ₹{estimate.get('total', 0):,.2f}.
+
+This estimate is valid until {estimate.get('expiry_date')}.
+
+Please let us know if you have any questions.
+
+Best regards,
+Battwheels Team"""
+    
+    email_log = {
+        "email_id": f"EMAIL-{uuid.uuid4().hex[:12].upper()}",
+        "entity_type": "estimate",
+        "entity_id": estimate_id,
+        "to_emails": to_emails.split(","),
+        "subject": subject or default_subject,
+        "body": body or default_body,
+        "status": "queued",
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    await db.email_logs.insert_one(email_log)
+    
+    if estimate.get("status") == "draft":
+        await db.estimates.update_one({"estimate_id": estimate_id}, {"$set": {"status": "sent"}})
+    
+    return {"code": 0, "message": "Estimate email queued", "email": {"to": to_emails, "subject": subject or default_subject}}
+
+@router.post("/estimates/{estimate_id}/clone")
+async def clone_estimate(estimate_id: str):
+    """Create a copy of an existing estimate"""
+    db = get_db()
+    estimate = await db.estimates.find_one({"estimate_id": estimate_id}, {"_id": 0})
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found")
+    
+    new_estimate_id = f"EST-{uuid.uuid4().hex[:12].upper()}"
+    new_estimate_number = await get_next_number(db, "estimates", "EST")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    expiry = (datetime.now(timezone.utc) + timedelta(days=30)).strftime("%Y-%m-%d")
+    
+    new_estimate = {
+        **estimate,
+        "estimate_id": new_estimate_id,
+        "estimate_number": new_estimate_number,
+        "date": today,
+        "expiry_date": expiry,
+        "status": "draft",
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    new_estimate.pop("_id", None)
+    new_estimate.pop("invoice_id", None)
+    new_estimate.pop("salesorder_id", None)
+    
+    await db.estimates.insert_one(new_estimate)
+    del new_estimate["_id"]
+    
+    return {"code": 0, "message": "Estimate cloned", "estimate": new_estimate}
+
 
 # ============== INVOICES MODULE ==============
 # Workflow: Create -> Mark Sent -> Record Payment -> Void/Write-off -> Delete
