@@ -183,22 +183,22 @@ code, .mono {
     @apply bg-blue-100 text-blue-700 border border-blue-200;
 }
 
-/* Button variants - Light Theme */
+/* Button variants - Emerald Theme */
 .btn-primary {
-    @apply bg-[#0B462F] text-white font-semibold rounded-md shadow-sm hover:bg-[#0a3d28] transition-colors;
+    @apply bg-[#22EDA9] text-black font-semibold rounded-lg shadow-sm hover:bg-[#1DD69A] transition-colors;
 }
 
 .btn-secondary {
-    @apply bg-transparent border border-[#0B462F] text-[#0B462F] font-medium rounded-md hover:bg-[#0B462F]/5 transition-colors;
+    @apply bg-transparent border border-[#22EDA9] text-[#0F0F0F] font-medium rounded-lg hover:bg-[#22EDA9]/10 transition-colors;
 }
 
 .btn-ghost {
     @apply text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors;
 }
 
-/* AI Match Highlight - Light */
+/* AI Match Highlight - Emerald */
 .ai-match-highlight {
-    @apply border-l-2 border-[#0B462F] bg-[#0B462F]/5 shadow-sm;
+    @apply border-l-2 border-[#22EDA9] bg-[#22EDA9]/10 shadow-sm;
 }
 
 /* Industrial scanlines overlay */
