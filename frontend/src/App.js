@@ -319,6 +319,13 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/amc" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <AMCManagement user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       
       {/* Customer Portal Routes */}
       <Route path="/customer" element={
