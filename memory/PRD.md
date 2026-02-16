@@ -13,7 +13,7 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 | Feature | Frontend Page | Backend API | Status |
 |---------|---------------|-------------|--------|
-| **Items Management** | `/items` | `/api/zoho/items` (CRUD) | ✅ |
+| **Items Management** | `/items` | `/api/zoho/items` (CRUD), `/api/zoho/items/bulk-import`, `/api/zoho/items/export`, `/api/zoho/items/import-template` | ✅ |
 | **Price Lists** | `/price-lists` | `/api/zoho/price-lists`, add/remove items | ✅ |
 | **Inventory Adjustments** | `/inventory-adjustments` | `/api/zoho/inventory-adjustments` | ✅ |
 | **Projects & Time Tracking** | `/projects` | `/api/zoho/projects`, `/api/zoho/time-entries` | ✅ |
