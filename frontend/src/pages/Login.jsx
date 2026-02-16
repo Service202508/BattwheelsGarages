@@ -113,9 +113,9 @@ export default function Login({ onLogin }) {
           {/* Large Logo - More Prominent */}
           <div className="mb-8">
             <img 
-              src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/0momdtv4_68469546%20%282%29.png" 
+              src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/3abu9yqt_68469546%20%283%29.png" 
               alt="Battwheels Logo" 
-              className="h-20 w-auto drop-shadow-[0_4px_20px_rgba(0,0,0,0.15)]"
+              className="h-28 w-auto drop-shadow-[0_4px_20px_rgba(0,0,0,0.15)]"
             />
           </div>
           
