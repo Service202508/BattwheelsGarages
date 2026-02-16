@@ -637,3 +637,68 @@ async def process_pending_events(request: Request, background_tasks: BackgroundT
         
         background_tasks.add_task(simple_process)
         return {"message": f"Processing {pending} pending events (simple mode)", "queued": True}
+
+
+
+# ==================== EMBEDDING MANAGEMENT ====================
+
+@router.post("/embeddings/generate")
+async def generate_embeddings(request: Request, background_tasks: BackgroundTasks):
+    """
+    Generate vector embeddings for all failure cards.
+    This enables semantic search in the AI matching pipeline.
+    """
+    try:
+        from services.embedding_service import get_card_embedder
+        embedder = get_card_embedder()
+        
+        # Run in background to not block
+        async def run_embedding():
+            return await embedder.embed_all_cards(batch_size=25)
+        
+        background_tasks.add_task(run_embedding)
+        
+        # Get count of cards without embeddings
+        service = get_service()
+        total_cards = await service.db.failure_cards.count_documents({})
+        cards_without_embeddings = await service.db.failure_cards.count_documents({
+            "$or": [
+                {"embedding_vector": {"$exists": False}},
+                {"embedding_vector": None}
+            ]
+        })
+        
+        return {
+            "message": "Embedding generation started in background",
+            "total_cards": total_cards,
+            "cards_needing_embeddings": cards_without_embeddings,
+            "status": "processing"
+        }
+    except Exception as e:
+        logger.error(f"Failed to start embedding generation: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/embeddings/status")
+async def get_embedding_status(request: Request):
+    """Check embedding generation status for failure cards."""
+    service = get_service()
+    
+    total_cards = await service.db.failure_cards.count_documents({})
+    cards_with_embeddings = await service.db.failure_cards.count_documents({
+        "embedding_vector": {"$exists": True, "$ne": None}
+    })
+    cards_without_embeddings = total_cards - cards_with_embeddings
+    
+    # Check cache stats
+    cache_count = await service.db.embedding_cache.count_documents({})
+    
+    return {
+        "total_cards": total_cards,
+        "cards_with_embeddings": cards_with_embeddings,
+        "cards_without_embeddings": cards_without_embeddings,
+        "embedding_coverage_percent": round((cards_with_embeddings / total_cards * 100), 2) if total_cards > 0 else 0,
+        "cache_entries": cache_count,
+        "embedding_model": "text-embedding-3-small",
+        "embedding_dimensions": 1536
+    }
