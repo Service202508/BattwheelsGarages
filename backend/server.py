@@ -4203,6 +4203,26 @@ except ImportError as e:
     logger.warning(f"Fault Tree Import not available: {e}")
     import_router = None
 
+# ==================== EVENT-DRIVEN ARCHITECTURE ====================
+
+# Initialize the event system (central event dispatcher + handlers)
+try:
+    from events import init_event_system
+    event_dispatcher = init_event_system(db)
+    logger.info(f"Event system initialized with {len(event_dispatcher.get_registered_events())} event types")
+except ImportError as e:
+    logger.warning(f"Event system not available: {e}")
+    event_dispatcher = None
+
+# Import modular tickets router (event-driven)
+try:
+    from routes.tickets import router as tickets_router, init_router as init_tickets_router
+    init_tickets_router(db)
+    logger.info("Tickets module (event-driven) initialized")
+except ImportError as e:
+    logger.warning(f"Tickets module not available: {e}")
+    tickets_router = None
+
 # Initialize EFI engine with database and event processor
 init_efi_router(db, efi_event_processor)
 init_notification_router(db)
@@ -4210,6 +4230,11 @@ init_notification_router(db)
 # Include EFI routes (core intelligence engine)
 api_router.include_router(efi_router)
 api_router.include_router(notification_router)
+
+# Include tickets routes (event-driven module)
+if tickets_router:
+    api_router.include_router(tickets_router)
+    logger.info("Tickets router included")
 
 # Include import routes
 if import_router:
