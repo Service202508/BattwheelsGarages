@@ -1,494 +1,398 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, Search, Package, Edit, Trash2, AlertTriangle, Link as LinkIcon, ArrowUpDown } from "lucide-react";
+import { 
+  Search, Plus, Wrench, Package, IndianRupee, Edit, 
+  AlertTriangle, CheckCircle, Tag, FileText
+} from "lucide-react";
 import { API } from "@/App";
 
-const categories = [
-  { value: "battery", label: "Battery" },
-  { value: "motor", label: "Motor" },
-  { value: "charging_equipment", label: "Charging Equipment" },
-  { value: "tools", label: "Tools" },
-  { value: "consumables", label: "Consumables" },
-];
-
-export default function Inventory({ user }) {
-  const [items, setItems] = useState([]);
-  const [suppliers, setSuppliers] = useState([]);
+export default function Inventory() {
+  const [services, setServices] = useState([]);
+  const [parts, setParts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editItem, setEditItem] = useState(null);
-  const [formData, setFormData] = useState({
+  const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState("services");
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [totals, setTotals] = useState({ services: 0, parts: 0 });
+
+  const [newItem, setNewItem] = useState({
     name: "",
     sku: "",
-    category: "",
-    quantity: 0,
-    unit_price: 0,
-    cost_price: 0,
-    min_stock_level: 0,
-    max_stock_level: 1000,
-    reorder_quantity: 10,
-    supplier_id: "",
-    location: "",
+    hsn_sac: "",
+    rate: 0,
+    description: "",
+    tax_rate: 18,
+    stock_quantity: 0,
+    reorder_level: 5
   });
 
   useEffect(() => {
-    fetchInventory();
-    fetchSuppliers();
-  }, []);
+    fetchData();
+  }, [search]);
 
-  const fetchInventory = async () => {
+  const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/inventory`, {
-        credentials: "include",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const [srvRes, prtRes] = await Promise.all([
+        fetch(`${API}/books/services?search=${search}&limit=200`, { headers }),
+        fetch(`${API}/books/parts?search=${search}&limit=200`, { headers })
+      ]);
+
+      const [srvData, prtData] = await Promise.all([
+        srvRes.json(),
+        prtRes.json()
+      ]);
+
+      setServices(srvData.items || []);
+      setParts(prtData.items || []);
+      setTotals({
+        services: srvData.total || 0,
+        parts: prtData.total || 0
       });
-      if (response.ok) {
-        const data = await response.json();
-        setItems(data);
-      }
     } catch (error) {
-      console.error("Failed to fetch inventory:", error);
+      console.error("Failed to fetch data:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchSuppliers = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/suppliers`, {
-        credentials: "include",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setSuppliers(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch suppliers:", error);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!formData.name || !formData.category) {
-      toast.error("Name and category are required");
+  const handleAddItem = async () => {
+    if (!newItem.name) {
+      toast.error("Item name is required");
       return;
     }
 
+    const endpoint = activeTab === "services" ? "/books/services" : "/books/parts";
+    const payload = {
+      ...newItem,
+      type: activeTab === "services" ? "service" : "goods"
+    };
+
     try {
       const token = localStorage.getItem("token");
-      const url = editItem ? `${API}/inventory/${editItem.item_id}` : `${API}/inventory`;
-      const method = editItem ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
+      const res = await fetch(`${API}${endpoint}`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          Authorization: `Bearer ${token}`
         },
-        credentials: "include",
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload)
       });
 
-      if (response.ok) {
-        toast.success(editItem ? "Item updated!" : "Item added!");
-        fetchInventory();
-        resetForm();
+      if (res.ok) {
+        toast.success(`${activeTab === "services" ? "Service" : "Part"} added successfully`);
+        setShowAddDialog(false);
+        setNewItem({
+          name: "", sku: "", hsn_sac: "", rate: 0, description: "",
+          tax_rate: 18, stock_quantity: 0, reorder_level: 5
+        });
+        fetchData();
       } else {
-        toast.error("Operation failed");
+        toast.error("Failed to add item");
       }
     } catch (error) {
-      toast.error("Network error");
+      toast.error("Error adding item");
     }
   };
 
-  const handleDelete = async (itemId) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API}/inventory/${itemId}`, {
-        method: "DELETE",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        credentials: "include",
-      });
-      if (response.ok) {
-        toast.success("Item deleted");
-        fetchInventory();
-      }
-    } catch (error) {
-      toast.error("Failed to delete");
-    }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      sku: "",
-      category: "",
-      quantity: 0,
-      unit_price: 0,
-      cost_price: 0,
-      min_stock_level: 0,
-      max_stock_level: 1000,
-      reorder_quantity: 10,
-      supplier_id: "",
-      location: "",
-    });
-    setEditItem(null);
-    setIsAddOpen(false);
-  };
-
-  const openEdit = (item) => {
-    setEditItem(item);
-    setFormData({
-      name: item.name,
-      sku: item.sku || "",
-      category: item.category,
-      quantity: item.quantity,
-      unit_price: item.unit_price,
-      cost_price: item.cost_price || 0,
-      min_stock_level: item.min_stock_level,
-      max_stock_level: item.max_stock_level || 1000,
-      reorder_quantity: item.reorder_quantity || 10,
-      supplier_id: item.supplier_id || "",
-      location: item.location || "",
-    });
-    setIsAddOpen(true);
-  };
-
-  const filteredItems = items.filter(item =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.sku?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const lowStockItems = items.filter(item => item.quantity < item.min_stock_level);
-  const totalValue = items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
-  const totalCost = items.reduce((sum, item) => sum + (item.quantity * (item.cost_price || 0)), 0);
+  const lowStockParts = parts.filter(p => (p.stock_quantity || 0) <= (p.reorder_level || 5));
 
   return (
-    <div className="space-y-6 animate-fadeIn" data-testid="inventory-page">
+    <div className="space-y-6" data-testid="inventory-page">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">Inventory Management</h1>
-          <p className="text-muted-foreground mt-1">Track stock, allocate materials, manage suppliers.</p>
+          <h1 className="text-2xl font-bold text-gray-900">Inventory</h1>
+          <p className="text-gray-500 text-sm mt-1">
+            {totals.services} services, {totals.parts} parts
+          </p>
         </div>
-        {(user?.role === "admin" || user?.role === "technician") && (
-          <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-            <DialogTrigger asChild>
-              <Button className="glow-primary" data-testid="add-item-btn">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Item
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-card border-white/10 max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>{editItem ? "Edit Item" : "Add New Item"}</DialogTitle>
-                <DialogDescription>
-                  {editItem ? "Update inventory item details." : "Add a new item to the inventory."}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Name *</Label>
-                    <Input
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="bg-background/50"
-                      data-testid="item-name-input"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>SKU</Label>
-                    <Input
-                      value={formData.sku}
-                      onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                      className="bg-background/50"
-                      placeholder="e.g., BAT-48V-001"
-                    />
-                  </div>
+        <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+          <DialogTrigger asChild>
+            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="add-item-btn">
+              <Plus className="h-4 w-4 mr-2" />
+              Add {activeTab === "services" ? "Service" : "Part"}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Add New {activeTab === "services" ? "Service" : "Part"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <Label>Name *</Label>
+                <Input
+                  value={newItem.name}
+                  onChange={(e) => setNewItem({...newItem, name: e.target.value})}
+                  placeholder="Item name"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>SKU</Label>
+                  <Input
+                    value={newItem.sku}
+                    onChange={(e) => setNewItem({...newItem, sku: e.target.value})}
+                    placeholder="SKU code"
+                  />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Category *</Label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value) => setFormData({ ...formData, category: value })}
-                    >
-                      <SelectTrigger className="bg-background/50" data-testid="item-category-select">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Supplier</Label>
-                    <Select
-                      value={formData.supplier_id || "none"}
-                      onValueChange={(value) => setFormData({ ...formData, supplier_id: value === "none" ? "" : value })}
-                    >
-                      <SelectTrigger className="bg-background/50">
-                        <SelectValue placeholder="Select supplier" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">None</SelectItem>
-                        {suppliers.map((sup) => (
-                          <SelectItem key={sup.supplier_id} value={sup.supplier_id}>{sup.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <Label>Quantity</Label>
-                    <Input
-                      type="number"
-                      value={formData.quantity}
-                      onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 0 })}
-                      className="bg-background/50"
-                      data-testid="item-quantity-input"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Cost Price (₹)</Label>
-                    <Input
-                      type="number"
-                      value={formData.cost_price}
-                      onChange={(e) => setFormData({ ...formData, cost_price: parseFloat(e.target.value) || 0 })}
-                      className="bg-background/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Sale Price (₹)</Label>
-                    <Input
-                      type="number"
-                      value={formData.unit_price}
-                      onChange={(e) => setFormData({ ...formData, unit_price: parseFloat(e.target.value) || 0 })}
-                      className="bg-background/50"
-                      data-testid="item-price-input"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Location</Label>
-                    <Input
-                      value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      className="bg-background/50"
-                      placeholder="e.g., Warehouse A"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label>Min Stock</Label>
-                    <Input
-                      type="number"
-                      value={formData.min_stock_level}
-                      onChange={(e) => setFormData({ ...formData, min_stock_level: parseInt(e.target.value) || 0 })}
-                      className="bg-background/50"
-                      data-testid="item-min-stock-input"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Max Stock</Label>
-                    <Input
-                      type="number"
-                      value={formData.max_stock_level}
-                      onChange={(e) => setFormData({ ...formData, max_stock_level: parseInt(e.target.value) || 0 })}
-                      className="bg-background/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Reorder Qty</Label>
-                    <Input
-                      type="number"
-                      value={formData.reorder_quantity}
-                      onChange={(e) => setFormData({ ...formData, reorder_quantity: parseInt(e.target.value) || 0 })}
-                      className="bg-background/50"
-                    />
-                  </div>
+                <div>
+                  <Label>HSN/SAC</Label>
+                  <Input
+                    value={newItem.hsn_sac}
+                    onChange={(e) => setNewItem({...newItem, hsn_sac: e.target.value})}
+                    placeholder="HSN/SAC code"
+                  />
                 </div>
               </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={resetForm} className="border-white/10">
-                  Cancel
-                </Button>
-                <Button onClick={handleSubmit} className="glow-primary" data-testid="save-item-btn">
-                  {editItem ? "Update" : "Add Item"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Rate (₹)</Label>
+                  <Input
+                    type="number"
+                    value={newItem.rate}
+                    onChange={(e) => setNewItem({...newItem, rate: parseFloat(e.target.value)})}
+                  />
+                </div>
+                <div>
+                  <Label>Tax Rate (%)</Label>
+                  <Input
+                    type="number"
+                    value={newItem.tax_rate}
+                    onChange={(e) => setNewItem({...newItem, tax_rate: parseFloat(e.target.value)})}
+                  />
+                </div>
+              </div>
+              {activeTab === "parts" && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Stock Quantity</Label>
+                    <Input
+                      type="number"
+                      value={newItem.stock_quantity}
+                      onChange={(e) => setNewItem({...newItem, stock_quantity: parseInt(e.target.value)})}
+                    />
+                  </div>
+                  <div>
+                    <Label>Reorder Level</Label>
+                    <Input
+                      type="number"
+                      value={newItem.reorder_level}
+                      onChange={(e) => setNewItem({...newItem, reorder_level: parseInt(e.target.value)})}
+                    />
+                  </div>
+                </div>
+              )}
+              <div>
+                <Label>Description</Label>
+                <Input
+                  value={newItem.description}
+                  onChange={(e) => setNewItem({...newItem, description: e.target.value})}
+                  placeholder="Item description"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button>
+              <Button onClick={handleAddItem} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
+                Add {activeTab === "services" ? "Service" : "Part"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
-      {/* Stats */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="metric-card">
+        <Card>
           <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Total Items</p>
-            <p className="text-2xl font-bold mono">{items.length}</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Total Services</p>
+                <p className="text-2xl font-bold text-gray-900">{totals.services}</p>
+              </div>
+              <Wrench className="h-8 w-8 text-[#22EDA9]" />
+            </div>
           </CardContent>
         </Card>
-        <Card className="metric-card">
+        <Card>
           <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Inventory Value</p>
-            <p className="text-2xl font-bold mono">₹{totalValue.toLocaleString()}</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Total Parts</p>
+                <p className="text-2xl font-bold text-gray-900">{totals.parts}</p>
+              </div>
+              <Package className="h-8 w-8 text-blue-500" />
+            </div>
           </CardContent>
         </Card>
-        <Card className="metric-card">
+        <Card>
           <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Cost Value</p>
-            <p className="text-2xl font-bold mono">₹{totalCost.toLocaleString()}</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Low Stock Items</p>
+                <p className="text-2xl font-bold text-orange-600">{lowStockParts.length}</p>
+              </div>
+              <AlertTriangle className="h-8 w-8 text-orange-500" />
+            </div>
           </CardContent>
         </Card>
-        <Card className={`metric-card ${lowStockItems.length > 0 ? 'border-orange-500/30' : ''}`}>
+        <Card>
           <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Low Stock Items</p>
-            <p className={`text-2xl font-bold mono ${lowStockItems.length > 0 ? 'text-orange-400' : ''}`}>
-              {lowStockItems.length}
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">In Stock</p>
+                <p className="text-2xl font-bold text-green-600">{parts.length - lowStockParts.length}</p>
+              </div>
+              <CheckCircle className="h-8 w-8 text-green-500" />
+            </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Low Stock Alert */}
-      {lowStockItems.length > 0 && (
-        <Card className="border-orange-500/30 bg-orange-500/10">
-          <CardContent className="p-4 flex items-center gap-3">
-            <AlertTriangle className="h-5 w-5 text-orange-400" />
-            <p className="text-sm text-orange-400">
-              <span className="font-semibold">{lowStockItems.length} items</span> are below minimum stock level. Consider creating a purchase order.
-            </p>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Search */}
-      <Card className="border-white/10 bg-card/50">
-        <CardContent className="p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by name or SKU..."
-              className="pl-10 bg-background/50"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              data-testid="search-inventory-input"
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Input
+          placeholder="Search items..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-10"
+          data-testid="inventory-search"
+        />
+      </div>
 
-      {/* Inventory Table */}
-      <Card className="border-white/10 bg-card/50">
-        <CardContent className="p-0">
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="services" className="data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black">
+            <Wrench className="h-4 w-4 mr-2" />
+            Services ({services.length})
+          </TabsTrigger>
+          <TabsTrigger value="parts" className="data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black">
+            <Package className="h-4 w-4 mr-2" />
+            Parts ({parts.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="services" className="mt-4">
           {loading ? (
-            <div className="p-8 text-center text-muted-foreground">Loading inventory...</div>
-          ) : filteredItems.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
-              No items found. Add your first inventory item to get started.
-            </div>
+            <div className="text-center py-12 text-gray-500">Loading services...</div>
+          ) : services.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center text-gray-500">
+                No services found. Add your first service to get started.
+              </CardContent>
+            </Card>
           ) : (
-            <Table className="data-table">
-              <TableHeader>
-                <TableRow className="border-white/10 hover:bg-transparent">
-                  <TableHead>Item</TableHead>
-                  <TableHead>SKU</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead className="text-right">In Stock</TableHead>
-                  <TableHead className="text-right">Reserved</TableHead>
-                  <TableHead className="text-right">Available</TableHead>
-                  <TableHead className="text-right">Cost</TableHead>
-                  <TableHead className="text-right">Price</TableHead>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Status</TableHead>
-                  {(user?.role === "admin" || user?.role === "technician") && (
-                    <TableHead className="text-right">Actions</TableHead>
-                  )}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredItems.map((item) => (
-                  <TableRow key={item.item_id} className="border-white/10">
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Package className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-medium">{item.name}</p>
-                          <p className="text-xs text-muted-foreground">{item.location || 'No location'}</p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="mono text-sm">{item.sku || '-'}</TableCell>
-                    <TableCell className="capitalize">{item.category.replace("_", " ")}</TableCell>
-                    <TableCell className="text-right mono">{item.quantity}</TableCell>
-                    <TableCell className="text-right mono text-muted-foreground">{item.reserved_quantity || 0}</TableCell>
-                    <TableCell className="text-right mono font-semibold">
-                      {item.quantity - (item.reserved_quantity || 0)}
-                    </TableCell>
-                    <TableCell className="text-right mono text-muted-foreground">₹{(item.cost_price || 0).toLocaleString()}</TableCell>
-                    <TableCell className="text-right mono">₹{item.unit_price.toLocaleString()}</TableCell>
-                    <TableCell className="text-sm">{item.supplier_name || '-'}</TableCell>
-                    <TableCell>
-                      {item.quantity < item.min_stock_level ? (
-                        <Badge className="badge-danger" variant="outline">Low Stock</Badge>
-                      ) : item.quantity > item.max_stock_level ? (
-                        <Badge className="badge-warning" variant="outline">Overstocked</Badge>
-                      ) : (
-                        <Badge className="badge-success" variant="outline">In Stock</Badge>
-                      )}
-                    </TableCell>
-                    {(user?.role === "admin" || user?.role === "technician") && (
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => openEdit(item)}
-                            data-testid={`edit-item-${item.item_id}`}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          {user?.role === "admin" && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDelete(item.item_id)}
-                              className="hover:text-destructive"
-                              data-testid={`delete-item-${item.item_id}`}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+            <div className="grid gap-3">
+              {services.map((service) => (
+                <Card key={service.item_id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-1">
+                          <h3 className="font-semibold text-gray-900">{service.name}</h3>
+                          {service.hsn_sac && (
+                            <Badge variant="outline" className="text-xs">
+                              HSN: {service.hsn_sac}
+                            </Badge>
                           )}
                         </div>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                        <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                          {service.sku && (
+                            <span className="flex items-center gap-1">
+                              <Tag className="h-3.5 w-3.5" />
+                              {service.sku}
+                            </span>
+                          )}
+                          {service.description && (
+                            <span className="flex items-center gap-1">
+                              <FileText className="h-3.5 w-3.5" />
+                              {service.description.substring(0, 50)}...
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-gray-900">₹{service.rate?.toLocaleString('en-IN')}</p>
+                        <p className="text-xs text-gray-400">+ {service.tax_rate || 18}% GST</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           )}
-        </CardContent>
-      </Card>
+        </TabsContent>
+
+        <TabsContent value="parts" className="mt-4">
+          {loading ? (
+            <div className="text-center py-12 text-gray-500">Loading parts...</div>
+          ) : parts.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center text-gray-500">
+                No parts found. Add your first part to get started.
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-3">
+              {parts.map((part) => {
+                const isLowStock = (part.stock_quantity || 0) <= (part.reorder_level || 5);
+                return (
+                  <Card key={part.item_id} className={`hover:shadow-md transition-shadow ${isLowStock ? 'border-orange-200 bg-orange-50/50' : ''}`}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-1">
+                            <h3 className="font-semibold text-gray-900">{part.name}</h3>
+                            {isLowStock && (
+                              <Badge className="bg-orange-100 text-orange-700 text-xs">
+                                <AlertTriangle className="h-3 w-3 mr-1" />
+                                Low Stock
+                              </Badge>
+                            )}
+                            {part.hsn_sac && (
+                              <Badge variant="outline" className="text-xs">
+                                HSN: {part.hsn_sac}
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                            {part.sku && (
+                              <span className="flex items-center gap-1">
+                                <Tag className="h-3.5 w-3.5" />
+                                {part.sku}
+                              </span>
+                            )}
+                            <span className="flex items-center gap-1">
+                              <Package className="h-3.5 w-3.5" />
+                              Stock: {part.stock_quantity || 0}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-gray-900">₹{part.rate?.toLocaleString('en-IN')}</p>
+                          <p className="text-xs text-gray-400">+ {part.tax_rate || 18}% GST</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
