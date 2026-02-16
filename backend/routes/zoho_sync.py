@@ -29,7 +29,8 @@ class ZohoOAuth:
         self.client_id = os.environ.get("ZOHO_CLIENT_ID", "")
         self.client_secret = os.environ.get("ZOHO_CLIENT_SECRET", "")
         self.refresh_token = os.environ.get("ZOHO_REFRESH_TOKEN", "")
-        self.base_url = os.environ.get("ZOHO_API_BASE_URL", "https://www.zohoapis.com")
+        self.base_url = os.environ.get("ZOHO_API_BASE_URL", "https://www.zohoapis.in")
+        self.accounts_url = os.environ.get("ZOHO_ACCOUNTS_URL", "https://accounts.zoho.in")
         self.access_token = None
         self.token_expiry = None
         self.organization_id = None
@@ -47,7 +48,7 @@ class ZohoOAuth:
     
     async def _refresh_token(self) -> str:
         """Refresh access token using refresh token"""
-        url = "https://accounts.zoho.com/oauth/v2/token"
+        url = f"{self.accounts_url}/oauth/v2/token"
         
         params = {
             "refresh_token": self.refresh_token,
