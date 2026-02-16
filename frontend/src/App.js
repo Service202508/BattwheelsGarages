@@ -99,7 +99,7 @@ export const useAuth = () => {
 };
 
 // Protected Route Component
-const ProtectedRoute = ({ children, user, loading }) => {
+const ProtectedRoute = ({ children, user, loading, allowedRoles = null }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -122,7 +122,24 @@ const ProtectedRoute = ({ children, user, loading }) => {
     return null;
   }
 
+  // Role-based access check
+  if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
+    // Redirect customer to customer portal, others to dashboard
+    if (currentUser.role === "customer") {
+      return <Navigate to="/customer" replace />;
+    }
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return children;
+};
+
+// Role-based redirect after login
+const RoleBasedRedirect = ({ user }) => {
+  if (user?.role === "customer") {
+    return <Navigate to="/customer" replace />;
+  }
+  return <Navigate to="/dashboard" replace />;
 };
 
 function AppRouter() {
