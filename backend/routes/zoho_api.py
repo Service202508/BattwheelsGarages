@@ -2126,6 +2126,95 @@ async def void_bill(bill_id: str):
     )
     return {"code": 0, "message": "Bill voided successfully"}
 
+@router.post("/bills/{bill_id}/payments")
+async def record_bill_payment(bill_id: str, amount: float, payment_mode: str = "cash", reference_number: str = "", date: str = ""):
+    """Record a payment directly against a bill"""
+    db = get_db()
+    bill = await db.bills.find_one({"bill_id": bill_id}, {"_id": 0})
+    if not bill:
+        raise HTTPException(status_code=404, detail="Bill not found")
+    
+    if bill["status"] in ["void", "paid"]:
+        raise HTTPException(status_code=400, detail=f"Cannot record payment for {bill['status']} bill")
+    
+    if amount > bill["balance"]:
+        raise HTTPException(status_code=400, detail="Payment amount exceeds bill balance")
+    
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    payment_id = f"VPMT-{uuid.uuid4().hex[:12].upper()}"
+    payment_number = await get_next_number(db, "vendorpayments", "VPMT")
+    
+    payment_dict = {
+        "payment_id": payment_id,
+        "payment_number": payment_number,
+        "vendor_id": bill["vendor_id"],
+        "vendor_name": bill["vendor_name"],
+        "payment_mode": payment_mode,
+        "amount": amount,
+        "date": date or today,
+        "reference_number": reference_number,
+        "bills": [{"bill_id": bill_id, "bill_number": bill.get("bill_number"), "amount_applied": amount}],
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.vendorpayments.insert_one(payment_dict)
+    
+    new_balance = bill["balance"] - amount
+    new_status = "paid" if new_balance <= 0 else "partial"
+    
+    await db.bills.update_one(
+        {"bill_id": bill_id},
+        {"$set": {"balance": new_balance, "status": new_status, "last_modified_time": datetime.now(timezone.utc).isoformat()},
+         "$push": {"payments": {"payment_id": payment_id, "amount": amount, "date": date or today}}}
+    )
+    
+    await db.contacts.update_one(
+        {"contact_id": bill["vendor_id"]},
+        {"$inc": {"outstanding_payable_amount": -amount}}
+    )
+    
+    del payment_dict["_id"]
+    return {"code": 0, "message": "Payment recorded", "payment": payment_dict, "bill_balance": new_balance}
+
+@router.get("/bills/{bill_id}/payments")
+async def get_bill_payments(bill_id: str):
+    """Get all payments applied to a bill"""
+    db = get_db()
+    payments = await db.vendorpayments.find({"bills.bill_id": bill_id}, {"_id": 0}).to_list(length=100)
+    return {"code": 0, "payments": payments}
+
+@router.post("/bills/{bill_id}/clone")
+async def clone_bill(bill_id: str):
+    """Create a copy of an existing bill"""
+    db = get_db()
+    bill = await db.bills.find_one({"bill_id": bill_id}, {"_id": 0})
+    if not bill:
+        raise HTTPException(status_code=404, detail="Bill not found")
+    
+    new_bill_id = f"BILL-{uuid.uuid4().hex[:12].upper()}"
+    new_bill_number = await get_next_number(db, "bills", "BILL")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    due_date = (datetime.now(timezone.utc) + timedelta(days=bill.get("payment_terms", 30))).strftime("%Y-%m-%d")
+    
+    new_bill = {
+        **bill,
+        "bill_id": new_bill_id,
+        "bill_number": new_bill_number,
+        "date": today,
+        "due_date": due_date,
+        "status": "draft",
+        "balance": bill.get("total", 0),
+        "payments": [],
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    new_bill.pop("_id", None)
+    new_bill.pop("from_purchaseorder_id", None)
+    
+    await db.bills.insert_one(new_bill)
+    del new_bill["_id"]
+    
+    return {"code": 0, "message": "Bill cloned", "bill": new_bill}
+
 # ============== CREDIT NOTES MODULE ==============
 # Workflow: Create -> Apply to Invoice -> Refund -> Delete
 
