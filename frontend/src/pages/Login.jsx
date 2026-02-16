@@ -114,7 +114,7 @@ export default function Login({ onLogin }) {
           <div className="mb-10">
             <div className="inline-flex items-center gap-4 bg-white/15 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20 shadow-lg">
               <img 
-                src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/ygo0wrln_68469546%20%281%29.png" 
+                src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/0momdtv4_68469546%20%282%29.png" 
                 alt="Battwheels Logo" 
                 className="h-14 w-auto"
               />
