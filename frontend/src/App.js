@@ -35,6 +35,13 @@ import Bills from "@/pages/Bills";
 import CreditNotes from "@/pages/CreditNotes";
 import Banking from "@/pages/Banking";
 import Reports from "@/pages/Reports";
+import VendorCredits from "@/pages/VendorCredits";
+import ChartOfAccounts from "@/pages/ChartOfAccounts";
+import JournalEntries from "@/pages/JournalEntries";
+import RecurringTransactions from "@/pages/RecurringTransactions";
+import Projects from "@/pages/Projects";
+import Taxes from "@/pages/Taxes";
+import DeliveryChallans from "@/pages/DeliveryChallans";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
