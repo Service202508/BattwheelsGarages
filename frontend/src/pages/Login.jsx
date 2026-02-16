@@ -154,15 +154,15 @@ export default function Login({ onLogin }) {
       {/* Right Panel - Auth Form */}
       <div className="flex-1 flex flex-col bg-white relative">
         {/* Top Right Logo */}
-        <div className="hidden lg:flex justify-end mb-4 bg-white -mx-6 sm:-mx-8 px-6 sm:px-8 py-4">
+        <div className="hidden lg:flex justify-end px-6 sm:px-8 py-6">
           <img 
             src="https://customer-assets.emergentagent.com/job_3a595ece-6ef9-4ac6-b3b4-0464858ff726/artifacts/trnes6dt_Screenshot%202026-02-16%20at%2010.25.22%E2%80%AFPM.png" 
             alt="Battwheels" 
-            className="h-14 w-auto"
+            className="h-16 w-auto"
           />
         </div>
 
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center p-6 sm:p-8">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden flex justify-center mb-8">
