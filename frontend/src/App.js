@@ -42,6 +42,9 @@ import RecurringTransactions from "@/pages/RecurringTransactions";
 import Projects from "@/pages/Projects";
 import Taxes from "@/pages/Taxes";
 import DeliveryChallans from "@/pages/DeliveryChallans";
+import Items from "@/pages/Items";
+import PriceLists from "@/pages/PriceLists";
+import InventoryAdjustments from "@/pages/InventoryAdjustments";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
