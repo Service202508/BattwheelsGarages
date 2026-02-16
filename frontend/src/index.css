@@ -21,32 +21,32 @@ code, .mono {
 
 @layer base {
     :root {
-        /* Battwheels OS - Light Theme with Green Accents */
+        /* Battwheels OS - Light Theme with Emerald Green Accents */
         --background: 0 0% 100%;           /* #FFFFFF - White */
         --foreground: 150 10% 10%;         /* Dark text */
         --card: 0 0% 98%;                  /* #FAFAFA - Light gray cards */
         --card-foreground: 150 10% 10%;   /* Dark text */
         --popover: 0 0% 100%;              /* #FFFFFF */
         --popover-foreground: 150 10% 10%;
-        --primary: 155 74% 16%;            /* #0B462F - Dark Green Brand */
-        --primary-foreground: 0 0% 100%;   /* White */
+        --primary: 160 85% 53%;            /* #22EDA9 - Vibrant Emerald Green */
+        --primary-foreground: 0 0% 0%;     /* Black text on primary */
         --secondary: 150 10% 96%;          /* Light gray */
         --secondary-foreground: 150 10% 10%;
         --muted: 150 10% 96%;              /* Light gray */
         --muted-foreground: 150 10% 40%;   /* Medium gray text */
-        --accent: 148 58% 40%;             /* #2F8F5C - Darker Green for light bg */
-        --accent-foreground: 0 0% 100%;    /* White */
+        --accent: 160 85% 53%;             /* #22EDA9 - Vibrant Emerald Green */
+        --accent-foreground: 0 0% 0%;      /* Black */
         --destructive: 0 84% 50%;          /* Red */
         --destructive-foreground: 0 0% 100%;
         --border: 150 10% 90%;             /* Light border */
         --input: 150 10% 90%;              /* Light input border */
-        --ring: 148 58% 40%;               /* Green ring */
-        --chart-1: 148 58% 40%;            /* Green */
+        --ring: 160 85% 53%;               /* #22EDA9 ring */
+        --chart-1: 160 85% 53%;            /* #22EDA9 */
         --chart-2: 38 92% 50%;             /* Amber */
         --chart-3: 217 91% 60%;            /* Blue */
         --chart-4: 262 83% 58%;            /* Purple */
         --chart-5: 0 84% 50%;              /* Red */
-        --radius: 0.375rem;                /* Slightly rounded */
+        --radius: 0.5rem;                  /* Rounded corners */
     }
 }
 
