@@ -236,7 +236,7 @@ export default function PurchaseOrders({ user }) {
                 Create PO
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-card border-white/10 max-w-3xl">
+            <DialogContent className="bg-card border-white/10 max-w-3xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Create Purchase Order</DialogTitle>
                 <DialogDescription>Create a new purchase order for inventory restocking.</DialogDescription>
@@ -483,7 +483,7 @@ export default function PurchaseOrders({ user }) {
 
       {/* Receive Stock Dialog */}
       <Dialog open={isReceiveOpen} onOpenChange={setIsReceiveOpen}>
-        <DialogContent className="bg-card border-white/10">
+        <DialogContent className="bg-card border-white/10 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Receive Stock</DialogTitle>
             <DialogDescription>Mark items as received for PO: {selectedPO?.po_number}</DialogDescription>
