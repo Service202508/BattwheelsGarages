@@ -4378,6 +4378,14 @@ except ImportError as e:
     logger.warning(f"HR module not available: {e}")
     hr_router = None
 
+# Import productivity router
+try:
+    from routes.productivity import router as productivity_router
+    logger.info("Productivity module initialized")
+except ImportError as e:
+    logger.warning(f"Productivity module not available: {e}")
+    productivity_router = None
+
 # Initialize EFI engine with database and event processor
 init_efi_router(db, efi_event_processor)
 init_notification_router(db)
