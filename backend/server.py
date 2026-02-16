@@ -1346,137 +1346,14 @@ async def update_vehicle_status(vehicle_id: str, status: str, request: Request):
     await db.vehicles.update_one({"vehicle_id": vehicle_id}, {"$set": {"current_status": status}})
     return {"message": "Status updated"}
 
-# ==================== TICKET ROUTES ====================
-
-@api_router.post("/tickets")
-async def create_ticket(ticket_data: TicketCreate, request: Request):
-    user = await require_auth(request)
-    
-    # Get or create customer
-    customer_id = user.user_id
-    customer_name = ticket_data.customer_name
-    
-    # If vehicle_id provided, get customer from vehicle
-    if ticket_data.vehicle_id:
-        vehicle = await db.vehicles.find_one({"vehicle_id": ticket_data.vehicle_id}, {"_id": 0})
-        if vehicle:
-            customer_name = customer_name or vehicle.get("owner_name")
-    
-    # Initialize status history with "open" status
-    initial_status_history = [{
-        "status": "open",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "updated_by": user.name if hasattr(user, "name") else "System"
-    }]
-    
-    # Create ticket with all new fields
-    ticket = Ticket(
-        # Vehicle Info
-        vehicle_id=ticket_data.vehicle_id,
-        vehicle_type=ticket_data.vehicle_type,
-        vehicle_model=ticket_data.vehicle_model,
-        vehicle_number=ticket_data.vehicle_number,
-        # Customer Info
-        customer_id=customer_id,
-        customer_type=ticket_data.customer_type,
-        customer_name=customer_name,
-        contact_number=ticket_data.contact_number,
-        customer_email=ticket_data.customer_email,
-        # Complaint Details
-        title=ticket_data.title,
-        description=ticket_data.description,
-        category=ticket_data.category,
-        issue_type=ticket_data.issue_type or ticket_data.category,
-        resolution_type=ticket_data.resolution_type,
-        priority=ticket_data.priority,
-        # Location
-        incident_location=ticket_data.incident_location,
-        # Attachments
-        attachments_count=ticket_data.attachments_count,
-        estimated_cost=ticket_data.estimated_cost,
-        # Job Card
-        status_history=initial_status_history
-    )
-    doc = ticket.model_dump()
-    doc['created_at'] = doc['created_at'].isoformat()
-    doc['updated_at'] = doc['updated_at'].isoformat()
-    await db.tickets.insert_one(doc)
-    
-    # Update vehicle status if vehicle_id provided
-    if ticket_data.vehicle_id:
-        await db.vehicles.update_one(
-            {"vehicle_id": ticket_data.vehicle_id},
-            {"$set": {"current_status": "in_workshop"}, "$inc": {"total_visits": 1}}
-        )
-    
-    return ticket.model_dump()
-
-@api_router.get("/tickets")
-async def get_tickets(request: Request, status: Optional[str] = None):
-    user = await require_auth(request)
-    query = {}
-    if status:
-        query["status"] = status
-    
-    if user.role == "customer":
-        query["customer_id"] = user.user_id
-    elif user.role == "technician":
-        query["$or"] = [
-            {"assigned_technician_id": user.user_id},
-            {"assigned_technician_id": None}
-        ]
-    
-    tickets = await db.tickets.find(query, {"_id": 0}).to_list(1000)
-    return tickets
-
-@api_router.get("/tickets/{ticket_id}")
-async def get_ticket(ticket_id: str, request: Request):
-    await require_auth(request)
-    ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
-    if not ticket:
-        raise HTTPException(status_code=404, detail="Ticket not found")
-    return ticket
-
-@api_router.put("/tickets/{ticket_id}")
-async def update_ticket(ticket_id: str, update: TicketUpdate, request: Request):
-    user = await require_technician_or_admin(request)
-    
-    # Get existing ticket first
-    existing_ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
-    if not existing_ticket:
-        raise HTTPException(status_code=404, detail="Ticket not found")
-    
-    update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
-    update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
-    
-    # Get technician name if assigning
-    if update.assigned_technician_id:
-        tech = await db.users.find_one({"user_id": update.assigned_technician_id}, {"_id": 0})
-        if tech:
-            update_dict["assigned_technician_name"] = tech.get("name")
-    
-    # Append to status history if status is changing
-    if update.status and update.status != existing_ticket.get("status"):
-        current_history = existing_ticket.get("status_history", [])
-        current_history.append({
-            "status": update.status,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "updated_by": user.name if hasattr(user, "name") else "System"
-        })
-        update_dict["status_history"] = current_history
-    
-    if update.status == "resolved":
-        update_dict["resolved_at"] = datetime.now(timezone.utc).isoformat()
-        # Update vehicle status
-        if existing_ticket.get("vehicle_id"):
-            await db.vehicles.update_one(
-                {"vehicle_id": existing_ticket["vehicle_id"]},
-                {"$set": {"current_status": "serviced"}}
-            )
-    
-    await db.tickets.update_one({"ticket_id": ticket_id}, {"$set": update_dict})
-    ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
-    return ticket
+# ==================== TICKET ROUTES (MIGRATED TO /routes/tickets.py) ====================
+# Old monolithic ticket routes have been moved to the event-driven tickets module.
+# See: /app/backend/routes/tickets.py and /app/backend/services/ticket_service.py
+# The new module:
+# - Emits events (TICKET_CREATED, TICKET_UPDATED, TICKET_CLOSED)
+# - Integrates with EFI AI matching pipeline
+# - Triggers confidence engine on ticket closure
+# - Auto-creates draft failure cards for undocumented issues
 
 # ==================== INVENTORY ROUTES ====================
 
