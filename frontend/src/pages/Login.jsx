@@ -6,94 +6,100 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Mail, Lock, User, Zap, Bike, Car } from "lucide-react";
+import { Mail, Lock, User, Zap } from "lucide-react";
 import { API } from "@/App";
 
-// Animated EV Icons Component
-const AnimatedEVIcons = () => {
-  const [icons, setIcons] = useState([]);
+// Standard EV Vehicle Icons
+const BikeIcon = ({ className }) => (
+  <svg viewBox="0 0 64 64" fill="none" className={className}>
+    <circle cx="14" cy="46" r="10" stroke="currentColor" strokeWidth="3" fill="none"/>
+    <circle cx="50" cy="46" r="10" stroke="currentColor" strokeWidth="3" fill="none"/>
+    <path d="M14 46L24 26H40L50 46" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M24 26L32 18L40 26" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="32" cy="18" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
+    <path d="M28 36H36" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+  </svg>
+);
 
+const AutoIcon = ({ className }) => (
+  <svg viewBox="0 0 64 64" fill="none" className={className}>
+    <circle cx="12" cy="48" r="8" stroke="currentColor" strokeWidth="3" fill="none"/>
+    <circle cx="52" cy="48" r="8" stroke="currentColor" strokeWidth="3" fill="none"/>
+    <path d="M20 48H44" stroke="currentColor" strokeWidth="3"/>
+    <path d="M8 36L16 20H48L56 36" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M8 36V44H20" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M56 36V44H44" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M20 28H44" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="32" cy="12" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
+    <path d="M32 16V20" stroke="currentColor" strokeWidth="2"/>
+  </svg>
+);
+
+const CarIcon = ({ className }) => (
+  <svg viewBox="0 0 64 64" fill="none" className={className}>
+    <circle cx="16" cy="46" r="8" stroke="currentColor" strokeWidth="3" fill="none"/>
+    <circle cx="48" cy="46" r="8" stroke="currentColor" strokeWidth="3" fill="none"/>
+    <path d="M8 38H56" stroke="currentColor" strokeWidth="3"/>
+    <path d="M8 38V30C8 28 10 26 12 26H20L26 18H38L44 26H52C54 26 56 28 56 30V38" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M24 38V32H40V38" stroke="currentColor" strokeWidth="2"/>
+    <rect x="12" y="30" width="8" height="4" rx="1" stroke="currentColor" strokeWidth="2"/>
+    <rect x="44" y="30" width="8" height="4" rx="1" stroke="currentColor" strokeWidth="2"/>
+  </svg>
+);
+
+const BoltIcon = ({ className }) => (
+  <svg viewBox="0 0 64 64" fill="none" className={className}>
+    <path d="M36 8L16 36H30L28 56L48 28H34L36 8Z" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+// Animated Icons Row Component
+const AnimatedIconsRow = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  
   useEffect(() => {
-    // Generate random icons
-    const generateIcon = () => {
-      const types = ['2W', '3W', '4W', 'bolt'];
-      const type = types[Math.floor(Math.random() * types.length)];
-      return {
-        id: Math.random(),
-        type,
-        left: Math.random() * 80 + 10,
-        top: Math.random() * 80 + 10,
-        delay: Math.random() * 2,
-        duration: 3 + Math.random() * 2,
-      };
-    };
-
-    // Initial icons
-    const initialIcons = Array.from({ length: 8 }, generateIcon);
-    setIcons(initialIcons);
-
-    // Add new icons periodically
     const interval = setInterval(() => {
-      setIcons(prev => {
-        const newIcons = prev.filter(icon => icon.id > Date.now() - 5000);
-        return [...newIcons, generateIcon()];
-      });
+      setActiveIndex(prev => (prev + 1) % 4);
     }, 1500);
-
     return () => clearInterval(interval);
   }, []);
 
-  const renderIcon = (type) => {
-    switch (type) {
-      case '2W':
-        return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full">
-            <circle cx="5" cy="17" r="3" />
-            <circle cx="19" cy="17" r="3" />
-            <path d="M12 17V5l4 4" />
-            <path d="M8 17h8" />
-            <path d="M5 14l7-9" />
-          </svg>
-        );
-      case '3W':
-        return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full">
-            <circle cx="6" cy="18" r="2" />
-            <circle cx="18" cy="18" r="2" />
-            <circle cx="18" cy="10" r="2" />
-            <path d="M6 18h8M18 12v4M8 18V8h8" />
-            <rect x="7" y="6" width="6" height="4" rx="1" />
-          </svg>
-        );
-      case '4W':
-        return (
-          <Car className="w-full h-full" />
-        );
-      case 'bolt':
-        return (
-          <Zap className="w-full h-full" />
-        );
-      default:
-        return null;
-    }
-  };
+  const icons = [
+    { Icon: BikeIcon, label: "2W" },
+    { Icon: AutoIcon, label: "3W" },
+    { Icon: CarIcon, label: "4W" },
+    { Icon: BoltIcon, label: "EV" },
+  ];
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {icons.map((icon) => (
-        <div
-          key={icon.id}
-          className="absolute animate-float-fade"
-          style={{
-            left: `${icon.left}%`,
-            top: `${icon.top}%`,
-            animationDelay: `${icon.delay}s`,
-            animationDuration: `${icon.duration}s`,
-          }}
+    <div className="flex justify-center items-end gap-8 mb-10">
+      {icons.map((item, index) => (
+        <div 
+          key={item.label}
+          className={`flex flex-col items-center transition-all duration-500 ${
+            activeIndex === index 
+              ? 'scale-110 opacity-100' 
+              : 'scale-100 opacity-40'
+          }`}
         >
-          <div className={`w-10 h-10 ${icon.type === 'bolt' ? 'text-[#22EDA9]' : 'text-gray-300'}`}>
-            {renderIcon(icon.type)}
+          <div className={`transition-all duration-500 ${
+            activeIndex === index 
+              ? 'text-[#22EDA9]' 
+              : 'text-gray-400'
+          }`}>
+            <item.Icon className={`${
+              index === 3 ? 'w-10 h-10' : 
+              index === 2 ? 'w-16 h-16' : 
+              index === 1 ? 'w-14 h-14' : 'w-12 h-12'
+            }`} />
           </div>
+          <span className={`text-xs font-medium mt-2 transition-all duration-500 ${
+            activeIndex === index 
+              ? 'text-[#22EDA9]' 
+              : 'text-gray-400'
+          }`}>
+            {item.label}
+          </span>
         </div>
       ))}
     </div>
@@ -182,63 +188,31 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="min-h-screen flex bg-white">
-      {/* Left Panel - Clean Hero with Animated Icons */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-gray-50 to-white">
-        {/* Animated Background Icons */}
-        <AnimatedEVIcons />
-        
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: `radial-gradient(circle, #22EDA9 1px, transparent 1px)`,
-          backgroundSize: '40px 40px'
+      {/* Left Panel - Clean Hero */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-[0.4]" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, #e5e7eb 1px, transparent 0)`,
+          backgroundSize: '32px 32px'
         }}></div>
 
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-center items-center w-full px-12">
-          {/* Main Heading */}
           <div className="text-center max-w-md">
-            {/* EV Vehicle Icons Row */}
-            <div className="flex justify-center items-center gap-6 mb-8">
-              <div className="w-12 h-12 text-gray-400 hover:text-[#22EDA9] transition-colors duration-300">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <circle cx="5" cy="17" r="3" />
-                  <circle cx="19" cy="17" r="3" />
-                  <path d="M12 17V5l4 4" />
-                  <path d="M8 17h8" />
-                  <path d="M5 14l7-9" />
-                </svg>
-              </div>
-              <div className="w-14 h-14 text-gray-400 hover:text-[#22EDA9] transition-colors duration-300">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <circle cx="6" cy="18" r="2" />
-                  <circle cx="18" cy="18" r="2" />
-                  <circle cx="18" cy="10" r="2" />
-                  <path d="M6 18h8M18 12v4M8 18V8h8" />
-                  <rect x="7" y="6" width="6" height="4" rx="1" />
-                </svg>
-              </div>
-              <div className="w-16 h-16 text-gray-400 hover:text-[#22EDA9] transition-colors duration-300">
-                <Car className="w-full h-full" />
-              </div>
-            </div>
+            {/* Animated Vehicle Icons */}
+            <AnimatedIconsRow />
 
-            {/* Bolt Icon */}
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 bg-[#22EDA9]/10 rounded-2xl flex items-center justify-center">
-                <Zap className="w-8 h-8 text-[#22EDA9]" />
-              </div>
-            </div>
-
+            {/* Main Heading */}
             <h1 className="text-3xl font-bold text-gray-900 mb-3">
               EV Failure Intelligence
             </h1>
             
-            <p className="text-lg text-[#22EDA9] font-medium mb-4">
+            <p className="text-lg text-[#22EDA9] font-semibold mb-4">
               Your Onsite EV Resolution Partner
             </p>
             
-            <p className="text-gray-500 text-sm leading-relaxed">
-              AI-powered diagnostics for 2W, 3W & 4W electric vehicles. 
+            <p className="text-gray-500 text-sm leading-relaxed max-w-sm mx-auto">
+              AI-powered diagnostics for electric 2-wheelers, 3-wheelers & 4-wheelers. 
               Transform every repair into enterprise-grade knowledge.
             </p>
           </div>
@@ -258,13 +232,18 @@ export default function Login({ onLogin }) {
 
         <div className="flex-1 flex items-center justify-center p-6 sm:p-8">
         <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <div className="lg:hidden flex justify-center mb-8">
+          {/* Mobile Logo & Icons */}
+          <div className="lg:hidden flex flex-col items-center mb-8">
             <img 
               src="https://customer-assets.emergentagent.com/job_3a595ece-6ef9-4ac6-b3b4-0464858ff726/artifacts/trnes6dt_Screenshot%202026-02-16%20at%2010.25.22%E2%80%AFPM.png" 
               alt="Battwheels" 
-              className="h-12 w-auto"
+              className="h-12 w-auto mb-4"
             />
+            <div className="flex gap-4 text-gray-400">
+              <BikeIcon className="w-8 h-8" />
+              <AutoIcon className="w-9 h-9" />
+              <CarIcon className="w-10 h-10" />
+            </div>
           </div>
 
           <Card className="border border-gray-100 shadow-xl rounded-2xl overflow-hidden">
@@ -453,31 +432,6 @@ export default function Login({ onLogin }) {
         </div>
         </div>
       </div>
-
-      {/* Global Styles for Animation */}
-      <style>{`
-        @keyframes float-fade {
-          0% {
-            opacity: 0;
-            transform: translateY(20px) scale(0.8);
-          }
-          20% {
-            opacity: 0.6;
-            transform: translateY(0) scale(1);
-          }
-          80% {
-            opacity: 0.6;
-            transform: translateY(-10px) scale(1);
-          }
-          100% {
-            opacity: 0;
-            transform: translateY(-30px) scale(0.8);
-          }
-        }
-        .animate-float-fade {
-          animation: float-fade 4s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 }
