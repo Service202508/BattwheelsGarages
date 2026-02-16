@@ -74,7 +74,7 @@ class EmbeddingService:
         text_hash = self._compute_text_hash(text)
         
         # Check cache
-        if use_cache and self.db:
+        if use_cache and self.db is not None:
             cached = await self.db.embedding_cache.find_one(
                 {"text_hash": text_hash},
                 {"_id": 0, "embedding": 1}
@@ -93,7 +93,7 @@ class EmbeddingService:
             embedding = response.data[0].embedding
             
             # Cache the result
-            if self.db:
+            if self.db is not None:
                 await self.db.embedding_cache.update_one(
                     {"text_hash": text_hash},
                     {"$set": {
