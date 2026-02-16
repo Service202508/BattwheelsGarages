@@ -191,7 +191,7 @@ export default function Inventory({ user }) {
                 Add Item
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-card border-white/10 max-w-2xl">
+            <DialogContent className="bg-card border-white/10 max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{editItem ? "Edit Item" : "Add New Item"}</DialogTitle>
                 <DialogDescription>
