@@ -4080,6 +4080,26 @@ except ImportError as e:
     logger.warning(f"Fault Tree Import not available: {e}")
     import_router = None
 
+# ==================== ADVANCED SEARCH & EMBEDDINGS ====================
+
+# Initialize embedding service (for vector semantic search)
+embedding_service = None
+try:
+    from services.embedding_service import init_embedding_service
+    embedding_service, card_embedder = init_embedding_service(db)
+    logger.info("Embedding service initialized (OpenAI text-embedding-3-small)")
+except Exception as e:
+    logger.warning(f"Embedding service not available: {e}")
+
+# Initialize advanced search service
+search_service = None
+try:
+    from services.search_service import init_search_service
+    search_service = init_search_service(db, embedding_service)
+    logger.info("Advanced Search service initialized (hybrid text+vector)")
+except Exception as e:
+    logger.warning(f"Search service not available: {e}")
+
 # ==================== EVENT-DRIVEN ARCHITECTURE ====================
 
 # Initialize the event system (central event dispatcher + handlers)
