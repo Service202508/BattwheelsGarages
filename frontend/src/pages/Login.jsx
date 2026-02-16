@@ -167,8 +167,8 @@ export default function Login({ onLogin }) {
           {/* Mobile Logo */}
           <div className="lg:hidden flex justify-center mb-8">
             <img 
-              src="https://customer-assets.emergentagent.com/job_335b5085-49dc-4853-90f5-28d59181be65/artifacts/d9i6j4g3_Battwheels%20Logo%20New%20Transparent.png" 
-              alt="Battwheels Garages" 
+              src="https://customer-assets.emergentagent.com/job_3a595ece-6ef9-4ac6-b3b4-0464858ff726/artifacts/trnes6dt_Screenshot%202026-02-16%20at%2010.25.22%E2%80%AFPM.png" 
+              alt="Battwheels" 
               className="h-12 w-auto"
             />
           </div>
