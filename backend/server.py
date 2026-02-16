@@ -1945,8 +1945,11 @@ async def create_invoice(data: InvoiceCreate, request: Request):
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     
-    # Get vehicle and customer details
-    vehicle = await db.vehicles.find_one({"vehicle_id": ticket["vehicle_id"]}, {"_id": 0})
+    # Get vehicle and customer details (vehicle_id may be None)
+    vehicle_id = ticket.get("vehicle_id")
+    vehicle = None
+    if vehicle_id:
+        vehicle = await db.vehicles.find_one({"vehicle_id": vehicle_id}, {"_id": 0})
     
     # Calculate totals
     subtotal = sum(item.get("amount", 0) for item in data.line_items)
@@ -1960,12 +1963,12 @@ async def create_invoice(data: InvoiceCreate, request: Request):
         invoice_number=invoice_number,
         sales_id=data.sales_id,
         ticket_id=data.ticket_id,
-        customer_id=ticket["customer_id"],
-        customer_name=vehicle.get("owner_name", "") if vehicle else "",
-        customer_email=vehicle.get("owner_email") if vehicle else None,
-        customer_phone=vehicle.get("owner_phone") if vehicle else None,
-        vehicle_id=ticket["vehicle_id"],
-        vehicle_details=f"{vehicle['make']} {vehicle['model']} ({vehicle['registration_number']})" if vehicle else None,
+        customer_id=ticket.get("customer_id", user.user_id),
+        customer_name=ticket.get("customer_name") or (vehicle.get("owner_name", "") if vehicle else ""),
+        customer_email=ticket.get("customer_email") or (vehicle.get("owner_email") if vehicle else None),
+        customer_phone=ticket.get("contact_number") or (vehicle.get("owner_phone") if vehicle else None),
+        vehicle_id=vehicle_id,
+        vehicle_details=f"{vehicle['make']} {vehicle['model']} ({vehicle['registration_number']})" if vehicle else ticket.get("vehicle_number"),
         line_items=data.line_items,
         subtotal=subtotal,
         tax_amount=tax_amount,
