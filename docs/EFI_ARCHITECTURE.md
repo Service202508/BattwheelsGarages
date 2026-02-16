@@ -167,10 +167,13 @@
 
 The FAILURE_CARD is the **most important entity** in the system. It represents structured, reusable repair knowledge.
 
+**EFI is about reasoning, not just documentation.**
+
 ```python
 class FailureCard:
     """
     Central Knowledge Object - Every repair solution becomes a card
+    Enhanced v2.0 with diagnostic reasoning and confidence tracking
     """
     # === IDENTIFICATION ===
     failure_id: str           # fc_abc123def456
@@ -183,6 +186,10 @@ class FailureCard:
     subsystem_category: SubsystemCategory  # battery, motor, controller, bms, charger...
     failure_mode: FailureMode # complete_failure, intermittent, degradation...
     
+    # === FAILURE SIGNATURE (NEW - Primary Matching Key) ===
+    failure_signature: FailureSignature  # Symptom + condition fingerprint
+    signature_hash: str       # Computed hash for fast lookup
+    
     # === SYMPTOM SIGNATURE ===
     symptoms: List[Symptom]   # Structured symptom objects (knowledge graph links)
     symptom_codes: List[str]  # Quick reference: ["SYM_BATT_001", "SYM_CHRG_003"]
@@ -194,7 +201,11 @@ class FailureCard:
     root_cause_details: str   # Extended explanation
     secondary_causes: List[str]  # ["thermal stress", "manufacturing_defect"]
     
-    # === DIAGNOSTIC PROCESS ===
+    # === DIAGNOSTIC TREE (NEW - Structured Reasoning) ===
+    diagnostic_tree: DiagnosticTree  # Step-by-step diagnostic logic tree
+    # Contains: root_node_id, nodes[], decision branches, confirmation paths
+    
+    # === DIAGNOSTIC PROCESS (Legacy) ===
     verification_steps: List[VerificationStep]  # How to verify this failure
     diagnostic_tools: List[str]                 # Tools needed for diagnosis
     diagnostic_duration_minutes: int            # Expected diagnosis time
@@ -226,21 +237,28 @@ class FailureCard:
     failure_count: int        # Failed repairs using this card
     effectiveness_score: float  # success_count / usage_count + bonuses
     
+    # === CONFIDENCE HISTORY (NEW - Track Learning Over Time) ===
+    confidence_history: List[ConfidenceChangeEvent]  # Track all confidence changes
+    # Each entry: {timestamp, previous_score, new_score, change_reason, ticket_id}
+    
     # === AI/ML METADATA ===
     embedding_vector: List[float]  # 768-dim semantic embedding
     keywords: List[str]       # Auto-extracted keywords
     tags: List[str]           # Manual tags
     
-    # === PROVENANCE ===
+    # === PROVENANCE (ENHANCED) ===
+    source_type: SourceType   # field_discovery | oem_input | internal_analysis | pattern_detection
     source_ticket_id: str     # Original ticket that created this card
     source_garage_id: str     # Garage where first discovered
     created_by: str           # Technician who created
     approved_by: str          # Expert who approved
     
-    # === TIMESTAMPS ===
+    # === TIMESTAMPS (ENHANCED) ===
     created_at: datetime
     updated_at: datetime
     approved_at: datetime
+    first_detected_at: datetime  # NEW - When this failure was first seen
+    last_used_at: datetime       # NEW - When this card was last used
     
     # === VERSION HISTORY ===
     version_history: List[dict]  # Track all changes
@@ -248,6 +266,68 @@ class FailureCard:
     # === NETWORK SYNC ===
     synced_to_network: bool
     last_sync_at: datetime
+```
+
+### 3.1.1 FailureSignature (Fast Matching Key)
+
+```python
+class FailureSignature:
+    """
+    Symptom + condition fingerprint for faster matching
+    PRIMARY key for fast failure card lookup
+    """
+    signature_id: str
+    signature_hash: str           # Computed hash for fast lookup
+    
+    # Core symptom indicators
+    primary_symptoms: List[str]   # Most important symptoms (ordered)
+    error_codes: List[str]        # OEM error codes
+    subsystem: SubsystemCategory
+    failure_mode: FailureMode
+    
+    # Environmental conditions
+    temperature_range: str        # "30-45°C"
+    humidity_range: str           # "high", "low", "normal"
+    load_condition: str           # "under_load", "idle", "charging"
+    
+    # Vehicle context
+    mileage_range: str            # "0-10000", "10000-50000", etc.
+    vehicle_age_months: int
+    
+    # Pattern indicators
+    occurrence_pattern: str       # sporadic, daily, weekly, weather_dependent
+    time_of_day_pattern: str      # morning, afternoon, night, random
+```
+
+### 3.1.2 DiagnosticTree (Structured Reasoning)
+
+```python
+class DiagnosticTree:
+    """
+    Structured step-by-step diagnostic logic tree
+    EFI is about reasoning, not just documentation
+    """
+    tree_id: str
+    root_node_id: str             # Starting point of diagnosis
+    nodes: List[DiagnosticNode]   # All decision nodes
+    total_paths: int              # Number of possible diagnostic paths
+    avg_path_length: int          # Average steps to diagnosis
+
+class DiagnosticNode:
+    """Single node in the diagnostic decision tree"""
+    node_id: str
+    step_number: int
+    question: str                 # "Is the battery voltage below 48V?"
+    check_action: str             # "Measure battery terminal voltage"
+    expected_outcome: str         # "Voltage should be 48-54V"
+    tools_required: List[str]
+    safety_warnings: List[str]
+    duration_minutes: int
+    
+    # Decision branches
+    if_yes: str                   # Next node_id if condition is true
+    if_no: str                    # Next node_id if condition is false
+    leads_to_root_cause: str      # If this confirms root cause
 ```
 
 ### 3.2 TICKET (Operational Input)
