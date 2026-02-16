@@ -25,7 +25,8 @@ import {
   Database,
   Clock,
   Calendar,
-  Wallet
+  Wallet,
+  Brain
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -33,6 +34,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navItems = [
+  { section: "Intelligence", items: [
+    { name: "Failure Intelligence", path: "/failure-intelligence", icon: Brain },
+  ]},
   { section: "General", items: [
     { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
     { name: "Data Insights", path: "/insights", icon: TrendingUp },
