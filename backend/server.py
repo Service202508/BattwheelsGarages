@@ -1142,6 +1142,13 @@ async def create_ticket(ticket_data: TicketCreate, request: Request):
         if vehicle:
             customer_name = customer_name or vehicle.get("owner_name")
     
+    # Initialize status history with "open" status
+    initial_status_history = [{
+        "status": "open",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "updated_by": user.name if hasattr(user, "name") else "System"
+    }]
+    
     # Create ticket with all new fields
     ticket = Ticket(
         # Vehicle Info
@@ -1166,7 +1173,9 @@ async def create_ticket(ticket_data: TicketCreate, request: Request):
         incident_location=ticket_data.incident_location,
         # Attachments
         attachments_count=ticket_data.attachments_count,
-        estimated_cost=ticket_data.estimated_cost
+        estimated_cost=ticket_data.estimated_cost,
+        # Job Card
+        status_history=initial_status_history
     )
     doc = ticket.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
