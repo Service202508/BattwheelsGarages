@@ -689,16 +689,6 @@ class EFIService:
                     ))
             except Exception as e:
                 logger.warning(f"Text search failed: {e}")
-                        failure_id=card["failure_id"],
-                        title=card["title"],
-                        match_score=min(0.5, card.get("score", 0) / 10),
-                        match_type="keyword",
-                        match_stage=4,
-                        confidence_level=calculate_confidence_level(card.get("confidence_score", 0.5)),
-                        effectiveness_score=card.get("effectiveness_score", 0)
-                    ))
-            except Exception as e:
-                logger.warning(f"Text search failed: {e}")
         
         # Sort by score
         all_matches.sort(key=lambda x: (x.match_score, x.effectiveness_score), reverse=True)
