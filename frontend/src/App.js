@@ -269,6 +269,13 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/employees" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Employees user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
