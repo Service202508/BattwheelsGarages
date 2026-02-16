@@ -59,40 +59,40 @@ code, .mono {
     }
 }
 
-/* Custom scrollbar - Battwheels Industrial Theme */
+/* Custom scrollbar - Light Theme */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #0B1210;
-    border-radius: 0;
+    background: #f1f5f9;
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #1F2937;
-    border-radius: 0;
+    background: #cbd5e1;
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #65D396;
+    background: #0B462F;
 }
 
-/* Glassmorphism effect */
+/* Glassmorphism effect - Light */
 .glass {
-    background: rgba(11, 18, 16, 0.8);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-/* Glow effects - Vibrant Green */
+/* Glow effects - Green */
 .glow-primary {
-    box-shadow: 0 0 15px rgba(101, 211, 150, 0.3);
+    box-shadow: 0 0 15px rgba(11, 70, 47, 0.2);
 }
 
 .glow-primary:hover {
-    box-shadow: 0 0 25px rgba(101, 211, 150, 0.5);
+    box-shadow: 0 0 25px rgba(11, 70, 47, 0.3);
 }
 
 /* Card hover effect */
