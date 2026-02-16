@@ -4425,6 +4425,14 @@ if hr_router:
     api_router.include_router(hr_router)
     logger.info("HR router included")
 
+# Include productivity routes
+try:
+    if productivity_router:
+        api_router.include_router(productivity_router)
+        logger.info("Productivity router included")
+except:
+    pass
+
 # Include import routes
 if import_router:
     api_router.include_router(import_router)
