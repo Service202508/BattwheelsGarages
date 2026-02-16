@@ -327,6 +327,13 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/productivity" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <TechnicianProductivity user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       
       {/* Customer Portal Routes */}
       <Route path="/customer" element={
