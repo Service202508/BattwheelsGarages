@@ -59,6 +59,9 @@ const navItems = [
     { name: "AMC Management", path: "/amc", icon: Shield },
     { name: "Alerts", path: "/alerts", icon: Bell },
   ]},
+  { section: "Projects & Time", items: [
+    { name: "Projects", path: "/projects", icon: FolderKanban },
+  ]},
   { section: "Catalog & Inventory", items: [
     { name: "Services & Parts", path: "/inventory", icon: Package },
   ]},
@@ -73,21 +76,27 @@ const navItems = [
     { name: "Customers", path: "/customers", icon: Users },
     { name: "Quotes", path: "/quotes", icon: FileText },
     { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
+    { name: "Delivery Challans", path: "/delivery-challans", icon: Truck },
     { name: "Invoices", path: "/invoices", icon: Receipt },
+    { name: "Recurring Invoices", path: "/recurring-transactions", icon: Repeat },
     { name: "Credit Notes", path: "/credit-notes", icon: FileText },
   ]},
   { section: "Purchases", items: [
     { name: "Vendors", path: "/suppliers", icon: Building2 },
     { name: "Purchase Orders", path: "/purchases", icon: Truck },
     { name: "Bills", path: "/bills", icon: Receipt },
+    { name: "Vendor Credits", path: "/vendor-credits", icon: CreditCard },
   ]},
   { section: "Finance", items: [
     { name: "Expenses", path: "/expenses", icon: Receipt },
     { name: "Banking", path: "/banking", icon: Wallet },
+    { name: "Chart of Accounts", path: "/chart-of-accounts", icon: Layers },
+    { name: "Journal Entries", path: "/journal-entries", icon: BookOpen },
     { name: "Reports", path: "/reports", icon: BarChart3 },
     { name: "Accounting", path: "/accounting", icon: Calculator },
   ]},
   { section: "Administration", items: [
+    { name: "Taxes", path: "/taxes", icon: Percent, adminOnly: true },
     { name: "Users", path: "/users", icon: Users, adminOnly: true },
     { name: "Data Migration", path: "/data-migration", icon: Database, adminOnly: true },
   ]},
