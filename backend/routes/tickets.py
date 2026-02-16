@@ -140,7 +140,7 @@ async def get_current_user(request: Request, db) -> dict:
             user = await db.users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
             if user:
                 return user
-        except:
+        except Exception:
             pass
     
     raise HTTPException(status_code=401, detail="Not authenticated")
@@ -213,7 +213,7 @@ async def list_tickets(
 async def get_ticket_stats(request: Request):
     """Get ticket statistics for dashboard"""
     service = get_service()
-    user = await get_current_user(request, service.db)
+    await get_current_user(request, service.db)  # Auth check
     
     return await service.get_ticket_stats()
 
@@ -222,7 +222,7 @@ async def get_ticket_stats(request: Request):
 async def get_ticket(ticket_id: str, request: Request):
     """Get a single ticket by ID"""
     service = get_service()
-    user = await get_current_user(request, service.db)
+    await get_current_user(request, service.db)  # Auth check
     
     ticket = await service.get_ticket(ticket_id)
     if not ticket:
@@ -322,7 +322,7 @@ async def get_ticket_matches(ticket_id: str, request: Request):
     4. Keyword fallback
     """
     service = get_service()
-    user = await get_current_user(request, service.db)
+    await get_current_user(request, service.db)  # Auth check
     
     try:
         result = await service.get_ticket_matches(ticket_id)
