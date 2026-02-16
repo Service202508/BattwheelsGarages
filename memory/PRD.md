@@ -13,6 +13,9 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 | Feature | Frontend Page | Backend API | Status |
 |---------|---------------|-------------|--------|
+| **Items Management** | `/items` | `/api/zoho/items` (CRUD) | ✅ |
+| **Price Lists** | `/price-lists` | `/api/zoho/price-lists`, add/remove items | ✅ |
+| **Inventory Adjustments** | `/inventory-adjustments` | `/api/zoho/inventory-adjustments` | ✅ |
 | **Projects & Time Tracking** | `/projects` | `/api/zoho/projects`, `/api/zoho/time-entries` | ✅ |
 | **Delivery Challans** | `/delivery-challans` | `/api/zoho/delivery-challans`, convert-to-invoice | ✅ |
 | **Recurring Invoices** | `/recurring-transactions` | `/api/zoho/recurring-invoices`, stop/resume | ✅ |
@@ -21,21 +24,20 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 | **Chart of Accounts** | `/chart-of-accounts` | `/api/zoho/chartofaccounts` | ✅ |
 | **Journal Entries** | `/journal-entries` | `/api/zoho/journals` (debit/credit validation) | ✅ |
 | **Vendor Credits** | `/vendor-credits` | `/api/zoho/vendorcredits`, apply to bills | ✅ |
-| **Inventory Adjustments** | (via API) | `/api/zoho/inventory-adjustments` | ✅ |
-| **Price Lists** | (via API) | `/api/zoho/price-lists`, custom rates per item | ✅ |
 | **Documents/Attachments** | (via API) | `/api/zoho/documents` | ✅ |
 | **Payment Reminders** | (via API) | `/api/zoho/payment-reminders/templates`, /send | ✅ |
 | **Organization Settings** | `/settings` | `/api/zoho/settings/organization` | ✅ |
 | **Number Series** | (via API) | `/api/zoho/settings/number-series` | ✅ |
 
-**Test Results: 16/16 extended API tests passed (100%)**
+**Test Results: 29/29 API tests passed (100%)**
 
 **Updated Navigation Sidebar:**
-- Projects & Time: Projects
-- Sales: Customers, Quotes, Sales Orders, Delivery Challans, Invoices, Recurring Invoices, Credit Notes
-- Purchases: Vendors, Purchase Orders, Bills, Vendor Credits
-- Finance: Expenses, Banking, Chart of Accounts, Journal Entries, Reports, Accounting
-- Administration: Taxes, Users, Data Migration
+- **Catalog & Inventory:** Items, Services & Parts, Price Lists, Inventory Adjustments
+- **Projects & Time:** Projects
+- **Sales:** Customers, Quotes, Sales Orders, Delivery Challans, Invoices, Recurring Invoices, Credit Notes
+- **Purchases:** Vendors, Purchase Orders, Bills, Vendor Credits
+- **Finance:** Expenses, Banking, Chart of Accounts, Journal Entries, Reports, Accounting
+- **Administration:** Taxes, Users, Data Migration
 
 ---
 
