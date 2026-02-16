@@ -137,7 +137,7 @@ class EmbeddingService:
             text = text.strip()[:8000]
             text_hash = self._compute_text_hash(text)
             
-            if use_cache and self.db:
+            if use_cache and self.db is not None:
                 cached = await self.db.embedding_cache.find_one(
                     {"text_hash": text_hash},
                     {"_id": 0, "embedding": 1}
@@ -171,7 +171,7 @@ class EmbeddingService:
                         results[original_idx] = embedding
                         
                         # Cache
-                        if self.db:
+                        if self.db is not None:
                             text = batch_texts[j]
                             text_hash = self._compute_text_hash(text)
                             await self.db.embedding_cache.update_one(
