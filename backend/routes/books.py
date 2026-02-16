@@ -2,19 +2,20 @@
 Zoho Books-like Operations Module
 Handles: Items, Customers, Vendors, Invoices, Payments, Chart of Accounts
 """
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
-from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClient
 import os
 
-router = APIRouter(prefix="/api/books", tags=["Zoho Books Operations"])
+router = APIRouter(prefix="/books", tags=["Zoho Books Operations"])
 
-# Get database from server
+# Get database connection
 def get_db():
-    from server import db
-    return db
+    mongo_url = os.environ['MONGO_URL']
+    client = AsyncIOMotorClient(mongo_url)
+    return client[os.environ['DB_NAME']]
 
 # ============== MODELS ==============
 
@@ -24,8 +25,8 @@ class ServiceItem(BaseModel):
     hsn_sac: Optional[str] = ""
     rate: float = 0
     description: Optional[str] = ""
-    type: str = "service"  # service or goods
-    tax_rate: float = 18.0  # GST rate
+    type: str = "service"
+    tax_rate: float = 18.0
     is_active: bool = True
 
 class Part(BaseModel):
@@ -52,7 +53,7 @@ class Customer(BaseModel):
     billing_city: Optional[str] = ""
     billing_state: Optional[str] = ""
     billing_pincode: Optional[str] = ""
-    payment_terms: int = 15  # days
+    payment_terms: int = 15
     is_active: bool = True
 
 class Vendor(BaseModel):
@@ -66,7 +67,7 @@ class Vendor(BaseModel):
 class Account(BaseModel):
     name: str
     code: Optional[str] = ""
-    type: str  # Expense, Income, Asset, Liability, Equity
+    type: str
     description: Optional[str] = ""
     parent: Optional[str] = ""
     is_active: bool = True
@@ -94,7 +95,7 @@ class Payment(BaseModel):
     customer_id: str
     customer_name: str
     amount: float
-    payment_mode: str = "Cash"  # Cash, UPI, Bank Transfer
+    payment_mode: str = "Cash"
     reference_number: Optional[str] = ""
     invoice_ids: List[str] = []
     notes: Optional[str] = ""
@@ -108,24 +109,25 @@ async def list_services(skip: int = 0, limit: int = 100, search: str = ""):
     if search:
         query["name"] = {"$regex": search, "$options": "i"}
     
-    items = list(db.service_items.find(query, {"_id": 0}).skip(skip).limit(limit))
-    total = db.service_items.count_documents(query)
+    cursor = db.service_items.find(query, {"_id": 0}).skip(skip).limit(limit)
+    items = await cursor.to_list(length=limit)
+    total = await db.service_items.count_documents(query)
     return {"items": items, "total": total}
 
 @router.post("/services")
 async def create_service(item: ServiceItem):
     db = get_db()
     item_dict = item.dict()
-    item_dict["item_id"] = f"SRV-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    item_dict["item_id"] = f"SRV-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
     item_dict["created_at"] = datetime.now(timezone.utc).isoformat()
-    db.service_items.insert_one(item_dict)
+    await db.service_items.insert_one(item_dict)
     del item_dict["_id"]
     return item_dict
 
 @router.put("/services/{item_id}")
 async def update_service(item_id: str, item: ServiceItem):
     db = get_db()
-    result = db.service_items.update_one(
+    result = await db.service_items.update_one(
         {"item_id": item_id},
         {"$set": item.dict()}
     )
@@ -142,24 +144,25 @@ async def list_parts(skip: int = 0, limit: int = 100, search: str = ""):
     if search:
         query["name"] = {"$regex": search, "$options": "i"}
     
-    items = list(db.parts.find(query, {"_id": 0}).skip(skip).limit(limit))
-    total = db.parts.count_documents(query)
+    cursor = db.parts.find(query, {"_id": 0}).skip(skip).limit(limit)
+    items = await cursor.to_list(length=limit)
+    total = await db.parts.count_documents(query)
     return {"items": items, "total": total}
 
 @router.post("/parts")
 async def create_part(part: Part):
     db = get_db()
     part_dict = part.dict()
-    part_dict["item_id"] = f"PRT-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    part_dict["item_id"] = f"PRT-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
     part_dict["created_at"] = datetime.now(timezone.utc).isoformat()
-    db.parts.insert_one(part_dict)
+    await db.parts.insert_one(part_dict)
     del part_dict["_id"]
     return part_dict
 
 @router.put("/parts/{item_id}")
 async def update_part(item_id: str, part: Part):
     db = get_db()
-    result = db.parts.update_one(
+    result = await db.parts.update_one(
         {"item_id": item_id},
         {"$set": part.dict()}
     )
@@ -170,7 +173,7 @@ async def update_part(item_id: str, part: Part):
 @router.put("/parts/{item_id}/stock")
 async def update_stock(item_id: str, quantity_change: int):
     db = get_db()
-    result = db.parts.update_one(
+    result = await db.parts.update_one(
         {"item_id": item_id},
         {"$inc": {"stock_quantity": quantity_change}}
     )
@@ -191,25 +194,26 @@ async def list_customers(skip: int = 0, limit: int = 100, search: str = ""):
             {"company_name": {"$regex": search, "$options": "i"}}
         ]
     
-    customers = list(db.books_customers.find(query, {"_id": 0}).skip(skip).limit(limit))
-    total = db.books_customers.count_documents(query)
+    cursor = db.books_customers.find(query, {"_id": 0}).skip(skip).limit(limit)
+    customers = await cursor.to_list(length=limit)
+    total = await db.books_customers.count_documents(query)
     return {"customers": customers, "total": total}
 
 @router.post("/customers")
 async def create_customer(customer: Customer):
     db = get_db()
     cust_dict = customer.dict()
-    cust_dict["customer_id"] = f"CUST-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    cust_dict["customer_id"] = f"CUST-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
     cust_dict["created_at"] = datetime.now(timezone.utc).isoformat()
     cust_dict["outstanding_balance"] = 0
-    db.books_customers.insert_one(cust_dict)
+    await db.books_customers.insert_one(cust_dict)
     del cust_dict["_id"]
     return cust_dict
 
 @router.get("/customers/{customer_id}")
 async def get_customer(customer_id: str):
     db = get_db()
-    customer = db.books_customers.find_one({"customer_id": customer_id}, {"_id": 0})
+    customer = await db.books_customers.find_one({"customer_id": customer_id}, {"_id": 0})
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     return customer
@@ -217,7 +221,7 @@ async def get_customer(customer_id: str):
 @router.put("/customers/{customer_id}")
 async def update_customer(customer_id: str, customer: Customer):
     db = get_db()
-    result = db.books_customers.update_one(
+    result = await db.books_customers.update_one(
         {"customer_id": customer_id},
         {"$set": customer.dict()}
     )
@@ -234,17 +238,18 @@ async def list_vendors(skip: int = 0, limit: int = 100, search: str = ""):
     if search:
         query["display_name"] = {"$regex": search, "$options": "i"}
     
-    vendors = list(db.books_vendors.find(query, {"_id": 0}).skip(skip).limit(limit))
-    total = db.books_vendors.count_documents(query)
+    cursor = db.books_vendors.find(query, {"_id": 0}).skip(skip).limit(limit)
+    vendors = await cursor.to_list(length=limit)
+    total = await db.books_vendors.count_documents(query)
     return {"vendors": vendors, "total": total}
 
 @router.post("/vendors")
 async def create_vendor(vendor: Vendor):
     db = get_db()
     vendor_dict = vendor.dict()
-    vendor_dict["vendor_id"] = f"VND-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    vendor_dict["vendor_id"] = f"VND-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
     vendor_dict["created_at"] = datetime.now(timezone.utc).isoformat()
-    db.books_vendors.insert_one(vendor_dict)
+    await db.books_vendors.insert_one(vendor_dict)
     del vendor_dict["_id"]
     return vendor_dict
 
@@ -257,17 +262,18 @@ async def list_accounts(account_type: str = ""):
     if account_type:
         query["type"] = account_type
     
-    accounts = list(db.chart_of_accounts.find(query, {"_id": 0}))
+    cursor = db.chart_of_accounts.find(query, {"_id": 0})
+    accounts = await cursor.to_list(length=500)
     return {"accounts": accounts, "total": len(accounts)}
 
 @router.post("/accounts")
 async def create_account(account: Account):
     db = get_db()
     acc_dict = account.dict()
-    acc_dict["account_id"] = f"ACC-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    acc_dict["account_id"] = f"ACC-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
     acc_dict["created_at"] = datetime.now(timezone.utc).isoformat()
     acc_dict["balance"] = 0
-    db.chart_of_accounts.insert_one(acc_dict)
+    await db.chart_of_accounts.insert_one(acc_dict)
     del acc_dict["_id"]
     return acc_dict
 
@@ -287,8 +293,9 @@ async def list_invoices(
     if customer_id:
         query["customer_id"] = customer_id
     
-    invoices = list(db.books_invoices.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit))
-    total = db.books_invoices.count_documents(query)
+    cursor = db.books_invoices.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit)
+    invoices = await cursor.to_list(length=limit)
+    total = await db.books_invoices.count_documents(query)
     return {"invoices": invoices, "total": total}
 
 @router.post("/invoices")
@@ -318,16 +325,16 @@ async def create_invoice(invoice: Invoice):
         tax_total += item_tax
     
     # Get next invoice number
-    last_invoice = db.books_invoices.find_one(sort=[("invoice_number", -1)])
+    last_invoice = await db.books_invoices.find_one(sort=[("invoice_number", -1)])
     next_num = 1
     if last_invoice and "invoice_number" in last_invoice:
         try:
             next_num = int(last_invoice["invoice_number"].split("-")[1]) + 1
         except:
-            next_num = db.books_invoices.count_documents({}) + 1
+            next_num = await db.books_invoices.count_documents({}) + 1
     
     invoice_dict = {
-        "invoice_id": f"INV-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
+        "invoice_id": f"INV-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}",
         "invoice_number": f"INV-{str(next_num).zfill(6)}",
         "customer_id": invoice.customer_id,
         "customer_name": invoice.customer_name,
@@ -347,11 +354,11 @@ async def create_invoice(invoice: Invoice):
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    db.books_invoices.insert_one(invoice_dict)
+    await db.books_invoices.insert_one(invoice_dict)
     del invoice_dict["_id"]
     
     # Update customer outstanding balance
-    db.books_customers.update_one(
+    await db.books_customers.update_one(
         {"customer_id": invoice.customer_id},
         {"$inc": {"outstanding_balance": invoice_dict["total"]}}
     )
@@ -361,7 +368,7 @@ async def create_invoice(invoice: Invoice):
 @router.get("/invoices/{invoice_id}")
 async def get_invoice(invoice_id: str):
     db = get_db()
-    invoice = db.books_invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    invoice = await db.books_invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     return invoice
@@ -373,7 +380,7 @@ async def update_invoice_status(invoice_id: str, status: str):
     if status not in valid_statuses:
         raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
     
-    result = db.books_invoices.update_one(
+    result = await db.books_invoices.update_one(
         {"invoice_id": invoice_id},
         {"$set": {"status": status}}
     )
@@ -390,8 +397,9 @@ async def list_payments(skip: int = 0, limit: int = 50, customer_id: str = ""):
     if customer_id:
         query["customer_id"] = customer_id
     
-    payments = list(db.books_payments.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit))
-    total = db.books_payments.count_documents(query)
+    cursor = db.books_payments.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit)
+    payments = await cursor.to_list(length=limit)
+    total = await db.books_payments.count_documents(query)
     return {"payments": payments, "total": total}
 
 @router.post("/payments")
@@ -399,16 +407,16 @@ async def record_payment(payment: Payment):
     db = get_db()
     
     # Get next payment number
-    last_payment = db.books_payments.find_one(sort=[("payment_number", -1)])
+    last_payment = await db.books_payments.find_one(sort=[("payment_number", -1)])
     next_num = 1
     if last_payment and "payment_number" in last_payment:
         try:
             next_num = int(last_payment["payment_number"].split("-")[1]) + 1
         except:
-            next_num = db.books_payments.count_documents({}) + 1
+            next_num = await db.books_payments.count_documents({}) + 1
     
     payment_dict = {
-        "payment_id": f"PMT-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
+        "payment_id": f"PMT-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}",
         "payment_number": f"PMT-{str(next_num).zfill(6)}",
         "customer_id": payment.customer_id,
         "customer_name": payment.customer_name,
@@ -421,7 +429,7 @@ async def record_payment(payment: Payment):
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    db.books_payments.insert_one(payment_dict)
+    await db.books_payments.insert_one(payment_dict)
     del payment_dict["_id"]
     
     # Update invoices
@@ -429,13 +437,13 @@ async def record_payment(payment: Payment):
     for inv_id in payment.invoice_ids:
         if remaining <= 0:
             break
-        invoice = db.books_invoices.find_one({"invoice_id": inv_id})
+        invoice = await db.books_invoices.find_one({"invoice_id": inv_id})
         if invoice:
             to_apply = min(remaining, invoice.get("balance_due", 0))
             new_balance = invoice.get("balance_due", 0) - to_apply
             new_status = "paid" if new_balance <= 0 else "partially_paid"
             
-            db.books_invoices.update_one(
+            await db.books_invoices.update_one(
                 {"invoice_id": inv_id},
                 {
                     "$set": {"balance_due": new_balance, "status": new_status},
@@ -445,7 +453,7 @@ async def record_payment(payment: Payment):
             remaining -= to_apply
     
     # Update customer outstanding balance
-    db.books_customers.update_one(
+    await db.books_customers.update_one(
         {"customer_id": payment.customer_id},
         {"$inc": {"outstanding_balance": -payment.amount}}
     )
@@ -461,60 +469,55 @@ async def import_zoho_data(data: Dict[str, Any]):
     results = {}
     
     # Import Services
-    if "services" in data:
-        for svc in data["services"]:
-            svc["item_id"] = f"SRV-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
+    if "services" in data and data["services"]:
+        for i, svc in enumerate(data["services"]):
+            svc["item_id"] = f"SRV-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{i}"
             svc["created_at"] = datetime.now(timezone.utc).isoformat()
             svc["is_active"] = True
             svc["tax_rate"] = 18.0
-        if data["services"]:
-            db.service_items.insert_many(data["services"])
+        await db.service_items.insert_many(data["services"])
         results["services"] = len(data["services"])
     
     # Import Parts
-    if "parts" in data:
-        for part in data["parts"]:
-            part["item_id"] = f"PRT-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
+    if "parts" in data and data["parts"]:
+        for i, part in enumerate(data["parts"]):
+            part["item_id"] = f"PRT-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{i}"
             part["created_at"] = datetime.now(timezone.utc).isoformat()
             part["is_active"] = True
             part["stock_quantity"] = 0
             part["reorder_level"] = 5
             part["tax_rate"] = 18.0
-        if data["parts"]:
-            db.parts.insert_many(data["parts"])
+        await db.parts.insert_many(data["parts"])
         results["parts"] = len(data["parts"])
     
     # Import Customers
-    if "customers" in data:
-        for cust in data["customers"]:
-            cust["customer_id"] = f"CUST-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
+    if "customers" in data and data["customers"]:
+        for i, cust in enumerate(data["customers"]):
+            cust["customer_id"] = f"CUST-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{i}"
             cust["created_at"] = datetime.now(timezone.utc).isoformat()
             cust["is_active"] = True
             cust["outstanding_balance"] = 0
             cust["payment_terms"] = 15
-        if data["customers"]:
-            db.books_customers.insert_many(data["customers"])
+        await db.books_customers.insert_many(data["customers"])
         results["customers"] = len(data["customers"])
     
     # Import Vendors
-    if "vendors" in data:
-        for vnd in data["vendors"]:
-            vnd["vendor_id"] = f"VND-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
+    if "vendors" in data and data["vendors"]:
+        for i, vnd in enumerate(data["vendors"]):
+            vnd["vendor_id"] = f"VND-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{i}"
             vnd["created_at"] = datetime.now(timezone.utc).isoformat()
             vnd["is_active"] = True
-        if data["vendors"]:
-            db.books_vendors.insert_many(data["vendors"])
+        await db.books_vendors.insert_many(data["vendors"])
         results["vendors"] = len(data["vendors"])
     
     # Import Chart of Accounts
-    if "accounts" in data:
-        for acc in data["accounts"]:
-            acc["account_id"] = f"ACC-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
+    if "accounts" in data and data["accounts"]:
+        for i, acc in enumerate(data["accounts"]):
+            acc["account_id"] = f"ACC-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{i}"
             acc["created_at"] = datetime.now(timezone.utc).isoformat()
             acc["is_active"] = True
             acc["balance"] = 0
-        if data["accounts"]:
-            db.chart_of_accounts.insert_many(data["accounts"])
+        await db.chart_of_accounts.insert_many(data["accounts"])
         results["accounts"] = len(data["accounts"])
     
     return {"message": "Import completed", "results": results}
@@ -526,23 +529,24 @@ async def get_books_summary():
     db = get_db()
     
     # Invoice stats
-    total_invoices = db.books_invoices.count_documents({})
-    paid_invoices = db.books_invoices.count_documents({"status": "paid"})
-    pending_invoices = db.books_invoices.count_documents({"status": {"$in": ["draft", "sent", "partially_paid"]}})
+    total_invoices = await db.books_invoices.count_documents({})
+    paid_invoices = await db.books_invoices.count_documents({"status": "paid"})
+    pending_invoices = await db.books_invoices.count_documents({"status": {"$in": ["draft", "sent", "partially_paid"]}})
     
     # Revenue
     pipeline = [
         {"$group": {"_id": None, "total": {"$sum": "$total"}, "collected": {"$sum": "$amount_paid"}}}
     ]
-    revenue = list(db.books_invoices.aggregate(pipeline))
+    revenue_cursor = db.books_invoices.aggregate(pipeline)
+    revenue = await revenue_cursor.to_list(length=1)
     total_revenue = revenue[0]["total"] if revenue else 0
     collected = revenue[0]["collected"] if revenue else 0
     
     # Counts
-    total_customers = db.books_customers.count_documents({})
-    total_services = db.service_items.count_documents({})
-    total_parts = db.parts.count_documents({})
-    total_vendors = db.books_vendors.count_documents({})
+    total_customers = await db.books_customers.count_documents({})
+    total_services = await db.service_items.count_documents({})
+    total_parts = await db.parts.count_documents({})
+    total_vendors = await db.books_vendors.count_documents({})
     
     return {
         "invoices": {
