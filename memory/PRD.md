@@ -31,8 +31,9 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 **Demo Credentials:**
 | Role | Email | Password |
 |------|-------|----------|
-| Customer | customer@demo.com | customer123 |
 | Admin | admin@battwheels.in | admin123 |
+| Technician | deepak@battwheelsgarages.in | tech123 |
+| Customer | customer@demo.com | customer123 |
 
 ### Complete Event-Driven Architecture (Feb 16, 2026) ✅
 
