@@ -184,7 +184,7 @@ export default function Login({ onLogin }) {
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full glow-primary" 
+                    className="w-full bg-[#65D396] text-[#050505] hover:bg-[#4ADE80] font-bold uppercase tracking-wide rounded-sm shadow-[0_0_15px_rgba(101,211,150,0.3)]" 
                     disabled={isLoading}
                     data-testid="login-submit-btn"
                   >
@@ -197,13 +197,13 @@ export default function Login({ onLogin }) {
                     <div className="w-full border-t border-white/10" />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-card px-2 text-muted-foreground">or continue with</span>
+                    <span className="bg-[#0B1210] px-2 text-gray-400">or continue with</span>
                   </div>
                 </div>
 
                 <Button 
                   variant="outline" 
-                  className="w-full border-white/10 hover:bg-white/5"
+                  className="w-full border-[#65D396]/30 text-[#65D396] hover:bg-[#65D396]/10 rounded-sm"
                   onClick={handleGoogleLogin}
                   data-testid="google-login-btn"
                 >
