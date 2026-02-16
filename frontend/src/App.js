@@ -25,6 +25,7 @@ import DataMigration from "@/pages/DataMigration";
 import Attendance from "@/pages/Attendance";
 import LeaveManagement from "@/pages/LeaveManagement";
 import Payroll from "@/pages/Payroll";
+import Employees from "@/pages/Employees";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
