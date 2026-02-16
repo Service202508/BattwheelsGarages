@@ -4450,6 +4450,14 @@ try:
 except Exception as e:
     logger.warning(f"Could not load Export router: {e}")
 
+# Include Zoho Books Sync routes (Live API Integration)
+try:
+    from routes.zoho_sync import router as zoho_sync_router
+    api_router.include_router(zoho_sync_router)
+    logger.info("Zoho Sync router included")
+except Exception as e:
+    logger.warning(f"Could not load Zoho Sync router: {e}")
+
 # Include tickets routes (event-driven module)
 if tickets_router:
     api_router.include_router(tickets_router)
