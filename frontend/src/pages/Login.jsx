@@ -158,7 +158,7 @@ export default function Login({ onLogin }) {
                         id="login-email"
                         type="email"
                         placeholder="you@example.com"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#0B462F] rounded-lg"
+                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] focus:ring-[#22EDA9] rounded-lg"
                         value={loginData.email}
                         onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                         required
@@ -174,7 +174,7 @@ export default function Login({ onLogin }) {
                         id="login-password"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#0B462F] rounded-lg"
+                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] focus:ring-[#22EDA9] rounded-lg"
                         value={loginData.password}
                         onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                         required
@@ -184,7 +184,7 @@ export default function Login({ onLogin }) {
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full bg-[#0B462F] text-white hover:bg-[#0a3d28] font-semibold rounded-lg" 
+                    className="w-full bg-[#22EDA9] text-black hover:bg-[#1DD69A] font-semibold rounded-lg" 
                     disabled={isLoading}
                     data-testid="login-submit-btn"
                   >
