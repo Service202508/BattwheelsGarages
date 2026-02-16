@@ -2,6 +2,7 @@
 AMC (Annual Maintenance Contract) Routes
 ========================================
 Admin routes for managing AMC plans and subscriptions.
+Based on official Battwheels Garages subscription plans.
 """
 from fastapi import APIRouter, HTTPException, Depends, Request
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -23,28 +24,52 @@ router = APIRouter(prefix="/amc", tags=["AMC Management"])
 class AMCPlanCreate(BaseModel):
     name: str
     description: Optional[str] = None
-    tier: str = "basic"
-    duration_months: int = 12
+    tier: str = "starter"  # starter, fleet_essential, fleet_pro, enterprise
+    vehicle_category: str = "2W"  # 2W, 3W, 4W
+    billing_frequency: str = "monthly"  # monthly, annual
+    duration_months: int = 1
     price: float
+    annual_price: Optional[float] = None  # For showing savings
     services_included: List[dict] = []
+    periodic_services_per_month: int = 1
+    breakdown_visits_per_month: int = 2
     max_service_visits: int = 4
     includes_parts: bool = False
     parts_discount_percent: float = 0.0
     priority_support: bool = False
-    roadside_assistance: bool = False
+    priority_response_minutes: Optional[int] = None  # e.g., 30 for 30-minute response
+    roadside_assistance: bool = True
+    fleet_dashboard: bool = False
+    dedicated_manager: bool = False
+    custom_sla: bool = False
+    telematics_integration: bool = False
+    digital_service_history: bool = True
+    oem_support: str = "standard"  # standard, priority, custom
 
 class AMCPlanUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     tier: Optional[str] = None
+    vehicle_category: Optional[str] = None
+    billing_frequency: Optional[str] = None
     duration_months: Optional[int] = None
     price: Optional[float] = None
+    annual_price: Optional[float] = None
     services_included: Optional[List[dict]] = None
+    periodic_services_per_month: Optional[int] = None
+    breakdown_visits_per_month: Optional[int] = None
     max_service_visits: Optional[int] = None
     includes_parts: Optional[bool] = None
     parts_discount_percent: Optional[float] = None
     priority_support: Optional[bool] = None
+    priority_response_minutes: Optional[int] = None
     roadside_assistance: Optional[bool] = None
+    fleet_dashboard: Optional[bool] = None
+    dedicated_manager: Optional[bool] = None
+    custom_sla: Optional[bool] = None
+    telematics_integration: Optional[bool] = None
+    digital_service_history: Optional[bool] = None
+    oem_support: Optional[str] = None
     is_active: Optional[bool] = None
 
 class AMCSubscriptionCreate(BaseModel):
