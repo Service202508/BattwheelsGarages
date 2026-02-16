@@ -233,23 +233,33 @@ export default function Layout({ children, user, onLogout }) {
       </aside>
 
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 flex items-center px-4 z-40 shadow-sm">
-        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-gray-600 hover:text-gray-900" data-testid="mobile-menu-btn">
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-64 p-0 bg-white border-r border-gray-200">
-            <SidebarContent 
-              user={user} 
-              collapsed={false} 
-              onLogout={onLogout}
-              onClose={() => setMobileOpen(false)}
-            />
-          </SheetContent>
-        </Sheet>
-        <h1 className="ml-4 text-lg font-bold text-gray-900">Battwheels OS</h1>
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-40 shadow-sm">
+        <div className="flex items-center">
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-gray-600 hover:text-gray-900" data-testid="mobile-menu-btn">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-64 p-0 bg-white border-r border-gray-200">
+              <SidebarContent 
+                user={user} 
+                collapsed={false} 
+                onLogout={onLogout}
+                onClose={() => setMobileOpen(false)}
+              />
+            </SheetContent>
+          </Sheet>
+          <h1 className="ml-4 text-lg font-bold text-gray-900">Battwheels OS</h1>
+        </div>
+        <NotificationBell user={user} />
+      </div>
+
+      {/* Desktop Top Bar (optional - for notifications) */}
+      <div className={`hidden lg:flex fixed top-0 right-0 h-16 items-center px-6 z-30 ${collapsed ? "left-20" : "left-64"}`}>
+        <div className="ml-auto">
+          <NotificationBell user={user} />
+        </div>
       </div>
 
       {/* Main Content */}
