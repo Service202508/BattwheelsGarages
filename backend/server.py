@@ -4493,6 +4493,14 @@ except:
 if import_router:
     api_router.include_router(import_router)
 
+# Include Razorpay payment routes
+try:
+    from routes.razorpay import router as razorpay_router
+    api_router.include_router(razorpay_router)
+    logger.info("Razorpay payment routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Razorpay routes: {e}")
+
 # Include main router
 app.include_router(api_router)
 
