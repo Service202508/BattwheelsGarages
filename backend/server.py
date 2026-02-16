@@ -2642,6 +2642,399 @@ DEFAULT_LEAVE_TYPES = [
     {"code": "CO", "name": "Compensatory Off", "days_allowed": 10, "carry_forward": False, "is_paid": True},
 ]
 
+# ==================== EMPLOYEE ROUTES ====================
+
+def calculate_salary_deductions(basic_salary: float, gross_salary: float, pf_enrolled: bool, esi_enrolled: bool):
+    """Calculate statutory deductions based on India compliance"""
+    deductions = {
+        "pf_deduction": 0.0,
+        "esi_deduction": 0.0,
+        "professional_tax": 0.0,
+        "tds": 0.0
+    }
+    
+    # PF - 12% of basic salary (if enrolled)
+    if pf_enrolled:
+        deductions["pf_deduction"] = round(basic_salary * 0.12, 2)
+    
+    # ESI - 0.75% of gross if gross <= 21000 (if enrolled)
+    if esi_enrolled and gross_salary <= 21000:
+        deductions["esi_deduction"] = round(gross_salary * 0.0075, 2)
+    
+    # Professional Tax (Karnataka example - varies by state)
+    if gross_salary > 15000:
+        deductions["professional_tax"] = 200.0
+    elif gross_salary > 10000:
+        deductions["professional_tax"] = 150.0
+    
+    # TDS - Simplified calculation (actual depends on declarations)
+    annual_salary = gross_salary * 12
+    if annual_salary > 1500000:
+        deductions["tds"] = round((gross_salary * 0.30) / 12, 2)
+    elif annual_salary > 1200000:
+        deductions["tds"] = round((gross_salary * 0.20) / 12, 2)
+    elif annual_salary > 900000:
+        deductions["tds"] = round((gross_salary * 0.15) / 12, 2)
+    elif annual_salary > 600000:
+        deductions["tds"] = round((gross_salary * 0.10) / 12, 2)
+    elif annual_salary > 300000:
+        deductions["tds"] = round((gross_salary * 0.05) / 12, 2)
+    
+    return deductions
+
+@api_router.post("/employees")
+async def create_employee(data: EmployeeCreate, request: Request):
+    """Create a new employee with user account"""
+    admin_user = await require_admin(request)
+    
+    # Check if work email already exists
+    existing_user = await db.users.find_one({"email": data.work_email}, {"_id": 0})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Get reporting manager name if provided
+    reporting_manager_name = None
+    if data.reporting_manager_id:
+        manager = await db.employees.find_one({"employee_id": data.reporting_manager_id}, {"_id": 0})
+        if manager:
+            reporting_manager_name = manager.get("full_name")
+    
+    # Calculate gross salary
+    gross_salary = (
+        data.basic_salary + data.hra + data.da + 
+        data.conveyance + data.medical_allowance + 
+        data.special_allowance + data.other_allowances
+    )
+    
+    # Calculate deductions
+    deductions = calculate_salary_deductions(
+        data.basic_salary, gross_salary, 
+        data.pf_enrolled, data.esi_enrolled
+    )
+    
+    total_deductions = sum(deductions.values())
+    net_salary = gross_salary - total_deductions
+    
+    # Create salary structure
+    salary_structure = EmployeeSalaryStructure(
+        basic_salary=data.basic_salary,
+        hra=data.hra,
+        da=data.da,
+        conveyance=data.conveyance,
+        medical_allowance=data.medical_allowance,
+        special_allowance=data.special_allowance,
+        other_allowances=data.other_allowances,
+        gross_salary=gross_salary,
+        pf_deduction=deductions["pf_deduction"],
+        esi_deduction=deductions["esi_deduction"],
+        professional_tax=deductions["professional_tax"],
+        tds=deductions["tds"],
+        net_salary=net_salary
+    )
+    
+    # Create compliance
+    compliance = EmployeeCompliance(
+        pan_number=data.pan_number,
+        aadhaar_number=data.aadhaar_number,
+        pf_number=data.pf_number,
+        uan=data.uan,
+        esi_number=data.esi_number,
+        pf_enrolled=data.pf_enrolled,
+        esi_enrolled=data.esi_enrolled
+    )
+    
+    # Create bank details
+    bank_details = EmployeeBankDetails(
+        bank_name=data.bank_name,
+        account_number=data.account_number,
+        ifsc_code=data.ifsc_code,
+        branch_name=data.branch_name,
+        account_type=data.account_type
+    )
+    
+    # Create user account first
+    user_id = f"user_{uuid.uuid4().hex[:12]}"
+    user_doc = {
+        "user_id": user_id,
+        "email": data.work_email,
+        "password_hash": hash_password(data.password),
+        "name": f"{data.first_name} {data.last_name}",
+        "role": data.system_role,
+        "designation": data.designation,
+        "phone": data.phone,
+        "picture": None,
+        "is_active": True,
+        "department": data.department,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.users.insert_one(user_doc)
+    
+    # Generate employee code if not provided
+    employee_code = data.employee_code
+    if not employee_code:
+        count = await db.employees.count_documents({})
+        employee_code = f"EMP{str(count + 1).zfill(4)}"
+    
+    # Create employee record
+    employee = Employee(
+        user_id=user_id,
+        first_name=data.first_name,
+        last_name=data.last_name,
+        full_name=f"{data.first_name} {data.last_name}",
+        date_of_birth=data.date_of_birth,
+        gender=data.gender,
+        personal_email=data.personal_email,
+        phone=data.phone,
+        alternate_phone=data.alternate_phone,
+        current_address=data.current_address,
+        permanent_address=data.permanent_address,
+        city=data.city,
+        state=data.state,
+        pincode=data.pincode,
+        emergency_contact_name=data.emergency_contact_name,
+        emergency_contact_phone=data.emergency_contact_phone,
+        emergency_contact_relation=data.emergency_contact_relation,
+        employee_code=employee_code,
+        work_email=data.work_email,
+        department=data.department,
+        designation=data.designation,
+        employment_type=data.employment_type,
+        joining_date=data.joining_date,
+        probation_period_months=data.probation_period_months,
+        reporting_manager_id=data.reporting_manager_id,
+        reporting_manager_name=reporting_manager_name,
+        work_location=data.work_location,
+        shift=data.shift,
+        system_role=data.system_role,
+        salary=salary_structure,
+        compliance=compliance,
+        bank_details=bank_details,
+        created_by=admin_user.user_id
+    )
+    
+    doc = employee.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.employees.insert_one(doc)
+    
+    # Initialize leave balance for the employee
+    current_year = datetime.now(timezone.utc).year
+    leave_balance = {
+        "user_id": user_id,
+        "year": current_year,
+        "balances": {
+            "CL": {"total": 12, "used": 0, "pending": 0},
+            "SL": {"total": 6, "used": 0, "pending": 0},
+            "PL": {"total": 0, "used": 0, "pending": 0},
+            "EL": {"total": 15, "used": 0, "pending": 0},
+            "LWP": {"total": 365, "used": 0, "pending": 0},
+            "CO": {"total": 10, "used": 0, "pending": 0}
+        }
+    }
+    await db.leave_balances.insert_one(leave_balance)
+    
+    return employee.model_dump()
+
+@api_router.get("/employees")
+async def get_employees(
+    request: Request,
+    department: Optional[str] = None,
+    status: Optional[str] = None,
+    role: Optional[str] = None
+):
+    """Get all employees with optional filters"""
+    await require_auth(request)
+    
+    query = {}
+    if department:
+        query["department"] = department
+    if status:
+        query["status"] = status
+    if role:
+        query["system_role"] = role
+    
+    employees = await db.employees.find(query, {"_id": 0}).to_list(1000)
+    return employees
+
+@api_router.get("/employees/{employee_id}")
+async def get_employee(employee_id: str, request: Request):
+    """Get single employee details"""
+    await require_auth(request)
+    
+    employee = await db.employees.find_one({"employee_id": employee_id}, {"_id": 0})
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    return employee
+
+@api_router.put("/employees/{employee_id}")
+async def update_employee(employee_id: str, data: EmployeeUpdate, request: Request):
+    """Update employee details"""
+    await require_admin(request)
+    
+    employee = await db.employees.find_one({"employee_id": employee_id}, {"_id": 0})
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    update_dict = {k: v for k, v in data.model_dump().items() if v is not None}
+    
+    # Handle salary updates
+    salary_fields = ["basic_salary", "hra", "da", "conveyance", "medical_allowance", "special_allowance", "other_allowances"]
+    salary_updated = any(field in update_dict for field in salary_fields)
+    
+    if salary_updated:
+        current_salary = employee.get("salary", {})
+        for field in salary_fields:
+            if field in update_dict:
+                current_salary[field] = update_dict.pop(field)
+        
+        # Recalculate gross
+        gross_salary = (
+            current_salary.get("basic_salary", 0) + current_salary.get("hra", 0) +
+            current_salary.get("da", 0) + current_salary.get("conveyance", 0) +
+            current_salary.get("medical_allowance", 0) + current_salary.get("special_allowance", 0) +
+            current_salary.get("other_allowances", 0)
+        )
+        current_salary["gross_salary"] = gross_salary
+        
+        # Recalculate deductions
+        compliance = employee.get("compliance", {})
+        pf_enrolled = data.pf_enrolled if data.pf_enrolled is not None else compliance.get("pf_enrolled", False)
+        esi_enrolled = data.esi_enrolled if data.esi_enrolled is not None else compliance.get("esi_enrolled", False)
+        
+        deductions = calculate_salary_deductions(
+            current_salary.get("basic_salary", 0), gross_salary,
+            pf_enrolled, esi_enrolled
+        )
+        
+        current_salary["pf_deduction"] = deductions["pf_deduction"]
+        current_salary["esi_deduction"] = deductions["esi_deduction"]
+        current_salary["professional_tax"] = deductions["professional_tax"]
+        current_salary["tds"] = deductions["tds"]
+        current_salary["net_salary"] = gross_salary - sum(deductions.values())
+        
+        update_dict["salary"] = current_salary
+    
+    # Handle compliance updates
+    compliance_fields = ["pan_number", "aadhaar_number", "pf_number", "uan", "esi_number", "pf_enrolled", "esi_enrolled"]
+    compliance_updated = any(field in update_dict for field in compliance_fields)
+    
+    if compliance_updated:
+        current_compliance = employee.get("compliance", {})
+        for field in compliance_fields:
+            if field in update_dict:
+                current_compliance[field] = update_dict.pop(field)
+        update_dict["compliance"] = current_compliance
+    
+    # Handle bank details updates
+    bank_fields = ["bank_name", "account_number", "ifsc_code", "branch_name", "account_type"]
+    bank_updated = any(field in update_dict for field in bank_fields)
+    
+    if bank_updated:
+        current_bank = employee.get("bank_details", {})
+        for field in bank_fields:
+            if field in update_dict:
+                current_bank[field] = update_dict.pop(field)
+        update_dict["bank_details"] = current_bank
+    
+    # Update full name if first or last name changed
+    if "first_name" in update_dict or "last_name" in update_dict:
+        first_name = update_dict.get("first_name", employee.get("first_name", ""))
+        last_name = update_dict.get("last_name", employee.get("last_name", ""))
+        update_dict["full_name"] = f"{first_name} {last_name}"
+    
+    # Update reporting manager name if manager changed
+    if "reporting_manager_id" in update_dict and update_dict["reporting_manager_id"]:
+        manager = await db.employees.find_one(
+            {"employee_id": update_dict["reporting_manager_id"]}, {"_id": 0}
+        )
+        if manager:
+            update_dict["reporting_manager_name"] = manager.get("full_name")
+    
+    update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.employees.update_one({"employee_id": employee_id}, {"$set": update_dict})
+    
+    # Update linked user account if role or designation changed
+    if employee.get("user_id"):
+        user_updates = {}
+        if data.system_role:
+            user_updates["role"] = data.system_role
+        if data.designation:
+            user_updates["designation"] = data.designation
+        if data.department:
+            user_updates["department"] = data.department
+        if "full_name" in update_dict:
+            user_updates["name"] = update_dict["full_name"]
+        if data.status == "inactive" or data.status == "terminated":
+            user_updates["is_active"] = False
+        elif data.status == "active":
+            user_updates["is_active"] = True
+        
+        if user_updates:
+            await db.users.update_one(
+                {"user_id": employee["user_id"]},
+                {"$set": user_updates}
+            )
+    
+    updated = await db.employees.find_one({"employee_id": employee_id}, {"_id": 0})
+    return updated
+
+@api_router.delete("/employees/{employee_id}")
+async def delete_employee(employee_id: str, request: Request):
+    """Deactivate an employee (soft delete)"""
+    await require_admin(request)
+    
+    employee = await db.employees.find_one({"employee_id": employee_id}, {"_id": 0})
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    # Soft delete - mark as terminated
+    await db.employees.update_one(
+        {"employee_id": employee_id},
+        {"$set": {
+            "status": "terminated",
+            "termination_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # Deactivate linked user account
+    if employee.get("user_id"):
+        await db.users.update_one(
+            {"user_id": employee["user_id"]},
+            {"$set": {"is_active": False}}
+        )
+    
+    return {"message": "Employee deactivated successfully"}
+
+@api_router.get("/employees/managers/list")
+async def get_managers(request: Request):
+    """Get list of employees who can be managers"""
+    await require_auth(request)
+    
+    managers = await db.employees.find(
+        {"system_role": {"$in": ["admin", "manager"]}, "status": "active"},
+        {"_id": 0, "employee_id": 1, "full_name": 1, "designation": 1, "department": 1}
+    ).to_list(100)
+    return managers
+
+@api_router.get("/employees/departments/list")
+async def get_departments(request: Request):
+    """Get list of departments"""
+    await require_auth(request)
+    return DEPARTMENTS
+
+@api_router.get("/employees/roles/list")
+async def get_roles(request: Request):
+    """Get list of available roles"""
+    await require_auth(request)
+    return [
+        {"value": "admin", "label": "Admin", "description": "Full access to all modules"},
+        {"value": "manager", "label": "Manager", "description": "HR + Reports access"},
+        {"value": "technician", "label": "Technician", "description": "Tickets + Job Cards access"},
+        {"value": "accountant", "label": "Accountant", "description": "Finance modules only"},
+        {"value": "customer_support", "label": "Customer Support", "description": "Tickets only"}
+    ]
+
 # ==================== ATTENDANCE ROUTES ====================
 
 @api_router.post("/attendance/clock-in")
