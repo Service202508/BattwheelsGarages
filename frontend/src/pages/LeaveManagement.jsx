@@ -237,7 +237,7 @@ export default function LeaveManagement({ user }) {
               Apply Leave
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Apply for Leave</DialogTitle>
             </DialogHeader>

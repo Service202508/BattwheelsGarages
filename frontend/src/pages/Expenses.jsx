@@ -128,7 +128,7 @@ export default function Expenses({ user }) {
               Add Expense
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Record New Expense</DialogTitle>
             </DialogHeader>
