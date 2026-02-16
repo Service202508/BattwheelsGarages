@@ -628,7 +628,7 @@ class Invoice(BaseModel):
     customer_name: str
     customer_email: Optional[str] = None
     customer_phone: Optional[str] = None
-    vehicle_id: str
+    vehicle_id: Optional[str] = None
     vehicle_details: Optional[str] = None
     line_items: List[dict]
     subtotal: float
