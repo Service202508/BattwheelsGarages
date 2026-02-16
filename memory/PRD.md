@@ -429,6 +429,7 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [x] **Customer Portal (Feb 16, 2026)** - Full customer portal with My Vehicles, Service History, Invoices, Payments Due, AMC Plans
 - [x] **AMC System (Feb 16, 2026)** - Admin-configurable plans, subscriptions, usage tracking
 - [x] **Role-Based Access Control (Feb 16, 2026)** - Strict RBAC on all routes
+- [x] **Extended Zoho Books Features (Feb 16, 2026)** - Projects, Delivery Challans, Recurring Invoices, Taxes, Chart of Accounts, Journal Entries, Vendor Credits, Retainer Invoices, Inventory Adjustments, Price Lists, Payment Reminders
 
 ### P0 (Next)
 - [ ] Enable vector embeddings with OPENAI_API_KEY
@@ -440,11 +441,13 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [ ] Location Agent & Offline Mode
 - [ ] Kafka for real-time sync
 - [ ] Event handlers for HR events
+- [ ] On-demand Sync button to pull latest data from Zoho Books
 
 ### P2 (Backlog)
 - [ ] Kubernetes migration with HPA
-- [ ] Migrate remaining monolith routes (Customers, Sales)
-- [ ] UI Theme Overhaul
+- [ ] Deprecate legacy books.py and erp.py files
+- [ ] E-invoicing government portal integration
+- [ ] Apply Logo to Favicon
 
 ## UI/UX Design System (Feb 16, 2026)
 
