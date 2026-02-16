@@ -1,59 +1,48 @@
 # Battwheels OS - EV Command Center PRD
 
 ## Original Problem Statement
-Build a full-stack EV Command Center operation system (Battwheels OS) with integrated AI for Electric failure intelligence. The system includes a full Enterprise ERP with legacy data migration and HR/Payroll module.
+Build a full-stack EV Command Center operation system (Battwheels OS) with integrated AI for Electric failure intelligence. The system includes a full Enterprise ERP with legacy data migration, HR/Payroll module, and a comprehensive technical specification for production deployment.
 
 ## What's Been Implemented
 
-### Employee Management Module (Feb 16, 2026) ✅ NEW
-Comprehensive employee onboarding and management with India compliance:
+### Technical Specification Document (Feb 16, 2026) ✅ NEW
+Comprehensive 100KB+ architecture document at `/app/docs/TECHNICAL_SPEC.md` covering:
+- **System Architecture**: Microservices topology, data layer design
+- **Failure Intelligence Pipeline**: AI-assisted matching, failure card structure
+- **Integration Layer**: Service adapters, event-driven patterns
+- **Scalability Design**: Database sharding, caching layers
+- **AI/ML Models**: Symptom classifier, root cause analyzer, solution ranker
+- **Data Synchronization**: Cross-location sync, conflict resolution
+- **Security & Governance**: RBAC, encryption, audit trails
+- **Continuous Improvement**: Feedback loops, effectiveness metrics
+- **Operational Considerations**: Deployment, monitoring, DR
 
-**Personal Information:**
-- Name, DOB, Gender, Phone, Personal Email
-- Current/Permanent Address (City, State, Pincode)
-- Emergency Contact (Name, Phone, Relation)
+### Invoice PDF Generation (Feb 16, 2026) ✅ NEW
+GST-compliant tax invoice matching Battwheels Services template:
+- **Company Header**: Battwheels Services Private Limited, GSTIN: 07AAMCB4976D1ZG
+- **GST Breakdown**: IGST for inter-state, CGST/SGST for intra-state
+- **Itemized Billing**: HSN/SAC codes, quantity, rate, tax amounts
+- **Bank Details**: KOTAK MAHINDRA BANK, Account: 0648556556, IFSC: KKBK0004635
+- **QR Code**: UPI payment link for easy payment
+- **Total in Words**: Indian numbering system (Lakh, Crore)
 
-**Employment Details:**
-- Auto-generated Employee Code (EMP0001, EMP0002...)
-- Work Email, Department, Designation
-- Employment Type (Full-time, Part-time, Contract, Intern, Probation)
-- Joining Date, Shift, Reporting Manager
+### Notification Service (Feb 16, 2026) ✅ NEW
+Email and WhatsApp notifications for ticket lifecycle:
+- **Email Templates**: ticket_created, ticket_assigned, estimate_shared, invoice_generated, ticket_resolved
+- **WhatsApp Templates**: Same events with formatted messages
+- **Background Processing**: Non-blocking async sending
+- **Logging**: Full notification audit trail
+- **Note**: MOCKED - Needs RESEND_API_KEY and TWILIO credentials to send actual messages
 
-**Salary Structure (Monthly):**
-- Earnings: Basic, HRA, DA, Conveyance, Medical, Special Allowance
-- Auto-calculated Gross Salary
-- Deductions: PF (12%), ESI (0.75%), Professional Tax, TDS
-- Auto-calculated Net Salary
-
-**India Compliance:**
-- PAN Number, Aadhaar Number
-- PF Number, UAN (when enrolled)
-- ESI Number (when enrolled)
-
-**Bank Details:**
-- Bank Name, Account Number, IFSC Code, Branch
-
-**Role-Based Access:**
-- Admin: Full access to all modules
-- Manager: HR + Reports access
-- Technician: Tickets + Job Cards access
-- Accountant: Finance modules only
-- Customer Support: Tickets only
-
-**Features:**
-- User account auto-created with password
-- Leave balance auto-initialized
-- Soft delete (deactivates user account)
-- Search, filter by department/status
-
-### Complaint Dashboard & Job Card (Feb 16, 2026)
-- 5 KPI Cards with clickable filtering
-- Data table with search and pagination
-- Job Card dialog with full ticket workflow
-- Role-based action buttons
+### Employee Management Module (Feb 16, 2026)
+Comprehensive employee onboarding with India compliance:
+- Personal, Employment, Salary, Compliance, Bank details
+- Auto-calculated deductions: PF (12%), ESI (0.75%), Professional Tax, TDS
+- Role-based access: Admin, Manager, Technician, Accountant, Customer Support
 
 ### Previous Implementations
-- Service Ticket Form (comprehensive)
+- Complaint Dashboard & Job Card (Feb 16, 2026)
+- Service Ticket Form
 - HR & Payroll (Attendance, Leave, Payroll)
 - Data Migration (~10,000 records)
 - Core ERP (Inventory, Suppliers, PO, Sales, Invoices, Accounting)
@@ -64,6 +53,8 @@ Comprehensive employee onboarding and management with India compliance:
 - Backend: FastAPI, Motor (MongoDB async)
 - Database: MongoDB
 - AI: Emergent LLM Integration
+- PDF: ReportLab, QRCode
+- Notifications: Resend (Email), Twilio (WhatsApp)
 
 ## Test Credentials
 - **Admin:** admin@battwheels.in / admin123
@@ -72,25 +63,53 @@ Comprehensive employee onboarding and management with India compliance:
 
 ## API Endpoints
 
-### Employee APIs
+### Invoice APIs
 ```
-GET    /api/employees              - List all employees (filters: department, status)
-GET    /api/employees/{id}         - Get employee details
-POST   /api/employees              - Create employee with user account
-PUT    /api/employees/{id}         - Update employee
-DELETE /api/employees/{id}         - Soft delete (deactivate)
-GET    /api/employees/managers/list - List managers for dropdown
-GET    /api/employees/roles/list    - List available roles
+GET    /api/invoices              - List all invoices
+POST   /api/invoices              - Create invoice from ticket
+GET    /api/invoices/{id}         - Get invoice details
+GET    /api/invoices/{id}/pdf     - Download GST-compliant PDF
+PUT    /api/invoices/{id}         - Update invoice status
 ```
 
-### Salary Calculation Logic
-```python
-# Gross = Basic + HRA + DA + Conveyance + Medical + Special + Other
-# PF = 12% of Basic (if enrolled)
-# ESI = 0.75% of Gross (if enrolled AND Gross <= 21000)
-# Professional Tax = 200 (if Gross > 15000), 150 (if > 10000)
-# TDS = Based on annual salary slabs (5% - 30%)
-# Net = Gross - PF - ESI - Professional Tax - TDS
+### Notification APIs
+```
+POST   /api/notifications/send-email           - Send email notification
+POST   /api/notifications/send-whatsapp        - Send WhatsApp notification
+POST   /api/notifications/ticket-notification/{id} - Auto-send for ticket events
+GET    /api/notifications/logs                 - Get notification logs
+GET    /api/notifications/stats                - Get notification statistics
+```
+
+## Directory Structure
+```
+/app/
+├── backend/
+│   ├── services/
+│   │   ├── invoice_service.py    # PDF generation
+│   │   └── notification_service.py # Email/WhatsApp
+│   ├── routes/
+│   │   └── auth.py               # Auth routes (refactored)
+│   ├── models/
+│   ├── utils/
+│   ├── migration/
+│   │   └── legacy_migrator.py
+│   ├── tests/
+│   │   ├── test_employee_module.py
+│   │   └── test_invoice_notification.py
+│   └── server.py                 # Main API (4100+ lines)
+├── frontend/
+│   └── src/
+│       ├── pages/
+│       │   ├── Employees.jsx     # Employee management
+│       │   ├── Tickets.jsx       # Complaint dashboard
+│       │   └── ...
+│       └── components/
+│           └── JobCard.jsx
+├── docs/
+│   └── TECHNICAL_SPEC.md         # Architecture doc (100KB+)
+└── memory/
+    └── PRD.md                    # This file
 ```
 
 ## Prioritized Backlog
@@ -98,27 +117,44 @@ GET    /api/employees/roles/list    - List available roles
 ### P0 (Completed) ✅
 - [x] ERP System with all modules
 - [x] Legacy data migration
-- [x] HR & Payroll module (Attendance, Leave, Payroll)
-- [x] Enhanced service ticket form
-- [x] Complaint Dashboard with KPI cards
-- [x] Job Card with full workflow
+- [x] HR & Payroll module
+- [x] Complaint Dashboard with Job Card
 - [x] Employee Management with India compliance
+- [x] Technical Specification document
+- [x] Invoice PDF generation (GST compliant)
+- [x] Notification service (Email/WhatsApp)
 
 ### P1 (Next Phase)
+- [ ] Configure Resend API key for email sending
+- [ ] Configure Twilio for WhatsApp notifications
 - [ ] Backend refactoring (split server.py into modules)
 - [ ] Google Maps integration for location picker
-- [ ] Invoice PDF generation
-- [ ] Email notifications on status changes
+- [ ] File upload to cloud storage
 
 ### P2 (Future)
 - [ ] Mobile app for field technicians
 - [ ] Customer portal with estimate approval
 - [ ] Real-time tracking with WebSockets
-- [ ] WhatsApp/SMS notifications
-- [ ] Employee document uploads (ID proofs)
+- [ ] Failure Intelligence Engine (from tech spec)
+- [ ] AI-assisted matching (from tech spec)
 
 ## Testing
 - Employee Module: 100% pass rate (21/21 tests)
-- Complaint Dashboard: 100% pass rate (19/19 tests)
+- Invoice/Notification: 100% pass rate (21/21 tests)
 - Test files: /app/backend/tests/
-- Test reports: /app/test_reports/iteration_5.json
+- Test reports: /app/test_reports/iteration_6.json
+
+## Environment Variables Needed
+```env
+# Backend (.env)
+MONGO_URL=<configured>
+DB_NAME=<configured>
+JWT_SECRET=<configured>
+
+# For Notifications (OPTIONAL - service works without but skips sending)
+RESEND_API_KEY=re_xxxxx
+SENDER_EMAIL=onboarding@resend.dev
+TWILIO_ACCOUNT_SID=ACxxxxx
+TWILIO_AUTH_TOKEN=xxxxx
+TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
+```
