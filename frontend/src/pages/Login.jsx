@@ -91,7 +91,16 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex relative">
+      {/* Top Right Logo */}
+      <div className="absolute top-6 right-6 z-50">
+        <img 
+          src="https://customer-assets.emergentagent.com/job_335b5085-49dc-4853-90f5-28d59181be65/artifacts/d9i6j4g3_Battwheels%20Logo%20New%20Transparent.png" 
+          alt="Battwheels Garages" 
+          className="h-16 w-auto"
+        />
+      </div>
+      
       {/* Left Panel - Hero Section - Dark Theme */}
       <div className="hidden lg:flex lg:w-[58%] relative overflow-hidden bg-[#0a0a0a]">
         {/* Decorative Background Elements */}
