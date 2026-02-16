@@ -548,8 +548,8 @@ class TestFailureCardApproval:
         card_data = {
             "title": "TEST_Approval_Charger Port Damage",
             "description": "Charging port physical damage preventing connection",
-            "subsystem_category": "charging",
-            "failure_mode": "physical_damage",
+            "subsystem_category": "charger",
+            "failure_mode": "complete_failure",
             "symptom_text": "Charger not connecting, port appears damaged",
             "error_codes": ["CHARGE_CONN_FAIL"],
             "root_cause": "Physical damage to charging port",
@@ -635,7 +635,7 @@ class TestFailureCardDeprecation:
             "title": "TEST_Deprecate_Old BMS Issue",
             "description": "Outdated BMS issue that has been superseded",
             "subsystem_category": "battery",
-            "failure_mode": "software_bug",
+            "failure_mode": "erratic_behavior",
             "root_cause": "Old firmware bug",
             "resolution_steps": [
                 {"step_number": 1, "action": "Update firmware", "duration_minutes": 15}
