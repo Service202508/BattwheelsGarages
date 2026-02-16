@@ -441,17 +441,19 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [x] **AMC System (Feb 16, 2026)** - Admin-configurable plans, subscriptions, usage tracking
 - [x] **Role-Based Access Control (Feb 16, 2026)** - Strict RBAC on all routes
 - [x] **Extended Zoho Books Features (Feb 16, 2026)** - Projects, Delivery Challans, Recurring Invoices, Taxes, Chart of Accounts, Journal Entries, Vendor Credits, Retainer Invoices, Inventory Adjustments, Price Lists, Payment Reminders
+- [x] **PDF Generation (Feb 16, 2026)** - WeasyPrint integration for professional invoice PDFs
+- [x] **Razorpay Integration (Feb 16, 2026)** - Payment orders, payment links, webhooks (mock mode - add keys to enable)
+- [x] **Scheduled Jobs System (Feb 16, 2026)** - Overdue invoice updates, recurring invoice/expense generation, payment reminders
 
 ### P0 (Next)
 - [ ] Enable vector embeddings with OPENAI_API_KEY
-- [ ] Online payments via Razorpay (currently view-only)
+- [ ] Configure Razorpay with production keys (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET)
 - [ ] Customer notifications (ticket status, invoice, AMC expiry alerts)
 
 ### P1 (Future)
 - [ ] Elasticsearch for production-scale search
-- [ ] Location Agent & Offline Mode
-- [ ] Kafka for real-time sync
-- [ ] Event handlers for HR events
+- [ ] Email service integration (SendGrid/Resend) for actual email delivery
+- [ ] Cron job setup for automated scheduler execution
 - [ ] On-demand Sync button to pull latest data from Zoho Books
 
 ### P2 (Backlog)
