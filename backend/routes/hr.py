@@ -83,13 +83,37 @@ class ClockRequest(BaseModel):
 
 # Helper
 async def get_current_user(request: Request, db) -> dict:
-    token = request.cookies.get("session_token") or request.headers.get("Authorization", "").replace("Bearer ", "")
-    if token:
-        session = await db.user_sessions.find_one({"session_token": token}, {"_id": 0})
+    """Get current authenticated user - supports both session tokens and JWT"""
+    # Try session token from cookie
+    session_token = request.cookies.get("session_token")
+    if session_token:
+        session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
         if session:
-            user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+            expires_at = session.get("expires_at")
+            if isinstance(expires_at, str):
+                expires_at = datetime.fromisoformat(expires_at)
+            if expires_at.tzinfo is None:
+                expires_at = expires_at.replace(tzinfo=timezone.utc)
+            if expires_at > datetime.now(timezone.utc):
+                user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+                if user:
+                    return user
+    
+    # Try Bearer token from header (JWT)
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header.split(" ")[1]
+        import jwt
+        import os
+        try:
+            JWT_SECRET = os.environ.get('JWT_SECRET', 'battwheels-secret')
+            payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+            user = await db.users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
             if user:
                 return user
+        except Exception:
+            pass
+    
     raise HTTPException(status_code=401, detail="Not authenticated")
 
 
