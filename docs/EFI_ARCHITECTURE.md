@@ -404,10 +404,13 @@ class Ticket:
 
 ### 3.3 TECHNICIAN_ACTION (Repair Execution Record)
 
+**Do NOT store only final outcome.** Track the reasoning journey for AI learning.
+
 ```python
 class TechnicianAction:
     """
     Records what the technician actually did - critical for learning
+    Enhanced v2.0 with diagnostic reasoning capture
     """
     # === IDENTIFICATION ===
     action_id: str            # act_abc123
@@ -415,8 +418,10 @@ class TechnicianAction:
     technician_id: str
     technician_name: str
     
-    # === DIAGNOSTIC PHASE ===
-    diagnostic_steps_performed: List[str]  # What was checked
+    # === DIAGNOSTIC PHASE (ENHANCED) ===
+    diagnostic_steps_performed: List[str]      # What was checked
+    attempted_diagnostics: List[AttemptedDiagnostic]  # NEW - Detailed attempts
+    rejected_hypotheses: List[RejectedHypothesis]     # NEW - What was ruled out
     observations: List[str]   # What was found
     measurements: Dict[str, Any]  # Voltage readings, temperatures, etc.
     photos: List[str]         # Evidence photos (S3 URLs)
@@ -424,10 +429,10 @@ class TechnicianAction:
     
     # === FAILURE CARD INTERACTION ===
     failure_cards_suggested: List[str]    # IDs shown to technician
-    failure_card_viewed: List[str]        # IDs technician looked at
+    failure_cards_viewed: List[str]       # IDs technician looked at
     failure_card_used: str                # ID of card actually used
     failure_card_helpful: bool            # Did it help? (explicit feedback)
-    failure_card_accuracy: int            # 1-5 rating
+    failure_card_accuracy_rating: int     # 1-5 rating
     failure_card_modifications: List[str] # What was different from card
     
     # === RESOLUTION PHASE ===
@@ -452,11 +457,29 @@ class TechnicianAction:
     # === FEEDBACK ===
     technician_notes: str
     difficulty_rating: int    # 1-5 (how hard was this repair)
-    documentation_quality: int  # 1-5 (how good was the failure card)
+    documentation_quality_rating: int  # 1-5 (how good was the failure card)
     
     # === TIMESTAMPS ===
     started_at: datetime
     completed_at: datetime
+
+class AttemptedDiagnostic:
+    """Records a single diagnostic attempt - for AI learning"""
+    step_id: str
+    hypothesis: str           # What they thought was wrong
+    check_performed: str      # What they did to verify
+    result: str               # What they found
+    confirmed: bool           # Did this confirm the hypothesis?
+    tools_used: List[str]
+    measurements: Dict[str, Any]
+    timestamp: datetime
+
+class RejectedHypothesis:
+    """Records ruled out possibilities - for AI learning"""
+    hypothesis: str           # What was considered
+    reason_rejected: str      # Why it was ruled out
+    evidence: str             # What evidence disproved it
+    ruled_out_at: datetime
 ```
 
 ### 3.4 PART_USAGE (Parts Consumption Tracking)
