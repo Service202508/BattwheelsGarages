@@ -3,9 +3,14 @@ Scheduled Jobs Service
 Handles automated tasks like overdue invoice updates and payment reminders
 """
 from datetime import datetime, timezone, timedelta
-from database import get_db
 import logging
 import uuid
+import os
+import sys
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from server import get_db
 
 logger = logging.getLogger(__name__)
 
