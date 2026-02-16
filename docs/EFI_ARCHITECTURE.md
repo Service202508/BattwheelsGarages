@@ -1098,9 +1098,19 @@ class EFIEventProcessor:
 
 ### 5.1 AI Matching Pipeline
 
+**Priority Order (Approved):**
+1. **Failure signature match** - Fastest, highest confidence
+2. **Subsystem + vehicle filtering** - Fast, context-aware
+3. **Semantic similarity** - Deep understanding
+4. **Keyword fallback** - Last resort
+
+**Avoid heavy GPT reasoning in early matching stages for performance and cost.**
+
+**Architecture Rule: AI assists ranking. Human-approved FAILURE_CARD remains source of truth.**
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    AI MATCHING PIPELINE                         │
+│                    AI MATCHING PIPELINE (v2.0)                  │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  INPUT: FailureMatchRequest                                     │
@@ -1108,71 +1118,80 @@ class EFIEventProcessor:
 │  • error_codes: ["E401", "E402"]                                │
 │  • vehicle_make: "Ather"                                        │
 │  • vehicle_model: "450X"                                        │
+│  • subsystem_hint: "battery" (optional)                         │
+│  • failure_mode_hint: "degradation" (optional)                  │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │                 STAGE 1: EXACT MATCH                     │   │
+│  │         STAGE 1: FAILURE SIGNATURE MATCH (Fastest)       │   │
 │  │                                                          │   │
-│  │  Query: error_codes IN card.error_codes                  │   │
-│  │  Score: 0.95 (high confidence for exact code match)      │   │
-│  │  Speed: < 10ms                                           │   │
+│  │  Build signature from: symptoms + error_codes + subsystem│   │
+│  │  Compute: signature_hash (deterministic)                 │   │
+│  │  Query: signature_hash == card.signature_hash            │   │
+│  │  Score: 0.95 (highest confidence)                        │   │
+│  │  Speed: < 5ms (index lookup)                             │   │
 │  │                                                          │   │
-│  │  IF exact_match.confidence > 0.95:                       │   │
-│  │     RETURN exact_match (fast path)                       │   │
+│  │  IF signature_match.score >= 0.95:                       │   │
+│  │     RETURN early (fast path) ────────────────────────►   │   │
+│  └────────────────────────┬────────────────────────────────┘   │
+│                           │ (no signature match)                │
+│                           ▼                                     │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │         STAGE 2: SUBSYSTEM + VEHICLE FILTERING           │   │
+│  │                                                          │   │
+│  │  Filter by: subsystem_category (if hint provided)        │   │
+│  │  Filter by: vehicle_models.make, vehicle_models.model    │   │
+│  │  Score: 0.5 base + 0.15 (vehicle match) + 0.1 (model)    │   │
+│  │  Speed: < 30ms                                           │   │
+│  │                                                          │   │
+│  │  Reduces search space before expensive operations        │   │
 │  └────────────────────────┬────────────────────────────────┘   │
 │                           │                                     │
 │                           ▼                                     │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │                 STAGE 2: KEYWORD MATCH                   │   │
+│  │         STAGE 3: SEMANTIC SIMILARITY                     │   │
 │  │                                                          │   │
 │  │  Extract keywords from symptom_text                      │   │
 │  │  Query: keywords IN card.keywords                        │   │
-│  │  Score: 0.3 + (overlap_count * 0.1), max 0.8             │   │
+│  │  Text similarity: symptom_text vs card.symptom_text      │   │
+│  │  Score: 0.3 + (overlap * 0.08), max 0.7                  │   │
+│  │  Speed: < 100ms                                          │   │
+│  │                                                          │   │
+│  │  NOTE: Embedding-based search (OpenAI text-embedding-    │   │
+│  │  3-small) available but deferred for performance.        │   │
+│  │  Provider-agnostic design allows future model swap.      │   │
+│  └────────────────────────┬────────────────────────────────┘   │
+│                           │                                     │
+│                           ▼                                     │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │         STAGE 4: KEYWORD FALLBACK (Last Resort)          │   │
+│  │                                                          │   │
+│  │  MongoDB $text search on: title, description, root_cause │   │
+│  │  Score: textScore / 10, max 0.5                          │   │
 │  │  Speed: < 50ms                                           │   │
 │  └────────────────────────┬────────────────────────────────┘   │
 │                           │                                     │
 │                           ▼                                     │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │                 STAGE 3: SEMANTIC MATCH                  │   │
+│  │                 FINAL RANKING                            │   │
 │  │                                                          │   │
-│  │  Generate embedding: OpenAI text-embedding-3-small       │   │
-│  │  Vector search: cosine similarity                        │   │
-│  │  Score: similarity * 0.85                                │   │
-│  │  Speed: < 200ms                                          │   │
+│  │  Sort by: (match_score, effectiveness_score) DESC        │   │
+│  │  Limit: top 5 results                                    │   │
 │  │                                                          │   │
-│  │  Note: Fallback to keyword hash if embedding fails       │   │
+│  │  NOTE: effectiveness_score from human feedback loop      │   │
+│  │  ensures battle-tested solutions rank higher             │   │
 │  └────────────────────────┬────────────────────────────────┘   │
 │                           │                                     │
 │                           ▼                                     │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │                 STAGE 4: VEHICLE FILTER                  │   │
-│  │                                                          │   │
-│  │  Filter by: vehicle_models.make, vehicle_models.model    │   │
-│  │  Boost: +0.1 for exact vehicle match                     │   │
-│  │  Penalty: -0.2 for incompatible vehicles                 │   │
-│  └────────────────────────┬────────────────────────────────┘   │
-│                           │                                     │
-│                           ▼                                     │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │                 ENSEMBLE RANKING                         │   │
-│  │                                                          │   │
-│  │  final_score = (                                         │   │
-│  │      0.4 * exact_score +                                 │   │
-│  │      0.3 * keyword_score +                               │   │
-│  │      0.2 * semantic_score +                              │   │
-│  │      0.1 * vehicle_bonus                                 │   │
-│  │  ) * effectiveness_multiplier                            │   │
-│  │                                                          │   │
-│  │  effectiveness_multiplier = 0.5 + (effectiveness * 0.5)  │   │
-│  └────────────────────────┬────────────────────────────────┘   │
-│                           │                                     │
-│                           ▼                                     │
-│  OUTPUT: List[FailureMatchResult] sorted by final_score         │
+│  OUTPUT: List[FailureMatchResult] sorted by score               │
 │  • failure_id                                                   │
 │  • title                                                        │
 │  • match_score (0-1)                                            │
-│  • match_type (exact/semantic/partial)                          │
+│  • match_type (signature/subsystem_vehicle/semantic/keyword)    │
+│  • match_stage (1-4)                                            │
 │  • matched_symptoms                                             │
+│  • matched_error_codes                                          │
 │  • confidence_level                                             │
+│  • effectiveness_score                                          │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
