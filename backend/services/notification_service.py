@@ -34,7 +34,7 @@ def init_router(database):
 class EmailRequest(BaseModel):
     recipient_email: EmailStr
     recipient_name: Optional[str] = None
-    subject: str
+    subject: Optional[str] = None  # Optional - will be auto-generated from template if not provided
     template: str  # ticket_created, ticket_assigned, estimate_shared, invoice_generated
     context: dict = {}
 
