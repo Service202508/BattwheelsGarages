@@ -1,160 +1,180 @@
-# Battwheels OS - EV Command Center PRD
+# Battwheels OS - EV Failure Intelligence Platform PRD
 
 ## Original Problem Statement
-Build a full-stack EV Command Center operation system (Battwheels OS) with integrated AI for Electric failure intelligence. The system includes a full Enterprise ERP with legacy data migration, HR/Payroll module, and a comprehensive technical specification for production deployment.
+Build an AI-native EV Failure Intelligence (EFI) Platform where structured failure knowledge is the core data model. Every EV issue solved once must become a reusable, standardized solution across the entire technician network.
 
 ## What's Been Implemented
 
-### Technical Specification Document (Feb 16, 2026) ✅ NEW
-Comprehensive 100KB+ architecture document at `/app/docs/TECHNICAL_SPEC.md` covering:
-- **System Architecture**: Microservices topology, data layer design
-- **Failure Intelligence Pipeline**: AI-assisted matching, failure card structure
-- **Integration Layer**: Service adapters, event-driven patterns
-- **Scalability Design**: Database sharding, caching layers
-- **AI/ML Models**: Symptom classifier, root cause analyzer, solution ranker
-- **Data Synchronization**: Cross-location sync, conflict resolution
-- **Security & Governance**: RBAC, encryption, audit trails
-- **Continuous Improvement**: Feedback loops, effectiveness metrics
-- **Operational Considerations**: Deployment, monitoring, DR
+### EV Failure Intelligence Engine (Feb 16, 2026) ✅ NEW
 
-### Invoice PDF Generation (Feb 16, 2026) ✅ NEW
-GST-compliant tax invoice matching Battwheels Services template:
-- **Company Header**: Battwheels Services Private Limited, GSTIN: 07AAMCB4976D1ZG
-- **GST Breakdown**: IGST for inter-state, CGST/SGST for intra-state
-- **Itemized Billing**: HSN/SAC codes, quantity, rate, tax amounts
-- **Bank Details**: KOTAK MAHINDRA BANK, Account: 0648556556, IFSC: KKBK0004635
-- **QR Code**: UPI payment link for easy payment
-- **Total in Words**: Indian numbering system (Lakh, Crore)
+**Core Entity: FAILURE_CARD**
+- `failure_id` - Unique identifier
+- `title`, `description` - Human-readable info
+- `symptoms[]` - Structured symptom tags with knowledge graph links
+- `subsystem_category` - battery, motor, controller, wiring, charger, BMS, etc.
+- `root_cause` - Structured root cause description
+- `verification_steps[]` - Diagnostic steps with tools/safety warnings
+- `resolution_steps[]` - Resolution steps with parts/tools/skill level
+- `required_parts[]` - Parts needed with alternatives
+- `vehicle_models[]` - Compatible vehicles (make, model, year range)
+- `failure_conditions[]` - Environmental/usage conditions
+- `confidence_score` - 0-1 score based on usage outcomes
+- `version` - Versioned knowledge objects
+- `status` - draft/pending_review/approved/deprecated
 
-### Notification Service (Feb 16, 2026) ✅ NEW
-Email and WhatsApp notifications for ticket lifecycle:
-- **Email Templates**: ticket_created, ticket_assigned, estimate_shared, invoice_generated, ticket_resolved
-- **WhatsApp Templates**: Same events with formatted messages
-- **Background Processing**: Non-blocking async sending
-- **Logging**: Full notification audit trail
-- **Note**: MOCKED - Needs RESEND_API_KEY and TWILIO credentials to send actual messages
+**AI Matching Pipeline**
+- Stage 1: Exact error code matching (95% confidence)
+- Stage 2: Subsystem + keyword matching
+- Stage 3: Semantic similarity search
+- Stage 4: Vehicle-specific filtering
+- Ensemble ranking with weighted scores
 
-### Employee Management Module (Feb 16, 2026)
-Comprehensive employee onboarding with India compliance:
-- Personal, Employment, Salary, Compliance, Bank details
-- Auto-calculated deductions: PF (12%), ESI (0.75%), Professional Tax, TDS
-- Role-based access: Admin, Manager, Technician, Accountant, Customer Support
+**Knowledge Graph Structure**
+- Symptoms ↔ Failures ↔ Parts ↔ Vehicles
+- Relationship types: causes, resolves, requires, affects, similar_to
+
+**Event-Driven Workflow**
+- `ticket_created` → Auto-trigger AI matching
+- `ticket_resolved` → Update confidence scores
+- `new_failure_discovered` → Auto-create draft card
+- `failure_card_approved` → Trigger network sync
+
+### Backend Refactoring (Feb 16, 2026) ✅
+```
+/app/backend/
+├── models/
+│   └── failure_intelligence.py  # EFI data models (800+ lines)
+├── routes/
+│   └── failure_intelligence.py  # EFI API routes (750+ lines)
+├── services/
+│   ├── invoice_service.py       # PDF generation
+│   └── notification_service.py  # Email/WhatsApp
+├── utils/
+│   ├── database.py              # DB config
+│   └── auth.py                  # Auth helpers
+└── server.py                    # Main server (modular)
+```
 
 ### Previous Implementations
-- Complaint Dashboard & Job Card (Feb 16, 2026)
-- Service Ticket Form
-- HR & Payroll (Attendance, Leave, Payroll)
-- Data Migration (~10,000 records)
-- Core ERP (Inventory, Suppliers, PO, Sales, Invoices, Accounting)
-- AI Diagnostic Assistant (GPT-5.2)
+- Technical Specification Document (`/app/docs/TECHNICAL_SPEC.md`)
+- Invoice PDF Generation (GST compliant)
+- Notification Service (Email/WhatsApp)
+- Employee Management with India compliance
+- Complaint Dashboard & Job Card
+- Core ERP modules
+- HR & Payroll
 
-## Tech Stack
-- Frontend: React 19, Tailwind CSS, Shadcn/UI
-- Backend: FastAPI, Motor (MongoDB async)
-- Database: MongoDB
-- AI: Emergent LLM Integration
-- PDF: ReportLab, QRCode
-- Notifications: Resend (Email), Twilio (WhatsApp)
+## API Endpoints
+
+### EFI (Failure Intelligence) APIs
+```
+POST   /api/efi/failure-cards           - Create failure card
+GET    /api/efi/failure-cards           - List with filters
+GET    /api/efi/failure-cards/{id}      - Get single card
+PUT    /api/efi/failure-cards/{id}      - Update card
+POST   /api/efi/failure-cards/{id}/approve    - Approve for network
+POST   /api/efi/failure-cards/{id}/deprecate  - Deprecate card
+
+POST   /api/efi/match                   - AI failure matching
+POST   /api/efi/match-ticket/{id}       - Match ticket to failures
+
+POST   /api/efi/technician-actions      - Record tech actions
+GET    /api/efi/technician-actions      - List actions
+
+POST   /api/efi/symptoms                - Add symptom to library
+GET    /api/efi/symptoms                - List symptoms
+
+POST   /api/efi/relations               - Create knowledge relation
+GET    /api/efi/relations               - Query relations
+GET    /api/efi/graph/{type}/{id}       - Get entity graph
+
+GET    /api/efi/analytics/overview      - EFI analytics
+GET    /api/efi/analytics/effectiveness - Effectiveness report
+GET    /api/efi/events                  - List system events
+POST   /api/efi/events/process          - Process pending events
+```
+
+## Data Models
+
+### FailureCard (Core Entity)
+```json
+{
+  "failure_id": "fc_abc123",
+  "title": "BMS Cell Balancing Failure",
+  "subsystem_category": "bms",
+  "failure_mode": "degradation",
+  "symptom_text": "Battery stops charging at 80%",
+  "error_codes": ["E401", "E402"],
+  "root_cause": "BMS cell balancing circuit failure",
+  "verification_steps": [...],
+  "resolution_steps": [...],
+  "required_parts": [...],
+  "vehicle_models": [{"make": "Ather", "model": "450X"}],
+  "confidence_score": 0.85,
+  "usage_count": 234,
+  "success_count": 220,
+  "status": "approved",
+  "version": 3
+}
+```
 
 ## Test Credentials
 - **Admin:** admin@battwheels.in / admin123
 - **Technician:** deepak@battwheelsgarages.in / tech123
-- **Test Employee:** test.employee@battwheels.in / test123
 
-## API Endpoints
+## Architecture Highlights
 
-### Invoice APIs
+### Intelligence Flow
 ```
-GET    /api/invoices              - List all invoices
-POST   /api/invoices              - Create invoice from ticket
-GET    /api/invoices/{id}         - Get invoice details
-GET    /api/invoices/{id}/pdf     - Download GST-compliant PDF
-PUT    /api/invoices/{id}         - Update invoice status
+Ticket Created
+    ↓
+AI Matching (symptoms → failure cards)
+    ↓
+Suggest Solutions to Technician
+    ↓
+Technician Uses/Modifies Solution
+    ↓
+Record Outcome (TechnicianAction)
+    ↓
+Update Confidence Scores
+    ↓
+New Failure? → Create Draft Card
+    ↓
+Expert Review → Approve
+    ↓
+Network Sync → All Garages
 ```
 
-### Notification APIs
-```
-POST   /api/notifications/send-email           - Send email notification
-POST   /api/notifications/send-whatsapp        - Send WhatsApp notification
-POST   /api/notifications/ticket-notification/{id} - Auto-send for ticket events
-GET    /api/notifications/logs                 - Get notification logs
-GET    /api/notifications/stats                - Get notification statistics
-```
-
-## Directory Structure
-```
-/app/
-├── backend/
-│   ├── services/
-│   │   ├── invoice_service.py    # PDF generation
-│   │   └── notification_service.py # Email/WhatsApp
-│   ├── routes/
-│   │   └── auth.py               # Auth routes (refactored)
-│   ├── models/
-│   ├── utils/
-│   ├── migration/
-│   │   └── legacy_migrator.py
-│   ├── tests/
-│   │   ├── test_employee_module.py
-│   │   └── test_invoice_notification.py
-│   └── server.py                 # Main API (4100+ lines)
-├── frontend/
-│   └── src/
-│       ├── pages/
-│       │   ├── Employees.jsx     # Employee management
-│       │   ├── Tickets.jsx       # Complaint dashboard
-│       │   └── ...
-│       └── components/
-│           └── JobCard.jsx
-├── docs/
-│   └── TECHNICAL_SPEC.md         # Architecture doc (100KB+)
-└── memory/
-    └── PRD.md                    # This file
-```
+### Continuous Learning
+- Every repair outcome updates confidence scores
+- Success rate = success_count / usage_count
+- High-performing cards get recommended first
+- Low-performing cards get flagged for review
 
 ## Prioritized Backlog
 
 ### P0 (Completed) ✅
-- [x] ERP System with all modules
-- [x] Legacy data migration
-- [x] HR & Payroll module
-- [x] Complaint Dashboard with Job Card
-- [x] Employee Management with India compliance
-- [x] Technical Specification document
-- [x] Invoice PDF generation (GST compliant)
-- [x] Notification service (Email/WhatsApp)
+- [x] EFI Engine with failure cards
+- [x] AI matching pipeline
+- [x] Knowledge graph structure
+- [x] Technician actions tracking
+- [x] Event-driven workflow
+- [x] Analytics dashboard
+- [x] Backend modularization
 
 ### P1 (Next Phase)
-- [ ] Configure Resend API key for email sending
-- [ ] Configure Twilio for WhatsApp notifications
-- [ ] Backend refactoring (split server.py into modules)
-- [ ] Google Maps integration for location picker
-- [ ] File upload to cloud storage
+- [ ] Semantic embeddings with OpenAI
+- [ ] Real-time network sync (WebSocket)
+- [ ] Mobile app for field technicians
+- [ ] PDF/Email for failure card sharing
 
 ### P2 (Future)
-- [ ] Mobile app for field technicians
-- [ ] Customer portal with estimate approval
-- [ ] Real-time tracking with WebSockets
-- [ ] Failure Intelligence Engine (from tech spec)
-- [ ] AI-assisted matching (from tech spec)
+- [ ] Multi-OEM vehicle support
+- [ ] Predictive failure detection
+- [ ] Automated card generation from tickets
+- [ ] Integration with OEM diagnostic tools
 
 ## Testing
-- Employee Module: 100% pass rate (21/21 tests)
-- Invoice/Notification: 100% pass rate (21/21 tests)
-- Test files: /app/backend/tests/
-- Test reports: /app/test_reports/iteration_6.json
-
-## Environment Variables Needed
-```env
-# Backend (.env)
-MONGO_URL=<configured>
-DB_NAME=<configured>
-JWT_SECRET=<configured>
-
-# For Notifications (OPTIONAL - service works without but skips sending)
-RESEND_API_KEY=re_REDACTED
-SENDER_EMAIL=onboarding@resend.dev
-TWILIO_ACCOUNT_SID=ACxxxxx
-TWILIO_AUTH_TOKEN=xxxxx
-TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
-```
+- EFI Engine: Tested via curl (matching, card creation)
+- Frontend: Screenshot verified
+- Test reports: /app/test_reports/
