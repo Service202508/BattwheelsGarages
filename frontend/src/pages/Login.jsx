@@ -226,14 +226,14 @@ export default function Login({ onLogin }) {
               <TabsContent value="login">
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="login-email" className="text-gray-700">Email</Label>
+                    <Label htmlFor="login-email" className="text-gray-300">Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                       <Input
                         id="login-email"
                         type="email"
                         placeholder="you@example.com"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] focus:ring-[#22EDA9] rounded-lg"
+                        className="pl-10 bg-[#1a1a1a] border-gray-700 text-white placeholder:text-gray-500 focus:border-[#22EDA9] focus:ring-[#22EDA9]/30 rounded-lg"
                         value={loginData.email}
                         onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                         required
@@ -242,14 +242,14 @@ export default function Login({ onLogin }) {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="login-password" className="text-gray-700">Password</Label>
+                    <Label htmlFor="login-password" className="text-gray-300">Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                       <Input
                         id="login-password"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10 bg-gray-50 border-gray-300 focus:border-[#22EDA9] focus:ring-[#22EDA9] rounded-lg"
+                        className="pl-10 bg-[#1a1a1a] border-gray-700 text-white placeholder:text-gray-500 focus:border-[#22EDA9] focus:ring-[#22EDA9]/30 rounded-lg"
                         value={loginData.password}
                         onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                         required
@@ -259,7 +259,7 @@ export default function Login({ onLogin }) {
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full bg-[#22EDA9] text-black hover:bg-[#1DD69A] font-semibold rounded-lg" 
+                    className="w-full bg-[#22EDA9] text-black hover:bg-[#1DD69A] font-semibold rounded-lg shadow-[0_0_20px_rgba(34,237,169,0.3)] hover:shadow-[0_0_30px_rgba(34,237,169,0.5)] transition-all" 
                     disabled={isLoading}
                     data-testid="login-submit-btn"
                   >
