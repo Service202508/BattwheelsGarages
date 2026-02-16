@@ -97,67 +97,65 @@ export default function Login({ onLogin }) {
         {/* Decorative Background Elements */}
         <div className="absolute inset-0">
           {/* Large decorative circles */}
-          <div className="absolute -top-20 -left-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 -right-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-white/5 rounded-full blur-2xl"></div>
+          <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 -right-32 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-white/5 rounded-full blur-2xl"></div>
           
           {/* Subtle grid pattern */}
-          <div className="absolute inset-0 opacity-[0.03]" style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px'
+          <div className="absolute inset-0 opacity-[0.04]" style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)`,
+            backgroundSize: '50px 50px'
           }}></div>
         </div>
 
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-center px-16 py-12 w-full">
-          {/* Logo Container */}
-          <div className="mb-10">
-            <div className="inline-flex items-center gap-4 bg-white/15 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20 shadow-lg">
-              <img 
-                src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/0momdtv4_68469546%20%282%29.png" 
-                alt="Battwheels Logo" 
-                className="h-14 w-auto"
-              />
-            </div>
+          {/* Large Logo - More Prominent */}
+          <div className="mb-8">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_evbattwheels/artifacts/0momdtv4_68469546%20%282%29.png" 
+              alt="Battwheels Logo" 
+              className="h-20 w-auto drop-shadow-[0_4px_20px_rgba(0,0,0,0.15)]"
+            />
           </div>
           
           {/* Main Heading */}
-          <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 tracking-tight">
+          <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-5 tracking-tight">
             EV Command<br />
-            <span className="text-white/90">Center</span>
+            <span className="text-white/95">Center</span>
           </h1>
           
           {/* Tagline */}
-          <p className="text-xl text-white/85 max-w-lg leading-relaxed mb-10 font-light">
+          <p className="text-xl text-white/90 max-w-lg leading-relaxed mb-8">
             Next-generation <span className="font-semibold text-white">AI-powered</span> Electric Failure Intelligence for comprehensive EV workshop management.
           </p>
           
           {/* Feature Pills */}
-          <div className="flex flex-wrap gap-3 mb-12">
-            <span className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium text-white border border-white/30">
+          <div className="flex flex-wrap gap-3 mb-10">
+            <span className="px-4 py-2.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium text-white border border-white/30 shadow-sm">
               🤖 AI Diagnostics
             </span>
-            <span className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium text-white border border-white/30">
+            <span className="px-4 py-2.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium text-white border border-white/30 shadow-sm">
               ⚡ Real-time Tracking
             </span>
-            <span className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium text-white border border-white/30">
+            <span className="px-4 py-2.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium text-white border border-white/30 shadow-sm">
               📊 Smart Analytics
             </span>
           </div>
           
           {/* Stats Cards */}
-          <div className="flex gap-5">
-            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-6 border border-white/30 shadow-lg hover:bg-white/25 transition-all duration-300 hover:scale-105 cursor-default min-w-[140px]">
-              <p className="text-4xl font-bold text-white mb-1">745+</p>
-              <p className="text-sm text-white/80 font-medium">Vehicles Serviced</p>
+          <div className="flex gap-4">
+            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-5 border border-white/30 shadow-lg hover:bg-white/25 transition-all duration-300 hover:scale-[1.02] cursor-default flex-1 max-w-[150px]">
+              <p className="text-3xl font-bold text-white mb-0.5">745+</p>
+              <p className="text-xs text-white/80 font-medium">Vehicles Serviced</p>
             </div>
-            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-6 border border-white/30 shadow-lg hover:bg-white/25 transition-all duration-300 hover:scale-105 cursor-default min-w-[140px]">
-              <p className="text-4xl font-bold text-white mb-1">98%</p>
-              <p className="text-sm text-white/80 font-medium">Success Rate</p>
+            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-5 border border-white/30 shadow-lg hover:bg-white/25 transition-all duration-300 hover:scale-[1.02] cursor-default flex-1 max-w-[150px]">
+              <p className="text-3xl font-bold text-white mb-0.5">98%</p>
+              <p className="text-xs text-white/80 font-medium">Success Rate</p>
             </div>
-            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-6 border border-white/30 shadow-lg hover:bg-white/25 transition-all duration-300 hover:scale-105 cursor-default min-w-[140px]">
-              <p className="text-4xl font-bold text-white mb-1">24/7</p>
-              <p className="text-sm text-white/80 font-medium">Support Available</p>
+            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-5 border border-white/30 shadow-lg hover:bg-white/25 transition-all duration-300 hover:scale-[1.02] cursor-default flex-1 max-w-[150px]">
+              <p className="text-3xl font-bold text-white mb-0.5">24/7</p>
+              <p className="text-xs text-white/80 font-medium">Support Available</p>
             </div>
           </div>
         </div>
