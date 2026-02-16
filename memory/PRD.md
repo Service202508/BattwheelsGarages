@@ -102,9 +102,11 @@ Admin UI Features:
 ├── models/
 │   └── failure_intelligence.py  # EFI data models (900+ lines)
 ├── routes/
-│   └── failure_intelligence.py  # EFI API routes (1000+ lines)
+│   ├── failure_intelligence.py  # EFI API routes (1000+ lines)
+│   └── fault_tree_import.py     # NEW - Import API routes
 ├── services/
-│   ├── event_processor.py       # NEW - EFI event workflows
+│   ├── event_processor.py       # EFI event workflows
+│   ├── fault_tree_import.py     # NEW - Import engine (800+ lines)
 │   ├── invoice_service.py       # PDF generation
 │   └── notification_service.py  # Email/WhatsApp
 ├── utils/
@@ -113,8 +115,13 @@ Admin UI Features:
 └── server.py                    # Main server (modular)
 ```
 
+### Frontend Pages
+- `/fault-tree-import` - NEW - Admin import interface
+- `/failure-intelligence` - EFI Dashboard
+- All other ERP/HR/Operations pages
+
 ### Documentation Created
-- `/app/docs/EFI_ARCHITECTURE.md` - **NEW** Complete system architecture with diagrams
+- `/app/docs/EFI_ARCHITECTURE.md` - Complete system architecture with diagrams
 - `/app/docs/TECHNICAL_SPEC.md` - Technical specification
 
 ### Previous Implementations
