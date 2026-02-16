@@ -1557,3 +1557,66 @@ async def log_activity(db, entity_type: str, entity_id: str, action: str, user_i
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
     await db.activity_logs.insert_one(log_entry)
+
+
+# ============== SCHEDULED JOBS API ==============
+
+@router.post("/scheduler/run")
+async def run_scheduled_jobs(background_tasks: BackgroundTasks, job: str = "all"):
+    """
+    Trigger scheduled jobs manually or via cron.
+    Jobs: all, overdue, recurring_invoices, recurring_expenses, reminders
+    """
+    from services.scheduler import (
+        run_all_scheduled_jobs,
+        update_overdue_invoices,
+        generate_recurring_invoices,
+        generate_recurring_expenses,
+        send_payment_reminders
+    )
+    
+    async def run_job():
+        if job == "all":
+            return await run_all_scheduled_jobs()
+        elif job == "overdue":
+            return await update_overdue_invoices()
+        elif job == "recurring_invoices":
+            return await generate_recurring_invoices()
+        elif job == "recurring_expenses":
+            return await generate_recurring_expenses()
+        elif job == "reminders":
+            return await send_payment_reminders()
+        else:
+            raise ValueError(f"Unknown job: {job}")
+    
+    # Run in background for long jobs
+    if job == "all":
+        background_tasks.add_task(run_job)
+        return {"code": 0, "message": "All scheduled jobs started in background"}
+    
+    # Run immediately for single jobs
+    result = await run_job()
+    return {"code": 0, "message": f"Job '{job}' completed", "result": result}
+
+@router.get("/scheduler/status")
+async def get_scheduler_status():
+    """Get status of scheduled job executions"""
+    db = get_db()
+    
+    # Get counts of various automated items
+    overdue_count = await db.invoices.count_documents({"status": "overdue"})
+    active_recurring_invoices = await db.recurring_invoices.count_documents({"status": "active"})
+    active_recurring_expenses = await db.recurring_expenses.count_documents({"status": "active"})
+    pending_reminders = await db.payment_reminders.count_documents({"status": "queued"})
+    
+    return {
+        "code": 0,
+        "status": {
+            "overdue_invoices": overdue_count,
+            "active_recurring_invoices": active_recurring_invoices,
+            "active_recurring_expenses": active_recurring_expenses,
+            "pending_payment_reminders": pending_reminders
+        },
+        "jobs_available": ["all", "overdue", "recurring_invoices", "recurring_expenses", "reminders"],
+        "note": "Call POST /api/zoho/scheduler/run?job=<job_name> to trigger"
+    }
