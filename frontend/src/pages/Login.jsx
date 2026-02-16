@@ -228,7 +228,7 @@ export default function Login({ onLogin }) {
                   Continue with Google
                 </Button>
 
-                <p className="mt-4 text-xs text-center text-muted-foreground">
+                <p className="mt-4 text-xs text-center text-gray-500">
                   Demo credentials: admin@battwheels.in / admin123
                 </p>
               </TabsContent>
@@ -236,14 +236,14 @@ export default function Login({ onLogin }) {
               <TabsContent value="register">
                 <form onSubmit={handleRegister} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="register-name">Full Name</Label>
+                    <Label htmlFor="register-name" className="text-gray-300">Full Name</Label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                       <Input
                         id="register-name"
                         type="text"
                         placeholder="John Doe"
-                        className="pl-10 bg-background/50"
+                        className="pl-10 bg-[#050505] border-white/20 focus:border-[#65D396] rounded-sm"
                         value={registerData.name}
                         onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
                         required
@@ -252,14 +252,14 @@ export default function Login({ onLogin }) {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="register-email">Email</Label>
+                    <Label htmlFor="register-email" className="text-gray-300">Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                       <Input
                         id="register-email"
                         type="email"
                         placeholder="you@example.com"
-                        className="pl-10 bg-background/50"
+                        className="pl-10 bg-[#050505] border-white/20 focus:border-[#65D396] rounded-sm"
                         value={registerData.email}
                         onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
                         required
@@ -268,14 +268,14 @@ export default function Login({ onLogin }) {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="register-password">Password</Label>
+                    <Label htmlFor="register-password" className="text-gray-300">Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                       <Input
                         id="register-password"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10 bg-background/50"
+                        className="pl-10 bg-[#050505] border-white/20 focus:border-[#65D396] rounded-sm"
                         value={registerData.password}
                         onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
                         required
@@ -284,14 +284,14 @@ export default function Login({ onLogin }) {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="register-confirm">Confirm Password</Label>
+                    <Label htmlFor="register-confirm" className="text-gray-300">Confirm Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                       <Input
                         id="register-confirm"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10 bg-background/50"
+                        className="pl-10 bg-[#050505] border-white/20 focus:border-[#65D396] rounded-sm"
                         value={registerData.confirmPassword}
                         onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
                         required
@@ -301,7 +301,7 @@ export default function Login({ onLogin }) {
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full glow-primary" 
+                    className="w-full bg-[#65D396] text-[#050505] hover:bg-[#4ADE80] font-bold uppercase tracking-wide rounded-sm shadow-[0_0_15px_rgba(101,211,150,0.3)]" 
                     disabled={isLoading}
                     data-testid="register-submit-btn"
                   >
