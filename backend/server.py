@@ -2034,6 +2034,89 @@ async def update_invoice(invoice_id: str, update: InvoiceUpdate, request: Reques
     invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
     return invoice
 
+@api_router.get("/invoices/{invoice_id}/pdf")
+async def download_invoice_pdf(invoice_id: str, request: Request):
+    """Generate and download invoice PDF with GST compliance"""
+    from services.invoice_service import generate_invoice_pdf
+    from fastapi.responses import StreamingResponse
+    
+    await require_auth(request)
+    invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Transform existing invoice format to PDF service format
+    customer_data = {
+        "name": invoice.get("customer_name", "Customer"),
+        "address": "",
+        "city": "Delhi",
+        "state": "Delhi",
+        "pincode": "110001",
+        "gstin": None
+    }
+    
+    # Try to get customer details
+    if invoice.get("customer_id"):
+        customer = await db.customers.find_one({"customer_id": invoice["customer_id"]}, {"_id": 0})
+        if customer:
+            customer_data = {
+                "name": customer.get("name", invoice.get("customer_name", "")),
+                "address": customer.get("address", ""),
+                "city": customer.get("city", "Delhi"),
+                "state": customer.get("state", "Delhi"),
+                "pincode": customer.get("pincode", "110001"),
+                "gstin": customer.get("gstin")
+            }
+    
+    # Transform line items
+    line_items = []
+    for item in invoice.get("line_items", []):
+        line_items.append({
+            "description": item.get("description", item.get("name", "Service")),
+            "hsn_sac": item.get("hsn_sac", "998714"),
+            "quantity": item.get("quantity", 1),
+            "unit": item.get("unit", "pcs"),
+            "rate": item.get("rate", item.get("amount", 0)),
+            "gst_percent": 18
+        })
+    
+    # Build PDF-compatible invoice
+    pdf_invoice = {
+        "invoice_id": invoice.get("invoice_id"),
+        "invoice_number": invoice.get("invoice_number"),
+        "invoice_date": invoice.get("created_at", datetime.now(timezone.utc).isoformat())[:10].replace("-", "/"),
+        "due_date": invoice.get("due_date", datetime.now(timezone.utc).isoformat())[:10].replace("-", "/"),
+        "terms": "Due on Receipt",
+        "vehicle_number": invoice.get("vehicle_details", "").split("(")[-1].replace(")", "") if invoice.get("vehicle_details") else "N/A",
+        "po_number": invoice.get("invoice_number"),
+        "place_of_supply": customer_data.get("state", "Delhi"),
+        "place_of_supply_code": "07",  # Default to Delhi
+        "customer": customer_data,
+        "line_items": line_items,
+        "sub_total": invoice.get("subtotal", 0),
+        "igst_amount": invoice.get("tax_amount", 0),
+        "cgst_amount": 0,
+        "sgst_amount": 0,
+        "rounding": 0,
+        "total_amount": invoice.get("total_amount", 0),
+        "total_in_words": ""
+    }
+    
+    # Calculate total in words
+    from services.invoice_service import number_to_words
+    pdf_invoice["total_in_words"] = number_to_words(pdf_invoice["total_amount"])
+    
+    # Generate PDF
+    pdf_buffer = generate_invoice_pdf(pdf_invoice)
+    
+    filename = f"{invoice.get('invoice_number', invoice_id)}.pdf"
+    
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
 # ==================== PAYMENT ROUTES ====================
 
 @api_router.post("/payments")
