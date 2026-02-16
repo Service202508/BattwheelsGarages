@@ -11,6 +11,7 @@ Features:
 """
 import re
 import math
+import asyncio
 import logging
 from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime, timezone
@@ -417,9 +418,6 @@ class AdvancedSearchService:
         
         return results[:limit]
 
-
-# Async import for parallel execution
-import asyncio
 
 # Service factory
 _search_service: Optional[AdvancedSearchService] = None
