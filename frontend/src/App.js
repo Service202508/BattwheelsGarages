@@ -31,6 +31,15 @@ import FaultTreeImport from "@/pages/FaultTreeImport";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
+// Customer Portal Pages
+import CustomerLayout from "@/components/CustomerLayout";
+import CustomerDashboard from "@/pages/customer/CustomerDashboard";
+import CustomerVehicles from "@/pages/customer/CustomerVehicles";
+import CustomerServiceHistory from "@/pages/customer/CustomerServiceHistory";
+import CustomerInvoices from "@/pages/customer/CustomerInvoices";
+import CustomerPayments from "@/pages/customer/CustomerPayments";
+import CustomerAMC from "@/pages/customer/CustomerAMC";
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
 
