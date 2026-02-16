@@ -4458,6 +4458,14 @@ try:
 except Exception as e:
     logger.warning(f"Could not load Zoho Sync router: {e}")
 
+# Include Zoho Extended routes (Recurring, Projects, Taxes, etc.)
+try:
+    from routes.zoho_extended import router as zoho_extended_router
+    api_router.include_router(zoho_extended_router)
+    logger.info("Zoho Extended router included")
+except Exception as e:
+    logger.warning(f"Could not load Zoho Extended router: {e}")
+
 # Include tickets routes (event-driven module)
 if tickets_router:
     api_router.include_router(tickets_router)
