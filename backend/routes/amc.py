@@ -437,7 +437,8 @@ async def renew_amc_subscription(subscription_id: str, request: Request):
         {"$set": {"renewed_to": new_subscription["subscription_id"]}}
     )
     
-    del new_subscription["_id"] if "_id" in new_subscription else None
+    if "_id" in new_subscription:
+        del new_subscription["_id"]
     return new_subscription
 
 # ==================== ANALYTICS ====================
