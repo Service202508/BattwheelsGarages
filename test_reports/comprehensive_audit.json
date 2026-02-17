@@ -1,22 +1,18 @@
 {
-  "timestamp": "2026-02-17T12:49:20.968770",
+  "timestamp": "2026-02-17T12:51:55.719678",
   "target": "https://finance-hub-650.preview.emergentagent.com",
-  "total_tests": 67,
-  "passed": 58,
-  "failed": 9,
-  "pass_rate": 86.56716417910447,
+  "total_tests": 62,
+  "passed": 54,
+  "failed": 8,
+  "pass_rate": 87.09677419354838,
   "errors": [
-    {
-      "test": "Items Summary Endpoint",
-      "error": ""
-    },
     {
       "test": "Item Update",
       "error": ""
     },
     {
-      "test": "GSTIN State Extraction",
-      "error": "Place: MH"
+      "test": "Contact Create",
+      "error": ""
     },
     {
       "test": "Conversion Funnel",
@@ -51,7 +47,7 @@
     },
     {
       "test": "Items Summary Endpoint",
-      "status": "FAIL",
+      "status": "PASS",
       "detail": ""
     },
     {
@@ -181,32 +177,7 @@
     },
     {
       "test": "Contact Create",
-      "status": "PASS",
-      "detail": ""
-    },
-    {
-      "test": "Contact Read",
-      "status": "PASS",
-      "detail": ""
-    },
-    {
-      "test": "GSTIN State Extraction",
       "status": "FAIL",
-      "detail": "Place: MH"
-    },
-    {
-      "test": "Contact Update",
-      "status": "PASS",
-      "detail": ""
-    },
-    {
-      "test": "Contact Person Add",
-      "status": "PASS",
-      "detail": ""
-    },
-    {
-      "test": "Contact Address Add",
-      "status": "PASS",
       "detail": ""
     },
     {
