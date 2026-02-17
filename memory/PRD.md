@@ -815,7 +815,9 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [x] **Quick Quote Enhancement (Feb 17, 2026)** - Button on Contact detail navigates to Estimates with customer pre-filled
 
 ### P0 (Next)
-- [ ] **Invoices Module (Enhanced)** - Core revenue module with payment status tracking (paid/partial/overdue), recurring invoice profiles
+- [x] **Bills & Purchase Orders Enhanced Module (Feb 17, 2026)** - Full payables module with Bills CRUD, Bill Payments, PO workflow (Draft→Issued→Received→Billed), Convert PO to Bill, Aging Report, Vendor-wise Report - ✅ COMPLETE
+- [x] **Inventory Enhanced Module (Feb 17, 2026)** - Variants (size/color), Bundles/Kits, Serial/Batch tracking, Warehouses, Shipments, Returns, Stock Adjustments, Reports (Stock Summary, Low Stock, Valuation, Movement) - ✅ COMPLETE
+- [ ] **Legacy Data Migration** - Migrate 346 legacy customers/vendors into unified Contacts model
 - [ ] Enable vector embeddings with OPENAI_API_KEY
 - [ ] Configure Razorpay with production keys (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET)
 - [ ] Customer notifications (ticket status, invoice, AMC expiry alerts)
