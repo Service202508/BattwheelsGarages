@@ -489,8 +489,8 @@ export default function Login({ onLogin }) {
                     </TabsContent>
 
                     <TabsContent value="register" className="mt-0">
-                      <form onSubmit={handleRegister} className="space-y-5">
-                        <div className="space-y-2">
+                      <form onSubmit={handleRegister} className="space-y-4">
+                        <div className="space-y-1.5">
                           <Label htmlFor="register-name" className="text-gray-700 text-sm font-semibold ml-1">Full Name</Label>
                           <PremiumInput
                             icon={User}
@@ -504,7 +504,7 @@ export default function Login({ onLogin }) {
                           />
                         </div>
                         
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           <Label htmlFor="register-email" className="text-gray-700 text-sm font-semibold ml-1">Email</Label>
                           <PremiumInput
                             icon={Mail}
@@ -518,7 +518,7 @@ export default function Login({ onLogin }) {
                           />
                         </div>
                         
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           <Label htmlFor="register-password" className="text-gray-700 text-sm font-semibold ml-1">Password</Label>
                           <PremiumInput
                             icon={Lock}
@@ -533,7 +533,7 @@ export default function Login({ onLogin }) {
                           />
                         </div>
                         
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           <Label htmlFor="register-confirm" className="text-gray-700 text-sm font-semibold ml-1">Confirm Password</Label>
                           <PremiumInput
                             icon={Lock}
@@ -548,7 +548,7 @@ export default function Login({ onLogin }) {
                           />
                         </div>
                         
-                        <div className="pt-2">
+                        <div className="pt-1">
                           <PremiumButton 
                             type="submit" 
                             disabled={isLoading}
