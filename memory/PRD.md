@@ -713,10 +713,12 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [x] **Contact Integration Module (Feb 17, 2026)** - Links enhanced contacts to transactions, unified search, transaction history, balance summaries, receivables/payables aging reports, migration tools
 - [x] **Estimates/Quotes Module (Feb 17, 2026)** - Sales cycle entry point with CRUD, line items, status workflow (Draft→Sent→Accepted/Declined→Converted), GST auto-calc (CGST/SGST/IGST), conversion to Invoice/Sales Order, conversion funnel visualization
 
-### P0 (Next)
-- [ ] **Sales Orders Module** - Order confirmation after estimate acceptance, status management (draft/open/fulfilled), inventory reservation
+### P0 (Completed)
+- [x] **Customers Enhanced Module (Feb 17, 2026)** - Comprehensive customer management with GSTIN validation, persons, addresses, portal, statements, credits/refunds, tags, balance/aging, bulk ops
 - [x] **Sales Orders Module (Feb 17, 2026)** - Order confirmation, stock reservation on confirm, fulfillment tracking, partial/full shipments, convert to invoice
 - [x] **Quick Quote Enhancement (Feb 17, 2026)** - Button on Contact detail navigates to Estimates with customer pre-filled
+
+### P0 (Next)
 - [ ] **Invoices Module (Enhanced)** - Core revenue module with payment status tracking (paid/partial/overdue), recurring invoice profiles
 - [ ] Enable vector embeddings with OPENAI_API_KEY
 - [ ] Configure Razorpay with production keys (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET)
@@ -734,7 +736,7 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [ ] **Activate Razorpay Integration** - Enable live payment gateway with user's production keys
 - [ ] **Full Customer Portal Functionality** - Expand token structure into full self-service portal
 - [ ] **Advanced Reporting** - Enhanced contact-centric reports
-- [ ] **Deprecate Old Routes** - Remove legacy `/app/backend/routes/books.py` and `/app/backend/routes/erp.py`
+- [ ] **Deprecate Old Routes** - Remove legacy routes and old customers/vendors pages
 - [ ] Kubernetes migration with HPA
 - [ ] E-invoicing government portal integration
 - [ ] Apply Logo to Favicon
