@@ -731,7 +731,12 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
         await update_contact_balance(invoice.customer_id)
     
     invoice_doc.pop("_id", None)
-    invoice_doc["line_items"] = calculated_items
+    # Remove _id from line items as well
+    cleaned_items = []
+    for item in calculated_items:
+        item.pop("_id", None)
+        cleaned_items.append(item)
+    invoice_doc["line_items"] = cleaned_items
     return {"code": 0, "message": "Invoice created", "invoice": invoice_doc}
 
 @router.get("/")
