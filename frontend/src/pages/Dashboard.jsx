@@ -87,66 +87,42 @@ export default function Dashboard({ user }) {
 
         <TabsContent value="workshop" className="mt-6">
           {/* Metric Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="metric-card card-hover" data-testid="vehicles-in-workshop-card">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground font-medium">Vehicles in Workshop</p>
-                    <p className="text-4xl font-bold mt-2 mono">{stats?.vehicles_in_workshop || 745}</p>
-                    <p className="text-xs text-muted-foreground mt-1">Currently being serviced</p>
-                  </div>
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Wrench className="h-5 w-5 text-primary" strokeWidth={1.5} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+            <MetricCard
+              title="Vehicles in Workshop"
+              value={stats?.vehicles_in_workshop || 745}
+              subtitle="Currently being serviced"
+              icon={Wrench}
+              iconClassName="bg-primary/10"
+              data-testid="vehicles-in-workshop-card"
+            />
 
-            <Card className="metric-card card-hover" data-testid="open-orders-card">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground font-medium">Open Repair Orders</p>
-                    <p className="text-4xl font-bold mt-2 mono">{stats?.open_repair_orders || 738}</p>
-                    <p className="text-xs text-muted-foreground mt-1">Active service tickets</p>
-                  </div>
-                  <div className="h-10 w-10 rounded-lg bg-chart-2/10 flex items-center justify-center">
-                    <Car className="h-5 w-5 text-chart-2" strokeWidth={1.5} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <MetricCard
+              title="Open Repair Orders"
+              value={stats?.open_repair_orders || 738}
+              subtitle="Active service tickets"
+              icon={Car}
+              iconClassName="bg-chart-2/10"
+              data-testid="open-orders-card"
+            />
 
-            <Card className="metric-card card-hover" data-testid="repair-time-card">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground font-medium">Avg. Repair Time</p>
-                    <p className="text-4xl font-bold mt-2 mono">{stats?.avg_repair_time || 7.9} <span className="text-lg font-normal">Hours</span></p>
-                    <p className="text-xs text-muted-foreground mt-1">For all closed tickets</p>
-                  </div>
-                  <div className="h-10 w-10 rounded-lg bg-chart-3/10 flex items-center justify-center">
-                    <Clock className="h-5 w-5 text-chart-3" strokeWidth={1.5} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <MetricCard
+              title="Avg. Repair Time"
+              value={<>{stats?.avg_repair_time || 7.9} <span className="text-base sm:text-lg font-normal">Hours</span></>}
+              subtitle="For all closed tickets"
+              icon={Clock}
+              iconClassName="bg-chart-3/10"
+              data-testid="repair-time-card"
+            />
 
-            <Card className="metric-card card-hover" data-testid="technicians-card">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground font-medium">Available Technicians</p>
-                    <p className="text-4xl font-bold mt-2 mono">{stats?.available_technicians || 34}</p>
-                    <p className="text-xs text-muted-foreground mt-1">Ready for assignment</p>
-                  </div>
-                  <div className="h-10 w-10 rounded-lg bg-chart-4/10 flex items-center justify-center">
-                    <Users className="h-5 w-5 text-chart-4" strokeWidth={1.5} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <MetricCard
+              title="Available Technicians"
+              value={stats?.available_technicians || 34}
+              subtitle="Ready for assignment"
+              icon={Users}
+              iconClassName="bg-chart-4/10"
+              data-testid="technicians-card"
+            />
           </div>
 
           {/* Charts */}
