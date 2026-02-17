@@ -7,7 +7,33 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
-### Enhanced Items/Inventory Management Module (Feb 17, 2026) ✅ COMPLETE - NEW
+### Enhanced Contacts Module (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Comprehensive Contact Management System (Replaces Customers/Vendors):**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Contact Tags** | `/api/contacts-enhanced/tags` | ✅ CRUD with color picker | ✅ |
+| **Contacts** | `/api/contacts-enhanced/` | ✅ Customer/Vendor/Both types | ✅ |
+| **Contact Persons** | `/api/contacts-enhanced/{id}/persons` | ✅ Multiple + Primary marking | ✅ |
+| **Addresses** | `/api/contacts-enhanced/{id}/addresses` | ✅ Billing/Shipping + Defaults | ✅ |
+| **GSTIN Validation** | `/api/contacts-enhanced/validate-gstin/{gstin}` | ✅ Auto-detect state/PAN | ✅ |
+| **Portal Access** | `/api/contacts-enhanced/{id}/enable-portal` | ✅ Token generation | ✅ |
+| **Email Statements** | `/api/contacts-enhanced/{id}/email-statement` | ✅ **MOCKED** (logs only) | ✅ |
+| **Activate/Deactivate** | `/api/contacts-enhanced/{id}/activate|deactivate` | ✅ Status toggle | ✅ |
+
+**Frontend Features:**
+- New page at `/contacts` with Contacts and Tags tabs
+- Summary cards: Total Contacts, Customers, Vendors, With GSTIN, Receivable, Payable
+- Contact detail dialog with persons, addresses, balance, usage stats
+- GSTIN auto-validation with state/PAN extraction
+- Action buttons: Enable Portal, Email Statement, Deactivate, Delete
+
+**Test Results: 37/37 backend tests passed (100%)**
+
+---
+
+### Enhanced Items/Inventory Management Module (Feb 17, 2026) ✅ COMPLETE
 
 **Comprehensive Inventory Management System:**
 
