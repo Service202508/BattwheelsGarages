@@ -4509,6 +4509,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Financial reports routes: {e}")
 
+# Include GST Compliance routes
+try:
+    from routes.gst import router as gst_router
+    api_router.include_router(gst_router)
+    logger.info("GST compliance routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load GST routes: {e}")
+
 # Include main router
 app.include_router(api_router)
 
