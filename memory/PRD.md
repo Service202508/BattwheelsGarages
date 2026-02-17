@@ -7,7 +7,27 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
-### Enhanced Contacts Module (Feb 17, 2026) ✅ COMPLETE - NEW
+### Contact Integration Module (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Links Enhanced Contacts to Existing Transactions:**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Unified Contact Search** | `/api/contact-integration/contacts/search` | ✅ Searches enhanced + legacy | ✅ |
+| **Transaction-Ready Contact** | `/api/contact-integration/contacts/{id}/for-transaction` | ✅ With addresses | ✅ |
+| **Transaction History** | `/api/contact-integration/contacts/{id}/transactions` | ✅ In contact detail dialog | ✅ |
+| **Balance Summary** | `/api/contact-integration/contacts/{id}/balance-summary` | ✅ Receivable/Payable breakdown | ✅ |
+| **Top Customers Report** | `/api/contact-integration/reports/customers-by-revenue` | ✅ Revenue ranking | ✅ |
+| **Top Vendors Report** | `/api/contact-integration/reports/vendors-by-expense` | ✅ Expense ranking | ✅ |
+| **Receivables Aging** | `/api/contact-integration/reports/receivables-aging` | ✅ By customer (49 with ₹50L) | ✅ |
+| **Payables Aging** | `/api/contact-integration/reports/payables-aging` | ✅ By vendor | ✅ |
+| **Migration Tools** | `/api/contact-integration/migrate/contacts-to-enhanced` | ✅ Dry-run (346 contacts) | ✅ |
+
+**Test Results: 23/23 backend tests passed (100%)**
+
+---
+
+### Enhanced Contacts Module (Feb 17, 2026) ✅ COMPLETE
 
 **Comprehensive Contact Management System (Replaces Customers/Vendors):**
 
@@ -25,7 +45,7 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 **Frontend Features:**
 - New page at `/contacts` with Contacts and Tags tabs
 - Summary cards: Total Contacts, Customers, Vendors, With GSTIN, Receivable, Payable
-- Contact detail dialog with persons, addresses, balance, usage stats
+- Contact detail dialog with persons, addresses, balance, transaction history
 - GSTIN auto-validation with state/PAN extraction
 - Action buttons: Enable Portal, Email Statement, Deactivate, Delete
 
