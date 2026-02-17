@@ -14,9 +14,10 @@ import {
   IndianRupee, Building, Car, Monitor, Settings, Calculator,
   AlertTriangle, CheckCircle, XCircle
 } from "lucide-react";
-import { KPICard, formatCurrencyCompact } from "@/components/KPICard";
+import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
+import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
 import { API } from "@/App";
-import PageHeader, { EmptyState } from "@/components/PageHeader";
+import PageHeader from "@/components/PageHeader";
 
 const statusColors = {
   active: "bg-green-100 text-green-700",
