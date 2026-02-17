@@ -1030,16 +1030,32 @@ async def low_stock_report():
             "foreignField": "item_id",
             "as": "stock"
         }},
-        {"$addFields": {"total_stock": {"$sum": "$stock.available_stock"}}},
-        {"$match": {"$expr": {"$lt": ["$total_stock", "$reorder_level"]}}},
+        {"$addFields": {
+            "total_stock": {"$sum": "$stock.available_stock"},
+            "reorder_level_num": {
+                "$cond": {
+                    "if": {"$or": [
+                        {"$eq": ["$reorder_level", ""]},
+                        {"$eq": ["$reorder_level", None]},
+                        {"$not": {"$isNumber": "$reorder_level"}}
+                    ]},
+                    "then": 0,
+                    "else": {"$toDouble": "$reorder_level"}
+                }
+            }
+        }},
+        {"$match": {"$expr": {"$and": [
+            {"$gt": ["$reorder_level_num", 0]},
+            {"$lt": ["$total_stock", "$reorder_level_num"]}
+        ]}}},
         {"$project": {
             "_id": 0,
             "item_id": 1,
             "name": 1,
             "sku": 1,
             "total_stock": 1,
-            "reorder_level": 1,
-            "shortage": {"$subtract": ["$reorder_level", "$total_stock"]}
+            "reorder_level": "$reorder_level_num",
+            "shortage": {"$subtract": ["$reorder_level_num", "$total_stock"]}
         }},
         {"$sort": {"shortage": -1}}
     ]
