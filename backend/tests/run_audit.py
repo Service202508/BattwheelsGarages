@@ -222,15 +222,16 @@ def run_audit():
     vendors = resp.json().get('contacts', []) if resp.status_code == 200 else []
     
     # CRUD
+    unique_ts = int(datetime.now().timestamp())
     contact_data = {
-        "name": f"Audit Contact {int(datetime.now().timestamp())}",
+        "name": f"Audit Contact {unique_ts}",
         "contact_type": "customer",
-        "email": f"audit{int(datetime.now().timestamp())}@test.com",
+        "email": f"audit{unique_ts}@test.com",
         "phone": "+919876543210",
-        "gstin": "27AABCU9603R1ZM"
+        "gstin": f"27AABCU{str(unique_ts)[-4:]}R1Z{str(unique_ts)[-1]}"  # Generate unique GSTIN
     }
     resp = client.post(f"{API_URL}/contacts-enhanced/", headers=headers, json=contact_data)
-    test("Contact Create", resp.status_code == 200)
+    test("Contact Create", resp.status_code == 200, resp.text[:100] if resp.status_code != 200 else "")
     created_contact_id = resp.json().get('contact', {}).get('contact_id') if resp.status_code == 200 else None
     
     if created_contact_id:
