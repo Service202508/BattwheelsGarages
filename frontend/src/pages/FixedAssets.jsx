@@ -14,6 +14,7 @@ import {
   IndianRupee, Building, Car, Monitor, Settings, Calculator,
   AlertTriangle, CheckCircle, XCircle
 } from "lucide-react";
+import { KPICard, formatCurrencyCompact } from "@/components/KPICard";
 import { API } from "@/App";
 import PageHeader, { EmptyState } from "@/components/PageHeader";
 
