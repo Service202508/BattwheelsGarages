@@ -383,6 +383,41 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/recurring-expenses" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <RecurringExpenses user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/project-tasks" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <ProjectTasks user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/opening-balances" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <OpeningBalances user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/exchange-rates" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <ExchangeRates user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/activity-logs" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <ActivityLogs user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/accounting" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
