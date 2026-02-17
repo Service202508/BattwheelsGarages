@@ -414,7 +414,7 @@ def run_audit():
     resp = client.get(f"{API_URL}/gst/summary", headers=headers)
     test("GST Summary", resp.status_code == 200)
     
-    resp = client.get(f"{API_URL}/gst/gstr1?month=2&year=2026", headers=headers)
+    resp = client.get(f"{API_URL}/gst/gstr1?period=2026-02", headers=headers)
     test("GSTR-1 Report", resp.status_code == 200)
     
     # ==================== CUSTOMER PORTAL ====================
