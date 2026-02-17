@@ -361,23 +361,23 @@ export default function Login({ onLogin }) {
             {/* Premium Glass Card */}
             <div className="relative">
               {/* Card Glow */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#22EDA9]/20 via-transparent to-[#22EDA9]/20 rounded-[2rem] blur-xl opacity-60" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#22EDA9]/20 via-transparent to-[#22EDA9]/20 rounded-3xl blur-xl opacity-60" />
               
               {/* Main Card */}
-              <Card className="relative border-0 shadow-2xl rounded-[2rem] overflow-hidden bg-white/95 backdrop-blur-xl">
+              <Card className="relative border-0 shadow-2xl rounded-3xl overflow-hidden bg-white/95 backdrop-blur-xl">
                 {/* Top Accent Line */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#22EDA9] to-transparent" />
                 
-                <CardHeader className="text-center pt-10 pb-6 px-10">
+                <CardHeader className="text-center pt-8 pb-4 px-6 sm:px-8">
                   {/* Decorative Icon */}
-                  <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-gradient-to-br from-[#22EDA9]/10 to-[#22EDA9]/5 flex items-center justify-center shadow-inner">
-                    <Zap className="w-7 h-7 text-[#22EDA9]" />
+                  <div className="mx-auto mb-3 w-12 h-12 rounded-xl bg-gradient-to-br from-[#22EDA9]/10 to-[#22EDA9]/5 flex items-center justify-center shadow-inner">
+                    <Zap className="w-6 h-6 text-[#22EDA9]" />
                   </div>
-                  <CardTitle className="text-3xl font-bold text-gray-900 tracking-tight">Battwheels OS</CardTitle>
-                  <CardDescription className="text-gray-500 mt-2 text-base">Sign in to your account</CardDescription>
+                  <CardTitle className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Battwheels OS</CardTitle>
+                  <CardDescription className="text-gray-500 mt-1.5 text-sm sm:text-base">Sign in to your account</CardDescription>
                 </CardHeader>
                 
-                <CardContent className="px-10 pb-10">
+                <CardContent className="px-6 sm:px-8 pb-8">
                   <Tabs defaultValue="login" className="w-full">
                     {/* Premium Tab List */}
                     <TabsList className="grid w-full grid-cols-2 mb-8 bg-gray-100/80 rounded-2xl p-1.5 h-14 shadow-inner">
