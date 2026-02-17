@@ -473,10 +473,10 @@ export default function ItemsEnhanced() {
                   <div><Label>Description</Label><Textarea value={newGroup.description} onChange={(e) => setNewGroup({ ...newGroup, description: e.target.value })} placeholder="Description" /></div>
                   <div>
                     <Label>Parent Group</Label>
-                    <Select value={newGroup.parent_group_id || ""} onValueChange={(v) => setNewGroup({ ...newGroup, parent_group_id: v })}>
+                    <Select value={newGroup.parent_group_id || "none"} onValueChange={(v) => setNewGroup({ ...newGroup, parent_group_id: v === "none" ? "" : v })}>
                       <SelectTrigger><SelectValue placeholder="Select parent (optional)" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No Parent</SelectItem>
+                        <SelectItem value="none">No Parent</SelectItem>
                         {groups.map(g => <SelectItem key={g.group_id} value={g.group_id}>{g.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
