@@ -495,12 +495,12 @@ export default function FixedAssets() {
       {/* Filter */}
       <div className="flex gap-4 items-center">
         <Label>Filter by Type:</Label>
-        <Select value={filterType} onValueChange={setFilterType}>
+        <Select value={filterType || "all"} onValueChange={(v) => setFilterType(v === "all" ? "" : v)}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Types</SelectItem>
+            <SelectItem value="all">All Types</SelectItem>
             {assetTypes.map(t => (
               <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
             ))}
