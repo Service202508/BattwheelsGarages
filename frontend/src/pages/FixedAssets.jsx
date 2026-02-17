@@ -431,38 +431,38 @@ export default function FixedAssets() {
 
       {/* Summary Cards */}
       {summary && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-          <KPICard
+        <StatCardGrid columns={5}>
+          <StatCard
             title="Total Assets"
             value={summary.total_assets}
             icon={Package}
             variant="info"
           />
-          <KPICard
+          <StatCard
             title="Active"
             value={summary.active_assets}
             icon={CheckCircle}
             variant="success"
           />
-          <KPICard
+          <StatCard
             title="Purchase Value"
             value={formatCurrencyCompact(summary.total_purchase_value || 0)}
             icon={IndianRupee}
             variant="purple"
           />
-          <KPICard
+          <StatCard
             title="Depreciation"
             value={formatCurrencyCompact(summary.total_accumulated_depreciation || 0)}
             icon={TrendingDown}
             variant="warning"
           />
-          <KPICard
+          <StatCard
             title="Book Value"
             value={formatCurrencyCompact(summary.total_book_value || 0)}
             icon={DollarSign}
             variant="success"
           />
-        </div>
+        </StatCardGrid>
       )}
 
       {/* Filter */}
