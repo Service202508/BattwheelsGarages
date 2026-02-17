@@ -1,20 +1,11 @@
 {
-  "timestamp": "2026-02-17T13:00:49.488094",
+  "timestamp": "2026-02-17T13:02:51.071956",
   "target": "https://finance-hub-650.preview.emergentagent.com",
   "total_tests": 67,
-  "passed": 65,
-  "failed": 2,
-  "pass_rate": 97.01492537313433,
-  "errors": [
-    {
-      "test": "Item Update",
-      "error": ""
-    },
-    {
-      "test": "GSTIN State Extraction",
-      "error": "Place: MH"
-    }
-  ],
+  "passed": 67,
+  "failed": 0,
+  "pass_rate": 100.0,
+  "errors": [],
   "details": [
     {
       "test": "Admin Login",
@@ -53,7 +44,7 @@
     },
     {
       "test": "Item Update",
-      "status": "FAIL",
+      "status": "PASS",
       "detail": ""
     },
     {
@@ -163,7 +154,7 @@
     },
     {
       "test": "GSTIN State Extraction",
-      "status": "FAIL",
+      "status": "PASS",
       "detail": "Place: MH"
     },
     {
