@@ -468,7 +468,7 @@ export default function Layout({ children, user, onLogout }) {
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setMobileOpen(true)}
-                className="h-10 w-10 hover:bg-gray-100 rounded-xl"
+                className="h-10 w-10 bg-gray-100 hover:bg-gray-200 rounded-xl"
                 data-testid="mobile-menu-btn"
               >
                 <Menu className="h-5 w-5 text-gray-700" />
