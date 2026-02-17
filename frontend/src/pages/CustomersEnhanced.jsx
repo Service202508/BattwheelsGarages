@@ -967,6 +967,15 @@ export default function CustomersEnhanced() {
                       >
                         <FileText className="h-4 w-4 mr-1" /> Quick Estimate
                       </Button>
+                      {!selectedCustomer.transaction_counts?.has_contact_link && (
+                        <Button 
+                          variant="outline" 
+                          className="bg-purple-50 hover:bg-purple-100 border-purple-200"
+                          onClick={() => handleSyncToContacts(selectedCustomer.customer_id)}
+                        >
+                          <RefreshCw className="h-4 w-4 mr-1" /> Sync to Contacts
+                        </Button>
+                      )}
                       <Button variant="outline" onClick={() => handleDeactivate(selectedCustomer.customer_id)}><XCircle className="h-4 w-4 mr-1" /> Deactivate</Button>
                     </>
                   ) : (
