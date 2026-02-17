@@ -4528,7 +4528,7 @@ except Exception as e:
 # Include Enhanced Contacts routes v2 (Unified Customer & Vendor Management)
 # This merges contacts_enhanced and customers_enhanced into a single source of truth
 try:
-    from routes.contacts_enhanced_v2 import router as contacts_enhanced_router
+    from routes.contacts_enhanced import router as contacts_enhanced_router
     api_router.include_router(contacts_enhanced_router)
     logger.info("Enhanced Contacts v2 routes loaded (unified customer/vendor management)")
 except Exception as e:
