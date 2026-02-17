@@ -73,7 +73,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
                 <Car className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="font-bold text-lg text-gray-900">Battwheels</h1>
+                <h1 className="font-bold text-lg text-gray-900">Battwheels OS</h1>
                 <p className="text-xs text-gray-500">Customer Portal</p>
               </div>
             </div>
