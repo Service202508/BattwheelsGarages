@@ -485,6 +485,16 @@ function AppRouter() {
       } />
       {/* Redirect old customers-enhanced route to unified contacts page */}
       <Route path="/customers-enhanced" element={<Navigate to="/contacts" replace />} />
+      {/* Customer Portal - Public access with token authentication */}
+      <Route path="/customer-portal" element={<CustomerPortal />} />
+      {/* Advanced Reports with Charts */}
+      <Route path="/reports-advanced" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <ReportsAdvanced user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/expenses" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
