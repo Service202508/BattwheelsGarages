@@ -498,10 +498,10 @@ export default function InvoicesEnhanced() {
                   <SelectItem value="void">Void</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={customerFilter} onValueChange={(v) => { setCustomerFilter(v); setTimeout(fetchInvoices, 100); }}>
+              <Select value={customerFilter || "all_customers"} onValueChange={(v) => { setCustomerFilter(v === "all_customers" ? "" : v); setTimeout(fetchInvoices, 100); }}>
                 <SelectTrigger className="w-48"><SelectValue placeholder="All Customers" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Customers</SelectItem>
+                  <SelectItem value="all_customers">All Customers</SelectItem>
                   {customers.map(c => <SelectItem key={c.contact_id} value={c.contact_id}>{c.name}</SelectItem>)}
                 </SelectContent>
               </Select>
