@@ -116,6 +116,7 @@ const navItems = [
     { name: "Reports", path: "/reports", icon: BarChart3 },
     { name: "GST Returns", path: "/gst-reports", icon: FileText },
     { name: "Accounting", path: "/accounting", icon: Calculator },
+    { name: "Analytics", path: "/reports-advanced", icon: BarChart3 },
   ]},
   { section: "Projects", items: [
     { name: "Projects", path: "/projects", icon: FolderKanban },
@@ -127,6 +128,7 @@ const navItems = [
     { name: "Activity Logs", path: "/activity-logs", icon: Activity, adminOnly: true },
     { name: "Zoho Sync", path: "/zoho-sync", icon: CloudDownload, adminOnly: true },
     { name: "Data Migration", path: "/data-migration", icon: Database, adminOnly: true },
+    { name: "Customer Portal", path: "/customer-portal", icon: Building2 },
   ]},
 ];
 
