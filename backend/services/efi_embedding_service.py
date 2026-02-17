@@ -471,7 +471,7 @@ class EFIEmbeddingManager:
         # Build query filter
         query = {"embedding_vector": {"$exists": True, "$ne": None}}
         if subsystem and subsystem != "unknown":
-            query["subsystem"] = subsystem
+            query["subsystem_category"] = subsystem
         
         # Get all failure cards with embeddings
         cards = await self.db.failure_cards.find(query, {"_id": 0}).to_list(None)
@@ -487,6 +487,12 @@ class EFIEmbeddingManager:
             logger.warning("No failure cards with embeddings found")
             return []
         
+        # Get all decision tree IDs for boosting
+        tree_card_ids = set()
+        trees = await self.db.efi_decision_trees.find({}, {"failure_card_id": 1}).to_list(None)
+        for t in trees:
+            tree_card_ids.add(t.get("failure_card_id"))
+        
         # Calculate similarities
         results = []
         for card in cards:
@@ -496,23 +502,29 @@ class EFIEmbeddingManager:
             
             similarity = cosine_similarity(embedding, card_embedding)
             
-            if similarity >= threshold:
+            # Boost cards that have decision trees
+            has_tree = card.get("failure_id") in tree_card_ids
+            boosted_score = similarity * (1.5 if has_tree else 1.0)
+            
+            if boosted_score >= threshold:
                 # Determine confidence level
-                if similarity >= 0.8:
+                if boosted_score >= 0.5:
                     confidence = "high"
-                elif similarity >= 0.6:
+                elif boosted_score >= 0.25:
                     confidence = "medium"
                 else:
                     confidence = "low"
                 
                 results.append({
                     **card,
-                    "similarity_score": round(similarity, 4),
-                    "confidence_level": confidence
+                    "similarity_score": round(boosted_score, 4),
+                    "raw_similarity": round(similarity, 4),
+                    "confidence_level": confidence,
+                    "has_decision_tree": has_tree
                 })
         
         # Sort by similarity and limit
-        results.sort(key=lambda x: x["similarity_score"], reverse=True)
+        results.sort(key=lambda x: (x.get("has_decision_tree", False), x["similarity_score"]), reverse=True)
         return results[:limit]
     
     async def embed_failure_card(self, failure_id: str) -> Dict[str, Any]:
