@@ -10,6 +10,7 @@ import {
   Receipt, AlertTriangle, Calendar, RefreshCw, ArrowUpRight, ArrowDownRight,
   Wallet, Target, Clock, CheckCircle
 } from "lucide-react";
+import { GradientKPICard, formatCurrencyCompact } from "@/components/KPICard";
 import { API } from "@/App";
 
 // Simple chart components using CSS
