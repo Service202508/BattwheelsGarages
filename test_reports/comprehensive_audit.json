@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-02-17T12:51:55.719678",
+  "timestamp": "2026-02-17T12:58:18.138037",
   "target": "https://finance-hub-650.preview.emergentagent.com",
   "total_tests": 62,
-  "passed": 54,
-  "failed": 8,
-  "pass_rate": 87.09677419354838,
+  "passed": 56,
+  "failed": 6,
+  "pass_rate": 90.32258064516128,
   "errors": [
     {
       "test": "Item Update",
@@ -20,14 +20,6 @@
     },
     {
       "test": "Invoice Aging Report",
-      "error": ""
-    },
-    {
-      "test": "Bills Aging Report",
-      "error": ""
-    },
-    {
-      "test": "GST Summary",
       "error": ""
     },
     {
@@ -287,7 +279,7 @@
     },
     {
       "test": "Bills Aging Report",
-      "status": "FAIL",
+      "status": "PASS",
       "detail": ""
     },
     {
@@ -322,7 +314,7 @@
     },
     {
       "test": "GST Summary",
-      "status": "FAIL",
+      "status": "PASS",
       "detail": ""
     },
     {
