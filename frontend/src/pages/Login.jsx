@@ -380,26 +380,26 @@ export default function Login({ onLogin }) {
                 <CardContent className="px-6 sm:px-8 pb-8">
                   <Tabs defaultValue="login" className="w-full">
                     {/* Premium Tab List */}
-                    <TabsList className="grid w-full grid-cols-2 mb-8 bg-gray-100/80 rounded-2xl p-1.5 h-14 shadow-inner">
+                    <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100/80 rounded-xl p-1 h-12 shadow-inner">
                       <TabsTrigger 
                         value="login" 
                         data-testid="login-tab" 
-                        className="rounded-xl font-semibold text-sm transition-all duration-300
+                        className="rounded-lg font-semibold text-sm transition-all duration-300
                           data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#22EDA9] data-[state=active]:to-[#1DD69A]
                           data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-[#22EDA9]/30
                           data-[state=inactive]:text-gray-500 data-[state=inactive]:hover:text-gray-700
-                          h-11"
+                          h-10"
                       >
                         Login
                       </TabsTrigger>
                       <TabsTrigger 
                         value="register" 
                         data-testid="register-tab" 
-                        className="rounded-xl font-semibold text-sm transition-all duration-300
+                        className="rounded-lg font-semibold text-sm transition-all duration-300
                           data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#22EDA9] data-[state=active]:to-[#1DD69A]
                           data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-[#22EDA9]/30
                           data-[state=inactive]:text-gray-500 data-[state=inactive]:hover:text-gray-700
-                          h-11"
+                          h-10"
                       >
                         Register
                       </TabsTrigger>
