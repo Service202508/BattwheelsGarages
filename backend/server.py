@@ -4558,6 +4558,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Enhanced Sales Orders routes: {e}")
 
+# Include Enhanced Invoices routes
+try:
+    from routes.invoices_enhanced import router as invoices_enhanced_router
+    api_router.include_router(invoices_enhanced_router)
+    logger.info("Enhanced Invoices routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Enhanced Invoices routes: {e}")
+
 # DEPRECATED: customers_enhanced has been merged into contacts_enhanced_v2
 # The unified contacts module now handles all customer and vendor functionality
 # with a contact_type field to distinguish between customers, vendors, and both
