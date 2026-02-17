@@ -17,6 +17,7 @@ import {
   FileText, ArrowRight, Download, Filter, MoreVertical, Users, Building2,
   TrendingUp, TrendingDown, Wallet, PieChart
 } from "lucide-react";
+import { KPICard, formatCurrencyCompact } from "@/components/KPICard";
 import { API } from "@/App";
 
 const statusColors = {
