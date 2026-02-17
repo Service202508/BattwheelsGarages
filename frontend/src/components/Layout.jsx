@@ -129,6 +129,7 @@ const navItems = [
   { section: "Administration", items: [
     { name: "Taxes", path: "/taxes", icon: Percent, adminOnly: true },
     { name: "Users", path: "/users", icon: Users, adminOnly: true },
+    { name: "Custom Modules", path: "/custom-modules", icon: Database, adminOnly: true },
     { name: "Activity Logs", path: "/activity-logs", icon: Activity, adminOnly: true },
     { name: "Zoho Sync", path: "/zoho-sync", icon: CloudDownload, adminOnly: true },
     { name: "Data Migration", path: "/data-migration", icon: Database, adminOnly: true },
