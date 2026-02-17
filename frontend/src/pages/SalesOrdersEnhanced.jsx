@@ -363,56 +363,57 @@ export default function SalesOrdersEnhanced() {
       />
 
       {/* Summary Cards */}
-      {summary && (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <ShoppingCart className="h-8 w-8 text-blue-500" />
-                <div>
-                  <p className="text-xs text-gray-500">Total Orders</p>
-                  <p className="text-xl font-bold">{summary.total}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-gray-50">
-            <CardContent className="pt-4">
-              <p className="text-xs text-gray-500">Draft</p>
-              <p className="text-lg font-bold">{summary.by_status?.draft || 0}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-blue-50">
-            <CardContent className="pt-4">
-              <p className="text-xs text-gray-500">Confirmed</p>
-              <p className="text-lg font-bold text-blue-700">{summary.by_status?.confirmed || 0}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-green-50">
-            <CardContent className="pt-4">
-              <p className="text-xs text-gray-500">Open</p>
-              <p className="text-lg font-bold text-green-700">{summary.by_status?.open || 0}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-purple-50">
-            <CardContent className="pt-4">
-              <p className="text-xs text-gray-500">Closed</p>
-              <p className="text-lg font-bold text-purple-700">{summary.by_status?.closed || 0}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-green-100 border-green-300">
-            <CardContent className="pt-4">
-              <p className="text-xs text-gray-500">Total Value</p>
-              <p className="text-lg font-bold text-green-700">₹{(summary.total_value || 0).toLocaleString('en-IN')}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-orange-50 border-orange-300">
-            <CardContent className="pt-4">
-              <p className="text-xs text-gray-500">Pending Invoice</p>
-              <p className="text-lg font-bold text-orange-700">₹{(summary.pending_invoice || 0).toLocaleString('en-IN')}</p>
-            </CardContent>
-          </Card>
-        </div>
+      {loading ? (
+        <StatCardGrid columns={7}>
+          {[...Array(7)].map((_, i) => (
+            <StatCard key={i} loading title="" value="" />
+          ))}
+        </StatCardGrid>
+      ) : summary && (
+        <StatCardGrid columns={7}>
+          <StatCard
+            title="Total Orders"
+            value={summary.total}
+            icon={ShoppingCart}
+            variant="info"
+          />
+          <StatCard
+            title="Draft"
+            value={summary.by_status?.draft || 0}
+            icon={Clock}
+            variant="default"
+          />
+          <StatCard
+            title="Confirmed"
+            value={summary.by_status?.confirmed || 0}
+            icon={CheckCircle}
+            variant="info"
+          />
+          <StatCard
+            title="Open"
+            value={summary.by_status?.open || 0}
+            icon={Package}
+            variant="success"
+          />
+          <StatCard
+            title="Closed"
+            value={summary.by_status?.closed || 0}
+            icon={CheckCircle}
+            variant="purple"
+          />
+          <StatCard
+            title="Total Value"
+            value={formatCurrencyCompact(summary.total_value || 0)}
+            icon={IndianRupee}
+            variant="success"
+          />
+          <StatCard
+            title="Pending Invoice"
+            value={formatCurrencyCompact(summary.pending_invoice || 0)}
+            icon={Receipt}
+            variant="warning"
+          />
+        </StatCardGrid>
       )}
 
       {/* Fulfillment Pipeline */}
