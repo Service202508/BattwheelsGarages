@@ -4501,6 +4501,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Razorpay routes: {e}")
 
+# Include Financial Reports routes
+try:
+    from routes.reports import router as reports_router
+    api_router.include_router(reports_router)
+    logger.info("Financial reports routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Financial reports routes: {e}")
+
 # Include main router
 app.include_router(api_router)
 
