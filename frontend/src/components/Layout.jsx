@@ -85,8 +85,12 @@ const navItems = [
     { name: "Leave Management", path: "/leave", icon: Calendar },
     { name: "Payroll", path: "/payroll", icon: Wallet },
   ]},
+  { section: "Contacts", items: [
+    { name: "Contact Management", path: "/contacts", icon: Users },
+    { name: "Customers (Legacy)", path: "/customers", icon: User },
+    { name: "Vendors (Legacy)", path: "/suppliers", icon: Building2 },
+  ]},
   { section: "Sales", items: [
-    { name: "Customers", path: "/customers", icon: Users },
     { name: "Quotes", path: "/quotes", icon: FileText },
     { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
     { name: "Delivery Challans", path: "/delivery-challans", icon: Truck },
@@ -95,7 +99,6 @@ const navItems = [
     { name: "Credit Notes", path: "/credit-notes", icon: FileText },
   ]},
   { section: "Purchases", items: [
-    { name: "Vendors", path: "/suppliers", icon: Building2 },
     { name: "Purchase Orders", path: "/purchases", icon: Truck },
     { name: "Bills", path: "/bills", icon: Receipt },
     { name: "Vendor Credits", path: "/vendor-credits", icon: CreditCard },
