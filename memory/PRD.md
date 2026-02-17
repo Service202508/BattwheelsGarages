@@ -7,7 +7,47 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
-### Sales Orders Module (Feb 17, 2026) ✅ COMPLETE - NEW
+### Customers Enhanced Module (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Comprehensive Customer Management with Zoho Books-like Features:**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Customers CRUD** | `/api/customers-enhanced/` | ✅ List with filters + Create form | ✅ |
+| **GSTIN Validation** | `/api/customers-enhanced/validate-gstin/{gstin}` | ✅ Auto-parse state, PAN, entity | ✅ |
+| **Sync Check** | `/api/customers-enhanced/check-sync` | ✅ Data quality audit | ✅ |
+| **Contact Persons** | `/api/customers-enhanced/{id}/persons` | ✅ Add/Update/Delete/Set Primary | ✅ |
+| **Multiple Addresses** | `/api/customers-enhanced/{id}/addresses` | ✅ Billing/Shipping | ✅ |
+| **Portal Access** | `/api/customers-enhanced/{id}/enable-portal` | ✅ Token gen + **MOCKED** email | ✅ |
+| **Email Statement** | `/api/customers-enhanced/{id}/email-statement` | ✅ **MOCKED** (email/PDF) | ✅ |
+| **Credits & Refunds** | `/api/customers-enhanced/{id}/credits` | ✅ Add credit, create refund | ✅ |
+| **Tags System** | `/api/customers-enhanced/tags` | ✅ Create/assign/remove tags | ✅ |
+| **Status Management** | `/api/customers-enhanced/{id}/activate|deactivate` | ✅ With pending invoice check | ✅ |
+| **Balance & Aging** | Calculated from invoices | ✅ Current, 1-30, 31-60, 90+ days | ✅ |
+| **Transaction History** | `/api/customers-enhanced/{id}/transactions` | ✅ Estimates/SO/Invoices/Payments | ✅ |
+| **Bulk Operations** | `/api/customers-enhanced/bulk-action` | ✅ Activate/deactivate/delete/tags | ✅ |
+| **Reports** | `/api/customers-enhanced/reports/` | ✅ By segment, top customers, aging | ✅ |
+| **Quick Estimate** | `/api/customers-enhanced/{id}/quick-estimate` | ✅ Redirect with customer pre-filled | ✅ |
+
+**Frontend Features:**
+- New page at `/customers-enhanced` with Summary Cards
+- Summary cards: Total, Active, Inactive, With GSTIN, Portal Enabled, New This Month, Total Receivable, Credit Limit
+- Customer list with search, status filter, GST treatment filter
+- Create New tab with GSTIN validation on blur (auto-fills PAN, Place of Supply)
+- Detail dialog with Balance & Aging visualization (5 buckets)
+- Contact Persons section with Add/Delete, set primary
+- Addresses section (Billing/Shipping) with Default toggle
+- Available Credits section
+- Transaction Counts (Estimates, Sales Orders, Invoices)
+- Action buttons: Edit, Enable Portal, Email Statement, Add Credit, Quick Estimate, Deactivate, Delete
+- Sync Check displays data quality report with suggestions
+- Tags tab with color-coded tag management
+
+**Test Results: 52/52 backend tests passed (100%)**
+
+---
+
+### Sales Orders Module (Feb 17, 2026) ✅ COMPLETE
 
 **Post-Estimate Order Confirmation with Inventory Reservation and Fulfillment:**
 
