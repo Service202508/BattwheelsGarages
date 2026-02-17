@@ -474,7 +474,11 @@ async def get_low_stock_items():
     low_stock_items = []
     for item in items:
         stock = item.get("stock_on_hand", 0) or item.get("available_stock", 0)
+        if isinstance(stock, str):
+            stock = float(stock) if stock else 0
         reorder = item.get("reorder_level", 0)
+        if isinstance(reorder, str):
+            reorder = float(reorder) if reorder else 0
         if stock < reorder:
             item["current_stock"] = stock
             item["shortage"] = reorder - stock
