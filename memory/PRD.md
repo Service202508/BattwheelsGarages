@@ -7,7 +7,40 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
-### Contact Integration Module (Feb 17, 2026) ✅ COMPLETE - NEW
+### Estimates/Quotes Module (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Full Sales Cycle Entry Point with GST Calculations and Workflow:**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Estimates CRUD** | `/api/estimates-enhanced/` | ✅ List with filters + Create form | ✅ |
+| **Line Items** | `/api/estimates-enhanced/{id}/line-items` | ✅ Add/Update/Delete | ✅ |
+| **Status Workflow** | `/api/estimates-enhanced/{id}/status` | ✅ Draft→Sent→Accepted/Declined→Converted | ✅ |
+| **Send Estimate** | `/api/estimates-enhanced/{id}/send` | ✅ **MOCKED** (logs only) | ✅ |
+| **Mark Accepted/Declined** | `/api/estimates-enhanced/{id}/mark-accepted|declined` | ✅ Action buttons | ✅ |
+| **Convert to Invoice** | `/api/estimates-enhanced/{id}/convert-to-invoice` | ✅ One-click conversion | ✅ |
+| **Convert to Sales Order** | `/api/estimates-enhanced/{id}/convert-to-sales-order` | ✅ One-click conversion | ✅ |
+| **Clone Estimate** | `/api/estimates-enhanced/{id}/clone` | ✅ Clone button | ✅ |
+| **GST Calculations** | Auto-calculated | ✅ CGST/SGST (intra-state) or IGST (inter-state) | ✅ |
+| **Summary Statistics** | `/api/estimates-enhanced/summary` | ✅ Summary cards | ✅ |
+| **Conversion Funnel** | `/api/estimates-enhanced/reports/conversion-funnel` | ✅ Visual funnel | ✅ |
+| **Reports** | `/api/estimates-enhanced/reports/by-status|by-customer` | ✅ Analytics | ✅ |
+
+**Frontend Features:**
+- New page at `/estimates` with Summary Cards and Conversion Funnel
+- Summary cards: Total, Draft, Sent, Accepted, Expired, Converted, Total Value
+- Conversion Funnel visualization: Created → Sent → Accepted → Converted with percentages
+- Estimates list with search, status filter, and action buttons (View, Clone)
+- Create New tab with customer search, date pickers, line items management
+- Line item calculations: Qty × Rate - Discount + Tax = Total
+- Document-level discount (percent/amount), shipping charge, adjustment
+- Detail dialog with line items table, totals breakdown, history, and status-specific action buttons
+
+**Test Results: 35/35 backend tests passed (100%)**
+
+---
+
+### Contact Integration Module (Feb 17, 2026) ✅ COMPLETE
 
 **Links Enhanced Contacts to Existing Transactions:**
 
