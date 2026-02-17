@@ -48,7 +48,7 @@ import ItemsEnhanced from "@/pages/ItemsEnhanced";
 import ContactsEnhanced from "@/pages/ContactsEnhanced";
 import EstimatesEnhanced from "@/pages/EstimatesEnhanced";
 import SalesOrdersEnhanced from "@/pages/SalesOrdersEnhanced";
-import CustomersEnhanced from "@/pages/CustomersEnhanced";
+// CustomersEnhanced has been merged into ContactsEnhanced - redirect below
 import PriceLists from "@/pages/PriceLists";
 import InventoryAdjustments from "@/pages/InventoryAdjustments";
 import RecurringExpenses from "@/pages/RecurringExpenses";
