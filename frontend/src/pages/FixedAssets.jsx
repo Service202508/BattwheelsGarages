@@ -426,7 +426,6 @@ export default function FixedAssets() {
             </div>
           </DialogContent>
         </Dialog>
-      </div>
 
       {/* Summary Cards */}
       {summary && (
