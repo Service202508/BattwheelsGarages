@@ -87,7 +87,6 @@ const navItems = [
     { name: "Payroll", path: "/payroll", icon: Wallet },
   ]},
   { section: "Contacts", items: [
-    { name: "Customer Management", path: "/customers-enhanced", icon: Users },
     { name: "Contact Management", path: "/contacts", icon: Users },
     { name: "Customers (Legacy)", path: "/customers", icon: User },
     { name: "Vendors (Legacy)", path: "/suppliers", icon: Building2 },
