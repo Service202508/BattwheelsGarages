@@ -131,12 +131,12 @@ export default function ExchangeRates() {
           <p className="text-gray-500 text-sm mt-1">Manage currency exchange rates for multi-currency transactions</p>
         </div>
         <div className="flex items-center gap-3">
-          <Select value={fromCurrencyFilter} onValueChange={setFromCurrencyFilter}>
+          <Select value={fromCurrencyFilter || "all"} onValueChange={(v) => setFromCurrencyFilter(v === "all" ? "" : v)}>
             <SelectTrigger className="w-40" data-testid="currency-filter">
               <SelectValue placeholder="All Currencies" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Currencies</SelectItem>
+              <SelectItem value="all">All Currencies</SelectItem>
               {CURRENCIES.map(c => (
                 <SelectItem key={c.code} value={c.code}>
                   {c.code} - {c.name}
