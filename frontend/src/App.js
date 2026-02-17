@@ -497,6 +497,22 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      {/* Bills Enhanced Module */}
+      <Route path="/bills-enhanced" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <BillsEnhanced user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      {/* Inventory Enhanced Module (Variants, Bundles, Shipments, Returns) */}
+      <Route path="/inventory-enhanced" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <InventoryEnhanced user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/expenses" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
