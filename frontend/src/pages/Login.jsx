@@ -406,8 +406,8 @@ export default function Login({ onLogin }) {
                     </TabsList>
 
                     <TabsContent value="login" className="mt-0">
-                      <form onSubmit={handleLogin} className="space-y-5">
-                        <div className="space-y-2">
+                      <form onSubmit={handleLogin} className="space-y-4">
+                        <div className="space-y-1.5">
                           <Label htmlFor="login-email" className="text-gray-700 text-sm font-semibold ml-1">Email</Label>
                           <PremiumInput
                             icon={Mail}
@@ -421,7 +421,7 @@ export default function Login({ onLogin }) {
                           />
                         </div>
                         
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           <Label htmlFor="login-password" className="text-gray-700 text-sm font-semibold ml-1">Password</Label>
                           <PremiumInput
                             icon={Lock}
@@ -436,7 +436,7 @@ export default function Login({ onLogin }) {
                           />
                         </div>
                         
-                        <div className="pt-2">
+                        <div className="pt-1">
                           <PremiumButton 
                             type="submit" 
                             disabled={isLoading}
@@ -461,12 +461,12 @@ export default function Login({ onLogin }) {
                       </form>
 
                       {/* Divider */}
-                      <div className="relative my-8">
+                      <div className="relative my-6">
                         <div className="absolute inset-0 flex items-center">
-                          <div className="w-full border-t-2 border-gray-100" />
+                          <div className="w-full border-t border-gray-200" />
                         </div>
                         <div className="relative flex justify-center">
-                          <span className="bg-white px-4 py-1 text-sm text-gray-400 font-medium rounded-full border border-gray-100">
+                          <span className="bg-white px-3 text-xs text-gray-400 font-medium">
                             or continue with
                           </span>
                         </div>
