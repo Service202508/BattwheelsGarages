@@ -6,105 +6,85 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Mail, Lock, User, Zap } from "lucide-react";
+import { Mail, Lock, User, Zap, ChevronRight } from "lucide-react";
 import { API } from "@/App";
 
-// Standard EV Vehicle Icons
-const BikeIcon = ({ className }) => (
-  <svg viewBox="0 0 64 64" fill="none" className={className}>
-    <circle cx="14" cy="46" r="10" stroke="currentColor" strokeWidth="3" fill="none"/>
-    <circle cx="50" cy="46" r="10" stroke="currentColor" strokeWidth="3" fill="none"/>
-    <path d="M14 46L24 26H40L50 46" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M24 26L32 18L40 26" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="32" cy="18" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
-    <path d="M28 36H36" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
-  </svg>
-);
+// 3D Vehicle Image URLs
+const VEHICLE_ICONS = {
+  twoWheeler: "https://static.prod-images.emergentagent.com/jobs/b6660fe1-f682-4808-9bae-a4692d3851e2/images/78da35e1e893d4a802576a6efe5889c4f534d1eae0f830c137d048a6a08e20eb.png",
+  threeWheeler: "https://static.prod-images.emergentagent.com/jobs/b6660fe1-f682-4808-9bae-a4692d3851e2/images/77bb650e73e4c6a25549a17eda5ee9649e16abfb1cefbb4fa9deb30a665e894e.png",
+  car: "https://static.prod-images.emergentagent.com/jobs/b6660fe1-f682-4808-9bae-a4692d3851e2/images/34b2bb260cf90d1adbdad96cd56731da36e34bd8d070754a390e89d0df18647f.png",
+  commercial: "https://static.prod-images.emergentagent.com/jobs/b6660fe1-f682-4808-9bae-a4692d3851e2/images/c8bef73afa11c68ce24af82cf634323d61f438023db3236559e15769386057ef.png"
+};
 
-const AutoIcon = ({ className }) => (
-  <svg viewBox="0 0 64 64" fill="none" className={className}>
-    <circle cx="12" cy="48" r="8" stroke="currentColor" strokeWidth="3" fill="none"/>
-    <circle cx="52" cy="48" r="8" stroke="currentColor" strokeWidth="3" fill="none"/>
-    <path d="M20 48H44" stroke="currentColor" strokeWidth="3"/>
-    <path d="M8 36L16 20H48L56 36" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M8 36V44H20" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M56 36V44H44" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M20 28H44" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-    <circle cx="32" cy="12" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
-    <path d="M32 16V20" stroke="currentColor" strokeWidth="2"/>
-  </svg>
-);
-
-const CarIcon = ({ className }) => (
-  <svg viewBox="0 0 64 64" fill="none" className={className}>
-    <circle cx="16" cy="46" r="8" stroke="currentColor" strokeWidth="3" fill="none"/>
-    <circle cx="48" cy="46" r="8" stroke="currentColor" strokeWidth="3" fill="none"/>
-    <path d="M8 38H56" stroke="currentColor" strokeWidth="3"/>
-    <path d="M8 38V30C8 28 10 26 12 26H20L26 18H38L44 26H52C54 26 56 28 56 30V38" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M24 38V32H40V38" stroke="currentColor" strokeWidth="2"/>
-    <rect x="12" y="30" width="8" height="4" rx="1" stroke="currentColor" strokeWidth="2"/>
-    <rect x="44" y="30" width="8" height="4" rx="1" stroke="currentColor" strokeWidth="2"/>
-  </svg>
-);
-
-const BoltIcon = ({ className }) => (
-  <svg viewBox="0 0 64 64" fill="none" className={className}>
-    <path d="M36 8L16 36H30L28 56L48 28H34L36 8Z" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-// Animated Icons Row Component
-const AnimatedIconsRow = () => {
+// Animated 3D Vehicle Icons Component
+const AnimatedVehicleIcons = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex(prev => (prev + 1) % 4);
-    }, 1500);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
-  const icons = [
-    { Icon: BikeIcon, label: "2W" },
-    { Icon: AutoIcon, label: "3W" },
-    { Icon: CarIcon, label: "4W" },
-    { Icon: BoltIcon, label: "EV" },
+  const vehicles = [
+    { src: VEHICLE_ICONS.twoWheeler, label: "2-Wheeler", size: "w-20 h-20" },
+    { src: VEHICLE_ICONS.threeWheeler, label: "3-Wheeler", size: "w-24 h-24" },
+    { src: VEHICLE_ICONS.car, label: "Electric Car", size: "w-28 h-28" },
+    { src: VEHICLE_ICONS.commercial, label: "Commercial", size: "w-24 h-24" },
   ];
 
   return (
-    <div className="flex justify-center items-end gap-8 mb-10">
-      {icons.map((item, index) => (
+    <div className="flex justify-center items-end gap-4 sm:gap-6 mb-12">
+      {vehicles.map((vehicle, index) => (
         <div 
-          key={item.label}
-          className={`flex flex-col items-center transition-all duration-500 ${
+          key={vehicle.label}
+          className={`flex flex-col items-center transition-all duration-700 ease-out cursor-pointer ${
             activeIndex === index 
-              ? 'scale-110 opacity-100' 
-              : 'scale-100 opacity-40'
+              ? 'scale-110 opacity-100 -translate-y-2' 
+              : 'scale-90 opacity-50'
           }`}
+          onClick={() => setActiveIndex(index)}
         >
-          <div className={`transition-all duration-500 ${
-            activeIndex === index 
-              ? 'text-[#22EDA9]' 
-              : 'text-gray-400'
-          }`}>
-            <item.Icon className={`${
-              index === 3 ? 'w-10 h-10' : 
-              index === 2 ? 'w-16 h-16' : 
-              index === 1 ? 'w-14 h-14' : 'w-12 h-12'
-            }`} />
+          <div className={`relative transition-all duration-700 ${vehicle.size} flex items-center justify-center`}>
+            {/* Glow effect for active */}
+            {activeIndex === index && (
+              <div className="absolute inset-0 bg-[#22EDA9]/20 blur-2xl rounded-full animate-pulse" />
+            )}
+            <img 
+              src={vehicle.src} 
+              alt={vehicle.label}
+              className={`relative z-10 object-contain transition-all duration-500 drop-shadow-lg ${
+                activeIndex === index ? 'drop-shadow-2xl' : ''
+              }`}
+              style={{ 
+                filter: activeIndex === index 
+                  ? 'drop-shadow(0 10px 20px rgba(34, 237, 169, 0.3))' 
+                  : 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))'
+              }}
+            />
           </div>
-          <span className={`text-xs font-medium mt-2 transition-all duration-500 ${
+          <span className={`text-xs font-semibold mt-3 transition-all duration-500 tracking-wide ${
             activeIndex === index 
               ? 'text-[#22EDA9]' 
               : 'text-gray-400'
           }`}>
-            {item.label}
+            {vehicle.label}
           </span>
         </div>
       ))}
     </div>
   );
 };
+
+// Feature Badges
+const FeatureBadge = ({ icon: Icon, text }) => (
+  <div className="flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-gray-100 shadow-sm">
+    <Icon className="w-4 h-4 text-[#22EDA9]" />
+    <span className="text-xs font-medium text-gray-600">{text}</span>
+  </div>
+);
 
 export default function Login({ onLogin }) {
   const navigate = useNavigate();
@@ -187,249 +167,285 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex bg-white">
-      {/* Left Panel - Clean Hero */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50">
-        {/* Subtle background pattern */}
-        <div className="absolute inset-0 opacity-[0.4]" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, #e5e7eb 1px, transparent 0)`,
-          backgroundSize: '32px 32px'
-        }}></div>
+    <div className="min-h-screen flex bg-gradient-to-br from-gray-50 via-white to-gray-50">
+      {/* Left Panel - Premium Hero */}
+      <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden">
+        {/* Animated gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-[#22EDA9]/5" />
+        
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-40" style={{
+          backgroundImage: `linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+                           linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)`,
+          backgroundSize: '40px 40px'
+        }} />
+        
+        {/* Decorative circles */}
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#22EDA9]/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#22EDA9]/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#22EDA9]/5 to-transparent rounded-full blur-3xl" />
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center items-center w-full px-12">
-          <div className="text-center max-w-md">
-            {/* Animated Vehicle Icons */}
-            <AnimatedIconsRow />
+        <div className="relative z-10 flex flex-col justify-center items-center w-full px-16">
+          <div className="text-center max-w-lg">
+            {/* Animated 3D Vehicle Icons */}
+            <AnimatedVehicleIcons />
 
-            {/* Main Heading */}
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">
-              EV Failure Intelligence
+            {/* Main Heading with gradient */}
+            <h1 className="text-4xl xl:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+              EV Failure
+              <span className="block bg-gradient-to-r from-[#22EDA9] to-[#1DD69A] bg-clip-text text-transparent">
+                Intelligence
+              </span>
             </h1>
             
-            <p className="text-lg text-[#22EDA9] font-semibold mb-4">
+            <p className="text-lg xl:text-xl text-[#22EDA9] font-semibold mb-6 tracking-wide">
               Your Onsite EV Resolution Partner
             </p>
             
-            <p className="text-gray-500 text-sm leading-relaxed max-w-sm mx-auto">
+            <p className="text-gray-500 text-base leading-relaxed mb-10 max-w-md mx-auto">
               AI-powered diagnostics for electric 2-wheelers, 3-wheelers & 4-wheelers. 
               Transform every repair into enterprise-grade knowledge.
             </p>
+
+            {/* Feature badges */}
+            <div className="flex flex-wrap justify-center gap-3">
+              <FeatureBadge icon={Zap} text="AI Diagnostics" />
+              <FeatureBadge icon={ChevronRight} text="Real-time Insights" />
+              <FeatureBadge icon={Zap} text="Fleet Management" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Right Panel - Auth Form */}
-      <div className="flex-1 flex flex-col bg-white relative">
+      <div className="flex-1 flex flex-col bg-white relative shadow-2xl shadow-gray-200/50">
         {/* Top Right Logo */}
-        <div className="hidden lg:flex justify-end px-6 sm:px-8 py-6">
+        <div className="flex justify-end px-8 py-8">
           <img 
             src="https://customer-assets.emergentagent.com/job_3a595ece-6ef9-4ac6-b3b4-0464858ff726/artifacts/trnes6dt_Screenshot%202026-02-16%20at%2010.25.22%E2%80%AFPM.png" 
             alt="Battwheels" 
-            className="h-16 w-auto"
+            className="h-14 w-auto"
           />
         </div>
 
-        <div className="flex-1 flex items-center justify-center p-6 sm:p-8">
-        <div className="w-full max-w-md">
-          {/* Mobile Logo & Icons */}
-          <div className="lg:hidden flex flex-col items-center mb-8">
-            <img 
-              src="https://customer-assets.emergentagent.com/job_3a595ece-6ef9-4ac6-b3b4-0464858ff726/artifacts/trnes6dt_Screenshot%202026-02-16%20at%2010.25.22%E2%80%AFPM.png" 
-              alt="Battwheels" 
-              className="h-12 w-auto mb-4"
-            />
-            <div className="flex gap-4 text-gray-400">
-              <BikeIcon className="w-8 h-8" />
-              <AutoIcon className="w-9 h-9" />
-              <CarIcon className="w-10 h-10" />
+        <div className="flex-1 flex items-center justify-center px-6 sm:px-12 pb-12">
+          <div className="w-full max-w-md">
+            {/* Mobile Logo & 3D Icons */}
+            <div className="lg:hidden flex flex-col items-center mb-8">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_3a595ece-6ef9-4ac6-b3b4-0464858ff726/artifacts/trnes6dt_Screenshot%202026-02-16%20at%2010.25.22%E2%80%AFPM.png" 
+                alt="Battwheels" 
+                className="h-14 w-auto mb-6"
+              />
+              <div className="flex gap-3 items-end">
+                <img src={VEHICLE_ICONS.twoWheeler} alt="2W" className="w-12 h-12 object-contain" />
+                <img src={VEHICLE_ICONS.threeWheeler} alt="3W" className="w-14 h-14 object-contain" />
+                <img src={VEHICLE_ICONS.car} alt="4W" className="w-16 h-16 object-contain" />
+                <img src={VEHICLE_ICONS.commercial} alt="Truck" className="w-14 h-14 object-contain" />
+              </div>
             </div>
+
+            <Card className="border-0 shadow-2xl shadow-gray-200/60 rounded-3xl overflow-hidden bg-white">
+              <CardHeader className="text-center pt-10 pb-4 px-10 bg-gradient-to-b from-gray-50/50 to-white">
+                <CardTitle className="text-3xl font-bold text-gray-900 tracking-tight">Battwheels OS</CardTitle>
+                <CardDescription className="text-gray-500 mt-2">Sign in to your account</CardDescription>
+              </CardHeader>
+              
+              <CardContent className="px-10 pb-10">
+                <Tabs defaultValue="login" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-8 bg-gray-100/80 rounded-2xl p-1.5 h-14">
+                    <TabsTrigger 
+                      value="login" 
+                      data-testid="login-tab" 
+                      className="rounded-xl font-semibold text-sm data-[state=active]:bg-[#22EDA9] data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-[#22EDA9]/20 transition-all duration-300 h-11"
+                    >
+                      Login
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="register" 
+                      data-testid="register-tab" 
+                      className="rounded-xl font-semibold text-sm data-[state=active]:bg-[#22EDA9] data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-[#22EDA9]/20 transition-all duration-300 h-11"
+                    >
+                      Register
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="login">
+                    <form onSubmit={handleLogin} className="space-y-5">
+                      <div className="space-y-2">
+                        <Label htmlFor="login-email" className="text-gray-700 text-sm font-medium">Email</Label>
+                        <div className="relative group">
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#22EDA9] transition-colors" />
+                          <Input
+                            id="login-email"
+                            type="email"
+                            placeholder="you@example.com"
+                            className="pl-12 h-13 bg-gray-50/50 border-gray-200 focus:border-[#22EDA9] focus:ring-2 focus:ring-[#22EDA9]/20 rounded-xl text-base transition-all"
+                            value={loginData.email}
+                            onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                            required
+                            data-testid="login-email-input"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="login-password" className="text-gray-700 text-sm font-medium">Password</Label>
+                        <div className="relative group">
+                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#22EDA9] transition-colors" />
+                          <Input
+                            id="login-password"
+                            type="password"
+                            placeholder="••••••••"
+                            className="pl-12 h-13 bg-gray-50/50 border-gray-200 focus:border-[#22EDA9] focus:ring-2 focus:ring-[#22EDA9]/20 rounded-xl text-base transition-all"
+                            value={loginData.password}
+                            onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                            required
+                            data-testid="login-password-input"
+                          />
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        type="submit" 
+                        className="w-full h-13 bg-[#22EDA9] text-gray-900 hover:bg-[#1DD69A] font-bold rounded-xl transition-all duration-300 text-base shadow-lg shadow-[#22EDA9]/30 hover:shadow-xl hover:shadow-[#22EDA9]/40 hover:-translate-y-0.5" 
+                        disabled={isLoading}
+                        data-testid="login-submit-btn"
+                      >
+                        {isLoading ? (
+                          <span className="flex items-center gap-2">
+                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            Signing in...
+                          </span>
+                        ) : "Sign In"}
+                      </Button>
+                    </form>
+
+                    <div className="relative my-8">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200" />
+                      </div>
+                      <div className="relative flex justify-center text-xs">
+                        <span className="bg-white px-4 text-gray-400 font-medium">or</span>
+                      </div>
+                    </div>
+
+                    <Button 
+                      variant="outline" 
+                      className="w-full h-13 border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 rounded-xl font-semibold transition-all duration-300"
+                      onClick={handleGoogleLogin}
+                      data-testid="google-login-btn"
+                    >
+                      <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                      </svg>
+                      Continue with Google
+                    </Button>
+
+                    <p className="mt-8 text-xs text-center text-gray-400 font-medium">
+                      Demo: admin@battwheels.in / admin123
+                    </p>
+                  </TabsContent>
+
+                  <TabsContent value="register">
+                    <form onSubmit={handleRegister} className="space-y-5">
+                      <div className="space-y-2">
+                        <Label htmlFor="register-name" className="text-gray-700 text-sm font-medium">Full Name</Label>
+                        <div className="relative group">
+                          <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#22EDA9] transition-colors" />
+                          <Input
+                            id="register-name"
+                            type="text"
+                            placeholder="John Doe"
+                            className="pl-12 h-13 bg-gray-50/50 border-gray-200 focus:border-[#22EDA9] focus:ring-2 focus:ring-[#22EDA9]/20 rounded-xl text-base transition-all"
+                            value={registerData.name}
+                            onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
+                            required
+                            data-testid="register-name-input"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="register-email" className="text-gray-700 text-sm font-medium">Email</Label>
+                        <div className="relative group">
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#22EDA9] transition-colors" />
+                          <Input
+                            id="register-email"
+                            type="email"
+                            placeholder="you@example.com"
+                            className="pl-12 h-13 bg-gray-50/50 border-gray-200 focus:border-[#22EDA9] focus:ring-2 focus:ring-[#22EDA9]/20 rounded-xl text-base transition-all"
+                            value={registerData.email}
+                            onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                            required
+                            data-testid="register-email-input"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="register-password" className="text-gray-700 text-sm font-medium">Password</Label>
+                        <div className="relative group">
+                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#22EDA9] transition-colors" />
+                          <Input
+                            id="register-password"
+                            type="password"
+                            placeholder="••••••••"
+                            className="pl-12 h-13 bg-gray-50/50 border-gray-200 focus:border-[#22EDA9] focus:ring-2 focus:ring-[#22EDA9]/20 rounded-xl text-base transition-all"
+                            value={registerData.password}
+                            onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
+                            required
+                            data-testid="register-password-input"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="register-confirm" className="text-gray-700 text-sm font-medium">Confirm Password</Label>
+                        <div className="relative group">
+                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#22EDA9] transition-colors" />
+                          <Input
+                            id="register-confirm"
+                            type="password"
+                            placeholder="••••••••"
+                            className="pl-12 h-13 bg-gray-50/50 border-gray-200 focus:border-[#22EDA9] focus:ring-2 focus:ring-[#22EDA9]/20 rounded-xl text-base transition-all"
+                            value={registerData.confirmPassword}
+                            onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
+                            required
+                            data-testid="register-confirm-input"
+                          />
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        type="submit" 
+                        className="w-full h-13 bg-[#22EDA9] text-gray-900 hover:bg-[#1DD69A] font-bold rounded-xl transition-all duration-300 text-base shadow-lg shadow-[#22EDA9]/30 hover:shadow-xl hover:shadow-[#22EDA9]/40 hover:-translate-y-0.5" 
+                        disabled={isLoading}
+                        data-testid="register-submit-btn"
+                      >
+                        {isLoading ? (
+                          <span className="flex items-center gap-2">
+                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            Creating Account...
+                          </span>
+                        ) : "Create Account"}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
           </div>
-
-          <Card className="border border-gray-100 shadow-xl rounded-2xl overflow-hidden">
-            <CardHeader className="text-center pt-8 pb-4 px-8">
-              <CardTitle className="text-2xl font-bold text-gray-900">Battwheels OS</CardTitle>
-              <CardDescription className="text-gray-500">Sign in to your account</CardDescription>
-            </CardHeader>
-            
-            <CardContent className="px-8 pb-8">
-              <Tabs defaultValue="login" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 rounded-xl p-1 h-11">
-                  <TabsTrigger 
-                    value="login" 
-                    data-testid="login-tab" 
-                    className="rounded-lg font-medium data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black data-[state=active]:shadow-sm transition-all h-9"
-                  >
-                    Login
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="register" 
-                    data-testid="register-tab" 
-                    className="rounded-lg font-medium data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black data-[state=active]:shadow-sm transition-all h-9"
-                  >
-                    Register
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="login">
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="login-email" className="text-gray-700 text-sm">Email</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="login-email"
-                          type="email"
-                          placeholder="you@example.com"
-                          className="pl-10 h-11 bg-white border-gray-200 focus:border-[#22EDA9] focus:ring-[#22EDA9] rounded-lg"
-                          value={loginData.email}
-                          onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                          required
-                          data-testid="login-email-input"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="login-password" className="text-gray-700 text-sm">Password</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="login-password"
-                          type="password"
-                          placeholder="••••••••"
-                          className="pl-10 h-11 bg-white border-gray-200 focus:border-[#22EDA9] focus:ring-[#22EDA9] rounded-lg"
-                          value={loginData.password}
-                          onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                          required
-                          data-testid="login-password-input"
-                        />
-                      </div>
-                    </div>
-                    
-                    <Button 
-                      type="submit" 
-                      className="w-full h-11 bg-[#22EDA9] text-black hover:bg-[#1DD69A] font-semibold rounded-lg transition-colors" 
-                      disabled={isLoading}
-                      data-testid="login-submit-btn"
-                    >
-                      {isLoading ? "Signing in..." : "Sign In"}
-                    </Button>
-                  </form>
-
-                  <div className="relative my-6">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200" />
-                    </div>
-                    <div className="relative flex justify-center text-xs">
-                      <span className="bg-white px-3 text-gray-400">or</span>
-                    </div>
-                  </div>
-
-                  <Button 
-                    variant="outline" 
-                    className="w-full h-11 border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
-                    onClick={handleGoogleLogin}
-                    data-testid="google-login-btn"
-                  >
-                    <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
-                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                    </svg>
-                    Continue with Google
-                  </Button>
-
-                  <p className="mt-6 text-xs text-center text-gray-400">
-                    Demo: admin@battwheels.in / admin123
-                  </p>
-                </TabsContent>
-
-                <TabsContent value="register">
-                  <form onSubmit={handleRegister} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="register-name" className="text-gray-700 text-sm">Full Name</Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="register-name"
-                          type="text"
-                          placeholder="John Doe"
-                          className="pl-10 h-11 bg-white border-gray-200 focus:border-[#22EDA9] rounded-lg"
-                          value={registerData.name}
-                          onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
-                          required
-                          data-testid="register-name-input"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="register-email" className="text-gray-700 text-sm">Email</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="register-email"
-                          type="email"
-                          placeholder="you@example.com"
-                          className="pl-10 h-11 bg-white border-gray-200 focus:border-[#22EDA9] rounded-lg"
-                          value={registerData.email}
-                          onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
-                          required
-                          data-testid="register-email-input"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="register-password" className="text-gray-700 text-sm">Password</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="register-password"
-                          type="password"
-                          placeholder="••••••••"
-                          className="pl-10 h-11 bg-white border-gray-200 focus:border-[#22EDA9] rounded-lg"
-                          value={registerData.password}
-                          onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                          required
-                          data-testid="register-password-input"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="register-confirm" className="text-gray-700 text-sm">Confirm Password</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="register-confirm"
-                          type="password"
-                          placeholder="••••••••"
-                          className="pl-10 h-11 bg-white border-gray-200 focus:border-[#22EDA9] rounded-lg"
-                          value={registerData.confirmPassword}
-                          onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
-                          required
-                          data-testid="register-confirm-input"
-                        />
-                      </div>
-                    </div>
-                    
-                    <Button 
-                      type="submit" 
-                      className="w-full h-11 bg-[#22EDA9] text-black hover:bg-[#1DD69A] font-semibold rounded-lg transition-colors" 
-                      disabled={isLoading}
-                      data-testid="register-submit-btn"
-                    >
-                      {isLoading ? "Creating Account..." : "Create Account"}
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-        </div>
         </div>
       </div>
     </div>
