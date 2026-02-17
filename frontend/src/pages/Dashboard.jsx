@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Car, Wrench, Clock, Users } from "lucide-react";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { MetricCard } from "@/components/KPICard";
+import { MetricCard } from "@/components/ui/stat-card";
 import { API } from "@/App";
 
 const CHART_COLORS = {
