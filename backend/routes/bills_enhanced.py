@@ -571,6 +571,57 @@ async def list_bills(
     
     return {"code": 0, "bills": bills, "page_context": {"page": page, "per_page": per_page, "total": total}}
 
+# ========================= REPORTS (Before dynamic routes) =========================
+
+@router.get("/aging-report")
+async def get_payables_aging():
+    """Get payables aging report"""
+    today = datetime.now(timezone.utc).date()
+    
+    bills = await bills_collection.find(
+        {"status": {"$in": ["open", "overdue", "partially_paid"]}, "balance_due": {"$gt": 0}},
+        {"_id": 0, "due_date": 1, "balance_due": 1}
+    ).to_list(2000)
+    
+    aging = {"current": 0, "1_30": 0, "31_60": 0, "61_90": 0, "over_90": 0}
+    
+    for bill in bills:
+        due_str = bill.get("due_date", "")
+        if not due_str:
+            continue
+        try:
+            due = datetime.fromisoformat(due_str.replace('Z', '+00:00')).date()
+            days = (today - due).days
+            balance = bill.get("balance_due", 0)
+            
+            if days <= 0:
+                aging["current"] += balance
+            elif days <= 30:
+                aging["1_30"] += balance
+            elif days <= 60:
+                aging["31_60"] += balance
+            elif days <= 90:
+                aging["61_90"] += balance
+            else:
+                aging["over_90"] += balance
+        except:
+            continue
+    
+    return {"code": 0, "report": {k: round_currency(v) for k, v in aging.items()}, "total": round_currency(sum(aging.values()))}
+
+@router.get("/vendor-wise")
+async def get_vendor_wise_report(limit: int = 20):
+    """Get vendor-wise payables report"""
+    pipeline = [
+        {"$match": {"status": {"$ne": "void"}}},
+        {"$group": {"_id": "$vendor_id", "vendor_name": {"$first": "$vendor_name"}, "bill_count": {"$sum": 1}, "total_billed": {"$sum": "$grand_total"}, "total_payable": {"$sum": "$balance_due"}}},
+        {"$sort": {"total_payable": -1}},
+        {"$limit": limit}
+    ]
+    
+    results = await bills_collection.aggregate(pipeline).to_list(limit)
+    return {"code": 0, "report": [{"vendor_id": r["_id"], "vendor_name": r.get("vendor_name", "Unknown"), "bill_count": r["bill_count"], "total_billed": round_currency(r["total_billed"]), "total_payable": round_currency(r["total_payable"])} for r in results]}
+
 @router.get("/{bill_id}")
 async def get_bill(bill_id: str):
     bill = await bills_collection.find_one({"bill_id": bill_id}, {"_id": 0})
