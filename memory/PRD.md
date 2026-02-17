@@ -7,7 +7,68 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
-### Invoices Enhanced Module (Feb 17, 2026) ✅ COMPLETE - NEW
+### Customer Portal Module (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Self-Service Portal for Customers:**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Portal Login** | `/api/customer-portal/login` | ✅ Token-based login with session | ✅ |
+| **Dashboard** | `/api/customer-portal/dashboard` | ✅ Summary cards, recent invoices | ✅ |
+| **View Invoices** | `/api/customer-portal/invoices` | ✅ List + detail view | ✅ |
+| **View Estimates** | `/api/customer-portal/estimates` | ✅ List + detail view | ✅ |
+| **Accept/Decline Estimate** | `/api/customer-portal/estimates/{id}/accept|decline` | ✅ Customer actions | ✅ |
+| **Payment History** | `/api/customer-portal/payments` | ✅ All payments list | ✅ |
+| **Account Statement** | `/api/customer-portal/statement` | ✅ Invoices + payments summary | ✅ |
+| **Profile** | `/api/customer-portal/profile` | ✅ Contact details + addresses | ✅ |
+| **Session Management** | `/api/customer-portal/session|logout` | ✅ 24-hour sessions | ✅ |
+
+**Frontend Features:**
+- Beautiful dark-themed login page at `/customer-portal`
+- Token-based authentication (token sent via portal invite email)
+- Dashboard with summary cards (Total Invoiced, Paid, Outstanding, Overdue)
+- Tabs: Dashboard, Invoices, Estimates, Payments, Statement
+- Invoice and estimate detail dialogs with line items
+- Accept/Decline buttons for pending estimates
+- Account statement with transaction history
+
+---
+
+### Advanced Reports with Charts (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Visual Analytics Dashboard:**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Dashboard Summary** | `/api/reports-advanced/dashboard-summary` | ✅ KPI cards | ✅ |
+| **Monthly Revenue** | `/api/reports-advanced/revenue/monthly` | ✅ Bar chart | ✅ |
+| **Quarterly Revenue** | `/api/reports-advanced/revenue/quarterly` | ✅ By quarter | ✅ |
+| **Yearly Comparison** | `/api/reports-advanced/revenue/yearly-comparison` | ✅ Multi-year | ✅ |
+| **Receivables Aging** | `/api/reports-advanced/receivables/aging` | ✅ Pie/bar chart | ✅ |
+| **Receivables Trend** | `/api/reports-advanced/receivables/trend` | ✅ Line chart | ✅ |
+| **Top Customers Revenue** | `/api/reports-advanced/customers/top-revenue` | ✅ Horizontal bar | ✅ |
+| **Top Outstanding** | `/api/reports-advanced/customers/top-outstanding` | ✅ Horizontal bar | ✅ |
+| **Customer Acquisition** | `/api/reports-advanced/customers/acquisition` | ✅ Line chart | ✅ |
+| **Sales Funnel** | `/api/reports-advanced/sales/funnel` | ✅ Funnel chart | ✅ |
+| **Invoice Status** | `/api/reports-advanced/invoices/status-distribution` | ✅ Donut chart | ✅ |
+| **Payment Trend** | `/api/reports-advanced/payments/trend` | ✅ Line chart | ✅ |
+| **Payment Modes** | `/api/reports-advanced/payments/by-mode` | ✅ Pie chart | ✅ |
+
+**Frontend Features:**
+- New page at `/reports-advanced` (Analytics in sidebar)
+- KPI cards: This Month, YTD, Outstanding, Overdue (color-coded gradients)
+- Tabs: Overview, Revenue, Receivables, Customers
+- Pure CSS charts (no external library dependency):
+  - Bar charts (vertical & horizontal)
+  - Donut/Pie charts
+  - Line charts with gradient fill
+  - Funnel chart with conversion rates
+- Interactive legends and tooltips
+- Currency formatting in Indian notation (₹K)
+
+---
+
+### Invoices Enhanced Module (Feb 17, 2026) ✅ COMPLETE
 
 **Comprehensive Invoice Management with Full Zoho Books Functionality:**
 
