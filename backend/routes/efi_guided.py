@@ -90,7 +90,7 @@ async def get_current_user(request: Request) -> dict:
     
     # Try JWT
     auth_header = request.headers.get("Authorization", "")
-    if auth_header.startswith("Bearer ") and _db:
+    if auth_header.startswith("Bearer ") and _db is not None:
         token = auth_header.split(" ")[1]
         import jwt
         import os
