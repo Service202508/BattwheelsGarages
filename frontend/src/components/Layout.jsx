@@ -99,6 +99,7 @@ const navItems = [
     { name: "Chart of Accounts", path: "/chart-of-accounts", icon: Layers },
     { name: "Journal Entries", path: "/journal-entries", icon: BookOpen },
     { name: "Reports", path: "/reports", icon: BarChart3 },
+    { name: "GST Returns", path: "/gst-reports", icon: FileText },
     { name: "Accounting", path: "/accounting", icon: Calculator },
   ]},
   { section: "Administration", items: [
