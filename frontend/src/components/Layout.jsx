@@ -74,6 +74,7 @@ const navItems = [
   ]},
   { section: "Catalog & Inventory", items: [
     { name: "Items", path: "/items", icon: Tag },
+    { name: "Inventory Advanced", path: "/inventory-enhanced", icon: Warehouse },
     { name: "Inventory Management", path: "/inventory-management", icon: Warehouse },
     { name: "Services & Parts", path: "/inventory", icon: Package },
     { name: "Price Lists", path: "/price-lists", icon: List },
