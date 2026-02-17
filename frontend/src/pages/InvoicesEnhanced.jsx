@@ -394,73 +394,43 @@ export default function InvoicesEnhanced() {
 
       {/* Summary Cards */}
       {summary && (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <Receipt className="h-8 w-8 text-blue-500" />
-                <div>
-                  <p className="text-xs text-gray-500">Total Invoices</p>
-                  <p className="text-xl font-bold">{summary.total_invoices}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-gray-50">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <FileText className="h-8 w-8 text-gray-500" />
-                <div>
-                  <p className="text-xs text-gray-500">Draft</p>
-                  <p className="text-xl font-bold">{summary.draft}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-red-50 border-red-200">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <AlertTriangle className="h-8 w-8 text-red-500" />
-                <div>
-                  <p className="text-xs text-gray-500">Overdue</p>
-                  <p className="text-xl font-bold text-red-600">{summary.overdue}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-green-50 border-green-200">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-8 w-8 text-green-500" />
-                <div>
-                  <p className="text-xs text-gray-500">Paid</p>
-                  <p className="text-xl font-bold text-green-600">{summary.paid}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-blue-50 border-blue-200">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <TrendingUp className="h-8 w-8 text-blue-600" />
-                <div>
-                  <p className="text-xs text-gray-500">Total Invoiced</p>
-                  <p className="text-lg font-bold text-blue-700">{formatCurrency(summary.total_invoiced)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-orange-50 border-orange-200">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <Wallet className="h-8 w-8 text-orange-600" />
-                <div>
-                  <p className="text-xs text-gray-500">Outstanding</p>
-                  <p className="text-lg font-bold text-orange-700">{formatCurrency(summary.total_outstanding)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          <KPICard
+            title="Total Invoices"
+            value={summary.total_invoices}
+            icon={Receipt}
+            variant="info"
+          />
+          <KPICard
+            title="Draft"
+            value={summary.draft}
+            icon={FileText}
+            variant="default"
+          />
+          <KPICard
+            title="Overdue"
+            value={summary.overdue}
+            icon={AlertTriangle}
+            variant="danger"
+          />
+          <KPICard
+            title="Paid"
+            value={summary.paid}
+            icon={CheckCircle}
+            variant="success"
+          />
+          <KPICard
+            title="Total Invoiced"
+            value={formatCurrencyCompact(summary.total_invoiced)}
+            icon={TrendingUp}
+            variant="info"
+          />
+          <KPICard
+            title="Outstanding"
+            value={formatCurrencyCompact(summary.total_outstanding)}
+            icon={Wallet}
+            variant="warning"
+          />
         </div>
       )}
 
