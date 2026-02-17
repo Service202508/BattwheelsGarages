@@ -1702,3 +1702,199 @@ async def create_quick_invoice_for_customer(customer_id: str):
         "redirect": f"/invoices?customer_id={customer_id}&customer_name={customer.get('display_name', '')}",
         "message": "Navigate to invoices with customer pre-filled"
     }
+
+
+# ========================= SYNC WITH CONTACTS SYSTEM =========================
+
+@router.post("/{customer_id}/sync-to-contacts")
+async def sync_customer_to_contacts(customer_id: str):
+    """
+    Sync customer to contacts_enhanced collection.
+    This allows the customer to be used in Estimates, Sales Orders, Invoices.
+    Creates a linked contact entry that mirrors the customer data.
+    """
+    customer = await customers_collection.find_one({"customer_id": customer_id})
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    
+    # Check if already synced
+    existing_contact = await db["contacts_enhanced"].find_one(
+        {"$or": [{"contact_id": customer_id}, {"linked_customer_id": customer_id}]}
+    )
+    
+    if existing_contact:
+        # Update existing contact
+        contact_update = {
+            "name": customer.get("display_name", ""),
+            "display_name": customer.get("display_name", ""),
+            "company_name": customer.get("company_name", ""),
+            "email": customer.get("email", ""),
+            "phone": customer.get("phone", ""),
+            "mobile": customer.get("mobile", ""),
+            "gstin": customer.get("gstin", ""),
+            "gst_no": customer.get("gstin", ""),
+            "pan": customer.get("pan", ""),
+            "place_of_supply": customer.get("place_of_supply", ""),
+            "gst_treatment": customer.get("gst_treatment", ""),
+            "payment_terms": customer.get("payment_terms", 30),
+            "currency_code": customer.get("currency_code", "INR"),
+            "notes": customer.get("notes", ""),
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }
+        await db["contacts_enhanced"].update_one(
+            {"contact_id": existing_contact["contact_id"]},
+            {"$set": contact_update}
+        )
+        return {
+            "code": 0,
+            "message": "Contact updated from customer",
+            "contact_id": existing_contact["contact_id"],
+            "action": "updated"
+        }
+    
+    # Create new contact linked to this customer
+    contact_id = customer_id  # Use same ID for easier linking
+    
+    contact_doc = {
+        "contact_id": contact_id,
+        "linked_customer_id": customer_id,
+        "contact_type": "customer",
+        "name": customer.get("display_name", ""),
+        "display_name": customer.get("display_name", ""),
+        "company_name": customer.get("company_name", ""),
+        "first_name": customer.get("first_name", ""),
+        "last_name": customer.get("last_name", ""),
+        "email": customer.get("email", ""),
+        "phone": customer.get("phone", ""),
+        "mobile": customer.get("mobile", ""),
+        "website": customer.get("website", ""),
+        "gstin": customer.get("gstin", ""),
+        "gst_no": customer.get("gstin", ""),
+        "pan": customer.get("pan", ""),
+        "place_of_supply": customer.get("place_of_supply", ""),
+        "gst_treatment": customer.get("gst_treatment", ""),
+        "payment_terms": customer.get("payment_terms", 30),
+        "credit_limit": customer.get("credit_limit", 0),
+        "currency_code": customer.get("currency_code", "INR"),
+        "notes": customer.get("notes", ""),
+        "tags": customer.get("tags", []),
+        "is_active": customer.get("is_active", True),
+        "portal_enabled": customer.get("portal_enabled", False),
+        "source": "customers_enhanced",
+        "created_time": datetime.now(timezone.utc).isoformat(),
+        "updated_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db["contacts_enhanced"].insert_one(contact_doc)
+    
+    # Copy addresses if any
+    addresses = await customer_addresses_collection.find({"customer_id": customer_id}, {"_id": 0}).to_list(20)
+    for addr in addresses:
+        addr["contact_id"] = contact_id
+        addr["address_id"] = generate_id("ADDR")
+        await db["addresses"].insert_one(addr)
+    
+    # Copy persons as contact persons
+    persons = await customer_persons_collection.find({"customer_id": customer_id}, {"_id": 0}).to_list(50)
+    for person in persons:
+        person["contact_id"] = contact_id
+        person["contact_person_id"] = generate_id("CP")
+        await db["contact_persons"].insert_one(person)
+    
+    await add_customer_history(customer_id, "synced_to_contacts", f"Customer synced to contacts as {contact_id}")
+    
+    return {
+        "code": 0,
+        "message": "Customer synced to contacts system",
+        "contact_id": contact_id,
+        "action": "created",
+        "addresses_synced": len(addresses),
+        "persons_synced": len(persons)
+    }
+
+@router.post("/bulk-sync-to-contacts")
+async def bulk_sync_customers_to_contacts():
+    """
+    Bulk sync all customers to contacts_enhanced collection.
+    This makes all customers available for Estimates, Sales Orders, Invoices.
+    """
+    customers = await customers_collection.find({}, {"_id": 0, "customer_id": 1}).to_list(1000)
+    
+    results = {"synced": 0, "updated": 0, "failed": 0, "errors": []}
+    
+    for cust in customers:
+        try:
+            # Check if already exists
+            existing = await db["contacts_enhanced"].find_one(
+                {"$or": [{"contact_id": cust["customer_id"]}, {"linked_customer_id": cust["customer_id"]}]}
+            )
+            
+            customer = await customers_collection.find_one({"customer_id": cust["customer_id"]})
+            if not customer:
+                continue
+            
+            if existing:
+                # Update
+                await db["contacts_enhanced"].update_one(
+                    {"contact_id": existing["contact_id"]},
+                    {"$set": {
+                        "name": customer.get("display_name", ""),
+                        "email": customer.get("email", ""),
+                        "phone": customer.get("phone", ""),
+                        "gstin": customer.get("gstin", ""),
+                        "updated_time": datetime.now(timezone.utc).isoformat()
+                    }}
+                )
+                results["updated"] += 1
+            else:
+                # Create new
+                contact_doc = {
+                    "contact_id": cust["customer_id"],
+                    "linked_customer_id": cust["customer_id"],
+                    "contact_type": "customer",
+                    "name": customer.get("display_name", ""),
+                    "display_name": customer.get("display_name", ""),
+                    "company_name": customer.get("company_name", ""),
+                    "email": customer.get("email", ""),
+                    "phone": customer.get("phone", ""),
+                    "gstin": customer.get("gstin", ""),
+                    "gst_no": customer.get("gstin", ""),
+                    "place_of_supply": customer.get("place_of_supply", ""),
+                    "gst_treatment": customer.get("gst_treatment", ""),
+                    "payment_terms": customer.get("payment_terms", 30),
+                    "currency_code": customer.get("currency_code", "INR"),
+                    "is_active": customer.get("is_active", True),
+                    "source": "customers_enhanced",
+                    "created_time": datetime.now(timezone.utc).isoformat(),
+                    "updated_time": datetime.now(timezone.utc).isoformat()
+                }
+                await db["contacts_enhanced"].insert_one(contact_doc)
+                results["synced"] += 1
+        except Exception as e:
+            results["failed"] += 1
+            results["errors"].append(f"{cust['customer_id']}: {str(e)}")
+    
+    return {
+        "code": 0,
+        "message": "Bulk sync completed",
+        "results": results
+    }
+
+@router.get("/{customer_id}/contact-link")
+async def get_customer_contact_link(customer_id: str):
+    """Check if customer is linked to contacts system and get the linked contact"""
+    customer = await customers_collection.find_one({"customer_id": customer_id})
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    
+    contact = await db["contacts_enhanced"].find_one(
+        {"$or": [{"contact_id": customer_id}, {"linked_customer_id": customer_id}]},
+        {"_id": 0}
+    )
+    
+    return {
+        "code": 0,
+        "customer_id": customer_id,
+        "is_linked": contact is not None,
+        "contact": contact
+    }
