@@ -7,43 +7,78 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
-### Customers Enhanced Module (Feb 17, 2026) ✅ COMPLETE - NEW
+### Invoices Enhanced Module (Feb 17, 2026) ✅ COMPLETE - NEW
 
-**Comprehensive Customer Management with Zoho Books-like Features:**
+**Comprehensive Invoice Management with Full Zoho Books Functionality:**
 
 | Feature | Backend API | Frontend UI | Status |
 |---------|-------------|-------------|--------|
-| **Customers CRUD** | `/api/customers-enhanced/` | ✅ List with filters + Create form | ✅ |
-| **GSTIN Validation** | `/api/customers-enhanced/validate-gstin/{gstin}` | ✅ Auto-parse state, PAN, entity | ✅ |
-| **Sync Check** | `/api/customers-enhanced/check-sync` | ✅ Data quality audit | ✅ |
-| **Contact Persons** | `/api/customers-enhanced/{id}/persons` | ✅ Add/Update/Delete/Set Primary | ✅ |
-| **Multiple Addresses** | `/api/customers-enhanced/{id}/addresses` | ✅ Billing/Shipping | ✅ |
-| **Portal Access** | `/api/customers-enhanced/{id}/enable-portal` | ✅ Token gen + **MOCKED** email | ✅ |
-| **Email Statement** | `/api/customers-enhanced/{id}/email-statement` | ✅ **MOCKED** (email/PDF) | ✅ |
-| **Credits & Refunds** | `/api/customers-enhanced/{id}/credits` | ✅ Add credit, create refund | ✅ |
-| **Tags System** | `/api/customers-enhanced/tags` | ✅ Create/assign/remove tags | ✅ |
-| **Status Management** | `/api/customers-enhanced/{id}/activate|deactivate` | ✅ With pending invoice check | ✅ |
-| **Balance & Aging** | Calculated from invoices | ✅ Current, 1-30, 31-60, 90+ days | ✅ |
-| **Transaction History** | `/api/customers-enhanced/{id}/transactions` | ✅ Estimates/SO/Invoices/Payments | ✅ |
-| **Bulk Operations** | `/api/customers-enhanced/bulk-action` | ✅ Activate/deactivate/delete/tags | ✅ |
-| **Reports** | `/api/customers-enhanced/reports/` | ✅ By segment, top customers, aging | ✅ |
-| **Quick Estimate** | `/api/customers-enhanced/{id}/quick-estimate` | ✅ Redirect with customer pre-filled | ✅ |
+| **Invoices CRUD** | `/api/invoices-enhanced/` | ✅ List with filters + Create dialog | ✅ |
+| **Line Items** | Embedded in invoice | ✅ Add/Update/Delete with tax calculations | ✅ |
+| **GST Calculations** | Auto-calculated | ✅ CGST/SGST or IGST based on place of supply | ✅ |
+| **Summary Dashboard** | `/api/invoices-enhanced/summary` | ✅ Total, Draft, Overdue, Paid, Outstanding | ✅ |
+| **Send Invoice** | `/api/invoices-enhanced/{id}/send` | ✅ **MOCKED** (logs only) | ✅ |
+| **Mark Sent** | `/api/invoices-enhanced/{id}/mark-sent` | ✅ Manual status update | ✅ |
+| **Record Payment** | `/api/invoices-enhanced/{id}/payments` | ✅ Partial/Full payment recording | ✅ |
+| **Delete Payment** | DELETE `/api/invoices-enhanced/{id}/payments/{pid}` | ✅ Payment reversal | ✅ |
+| **Clone Invoice** | `/api/invoices-enhanced/{id}/clone` | ✅ Clone as new draft | ✅ |
+| **Void Invoice** | `/api/invoices-enhanced/{id}/void` | ✅ With reason tracking | ✅ |
+| **Write-Off** | `/api/invoices-enhanced/{id}/write-off` | ✅ Bad debt write-off | ✅ |
+| **Aging Report** | `/api/invoices-enhanced/reports/aging` | ✅ Current, 1-30, 31-60, 61-90, 90+ buckets | ✅ |
+| **Customer-wise Report** | `/api/invoices-enhanced/reports/customer-wise` | ✅ Top customers by outstanding | ✅ |
+| **Monthly Report** | `/api/invoices-enhanced/reports/monthly` | ✅ Monthly breakdown by year | ✅ |
+| **Recurring Invoices** | `/api/invoices-enhanced/recurring` | ✅ Recurring profile management | ✅ |
+| **Create from Sales Order** | `/api/invoices-enhanced/from-salesorder/{id}` | ✅ One-click conversion | ✅ |
+| **Create from Estimate** | `/api/invoices-enhanced/from-estimate/{id}` | ✅ One-click conversion | ✅ |
+| **Bulk Actions** | `/api/invoices-enhanced/bulk-action` | ✅ Send, Void, Mark Paid, Delete | ✅ |
 
 **Frontend Features:**
-- New page at `/customers-enhanced` with Summary Cards
-- Summary cards: Total, Active, Inactive, With GSTIN, Portal Enabled, New This Month, Total Receivable, Credit Limit
-- Customer list with search, status filter, GST treatment filter
-- Create New tab with GSTIN validation on blur (auto-fills PAN, Place of Supply)
-- Detail dialog with Balance & Aging visualization (5 buckets)
-- Contact Persons section with Add/Delete, set primary
-- Addresses section (Billing/Shipping) with Default toggle
-- Available Credits section
-- Transaction Counts (Estimates, Sales Orders, Invoices)
-- Action buttons: Edit, Enable Portal, Email Statement, Add Credit, Quick Estimate, Deactivate, Delete
-- Sync Check displays data quality report with suggestions
-- Tags tab with color-coded tag management
+- New page at `/invoices-enhanced` with Summary Cards and Tabs
+- Summary cards: Total Invoices, Draft, Overdue, Paid, Total Invoiced, Outstanding
+- Tabs: All Invoices, Overdue, Drafts
+- Invoice list with search, status filter, customer filter
+- Create Invoice dialog with customer select, line items, tax rates
+- Line item calculations: Qty × Rate - Discount + Tax = Total
+- Payment recording dialog with mode, reference, date
+- Detail dialog with line items, totals breakdown, payments history
+- Status-specific action buttons (Send, Mark Sent, Record Payment, Clone, Void, Delete)
 
-**Test Results: 52/52 backend tests passed (100%)**
+**Test Results: 17/17 backend API tests passed (100%)**
+
+---
+
+### Unified Contacts Module v2 (Feb 17, 2026) ✅ COMPLETE - ARCHITECTURAL MERGE
+
+**IMPORTANT: Customers Enhanced module has been merged into Contacts Enhanced v2**
+
+This merge creates a single source of truth for all contact data (customers, vendors, or both). The `/customers-enhanced` route now redirects to `/contacts`.
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Unified Contact CRUD** | `/api/contacts-enhanced/` | ✅ Customer/Vendor/Both types | ✅ |
+| **Contact Type Filter** | `?contact_type=customer|vendor` | ✅ Type badges | ✅ |
+| **Summary Dashboard** | `/api/contacts-enhanced/summary` | ✅ Total, Customers, Vendors, GSTIN, Portal, Receivable, Payable | ✅ |
+| **GSTIN Validation** | `/api/contacts-enhanced/validate-gstin/{gstin}` | ✅ Auto-parse state, PAN, entity | ✅ |
+| **Contact Persons** | `/api/contacts-enhanced/{id}/persons` | ✅ Add/Update/Delete/Set Primary | ✅ |
+| **Multiple Addresses** | `/api/contacts-enhanced/{id}/addresses` | ✅ Billing/Shipping with defaults | ✅ |
+| **Portal Access** | `/api/contacts-enhanced/{id}/enable-portal` | ✅ Token gen + **MOCKED** email | ✅ |
+| **Email Statement** | `/api/contacts-enhanced/{id}/email-statement` | ✅ **MOCKED** (email/PDF) | ✅ |
+| **Statement Data** | `/api/contacts-enhanced/{id}/statement` | ✅ Invoices, payments, balance | ✅ |
+| **Credits & Refunds** | `/api/contacts-enhanced/{id}/credits|refunds` | ✅ Add credit, create refund | ✅ |
+| **Tags System** | `/api/contacts-enhanced/tags` | ✅ Create/assign/remove tags | ✅ |
+| **Status Management** | `/api/contacts-enhanced/{id}/activate|deactivate` | ✅ With pending invoice check | ✅ |
+| **Balance & Aging** | Calculated from invoices | ✅ Current, 1-30, 31-60, 61-90, 90+ days | ✅ |
+| **Transaction History** | `/api/contacts-enhanced/{id}/transactions` | ✅ Estimates/SO/Invoices/Bills/Payments | ✅ |
+| **Bulk Operations** | `/api/contacts-enhanced/bulk-action` | ✅ Activate/deactivate/delete/tags | ✅ |
+| **Reports** | `/api/contacts-enhanced/reports/` | ✅ By segment, top customers, top vendors, aging, new contacts | ✅ |
+| **Quick Actions** | `/api/contacts-enhanced/{id}/quick-estimate|invoice|bill` | ✅ Redirect with contact pre-filled | ✅ |
+| **Data Quality Check** | `/api/contacts-enhanced/check-sync` | ✅ Audit with suggestions | ✅ |
+
+**Deprecated Routes:**
+- `/api/customers-enhanced/` → Use `/api/contacts-enhanced/?contact_type=customer`
+- `/customers-enhanced` (frontend) → Redirects to `/contacts`
+
+**Test Results: 18/18 backend API tests passed (100%)**
 
 ---
 
