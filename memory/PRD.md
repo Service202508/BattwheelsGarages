@@ -7,6 +7,71 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
+### Bills & Purchase Orders Enhanced Module (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Full Payables Management System:**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Bills CRUD** | `/api/bills-enhanced/` | ✅ List/Create/Detail | ✅ |
+| **Bill Payments** | `/api/bills-enhanced/{id}/payments` | ✅ Record payments | ✅ |
+| **Purchase Orders CRUD** | `/api/bills-enhanced/purchase-orders` | ✅ Create/List POs | ✅ |
+| **PO Status Workflow** | `issue`, `receive`, `convert-to-bill` | ✅ Draft→Issued→Received→Billed | ✅ |
+| **Bill Summary** | `/api/bills-enhanced/summary` | ✅ Total, Draft, Open, Overdue, Paid | ✅ |
+| **PO Summary** | `/api/bills-enhanced/purchase-orders/summary` | ✅ Statistics by status | ✅ |
+| **Aging Report** | `/api/bills-enhanced/aging-report` | ✅ By aging bucket | ✅ |
+| **Vendor-wise Report** | `/api/bills-enhanced/vendor-wise` | ✅ Payables by vendor | ✅ |
+| **Open/Void/Clone Bill** | Status actions | ✅ Bill lifecycle | ✅ |
+
+**Frontend Features:**
+- New page at `/bills-enhanced` (Bills in Purchases section)
+- Summary cards: Total Bills, Draft, Open, Overdue, Total Payable, Total Paid
+- Tabs: Bills, Purchase Orders, Overdue
+- Create Bill dialog: Vendor, Bill Number, Date, Payment Terms, Line Items
+- Create PO dialog: Vendor, Order Date, Expected Delivery, Line Items
+- Bill Detail dialog: Header info, line items table, totals, payments, history
+- PO Detail dialog: With status actions (Issue, Receive, Convert to Bill)
+- Pay button for recording payments
+- Status filter and search
+
+---
+
+### Inventory Enhanced Module (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Advanced Inventory Management with Variants, Bundles, Shipments, Returns:**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Warehouses** | `/api/inventory-enhanced/warehouses` | ✅ CRUD + Stock view | ✅ |
+| **Item Variants** | `/api/inventory-enhanced/variants` | ✅ Size/color variations | ✅ |
+| **Bundles/Kits** | `/api/inventory-enhanced/bundles` | ✅ Composite items | ✅ |
+| **Bundle Assembly** | `/api/inventory-enhanced/bundles/{id}/assemble` | ✅ Consume components | ✅ |
+| **Serial Numbers** | `/api/inventory-enhanced/serial-batches` | ✅ Individual tracking | ✅ |
+| **Batch/Lot Tracking** | `/api/inventory-enhanced/serial-batches` | ✅ Group tracking | ✅ |
+| **Shipments** | `/api/inventory-enhanced/shipments` | ✅ From Sales Orders | ✅ |
+| **Shipment Status** | `ship`, `deliver` actions | ✅ Packed→Shipped→Delivered | ✅ |
+| **Returns** | `/api/inventory-enhanced/returns` | ✅ Return from shipment | ✅ |
+| **Stock Adjustments** | `/api/inventory-enhanced/adjustments` | ✅ Add/Subtract/Set | ✅ |
+| **Stock Summary Report** | `/api/inventory-enhanced/reports/stock-summary` | ✅ Value by item | ✅ |
+| **Low Stock Report** | `/api/inventory-enhanced/reports/low-stock` | ✅ Below reorder level | ✅ |
+| **Valuation Report** | `/api/inventory-enhanced/reports/valuation` | ✅ By item type | ✅ |
+| **Movement Report** | `/api/inventory-enhanced/reports/movement` | ✅ Stock history | ✅ |
+
+**Frontend Features:**
+- New page at `/inventory-enhanced` (Inventory Advanced in Catalog section)
+- Summary cards: Items, Variants, Bundles, Warehouses, Stock Value, Low Stock
+- Tabs: Overview, Warehouses, Variants, Bundles, Serial/Batch, Shipments, Returns
+- Overview: Low Stock Alerts, Pending Shipments, Pending Returns
+- Create dialogs for: Warehouse, Variant, Bundle, Serial/Batch
+- Stock Adjustment dialog: Item, Warehouse, Add/Subtract/Set, Reason
+- Warehouse detail with stock items table
+- Bundle detail with components and max assemblable count
+- Assemble bundle button (consumes component stock)
+- Shipment actions: Ship, Deliver
+- Return actions: Process
+
+---
+
 ### Customer Portal Module (Feb 17, 2026) ✅ COMPLETE - NEW
 
 **Self-Service Portal for Customers:**
