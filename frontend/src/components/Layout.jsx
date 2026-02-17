@@ -92,7 +92,8 @@ const navItems = [
     { name: "Vendors (Legacy)", path: "/suppliers", icon: Building2 },
   ]},
   { section: "Sales", items: [
-    { name: "Quotes", path: "/quotes", icon: FileText },
+    { name: "Estimates", path: "/estimates", icon: FileText },
+    { name: "Quotes (Legacy)", path: "/quotes", icon: FileText },
     { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
     { name: "Delivery Challans", path: "/delivery-challans", icon: Truck },
     { name: "Invoices", path: "/invoices", icon: Receipt },

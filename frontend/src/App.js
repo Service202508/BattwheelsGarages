@@ -46,6 +46,7 @@ import DeliveryChallans from "@/pages/DeliveryChallans";
 import Items from "@/pages/Items";
 import ItemsEnhanced from "@/pages/ItemsEnhanced";
 import ContactsEnhanced from "@/pages/ContactsEnhanced";
+import EstimatesEnhanced from "@/pages/EstimatesEnhanced";
 import PriceLists from "@/pages/PriceLists";
 import InventoryAdjustments from "@/pages/InventoryAdjustments";
 import RecurringExpenses from "@/pages/RecurringExpenses";
@@ -453,6 +454,13 @@ function AppRouter() {
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <ContactsEnhanced user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/estimates" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <EstimatesEnhanced user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
