@@ -47,6 +47,7 @@ import Items from "@/pages/Items";
 import ItemsEnhanced from "@/pages/ItemsEnhanced";
 import ContactsEnhanced from "@/pages/ContactsEnhanced";
 import EstimatesEnhanced from "@/pages/EstimatesEnhanced";
+import SalesOrdersEnhanced from "@/pages/SalesOrdersEnhanced";
 import PriceLists from "@/pages/PriceLists";
 import InventoryAdjustments from "@/pages/InventoryAdjustments";
 import RecurringExpenses from "@/pages/RecurringExpenses";
