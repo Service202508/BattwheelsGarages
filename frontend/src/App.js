@@ -35,6 +35,7 @@ import Bills from "@/pages/Bills";
 import CreditNotes from "@/pages/CreditNotes";
 import Banking from "@/pages/Banking";
 import Reports from "@/pages/Reports";
+import GSTReports from "@/pages/GSTReports";
 import VendorCredits from "@/pages/VendorCredits";
 import ChartOfAccounts from "@/pages/ChartOfAccounts";
 import JournalEntries from "@/pages/JournalEntries";
