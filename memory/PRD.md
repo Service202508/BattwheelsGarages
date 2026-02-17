@@ -993,6 +993,47 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 
 **Variant Support:** default, success, warning, danger, info, purple, teal
 
+### EFI Guided Execution System (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Technician Decision Support Engine:**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Complaint Classification** | Auto-classify subsystem | ✅ Shown in panel header | ✅ |
+| **Similarity Search** | `/api/efi-guided/suggestions/{ticket_id}` | ✅ Ranked paths with confidence | ✅ |
+| **Decision Trees** | 14 seeded failure cards with trees | ✅ Interactive PASS/FAIL steps | ✅ |
+| **Session Management** | `/api/efi-guided/session/start` | ✅ Start/track sessions | ✅ |
+| **Step Recording** | `/api/efi-guided/session/{id}/step/{step_id}` | ✅ PASS/FAIL buttons | ✅ |
+| **Smart Estimates** | `/api/efi-guided/session/{id}/estimate` | ✅ Auto-suggest parts/labor | ✅ |
+| **Seed Data** | `/api/efi-guided/seed` | Admin endpoint | ✅ |
+| **Embeddings** | `/api/efi-guided/embeddings/generate-all` | Hash-based (MOCKED) | ✅ |
+
+**Frontend Features:**
+- **EFI Side Panel** in Job Card (`EFISidePanel.jsx`)
+- Dynamic, collapsible panel (always visible when Job Card open)
+- Suggested diagnostic paths with confidence scores
+- "Best Match" badge for top result
+- "Start Guided Diagnosis" button
+- Active diagnosis view with progress bar
+- Current step with expected measurements and tools
+- PASS/FAIL buttons for step outcomes
+- Notes field for measurements
+- Completed steps collapsible list
+- Smart estimate generation with parts and labor
+
+**Backend Architecture:**
+- **Provider-agnostic embedding service** (`efi_embedding_service.py`)
+- **Decision tree engine** (`efi_decision_engine.py`)
+- **14 seeded failure cards** with decision trees:
+  - 🔋 Battery: BMS Lock, Charging Failure, Communication Loss, Cell Imbalance
+  - ⚡ Electrical: Loose Connectors, Wiring Faults, DC-DC Failure, Low Voltage
+  - 🧠 Controller: Communication Error, Firmware Lock, Throttle Mismatch
+  - ⚙️ Motor: Hall Sensor, Overheating, Torque Loss
+
+**Note:** Embeddings use hash-based fallback (MOCKED) - real Gemini embeddings not available via Emergent proxy.
+
+---
+
 **Pages Updated with PageHeader & StatCard:**
 - ✅ Dashboard.jsx - MetricCard components
 - ✅ ContactsEnhanced.jsx - PageHeader + StatCardGrid + ResponsiveTable + EmptyState
