@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Mail, Lock, User, Zap, ChevronRight } from "lucide-react";
+import { Mail, Lock, User, Zap, ChevronRight, Eye, EyeOff, Sparkles } from "lucide-react";
 import { API } from "@/App";
 
 // 3D Vehicle Image URLs
@@ -48,7 +48,6 @@ const AnimatedVehicleIcons = () => {
           onClick={() => setActiveIndex(index)}
         >
           <div className={`relative transition-all duration-700 ${vehicle.size} flex items-center justify-center`}>
-            {/* Glow effect for active */}
             {activeIndex === index && (
               <div className="absolute inset-0 bg-[#22EDA9]/20 blur-2xl rounded-full animate-pulse" />
             )}
@@ -85,6 +84,114 @@ const FeatureBadge = ({ icon: Icon, text }) => (
     <span className="text-xs font-medium text-gray-600">{text}</span>
   </div>
 );
+
+// Premium Input Component with 3D styling
+const PremiumInput = ({ icon: Icon, type, id, placeholder, value, onChange, required, showPasswordToggle, dataTestId }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  
+  const inputType = showPasswordToggle ? (showPassword ? "text" : "password") : type;
+  
+  return (
+    <div className={`relative group transition-all duration-300 ${isFocused ? 'transform scale-[1.02]' : ''}`}>
+      {/* 3D Shadow Effect */}
+      <div className={`absolute inset-0 rounded-2xl transition-all duration-300 ${
+        isFocused 
+          ? 'bg-gradient-to-r from-[#22EDA9]/20 to-[#1DD69A]/20 blur-xl opacity-100' 
+          : 'opacity-0'
+      }`} />
+      
+      {/* Input Container */}
+      <div className={`relative rounded-2xl transition-all duration-300 ${
+        isFocused 
+          ? 'shadow-lg shadow-[#22EDA9]/20 ring-2 ring-[#22EDA9]/50' 
+          : 'shadow-sm hover:shadow-md'
+      }`}>
+        {/* Icon */}
+        <div className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all duration-300 ${
+          isFocused 
+            ? 'bg-[#22EDA9] shadow-lg shadow-[#22EDA9]/30' 
+            : 'bg-gray-100'
+        }`}>
+          <Icon className={`h-4 w-4 transition-colors duration-300 ${
+            isFocused ? 'text-gray-900' : 'text-gray-500'
+          }`} />
+        </div>
+        
+        <Input
+          id={id}
+          type={inputType}
+          placeholder={placeholder}
+          className={`pl-16 pr-${showPasswordToggle ? '14' : '4'} h-14 bg-white border-2 rounded-2xl text-base font-medium transition-all duration-300 ${
+            isFocused 
+              ? 'border-[#22EDA9] bg-white' 
+              : 'border-gray-100 hover:border-gray-200'
+          }`}
+          value={value}
+          onChange={onChange}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          required={required}
+          data-testid={dataTestId}
+        />
+        
+        {/* Password Toggle */}
+        {showPasswordToggle && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className={`absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all duration-300 hover:bg-gray-100 ${
+              isFocused ? 'text-[#22EDA9]' : 'text-gray-400'
+            }`}
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Premium Button Component
+const PremiumButton = ({ children, onClick, type, disabled, variant = "primary", className = "", dataTestId }) => {
+  const [isPressed, setIsPressed] = useState(false);
+  
+  const baseStyles = "relative w-full h-14 font-bold rounded-2xl transition-all duration-300 overflow-hidden";
+  
+  const variants = {
+    primary: `bg-gradient-to-r from-[#22EDA9] to-[#1DD69A] text-gray-900 
+      shadow-lg shadow-[#22EDA9]/30 
+      hover:shadow-xl hover:shadow-[#22EDA9]/40 hover:-translate-y-0.5
+      active:translate-y-0 active:shadow-md
+      disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0`,
+    outline: `bg-white border-2 border-gray-200 text-gray-700 
+      shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5
+      active:translate-y-0`
+  };
+  
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onMouseLeave={() => setIsPressed(false)}
+      className={`${baseStyles} ${variants[variant]} ${className}`}
+      data-testid={dataTestId}
+    >
+      {/* Shine Effect */}
+      {variant === "primary" && (
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+      )}
+      
+      {/* Content */}
+      <span className="relative flex items-center justify-center gap-2">
+        {children}
+      </span>
+    </button>
+  );
+};
 
 export default function Login({ onLogin }) {
   const navigate = useNavigate();
@@ -212,24 +319,29 @@ export default function Login({ onLogin }) {
             <div className="flex flex-wrap justify-center gap-3">
               <FeatureBadge icon={Zap} text="AI Diagnostics" />
               <FeatureBadge icon={ChevronRight} text="Real-time Insights" />
-              <FeatureBadge icon={Zap} text="Fleet Management" />
+              <FeatureBadge icon={Sparkles} text="Fleet Management" />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Right Panel - Auth Form */}
-      <div className="flex-1 flex flex-col bg-white relative shadow-2xl shadow-gray-200/50">
+      {/* Right Panel - Premium Auth Form */}
+      <div className="flex-1 flex flex-col relative overflow-hidden">
+        {/* Premium Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50/50 to-white" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#22EDA9]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#22EDA9]/3 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+        
         {/* Top Right Logo */}
-        <div className="flex justify-end px-8 py-8">
+        <div className="relative z-10 flex justify-end px-8 py-8">
           <img 
             src="https://customer-assets.emergentagent.com/job_3a595ece-6ef9-4ac6-b3b4-0464858ff726/artifacts/trnes6dt_Screenshot%202026-02-16%20at%2010.25.22%E2%80%AFPM.png" 
             alt="Battwheels" 
-            className="h-14 w-auto"
+            className="h-14 w-auto drop-shadow-sm"
           />
         </div>
 
-        <div className="flex-1 flex items-center justify-center px-6 sm:px-12 pb-12">
+        <div className="relative z-10 flex-1 flex items-center justify-center px-6 sm:px-12 pb-12">
           <div className="w-full max-w-md">
             {/* Mobile Logo & 3D Icons */}
             <div className="lg:hidden flex flex-col items-center mb-8">
@@ -246,205 +358,234 @@ export default function Login({ onLogin }) {
               </div>
             </div>
 
-            <Card className="border-0 shadow-2xl shadow-gray-200/60 rounded-3xl overflow-hidden bg-white">
-              <CardHeader className="text-center pt-10 pb-4 px-10 bg-gradient-to-b from-gray-50/50 to-white">
-                <CardTitle className="text-3xl font-bold text-gray-900 tracking-tight">Battwheels OS</CardTitle>
-                <CardDescription className="text-gray-500 mt-2">Sign in to your account</CardDescription>
-              </CardHeader>
+            {/* Premium Glass Card */}
+            <div className="relative">
+              {/* Card Glow */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#22EDA9]/20 via-transparent to-[#22EDA9]/20 rounded-[2rem] blur-xl opacity-60" />
               
-              <CardContent className="px-10 pb-10">
-                <Tabs defaultValue="login" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-8 bg-gray-100/80 rounded-2xl p-1.5 h-14">
-                    <TabsTrigger 
-                      value="login" 
-                      data-testid="login-tab" 
-                      className="rounded-xl font-semibold text-sm data-[state=active]:bg-[#22EDA9] data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-[#22EDA9]/20 transition-all duration-300 h-11"
-                    >
-                      Login
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="register" 
-                      data-testid="register-tab" 
-                      className="rounded-xl font-semibold text-sm data-[state=active]:bg-[#22EDA9] data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-[#22EDA9]/20 transition-all duration-300 h-11"
-                    >
-                      Register
-                    </TabsTrigger>
-                  </TabsList>
+              {/* Main Card */}
+              <Card className="relative border-0 shadow-2xl rounded-[2rem] overflow-hidden bg-white/95 backdrop-blur-xl">
+                {/* Top Accent Line */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#22EDA9] to-transparent" />
+                
+                <CardHeader className="text-center pt-10 pb-6 px-10">
+                  {/* Decorative Icon */}
+                  <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-gradient-to-br from-[#22EDA9]/10 to-[#22EDA9]/5 flex items-center justify-center shadow-inner">
+                    <Zap className="w-7 h-7 text-[#22EDA9]" />
+                  </div>
+                  <CardTitle className="text-3xl font-bold text-gray-900 tracking-tight">Battwheels OS</CardTitle>
+                  <CardDescription className="text-gray-500 mt-2 text-base">Sign in to your account</CardDescription>
+                </CardHeader>
+                
+                <CardContent className="px-10 pb-10">
+                  <Tabs defaultValue="login" className="w-full">
+                    {/* Premium Tab List */}
+                    <TabsList className="grid w-full grid-cols-2 mb-8 bg-gray-100/80 rounded-2xl p-1.5 h-14 shadow-inner">
+                      <TabsTrigger 
+                        value="login" 
+                        data-testid="login-tab" 
+                        className="rounded-xl font-semibold text-sm transition-all duration-300
+                          data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#22EDA9] data-[state=active]:to-[#1DD69A]
+                          data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-[#22EDA9]/30
+                          data-[state=inactive]:text-gray-500 data-[state=inactive]:hover:text-gray-700
+                          h-11"
+                      >
+                        Login
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="register" 
+                        data-testid="register-tab" 
+                        className="rounded-xl font-semibold text-sm transition-all duration-300
+                          data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#22EDA9] data-[state=active]:to-[#1DD69A]
+                          data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-[#22EDA9]/30
+                          data-[state=inactive]:text-gray-500 data-[state=inactive]:hover:text-gray-700
+                          h-11"
+                      >
+                        Register
+                      </TabsTrigger>
+                    </TabsList>
 
-                  <TabsContent value="login">
-                    <form onSubmit={handleLogin} className="space-y-5">
-                      <div className="space-y-2">
-                        <Label htmlFor="login-email" className="text-gray-700 text-sm font-medium">Email</Label>
-                        <div className="relative group">
-                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#22EDA9] transition-colors" />
-                          <Input
-                            id="login-email"
+                    <TabsContent value="login" className="mt-0">
+                      <form onSubmit={handleLogin} className="space-y-5">
+                        <div className="space-y-2">
+                          <Label htmlFor="login-email" className="text-gray-700 text-sm font-semibold ml-1">Email</Label>
+                          <PremiumInput
+                            icon={Mail}
                             type="email"
+                            id="login-email"
                             placeholder="you@example.com"
-                            className="pl-12 h-13 bg-gray-50/50 border-gray-200 focus:border-[#22EDA9] focus:ring-2 focus:ring-[#22EDA9]/20 rounded-xl text-base transition-all"
                             value={loginData.email}
                             onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                             required
-                            data-testid="login-email-input"
+                            dataTestId="login-email-input"
                           />
                         </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="login-password" className="text-gray-700 text-sm font-medium">Password</Label>
-                        <div className="relative group">
-                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#22EDA9] transition-colors" />
-                          <Input
-                            id="login-password"
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="login-password" className="text-gray-700 text-sm font-semibold ml-1">Password</Label>
+                          <PremiumInput
+                            icon={Lock}
                             type="password"
+                            id="login-password"
                             placeholder="••••••••"
-                            className="pl-12 h-13 bg-gray-50/50 border-gray-200 focus:border-[#22EDA9] focus:ring-2 focus:ring-[#22EDA9]/20 rounded-xl text-base transition-all"
                             value={loginData.password}
                             onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                             required
-                            data-testid="login-password-input"
+                            showPasswordToggle
+                            dataTestId="login-password-input"
                           />
                         </div>
-                      </div>
-                      
-                      <Button 
-                        type="submit" 
-                        className="w-full h-13 bg-[#22EDA9] text-gray-900 hover:bg-[#1DD69A] font-bold rounded-xl transition-all duration-300 text-base shadow-lg shadow-[#22EDA9]/30 hover:shadow-xl hover:shadow-[#22EDA9]/40 hover:-translate-y-0.5" 
-                        disabled={isLoading}
-                        data-testid="login-submit-btn"
-                      >
-                        {isLoading ? (
-                          <span className="flex items-center gap-2">
-                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                            </svg>
-                            Signing in...
+                        
+                        <div className="pt-2">
+                          <PremiumButton 
+                            type="submit" 
+                            disabled={isLoading}
+                            dataTestId="login-submit-btn"
+                          >
+                            {isLoading ? (
+                              <>
+                                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                </svg>
+                                <span>Signing in...</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>Sign In</span>
+                                <ChevronRight className="w-5 h-5" />
+                              </>
+                            )}
+                          </PremiumButton>
+                        </div>
+                      </form>
+
+                      {/* Divider */}
+                      <div className="relative my-8">
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="w-full border-t-2 border-gray-100" />
+                        </div>
+                        <div className="relative flex justify-center">
+                          <span className="bg-white px-4 py-1 text-sm text-gray-400 font-medium rounded-full border border-gray-100">
+                            or continue with
                           </span>
-                        ) : "Sign In"}
-                      </Button>
-                    </form>
-
-                    <div className="relative my-8">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-200" />
+                        </div>
                       </div>
-                      <div className="relative flex justify-center text-xs">
-                        <span className="bg-white px-4 text-gray-400 font-medium">or</span>
+
+                      {/* Google Button */}
+                      <PremiumButton 
+                        variant="outline"
+                        onClick={handleGoogleLogin}
+                        dataTestId="google-login-btn"
+                      >
+                        <svg className="h-5 w-5" viewBox="0 0 24 24">
+                          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        </svg>
+                        <span>Continue with Google</span>
+                      </PremiumButton>
+
+                      {/* Demo Credentials */}
+                      <div className="mt-8 text-center">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl border border-gray-100">
+                          <div className="w-2 h-2 bg-[#22EDA9] rounded-full animate-pulse" />
+                          <span className="text-xs text-gray-500 font-medium">
+                            Demo: <span className="text-gray-700">admin@battwheels.in</span> / <span className="text-gray-700">admin123</span>
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    </TabsContent>
 
-                    <Button 
-                      variant="outline" 
-                      className="w-full h-13 border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 rounded-xl font-semibold transition-all duration-300"
-                      onClick={handleGoogleLogin}
-                      data-testid="google-login-btn"
-                    >
-                      <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                      </svg>
-                      Continue with Google
-                    </Button>
-
-                    <p className="mt-8 text-xs text-center text-gray-400 font-medium">
-                      Demo: admin@battwheels.in / admin123
-                    </p>
-                  </TabsContent>
-
-                  <TabsContent value="register">
-                    <form onSubmit={handleRegister} className="space-y-5">
-                      <div className="space-y-2">
-                        <Label htmlFor="register-name" className="text-gray-700 text-sm font-medium">Full Name</Label>
-                        <div className="relative group">
-                          <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#22EDA9] transition-colors" />
-                          <Input
-                            id="register-name"
+                    <TabsContent value="register" className="mt-0">
+                      <form onSubmit={handleRegister} className="space-y-5">
+                        <div className="space-y-2">
+                          <Label htmlFor="register-name" className="text-gray-700 text-sm font-semibold ml-1">Full Name</Label>
+                          <PremiumInput
+                            icon={User}
                             type="text"
+                            id="register-name"
                             placeholder="John Doe"
-                            className="pl-12 h-13 bg-gray-50/50 border-gray-200 focus:border-[#22EDA9] focus:ring-2 focus:ring-[#22EDA9]/20 rounded-xl text-base transition-all"
                             value={registerData.name}
                             onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
                             required
-                            data-testid="register-name-input"
+                            dataTestId="register-name-input"
                           />
                         </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="register-email" className="text-gray-700 text-sm font-medium">Email</Label>
-                        <div className="relative group">
-                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#22EDA9] transition-colors" />
-                          <Input
-                            id="register-email"
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="register-email" className="text-gray-700 text-sm font-semibold ml-1">Email</Label>
+                          <PremiumInput
+                            icon={Mail}
                             type="email"
+                            id="register-email"
                             placeholder="you@example.com"
-                            className="pl-12 h-13 bg-gray-50/50 border-gray-200 focus:border-[#22EDA9] focus:ring-2 focus:ring-[#22EDA9]/20 rounded-xl text-base transition-all"
                             value={registerData.email}
                             onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
                             required
-                            data-testid="register-email-input"
+                            dataTestId="register-email-input"
                           />
                         </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="register-password" className="text-gray-700 text-sm font-medium">Password</Label>
-                        <div className="relative group">
-                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#22EDA9] transition-colors" />
-                          <Input
-                            id="register-password"
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="register-password" className="text-gray-700 text-sm font-semibold ml-1">Password</Label>
+                          <PremiumInput
+                            icon={Lock}
                             type="password"
+                            id="register-password"
                             placeholder="••••••••"
-                            className="pl-12 h-13 bg-gray-50/50 border-gray-200 focus:border-[#22EDA9] focus:ring-2 focus:ring-[#22EDA9]/20 rounded-xl text-base transition-all"
                             value={registerData.password}
                             onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
                             required
-                            data-testid="register-password-input"
+                            showPasswordToggle
+                            dataTestId="register-password-input"
                           />
                         </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="register-confirm" className="text-gray-700 text-sm font-medium">Confirm Password</Label>
-                        <div className="relative group">
-                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-[#22EDA9] transition-colors" />
-                          <Input
-                            id="register-confirm"
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="register-confirm" className="text-gray-700 text-sm font-semibold ml-1">Confirm Password</Label>
+                          <PremiumInput
+                            icon={Lock}
                             type="password"
+                            id="register-confirm"
                             placeholder="••••••••"
-                            className="pl-12 h-13 bg-gray-50/50 border-gray-200 focus:border-[#22EDA9] focus:ring-2 focus:ring-[#22EDA9]/20 rounded-xl text-base transition-all"
                             value={registerData.confirmPassword}
                             onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
                             required
-                            data-testid="register-confirm-input"
+                            showPasswordToggle
+                            dataTestId="register-confirm-input"
                           />
                         </div>
-                      </div>
-                      
-                      <Button 
-                        type="submit" 
-                        className="w-full h-13 bg-[#22EDA9] text-gray-900 hover:bg-[#1DD69A] font-bold rounded-xl transition-all duration-300 text-base shadow-lg shadow-[#22EDA9]/30 hover:shadow-xl hover:shadow-[#22EDA9]/40 hover:-translate-y-0.5" 
-                        disabled={isLoading}
-                        data-testid="register-submit-btn"
-                      >
-                        {isLoading ? (
-                          <span className="flex items-center gap-2">
-                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                            </svg>
-                            Creating Account...
-                          </span>
-                        ) : "Create Account"}
-                      </Button>
-                    </form>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
+                        
+                        <div className="pt-2">
+                          <PremiumButton 
+                            type="submit" 
+                            disabled={isLoading}
+                            dataTestId="register-submit-btn"
+                          >
+                            {isLoading ? (
+                              <>
+                                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                </svg>
+                                <span>Creating Account...</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>Create Account</span>
+                                <ChevronRight className="w-5 h-5" />
+                              </>
+                            )}
+                          </PremiumButton>
+                        </div>
+                      </form>
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
