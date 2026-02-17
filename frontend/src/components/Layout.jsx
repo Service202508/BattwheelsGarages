@@ -37,7 +37,11 @@ import {
   CreditCard,
   Tag,
   List,
-  ClipboardList
+  ClipboardList,
+  ArrowRightLeft,
+  Activity,
+  Landmark,
+  CheckSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
