@@ -75,7 +75,7 @@ class CaptureCompletionRequest(BaseModel):
 async def get_current_user(request: Request) -> dict:
     """Get current authenticated user"""
     token = request.cookies.get("session_token") or request.headers.get("Authorization", "").replace("Bearer ", "")
-    if token and _db:
+    if token and _db is not None:
         session = await _db.user_sessions.find_one({"session_token": token}, {"_id": 0})
         if session:
             expires_at = session.get("expires_at")
