@@ -334,6 +334,29 @@ export default function CustomersEnhanced() {
     } catch (e) { toast.error("Error adding credit"); }
   };
 
+  // Sync to Contacts
+  const handleSyncToContacts = async (customerId) => {
+    try {
+      const res = await fetch(`${API}/customers-enhanced/${customerId}/sync-to-contacts`, { method: "POST", headers });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.action === "created" ? "Customer synced to contacts system!" : "Contact updated from customer data");
+        fetchCustomerDetail(customerId);
+      } else {
+        toast.error(data.detail || "Sync failed");
+      }
+    } catch (e) { toast.error("Error syncing customer"); }
+  };
+
+  // Check contact link
+  const checkContactLink = async (customerId) => {
+    try {
+      const res = await fetch(`${API}/customers-enhanced/${customerId}/contact-link`, { headers });
+      const data = await res.json();
+      return data.is_linked;
+    } catch (e) { return false; }
+  };
+
   // Tags
   const handleCreateTag = async () => {
     if (!newTag.name) return toast.error("Tag name is required");
