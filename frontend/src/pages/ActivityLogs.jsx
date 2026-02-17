@@ -130,12 +130,12 @@ export default function ActivityLogs() {
           <p className="text-gray-500 text-sm mt-1">Audit trail of all system activities</p>
         </div>
         <div className="flex items-center gap-3">
-          <Select value={entityTypeFilter} onValueChange={(v) => { setEntityTypeFilter(v); setPage(1); }}>
+          <Select value={entityTypeFilter || "all"} onValueChange={(v) => { setEntityTypeFilter(v === "all" ? "" : v); setPage(1); }}>
             <SelectTrigger className="w-40" data-testid="entity-type-filter">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Types</SelectItem>
+              <SelectItem value="all">All Types</SelectItem>
               {Object.entries(ENTITY_TYPES).map(([key, val]) => (
                 <SelectItem key={key} value={key}>{val.label}</SelectItem>
               ))}

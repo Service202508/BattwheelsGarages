@@ -238,12 +238,12 @@ export default function RecurringExpenses() {
           <p className="text-gray-500 text-sm mt-1">Manage automated expense schedules</p>
         </div>
         <div className="flex items-center gap-3">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={statusFilter || "all"} onValueChange={(v) => setStatusFilter(v === "all" ? "" : v)}>
             <SelectTrigger className="w-32" data-testid="status-filter">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Status</SelectItem>
+              <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="stopped">Stopped</SelectItem>
             </SelectContent>
