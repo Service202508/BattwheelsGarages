@@ -381,56 +381,57 @@ export default function ContactsEnhanced() {
   return (
     <div className="space-y-6" data-testid="contacts-enhanced-page">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Contact Management</h1>
-          <p className="text-gray-500 text-sm mt-1">Customers, Vendors, Persons & Addresses</p>
-        </div>
-        <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
-          <RefreshCw className="h-4 w-4" /> Refresh
-        </Button>
-      </div>
+      <PageHeader
+        title="Contact Management"
+        description="Customers, Vendors, Persons & Addresses"
+        icon={Users}
+        actions={
+          <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
+            <RefreshCw className="h-4 w-4" /> Refresh
+          </Button>
+        }
+      />
 
       {/* Summary Cards */}
       {summary && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-          <KPICard
+        <StatCardGrid columns={6}>
+          <StatCard
             title="Total Contacts"
             value={summary.total_contacts}
             icon={Users}
             variant="info"
           />
-          <KPICard
+          <StatCard
             title="Customers"
             value={summary.customers}
             icon={User}
             variant="success"
           />
-          <KPICard
+          <StatCard
             title="Vendors"
             value={summary.vendors}
             icon={Building2}
             variant="warning"
           />
-          <KPICard
+          <StatCard
             title="With GSTIN"
             value={summary.with_gstin}
             icon={Shield}
             variant="purple"
           />
-          <KPICard
+          <StatCard
             title="Receivable"
             value={formatCurrencyCompact(summary.total_receivable || 0)}
             icon={CreditCard}
             variant="success"
           />
-          <KPICard
+          <StatCard
             title="Payable"
             value={formatCurrencyCompact(summary.total_payable || 0)}
             icon={CreditCard}
             variant="danger"
           />
-        </div>
+        </StatCardGrid>
       )}
 
       {/* Tabs */}
