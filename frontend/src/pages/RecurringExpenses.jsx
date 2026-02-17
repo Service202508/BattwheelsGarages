@@ -293,11 +293,12 @@ export default function RecurringExpenses() {
                   </div>
                   <div className="space-y-2">
                     <Label>Vendor</Label>
-                    <Select value={formData.vendor_id} onValueChange={(v) => setFormData({...formData, vendor_id: v})}>
+                    <Select value={formData.vendor_id || "none"} onValueChange={(v) => setFormData({...formData, vendor_id: v === "none" ? "" : v})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select Vendor" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="none">No Vendor</SelectItem>
                         {vendors.map(v => (
                           <SelectItem key={v.contact_id} value={v.contact_id}>
                             {v.contact_name}
