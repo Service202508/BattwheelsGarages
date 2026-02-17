@@ -291,21 +291,72 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
   const isTechnician = user?.role === "technician";
   const isCustomer = user?.role === "customer";
 
+  // Handle EFI estimate suggestion
+  const handleEfiEstimateSuggested = (estimate) => {
+    if (!estimate) return;
+    
+    // Convert EFI parts to estimate format
+    const efiParts = (estimate.parts || estimate.parts_required || []).map(p => ({
+      item_id: p.part_id || `efi_${Date.now()}`,
+      name: p.name,
+      sku: p.sku || "-",
+      quantity: p.quantity || 1,
+      unit_price: p.price || 0,
+      gst_rate: 18,
+      type: "part"
+    }));
+
+    // Add labor as service
+    const laborService = {
+      service_id: `labor_${Date.now()}`,
+      name: estimate.resolution?.title || "Diagnostic Repair Labor",
+      quantity: 1,
+      unit_price: estimate.labor_total || (estimate.labor_hours || 1) * (estimate.labor_rate || 500),
+      gst_rate: 18,
+      type: "service"
+    };
+
+    // Update estimated items
+    setEstimatedItems(prev => ({
+      parts: [...prev.parts, ...efiParts],
+      services: [...prev.services, laborService]
+    }));
+
+    toast.success("EFI estimate applied to job card");
+  };
+
   return (
-    <div className="flex flex-col bg-muted/20" data-testid="job-card">
-      <div className="p-4 space-y-4">
+    <div className="flex h-full" data-testid="job-card">
+      {/* Main Job Card Content */}
+      <div className="flex-1 flex flex-col bg-muted/20 overflow-auto">
+        <div className="p-4 space-y-4">
           {/* Header */}
           <div className="flex justify-between items-start">
             <div>
               <h1 className="text-2xl font-bold">Battwheels OS</h1>
               <p className="text-muted-foreground text-sm">Service & Repair Center</p>
             </div>
-            <div className="text-right">
-              <h3 className="text-xl font-semibold">Job Card</h3>
-              <p className="text-muted-foreground font-mono">{localTicket.ticket_id}</p>
-              <Badge className={statusColors[localTicket.status] || "bg-gray-500"}>
-                {statusLabels[localTicket.status] || localTicket.status}
-              </Badge>
+            <div className="flex items-start gap-4">
+              {/* EFI Toggle Button */}
+              {(isTechnician || isAdmin) && (
+                <Button
+                  variant={efiPanelOpen ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setEfiPanelOpen(!efiPanelOpen)}
+                  className="gap-2"
+                  data-testid="efi-header-toggle"
+                >
+                  <Brain className="h-4 w-4" />
+                  {efiPanelOpen ? "Hide" : "Show"} EFI
+                </Button>
+              )}
+              <div className="text-right">
+                <h3 className="text-xl font-semibold">Job Card</h3>
+                <p className="text-muted-foreground font-mono">{localTicket.ticket_id}</p>
+                <Badge className={statusColors[localTicket.status] || "bg-gray-500"}>
+                  {statusLabels[localTicket.status] || localTicket.status}
+                </Badge>
+              </div>
             </div>
           </div>
 
