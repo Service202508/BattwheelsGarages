@@ -516,7 +516,7 @@ class EFIEmbeddingManager:
         return results[:limit]
     
     async def embed_failure_card(self, failure_id: str) -> Dict[str, Any]:
-        """Generate and store embedding for a single failure card"""
+        """Generate and store embedding for a single failure card (uses fast hash-based)"""
         card = await self.db.failure_cards.find_one({"failure_id": failure_id})
         if not card:
             raise ValueError(f"Failure card {failure_id} not found")
@@ -526,13 +526,15 @@ class EFIEmbeddingManager:
             card.get("title", ""),
             card.get("description", ""),
             card.get("symptoms", ""),
+            card.get("symptom_text", ""),
             " ".join(card.get("common_causes", [])),
             " ".join(card.get("keywords", []))
         ]
         text = " ".join(filter(None, text_parts))
         
-        # Generate embedding
-        embedding_response = await self.embedding_service.embed_text(text)
+        # Use hash-based embedding for reliability in batch operations
+        fallback = FallbackEmbeddingService(self.embedding_service.get_dimensions())
+        embedding_response = await fallback.embed_text(text)
         
         # Update card with embedding
         await self.db.failure_cards.update_one(
