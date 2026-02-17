@@ -378,10 +378,10 @@ export default function ItemsEnhanced() {
                   </div>
                   <div>
                     <Label>Item Group</Label>
-                    <Select value={newItem.group_id || ""} onValueChange={(v) => setNewItem({ ...newItem, group_id: v })}>
+                    <Select value={newItem.group_id || "none"} onValueChange={(v) => setNewItem({ ...newItem, group_id: v === "none" ? "" : v })}>
                       <SelectTrigger><SelectValue placeholder="Select group (optional)" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No Group</SelectItem>
+                        <SelectItem value="none">No Group</SelectItem>
                         {groups.map(g => <SelectItem key={g.group_id} value={g.group_id}>{g.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
