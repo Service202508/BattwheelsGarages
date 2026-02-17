@@ -430,72 +430,37 @@ export default function FixedAssets() {
 
       {/* Summary Cards */}
       {summary && (
-        <div className="grid grid-cols-5 gap-4">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Package className="h-5 w-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Total Assets</p>
-                  <p className="text-2xl font-bold">{summary.total_assets}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Active</p>
-                  <p className="text-2xl font-bold">{summary.active_assets}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <IndianRupee className="h-5 w-5 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Purchase Value</p>
-                  <p className="text-xl font-bold">₹{(summary.total_purchase_value || 0).toLocaleString()}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <TrendingDown className="h-5 w-5 text-orange-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Depreciation</p>
-                  <p className="text-xl font-bold">₹{(summary.total_accumulated_depreciation || 0).toLocaleString()}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-teal-100 rounded-lg">
-                  <DollarSign className="h-5 w-5 text-teal-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Book Value</p>
-                  <p className="text-xl font-bold">₹{(summary.total_book_value || 0).toLocaleString()}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+          <KPICard
+            title="Total Assets"
+            value={summary.total_assets}
+            icon={Package}
+            variant="info"
+          />
+          <KPICard
+            title="Active"
+            value={summary.active_assets}
+            icon={CheckCircle}
+            variant="success"
+          />
+          <KPICard
+            title="Purchase Value"
+            value={formatCurrencyCompact(summary.total_purchase_value || 0)}
+            icon={IndianRupee}
+            variant="purple"
+          />
+          <KPICard
+            title="Depreciation"
+            value={formatCurrencyCompact(summary.total_accumulated_depreciation || 0)}
+            icon={TrendingDown}
+            variant="warning"
+          />
+          <KPICard
+            title="Book Value"
+            value={formatCurrencyCompact(summary.total_book_value || 0)}
+            icon={DollarSign}
+            variant="success"
+          />
         </div>
       )}
 
