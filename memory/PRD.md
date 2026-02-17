@@ -675,6 +675,8 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 
 ### P0 (Next)
 - [ ] **Sales Orders Module** - Order confirmation after estimate acceptance, status management (draft/open/fulfilled), inventory reservation
+- [x] **Sales Orders Module (Feb 17, 2026)** - Order confirmation, stock reservation on confirm, fulfillment tracking, partial/full shipments, convert to invoice
+- [x] **Quick Quote Enhancement (Feb 17, 2026)** - Button on Contact detail navigates to Estimates with customer pre-filled
 - [ ] **Invoices Module (Enhanced)** - Core revenue module with payment status tracking (paid/partial/overdue), recurring invoice profiles
 - [ ] Enable vector embeddings with OPENAI_API_KEY
 - [ ] Configure Razorpay with production keys (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET)
