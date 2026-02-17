@@ -261,14 +261,20 @@ export default function FixedAssets() {
         description="Track and depreciate your business assets"
         icon={Package}
         actions={
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-            <DialogTrigger asChild>
-              <Button className="bg-[#22EDA9] text-gray-900 hover:bg-[#1DD69A] font-semibold shadow-lg shadow-[#22EDA9]/20" data-testid="create-asset-btn">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Fixed Asset
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <Button 
+            onClick={() => setShowCreateDialog(true)}
+            className="bg-[#22EDA9] text-gray-900 hover:bg-[#1DD69A] font-semibold shadow-lg shadow-[#22EDA9]/20" 
+            data-testid="create-asset-btn"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Fixed Asset
+          </Button>
+        }
+      />
+
+      {/* Create Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add Fixed Asset</DialogTitle>
             </DialogHeader>
