@@ -974,6 +974,39 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 
 ## UI/UX Design System (Feb 16-17, 2026)
 
+### Unified Component System (Feb 17, 2026) ✅ COMPLETE
+**Created a unified StatCard component system replacing all ad-hoc KPI card implementations.**
+
+**New Components Created:**
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `StatCard` | `/components/ui/stat-card.jsx` | Basic stat card with variants |
+| `MetricCard` | `/components/ui/stat-card.jsx` | Dashboard-style larger metric display |
+| `GradientStatCard` | `/components/ui/stat-card.jsx` | Gradient background for analytics |
+| `StatCardGrid` | `/components/ui/stat-card.jsx` | Responsive grid layout container |
+| `MiniStatCard` | `/components/ui/stat-card.jsx` | Compact stat for tight spaces |
+| `formatCurrencyCompact` | `/components/ui/stat-card.jsx` | Indian currency abbreviation (L/Cr) |
+| `ResponsiveTable` | `/components/ui/data-display.jsx` | Mobile-friendly table wrapper |
+| `TableSkeleton` | `/components/ui/data-display.jsx` | Loading skeleton for tables |
+| `EmptyState` | `/components/ui/data-display.jsx` | Illustrative empty state component |
+| `PageSkeleton` | `/components/ui/data-display.jsx` | Full page loading skeleton |
+
+**Variant Support:** default, success, warning, danger, info, purple, teal
+
+**Pages Updated with PageHeader & StatCard:**
+- ✅ Dashboard.jsx - MetricCard components
+- ✅ ContactsEnhanced.jsx - PageHeader + StatCardGrid + ResponsiveTable + EmptyState
+- ✅ InvoicesEnhanced.jsx - PageHeader + StatCardGrid
+- ✅ FixedAssets.jsx - PageHeader + StatCardGrid
+- ✅ ReportsAdvanced.jsx - PageHeader + GradientStatCard
+- ✅ ItemsEnhanced.jsx - PageHeader + StatCardGrid
+- ✅ BillsEnhanced.jsx - PageHeader + StatCardGrid
+
+**Deprecated Files Deleted:**
+- `/app/backend/routes/books.py`
+- `/app/backend/routes/erp.py`
+- `/app/frontend/src/components/KPICard.jsx`
+
 ### KPI Card Overflow Fix (Feb 17, 2026) ✅ COMPLETE
 - **New Component:** `/app/frontend/src/components/KPICard.jsx`
 - **Exports:** `KPICard`, `MetricCard`, `GradientKPICard`, `formatCurrencyCompact`
