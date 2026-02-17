@@ -972,7 +972,27 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [ ] E-invoicing government portal integration
 - [ ] Apply Logo to Favicon
 
-## UI/UX Design System (Feb 16, 2026)
+## UI/UX Design System (Feb 16-17, 2026)
+
+### KPI Card Overflow Fix (Feb 17, 2026) ✅ COMPLETE
+- **New Component:** `/app/frontend/src/components/KPICard.jsx`
+- **Exports:** `KPICard`, `MetricCard`, `GradientKPICard`, `formatCurrencyCompact`
+- **Features:**
+  - Responsive font sizing (`text-lg sm:text-xl md:text-2xl`)
+  - Text truncation with `truncate` class
+  - Indian numbering abbreviations (L for Lakhs, Cr for Crores)
+  - Variant styling (default, success, warning, danger, info, purple)
+  - Mobile-first grid layouts (`grid-cols-2 md:grid-cols-3 lg:grid-cols-6`)
+- **Pages Updated:**
+  - Dashboard.jsx - Uses `MetricCard` component
+  - ContactsEnhanced.jsx - Uses `KPICard` component  
+  - InvoicesEnhanced.jsx - Uses `KPICard` component
+  - FixedAssets.jsx - Uses `KPICard` component
+  - ReportsAdvanced.jsx - Uses `GradientKPICard` component
+- **Currency Formatting:**
+  - Values < ₹1L: Full format (e.g., ₹5,580)
+  - Values ≥ ₹1L: Lakh format (e.g., ₹29.3L)
+  - Values ≥ ₹1Cr: Crore format (e.g., ₹1.5Cr)
 
 ### Login Page Redesign (Feb 16, 2026) ✅
 - Simplified from cluttered 6-card layout to clean 3-feature design
