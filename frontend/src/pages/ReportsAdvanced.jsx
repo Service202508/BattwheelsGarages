@@ -299,46 +299,47 @@ export default function ReportsAdvanced() {
   return (
     <div className="space-y-6" data-testid="reports-advanced-page">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Analytics & Reports</h1>
-          <p className="text-gray-500 text-sm mt-1">Visual insights into your business performance</p>
-        </div>
-        <Button onClick={fetchAllReports} variant="outline" className="gap-2" disabled={loading}>
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} /> Refresh
-        </Button>
-      </div>
+      <PageHeader
+        title="Analytics & Reports"
+        description="Visual insights into your business performance"
+        icon={BarChart3}
+        actions={
+          <Button onClick={fetchAllReports} variant="outline" className="gap-2" disabled={loading}>
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} /> Refresh
+          </Button>
+        }
+      />
 
       {/* KPI Cards */}
       {dashboardSummary && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          <GradientKPICard
+        <StatCardGrid columns={4}>
+          <GradientStatCard
             title="This Month Revenue"
             value={formatCurrencyCompact(dashboardSummary.this_month?.revenue)}
             subtitle={`${dashboardSummary.this_month?.invoices} invoices`}
             icon={TrendingUp}
             gradient="from-blue-500 to-blue-600"
           />
-          <GradientKPICard
+          <GradientStatCard
             title="Year to Date"
             value={formatCurrencyCompact(dashboardSummary.year_to_date?.revenue)}
             icon={DollarSign}
             gradient="from-green-500 to-green-600"
           />
-          <GradientKPICard
+          <GradientStatCard
             title="Total Outstanding"
             value={formatCurrencyCompact(dashboardSummary.receivables?.total_outstanding)}
             icon={Wallet}
             gradient="from-orange-500 to-orange-600"
           />
-          <GradientKPICard
+          <GradientStatCard
             title="Overdue Amount"
             value={formatCurrencyCompact(dashboardSummary.receivables?.overdue_amount)}
             subtitle={`${dashboardSummary.receivables?.overdue_count} invoices`}
             icon={AlertTriangle}
             gradient={dashboardSummary.receivables?.overdue_count > 0 ? "from-red-500 to-red-600" : "from-gray-500 to-gray-600"}
           />
-        </div>
+        </StatCardGrid>
       )}
 
       {/* Tabs */}
