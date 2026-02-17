@@ -4582,8 +4582,8 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Advanced Reports routes: {e}")
 
-# DEPRECATED: customers_enhanced has been merged into contacts_enhanced_v2
-# The unified contacts module now handles all customer and vendor functionality
+# NOTE: customers_enhanced has been merged into contacts_enhanced (unified module)
+# The contacts_enhanced module now handles all customer and vendor functionality
 # with a contact_type field to distinguish between customers, vendors, and both
 
 # Include Bills Enhanced routes
