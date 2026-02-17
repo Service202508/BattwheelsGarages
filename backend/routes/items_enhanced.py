@@ -441,7 +441,10 @@ async def list_enhanced_items(
             ).to_list(100)
             item["stock_locations"] = stock_locs
             item["total_stock"] = sum(s.get("stock", 0) for s in stock_locs)
-            item["is_low_stock"] = item["total_stock"] < item.get("reorder_level", 0)
+            reorder_level = item.get("reorder_level", 0)
+            if isinstance(reorder_level, str):
+                reorder_level = float(reorder_level) if reorder_level else 0
+            item["is_low_stock"] = item["total_stock"] < reorder_level
     
     # Filter low stock if requested
     if low_stock:
