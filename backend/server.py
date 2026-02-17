@@ -4541,6 +4541,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Contact Integration routes: {e}")
 
+# Include Enhanced Estimates routes
+try:
+    from routes.estimates_enhanced import router as estimates_enhanced_router
+    api_router.include_router(estimates_enhanced_router)
+    logger.info("Enhanced Estimates routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Enhanced Estimates routes: {e}")
+
 # Include main router
 app.include_router(api_router)
 
