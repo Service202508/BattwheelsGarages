@@ -445,13 +445,21 @@ async def create_bundle(bundle: BundleCreate):
         if not item:
             raise HTTPException(status_code=400, detail=f"Component item {comp.get('item_id')} not found")
         
+        # Handle sales_rate that might be string or number
+        sales_rate = item.get("sales_rate", 0) or item.get("rate", 0)
+        if isinstance(sales_rate, str):
+            try:
+                sales_rate = float(sales_rate) if sales_rate else 0
+            except:
+                sales_rate = 0
+        
         component_data = {
             "component_id": generate_id("COMP"),
             "bundle_id": bundle_id,
             "item_id": comp["item_id"],
             "item_name": item.get("name"),
             "quantity": comp.get("quantity", 1),
-            "unit_rate": item.get("sales_rate", 0)
+            "unit_rate": sales_rate
         }
         components.append(component_data)
         calculated_rate += component_data["unit_rate"] * component_data["quantity"]
@@ -474,6 +482,7 @@ async def create_bundle(bundle: BundleCreate):
     
     for comp in components:
         await bundle_components_collection.insert_one(comp)
+        comp.pop("_id", None)  # Remove MongoDB _id after insert
     
     await add_history("bundle", bundle_id, "created", f"Bundle '{bundle.name}' created with {len(components)} components")
     
