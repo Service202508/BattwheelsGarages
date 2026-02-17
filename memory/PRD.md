@@ -596,6 +596,7 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [x] **Scheduled Jobs System (Feb 16, 2026)** - Overdue invoice updates, recurring invoice/expense generation, payment reminders
 - [x] **Enhanced Items Module (Feb 17, 2026)** - Complete inventory management with Item Groups, Warehouses, Price Lists, Inventory Adjustments, Stock Tracking, Low Stock Alerts
 - [x] **Enhanced Contacts Module (Feb 17, 2026)** - Unified contact management replacing Customers/Vendors, with Contact Persons, Addresses, Tags, GSTIN validation, Portal Access, Email Statements
+- [x] **Contact Integration Module (Feb 17, 2026)** - Links enhanced contacts to transactions, unified search, transaction history, balance summaries, receivables/payables aging reports, migration tools
 
 ### P0 (Next)
 - [ ] Enable vector embeddings with OPENAI_API_KEY
