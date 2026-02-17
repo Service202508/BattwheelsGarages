@@ -282,7 +282,18 @@ export default function PurchaseOrders() {
       </div>
 
       {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
-        orders.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No purchase orders found</CardContent></Card> :
+        orders.length === 0 ? (
+          <Card>
+            <EmptyState
+              icon={ShoppingCart}
+              title="No purchase orders found"
+              description="Create a purchase order to start ordering from vendors."
+              actionLabel="New Purchase Order"
+              onAction={() => setShowCreateDialog(true)}
+              actionIcon={Plus}
+            />
+          </Card>
+        ) :
         <div className="space-y-3">
           {orders.map(po => (
             <Card key={po.po_id} className="hover:shadow-md transition-shadow">
