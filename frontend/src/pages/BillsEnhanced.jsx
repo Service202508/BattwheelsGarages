@@ -353,60 +353,61 @@ export default function BillsEnhanced() {
   return (
     <div className="space-y-6" data-testid="bills-enhanced-page">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Purchases</h1>
-          <p className="text-gray-500 text-sm mt-1">Bills, Purchase Orders & Vendor Payments</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setShowCreatePO(true)} data-testid="create-po-btn">
-            <Truck className="h-4 w-4 mr-2" /> New PO
-          </Button>
-          <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" onClick={() => setShowCreateBill(true)} data-testid="create-bill-btn">
-            <Plus className="h-4 w-4 mr-2" /> New Bill
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Purchases"
+        description="Bills, Purchase Orders & Vendor Payments"
+        icon={FileText}
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setShowCreatePO(true)} data-testid="create-po-btn">
+              <Truck className="h-4 w-4 mr-2" /> New PO
+            </Button>
+            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" onClick={() => setShowCreateBill(true)} data-testid="create-bill-btn">
+              <Plus className="h-4 w-4 mr-2" /> New Bill
+            </Button>
+          </div>
+        }
+      />
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-xs text-gray-500 uppercase">Total Bills</p>
-            <p className="text-2xl font-bold">{summary.total_bills || 0}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-xs text-gray-500 uppercase">Draft</p>
-            <p className="text-2xl font-bold text-gray-600">{summary.draft || 0}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-xs text-gray-500 uppercase">Open</p>
-            <p className="text-2xl font-bold text-blue-600">{summary.open || 0}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-xs text-gray-500 uppercase">Overdue</p>
-            <p className="text-2xl font-bold text-red-600">{summary.overdue || 0}</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
-          <CardContent className="p-4">
-            <p className="text-xs text-amber-700 uppercase">Total Payable</p>
-            <p className="text-xl font-bold text-amber-800">₹{(summary.total_payable || 0).toLocaleString('en-IN')}</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <CardContent className="p-4">
-            <p className="text-xs text-green-700 uppercase">Total Paid</p>
-            <p className="text-xl font-bold text-green-800">₹{(summary.total_paid || 0).toLocaleString('en-IN')}</p>
-          </CardContent>
-        </Card>
-      </div>
+      <StatCardGrid columns={6}>
+        <StatCard
+          title="Total Bills"
+          value={summary.total_bills || 0}
+          icon={Receipt}
+          variant="info"
+        />
+        <StatCard
+          title="Draft"
+          value={summary.draft || 0}
+          icon={FileText}
+          variant="default"
+        />
+        <StatCard
+          title="Open"
+          value={summary.open || 0}
+          icon={Clock}
+          variant="info"
+        />
+        <StatCard
+          title="Overdue"
+          value={summary.overdue || 0}
+          icon={AlertTriangle}
+          variant="danger"
+        />
+        <StatCard
+          title="Total Payable"
+          value={formatCurrencyCompact(summary.total_payable || 0)}
+          icon={IndianRupee}
+          variant="warning"
+        />
+        <StatCard
+          title="Total Paid"
+          value={formatCurrencyCompact(summary.total_paid || 0)}
+          icon={CheckCircle}
+          variant="success"
+        />
+      </StatCardGrid>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
