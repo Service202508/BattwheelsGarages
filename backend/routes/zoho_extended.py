@@ -1620,3 +1620,708 @@ async def get_scheduler_status():
         "jobs_available": ["all", "overdue", "recurring_invoices", "recurring_expenses", "reminders"],
         "note": "Call POST /api/zoho/scheduler/run?job=<job_name> to trigger"
     }
+
+# ============== RECURRING BILLS ==============
+
+class RecurringBillCreate(BaseModel):
+    vendor_id: str
+    vendor_name: str
+    recurrence_name: str
+    recurrence_frequency: str = "monthly"  # weekly, monthly, yearly, custom
+    repeat_every: int = 1
+    start_date: str
+    end_date: Optional[str] = None
+    never_expires: bool = False
+    line_items: List[Dict]
+    payment_terms: int = 30
+    notes: Optional[str] = ""
+
+@router.post("/recurring-bills")
+async def create_recurring_bill(rb: RecurringBillCreate):
+    """Create a recurring bill profile"""
+    db = get_db()
+    rb_id = f"RB-{uuid.uuid4().hex[:12].upper()}"
+    
+    # Calculate totals
+    sub_total = sum(item.get("quantity", 1) * item.get("rate", 0) for item in rb.line_items)
+    tax_total = sum(
+        item.get("quantity", 1) * item.get("rate", 0) * (item.get("tax_percentage", 0) / 100)
+        for item in rb.line_items
+    )
+    total = sub_total + tax_total
+    
+    rb_dict = {
+        "recurring_bill_id": rb_id,
+        "vendor_id": rb.vendor_id,
+        "vendor_name": rb.vendor_name,
+        "recurrence_name": rb.recurrence_name,
+        "recurrence_frequency": rb.recurrence_frequency,
+        "repeat_every": rb.repeat_every,
+        "start_date": rb.start_date,
+        "end_date": rb.end_date,
+        "never_expires": rb.never_expires,
+        "next_bill_date": rb.start_date,
+        "last_bill_date": None,
+        "line_items": rb.line_items,
+        "sub_total": sub_total,
+        "tax_total": tax_total,
+        "total": total,
+        "payment_terms": rb.payment_terms,
+        "notes": rb.notes,
+        "status": "active",
+        "bills_generated": 0,
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.recurring_bills.insert_one(rb_dict)
+    return {"code": 0, "message": "Recurring bill created", "recurring_bill": {k: v for k, v in rb_dict.items() if k != "_id"}}
+
+@router.get("/recurring-bills")
+async def list_recurring_bills(status: str = "", vendor_id: str = ""):
+    """List all recurring bills"""
+    db = get_db()
+    query = {}
+    if status:
+        query["status"] = status
+    if vendor_id:
+        query["vendor_id"] = vendor_id
+    
+    cursor = db.recurring_bills.find(query, {"_id": 0}).sort("created_time", -1)
+    items = await cursor.to_list(length=1000)
+    return {"code": 0, "recurring_bills": items}
+
+@router.get("/recurring-bills/{rb_id}")
+async def get_recurring_bill(rb_id: str):
+    """Get recurring bill details"""
+    db = get_db()
+    rb = await db.recurring_bills.find_one({"recurring_bill_id": rb_id}, {"_id": 0})
+    if not rb:
+        raise HTTPException(status_code=404, detail="Recurring bill not found")
+    return {"code": 0, "recurring_bill": rb}
+
+@router.put("/recurring-bills/{rb_id}")
+async def update_recurring_bill(rb_id: str, update_data: Dict):
+    """Update a recurring bill"""
+    db = get_db()
+    update_data.pop("recurring_bill_id", None)
+    update_data.pop("_id", None)
+    update_data["updated_time"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.recurring_bills.update_one(
+        {"recurring_bill_id": rb_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Recurring bill not found")
+    return {"code": 0, "message": "Recurring bill updated"}
+
+@router.post("/recurring-bills/{rb_id}/stop")
+async def stop_recurring_bill(rb_id: str):
+    """Stop a recurring bill"""
+    db = get_db()
+    result = await db.recurring_bills.update_one(
+        {"recurring_bill_id": rb_id},
+        {"$set": {"status": "stopped"}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Recurring bill not found")
+    return {"code": 0, "message": "Recurring bill stopped"}
+
+@router.post("/recurring-bills/{rb_id}/resume")
+async def resume_recurring_bill(rb_id: str):
+    """Resume a stopped recurring bill"""
+    db = get_db()
+    result = await db.recurring_bills.update_one(
+        {"recurring_bill_id": rb_id},
+        {"$set": {"status": "active"}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Recurring bill not found")
+    return {"code": 0, "message": "Recurring bill resumed"}
+
+@router.delete("/recurring-bills/{rb_id}")
+async def delete_recurring_bill(rb_id: str):
+    """Delete a recurring bill"""
+    db = get_db()
+    result = await db.recurring_bills.delete_one({"recurring_bill_id": rb_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Recurring bill not found")
+    return {"code": 0, "message": "Recurring bill deleted"}
+
+@router.post("/recurring-bills/generate")
+async def generate_due_bills():
+    """Generate bills for all due recurring profiles"""
+    db = get_db()
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    res = await db.recurring_bills.find({
+        "status": "active",
+        "next_bill_date": {"$lte": today}
+    }, {"_id": 0}).to_list(length=1000)
+    
+    generated = 0
+    for rb in res:
+        try:
+            bill_id = f"BILL-{uuid.uuid4().hex[:12].upper()}"
+            
+            # Get next bill number
+            counter = await db.counters.find_one_and_update(
+                {"_id": "bills"},
+                {"$inc": {"seq": 1}},
+                upsert=True,
+                return_document=True
+            )
+            bill_number = f"BILL-{str(counter['seq']).zfill(6)}"
+            
+            due_date = (datetime.strptime(today, "%Y-%m-%d") + timedelta(days=rb.get("payment_terms", 30))).strftime("%Y-%m-%d")
+            
+            bill_dict = {
+                "bill_id": bill_id,
+                "bill_number": bill_number,
+                "vendor_id": rb["vendor_id"],
+                "vendor_name": rb["vendor_name"],
+                "date": today,
+                "due_date": due_date,
+                "line_items": rb["line_items"],
+                "sub_total": rb["sub_total"],
+                "tax_total": rb["tax_total"],
+                "total": rb["total"],
+                "balance_due": rb["total"],
+                "status": "open",
+                "from_recurring_bill_id": rb["recurring_bill_id"],
+                "notes": rb.get("notes", ""),
+                "created_time": datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.bills.insert_one(bill_dict)
+            
+            next_date = calculate_next_date(
+                rb["next_bill_date"],
+                rb["recurrence_frequency"],
+                rb["repeat_every"]
+            )
+            
+            new_status = rb["status"]
+            if rb.get("end_date") and next_date > rb["end_date"]:
+                new_status = "expired"
+            
+            await db.recurring_bills.update_one(
+                {"recurring_bill_id": rb["recurring_bill_id"]},
+                {"$set": {"next_bill_date": next_date, "last_bill_date": today, "status": new_status},
+                 "$inc": {"bills_generated": 1}}
+            )
+            
+            generated += 1
+        except Exception as e:
+            logger.error(f"Error generating bill for {rb['recurring_bill_id']}: {e}")
+    
+    return {"code": 0, "message": f"Generated {generated} bills"}
+
+# ============== FIXED ASSETS ==============
+
+ASSET_TYPES = ["furniture", "vehicle", "computer", "equipment", "building", "land", "software", "other"]
+DEPRECIATION_METHODS = ["straight_line", "declining_balance", "units_of_production", "sum_of_years"]
+
+class FixedAssetCreate(BaseModel):
+    asset_name: str
+    asset_type: str = "equipment"
+    description: Optional[str] = ""
+    purchase_date: str
+    purchase_price: float
+    useful_life_years: int = 5
+    salvage_value: float = 0
+    depreciation_method: str = "straight_line"
+    asset_account_id: Optional[str] = ""
+    depreciation_account_id: Optional[str] = ""
+    location: Optional[str] = ""
+    serial_number: Optional[str] = ""
+    warranty_expiry: Optional[str] = None
+
+@router.post("/fixed-assets")
+async def create_fixed_asset(asset: FixedAssetCreate):
+    """Create a fixed asset"""
+    db = get_db()
+    asset_id = f"FA-{uuid.uuid4().hex[:12].upper()}"
+    
+    # Get next asset number
+    counter = await db.counters.find_one_and_update(
+        {"_id": "fixed_assets"},
+        {"$inc": {"seq": 1}},
+        upsert=True,
+        return_document=True
+    )
+    asset_number = f"ASSET-{str(counter['seq']).zfill(6)}"
+    
+    # Calculate annual depreciation (straight line default)
+    depreciable_value = asset.purchase_price - asset.salvage_value
+    annual_depreciation = depreciable_value / asset.useful_life_years if asset.useful_life_years > 0 else 0
+    
+    asset_dict = {
+        "asset_id": asset_id,
+        "asset_number": asset_number,
+        "asset_name": asset.asset_name,
+        "asset_type": asset.asset_type,
+        "description": asset.description,
+        "purchase_date": asset.purchase_date,
+        "purchase_price": asset.purchase_price,
+        "useful_life_years": asset.useful_life_years,
+        "salvage_value": asset.salvage_value,
+        "depreciation_method": asset.depreciation_method,
+        "depreciable_value": depreciable_value,
+        "annual_depreciation": annual_depreciation,
+        "accumulated_depreciation": 0,
+        "book_value": asset.purchase_price,
+        "asset_account_id": asset.asset_account_id,
+        "depreciation_account_id": asset.depreciation_account_id,
+        "location": asset.location,
+        "serial_number": asset.serial_number,
+        "warranty_expiry": asset.warranty_expiry,
+        "status": "active",
+        "depreciation_entries": [],
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.fixed_assets.insert_one(asset_dict)
+    return {"code": 0, "message": "Fixed asset created", "fixed_asset": {k: v for k, v in asset_dict.items() if k != "_id"}}
+
+@router.get("/fixed-assets")
+async def list_fixed_assets(
+    status: str = "",
+    asset_type: str = "",
+    page: int = 1,
+    per_page: int = 50
+):
+    """List all fixed assets"""
+    db = get_db()
+    query = {}
+    if status:
+        query["status"] = status
+    if asset_type:
+        query["asset_type"] = asset_type
+    
+    skip = (page - 1) * per_page
+    cursor = db.fixed_assets.find(query, {"_id": 0}).sort("created_time", -1).skip(skip).limit(per_page)
+    assets = await cursor.to_list(length=per_page)
+    total = await db.fixed_assets.count_documents(query)
+    
+    return {
+        "code": 0,
+        "fixed_assets": assets,
+        "page_context": {"page": page, "per_page": per_page, "total": total}
+    }
+
+@router.get("/fixed-assets/summary")
+async def get_fixed_assets_summary():
+    """Get summary of fixed assets"""
+    db = get_db()
+    
+    total_count = await db.fixed_assets.count_documents({})
+    active_count = await db.fixed_assets.count_documents({"status": "active"})
+    disposed_count = await db.fixed_assets.count_documents({"status": "disposed"})
+    
+    # Aggregate values
+    pipeline = [
+        {"$match": {"status": "active"}},
+        {"$group": {
+            "_id": None,
+            "total_purchase_value": {"$sum": "$purchase_price"},
+            "total_book_value": {"$sum": "$book_value"},
+            "total_accumulated_depreciation": {"$sum": "$accumulated_depreciation"}
+        }}
+    ]
+    
+    result = await db.fixed_assets.aggregate(pipeline).to_list(length=1)
+    values = result[0] if result else {
+        "total_purchase_value": 0,
+        "total_book_value": 0,
+        "total_accumulated_depreciation": 0
+    }
+    
+    # By type breakdown
+    type_pipeline = [
+        {"$match": {"status": "active"}},
+        {"$group": {
+            "_id": "$asset_type",
+            "count": {"$sum": 1},
+            "total_value": {"$sum": "$book_value"}
+        }}
+    ]
+    by_type = await db.fixed_assets.aggregate(type_pipeline).to_list(length=100)
+    
+    return {
+        "code": 0,
+        "summary": {
+            "total_assets": total_count,
+            "active_assets": active_count,
+            "disposed_assets": disposed_count,
+            "total_purchase_value": values.get("total_purchase_value", 0),
+            "total_book_value": values.get("total_book_value", 0),
+            "total_accumulated_depreciation": values.get("total_accumulated_depreciation", 0),
+            "by_type": by_type
+        }
+    }
+
+@router.get("/fixed-assets/{asset_id}")
+async def get_fixed_asset(asset_id: str):
+    """Get fixed asset details"""
+    db = get_db()
+    asset = await db.fixed_assets.find_one({"asset_id": asset_id}, {"_id": 0})
+    if not asset:
+        raise HTTPException(status_code=404, detail="Fixed asset not found")
+    return {"code": 0, "fixed_asset": asset}
+
+@router.put("/fixed-assets/{asset_id}")
+async def update_fixed_asset(asset_id: str, update_data: Dict):
+    """Update a fixed asset"""
+    db = get_db()
+    update_data.pop("asset_id", None)
+    update_data.pop("_id", None)
+    update_data["updated_time"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.fixed_assets.update_one(
+        {"asset_id": asset_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Fixed asset not found")
+    return {"code": 0, "message": "Fixed asset updated"}
+
+@router.delete("/fixed-assets/{asset_id}")
+async def delete_fixed_asset(asset_id: str):
+    """Delete a fixed asset"""
+    db = get_db()
+    result = await db.fixed_assets.delete_one({"asset_id": asset_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Fixed asset not found")
+    return {"code": 0, "message": "Fixed asset deleted"}
+
+@router.post("/fixed-assets/{asset_id}/depreciate")
+async def record_depreciation(asset_id: str, period: str = "", amount: Optional[float] = None):
+    """Record depreciation for an asset"""
+    db = get_db()
+    
+    asset = await db.fixed_assets.find_one({"asset_id": asset_id}, {"_id": 0})
+    if not asset:
+        raise HTTPException(status_code=404, detail="Fixed asset not found")
+    
+    if asset["status"] != "active":
+        raise HTTPException(status_code=400, detail="Cannot depreciate non-active asset")
+    
+    # Use provided amount or calculate based on method
+    if amount is None:
+        amount = asset["annual_depreciation"] / 12  # Monthly depreciation
+    
+    # Check if would exceed depreciable value
+    new_accumulated = asset["accumulated_depreciation"] + amount
+    if new_accumulated > asset["depreciable_value"]:
+        amount = asset["depreciable_value"] - asset["accumulated_depreciation"]
+        if amount <= 0:
+            raise HTTPException(status_code=400, detail="Asset is fully depreciated")
+    
+    new_book_value = asset["purchase_price"] - new_accumulated
+    
+    # Create depreciation entry
+    entry = {
+        "entry_id": f"DEP-{uuid.uuid4().hex[:8].upper()}",
+        "period": period or datetime.now(timezone.utc).strftime("%Y-%m"),
+        "amount": amount,
+        "accumulated_after": new_accumulated,
+        "book_value_after": new_book_value,
+        "date": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Check if fully depreciated
+    new_status = "active"
+    if new_book_value <= asset["salvage_value"]:
+        new_status = "fully_depreciated"
+    
+    await db.fixed_assets.update_one(
+        {"asset_id": asset_id},
+        {
+            "$set": {
+                "accumulated_depreciation": new_accumulated,
+                "book_value": new_book_value,
+                "status": new_status
+            },
+            "$push": {"depreciation_entries": entry}
+        }
+    )
+    
+    return {"code": 0, "message": "Depreciation recorded", "entry": entry}
+
+@router.post("/fixed-assets/{asset_id}/dispose")
+async def dispose_asset(asset_id: str, disposal_date: str, disposal_amount: float, reason: str = ""):
+    """Dispose/sell a fixed asset"""
+    db = get_db()
+    
+    asset = await db.fixed_assets.find_one({"asset_id": asset_id}, {"_id": 0})
+    if not asset:
+        raise HTTPException(status_code=404, detail="Fixed asset not found")
+    
+    if asset["status"] in ["disposed", "written_off"]:
+        raise HTTPException(status_code=400, detail="Asset already disposed")
+    
+    gain_loss = disposal_amount - asset["book_value"]
+    
+    await db.fixed_assets.update_one(
+        {"asset_id": asset_id},
+        {"$set": {
+            "status": "disposed",
+            "disposal_date": disposal_date,
+            "disposal_amount": disposal_amount,
+            "disposal_gain_loss": gain_loss,
+            "disposal_reason": reason,
+            "disposed_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {
+        "code": 0,
+        "message": "Asset disposed",
+        "disposal": {
+            "book_value": asset["book_value"],
+            "disposal_amount": disposal_amount,
+            "gain_loss": gain_loss
+        }
+    }
+
+@router.post("/fixed-assets/{asset_id}/write-off")
+async def write_off_asset(asset_id: str, reason: str = ""):
+    """Write off a fixed asset"""
+    db = get_db()
+    
+    asset = await db.fixed_assets.find_one({"asset_id": asset_id}, {"_id": 0})
+    if not asset:
+        raise HTTPException(status_code=404, detail="Fixed asset not found")
+    
+    if asset["status"] in ["disposed", "written_off"]:
+        raise HTTPException(status_code=400, detail="Asset already disposed/written off")
+    
+    await db.fixed_assets.update_one(
+        {"asset_id": asset_id},
+        {"$set": {
+            "status": "written_off",
+            "write_off_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "write_off_reason": reason,
+            "write_off_amount": asset["book_value"],
+            "book_value": 0,
+            "written_off_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {
+        "code": 0,
+        "message": "Asset written off",
+        "write_off_amount": asset["book_value"]
+    }
+
+# ============== CUSTOM MODULES ==============
+
+class CustomModuleCreate(BaseModel):
+    module_name: str
+    module_label: str
+    description: Optional[str] = ""
+    fields: List[Dict]  # [{name, label, type, required, options}]
+    icon: Optional[str] = "folder"
+
+@router.post("/custom-modules")
+async def create_custom_module(module: CustomModuleCreate):
+    """Create a custom module definition"""
+    db = get_db()
+    module_id = f"CM-{uuid.uuid4().hex[:12].upper()}"
+    
+    # Validate field types
+    valid_types = ["text", "number", "decimal", "date", "datetime", "email", "phone", "url", "textarea", "dropdown", "checkbox", "lookup"]
+    for field in module.fields:
+        if field.get("type") not in valid_types:
+            raise HTTPException(status_code=400, detail=f"Invalid field type: {field.get('type')}")
+    
+    module_dict = {
+        "module_id": module_id,
+        "module_name": module.module_name.lower().replace(" ", "_"),
+        "module_label": module.module_label,
+        "description": module.description,
+        "fields": module.fields,
+        "icon": module.icon,
+        "is_active": True,
+        "records_count": 0,
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.custom_modules.insert_one(module_dict)
+    return {"code": 0, "message": "Custom module created", "custom_module": {k: v for k, v in module_dict.items() if k != "_id"}}
+
+@router.get("/custom-modules")
+async def list_custom_modules(is_active: bool = True):
+    """List all custom modules"""
+    db = get_db()
+    query = {"is_active": is_active} if is_active else {}
+    cursor = db.custom_modules.find(query, {"_id": 0}).sort("created_time", -1)
+    modules = await cursor.to_list(length=100)
+    return {"code": 0, "custom_modules": modules}
+
+@router.get("/custom-modules/{module_id}")
+async def get_custom_module(module_id: str):
+    """Get custom module definition"""
+    db = get_db()
+    module = await db.custom_modules.find_one({"module_id": module_id}, {"_id": 0})
+    if not module:
+        raise HTTPException(status_code=404, detail="Custom module not found")
+    return {"code": 0, "custom_module": module}
+
+@router.put("/custom-modules/{module_id}")
+async def update_custom_module(module_id: str, update_data: Dict):
+    """Update a custom module"""
+    db = get_db()
+    update_data.pop("module_id", None)
+    update_data.pop("_id", None)
+    update_data["updated_time"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.custom_modules.update_one(
+        {"module_id": module_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Custom module not found")
+    return {"code": 0, "message": "Custom module updated"}
+
+@router.delete("/custom-modules/{module_id}")
+async def delete_custom_module(module_id: str):
+    """Deactivate a custom module (soft delete)"""
+    db = get_db()
+    result = await db.custom_modules.update_one(
+        {"module_id": module_id},
+        {"$set": {"is_active": False}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Custom module not found")
+    return {"code": 0, "message": "Custom module deactivated"}
+
+@router.post("/custom-modules/{module_id}/records")
+async def create_custom_record(module_id: str, record_data: Dict):
+    """Create a record in a custom module"""
+    db = get_db()
+    
+    module = await db.custom_modules.find_one({"module_id": module_id}, {"_id": 0})
+    if not module:
+        raise HTTPException(status_code=404, detail="Custom module not found")
+    
+    # Validate required fields
+    for field in module["fields"]:
+        if field.get("required") and not record_data.get(field["name"]):
+            raise HTTPException(status_code=400, detail=f"Field '{field['name']}' is required")
+    
+    record_id = f"REC-{uuid.uuid4().hex[:12].upper()}"
+    collection_name = f"custom_{module['module_name']}"
+    
+    record_dict = {
+        "record_id": record_id,
+        "module_id": module_id,
+        **record_data,
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db[collection_name].insert_one(record_dict)
+    
+    # Update records count
+    await db.custom_modules.update_one(
+        {"module_id": module_id},
+        {"$inc": {"records_count": 1}}
+    )
+    
+    return {"code": 0, "message": "Record created", "record": {k: v for k, v in record_dict.items() if k != "_id"}}
+
+@router.get("/custom-modules/{module_id}/records")
+async def list_custom_records(
+    module_id: str,
+    page: int = 1,
+    per_page: int = 50,
+    search: str = ""
+):
+    """List records in a custom module"""
+    db = get_db()
+    
+    module = await db.custom_modules.find_one({"module_id": module_id}, {"_id": 0})
+    if not module:
+        raise HTTPException(status_code=404, detail="Custom module not found")
+    
+    collection_name = f"custom_{module['module_name']}"
+    query = {"module_id": module_id}
+    
+    if search:
+        # Search in text fields
+        text_fields = [f["name"] for f in module["fields"] if f.get("type") in ["text", "textarea", "email"]]
+        if text_fields:
+            query["$or"] = [{f: {"$regex": search, "$options": "i"}} for f in text_fields]
+    
+    skip = (page - 1) * per_page
+    cursor = db[collection_name].find(query, {"_id": 0}).sort("created_time", -1).skip(skip).limit(per_page)
+    records = await cursor.to_list(length=per_page)
+    total = await db[collection_name].count_documents(query)
+    
+    return {
+        "code": 0,
+        "records": records,
+        "page_context": {"page": page, "per_page": per_page, "total": total}
+    }
+
+@router.get("/custom-modules/{module_id}/records/{record_id}")
+async def get_custom_record(module_id: str, record_id: str):
+    """Get a specific record"""
+    db = get_db()
+    
+    module = await db.custom_modules.find_one({"module_id": module_id}, {"_id": 0})
+    if not module:
+        raise HTTPException(status_code=404, detail="Custom module not found")
+    
+    collection_name = f"custom_{module['module_name']}"
+    record = await db[collection_name].find_one({"record_id": record_id}, {"_id": 0})
+    if not record:
+        raise HTTPException(status_code=404, detail="Record not found")
+    
+    return {"code": 0, "record": record}
+
+@router.put("/custom-modules/{module_id}/records/{record_id}")
+async def update_custom_record(module_id: str, record_id: str, update_data: Dict):
+    """Update a record in a custom module"""
+    db = get_db()
+    
+    module = await db.custom_modules.find_one({"module_id": module_id}, {"_id": 0})
+    if not module:
+        raise HTTPException(status_code=404, detail="Custom module not found")
+    
+    collection_name = f"custom_{module['module_name']}"
+    update_data.pop("record_id", None)
+    update_data.pop("_id", None)
+    update_data["updated_time"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db[collection_name].update_one(
+        {"record_id": record_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Record not found")
+    
+    return {"code": 0, "message": "Record updated"}
+
+@router.delete("/custom-modules/{module_id}/records/{record_id}")
+async def delete_custom_record(module_id: str, record_id: str):
+    """Delete a record from a custom module"""
+    db = get_db()
+    
+    module = await db.custom_modules.find_one({"module_id": module_id}, {"_id": 0})
+    if not module:
+        raise HTTPException(status_code=404, detail="Custom module not found")
+    
+    collection_name = f"custom_{module['module_name']}"
+    result = await db[collection_name].delete_one({"record_id": record_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Record not found")
+    
+    # Update records count
+    await db.custom_modules.update_one(
+        {"module_id": module_id},
+        {"$inc": {"records_count": -1}}
+    )
+    
+    return {"code": 0, "message": "Record deleted"}
