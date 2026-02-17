@@ -51,6 +51,7 @@ import ProjectTasks from "@/pages/ProjectTasks";
 import OpeningBalances from "@/pages/OpeningBalances";
 import ExchangeRates from "@/pages/ExchangeRates";
 import ActivityLogs from "@/pages/ActivityLogs";
+import ZohoSync from "@/pages/ZohoSync";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
