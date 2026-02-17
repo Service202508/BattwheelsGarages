@@ -605,6 +605,85 @@ async def get_estimates_summary():
         }
     }
 
+# ========================= REPORTING ENDPOINTS (Before dynamic routes) =========================
+
+@router.get("/reports/by-status")
+async def report_by_status(date_from: str = "", date_to: str = ""):
+    """Report: Estimates by status"""
+    query = {}
+    if date_from:
+        query["date"] = {"$gte": date_from}
+    if date_to:
+        if "date" in query:
+            query["date"]["$lte"] = date_to
+        else:
+            query["date"] = {"$lte": date_to}
+    
+    pipeline = [
+        {"$match": query},
+        {"$group": {
+            "_id": "$status",
+            "count": {"$sum": 1},
+            "total_value": {"$sum": "$grand_total"}
+        }},
+        {"$sort": {"count": -1}}
+    ]
+    
+    results = await estimates_collection.aggregate(pipeline).to_list(10)
+    
+    return {
+        "code": 0,
+        "report": [{"status": r["_id"], "count": r["count"], "total_value": round(r["total_value"], 2)} for r in results]
+    }
+
+@router.get("/reports/by-customer")
+async def report_by_customer(limit: int = 20):
+    """Report: Top customers by estimate value"""
+    pipeline = [
+        {"$match": {"status": {"$nin": ["void"]}}},
+        {"$group": {
+            "_id": "$customer_id",
+            "customer_name": {"$first": "$customer_name"},
+            "count": {"$sum": 1},
+            "total_value": {"$sum": "$grand_total"},
+            "accepted_count": {"$sum": {"$cond": [{"$eq": ["$status", "accepted"]}, 1, 0]}},
+            "converted_count": {"$sum": {"$cond": [{"$eq": ["$status", "converted"]}, 1, 0]}}
+        }},
+        {"$sort": {"total_value": -1}},
+        {"$limit": limit}
+    ]
+    
+    results = await estimates_collection.aggregate(pipeline).to_list(limit)
+    
+    for r in results:
+        r["customer_id"] = r.pop("_id")
+        r["total_value"] = round(r["total_value"], 2)
+        r["conversion_rate"] = round((r["converted_count"] / r["count"]) * 100, 1) if r["count"] > 0 else 0
+    
+    return {"code": 0, "report": results}
+
+@router.get("/reports/conversion-funnel")
+async def report_conversion_funnel():
+    """Report: Estimate conversion funnel"""
+    total = await estimates_collection.count_documents({"status": {"$ne": "void"}})
+    sent = await estimates_collection.count_documents({"status": {"$in": ["sent", "accepted", "declined", "expired", "converted"]}})
+    accepted = await estimates_collection.count_documents({"status": {"$in": ["accepted", "converted"]}})
+    converted = await estimates_collection.count_documents({"status": "converted"})
+    
+    return {
+        "code": 0,
+        "funnel": {
+            "total_created": total,
+            "sent_to_customer": sent,
+            "accepted": accepted,
+            "converted": converted,
+            "send_rate": round((sent / total) * 100, 1) if total > 0 else 0,
+            "acceptance_rate": round((accepted / sent) * 100, 1) if sent > 0 else 0,
+            "conversion_rate": round((converted / accepted) * 100, 1) if accepted > 0 else 0,
+            "overall_conversion": round((converted / total) * 100, 1) if total > 0 else 0
+        }
+    }
+
 @router.get("/{estimate_id}")
 async def get_estimate(estimate_id: str):
     """Get estimate details with line items and history"""
