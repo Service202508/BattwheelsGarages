@@ -116,7 +116,7 @@ export default function EstimatesEnhanced() {
 
   const fetchItems = async () => {
     try {
-      const res = await fetch(`${API}/items?per_page=200`, { headers });
+      const res = await fetch(`${API}/items-enhanced/?per_page=200`, { headers });
       const data = await res.json();
       setItems(data.items || []);
     } catch (e) { console.error("Failed to fetch items:", e); }
