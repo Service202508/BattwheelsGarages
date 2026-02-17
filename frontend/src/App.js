@@ -465,6 +465,13 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/sales-orders" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <SalesOrdersEnhanced user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/expenses" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
