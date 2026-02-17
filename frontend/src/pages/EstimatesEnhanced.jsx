@@ -471,42 +471,51 @@ export default function EstimatesEnhanced() {
             </Button>
           </div>
 
-          {loading ? <div className="text-center py-8">Loading...</div> : estimates.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500"><FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No estimates found</p></CardContent></Card>
+          {loading ? (
+            <TableSkeleton columns={7} rows={5} />
+          ) : estimates.length === 0 ? (
+            <Card>
+              <EmptyState
+                icon={FileText}
+                title="No estimates found"
+                description="Create your first estimate to start quoting customers."
+                actionLabel="New Estimate"
+                onAction={() => setActiveTab("create")}
+                actionIcon={Plus}
+              />
+            </Card>
           ) : (
-            <div className="border rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-medium">Estimate #</th>
-                    <th className="px-4 py-3 text-left font-medium">Customer</th>
-                    <th className="px-4 py-3 text-left font-medium">Date</th>
-                    <th className="px-4 py-3 text-left font-medium">Expiry</th>
-                    <th className="px-4 py-3 text-right font-medium">Amount</th>
-                    <th className="px-4 py-3 text-center font-medium">Status</th>
-                    <th className="px-4 py-3 text-right font-medium">Actions</th>
+            <ResponsiveTable>
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium text-sm">Estimate #</th>
+                  <th className="px-4 py-3 text-left font-medium text-sm">Customer</th>
+                  <th className="px-4 py-3 text-left font-medium text-sm">Date</th>
+                  <th className="px-4 py-3 text-left font-medium text-sm">Expiry</th>
+                  <th className="px-4 py-3 text-right font-medium text-sm">Amount</th>
+                  <th className="px-4 py-3 text-center font-medium text-sm">Status</th>
+                  <th className="px-4 py-3 text-right font-medium text-sm">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {estimates.map(est => (
+                  <tr key={est.estimate_id} className="border-t hover:bg-gray-50 cursor-pointer" onClick={() => fetchEstimateDetail(est.estimate_id)} data-testid={`estimate-row-${est.estimate_id}`}>
+                    <td className="px-4 py-3 font-mono font-medium text-sm">{est.estimate_number}</td>
+                    <td className="px-4 py-3 text-sm">{est.customer_name}</td>
+                    <td className="px-4 py-3 text-gray-600 text-sm">{est.date}</td>
+                    <td className="px-4 py-3 text-gray-600 text-sm">{est.expiry_date}</td>
+                    <td className="px-4 py-3 text-right font-medium text-sm">₹{(est.grand_total || 0).toLocaleString('en-IN')}</td>
+                    <td className="px-4 py-3 text-center">
+                      <Badge className={statusColors[est.status]}>{statusLabels[est.status]}</Badge>
+                    </td>
+                    <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                      <Button size="icon" variant="ghost" onClick={() => fetchEstimateDetail(est.estimate_id)}><Eye className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => handleClone(est.estimate_id)}><Copy className="h-4 w-4" /></Button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {estimates.map(est => (
-                    <tr key={est.estimate_id} className="border-t hover:bg-gray-50 cursor-pointer" onClick={() => fetchEstimateDetail(est.estimate_id)} data-testid={`estimate-row-${est.estimate_id}`}>
-                      <td className="px-4 py-3 font-mono font-medium">{est.estimate_number}</td>
-                      <td className="px-4 py-3">{est.customer_name}</td>
-                      <td className="px-4 py-3 text-gray-600">{est.date}</td>
-                      <td className="px-4 py-3 text-gray-600">{est.expiry_date}</td>
-                      <td className="px-4 py-3 text-right font-medium">₹{(est.grand_total || 0).toLocaleString('en-IN')}</td>
-                      <td className="px-4 py-3 text-center">
-                        <Badge className={statusColors[est.status]}>{statusLabels[est.status]}</Badge>
-                      </td>
-                      <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                        <Button size="icon" variant="ghost" onClick={() => fetchEstimateDetail(est.estimate_id)}><Eye className="h-4 w-4" /></Button>
-                        <Button size="icon" variant="ghost" onClick={() => handleClone(est.estimate_id)}><Copy className="h-4 w-4" /></Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </ResponsiveTable>
           )}
         </TabsContent>
 
