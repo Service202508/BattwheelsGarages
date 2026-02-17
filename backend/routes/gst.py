@@ -182,6 +182,76 @@ class GSTCalculationRequest(BaseModel):
 
 # ============== API ENDPOINTS ==============
 
+@router.get("/summary")
+async def get_gst_summary():
+    """Get GST summary for current financial year"""
+    db = get_db()
+    
+    # Get current FY dates (April to March)
+    today = datetime.now(timezone.utc)
+    if today.month >= 4:
+        fy_start = f"{today.year}-04-01"
+        fy_end = f"{today.year + 1}-03-31"
+    else:
+        fy_start = f"{today.year - 1}-04-01"
+        fy_end = f"{today.year}-03-31"
+    
+    # Get sales tax from invoices
+    sales_pipeline = [
+        {"$match": {"invoice_date": {"$gte": fy_start, "$lte": fy_end}, "status": {"$ne": "void"}}},
+        {"$group": {
+            "_id": None,
+            "total_sales": {"$sum": "$sub_total"},
+            "cgst": {"$sum": {"$ifNull": ["$cgst_amount", 0]}},
+            "sgst": {"$sum": {"$ifNull": ["$sgst_amount", 0]}},
+            "igst": {"$sum": {"$ifNull": ["$igst_amount", 0]}},
+            "total_tax": {"$sum": "$tax_total"}
+        }}
+    ]
+    sales = await db.invoices_enhanced.aggregate(sales_pipeline).to_list(1)
+    
+    # Get purchase tax from bills  
+    purchase_pipeline = [
+        {"$match": {"bill_date": {"$gte": fy_start, "$lte": fy_end}, "status": {"$ne": "void"}}},
+        {"$group": {
+            "_id": None,
+            "total_purchases": {"$sum": "$sub_total"},
+            "input_cgst": {"$sum": {"$ifNull": ["$cgst_amount", 0]}},
+            "input_sgst": {"$sum": {"$ifNull": ["$sgst_amount", 0]}},
+            "input_igst": {"$sum": {"$ifNull": ["$igst_amount", 0]}},
+            "total_input_tax": {"$sum": "$tax_total"}
+        }}
+    ]
+    purchases = await db.bills_enhanced.aggregate(purchase_pipeline).to_list(1)
+    
+    sales_data = sales[0] if sales else {}
+    purchase_data = purchases[0] if purchases else {}
+    
+    output_tax = sales_data.get("total_tax", 0)
+    input_tax = purchase_data.get("total_input_tax", 0)
+    
+    return {
+        "code": 0,
+        "summary": {
+            "financial_year": f"{fy_start[:4]}-{fy_end[:4]}",
+            "sales": {
+                "taxable_value": round(sales_data.get("total_sales", 0), 2),
+                "cgst": round(sales_data.get("cgst", 0), 2),
+                "sgst": round(sales_data.get("sgst", 0), 2),
+                "igst": round(sales_data.get("igst", 0), 2),
+                "total_output_tax": round(output_tax, 2)
+            },
+            "purchases": {
+                "taxable_value": round(purchase_data.get("total_purchases", 0), 2),
+                "input_cgst": round(purchase_data.get("input_cgst", 0), 2),
+                "input_sgst": round(purchase_data.get("input_sgst", 0), 2),
+                "input_igst": round(purchase_data.get("input_igst", 0), 2),
+                "total_input_tax": round(input_tax, 2)
+            },
+            "net_liability": round(output_tax - input_tax, 2)
+        }
+    }
+
 @router.get("/states")
 async def get_indian_states():
     """Get list of Indian states with GST codes"""
