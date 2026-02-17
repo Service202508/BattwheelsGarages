@@ -10,8 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { 
   Search, Plus, FileText, Calendar, Building2, ArrowRight, 
-  Truck, Package, CheckCircle
+  Truck, Package, CheckCircle, RefreshCw, ShoppingCart
 } from "lucide-react";
+import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
+import { EmptyState } from "@/components/ui/data-display";
+import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
 
 const statusColors = {
