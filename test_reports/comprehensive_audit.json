@@ -1,34 +1,18 @@
 {
-  "timestamp": "2026-02-17T12:58:18.138037",
+  "timestamp": "2026-02-17T13:00:49.488094",
   "target": "https://finance-hub-650.preview.emergentagent.com",
-  "total_tests": 62,
-  "passed": 56,
-  "failed": 6,
-  "pass_rate": 90.32258064516128,
+  "total_tests": 67,
+  "passed": 65,
+  "failed": 2,
+  "pass_rate": 97.01492537313433,
   "errors": [
     {
       "test": "Item Update",
       "error": ""
     },
     {
-      "test": "Contact Create",
-      "error": ""
-    },
-    {
-      "test": "Conversion Funnel",
-      "error": ""
-    },
-    {
-      "test": "Invoice Aging Report",
-      "error": ""
-    },
-    {
-      "test": "GSTR-1 Report",
-      "error": ""
-    },
-    {
-      "test": "Portal Login Endpoint",
-      "error": ""
+      "test": "GSTIN State Extraction",
+      "error": "Place: MH"
     }
   ],
   "details": [
@@ -169,7 +153,32 @@
     },
     {
       "test": "Contact Create",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Contact Read",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "GSTIN State Extraction",
       "status": "FAIL",
+      "detail": "Place: MH"
+    },
+    {
+      "test": "Contact Update",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Contact Person Add",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Contact Address Add",
+      "status": "PASS",
       "detail": ""
     },
     {
@@ -194,7 +203,7 @@
     },
     {
       "test": "Conversion Funnel",
-      "status": "FAIL",
+      "status": "PASS",
       "detail": ""
     },
     {
@@ -239,7 +248,7 @@
     },
     {
       "test": "Invoice Aging Report",
-      "status": "FAIL",
+      "status": "PASS",
       "detail": ""
     },
     {
@@ -319,12 +328,12 @@
     },
     {
       "test": "GSTR-1 Report",
-      "status": "FAIL",
+      "status": "PASS",
       "detail": ""
     },
     {
       "test": "Portal Login Endpoint",
-      "status": "FAIL",
+      "status": "PASS",
       "detail": ""
     },
     {
@@ -343,5 +352,5 @@
       "detail": ""
     }
   ],
-  "market_ready": false
+  "market_ready": true
 }
