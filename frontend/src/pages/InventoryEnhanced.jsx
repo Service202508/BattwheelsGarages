@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { 
   Package, Plus, Search, Eye, Edit, Trash2, RefreshCw, AlertTriangle, 
   TrendingUp, TrendingDown, ArrowRightLeft, Clock, CheckCircle, XCircle, 
-  Warehouse, BarChart3, History, Upload, Download, Filter, Box, IndianRupee
+  Warehouse, BarChart3, History, Upload, Download, Filter, Box, IndianRupee, Layers
 } from "lucide-react";
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
