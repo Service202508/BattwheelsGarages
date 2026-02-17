@@ -379,61 +379,62 @@ export default function InvoicesEnhanced() {
   return (
     <div className="space-y-6" data-testid="invoices-enhanced-page">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage invoices, payments, and receivables</p>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
-            <RefreshCw className="h-4 w-4" /> Refresh
-          </Button>
-          <Button onClick={() => setShowCreateDialog(true)} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-invoice-btn">
-            <Plus className="h-4 w-4" /> New Invoice
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Invoices"
+        description="Manage invoices, payments, and receivables"
+        icon={Receipt}
+        actions={
+          <div className="flex gap-2">
+            <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
+              <RefreshCw className="h-4 w-4" /> Refresh
+            </Button>
+            <Button onClick={() => setShowCreateDialog(true)} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-invoice-btn">
+              <Plus className="h-4 w-4" /> New Invoice
+            </Button>
+          </div>
+        }
+      />
 
       {/* Summary Cards */}
       {summary && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-          <KPICard
+        <StatCardGrid columns={6}>
+          <StatCard
             title="Total Invoices"
             value={summary.total_invoices}
             icon={Receipt}
             variant="info"
           />
-          <KPICard
+          <StatCard
             title="Draft"
             value={summary.draft}
             icon={FileText}
             variant="default"
           />
-          <KPICard
+          <StatCard
             title="Overdue"
             value={summary.overdue}
             icon={AlertTriangle}
             variant="danger"
           />
-          <KPICard
+          <StatCard
             title="Paid"
             value={summary.paid}
             icon={CheckCircle}
             variant="success"
           />
-          <KPICard
+          <StatCard
             title="Total Invoiced"
             value={formatCurrencyCompact(summary.total_invoiced)}
             icon={TrendingUp}
             variant="info"
           />
-          <KPICard
+          <StatCard
             title="Outstanding"
             value={formatCurrencyCompact(summary.total_outstanding)}
             icon={Wallet}
             variant="warning"
           />
-        </div>
+        </StatCardGrid>
       )}
 
       {/* Tabs */}
