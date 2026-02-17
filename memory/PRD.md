@@ -36,6 +36,72 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ---
 
+### Recurring Bills Module (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Automated Vendor Payment Scheduling:**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Recurring Bill CRUD** | `/api/zoho/recurring-bills` | ✅ List/Create/Detail | ✅ |
+| **Stop/Resume** | `/api/zoho/recurring-bills/{id}/stop\|resume` | ✅ Action buttons | ✅ |
+| **Auto Generation** | `/api/zoho/recurring-bills/generate` | ✅ Generate Due Bills | ✅ |
+| **Frequency Options** | weekly, monthly, yearly | ✅ Select dropdown | ✅ |
+| **Line Items** | Embedded in profile | ✅ Add/Remove items | ✅ |
+
+**Frontend Features:**
+- New page at `/recurring-bills` (Purchases → Recurring Bills)
+- Summary cards: Total Profiles, Active, Stopped, Monthly Estimate
+- Tabs: Active, Stopped, All
+- Create dialog with vendor, frequency, line items
+- Stop/Resume/Delete actions per profile
+
+---
+
+### Fixed Assets Module (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Asset Tracking with Depreciation:**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Asset CRUD** | `/api/zoho/fixed-assets` | ✅ List/Create/Detail | ✅ |
+| **Asset Summary** | `/api/zoho/fixed-assets/summary` | ✅ By type, totals | ✅ |
+| **Depreciation** | `/api/zoho/fixed-assets/{id}/depreciate` | ✅ Record monthly | ✅ |
+| **Disposal/Sale** | `/api/zoho/fixed-assets/{id}/dispose` | ✅ With gain/loss calc | ✅ |
+| **Write-Off** | `/api/zoho/fixed-assets/{id}/write-off` | ✅ Bad asset write-off | ✅ |
+| **Asset Types** | furniture, vehicle, computer, equipment, etc. | ✅ Filter by type | ✅ |
+
+**Frontend Features:**
+- New page at `/fixed-assets` (Finance → Fixed Assets)
+- Summary cards: Total Assets, Active, Purchase Value, Depreciation, Book Value
+- Tabs: Active, Fully Depreciated, Disposed
+- Create dialog with asset details, useful life, depreciation method
+- Depreciation preview calculator
+- Detail dialog with financial info, depreciation history
+- Action buttons: Record Depreciation, Dispose/Sell, Write Off
+
+---
+
+### Custom Modules (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Dynamic Module Builder:**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Module CRUD** | `/api/zoho/custom-modules` | ✅ Create/List modules | ✅ |
+| **Field Types** | text, number, date, dropdown, checkbox, etc. | ✅ Field builder UI | ✅ |
+| **Record CRUD** | `/api/zoho/custom-modules/{id}/records` | ✅ Add/Edit/Delete | ✅ |
+| **Search Records** | Query param: search | ✅ Search input | ✅ |
+| **Deactivate Module** | DELETE `/api/zoho/custom-modules/{id}` | ✅ Soft delete | ✅ |
+
+**Frontend Features:**
+- New page at `/custom-modules` (Administration → Custom Modules)
+- Two-panel layout: Modules list (left), Records view (right)
+- Field builder with drag-and-drop style UI
+- Dynamic form generation based on module fields
+- Record detail dialog with all field values
+
+---
+
 ### Inventory Enhanced Module (Feb 17, 2026) ✅ COMPLETE - NEW
 
 **Advanced Inventory Management with Variants, Bundles, Shipments, Returns:**
