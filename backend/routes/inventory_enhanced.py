@@ -21,7 +21,7 @@ client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
 # Collections
-items_collection = db["items_enhanced"]
+items_collection = db["items"]  # Use same collection as items_enhanced route
 variants_collection = db["item_variants"]
 bundles_collection = db["item_bundles"]
 bundle_components_collection = db["bundle_components"]
