@@ -444,16 +444,6 @@ export default function Layout({ children, user, onLogout }) {
 
       {/* Mobile Sidebar */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="lg:hidden fixed left-4 top-4 z-50 h-10 w-10 bg-white shadow-md rounded-xl border border-gray-100"
-            data-testid="mobile-menu-btn"
-          >
-            <Menu className="h-5 w-5 text-gray-700" />
-          </Button>
-        </SheetTrigger>
         <SheetContent side="left" className="p-0 w-80">
           <SidebarContent 
             user={user} 
@@ -472,8 +462,18 @@ export default function Layout({ children, user, onLogout }) {
         {/* Top Header Bar */}
         <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100">
           <div className="flex items-center justify-between px-4 lg:px-8 h-16">
-            {/* Left side - Mobile menu space */}
-            <div className="lg:hidden w-12" />
+            {/* Left side - Mobile menu button */}
+            <div className="lg:hidden">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setMobileOpen(true)}
+                className="h-10 w-10 hover:bg-gray-100 rounded-xl"
+                data-testid="mobile-menu-btn"
+              >
+                <Menu className="h-5 w-5 text-gray-700" />
+              </Button>
+            </div>
             
             {/* Center - Breadcrumb or Page Title could go here */}
             <div className="flex-1" />
