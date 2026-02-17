@@ -132,7 +132,7 @@ class EFIDecisionTreeEngine:
         )
         
         session_dict = session.model_dump()
-        await self.db.efi_sessions.insert_one(session_dict)
+        await self.db.efi_sessions.insert_one(session_dict.copy())
         
         # Return session with current step details
         current_step = None
