@@ -54,6 +54,7 @@ export default function ContactsEnhanced() {
   const [transactionSummary, setTransactionSummary] = useState(null);
 
   // Form states
+  const navigate = useNavigate();
   const [newContact, setNewContact] = useState({
     name: "", company_name: "", contact_type: "customer", email: "", phone: "", mobile: "",
     website: "", currency_code: "INR", payment_terms: 30, credit_limit: 0,
