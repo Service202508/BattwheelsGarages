@@ -1054,8 +1054,8 @@ async def get_enhanced_item(item_id: str):
     return {"code": 0, "item": item}
 
 @router.put("/{item_id}")
-async def update_enhanced_item(item_id: str, item: ItemCreate):
-    """Update item"""
+async def update_enhanced_item(item_id: str, item: ItemUpdate):
+    """Update item with partial data"""
     db = get_db()
     
     existing = await db.items.find_one({"item_id": item_id})
@@ -1063,32 +1063,25 @@ async def update_enhanced_item(item_id: str, item: ItemCreate):
         raise HTTPException(status_code=404, detail="Item not found")
     
     # Check if type change is allowed
-    if existing.get("item_type") != item.item_type:
+    if item.item_type and existing.get("item_type") != item.item_type:
         invoice_count = await db.invoices.count_documents({"line_items.item_id": item_id})
         bill_count = await db.bills.count_documents({"line_items.item_id": item_id})
         if invoice_count > 0 or bill_count > 0:
             raise HTTPException(status_code=400, detail="Cannot change item type when used in transactions")
     
-    update_data = {
-        "name": item.name,
-        "sku": item.sku,
-        "description": item.description,
-        "item_type": item.item_type,
-        "group_id": item.group_id,
-        "group_name": item.group_name,
-        "sales_rate": item.sales_rate,
-        "purchase_rate": item.purchase_rate,
-        "rate": item.sales_rate,
-        "unit": item.unit,
-        "tax_id": item.tax_id,
-        "tax_percentage": item.tax_percentage,
-        "hsn_code": item.hsn_code,
-        "sac_code": item.sac_code,
-        "hsn_or_sac": item.hsn_code or item.sac_code,
-        "reorder_level": item.reorder_level,
-        "preferred_vendor_id": item.preferred_vendor_id,
-        "preferred_vendor_name": item.preferred_vendor_name,
-        "custom_fields": item.custom_fields,
+    # Build update dict with only provided fields
+    update_data = {k: v for k, v in item.dict().items() if v is not None}
+    
+    if update_data:
+        update_data["updated_time"] = datetime.now(timezone.utc).isoformat()
+        # Update rate field if sales_rate changed
+        if "sales_rate" in update_data:
+            update_data["rate"] = update_data["sales_rate"]
+        # Update hsn_or_sac if either changed
+        if "hsn_code" in update_data or "sac_code" in update_data:
+            update_data["hsn_or_sac"] = update_data.get("hsn_code", existing.get("hsn_code", "")) or update_data.get("sac_code", existing.get("sac_code", ""))
+        
+        await db.items.update_one({"item_id": item_id}, {"$set": update_data})
         "is_active": item.is_active,
         "status": "active" if item.is_active else "inactive",
         "updated_time": datetime.now(timezone.utc).isoformat()
