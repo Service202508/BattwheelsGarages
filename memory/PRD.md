@@ -7,7 +7,7 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
-### GST Compliance Module (Feb 17, 2026) ✅ COMPLETE - NEW
+### GST Compliance Module (Feb 17, 2026) ✅ COMPLETE
 
 **Full Indian GST Compliance System:**
 
@@ -20,14 +20,30 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 | **GST Calculation** | `/api/gst/calculate` | Auto-calculate | - | - |
 | **Organization Settings** | `/api/gst/organization-settings` | ✅ Settings dialog | - | - |
 
-**Key Features:**
-- GSTIN validation with Indian GST 15-character format regex
-- Auto-calculation: Intra-state (CGST+SGST at half rate each), Inter-state (IGST full rate)
-- 39 Indian states/UTs with GST codes
-- Professional PDF reports with company branding
-- Excel exports in GSTR-1/3B filing format
-
 **Test Results: 20/20 backend tests passed (100%)**
+
+---
+
+### Frontend UI for Backend Features (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**5 New Frontend Pages for Existing Backend APIs:**
+
+| Page | Route | Backend API | Status |
+|------|-------|-------------|--------|
+| **Recurring Expenses** | `/recurring-expenses` | `/zoho/recurring-expenses` | ✅ Full CRUD + Generate Due |
+| **Project Tasks** | `/project-tasks` | `/zoho/projects/{id}/tasks` | ✅ Full CRUD with progress tracking |
+| **Opening Balances** | `/opening-balances` | `/zoho/opening-balances` | ✅ 3 tabs (Customers, Vendors, Accounts) |
+| **Exchange Rates** | `/exchange-rates` | `/zoho/settings/exchange-rates` | ✅ Multi-currency support |
+| **Activity Logs** | `/activity-logs` | `/zoho/activity-logs` | ✅ Audit trail with filters |
+
+**Key Features:**
+- All pages have proper data-testid attributes for testing
+- Form validation and toast notifications
+- Loading states and empty state messages
+- Currency formatting in Indian Rupee format
+- Navigation links added to sidebar
+
+**Test Results: 100% frontend tests passed**
 
 ---
 
