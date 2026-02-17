@@ -1,0 +1,384 @@
+{
+  "timestamp": "2026-02-17T12:49:20.968770",
+  "target": "https://finance-hub-650.preview.emergentagent.com",
+  "total_tests": 67,
+  "passed": 58,
+  "failed": 9,
+  "pass_rate": 86.56716417910447,
+  "errors": [
+    {
+      "test": "Items Summary Endpoint",
+      "error": ""
+    },
+    {
+      "test": "Item Update",
+      "error": ""
+    },
+    {
+      "test": "GSTIN State Extraction",
+      "error": "Place: MH"
+    },
+    {
+      "test": "Conversion Funnel",
+      "error": ""
+    },
+    {
+      "test": "Invoice Aging Report",
+      "error": ""
+    },
+    {
+      "test": "Bills Aging Report",
+      "error": ""
+    },
+    {
+      "test": "GST Summary",
+      "error": ""
+    },
+    {
+      "test": "GSTR-1 Report",
+      "error": ""
+    },
+    {
+      "test": "Portal Login Endpoint",
+      "error": ""
+    }
+  ],
+  "details": [
+    {
+      "test": "Admin Login",
+      "status": "PASS",
+      "detail": "Status: 200"
+    },
+    {
+      "test": "Items Summary Endpoint",
+      "status": "FAIL",
+      "detail": ""
+    },
+    {
+      "test": "Items List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Items Filter by Type",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Items Search",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Item Create",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Item Read",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Item Update",
+      "status": "FAIL",
+      "detail": ""
+    },
+    {
+      "test": "Low Stock Report",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Inventory Summary",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Warehouses List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Warehouse Create",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Variants List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Variant Create",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Bundles List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Serial/Batch List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Serial Create",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Stock Adjustment Add",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Stock Adjustment Subtract",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Stock Summary Report",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Low Stock Report",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Valuation Report",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Movement Report",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Contacts Summary",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Contacts List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Contacts Filter Customers",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Contacts Filter Vendors",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Contact Create",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Contact Read",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "GSTIN State Extraction",
+      "status": "FAIL",
+      "detail": "Place: MH"
+    },
+    {
+      "test": "Contact Update",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Contact Person Add",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Contact Address Add",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Estimates Summary",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Estimates List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Estimate Create",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Estimate Read",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Conversion Funnel",
+      "status": "FAIL",
+      "detail": ""
+    },
+    {
+      "test": "Sales Orders Summary",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Sales Orders List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Sales Order Create",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Invoices Summary",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Invoices List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Invoice Create",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Invoice Read",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Invoice Payment",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Invoice Aging Report",
+      "status": "FAIL",
+      "detail": ""
+    },
+    {
+      "test": "Bills Summary",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Bills List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Bill Create",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Bill Read",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "PO Summary",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "PO List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "PO Create",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Bills Aging Report",
+      "status": "FAIL",
+      "detail": ""
+    },
+    {
+      "test": "Dashboard Summary",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Monthly Revenue",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Quarterly Revenue",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Receivables Aging",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Top Customers Revenue",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Top Outstanding",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "GST Summary",
+      "status": "FAIL",
+      "detail": ""
+    },
+    {
+      "test": "GSTR-1 Report",
+      "status": "FAIL",
+      "detail": ""
+    },
+    {
+      "test": "Portal Login Endpoint",
+      "status": "FAIL",
+      "detail": ""
+    },
+    {
+      "test": "Portal Page Accessible",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Shipments List",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "test": "Returns List",
+      "status": "PASS",
+      "detail": ""
+    }
+  ],
+  "market_ready": false
+}
