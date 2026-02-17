@@ -332,29 +332,29 @@ export default function Login({ onLogin }) {
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#22EDA9]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#22EDA9]/3 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
         
-        {/* Top Right Logo */}
-        <div className="relative z-10 flex justify-end px-8 py-8">
+        {/* Top Right Logo - Hidden on mobile since card has branding */}
+        <div className="relative z-10 hidden lg:flex justify-end px-8 py-6">
           <img 
             src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
             alt="Battwheels" 
-            className="h-16 w-auto drop-shadow-sm"
+            className="h-12 w-auto drop-shadow-sm"
           />
         </div>
 
-        <div className="relative z-10 flex-1 flex items-center justify-center px-6 sm:px-12 pb-12">
+        <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6 lg:py-0">
           <div className="w-full max-w-md">
-            {/* Mobile Logo & 3D Icons */}
-            <div className="lg:hidden flex flex-col items-center mb-8">
+            {/* Mobile Logo & 3D Icons - Only on mobile */}
+            <div className="lg:hidden flex flex-col items-center mb-6">
               <img 
                 src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
                 alt="Battwheels" 
-                className="h-16 w-auto mb-6"
+                className="h-12 w-auto mb-4"
               />
-              <div className="flex gap-3 items-end">
-                <img src={VEHICLE_ICONS.twoWheeler} alt="2W" className="w-12 h-12 object-contain" />
-                <img src={VEHICLE_ICONS.threeWheeler} alt="3W" className="w-14 h-14 object-contain" />
-                <img src={VEHICLE_ICONS.car} alt="4W" className="w-16 h-16 object-contain" />
-                <img src={VEHICLE_ICONS.commercial} alt="Truck" className="w-14 h-14 object-contain" />
+              <div className="flex gap-2 items-end">
+                <img src={VEHICLE_ICONS.twoWheeler} alt="2W" className="w-10 h-10 object-contain" />
+                <img src={VEHICLE_ICONS.threeWheeler} alt="3W" className="w-12 h-12 object-contain" />
+                <img src={VEHICLE_ICONS.car} alt="4W" className="w-14 h-14 object-contain" />
+                <img src={VEHICLE_ICONS.commercial} alt="Truck" className="w-12 h-12 object-contain" />
               </div>
             </div>
 
