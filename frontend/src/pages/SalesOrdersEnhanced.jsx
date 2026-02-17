@@ -13,8 +13,11 @@ import { toast } from "sonner";
 import { 
   Plus, ShoppingCart, Search, Trash2, RefreshCw, Send, CheckCircle, XCircle, 
   Eye, Copy, ArrowRightLeft, Package, Truck, Calendar, User, 
-  TrendingUp, ChevronRight, Receipt, Box
+  TrendingUp, ChevronRight, Receipt, Box, IndianRupee, Clock
 } from "lucide-react";
+import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
+import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
+import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
 
 const statusColors = {
