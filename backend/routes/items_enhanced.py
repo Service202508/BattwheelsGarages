@@ -1089,3 +1089,19 @@ async def delete_enhanced_item(item_id: str):
     
     return {"code": 0, "message": "Item deleted successfully"}
 
+
+# ============== ITEM-SPECIFIC STOCK LOCATIONS ==============
+
+@router.get("/{item_id}/stock-locations")
+async def get_item_stock_locations(item_id: str):
+    """Get stock locations for an item"""
+    db = get_db()
+    locations = await db.item_stock_locations.find(
+        {"item_id": item_id},
+        {"_id": 0}
+    ).to_list(100)
+    
+    total_stock = sum(loc.get("stock", 0) for loc in locations)
+    
+    return {"code": 0, "stock_locations": locations, "total_stock": total_stock}
+
