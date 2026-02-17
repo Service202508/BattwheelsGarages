@@ -126,103 +126,150 @@ export default function PurchaseOrders() {
     } catch { toast.error("Conversion failed"); }
   };
 
+  // Calculate summary stats
+  const statusCounts = orders.reduce((acc, po) => {
+    acc[po.status] = (acc[po.status] || 0) + 1;
+    return acc;
+  }, {});
+  const totalValue = orders.reduce((sum, po) => sum + (po.total || 0), 0);
+
   return (
     <div className="space-y-6" data-testid="purchase-orders-page">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Purchase Orders</h1>
-          <p className="text-gray-500 text-sm mt-1">{orders.length} purchase orders</p>
-        </div>
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
-              <Plus className="h-4 w-4 mr-2" /> New Purchase Order
+      <PageHeader
+        title="Purchase Orders"
+        description={`${orders.length} purchase orders`}
+        icon={ShoppingCart}
+        actions={
+          <div className="flex gap-2">
+            <Button onClick={fetchData} variant="outline" size="sm">
+              <RefreshCw className="h-4 w-4 mr-1" /> Refresh
             </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Create Purchase Order</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Vendor *</Label>
-                  <Select onValueChange={(v) => {
-                    const vnd = vendors.find(x => x.vendor_id === v);
-                    if (vnd) setNewPO({ ...newPO, vendor_id: vnd.vendor_id, vendor_name: vnd.display_name });
-                  }}>
-                    <SelectTrigger><SelectValue placeholder="Select vendor" /></SelectTrigger>
-                    <SelectContent>
-                      {vendors.map(v => <SelectItem key={v.vendor_id} value={v.vendor_id}>{v.display_name}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Destination</Label>
-                  <Select value={newPO.destination_of_supply} onValueChange={(v) => setNewPO({ ...newPO, destination_of_supply: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="DL">Delhi</SelectItem>
-                      <SelectItem value="HR">Haryana</SelectItem>
-                      <SelectItem value="UP">Uttar Pradesh</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="border rounded-lg p-4 bg-gray-50">
-                <h3 className="font-medium mb-3">Add Parts/Items</h3>
-                <Select onValueChange={handleSelectItem}>
-                  <SelectTrigger><SelectValue placeholder="Select part" /></SelectTrigger>
-                  <SelectContent>
-                    {parts.slice(0, 50).map(p => <SelectItem key={p.item_id} value={p.item_id}>{p.name} - ₹{p.rate}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-                {newLineItem.item_name && (
-                  <div className="mt-3 grid grid-cols-4 gap-3">
-                    <Input value={newLineItem.item_name} readOnly className="bg-white" />
-                    <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" />
-                    <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
-                    <Button onClick={handleAddLineItem} className="bg-[#22EDA9] text-black">Add</Button>
+            <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+              <DialogTrigger asChild>
+                <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
+                  <Plus className="h-4 w-4 mr-2" /> New Purchase Order
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Create Purchase Order</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Vendor *</Label>
+                      <Select onValueChange={(v) => {
+                        const vnd = vendors.find(x => x.vendor_id === v);
+                        if (vnd) setNewPO({ ...newPO, vendor_id: vnd.vendor_id, vendor_name: vnd.display_name });
+                      }}>
+                        <SelectTrigger><SelectValue placeholder="Select vendor" /></SelectTrigger>
+                        <SelectContent>
+                          {vendors.map(v => <SelectItem key={v.vendor_id} value={v.vendor_id}>{v.display_name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Destination</Label>
+                      <Select value={newPO.destination_of_supply} onValueChange={(v) => setNewPO({ ...newPO, destination_of_supply: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="DL">Delhi</SelectItem>
+                          <SelectItem value="HR">Haryana</SelectItem>
+                          <SelectItem value="UP">Uttar Pradesh</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                )}
-              </div>
 
-              {newPO.line_items.length > 0 && (
-                <div className="border rounded-lg overflow-hidden">
-                  <table className="w-full text-sm">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-3 py-2 text-left">Item</th>
-                        <th className="px-3 py-2 text-right">Qty</th>
-                        <th className="px-3 py-2 text-right">Rate</th>
-                        <th className="px-3 py-2 text-right">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {newPO.line_items.map((item, idx) => (
-                        <tr key={idx} className="border-t">
-                          <td className="px-3 py-2">{item.item_name}</td>
-                          <td className="px-3 py-2 text-right">{item.quantity}</td>
-                          <td className="px-3 py-2 text-right">₹{item.rate}</td>
-                          <td className="px-3 py-2 text-right">₹{(item.quantity * item.rate * (1 + item.tax_rate/100)).toLocaleString('en-IN')}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot className="bg-gray-50 font-semibold">
-                      <tr><td colSpan={3} className="px-3 py-2 text-right">Total:</td><td className="px-3 py-2 text-right">₹{calculateTotal().toLocaleString('en-IN')}</td></tr>
-                    </tfoot>
-                  </table>
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h3 className="font-medium mb-3">Add Parts/Items</h3>
+                    <Select onValueChange={handleSelectItem}>
+                      <SelectTrigger><SelectValue placeholder="Select part" /></SelectTrigger>
+                      <SelectContent>
+                        {parts.slice(0, 50).map(p => <SelectItem key={p.item_id} value={p.item_id}>{p.name} - ₹{p.rate}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    {newLineItem.item_name && (
+                      <div className="mt-3 grid grid-cols-4 gap-3">
+                        <Input value={newLineItem.item_name} readOnly className="bg-white" />
+                        <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" />
+                        <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
+                        <Button onClick={handleAddLineItem} className="bg-[#22EDA9] text-black">Add</Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {newPO.line_items.length > 0 && (
+                    <div className="border rounded-lg overflow-hidden">
+                      <table className="w-full text-sm">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-3 py-2 text-left">Item</th>
+                            <th className="px-3 py-2 text-right">Qty</th>
+                            <th className="px-3 py-2 text-right">Rate</th>
+                            <th className="px-3 py-2 text-right">Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {newPO.line_items.map((item, idx) => (
+                            <tr key={idx} className="border-t">
+                              <td className="px-3 py-2">{item.item_name}</td>
+                              <td className="px-3 py-2 text-right">{item.quantity}</td>
+                              <td className="px-3 py-2 text-right">₹{item.rate}</td>
+                              <td className="px-3 py-2 text-right">₹{(item.quantity * item.rate * (1 + item.tax_rate/100)).toLocaleString('en-IN')}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                        <tfoot className="bg-gray-50 font-semibold">
+                          <tr><td colSpan={3} className="px-3 py-2 text-right">Total:</td><td className="px-3 py-2 text-right">₹{calculateTotal().toLocaleString('en-IN')}</td></tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreatePO} className="bg-[#22EDA9] text-black">Create PO</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
+                  <Button onClick={handleCreatePO} className="bg-[#22EDA9] text-black">Create PO</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        }
+      />
+
+      {/* Summary Cards */}
+      <StatCardGrid columns={5}>
+        <StatCard
+          title="Total POs"
+          value={orders.length}
+          icon={ShoppingCart}
+          variant="info"
+        />
+        <StatCard
+          title="Draft"
+          value={statusCounts.draft || 0}
+          icon={FileText}
+          variant="default"
+        />
+        <StatCard
+          title="Issued"
+          value={statusCounts.issued || 0}
+          icon={Truck}
+          variant="info"
+        />
+        <StatCard
+          title="Billed"
+          value={statusCounts.billed || 0}
+          icon={CheckCircle}
+          variant="success"
+        />
+        <StatCard
+          title="Total Value"
+          value={formatCurrencyCompact(totalValue)}
+          icon={Package}
+          variant="success"
+        />
+      </StatCardGrid>
 
       <div className="flex gap-2 flex-wrap">
         {["", "draft", "issued", "partially_billed", "billed"].map(s => (
