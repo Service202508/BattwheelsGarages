@@ -4557,6 +4557,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Enhanced Sales Orders routes: {e}")
 
+# Include Enhanced Customers routes
+try:
+    from routes.customers_enhanced import router as customers_enhanced_router
+    api_router.include_router(customers_enhanced_router)
+    logger.info("Enhanced Customers routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Enhanced Customers routes: {e}")
+
 # Include main router
 app.include_router(api_router)
 
