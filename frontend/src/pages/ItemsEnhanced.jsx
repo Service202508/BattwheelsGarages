@@ -237,85 +237,56 @@ export default function ItemsEnhanced() {
   return (
     <div className="space-y-6" data-testid="items-enhanced-page">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Inventory Management</h1>
-          <p className="text-gray-500 text-sm mt-1">Items, Groups, Warehouses, Price Lists & Adjustments</p>
-        </div>
-        <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
-          <RefreshCw className="h-4 w-4" /> Refresh
-        </Button>
-      </div>
+      <PageHeader
+        title="Inventory Management"
+        description="Items, Groups, Warehouses, Price Lists & Adjustments"
+        icon={Package}
+        actions={
+          <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
+            <RefreshCw className="h-4 w-4" /> Refresh
+          </Button>
+        }
+      />
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <Package className="h-8 w-8 text-blue-500" />
-              <div>
-                <p className="text-xs text-gray-500">Total Items</p>
-                <p className="text-xl font-bold">{items.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <FolderTree className="h-8 w-8 text-purple-500" />
-              <div>
-                <p className="text-xs text-gray-500">Item Groups</p>
-                <p className="text-xl font-bold">{groups.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <Warehouse className="h-8 w-8 text-green-500" />
-              <div>
-                <p className="text-xs text-gray-500">Warehouses</p>
-                <p className="text-xl font-bold">{warehouses.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <Tags className="h-8 w-8 text-orange-500" />
-              <div>
-                <p className="text-xs text-gray-500">Price Lists</p>
-                <p className="text-xl font-bold">{priceLists.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className={lowStockItems.length > 0 ? "border-red-200 bg-red-50" : ""}>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className={`h-8 w-8 ${lowStockItems.length > 0 ? "text-red-500" : "text-gray-400"}`} />
-              <div>
-                <p className="text-xs text-gray-500">Low Stock</p>
-                <p className={`text-xl font-bold ${lowStockItems.length > 0 ? "text-red-600" : ""}`}>{lowStockItems.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <BarChart3 className="h-8 w-8 text-teal-500" />
-              <div>
-                <p className="text-xs text-gray-500">Stock Value</p>
-                <p className="text-xl font-bold">₹{(stockSummary?.total_stock_value || 0).toLocaleString('en-IN')}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <StatCardGrid columns={6}>
+        <StatCard
+          title="Total Items"
+          value={items.length}
+          icon={Package}
+          variant="info"
+        />
+        <StatCard
+          title="Item Groups"
+          value={groups.length}
+          icon={FolderTree}
+          variant="purple"
+        />
+        <StatCard
+          title="Warehouses"
+          value={warehouses.length}
+          icon={Warehouse}
+          variant="success"
+        />
+        <StatCard
+          title="Price Lists"
+          value={priceLists.length}
+          icon={Tags}
+          variant="warning"
+        />
+        <StatCard
+          title="Low Stock"
+          value={lowStockItems.length}
+          icon={AlertTriangle}
+          variant={lowStockItems.length > 0 ? "danger" : "default"}
+        />
+        <StatCard
+          title="Stock Value"
+          value={formatCurrencyCompact(stockSummary?.total_stock_value || 0)}
+          icon={BarChart3}
+          variant="teal"
+        />
+      </StatCardGrid>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
