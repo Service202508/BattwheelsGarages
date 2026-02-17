@@ -721,6 +721,18 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
           Print / Download
         </Button>
       </div>
+      </div>
+
+      {/* EFI Side Panel - Only for technicians and admins */}
+      {(isTechnician || isAdmin) && (
+        <EFISidePanel
+          ticket={localTicket}
+          user={user}
+          isOpen={efiPanelOpen}
+          onToggle={() => setEfiPanelOpen(!efiPanelOpen)}
+          onEstimateSuggested={handleEfiEstimateSuggested}
+        />
+      )}
     </div>
   );
 }
