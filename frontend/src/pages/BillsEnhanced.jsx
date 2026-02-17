@@ -15,6 +15,9 @@ import {
   Clock, IndianRupee, Trash2, CreditCard, Copy, XCircle, Receipt,
   AlertTriangle, TrendingUp, Truck, MoreHorizontal, Search, Filter
 } from "lucide-react";
+import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
+import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
+import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
 
 const statusColors = {
