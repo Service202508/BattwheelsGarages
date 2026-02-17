@@ -4394,6 +4394,15 @@ init_notification_router(db)
 api_router.include_router(efi_router)
 api_router.include_router(notification_router)
 
+# Include EFI Guided Execution routes (decision trees & diagnostics)
+try:
+    from routes.efi_guided import router as efi_guided_router, init_router as init_efi_guided_router
+    init_efi_guided_router(db)
+    api_router.include_router(efi_guided_router)
+    logger.info("EFI Guided Execution router loaded")
+except Exception as e:
+    logger.warning(f"Could not load EFI Guided router: {e}")
+
 # Include Customer Portal routes
 try:
     from routes.customer_portal import router as customer_router
