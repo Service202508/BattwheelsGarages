@@ -984,19 +984,41 @@ async def stock_summary_report(warehouse_id: Optional[str] = None):
         }},
         {"$addFields": {
             "total_stock": {"$sum": "$stock.available_stock"},
-            "total_reserved": {"$sum": "$stock.reserved_stock"}
+            "total_reserved": {"$sum": "$stock.reserved_stock"},
+            "purchase_rate_num": {
+                "$cond": {
+                    "if": {"$or": [
+                        {"$eq": ["$purchase_rate", ""]},
+                        {"$eq": ["$purchase_rate", None]},
+                        {"$not": {"$isNumber": "$purchase_rate"}}
+                    ]},
+                    "then": 0,
+                    "else": {"$toDouble": "$purchase_rate"}
+                }
+            },
+            "reorder_level_num": {
+                "$cond": {
+                    "if": {"$or": [
+                        {"$eq": ["$reorder_level", ""]},
+                        {"$eq": ["$reorder_level", None]},
+                        {"$not": {"$isNumber": "$reorder_level"}}
+                    ]},
+                    "then": 0,
+                    "else": {"$toDouble": "$reorder_level"}
+                }
+            }
         }},
         {"$project": {
             "_id": 0,
             "item_id": 1,
             "name": 1,
             "sku": 1,
-            "purchase_rate": 1,
+            "purchase_rate": "$purchase_rate_num",
             "sales_rate": 1,
             "total_stock": 1,
             "total_reserved": 1,
-            "reorder_level": 1,
-            "stock_value": {"$multiply": ["$total_stock", {"$ifNull": ["$purchase_rate", 0]}]}
+            "reorder_level": "$reorder_level_num",
+            "stock_value": {"$multiply": ["$total_stock", "$purchase_rate_num"]}
         }}
     ]
     
