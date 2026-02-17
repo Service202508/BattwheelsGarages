@@ -882,6 +882,10 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 ### P0 (Next)
 - [x] **Bills & Purchase Orders Enhanced Module (Feb 17, 2026)** - Full payables module with Bills CRUD, Bill Payments, PO workflow (Draft→Issued→Received→Billed), Convert PO to Bill, Aging Report, Vendor-wise Report - ✅ COMPLETE
 - [x] **Inventory Enhanced Module (Feb 17, 2026)** - Variants (size/color), Bundles/Kits, Serial/Batch tracking, Warehouses, Shipments, Returns, Stock Adjustments, Reports (Stock Summary, Low Stock, Valuation, Movement) - ✅ COMPLETE
+- [x] **Recurring Bills Module (Feb 17, 2026)** - Full recurring bill profiles with CRUD, stop/resume, auto-generation, vendor integration - ✅ COMPLETE
+- [x] **Fixed Assets Module (Feb 17, 2026)** - Asset tracking with depreciation (straight-line), disposal, write-off, summary reports, by-type filtering - ✅ COMPLETE
+- [x] **Custom Modules (Feb 17, 2026)** - Dynamic custom module builder with field types (text, number, date, dropdown, etc.), record management, search - ✅ COMPLETE
+- [x] **Code Cleanup (Feb 17, 2026)** - Deleted deprecated customers_enhanced files, renamed contacts_enhanced_v2 to contacts_enhanced - ✅ COMPLETE
 - [ ] **Legacy Data Migration** - Migrate 346 legacy customers/vendors into unified Contacts model
 - [ ] Enable vector embeddings with OPENAI_API_KEY
 - [ ] Configure Razorpay with production keys (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET)
@@ -889,7 +893,6 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 
 ### P1 (Future)
 - [ ] **Real Email Integration** - Un-mock email sending for portal invites, statements, and quotes using SendGrid/Resend
-- [ ] **Code Cleanup** - Delete deprecated customers_enhanced files, rename contacts_enhanced_v2 to contacts_enhanced
 - [ ] Elasticsearch for production-scale search
 - [ ] Cron job setup for automated scheduler execution
 - [ ] On-demand Sync button to pull latest data from Zoho Books
