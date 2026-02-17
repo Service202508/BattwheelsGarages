@@ -4594,6 +4594,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Bills Enhanced routes: {e}")
 
+# Include Inventory Enhanced routes (Variants, Bundles, Shipments, Returns)
+try:
+    from routes.inventory_enhanced import router as inventory_enhanced_router
+    api_router.include_router(inventory_enhanced_router)
+    logger.info("Inventory Enhanced routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Inventory Enhanced routes: {e}")
+
 # Include main router
 app.include_router(api_router)
 
