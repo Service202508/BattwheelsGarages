@@ -397,6 +397,46 @@ async def create_enhanced_item(item: ItemCreate):
     
     return {"code": 0, "message": "Item created successfully", "item": item_dict}
 
+@router.get("/summary")
+async def get_items_summary():
+    """Get items summary statistics"""
+    db = get_db()
+    
+    total_items = await db.items.count_documents({})
+    active_items = await db.items.count_documents({"status": "active"})
+    inventory_items = await db.items.count_documents({"item_type": "inventory"})
+    service_items = await db.items.count_documents({"item_type": "service"})
+    
+    # Calculate total stock value
+    pipeline = [
+        {"$match": {"item_type": "inventory"}},
+        {"$lookup": {
+            "from": "item_stock_locations",
+            "localField": "item_id",
+            "foreignField": "item_id",
+            "as": "stock"
+        }},
+        {"$unwind": {"path": "$stock", "preserveNullAndEmptyArrays": True}},
+        {"$group": {
+            "_id": None,
+            "total_stock_value": {"$sum": {"$multiply": [{"$ifNull": ["$stock.available_stock", 0]}, {"$ifNull": ["$purchase_rate", 0]}]}},
+            "total_units": {"$sum": {"$ifNull": ["$stock.available_stock", 0]}}
+        }}
+    ]
+    stock_data = await db.items.aggregate(pipeline).to_list(1)
+    
+    return {
+        "code": 0,
+        "summary": {
+            "total_items": total_items,
+            "active_items": active_items,
+            "inventory_items": inventory_items,
+            "service_items": service_items,
+            "total_stock_value": round(stock_data[0].get("total_stock_value", 0) if stock_data else 0, 2),
+            "total_units": round(stock_data[0].get("total_units", 0) if stock_data else 0, 2)
+        }
+    }
+
 @router.get("/")
 async def list_enhanced_items(
     item_type: str = "",
