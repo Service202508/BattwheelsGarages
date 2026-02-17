@@ -121,7 +121,23 @@ export default function ContactsEnhanced() {
       const data = await res.json();
       setSelectedContact(data.contact);
       setShowDetailDialog(true);
+      
+      // Fetch transaction history
+      fetchContactTransactions(contactId);
     } catch (e) { toast.error("Failed to fetch contact details"); }
+  };
+
+  const fetchContactTransactions = async (contactId) => {
+    try {
+      const res = await fetch(`${API}/contact-integration/contacts/${contactId}/transactions?per_page=10`, { headers });
+      const data = await res.json();
+      setContactTransactions(data.transactions || []);
+      setTransactionSummary(data.summary || null);
+    } catch (e) { 
+      console.error("Failed to fetch transactions:", e);
+      setContactTransactions([]);
+      setTransactionSummary(null);
+    }
   };
 
   // Contact CRUD
