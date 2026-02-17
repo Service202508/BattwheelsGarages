@@ -516,6 +516,30 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      {/* Recurring Bills */}
+      <Route path="/recurring-bills" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <RecurringBills user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      {/* Fixed Assets */}
+      <Route path="/fixed-assets" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <FixedAssets user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      {/* Custom Modules */}
+      <Route path="/custom-modules" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <CustomModules user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/expenses" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
