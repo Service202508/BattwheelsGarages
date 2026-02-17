@@ -634,57 +634,66 @@ export default function ContactsEnhanced() {
             </Dialog>
           </div>
 
-          {loading ? <div className="text-center py-8">Loading...</div> : contacts.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500"><Users className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No contacts found</p></CardContent></Card>
+          {loading ? (
+            <TableSkeleton columns={7} rows={6} />
+          ) : contacts.length === 0 ? (
+            <Card>
+              <EmptyState 
+                icon={Users}
+                title="No contacts found"
+                description="Add customers and vendors to manage your business relationships."
+                actionLabel="Add Contact"
+                onAction={() => setShowContactDialog(true)}
+                actionIcon={Plus}
+              />
+            </Card>
           ) : (
-            <div className="border rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-medium">Contact</th>
-                    <th className="px-4 py-3 text-left font-medium">Type</th>
-                    <th className="px-4 py-3 text-left font-medium">Email / Phone</th>
-                    <th className="px-4 py-3 text-left font-medium">GSTIN</th>
-                    <th className="px-4 py-3 text-right font-medium">Balance</th>
-                    <th className="px-4 py-3 text-center font-medium">Status</th>
-                    <th className="px-4 py-3 text-right font-medium">Actions</th>
+            <ResponsiveTable>
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium text-xs uppercase text-gray-500">Contact</th>
+                  <th className="px-4 py-3 text-left font-medium text-xs uppercase text-gray-500">Type</th>
+                  <th className="px-4 py-3 text-left font-medium text-xs uppercase text-gray-500">Email / Phone</th>
+                  <th className="px-4 py-3 text-left font-medium text-xs uppercase text-gray-500">GSTIN</th>
+                  <th className="px-4 py-3 text-right font-medium text-xs uppercase text-gray-500">Balance</th>
+                  <th className="px-4 py-3 text-center font-medium text-xs uppercase text-gray-500">Status</th>
+                  <th className="px-4 py-3 text-right font-medium text-xs uppercase text-gray-500">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {contacts.map(contact => (
+                  <tr key={contact.contact_id} className="hover:bg-gray-50 cursor-pointer" onClick={() => fetchContactDetail(contact.contact_id)} data-testid={`contact-row-${contact.contact_id}`}>
+                    <td className="px-4 py-3">
+                      <div>
+                        <p className="font-medium">{contact.name}</p>
+                        {contact.company_name && <p className="text-xs text-gray-500">{contact.company_name}</p>}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge className={contactTypeColors[contact.contact_type]}>{contactTypeLabels[contact.contact_type]}</Badge>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-gray-600">
+                        {contact.email && <p className="text-xs">{contact.email}</p>}
+                        {contact.phone && <p className="text-xs">{contact.phone}</p>}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 font-mono text-xs">{contact.gstin || '-'}</td>
+                    <td className="px-4 py-3 text-right">
+                      {contact.balance?.receivable > 0 && <p className="text-green-600 text-xs">+₹{contact.balance.receivable.toLocaleString('en-IN')}</p>}
+                      {contact.balance?.payable > 0 && <p className="text-red-600 text-xs">-₹{contact.balance.payable.toLocaleString('en-IN')}</p>}
+                      {!contact.balance?.receivable && !contact.balance?.payable && <span className="text-gray-400">-</span>}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {contact.is_active ? <CheckCircle className="h-4 w-4 text-green-500 inline" /> : <XCircle className="h-4 w-4 text-red-400 inline" />}
+                    </td>
+                    <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                      <Button size="icon" variant="ghost" onClick={() => fetchContactDetail(contact.contact_id)}><Eye className="h-4 w-4" /></Button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {contacts.map(contact => (
-                    <tr key={contact.contact_id} className="border-t hover:bg-gray-50 cursor-pointer" onClick={() => fetchContactDetail(contact.contact_id)} data-testid={`contact-row-${contact.contact_id}`}>
-                      <td className="px-4 py-3">
-                        <div>
-                          <p className="font-medium">{contact.name}</p>
-                          {contact.company_name && <p className="text-xs text-gray-500">{contact.company_name}</p>}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge className={contactTypeColors[contact.contact_type]}>{contactTypeLabels[contact.contact_type]}</Badge>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="text-gray-600">
-                          {contact.email && <p className="text-xs">{contact.email}</p>}
-                          {contact.phone && <p className="text-xs">{contact.phone}</p>}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-gray-600 font-mono text-xs">{contact.gstin || '-'}</td>
-                      <td className="px-4 py-3 text-right">
-                        {contact.balance?.receivable > 0 && <p className="text-green-600 text-xs">+₹{contact.balance.receivable.toLocaleString('en-IN')}</p>}
-                        {contact.balance?.payable > 0 && <p className="text-red-600 text-xs">-₹{contact.balance.payable.toLocaleString('en-IN')}</p>}
-                        {!contact.balance?.receivable && !contact.balance?.payable && <span className="text-gray-400">-</span>}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        {contact.is_active ? <CheckCircle className="h-4 w-4 text-green-500 inline" /> : <XCircle className="h-4 w-4 text-red-400 inline" />}
-                      </td>
-                      <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                        <Button size="icon" variant="ghost" onClick={() => fetchContactDetail(contact.contact_id)}><Eye className="h-4 w-4" /></Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </ResponsiveTable>
           )}
         </TabsContent>
 
