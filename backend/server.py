@@ -4525,6 +4525,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Enhanced Items routes: {e}")
 
+# Include Enhanced Contacts routes (Comprehensive Contact Management)
+try:
+    from routes.contacts_enhanced import router as contacts_enhanced_router
+    api_router.include_router(contacts_enhanced_router)
+    logger.info("Enhanced Contacts routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Enhanced Contacts routes: {e}")
+
 # Include main router
 app.include_router(api_router)
 
