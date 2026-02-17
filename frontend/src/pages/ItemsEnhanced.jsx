@@ -10,6 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Plus, Package, Search, Edit, Trash2, Warehouse, FolderTree, Tags, AlertTriangle, ArrowUpDown, BarChart3, RefreshCw } from "lucide-react";
+import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
+import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
+import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
 
 const itemTypeColors = {
