@@ -7,7 +7,30 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
-### Extended Zoho Books Features (Feb 16, 2026) ✅ COMPLETE - NEW
+### Financial Reports with PDF/Excel Export (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Comprehensive Financial Reporting System:**
+
+| Report | Backend API | Frontend UI | PDF Export | Excel Export |
+|--------|-------------|-------------|------------|--------------|
+| **Profit & Loss** | `/api/reports/profit-loss` | ✅ Summary cards + detailed table | ✅ WeasyPrint | ✅ openpyxl |
+| **Balance Sheet** | `/api/reports/balance-sheet` | ✅ Assets/Liabilities/Equity cards | ✅ WeasyPrint | ✅ openpyxl |
+| **AR Aging** | `/api/reports/ar-aging` | ✅ Aging buckets + invoice table | ✅ WeasyPrint | ✅ openpyxl |
+| **AP Aging** | `/api/reports/ap-aging` | ✅ Aging buckets + bill table | ✅ WeasyPrint | ✅ openpyxl |
+| **Sales by Customer** | `/api/reports/sales-by-customer` | ✅ Customer ranking table | ✅ WeasyPrint | ✅ openpyxl |
+
+**Key Features:**
+- Date range filters for period-based reports (P&L, Sales)
+- Point-in-time filters for snapshot reports (Balance Sheet, Aging)
+- Professional PDF output with company branding and styling
+- Excel export with formatted headers, currency formatting, and totals
+- All reports built from real Zoho Books data (14,000+ records)
+
+**Test Results: 16/16 backend tests passed (100%)**
+
+---
+
+### Extended Zoho Books Features (Feb 16, 2026) ✅ COMPLETE
 
 **All Missing Zoho Books Features Now Implemented:**
 
