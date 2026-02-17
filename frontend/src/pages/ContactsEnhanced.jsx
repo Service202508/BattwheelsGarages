@@ -915,6 +915,18 @@ export default function ContactsEnhanced() {
                           <Button variant="outline" size="sm" onClick={() => handleEnablePortal(selectedContact.contact_id)}><Key className="h-4 w-4 mr-1" /> Enable Portal</Button>
                         )}
                         <Button variant="outline" size="sm" onClick={() => handleEmailStatement(selectedContact.contact_id)}><Send className="h-4 w-4 mr-1" /> Email Statement</Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => {
+                            setShowDetailDialog(false);
+                            navigate(`/estimates?customer_id=${selectedContact.contact_id}&customer_name=${encodeURIComponent(selectedContact.name)}`);
+                          }}
+                          className="bg-blue-50 hover:bg-blue-100 border-blue-200"
+                          data-testid="quick-quote-btn"
+                        >
+                          <FileText className="h-4 w-4 mr-1" /> Quick Quote
+                        </Button>
                       </>
                     )}
                     <Button variant="destructive" size="sm" onClick={() => handleDeleteContact(selectedContact.contact_id)}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
