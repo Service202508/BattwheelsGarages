@@ -44,6 +44,7 @@ import Projects from "@/pages/Projects";
 import Taxes from "@/pages/Taxes";
 import DeliveryChallans from "@/pages/DeliveryChallans";
 import Items from "@/pages/Items";
+import ItemsEnhanced from "@/pages/ItemsEnhanced";
 import PriceLists from "@/pages/PriceLists";
 import InventoryAdjustments from "@/pages/InventoryAdjustments";
 import RecurringExpenses from "@/pages/RecurringExpenses";
