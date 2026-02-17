@@ -474,6 +474,13 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/invoices-enhanced" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <InvoicesEnhanced user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       {/* Redirect old customers-enhanced route to unified contacts page */}
       <Route path="/customers-enhanced" element={<Navigate to="/contacts" replace />} />
       <Route path="/expenses" element={
