@@ -339,9 +339,22 @@ async def get_customer_aging(customer_id: str) -> dict:
 
 async def is_customer_used_in_transactions(customer_id: str) -> dict:
     """Check if customer is linked to any transactions"""
-    estimates_count = await db["estimates_enhanced"].count_documents({"customer_id": customer_id})
-    salesorders_count = await db["salesorders_enhanced"].count_documents({"customer_id": customer_id})
-    invoices_count = await db["invoices"].count_documents({"customer_id": customer_id})
+    # Check both by customer_id and contact_id (for cross-module compatibility)
+    estimates_count = await db["estimates_enhanced"].count_documents(
+        {"$or": [{"customer_id": customer_id}, {"contact_id": customer_id}]}
+    )
+    salesorders_count = await db["salesorders_enhanced"].count_documents(
+        {"$or": [{"customer_id": customer_id}, {"contact_id": customer_id}]}
+    )
+    invoices_count = await db["invoices"].count_documents(
+        {"$or": [{"customer_id": customer_id}, {"contact_id": customer_id}]}
+    )
+    
+    # Also check if this customer exists in contacts_enhanced (linked)
+    contacts_enhanced = await db["contacts_enhanced"].find_one(
+        {"$or": [{"contact_id": customer_id}, {"linked_customer_id": customer_id}]}
+    )
+    has_contact_link = contacts_enhanced is not None
     
     is_used = estimates_count > 0 or salesorders_count > 0 or invoices_count > 0
     
@@ -350,7 +363,8 @@ async def is_customer_used_in_transactions(customer_id: str) -> dict:
         "estimates_count": estimates_count,
         "salesorders_count": salesorders_count,
         "invoices_count": invoices_count,
-        "total_transactions": estimates_count + salesorders_count + invoices_count
+        "total_transactions": estimates_count + salesorders_count + invoices_count,
+        "has_contact_link": has_contact_link
     }
 
 async def add_customer_history(customer_id: str, action: str, details: str, user_id: str = ""):
