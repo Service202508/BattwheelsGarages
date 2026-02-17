@@ -4533,6 +4533,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Enhanced Contacts routes: {e}")
 
+# Include Contact Integration routes (Links contacts to transactions)
+try:
+    from routes.contact_integration import router as contact_integration_router
+    api_router.include_router(contact_integration_router)
+    logger.info("Contact Integration routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Contact Integration routes: {e}")
+
 # Include main router
 app.include_router(api_router)
 
