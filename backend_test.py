@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 
 class BattwheelsAPITester:
-    def __init__(self, base_url="https://finance-hub-650.preview.emergentagent.com"):
+    def __init__(self, base_url="https://accounting-os-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_id = None
