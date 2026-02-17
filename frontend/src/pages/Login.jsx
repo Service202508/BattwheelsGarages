@@ -335,9 +335,9 @@ export default function Login({ onLogin }) {
         {/* Top Right Logo */}
         <div className="relative z-10 flex justify-end px-8 py-8">
           <img 
-            src="https://customer-assets.emergentagent.com/job_3a595ece-6ef9-4ac6-b3b4-0464858ff726/artifacts/trnes6dt_Screenshot%202026-02-16%20at%2010.25.22%E2%80%AFPM.png" 
+            src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
             alt="Battwheels" 
-            className="h-14 w-auto drop-shadow-sm"
+            className="h-16 w-auto drop-shadow-sm"
           />
         </div>
 
@@ -346,9 +346,9 @@ export default function Login({ onLogin }) {
             {/* Mobile Logo & 3D Icons */}
             <div className="lg:hidden flex flex-col items-center mb-8">
               <img 
-                src="https://customer-assets.emergentagent.com/job_3a595ece-6ef9-4ac6-b3b4-0464858ff726/artifacts/trnes6dt_Screenshot%202026-02-16%20at%2010.25.22%E2%80%AFPM.png" 
+                src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
                 alt="Battwheels" 
-                className="h-14 w-auto mb-6"
+                className="h-16 w-auto mb-6"
               />
               <div className="flex gap-3 items-end">
                 <img src={VEHICLE_ICONS.twoWheeler} alt="2W" className="w-12 h-12 object-contain" />
