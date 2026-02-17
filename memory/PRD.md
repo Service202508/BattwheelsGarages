@@ -24,7 +24,7 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ---
 
-### Frontend UI for Backend Features (Feb 17, 2026) ✅ COMPLETE - NEW
+### Frontend UI for Backend Features (Feb 17, 2026) ✅ COMPLETE
 
 **5 New Frontend Pages for Existing Backend APIs:**
 
@@ -36,14 +36,30 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 | **Exchange Rates** | `/exchange-rates` | `/zoho/settings/exchange-rates` | ✅ Multi-currency support |
 | **Activity Logs** | `/activity-logs` | `/zoho/activity-logs` | ✅ Audit trail with filters |
 
-**Key Features:**
-- All pages have proper data-testid attributes for testing
-- Form validation and toast notifications
-- Loading states and empty state messages
-- Currency formatting in Indian Rupee format
-- Navigation links added to sidebar
-
 **Test Results: 100% frontend tests passed**
+
+---
+
+### On-Demand Zoho Sync (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Live Zoho Books Integration Page:**
+
+| Feature | Description |
+|---------|-------------|
+| **Test Connection** | Validates Zoho API credentials and shows Organization ID |
+| **Full Sync** | One-click sync of ALL modules with progress tracking |
+| **Individual Module Sync** | 11 separate module buttons for selective sync |
+| **Sync History** | Table showing all past sync activities with status |
+
+**Supported Modules:**
+- Contacts (Customers & Vendors)
+- Items (Products & Services)
+- Invoices, Bills, Estimates, Expenses
+- Payments (Customer & Vendor)
+- Purchase Orders, Sales Orders
+- Credit Notes, Bank Accounts
+
+**Connection Status:** ✅ Connected to Zoho Books (Org ID: 60029414603)
 
 ---
 
