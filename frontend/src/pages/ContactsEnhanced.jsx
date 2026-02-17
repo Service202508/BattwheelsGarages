@@ -18,7 +18,9 @@ import {
   UserPlus, Home, Truck, CreditCard, MoreVertical, Send, Key, ChevronRight,
   Receipt, ShoppingCart, History
 } from "lucide-react";
-import { KPICard, formatCurrencyCompact } from "@/components/KPICard";
+import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
+import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
+import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
 
 const contactTypeColors = {
