@@ -256,19 +256,19 @@ export default function FixedAssets() {
   return (
     <div className="space-y-6" data-testid="fixed-assets-page">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Fixed Assets</h1>
-          <p className="text-gray-500">Track and depreciate your business assets</p>
-        </div>
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <Button data-testid="create-asset-btn">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Fixed Asset
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <PageHeader
+        title="Fixed Assets"
+        description="Track and depreciate your business assets"
+        icon={Package}
+        actions={
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <Button className="bg-[#22EDA9] text-gray-900 hover:bg-[#1DD69A] font-semibold shadow-lg shadow-[#22EDA9]/20" data-testid="create-asset-btn">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Fixed Asset
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add Fixed Asset</DialogTitle>
             </DialogHeader>
