@@ -4566,6 +4566,22 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Enhanced Invoices routes: {e}")
 
+# Include Customer Portal routes
+try:
+    from routes.customer_portal import router as customer_portal_router
+    api_router.include_router(customer_portal_router)
+    logger.info("Customer Portal routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Customer Portal routes: {e}")
+
+# Include Advanced Reports routes
+try:
+    from routes.reports_advanced import router as reports_advanced_router
+    api_router.include_router(reports_advanced_router)
+    logger.info("Advanced Reports routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Advanced Reports routes: {e}")
+
 # DEPRECATED: customers_enhanced has been merged into contacts_enhanced_v2
 # The unified contacts module now handles all customer and vendor functionality
 # with a contact_type field to distinguish between customers, vendors, and both
