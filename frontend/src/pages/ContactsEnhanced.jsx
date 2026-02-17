@@ -14,7 +14,8 @@ import { toast } from "sonner";
 import { 
   Plus, Users, Search, Edit, Trash2, Building2, User, Phone, Mail, Globe, 
   MapPin, Tag, Shield, FileText, RefreshCw, CheckCircle, XCircle, Eye,
-  UserPlus, Home, Truck, CreditCard, MoreVertical, Send, Key, ChevronRight
+  UserPlus, Home, Truck, CreditCard, MoreVertical, Send, Key, ChevronRight,
+  Receipt, ShoppingCart, History
 } from "lucide-react";
 import { API } from "@/App";
 
