@@ -335,8 +335,8 @@ def run_audit():
             resp = client.post(f"{API_URL}/invoices-enhanced/{invoice_id}/payments", headers=headers, json=pmt_data)
             test("Invoice Payment", resp.status_code in [200, 400])  # May need to be sent first
     
-    resp = client.get(f"{API_URL}/invoices-enhanced/aging-report", headers=headers)
-    test("Invoice Aging Report", resp.status_code == 200)
+    resp = client.get(f"{API_URL}/invoices-enhanced/reports/aging", headers=headers)
+    test("Invoice Aging Report", resp.status_code == 200 and 'report' in resp.json())
     
     # ==================== BILLS ENHANCED MODULE ====================
     print("\n" + "-"*50)
