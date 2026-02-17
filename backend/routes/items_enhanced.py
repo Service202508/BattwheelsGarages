@@ -71,6 +71,27 @@ class ItemCreate(BaseModel):
             raise ValueError(f"Item type must be one of: {valid_types}")
         return v
 
+class ItemUpdate(BaseModel):
+    """Partial update model - all fields optional"""
+    name: Optional[str] = None
+    sku: Optional[str] = None
+    description: Optional[str] = None
+    item_type: Optional[str] = None
+    group_id: Optional[str] = None
+    group_name: Optional[str] = None
+    sales_rate: Optional[float] = None
+    purchase_rate: Optional[float] = None
+    unit: Optional[str] = None
+    tax_id: Optional[str] = None
+    tax_percentage: Optional[float] = None
+    hsn_code: Optional[str] = None
+    sac_code: Optional[str] = None
+    reorder_level: Optional[float] = None
+    preferred_vendor_id: Optional[str] = None
+    preferred_vendor_name: Optional[str] = None
+    custom_fields: Optional[Dict] = None
+    is_active: Optional[bool] = None
+
 class ItemStockLocationCreate(BaseModel):
     item_id: str
     warehouse_id: str
