@@ -630,21 +630,29 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [x] **Enhanced Items Module (Feb 17, 2026)** - Complete inventory management with Item Groups, Warehouses, Price Lists, Inventory Adjustments, Stock Tracking, Low Stock Alerts
 - [x] **Enhanced Contacts Module (Feb 17, 2026)** - Unified contact management replacing Customers/Vendors, with Contact Persons, Addresses, Tags, GSTIN validation, Portal Access, Email Statements
 - [x] **Contact Integration Module (Feb 17, 2026)** - Links enhanced contacts to transactions, unified search, transaction history, balance summaries, receivables/payables aging reports, migration tools
+- [x] **Estimates/Quotes Module (Feb 17, 2026)** - Sales cycle entry point with CRUD, line items, status workflow (Draft→Sent→Accepted/Declined→Converted), GST auto-calc (CGST/SGST/IGST), conversion to Invoice/Sales Order, conversion funnel visualization
 
 ### P0 (Next)
+- [ ] **Sales Orders Module** - Order confirmation after estimate acceptance, status management (draft/open/fulfilled), inventory reservation
+- [ ] **Invoices Module (Enhanced)** - Core revenue module with payment status tracking (paid/partial/overdue), recurring invoice profiles
 - [ ] Enable vector embeddings with OPENAI_API_KEY
 - [ ] Configure Razorpay with production keys (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET)
 - [ ] Customer notifications (ticket status, invoice, AMC expiry alerts)
 
 ### P1 (Future)
+- [ ] **Real Email Integration** - Un-mock email sending for portal invites, statements, and quotes using SendGrid/Resend
+- [ ] **Legacy Data Migration** - Migration script to move 346 legacy customers/vendors into unified Contacts model
+- [ ] **Purchase Side Modules** - Bills and Purchase Orders modules (symmetric to sales-side)
 - [ ] Elasticsearch for production-scale search
-- [ ] Email service integration (SendGrid/Resend) for actual email delivery
 - [ ] Cron job setup for automated scheduler execution
 - [ ] On-demand Sync button to pull latest data from Zoho Books
 
 ### P2 (Backlog)
+- [ ] **Activate Razorpay Integration** - Enable live payment gateway with user's production keys
+- [ ] **Full Customer Portal Functionality** - Expand token structure into full self-service portal
+- [ ] **Advanced Reporting** - Enhanced contact-centric reports
+- [ ] **Deprecate Old Routes** - Remove legacy `/app/backend/routes/books.py` and `/app/backend/routes/erp.py`
 - [ ] Kubernetes migration with HPA
-- [ ] Deprecate legacy books.py and erp.py files
 - [ ] E-invoicing government portal integration
 - [ ] Apply Logo to Favicon
 
