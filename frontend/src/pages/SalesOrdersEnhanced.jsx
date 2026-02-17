@@ -351,15 +351,16 @@ export default function SalesOrdersEnhanced() {
   return (
     <div className="space-y-6" data-testid="sales-orders-enhanced-page">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Sales Orders</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage orders, fulfillments, and invoicing</p>
-        </div>
-        <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
-          <RefreshCw className="h-4 w-4" /> Refresh
-        </Button>
-      </div>
+      <PageHeader
+        title="Sales Orders"
+        description="Manage orders, fulfillments, and invoicing"
+        icon={ShoppingCart}
+        actions={
+          <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
+            <RefreshCw className="h-4 w-4" /> Refresh
+          </Button>
+        }
+      />
 
       {/* Summary Cards */}
       {summary && (
