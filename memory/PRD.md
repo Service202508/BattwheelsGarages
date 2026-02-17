@@ -548,6 +548,7 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - [x] **PDF Generation (Feb 16, 2026)** - WeasyPrint integration for professional invoice PDFs
 - [x] **Razorpay Integration (Feb 16, 2026)** - Payment orders, payment links, webhooks (mock mode - add keys to enable)
 - [x] **Scheduled Jobs System (Feb 16, 2026)** - Overdue invoice updates, recurring invoice/expense generation, payment reminders
+- [x] **Enhanced Items Module (Feb 17, 2026)** - Complete inventory management with Item Groups, Warehouses, Price Lists, Inventory Adjustments, Stock Tracking, Low Stock Alerts
 
 ### P0 (Next)
 - [ ] Enable vector embeddings with OPENAI_API_KEY
