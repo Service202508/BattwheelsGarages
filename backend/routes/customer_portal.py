@@ -1,502 +1,466 @@
-"""
-Customer Portal Routes
-======================
-Read-only views + simple actions for customers.
-Strict RBAC: customer sees only their own data.
-"""
-from fastapi import APIRouter, HTTPException, Depends, Request
-from motor.motor_asyncio import AsyncIOMotorClient
-from typing import Optional, List
+# Customer Portal Module - Self-Service Portal for Customers
+# Allows customers to view invoices, estimates, statements, and make payments
+
+from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel, Field
+from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
+import motor.motor_asyncio
 import os
 import uuid
+import logging
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/customer-portal", tags=["Customer Portal"])
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
+client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
+db = client[DB_NAME]
 
-router = APIRouter(prefix="/customer", tags=["Customer Portal"])
+# Collections
+contacts_collection = db["contacts_enhanced"]
+invoices_collection = db["invoices_enhanced"]
+estimates_collection = db["estimates_enhanced"]
+salesorders_collection = db["salesorders_enhanced"]
+payments_collection = db["invoice_payments"]
+portal_sessions_collection = db["portal_sessions"]
 
-# ==================== MODELS ====================
+# ========================= MODELS =========================
 
-class AMCPlan(BaseModel):
-    """AMC Plan template (admin-configurable)"""
-    plan_id: str = Field(default_factory=lambda: f"amc_plan_{uuid.uuid4().hex[:8]}")
-    name: str
-    description: Optional[str] = None
-    tier: str = "basic"  # basic, plus, premium (stored as data, not constants)
-    duration_months: int = 12
-    price: float
-    services_included: List[dict] = []  # [{service_id, service_name, quantity}]
-    max_service_visits: int = 4
-    includes_parts: bool = False
-    parts_discount_percent: float = 0.0
-    priority_support: bool = False
-    roadside_assistance: bool = False
-    is_active: bool = True
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+class PortalLogin(BaseModel):
+    token: str = Field(..., min_length=10)
 
-class AMCSubscription(BaseModel):
-    """Customer's AMC subscription"""
-    subscription_id: str = Field(default_factory=lambda: f"amc_sub_{uuid.uuid4().hex[:12]}")
-    plan_id: str
-    plan_name: str
-    customer_id: str
-    customer_name: str
-    vehicle_id: str
-    vehicle_number: str
-    start_date: str  # YYYY-MM-DD
-    end_date: str  # YYYY-MM-DD
-    services_used: int = 0
-    max_services: int = 4
-    status: str = "active"  # active, expiring, expired, cancelled
-    amount_paid: float = 0.0
-    payment_status: str = "pending"  # pending, paid, partial
-    notes: Optional[str] = None
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    renewed_from: Optional[str] = None  # Previous subscription_id if renewed
-
-class ServiceHistoryItem(BaseModel):
-    """Service history view model"""
-    ticket_id: str
-    vehicle_number: str
-    vehicle_model: Optional[str] = None
-    title: str
-    status: str
-    priority: str
-    created_at: str
-    resolved_at: Optional[str] = None
-    technician_name: Optional[str] = None
-    total_cost: float = 0.0
-    invoice_id: Optional[str] = None
-
-class PaymentDue(BaseModel):
-    """Outstanding payment view model"""
+class PortalPaymentRequest(BaseModel):
     invoice_id: str
-    invoice_number: str
-    ticket_id: Optional[str] = None
-    vehicle_number: Optional[str] = None
-    amount: float
-    amount_paid: float = 0.0
-    balance_due: float
-    due_date: Optional[str] = None
-    status: str
-    created_at: str
+    amount: float = Field(..., gt=0)
+    payment_mode: str = "online"
 
-# ==================== AUTH HELPERS ====================
+# ========================= HELPERS =========================
 
-async def get_current_user_from_request(request: Request):
-    """Extract current user from request (reuse main auth)"""
-    import jwt
-    JWT_SECRET = os.environ.get('JWT_SECRET', 'battwheels-secret')
-    
-    # Try session token first
-    session_token = request.cookies.get("session_token")
-    if session_token:
-        session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
-        if session:
-            user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
-            if user:
-                return user
-    
-    # Try JWT token
-    auth_header = request.headers.get("Authorization")
-    if auth_header and auth_header.startswith("Bearer "):
-        token = auth_header.split(" ")[1]
-        try:
-            payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-            user = await db.users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
-            if user:
-                return user
-        except:
-            pass
-    return None
+def generate_session_token() -> str:
+    return f"PS-{uuid.uuid4().hex}"
 
-async def require_customer(request: Request):
-    """Require authenticated customer (not admin/technician for customer portal)"""
-    user = await get_current_user_from_request(request)
-    if not user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    # Customer portal is for customers, but admins can also view for support
-    if user.get("role") not in ["customer", "admin"]:
-        raise HTTPException(status_code=403, detail="Customer portal access required")
-    return user
-
-async def require_any_authenticated(request: Request):
-    """Require any authenticated user"""
-    user = await get_current_user_from_request(request)
-    if not user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    return user
-
-# ==================== CUSTOMER DASHBOARD ====================
-
-@router.get("/dashboard")
-async def get_customer_dashboard(request: Request):
-    """Get customer portal dashboard summary"""
-    user = await require_customer(request)
-    customer_id = user["user_id"]
-    
-    # Get customer's vehicles
-    vehicles = await db.vehicles.find(
-        {"owner_id": customer_id},
+async def validate_portal_token(token: str) -> dict:
+    """Validate portal token and return contact"""
+    contact = await contacts_collection.find_one(
+        {"portal_token": token, "portal_enabled": True, "is_active": True},
         {"_id": 0}
-    ).to_list(100)
+    )
+    if not contact:
+        raise HTTPException(status_code=401, detail="Invalid or expired portal token")
+    return contact
+
+async def get_portal_session(session_token: str) -> dict:
+    """Get and validate portal session"""
+    session = await portal_sessions_collection.find_one(
+        {"session_token": session_token, "is_active": True},
+        {"_id": 0}
+    )
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
     
-    # Get active tickets
-    active_tickets = await db.tickets.count_documents({
-        "customer_id": customer_id,
-        "status": {"$nin": ["closed", "resolved"]}
-    })
+    # Check expiry
+    expires = datetime.fromisoformat(session.get("expires_at", "2000-01-01"))
+    if expires < datetime.now(timezone.utc):
+        await portal_sessions_collection.update_one(
+            {"session_token": session_token},
+            {"$set": {"is_active": False}}
+        )
+        raise HTTPException(status_code=401, detail="Session expired")
     
-    # Get total service history
-    total_services = await db.tickets.count_documents({
-        "customer_id": customer_id
-    })
+    return session
+
+# ========================= AUTH ENDPOINTS =========================
+
+@router.post("/login")
+async def portal_login(login: PortalLogin):
+    """Login to customer portal with token"""
+    contact = await validate_portal_token(login.token)
     
-    # Get pending payments
-    pending_invoices = await db.invoices.find({
-        "customer_id": customer_id,
-        "payment_status": {"$in": ["pending", "partial"]}
-    }, {"_id": 0, "total_amount": 1, "amount_paid": 1}).to_list(100)
+    # Create session
+    session_token = generate_session_token()
+    session = {
+        "session_token": session_token,
+        "contact_id": contact["contact_id"],
+        "contact_name": contact.get("name", ""),
+        "contact_email": contact.get("email", ""),
+        "company_name": contact.get("company_name", ""),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat(),
+        "is_active": True
+    }
+    await portal_sessions_collection.insert_one(session)
     
-    total_pending = sum(
-        (inv.get("total_amount", 0) - inv.get("amount_paid", 0)) 
-        for inv in pending_invoices
+    # Update last login
+    await contacts_collection.update_one(
+        {"contact_id": contact["contact_id"]},
+        {"$set": {"portal_last_login": datetime.now(timezone.utc).isoformat()}}
     )
     
-    # Get active AMC subscriptions
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    active_amc = await db.amc_subscriptions.count_documents({
-        "customer_id": customer_id,
-        "status": {"$in": ["active", "expiring"]},
-        "end_date": {"$gte": today}
-    })
-    
     return {
-        "vehicles_count": len(vehicles),
-        "active_tickets": active_tickets,
-        "total_services": total_services,
-        "pending_amount": total_pending,
-        "active_amc_plans": active_amc,
-        "customer_name": user.get("name", ""),
-        "customer_email": user.get("email", "")
+        "code": 0,
+        "message": "Login successful",
+        "session_token": session_token,
+        "contact": {
+            "contact_id": contact["contact_id"],
+            "name": contact.get("name"),
+            "company_name": contact.get("company_name"),
+            "email": contact.get("email")
+        },
+        "expires_in": 86400  # 24 hours in seconds
     }
 
-# ==================== MY VEHICLES ====================
+@router.post("/logout")
+async def portal_logout(session_token: str):
+    """Logout from portal"""
+    await portal_sessions_collection.update_one(
+        {"session_token": session_token},
+        {"$set": {"is_active": False, "logged_out_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"code": 0, "message": "Logged out successfully"}
 
-@router.get("/vehicles")
-async def get_my_vehicles(request: Request):
-    """Get customer's registered vehicles"""
-    user = await require_customer(request)
-    customer_id = user["user_id"]
-    
-    vehicles = await db.vehicles.find(
-        {"owner_id": customer_id},
-        {"_id": 0}
-    ).to_list(100)
-    
-    # Enrich with service stats
-    for vehicle in vehicles:
-        vehicle_id = vehicle.get("vehicle_id")
-        
-        # Count services
-        service_count = await db.tickets.count_documents({"vehicle_id": vehicle_id})
-        vehicle["total_services"] = service_count
-        
-        # Last service date
-        last_ticket = await db.tickets.find_one(
-            {"vehicle_id": vehicle_id},
-            {"_id": 0, "created_at": 1},
-            sort=[("created_at", -1)]
-        )
-        vehicle["last_service_date"] = last_ticket.get("created_at") if last_ticket else None
-        
-        # Check AMC status
-        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        amc = await db.amc_subscriptions.find_one({
-            "vehicle_id": vehicle_id,
-            "status": {"$in": ["active", "expiring"]},
-            "end_date": {"$gte": today}
-        }, {"_id": 0, "plan_name": 1, "end_date": 1, "status": 1})
-        vehicle["amc_plan"] = amc
-    
-    return vehicles
+@router.get("/session")
+async def get_session_info(session_token: str):
+    """Get current session info"""
+    session = await get_portal_session(session_token)
+    return {"code": 0, "session": session}
 
-# ==================== SERVICE HISTORY ====================
+# ========================= DASHBOARD =========================
 
-@router.get("/service-history")
-async def get_service_history(
-    request: Request,
-    vehicle_id: Optional[str] = None,
+@router.get("/dashboard")
+async def get_portal_dashboard(session_token: str):
+    """Get customer portal dashboard summary"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
+    
+    # Get invoice stats
+    total_invoices = await invoices_collection.count_documents({
+        "customer_id": contact_id, "status": {"$ne": "void"}
+    })
+    pending_invoices = await invoices_collection.count_documents({
+        "customer_id": contact_id, "status": {"$in": ["sent", "overdue", "partially_paid"]}
+    })
+    overdue_invoices = await invoices_collection.count_documents({
+        "customer_id": contact_id, "status": "overdue"
+    })
+    
+    # Get totals
+    pipeline = [
+        {"$match": {"customer_id": contact_id, "status": {"$ne": "void"}}},
+        {"$group": {
+            "_id": None,
+            "total_invoiced": {"$sum": "$grand_total"},
+            "total_outstanding": {"$sum": "$balance_due"},
+            "total_paid": {"$sum": {"$subtract": ["$grand_total", "$balance_due"]}}
+        }}
+    ]
+    totals = await invoices_collection.aggregate(pipeline).to_list(1)
+    values = totals[0] if totals else {"total_invoiced": 0, "total_outstanding": 0, "total_paid": 0}
+    
+    # Get estimate stats
+    total_estimates = await estimates_collection.count_documents({"customer_id": contact_id})
+    pending_estimates = await estimates_collection.count_documents({
+        "customer_id": contact_id, "status": "sent"
+    })
+    
+    # Get recent activity
+    recent_invoices = await invoices_collection.find(
+        {"customer_id": contact_id, "status": {"$ne": "void"}},
+        {"_id": 0, "invoice_id": 1, "invoice_number": 1, "invoice_date": 1, "grand_total": 1, "balance_due": 1, "status": 1}
+    ).sort("invoice_date", -1).limit(5).to_list(5)
+    
+    return {
+        "code": 0,
+        "dashboard": {
+            "contact": {
+                "name": session.get("contact_name"),
+                "company": session.get("company_name"),
+                "email": session.get("contact_email")
+            },
+            "summary": {
+                "total_invoices": total_invoices,
+                "pending_invoices": pending_invoices,
+                "overdue_invoices": overdue_invoices,
+                "total_estimates": total_estimates,
+                "pending_estimates": pending_estimates,
+                "total_invoiced": round(values.get("total_invoiced", 0), 2),
+                "total_outstanding": round(values.get("total_outstanding", 0), 2),
+                "total_paid": round(values.get("total_paid", 0), 2)
+            },
+            "recent_invoices": recent_invoices
+        }
+    }
+
+# ========================= INVOICES =========================
+
+@router.get("/invoices")
+async def get_portal_invoices(
+    session_token: str,
     status: Optional[str] = None,
-    limit: int = 50
+    page: int = 1,
+    per_page: int = 20
 ):
-    """Get customer's service history with status timeline"""
-    user = await require_customer(request)
-    customer_id = user["user_id"]
+    """Get customer's invoices"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
     
-    query = {"customer_id": customer_id}
-    if vehicle_id:
-        query["vehicle_id"] = vehicle_id
+    query = {"customer_id": contact_id, "status": {"$nin": ["draft", "void"]}}
     if status:
         query["status"] = status
     
-    tickets = await db.tickets.find(
+    total = await invoices_collection.count_documents(query)
+    skip = (page - 1) * per_page
+    
+    invoices = await invoices_collection.find(
         query,
-        {"_id": 0}
-    ).sort("created_at", -1).limit(limit).to_list(limit)
-    
-    history = []
-    for ticket in tickets:
-        # Get invoice if exists
-        invoice = await db.invoices.find_one(
-            {"ticket_id": ticket["ticket_id"]},
-            {"_id": 0, "invoice_id": 1, "total_amount": 1}
-        )
-        
-        history.append({
-            "ticket_id": ticket.get("ticket_id"),
-            "vehicle_number": ticket.get("vehicle_number", "N/A"),
-            "vehicle_model": ticket.get("vehicle_model"),
-            "title": ticket.get("title"),
-            "description": ticket.get("description"),
-            "status": ticket.get("status"),
-            "priority": ticket.get("priority"),
-            "created_at": ticket.get("created_at"),
-            "updated_at": ticket.get("updated_at"),
-            "resolved_at": ticket.get("resolved_at"),
-            "technician_name": ticket.get("assigned_technician_name"),
-            "total_cost": ticket.get("final_amount", ticket.get("estimated_cost", 0)),
-            "invoice_id": invoice.get("invoice_id") if invoice else None,
-            "status_history": ticket.get("status_history", [])
-        })
-    
-    return history
-
-@router.get("/service-history/{ticket_id}")
-async def get_service_detail(ticket_id: str, request: Request):
-    """Get detailed service ticket view with timeline"""
-    user = await require_customer(request)
-    customer_id = user["user_id"]
-    
-    ticket = await db.tickets.find_one(
-        {"ticket_id": ticket_id, "customer_id": customer_id},
-        {"_id": 0}
-    )
-    
-    if not ticket:
-        raise HTTPException(status_code=404, detail="Service ticket not found")
-    
-    # Get invoice
-    invoice = await db.invoices.find_one(
-        {"ticket_id": ticket_id},
-        {"_id": 0}
-    )
-    
-    # Get status history (timeline)
-    status_history = ticket.get("status_history", [])
+        {"_id": 0, "invoice_id": 1, "invoice_number": 1, "invoice_date": 1, "due_date": 1,
+         "grand_total": 1, "balance_due": 1, "status": 1, "is_sent": 1}
+    ).sort("invoice_date", -1).skip(skip).limit(per_page).to_list(per_page)
     
     return {
-        **ticket,
-        "invoice": invoice,
-        "timeline": status_history
+        "code": 0,
+        "invoices": invoices,
+        "page_context": {"page": page, "per_page": per_page, "total": total}
     }
 
-# ==================== INVOICES ====================
-
-@router.get("/invoices")
-async def get_my_invoices(
-    request: Request,
-    status: Optional[str] = None,
-    limit: int = 50
-):
-    """Get customer's invoices"""
-    user = await require_customer(request)
-    customer_id = user["user_id"]
-    
-    query = {"customer_id": customer_id}
-    if status:
-        query["payment_status"] = status
-    
-    invoices = await db.invoices.find(
-        query,
-        {"_id": 0}
-    ).sort("created_at", -1).limit(limit).to_list(limit)
-    
-    return invoices
-
 @router.get("/invoices/{invoice_id}")
-async def get_invoice_detail(invoice_id: str, request: Request):
-    """Get invoice detail (for download/view)"""
-    user = await require_customer(request)
-    customer_id = user["user_id"]
+async def get_portal_invoice_detail(session_token: str, invoice_id: str):
+    """Get invoice details for portal"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
     
-    invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "customer_id": customer_id},
+    invoice = await invoices_collection.find_one(
+        {"invoice_id": invoice_id, "customer_id": contact_id, "status": {"$nin": ["draft", "void"]}},
         {"_id": 0}
     )
-    
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
-    return invoice
-
-# ==================== PAYMENTS DUE ====================
-
-@router.get("/payments-due")
-async def get_payments_due(request: Request):
-    """Get outstanding payments"""
-    user = await require_customer(request)
-    customer_id = user["user_id"]
-    
-    invoices = await db.invoices.find({
-        "customer_id": customer_id,
-        "payment_status": {"$in": ["pending", "partial"]}
-    }, {"_id": 0}).sort("created_at", -1).to_list(100)
-    
-    payments_due = []
-    for inv in invoices:
-        total = inv.get("total_amount", 0)
-        paid = inv.get("amount_paid", 0)
-        balance = total - paid
-        
-        if balance > 0:
-            payments_due.append({
-                "invoice_id": inv.get("invoice_id"),
-                "invoice_number": inv.get("invoice_number"),
-                "ticket_id": inv.get("ticket_id"),
-                "vehicle_number": inv.get("vehicle_number"),
-                "amount": total,
-                "amount_paid": paid,
-                "balance_due": balance,
-                "due_date": inv.get("due_date"),
-                "status": inv.get("payment_status"),
-                "created_at": inv.get("created_at")
-            })
-    
-    return {
-        "payments": payments_due,
-        "total_due": sum(p["balance_due"] for p in payments_due)
-    }
-
-# ==================== AMC SUBSCRIPTIONS ====================
-
-@router.get("/amc")
-async def get_my_amc_subscriptions(request: Request):
-    """Get customer's AMC subscriptions"""
-    user = await require_customer(request)
-    customer_id = user["user_id"]
-    
-    subscriptions = await db.amc_subscriptions.find(
-        {"customer_id": customer_id},
-        {"_id": 0}
-    ).sort("created_at", -1).to_list(100)
-    
-    # Update status based on dates
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    for sub in subscriptions:
-        end_date = sub.get("end_date", "")
-        if end_date:
-            if end_date < today:
-                sub["status"] = "expired"
-            elif end_date <= (datetime.now(timezone.utc) + timedelta(days=15)).strftime("%Y-%m-%d"):
-                sub["status"] = "expiring"
-            else:
-                sub["status"] = "active" if sub.get("status") != "cancelled" else "cancelled"
-    
-    return subscriptions
-
-@router.get("/amc/{subscription_id}")
-async def get_amc_detail(subscription_id: str, request: Request):
-    """Get AMC subscription detail with usage"""
-    user = await require_customer(request)
-    customer_id = user["user_id"]
-    
-    subscription = await db.amc_subscriptions.find_one(
-        {"subscription_id": subscription_id, "customer_id": customer_id},
-        {"_id": 0}
-    )
-    
-    if not subscription:
-        raise HTTPException(status_code=404, detail="AMC subscription not found")
-    
-    # Get the plan details
-    plan = await db.amc_plans.find_one(
-        {"plan_id": subscription.get("plan_id")},
-        {"_id": 0}
-    )
-    
-    # Get services used under this AMC
-    services_used = await db.tickets.find({
-        "vehicle_id": subscription.get("vehicle_id"),
-        "amc_subscription_id": subscription_id
-    }, {"_id": 0, "ticket_id": 1, "title": 1, "created_at": 1, "status": 1}).to_list(100)
-    
-    return {
-        **subscription,
-        "plan_details": plan,
-        "services_history": services_used
-    }
-
-@router.get("/amc-plans")
-async def get_available_amc_plans(request: Request):
-    """Get available AMC plans for purchase"""
-    user = await require_customer(request)
-    
-    plans = await db.amc_plans.find(
-        {"is_active": True},
+    # Get line items
+    line_items = await db["invoice_line_items"].find(
+        {"invoice_id": invoice_id},
         {"_id": 0}
     ).to_list(100)
+    invoice["line_items"] = line_items
     
-    return plans
-
-# ==================== SIMPLE ACTIONS ====================
-
-@router.post("/request-callback")
-async def request_callback(request: Request):
-    """Request a callback from service team"""
-    user = await require_customer(request)
-    body = await request.json()
+    # Get payments
+    payments = await payments_collection.find(
+        {"invoice_id": invoice_id},
+        {"_id": 0, "payment_id": 1, "amount": 1, "payment_date": 1, "payment_mode": 1}
+    ).sort("payment_date", -1).to_list(50)
+    invoice["payments"] = payments
     
-    callback_request = {
-        "request_id": f"cb_{uuid.uuid4().hex[:12]}",
-        "customer_id": user["user_id"],
-        "customer_name": user.get("name"),
-        "customer_email": user.get("email"),
-        "customer_phone": body.get("phone"),
-        "reason": body.get("reason", "General inquiry"),
-        "preferred_time": body.get("preferred_time"),
-        "vehicle_id": body.get("vehicle_id"),
-        "status": "pending",
-        "created_at": datetime.now(timezone.utc).isoformat()
+    # Mark as viewed if first time
+    if not invoice.get("viewed_date"):
+        await invoices_collection.update_one(
+            {"invoice_id": invoice_id},
+            {"$set": {"viewed_date": datetime.now(timezone.utc).isoformat()}}
+        )
+    
+    return {"code": 0, "invoice": invoice}
+
+# ========================= ESTIMATES =========================
+
+@router.get("/estimates")
+async def get_portal_estimates(
+    session_token: str,
+    status: Optional[str] = None,
+    page: int = 1,
+    per_page: int = 20
+):
+    """Get customer's estimates/quotes"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
+    
+    query = {"customer_id": contact_id, "status": {"$nin": ["draft"]}}
+    if status:
+        query["status"] = status
+    
+    total = await estimates_collection.count_documents(query)
+    skip = (page - 1) * per_page
+    
+    estimates = await estimates_collection.find(
+        query,
+        {"_id": 0, "estimate_id": 1, "estimate_number": 1, "estimate_date": 1, "expiry_date": 1,
+         "grand_total": 1, "status": 1}
+    ).sort("estimate_date", -1).skip(skip).limit(per_page).to_list(per_page)
+    
+    return {
+        "code": 0,
+        "estimates": estimates,
+        "page_context": {"page": page, "per_page": per_page, "total": total}
     }
-    
-    await db.callback_requests.insert_one(callback_request)
-    
-    return {"message": "Callback request submitted", "request_id": callback_request["request_id"]}
 
-@router.post("/request-appointment")
-async def request_appointment(request: Request):
-    """Request service appointment"""
-    user = await require_customer(request)
-    body = await request.json()
+@router.get("/estimates/{estimate_id}")
+async def get_portal_estimate_detail(session_token: str, estimate_id: str):
+    """Get estimate details for portal"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
     
-    appointment = {
-        "appointment_id": f"apt_{uuid.uuid4().hex[:12]}",
-        "customer_id": user["user_id"],
-        "customer_name": user.get("name"),
-        "vehicle_id": body.get("vehicle_id"),
-        "service_type": body.get("service_type"),
-        "preferred_date": body.get("preferred_date"),
-        "preferred_time": body.get("preferred_time"),
-        "notes": body.get("notes"),
-        "status": "pending",
-        "created_at": datetime.now(timezone.utc).isoformat()
+    estimate = await estimates_collection.find_one(
+        {"estimate_id": estimate_id, "customer_id": contact_id, "status": {"$ne": "draft"}},
+        {"_id": 0}
+    )
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found")
+    
+    # Get line items
+    line_items = await db["estimate_line_items"].find(
+        {"estimate_id": estimate_id},
+        {"_id": 0}
+    ).to_list(100)
+    estimate["line_items"] = line_items
+    
+    return {"code": 0, "estimate": estimate}
+
+@router.post("/estimates/{estimate_id}/accept")
+async def accept_portal_estimate(session_token: str, estimate_id: str):
+    """Accept an estimate from portal"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
+    
+    estimate = await estimates_collection.find_one(
+        {"estimate_id": estimate_id, "customer_id": contact_id, "status": "sent"}
+    )
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found or not in sent status")
+    
+    await estimates_collection.update_one(
+        {"estimate_id": estimate_id},
+        {"$set": {
+            "status": "accepted",
+            "accepted_date": datetime.now(timezone.utc).isoformat(),
+            "accepted_via": "portal",
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"code": 0, "message": "Estimate accepted"}
+
+@router.post("/estimates/{estimate_id}/decline")
+async def decline_portal_estimate(session_token: str, estimate_id: str, reason: str = ""):
+    """Decline an estimate from portal"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
+    
+    estimate = await estimates_collection.find_one(
+        {"estimate_id": estimate_id, "customer_id": contact_id, "status": "sent"}
+    )
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found or not in sent status")
+    
+    await estimates_collection.update_one(
+        {"estimate_id": estimate_id},
+        {"$set": {
+            "status": "declined",
+            "declined_date": datetime.now(timezone.utc).isoformat(),
+            "declined_via": "portal",
+            "decline_reason": reason,
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"code": 0, "message": "Estimate declined"}
+
+# ========================= STATEMENT =========================
+
+@router.get("/statement")
+async def get_portal_statement(
+    session_token: str,
+    start_date: str = "",
+    end_date: str = ""
+):
+    """Get account statement for portal"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
+    
+    # Build query
+    query = {"customer_id": contact_id, "status": {"$nin": ["draft", "void"]}}
+    if start_date:
+        query["invoice_date"] = {"$gte": start_date}
+    if end_date:
+        if "invoice_date" in query:
+            query["invoice_date"]["$lte"] = end_date
+        else:
+            query["invoice_date"] = {"$lte": end_date}
+    
+    # Get invoices
+    invoices = await invoices_collection.find(
+        query,
+        {"_id": 0, "invoice_id": 1, "invoice_number": 1, "invoice_date": 1, "due_date": 1,
+         "grand_total": 1, "balance_due": 1, "status": 1}
+    ).sort("invoice_date", 1).to_list(500)
+    
+    # Get payments
+    payments = await payments_collection.find(
+        {"customer_id": contact_id},
+        {"_id": 0, "payment_id": 1, "invoice_id": 1, "amount": 1, "payment_date": 1, "payment_mode": 1}
+    ).sort("payment_date", 1).to_list(500)
+    
+    # Calculate totals
+    total_invoiced = sum(inv.get("grand_total", 0) for inv in invoices)
+    total_paid = sum(p.get("amount", 0) for p in payments)
+    balance = total_invoiced - total_paid
+    
+    return {
+        "code": 0,
+        "statement": {
+            "period": {"start_date": start_date, "end_date": end_date},
+            "invoices": invoices,
+            "payments": payments,
+            "summary": {
+                "total_invoiced": round(total_invoiced, 2),
+                "total_paid": round(total_paid, 2),
+                "balance_due": round(balance, 2)
+            }
+        }
     }
+
+# ========================= PAYMENTS =========================
+
+@router.get("/payments")
+async def get_portal_payments(session_token: str, page: int = 1, per_page: int = 20):
+    """Get customer's payment history"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
     
-    await db.appointments.insert_one(appointment)
+    total = await payments_collection.count_documents({"customer_id": contact_id})
+    skip = (page - 1) * per_page
     
-    return {"message": "Appointment request submitted", "appointment_id": appointment["appointment_id"]}
+    payments = await payments_collection.find(
+        {"customer_id": contact_id},
+        {"_id": 0}
+    ).sort("payment_date", -1).skip(skip).limit(per_page).to_list(per_page)
+    
+    return {
+        "code": 0,
+        "payments": payments,
+        "page_context": {"page": page, "per_page": per_page, "total": total}
+    }
+
+# ========================= PROFILE =========================
+
+@router.get("/profile")
+async def get_portal_profile(session_token: str):
+    """Get customer profile for portal"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
+    
+    contact = await contacts_collection.find_one(
+        {"contact_id": contact_id},
+        {"_id": 0, "portal_token": 0}
+    )
+    if not contact:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    
+    # Get addresses
+    addresses = await db["addresses"].find(
+        {"contact_id": contact_id},
+        {"_id": 0}
+    ).to_list(20)
+    contact["addresses"] = addresses
+    
+    return {"code": 0, "profile": contact}
