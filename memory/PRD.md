@@ -7,7 +7,48 @@ Build an AI-native EV Failure Intelligence (EFI) Platform where structured failu
 
 ## What's Been Implemented
 
-### Estimates/Quotes Module (Feb 17, 2026) ✅ COMPLETE - NEW
+### Sales Orders Module (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**Post-Estimate Order Confirmation with Inventory Reservation and Fulfillment:**
+
+| Feature | Backend API | Frontend UI | Status |
+|---------|-------------|-------------|--------|
+| **Sales Orders CRUD** | `/api/sales-orders-enhanced/` | ✅ List with filters + Create form | ✅ |
+| **Line Items** | `/api/sales-orders-enhanced/{id}/line-items` | ✅ Add/Update/Delete | ✅ |
+| **Status Workflow** | `/api/sales-orders-enhanced/{id}/status` | ✅ Draft→Confirmed→Open→Fulfilled→Closed | ✅ |
+| **Confirm Order** | `/api/sales-orders-enhanced/{id}/confirm` | ✅ Reserves stock | ✅ |
+| **Void Order** | `/api/sales-orders-enhanced/{id}/void` | ✅ Releases reserved stock | ✅ |
+| **Create Fulfillment** | `/api/sales-orders-enhanced/{id}/fulfill` | ✅ Partial/full shipment | ✅ |
+| **Convert to Invoice** | `/api/sales-orders-enhanced/{id}/convert-to-invoice` | ✅ One-click conversion | ✅ |
+| **Clone Order** | `/api/sales-orders-enhanced/{id}/clone` | ✅ Clone button | ✅ |
+| **Send Order** | `/api/sales-orders-enhanced/{id}/send` | ✅ **MOCKED** (logs only) | ✅ |
+| **GST Calculations** | Auto-calculated | ✅ CGST/SGST or IGST | ✅ |
+| **Fulfillment Pipeline** | `/api/sales-orders-enhanced/reports/fulfillment-summary` | ✅ Visual pipeline | ✅ |
+
+**Frontend Features:**
+- New page at `/sales-orders` with Summary Cards and Fulfillment Pipeline
+- Summary cards: Total Orders, Draft, Confirmed, Open, Closed, Total Value, Pending Invoice
+- Fulfillment Pipeline: Unfulfilled → Partially Fulfilled → Fulfilled with values and rate
+- Orders list with search, status filter, fulfillment filter
+- Create New tab with customer search, line items, delivery method
+- Detail dialog with line items (Ordered/Fulfilled/Remaining), fulfillments, history
+- Status-specific action buttons (Confirm, Fulfill, Convert to Invoice, Send, Void, Clone)
+
+**Test Results: 28/28 backend tests passed (100%)**
+
+---
+
+### Quick Quote Enhancement (Feb 17, 2026) ✅ COMPLETE - NEW
+
+**UX Optimization for Contact-to-Estimate Workflow:**
+- Added "Quick Quote" button on Contact detail dialog
+- Click navigates to `/estimates` with customer pre-filled
+- URL params `customer_id` and `customer_name` auto-populate create form
+- Streamlines sales workflow for repeat customers
+
+---
+
+### Estimates/Quotes Module (Feb 17, 2026) ✅ COMPLETE
 
 **Full Sales Cycle Entry Point with GST Calculations and Workflow:**
 
