@@ -391,73 +391,43 @@ export default function ContactsEnhanced() {
 
       {/* Summary Cards */}
       {summary && (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <Users className="h-8 w-8 text-blue-500" />
-                <div>
-                  <p className="text-xs text-gray-500">Total Contacts</p>
-                  <p className="text-xl font-bold">{summary.total_contacts}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <User className="h-8 w-8 text-green-500" />
-                <div>
-                  <p className="text-xs text-gray-500">Customers</p>
-                  <p className="text-xl font-bold">{summary.customers}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <Building2 className="h-8 w-8 text-orange-500" />
-                <div>
-                  <p className="text-xs text-gray-500">Vendors</p>
-                  <p className="text-xl font-bold">{summary.vendors}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <Shield className="h-8 w-8 text-purple-500" />
-                <div>
-                  <p className="text-xs text-gray-500">With GSTIN</p>
-                  <p className="text-xl font-bold">{summary.with_gstin}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-green-50 border-green-200">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <CreditCard className="h-8 w-8 text-green-600" />
-                <div>
-                  <p className="text-xs text-gray-500">Receivable</p>
-                  <p className="text-lg font-bold text-green-700">₹{(summary.total_receivable || 0).toLocaleString('en-IN')}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-red-50 border-red-200">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <CreditCard className="h-8 w-8 text-red-600" />
-                <div>
-                  <p className="text-xs text-gray-500">Payable</p>
-                  <p className="text-lg font-bold text-red-700">₹{(summary.total_payable || 0).toLocaleString('en-IN')}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          <KPICard
+            title="Total Contacts"
+            value={summary.total_contacts}
+            icon={Users}
+            variant="info"
+          />
+          <KPICard
+            title="Customers"
+            value={summary.customers}
+            icon={User}
+            variant="success"
+          />
+          <KPICard
+            title="Vendors"
+            value={summary.vendors}
+            icon={Building2}
+            variant="warning"
+          />
+          <KPICard
+            title="With GSTIN"
+            value={summary.with_gstin}
+            icon={Shield}
+            variant="purple"
+          />
+          <KPICard
+            title="Receivable"
+            value={formatCurrencyCompact(summary.total_receivable || 0)}
+            icon={CreditCard}
+            variant="success"
+          />
+          <KPICard
+            title="Payable"
+            value={formatCurrencyCompact(summary.total_payable || 0)}
+            icon={CreditCard}
+            variant="danger"
+          />
         </div>
       )}
 
