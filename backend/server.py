@@ -4525,13 +4525,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Enhanced Items routes: {e}")
 
-# Include Enhanced Contacts routes (Comprehensive Contact Management)
+# Include Enhanced Contacts routes v2 (Unified Customer & Vendor Management)
+# This merges contacts_enhanced and customers_enhanced into a single source of truth
 try:
-    from routes.contacts_enhanced import router as contacts_enhanced_router
+    from routes.contacts_enhanced_v2 import router as contacts_enhanced_router
     api_router.include_router(contacts_enhanced_router)
-    logger.info("Enhanced Contacts routes loaded")
+    logger.info("Enhanced Contacts v2 routes loaded (unified customer/vendor management)")
 except Exception as e:
-    logger.error(f"Failed to load Enhanced Contacts routes: {e}")
+    logger.error(f"Failed to load Enhanced Contacts v2 routes: {e}")
 
 # Include Contact Integration routes (Links contacts to transactions)
 try:
@@ -4557,13 +4558,9 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Enhanced Sales Orders routes: {e}")
 
-# Include Enhanced Customers routes
-try:
-    from routes.customers_enhanced import router as customers_enhanced_router
-    api_router.include_router(customers_enhanced_router)
-    logger.info("Enhanced Customers routes loaded")
-except Exception as e:
-    logger.error(f"Failed to load Enhanced Customers routes: {e}")
+# DEPRECATED: customers_enhanced has been merged into contacts_enhanced_v2
+# The unified contacts module now handles all customer and vendor functionality
+# with a contact_type field to distinguish between customers, vendors, and both
 
 # Include main router
 app.include_router(api_router)
