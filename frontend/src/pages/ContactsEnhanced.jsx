@@ -918,10 +918,79 @@ export default function ContactsEnhanced() {
                     <Button variant="destructive" size="sm" onClick={() => handleDeleteContact(selectedContact.contact_id)}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
                   </div>
 
-                  {/* Usage Stats */}
-                  {selectedContact.usage && selectedContact.usage.is_used && (
+                  {/* Transaction History */}
+                  {(contactTransactions.length > 0 || transactionSummary) && (
+                    <>
+                      <Separator />
+                      <div>
+                        <h4 className="font-medium flex items-center gap-2 mb-3"><History className="h-4 w-4" /> Transaction History</h4>
+                        
+                        {transactionSummary && (
+                          <div className="grid grid-cols-4 gap-3 mb-4">
+                            <div className="bg-blue-50 rounded-lg p-2 text-center">
+                              <p className="text-xs text-gray-500">Total Invoiced</p>
+                              <p className="font-bold text-blue-700">₹{transactionSummary.total_invoiced?.toLocaleString('en-IN') || 0}</p>
+                            </div>
+                            <div className="bg-orange-50 rounded-lg p-2 text-center">
+                              <p className="text-xs text-gray-500">Total Billed</p>
+                              <p className="font-bold text-orange-700">₹{transactionSummary.total_billed?.toLocaleString('en-IN') || 0}</p>
+                            </div>
+                            <div className="bg-red-50 rounded-lg p-2 text-center">
+                              <p className="text-xs text-gray-500">Outstanding</p>
+                              <p className="font-bold text-red-700">₹{transactionSummary.total_outstanding?.toLocaleString('en-IN') || 0}</p>
+                            </div>
+                            <div className="bg-gray-100 rounded-lg p-2 text-center">
+                              <p className="text-xs text-gray-500">Transactions</p>
+                              <p className="font-bold">{transactionSummary.transaction_count || 0}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {contactTransactions.length > 0 && (
+                          <div className="border rounded-lg overflow-hidden">
+                            <table className="w-full text-xs">
+                              <thead className="bg-gray-50">
+                                <tr>
+                                  <th className="px-3 py-2 text-left">Type</th>
+                                  <th className="px-3 py-2 text-left">Number</th>
+                                  <th className="px-3 py-2 text-left">Date</th>
+                                  <th className="px-3 py-2 text-right">Amount</th>
+                                  <th className="px-3 py-2 text-center">Status</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {contactTransactions.slice(0, 5).map((txn, idx) => (
+                                  <tr key={idx} className="border-t">
+                                    <td className="px-3 py-2">
+                                      <Badge variant="outline" className="text-xs capitalize">
+                                        {txn.type?.replace('_', ' ')}
+                                      </Badge>
+                                    </td>
+                                    <td className="px-3 py-2 font-mono">{txn.transaction_number || '-'}</td>
+                                    <td className="px-3 py-2">{txn.date ? new Date(txn.date).toLocaleDateString('en-IN') : '-'}</td>
+                                    <td className="px-3 py-2 text-right font-medium">₹{(txn.total || 0).toLocaleString('en-IN')}</td>
+                                    <td className="px-3 py-2 text-center">
+                                      <Badge className={`text-xs ${txn.status === 'paid' ? 'bg-green-100 text-green-700' : txn.status === 'overdue' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'}`}>
+                                        {txn.status || 'N/A'}
+                                      </Badge>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                            {contactTransactions.length > 5 && (
+                              <p className="text-xs text-gray-500 text-center py-2">+ {contactTransactions.length - 5} more transactions</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Usage Stats (Legacy) */}
+                  {selectedContact.usage && selectedContact.usage.is_used && !contactTransactions.length && (
                     <div className="bg-gray-50 rounded-lg p-3">
-                      <p className="text-xs text-gray-500 mb-2">Transaction History</p>
+                      <p className="text-xs text-gray-500 mb-2">Transaction Summary</p>
                       <div className="flex gap-4 text-xs">
                         {selectedContact.usage.invoices > 0 && <span>Invoices: {selectedContact.usage.invoices}</span>}
                         {selectedContact.usage.bills > 0 && <span>Bills: {selectedContact.usage.bills}</span>}
