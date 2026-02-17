@@ -49,7 +49,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
           <button onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
-          <span className="font-bold text-lg text-emerald-600">Battwheels</span>
+          <span className="font-bold text-lg text-emerald-600">Battwheels OS</span>
         </div>
         <Avatar className="h-8 w-8">
           <AvatarImage src={user?.picture} />
