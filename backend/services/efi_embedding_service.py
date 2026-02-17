@@ -464,7 +464,7 @@ class EFIEmbeddingManager:
         embedding: List[float],
         subsystem: Optional[str] = None,
         limit: int = 5,
-        threshold: float = 0.3
+        threshold: float = 0.1  # Lowered threshold for hash-based embeddings
     ) -> List[Dict[str, Any]]:
         """Find similar failure cards using embedding similarity"""
         
