@@ -1082,12 +1082,6 @@ async def update_enhanced_item(item_id: str, item: ItemUpdate):
             update_data["hsn_or_sac"] = update_data.get("hsn_code", existing.get("hsn_code", "")) or update_data.get("sac_code", existing.get("sac_code", ""))
         
         await db.items.update_one({"item_id": item_id}, {"$set": update_data})
-        "is_active": item.is_active,
-        "status": "active" if item.is_active else "inactive",
-        "updated_time": datetime.now(timezone.utc).isoformat()
-    }
-    
-    await db.items.update_one({"item_id": item_id}, {"$set": update_data})
     
     return {"code": 0, "message": "Item updated successfully"}
 
