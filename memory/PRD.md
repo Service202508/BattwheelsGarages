@@ -1119,6 +1119,8 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 - **Password:** `admin123`
 
 ## Key Technical Notes
-1. **Embeddings require OPENAI_API_KEY** - Emergent LLM key only supports chat completions, not embeddings
-2. **Search fallback** - When embeddings disabled, system uses keyword/BM25 search (Stage 4-5)
-3. **Processing time** - AI matching averages 2-10ms per query
+1. **EFI Embeddings use hash-based fallback** - Emergent LLM key proxy does not support embedding endpoints
+2. **Embeddings require OPENAI_API_KEY** - For real semantic embeddings (OPENAI_API_KEY env var)
+3. **Search fallback** - When embeddings disabled, system uses keyword/BM25 search (Stage 4-5)
+4. **Processing time** - AI matching averages 2-10ms per query
+5. **Decision trees boost ranking** - Cards with decision trees get 1.5x similarity boost
