@@ -49,6 +49,8 @@ export default function ContactsEnhanced() {
   const [showPersonDialog, setShowPersonDialog] = useState(false);
   const [showAddressDialog, setShowAddressDialog] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
+  const [contactTransactions, setContactTransactions] = useState([]);
+  const [transactionSummary, setTransactionSummary] = useState(null);
 
   // Form states
   const [newContact, setNewContact] = useState({
