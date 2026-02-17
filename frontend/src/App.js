@@ -46,6 +46,11 @@ import DeliveryChallans from "@/pages/DeliveryChallans";
 import Items from "@/pages/Items";
 import PriceLists from "@/pages/PriceLists";
 import InventoryAdjustments from "@/pages/InventoryAdjustments";
+import RecurringExpenses from "@/pages/RecurringExpenses";
+import ProjectTasks from "@/pages/ProjectTasks";
+import OpeningBalances from "@/pages/OpeningBalances";
+import ExchangeRates from "@/pages/ExchangeRates";
+import ActivityLogs from "@/pages/ActivityLogs";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 
