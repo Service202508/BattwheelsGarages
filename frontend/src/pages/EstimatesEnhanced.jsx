@@ -338,67 +338,69 @@ export default function EstimatesEnhanced() {
   return (
     <div className="space-y-6" data-testid="estimates-enhanced-page">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Estimates & Quotes</h1>
-          <p className="text-gray-500 text-sm mt-1">Create, send, and convert estimates to invoices</p>
-        </div>
-        <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
-          <RefreshCw className="h-4 w-4" /> Refresh
-        </Button>
-      </div>
+      <PageHeader
+        title="Estimates & Quotes"
+        description="Create, send, and convert estimates to invoices"
+        icon={FileText}
+        actions={
+          <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
+            <RefreshCw className="h-4 w-4" /> Refresh
+          </Button>
+        }
+      />
 
       {/* Summary Cards */}
-      {summary && (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <FileText className="h-8 w-8 text-blue-500" />
-                <div>
-                  <p className="text-xs text-gray-500">Total</p>
-                  <p className="text-xl font-bold">{summary.total}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-gray-50">
-            <CardContent className="pt-4">
-              <p className="text-xs text-gray-500">Draft</p>
-              <p className="text-lg font-bold">{summary.by_status?.draft || 0}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-blue-50">
-            <CardContent className="pt-4">
-              <p className="text-xs text-gray-500">Sent</p>
-              <p className="text-lg font-bold text-blue-700">{summary.by_status?.sent || 0}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-green-50">
-            <CardContent className="pt-4">
-              <p className="text-xs text-gray-500">Accepted</p>
-              <p className="text-lg font-bold text-green-700">{summary.by_status?.accepted || 0}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-orange-50">
-            <CardContent className="pt-4">
-              <p className="text-xs text-gray-500">Expired</p>
-              <p className="text-lg font-bold text-orange-700">{summary.by_status?.expired || 0}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-purple-50">
-            <CardContent className="pt-4">
-              <p className="text-xs text-gray-500">Converted</p>
-              <p className="text-lg font-bold text-purple-700">{summary.by_status?.converted || 0}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-green-100 border-green-300">
-            <CardContent className="pt-4">
-              <p className="text-xs text-gray-500">Total Value</p>
-              <p className="text-lg font-bold text-green-700">₹{(summary.total_value || 0).toLocaleString('en-IN')}</p>
-            </CardContent>
-          </Card>
-        </div>
+      {loading ? (
+        <StatCardGrid columns={7}>
+          {[...Array(7)].map((_, i) => (
+            <StatCard key={i} loading title="" value="" />
+          ))}
+        </StatCardGrid>
+      ) : summary && (
+        <StatCardGrid columns={7}>
+          <StatCard
+            title="Total Estimates"
+            value={summary.total}
+            icon={FileText}
+            variant="info"
+          />
+          <StatCard
+            title="Draft"
+            value={summary.by_status?.draft || 0}
+            icon={Edit}
+            variant="default"
+          />
+          <StatCard
+            title="Sent"
+            value={summary.by_status?.sent || 0}
+            icon={Send}
+            variant="info"
+          />
+          <StatCard
+            title="Accepted"
+            value={summary.by_status?.accepted || 0}
+            icon={CheckCircle}
+            variant="success"
+          />
+          <StatCard
+            title="Expired"
+            value={summary.by_status?.expired || 0}
+            icon={Clock}
+            variant="warning"
+          />
+          <StatCard
+            title="Converted"
+            value={summary.by_status?.converted || 0}
+            icon={ArrowRightLeft}
+            variant="purple"
+          />
+          <StatCard
+            title="Total Value"
+            value={formatCurrencyCompact(summary.total_value || 0)}
+            icon={IndianRupee}
+            variant="success"
+          />
+        </StatCardGrid>
       )}
 
       {/* Conversion Funnel */}
