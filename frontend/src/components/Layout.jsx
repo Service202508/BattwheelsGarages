@@ -101,8 +101,9 @@ const navItems = [
     { name: "Credit Notes", path: "/credit-notes", icon: FileText },
   ]},
   { section: "Purchases", items: [
+    { name: "Bills", path: "/bills-enhanced", icon: Receipt },
     { name: "Purchase Orders", path: "/purchases", icon: Truck },
-    { name: "Bills", path: "/bills", icon: Receipt },
+    { name: "Bills (Legacy)", path: "/bills", icon: Receipt },
     { name: "Vendor Credits", path: "/vendor-credits", icon: CreditCard },
   ]},
   { section: "Finance", items: [
