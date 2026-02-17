@@ -4517,6 +4517,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load GST routes: {e}")
 
+# Include Enhanced Items routes (Comprehensive Inventory Management)
+try:
+    from routes.items_enhanced import router as items_enhanced_router
+    api_router.include_router(items_enhanced_router)
+    logger.info("Enhanced Items routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Enhanced Items routes: {e}")
+
 # Include main router
 app.include_router(api_router)
 
