@@ -4586,6 +4586,14 @@ except Exception as e:
 # The unified contacts module now handles all customer and vendor functionality
 # with a contact_type field to distinguish between customers, vendors, and both
 
+# Include Bills Enhanced routes
+try:
+    from routes.bills_enhanced import router as bills_enhanced_router
+    api_router.include_router(bills_enhanced_router)
+    logger.info("Bills Enhanced routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Bills Enhanced routes: {e}")
+
 # Include main router
 app.include_router(api_router)
 
