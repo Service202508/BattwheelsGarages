@@ -480,3 +480,75 @@ async def get_embedding_status(request: Request):
         "cards_without_embeddings": total - with_embeddings,
         "coverage_percent": round((with_embeddings / total * 100), 2) if total > 0 else 0
     }
+
+
+# ==================== SEED DATA ====================
+
+@router.post("/seed")
+async def seed_failure_data(request: Request):
+    """Seed failure cards and decision trees (Admin only)"""
+    user = await get_current_user(request)
+    
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    from services.efi_seed_data import seed_failure_cards_and_trees
+    
+    result = await seed_failure_cards_and_trees(_db)
+    
+    # Generate embeddings for seeded cards
+    if _embedding_manager and result["cards_inserted"] > 0:
+        embed_result = await _embedding_manager.embed_all_cards()
+        result["embeddings_generated"] = embed_result["success"]
+    
+    return {
+        "status": "success",
+        "message": f"Seeded {result['cards_inserted']} failure cards and {result['trees_inserted']} decision trees",
+        **result
+    }
+
+
+@router.get("/failure-cards")
+async def list_failure_cards(
+    request: Request,
+    subsystem: Optional[str] = None,
+    limit: int = Query(50, le=200),
+    skip: int = 0
+):
+    """List all failure cards with optional filtering"""
+    await get_current_user(request)
+    
+    query = {}
+    if subsystem:
+        query["subsystem_category"] = subsystem
+    
+    cards = await _db.failure_cards.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
+    total = await _db.failure_cards.count_documents(query)
+    
+    return {
+        "cards": cards,
+        "total": total,
+        "limit": limit,
+        "skip": skip
+    }
+
+
+@router.get("/failure-cards/{failure_id}")
+async def get_failure_card(failure_id: str, request: Request):
+    """Get a single failure card by ID"""
+    await get_current_user(request)
+    
+    card = await _db.failure_cards.find_one({"failure_id": failure_id}, {"_id": 0})
+    if not card:
+        raise HTTPException(status_code=404, detail="Failure card not found")
+    
+    # Also get decision tree if exists
+    tree = await _db.efi_decision_trees.find_one(
+        {"failure_card_id": failure_id},
+        {"_id": 0}
+    )
+    
+    return {
+        **card,
+        "decision_tree": tree
+    }
