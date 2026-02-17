@@ -405,3 +405,190 @@ async def find_similar_embeddings(
     results.sort(key=lambda x: x['similarity_score'], reverse=True)
     
     return results[:top_k]
+
+
+# ==================== EFI EMBEDDING MANAGER ====================
+
+class EFIEmbeddingManager:
+    """
+    Manager for EFI embedding operations - integrates with failure cards database.
+    Handles complaint classification, embedding generation, and similarity search.
+    """
+    
+    # Subsystem keywords for classification
+    SUBSYSTEM_KEYWORDS = {
+        "battery": ["battery", "bms", "charging", "charge", "cell", "voltage", "soc", "swap", "discharge", "capacity", "pack"],
+        "motor": ["motor", "hub", "torque", "rpm", "overheating", "noise", "vibration", "hall", "sensor", "shaft"],
+        "controller": ["controller", "ecu", "throttle", "firmware", "software", "communication", "can", "error code", "lock"],
+        "electrical": ["wiring", "harness", "connector", "fuse", "relay", "dc-dc", "converter", "voltage", "ground", "short"]
+    }
+    
+    def __init__(self, db, embedding_service: Optional[BaseEmbeddingService] = None):
+        self.db = db
+        self.embedding_service = embedding_service or EmbeddingServiceFactory.get_default()
+        logger.info(f"EFI Embedding Manager initialized with {type(self.embedding_service).__name__}")
+    
+    def classify_subsystem(self, text: str) -> str:
+        """Classify complaint text into subsystem category"""
+        text_lower = text.lower()
+        scores = {}
+        
+        for subsystem, keywords in self.SUBSYSTEM_KEYWORDS.items():
+            score = sum(1 for kw in keywords if kw in text_lower)
+            if score > 0:
+                scores[subsystem] = score
+        
+        if scores:
+            return max(scores, key=scores.get)
+        return "unknown"
+    
+    async def generate_complaint_embedding(self, complaint_text: str) -> Dict[str, Any]:
+        """Generate embedding and classify a complaint"""
+        # Classify subsystem
+        subsystem = self.classify_subsystem(complaint_text)
+        
+        # Generate embedding
+        embedding_response = await self.embedding_service.embed_text(complaint_text)
+        
+        return {
+            "complaint_text": complaint_text,
+            "classified_subsystem": subsystem,
+            "embedding": embedding_response.embedding,
+            "embedding_model": embedding_response.model,
+            "dimensions": embedding_response.dimensions
+        }
+    
+    async def find_similar_failure_cards(
+        self,
+        embedding: List[float],
+        subsystem: Optional[str] = None,
+        limit: int = 5,
+        threshold: float = 0.3
+    ) -> List[Dict[str, Any]]:
+        """Find similar failure cards using embedding similarity"""
+        
+        # Build query filter
+        query = {"embedding_vector": {"$exists": True, "$ne": None}}
+        if subsystem and subsystem != "unknown":
+            query["subsystem"] = subsystem
+        
+        # Get all failure cards with embeddings
+        cards = await self.db.failure_cards.find(query, {"_id": 0}).to_list(None)
+        
+        if not cards:
+            # Try without subsystem filter
+            cards = await self.db.failure_cards.find(
+                {"embedding_vector": {"$exists": True, "$ne": None}},
+                {"_id": 0}
+            ).to_list(None)
+        
+        if not cards:
+            logger.warning("No failure cards with embeddings found")
+            return []
+        
+        # Calculate similarities
+        results = []
+        for card in cards:
+            card_embedding = card.get("embedding_vector", [])
+            if not card_embedding or len(card_embedding) != len(embedding):
+                continue
+            
+            similarity = cosine_similarity(embedding, card_embedding)
+            
+            if similarity >= threshold:
+                # Determine confidence level
+                if similarity >= 0.8:
+                    confidence = "high"
+                elif similarity >= 0.6:
+                    confidence = "medium"
+                else:
+                    confidence = "low"
+                
+                results.append({
+                    **card,
+                    "similarity_score": round(similarity, 4),
+                    "confidence_level": confidence
+                })
+        
+        # Sort by similarity and limit
+        results.sort(key=lambda x: x["similarity_score"], reverse=True)
+        return results[:limit]
+    
+    async def embed_failure_card(self, failure_id: str) -> Dict[str, Any]:
+        """Generate and store embedding for a single failure card"""
+        card = await self.db.failure_cards.find_one({"failure_id": failure_id})
+        if not card:
+            raise ValueError(f"Failure card {failure_id} not found")
+        
+        # Create text for embedding from card fields
+        text_parts = [
+            card.get("title", ""),
+            card.get("description", ""),
+            card.get("symptoms", ""),
+            " ".join(card.get("common_causes", [])),
+            " ".join(card.get("keywords", []))
+        ]
+        text = " ".join(filter(None, text_parts))
+        
+        # Generate embedding
+        embedding_response = await self.embedding_service.embed_text(text)
+        
+        # Update card with embedding
+        await self.db.failure_cards.update_one(
+            {"failure_id": failure_id},
+            {
+                "$set": {
+                    "embedding_vector": embedding_response.embedding,
+                    "embedding_model": embedding_response.model,
+                    "embedding_updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        return {
+            "failure_id": failure_id,
+            "embedding_dimensions": len(embedding_response.embedding),
+            "model": embedding_response.model,
+            "status": "success"
+        }
+    
+    async def embed_all_cards(self) -> Dict[str, Any]:
+        """Generate embeddings for all failure cards"""
+        cards = await self.db.failure_cards.find({}, {"failure_id": 1, "_id": 0}).to_list(None)
+        
+        results = {
+            "total": len(cards),
+            "success": 0,
+            "failed": 0,
+            "errors": []
+        }
+        
+        for card in cards:
+            try:
+                await self.embed_failure_card(card["failure_id"])
+                results["success"] += 1
+            except Exception as e:
+                results["failed"] += 1
+                results["errors"].append({
+                    "failure_id": card["failure_id"],
+                    "error": str(e)
+                })
+        
+        return results
+
+
+# ==================== SINGLETON MANAGEMENT ====================
+
+_embedding_manager: Optional[EFIEmbeddingManager] = None
+
+
+def init_efi_embedding_manager(db) -> EFIEmbeddingManager:
+    """Initialize the EFI embedding manager with database"""
+    global _embedding_manager
+    _embedding_manager = EFIEmbeddingManager(db)
+    return _embedding_manager
+
+
+def get_efi_embedding_manager() -> Optional[EFIEmbeddingManager]:
+    """Get the initialized embedding manager"""
+    return _embedding_manager
