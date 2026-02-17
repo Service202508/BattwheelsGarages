@@ -1,87 +1,86 @@
 <analysis>**original_problem_statement:**
-The user's initial goal was to build a production-grade accounting ERP system, Battwheels OS, cloning Zoho Books. This has evolved into a complete and exhaustive migration of all features from the Zoho Books API v3 into Battwheels OS.
+The user's initial goal was to build a production-grade accounting ERP system, Battwheels OS, cloning Zoho Books. This evolved into a complete migration of all Zoho Books API v3 features. The focus then shifted to significant UI/UX enhancements, including a login page redesign and a comprehensive UI component overhaul to fix layout and data overflow issues.
 
-Recently, the user has shifted focus to significant UI/UX enhancements. This includes:
-1.  A complete redesign of the login page to a premium, 3D aesthetic.
-2.  A comprehensive UX/UI audit of the entire application to identify and fix inconsistencies.
-3.  A request to fix layout sizing issues, content overflow on pages, and numerical data overflowing from KPI cards.
+Most recently, the user has requested a major new feature: an **EV Failure Intelligence (EFI) system**.
+
+**PRODUCT REQUIREMENTS (EFI System):**
+-   **Goal:** Build an embedded decision-support engine within the existing Job Card workflow to guide technicians.
+-   **Activation:** EFI triggers when a technician opens a Job Card.
+-   **Core Features:**
+    1.  **Complaint Pre-Processing:** On complaint logging, classify the subsystem, generate a Gemini embedding, and run a similarity search against .
+    2.  **Guided Execution:** On Job Card opening, display ranked resolution paths with confidence scores from the pre-processed search.
+    3.  **Diagnostic Tree UI:** Create an interactive, step-by-step diagnostic workflow with PASS/FAIL branching logic. It must be a guided workflow, not a chatbot.
+    4.  **Smart Estimate Generation:** Auto-suggest parts and labor to pre-fill the estimate module when a resolution is reached.
+    5.  **Continuous Learning:** Capture technician actions and deviations to propose new  drafts for engineer approval.
+-   **AI/Embedding Provider:** Use **Gemini () via the Emergent LLM Key**. The architecture must be provider-agnostic.
+-   **UX:** Implement EFI as a **dynamic, collapsible side panel** within the existing Job Card screen. It should not be a separate page.
+-   **Data:** Seed the database with at least **15 pre-built ** with structured decision trees and PASS/FAIL logic. Support images/diagrams at each diagnostic step.
+-   **Integration:** Extend the existing  module; do not create a duplicate. The core ticket lifecycle must remain unchanged.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack ERP system with a FastAPI backend, React frontend, and MongoDB database. It has numerous modules for sales, procurement, inventory, and finance.
+The application is a full-stack ERP system with a FastAPI backend, React frontend, and MongoDB database. It has complete module coverage from Zoho Books API v3.
 
-Key recent updates include:
--   **100% Zoho Module Coverage:** All 28 Zoho Books modules are now implemented in the backend, including recently added , , and .
--   **Revamped Navigation:** The main application sidebar has been completely restructured based on a UX/UI audit. It now features a cleaner, more organized layout with collapsible sections, reducing the original 60+ items to ~8 logical groups. A new standardized  component has been created.
--   **Redesigned Login Page:** The login page has been completely overhauled with a premium aesthetic, featuring 3D animated vehicle icons, glass-morphism effects, gradient text, and improved form elements.
+Recent major accomplishments include:
+-   **UI/UX Overhaul:** A comprehensive refactoring of UI components was completed. This introduced a standardized , a unified  system (fixing previous data overflow bugs),  wrappers, and loading skeletons.
+-   **Key Pages Refactored:** Pages like Dashboard, Contacts, Invoices, Items, and Bills have been updated to use the new, consistent component system.
+-   **Code Cleanup:** Deprecated backend route files (, ) and frontend components () have been deleted.
+-   **EFI Scaffolding:** The initial backend files for the new EFI feature have been created but not yet integrated.
 
 **Last working item**:
--   **Last item agent was working:** The agent was actively auditing application pages to address the user's latest request to fix UI/UX layout and sizing issues. Specifically, the agent was investigating pages with KPI cards where large numerical values were overflowing their containers and pages where content required scrolling to be fully visible. The agent was viewing  and  to understand the card layouts.
+-   **Last item agent was working:** The agent had just started implementing the **EV Failure Intelligence (EFI)** system. It successfully created the initial backend files required for the feature:  (provider-agnostic service for Gemini),  (to handle the logic),  (API routes), and  (to populate initial failure cards). The immediate next step is to integrate these new modules into the main application.
 -   **Status:** IN PROGRESS
--   **Agent Testing Done:** N/A
--   **Which testing method agent to use?** frontend testing agent (After implementing fixes, use the testing agent to navigate through all major pages and verify that layouts are responsive and that no content or data overflows on different screen sizes. Pay special attention to the Dashboard and pages with KPI cards.)
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** both. The backend agent is needed to test the new EFI API endpoints, the embedding generation, and the decision tree logic. The frontend agent is needed to test the new dynamic side panel UI within the Job Card page and its interactivity.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Content Overflow in KPI Cards and Page Layouts (P0 - HIGHEST PRIORITY)**
-    -   **Description:** On several pages, particularly the Dashboard, large numerical values are overflowing their KPI card containers. Additionally, some pages have layout issues where content is not fully visible without scrolling, indicating a need for better responsive design and layout management.
-    -   **Attempted fixes:** The agent started investigating the  and  components to understand their structure but has not yet implemented any fixes.
-    -   **Next debug checklist:**
-        1.  Identify all pages with KPI cards (, , , , ).
-        2.  Inspect the CSS for these cards. The issue is likely related to  being too large for the container, or a lack of responsive font sizing/word wrapping.
-        3.  Implement a fix, potentially using  or  for the numbers and ensuring containers can grow or text can wrap. Use responsive breakpoints (e.g., ) to adjust font size.
-        4.  Review pages like the Dashboard to see why scrolling is required. It may be due to fixed heights on containers or insufficient use of flexbox/grid for layout.
-    -   **Why fix this issue and what will be achieved with the fix?** Fixing this will resolve major visual bugs, improve the professional appearance of the application, and enhance the overall user experience by ensuring data is presented clearly and layouts are clean.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** frontend
-    -   **Blocked on other issue:** None.
+There are no outstanding bugs. The focus is on new feature development.
 
 **In progress Task List**:
--   **Task 1: Complete UX/UI Audit Fixes (P0)**
-    -   **Where to resume:** Continue the work from Last working item by implementing fixes for the KPI card overflow and general page layout issues.
-    -   **What will be achieved with this?** A polished, visually consistent, and user-friendly application interface that meets enterprise-ready standards.
+-   **Task 1: Implement EV Failure Intelligence (EFI) System (P0 - HIGHEST PRIORITY)**
+    -   **Where to resume:** The foundational backend files are created. The next steps are:
+        1.  **Backend Integration:**
+            -   Import and register the new router from  in .
+            -   Install the  package and update .
+            -   Define the new MongoDB Pydantic models for EFI schemas (, , etc.).
+            -   Implement a command or endpoint to execute the  script once to populate the database.
+        2.  **Frontend Implementation:**
+            -   Create a new  component.
+            -   Integrate  into the  page, making it appear conditionally when a job card is active.
+            -   Build the UI for the diagnostic decision tree inside the side panel, including steps, images, and PASS/FAIL buttons.
+            -   Connect the frontend components to the new  endpoints.
+    -   **What will be achieved with this?** A fully functional, AI-powered diagnostic assistant for technicians, seamlessly integrated into the existing job card workflow, as per the user's detailed requirements.
     -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** frontend
+    -   **Should Test frontend/backend/both after fix?** both
     -   **Blocked on something:** None.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **Task 1 (P1): Implement Medium-Priority Audit Recommendations:**
-    -   **Create Empty State Components:** Replace plain No data text in tables with illustrative empty state components.
-    -   **Improve Mobile Responsiveness:** Address horizontal table overflows and improve stacking of components on mobile.
-    -   **Add Loading Skeletons:** Replace generic spinners with content-aware loading skeletons for a better perceived performance.
--   **Task 2 (P1): Implement Standardized Page Headers Across All Pages:** The new  component has been created. It now needs to be implemented on all main pages (e.g., , , , etc.) to ensure a consistent look and feel.
--   **Task 3 (P2): Code Cleanup & Deprecation:** As per the original handoff, physically delete the now-redundant files to prevent future confusion:
-    -   
-    -   
+-   **Task 1 (P1): Propagate Standardized UI Components:** Update all remaining pages (e.g., Estimates, Purchase Orders, etc.) to use the new , , and  components to ensure 100% UI consistency across the app.
+-   **Task 2 (P1): Activate Real Integrations:** Un-mock email sending (Resend/SendGrid) and the Razorpay payment gateway.
+-   **Task 3 (P2): Implement Medium-Priority Audit Recommendations:** Create illustrative  components to replace plain No data text in tables where not already implemented.
 
 **Future Tasks:**
--   **Activate Real Integrations (P1):**
-    -   Un-mock email sending by integrating Resend or SendGrid.
-    -   Activate the Razorpay payment gateway with live keys and webhook handling.
--   **Add Search/Command Palette (P2):** Implement a  style command palette for quick navigation and actions, as suggested in the UX audit.
--   **Full Semantic Search (Backlog):** Integrate OpenAI (awaiting user's ).
+-   **Task 1 (P2): Add Search/Command Palette:** Implement a  style command palette for quick navigation and actions.
+-   **Task 2 (Backlog):** Integrate OpenAI for full semantic search (pending user ).
 
 **Completed work in this session**
--   **100% Zoho Module Implementation:**
-    -   Implemented backend routes and frontend placeholders for , , and  in , , , and .
--   **Technical Debt Cleanup:**
-    -   Deleted deprecated files:  and .
-    -   Renamed  to  and updated the import in .
--   **Login Page Redesign:**
-    -   Completely redesigned  with a premium 3D aesthetic, including animated 3D vehicle icons, glass-morphism, gradient text, and improved form controls.
-    -   Fixed responsive issues, including removing a duplicate logo on mobile and removing hardcoded demo credentials.
-    -   Added the user-provided transparent logo.
--   **Comprehensive UX/UI Audit & Refactor:**
-    -   Conducted a full application audit, identifying issues in navigation, visual consistency, and page quality.
-    -   Completely rewrote  to implement a new, streamlined navigation structure with collapsible sections.
-    -   Created a new standardized  component.
-    -   Applied the new  to  as an initial example.
+-   **UI Component System Implementation:**
+    -   Created a unified and responsive component system:  and .
+    -   Refactored , , , , , , and  to use the new system.
+-   **Resolved UI Bug - KPI Card Overflow:**
+    -   Fixed numerical and content overflow issues on all KPI cards by implementing responsive font sizes and a compact currency formatting utility.
+    -   Confirmed the fix with manual screenshots and a successful  run ().
+-   **Code & Technical Debt Cleanup:**
+    -   Deleted deprecated backend files:  and .
+    -   Deleted the obsolete frontend component: .
+-   **EFI System Scaffolding:**
+    -   Created initial backend files: , , , and .
 
 **Earlier issues found/mentioned but not fixed**
--   The lower-priority items from the comprehensive UX/UI audit are pending (e.g., unifying card styles, enhancing status badges, adding loading skeletons).
+-   None.
 
 **Known issue recurrence from previous fork**
 -   None.
@@ -92,73 +91,79 @@ Key recent updates include:
 **Key Technical Concepts**
 -   **Backend:** FastAPI, Pydantic, MongoDB.
 -   **Frontend:** React, TailwindCSS, Shadcn/UI, .
--   **UI/UX Design:** Focus on creating a consistent design system with design tokens, standardized components (), and a clear navigation hierarchy. Using glass-morphism, gradients, and 3D elements for a premium feel.
+-   **AI/ML:** Vector Embeddings (Gemini), Similarity Search.
+-   **Architecture:** Provider-Agnostic Service Design (for embedding models).
 
 **key DB schema**
--   No new collections were finalized, but placeholder logic was added for , , and .
+-   **New Schemas for EFI:** , , , , , .
 
 **changes in tech stack**
--   None.
+-   ****: To be added to  for Gemini integration.
 
 **All files of reference**
--   **/app/frontend/src/pages/Dashboard.jsx**: The primary page exhibiting potential KPI card overflow issues.
--   **/app/frontend/src/pages/InvoicesEnhanced.jsx**: Another page with KPI cards to check for layout issues.
--   **/app/frontend/src/components/Layout.jsx**: The recently rewritten navigation component.
--   **/app/frontend/src/pages/Login.jsx**: The completely redesigned login page.
--   **/app/frontend/src/components/PageHeader.jsx**: The new standardized header component to be propagated across the app.
--   **/app/backend/routes/zoho_extended.py**: Contains the backend logic for the newly added Zoho modules.
+-   **/app/backend/routes/efi_guided.py**: New API routes for the EFI system.
+-   **/app/backend/services/efi_embedding_service.py**: New provider-agnostic embedding service.
+-   **/app/backend/services/efi_seed_data.py**: New script to populate initial failure card data.
+-   **/app/backend/server.py**: Needs to be updated to include the new EFI router.
+-   **/app/frontend/src/pages/JobCard.jsx**: The main integration point for the new EFI side panel.
+-   **/app/backend/routes/failure_intelligence.py**: Existing module that must be extended for the EFI feature.
+-   **/app/frontend/src/components/ui/stat-card.jsx**: The new standardized KPI card component.
 
 **Areas that need refactoring**:
--   **Page Content Layouts:** As per the user's last request, multiple pages need their layouts audited and fixed to prevent content overflow, especially in KPI cards and on smaller viewports.
--   **Component Standardization:** The new  needs to be applied to all pages. A standardized  component and  component should be created and used globally to enforce consistency, as per the UX audit.
+-   The existing  module must be refactored and extended to support the new structured  model with decision trees.
+-   Numerous frontend pages still use legacy layouts and need to be updated to use the new standardized  component for full UI consistency.
 
 **key api endpoints**
--   **/api/zoho/recurring-bills** (and sub-routes)
--   **/api/zoho/fixed-assets** (and sub-routes)
--   **/api/zoho/custom-modules** (and sub-routes)
+-   **(New) **: To get ranked diagnostic paths.
+-   **(New) **: To log a technician's PASS/FAIL action on a diagnostic step.
+-   **(New) **: CRUD endpoints for managing failure cards.
 
 **Critical Info for New Agent**
-1.  **Priority Shift:** The primary focus has shifted from backend feature implementation to frontend UI/UX polish. Your immediate task is to fix the layout and overflow issues reported by the user.
-2.  **Use the Audit Report:** A detailed UX/UI audit was performed (see message #240). Use its recommendations (e.g., standardizing cards, creating empty states, improving mobile layouts) to guide your next steps after fixing the immediate overflow bugs.
-3.  **Component-Driven Approach:** Continue the pattern of creating standardized components (). When fixing the KPI card issue, consider creating a reusable  component to ensure consistency and easier future maintenance.
-4.  **Navigation is Done:** The main sidebar navigation structure in  has been completely overhauled and approved. Do not make major changes to it, but focus on the content within the pages themselves.
+1.  **New Feature Priority:** The primary focus is now the implementation of the **EV Failure Intelligence (EFI)** system. All other tasks are secondary.
+2.  **UX Is Key:** The EFI must be a **dynamic side panel** within the  screen, not a new page. The goal is to assist, not distract, the technician.
+3.  **Provider-Agnostic Backend:** The embedding service you are building must be abstracted. It will start with **Gemini  via the Emergent LLM Key**, but the design should allow for future changes (e.g., to OpenAI) without a major rewrite.
+4.  **Integration, Not Duplication:** You must **extend** the existing  module to handle the new structured  data model. Do not create parallel logic.
+5.  **Resume Point:** Your first task is to integrate the newly created backend files (, services) into , install the  dependency, and then begin building the frontend  component.
 
 **documents and test reports created in this job**
--   /app/test_reports/iteration_30.json (Testing agent report for new modules)
--   /app/test_reports/zoho_migration_audit.json (Updated gap analysis)
+-   /app/test_reports/iteration_31.json
+-   /app/memory/PRD.md (Updated with UI component completion and new EFI requirements)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User (LATEST):** Requested a fix for UI/UX issues where page content requires scrolling and numerical data overflows from KPI cards. (IN PROGRESS)
-2.  **Agent:** Completed the high-priority UX/UI audit fixes and provided a summary.
-3.  **User:** Approved the agent's plan to implement high-priority fixes from the UX audit.
-4.  **Agent:** Presented a comprehensive UX/UI audit report with prioritized recommendations, focusing on navigation overload and visual inconsistency.
-5.  **User:** Prompted the agent to perform a comprehensive UX/UI audit.
-6.  **Agent:** Confirmed the login page responsive fixes were complete.
-7.  **User:** Reported a double logo issue in mobile view for the login page and asked for demo credentials to be removed. (COMPLETE)
-8.  **Agent:** Confirmed the new transparent logo was added.
-9.  **User:** Provided a transparent logo and asked for it to be placed in the top corner of the login page. (COMPLETE)
-10. **Agent:** Confirmed the login form section redesign was complete.
+1.  **User:** Provided detailed requirements for the new EV Failure Intelligence (EFI) feature, including the AI provider (Gemini), UX (side panel), data seeding, and integration scope.
+2.  **Agent:** Asked clarifying questions about the EFI feature request.
+3.  **User:** Provided comprehensive feature request for the EFI system.
+4.  **Agent:** Finished the UI/UX Component System implementation.
+5.  **Agent:** Updated .
+6.  **Agent:** Showed a screenshot of the refactored Bills Enhanced page working correctly.
+7.  **Agent:** Logged into the application to verify the Bills page.
+8.  **Agent:** Saw the login page after a session expiry while trying to view the Bills page.
+9.  **Agent:** Showed a screenshot of the Dashboard working correctly with the new  components.
+10. **Agent:** Noted that the testing agent execution was interrupted and decided to do a manual check.
 
 **Project Health Check:**
--   **Broken:** Minor visual bugs on several pages (KPI card overflow, responsive layout issues).
--   **Mocked:** Razorpay payment processing, All email-sending functionality, PDF generation (WeasyPrint dependency).
+-   **Broken:** None.
+-   **Mocked:** Razorpay (payment processing), Resend/SendGrid (email), WeasyPrint (PDF generation).
+-   **In Development:** The EV Failure Intelligence (EFI) system is scaffolded but not yet functional or integrated.
 
 **3rd Party Integrations**
 -   **Zoho Books API (India Region):** Live and active.
--   **WeasyPrint:** Integrated but effectively mocked due to a soft-handled dependency failure.
--   **Razorpay:** Integrated but in a mocked state.
--   **OpenAI:** Dormant. Awaiting user API key.
 -   **Emergent-managed Google Auth:** Integrated.
+-   **Gemini (text-embedding-004):** Approved for use via Emergent LLM Key for the new EFI feature. Implementation is in progress.
+-   **WeasyPrint:** Integrated but mocked.
+-   **Razorpay:** Integrated but mocked.
+-   **OpenAI:** Dormant, awaiting user API key for a future feature.
 
 **Testing status**
--   Testing agent used after significant changes: YES. A 68-point test suite passed for the new backend modules.
--   Troubleshoot agent used after agent stuck in loop: NO.
--   Test files created: None in this session. Existing test files were updated.
--   Known regressions: None.
+-   **Testing agent used after significant changes:** YES. The UI bug fix and component refactor were partially tested before the agent run was interrupted.  covers the successful KPI card fix.
+-   **Troubleshoot agent used after agent stuck in loop:** NO.
+-   **Test files created:** None.
+-   **Known regressions:** None.
 
 **Credentials to test flow:**
 -   **Admin:**  / 
 -   **Technician:**  / 
 
 **What agent forgot to execute**
-The agent was in the process of investigating and fixing the KPI card overflow and page layout issues when the session ended. This task needs to be completed.</analysis>
+-   The testing agent run for the major UI component refactor was interrupted. While several pages were manually verified via screenshots, a comprehensive test was not completed.
+-   The newly created backend EFI files have not been integrated into , and the required  dependency has not been installed. This is the immediate next step.</analysis>
