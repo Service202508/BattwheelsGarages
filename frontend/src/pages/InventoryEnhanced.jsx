@@ -271,80 +271,70 @@ export default function InventoryEnhanced() {
   return (
     <div className="space-y-6" data-testid="inventory-enhanced-page">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Inventory Management</h1>
-          <p className="text-gray-500 text-sm mt-1">Variants, Bundles, Shipments & Returns</p>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          <Button variant="outline" size="sm" onClick={() => setShowWarehouseDialog(true)}>
-            <Warehouse className="h-4 w-4 mr-1" /> Warehouse
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowVariantDialog(true)}>
-            <Layers className="h-4 w-4 mr-1" /> Variant
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowBundleDialog(true)}>
-            <Package className="h-4 w-4 mr-1" /> Bundle
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowSerialDialog(true)}>
-            <Barcode className="h-4 w-4 mr-1" /> Serial/Batch
-          </Button>
-          <Button className="bg-[#22EDA9] text-black" size="sm" onClick={() => setShowAdjustmentDialog(true)}>
-            <ArrowUpDown className="h-4 w-4 mr-1" /> Adjust Stock
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Inventory Management"
+        description="Variants, Bundles, Shipments & Returns"
+        icon={Package}
+        actions={
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="outline" size="sm" onClick={() => setShowWarehouseDialog(true)}>
+              <Warehouse className="h-4 w-4 mr-1" /> Warehouse
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowVariantDialog(true)}>
+              <Layers className="h-4 w-4 mr-1" /> Variant
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowBundleDialog(true)}>
+              <Package className="h-4 w-4 mr-1" /> Bundle
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowSerialDialog(true)}>
+              <Barcode className="h-4 w-4 mr-1" /> Serial/Batch
+            </Button>
+            <Button className="bg-[#22EDA9] text-black" size="sm" onClick={() => setShowAdjustmentDialog(true)}>
+              <ArrowUpDown className="h-4 w-4 mr-1" /> Adjust Stock
+            </Button>
+          </div>
+        }
+      />
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
-              <Box className="h-3.5 w-3.5" /> ITEMS
-            </div>
-            <p className="text-2xl font-bold">{summary.total_items || 0}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
-              <Layers className="h-3.5 w-3.5" /> VARIANTS
-            </div>
-            <p className="text-2xl font-bold">{summary.total_variants || 0}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
-              <Package className="h-3.5 w-3.5" /> BUNDLES
-            </div>
-            <p className="text-2xl font-bold">{summary.total_bundles || 0}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
-              <Warehouse className="h-3.5 w-3.5" /> WAREHOUSES
-            </div>
-            <p className="text-2xl font-bold">{summary.total_warehouses || 0}</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <CardContent className="p-4">
-            <p className="text-xs text-green-700 uppercase">Stock Value</p>
-            <p className="text-xl font-bold text-green-800">₹{(summary.total_stock_value || 0).toLocaleString('en-IN')}</p>
-          </CardContent>
-        </Card>
-        <Card className={summary.low_stock_count > 0 ? "bg-gradient-to-br from-red-50 to-red-100 border-red-200" : ""}>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs uppercase mb-1">
-              <AlertTriangle className={`h-3.5 w-3.5 ${summary.low_stock_count > 0 ? 'text-red-600' : 'text-gray-500'}`} />
-              <span className={summary.low_stock_count > 0 ? 'text-red-700' : 'text-gray-500'}>Low Stock</span>
-            </div>
-            <p className={`text-2xl font-bold ${summary.low_stock_count > 0 ? 'text-red-800' : ''}`}>{summary.low_stock_count || 0}</p>
-          </CardContent>
-        </Card>
-      </div>
+      <StatCardGrid columns={6}>
+        <StatCard
+          title="Items"
+          value={summary.total_items || 0}
+          icon={Box}
+          variant="info"
+        />
+        <StatCard
+          title="Variants"
+          value={summary.total_variants || 0}
+          icon={Layers}
+          variant="default"
+        />
+        <StatCard
+          title="Bundles"
+          value={summary.total_bundles || 0}
+          icon={Package}
+          variant="info"
+        />
+        <StatCard
+          title="Warehouses"
+          value={summary.total_warehouses || 0}
+          icon={Warehouse}
+          variant="default"
+        />
+        <StatCard
+          title="Stock Value"
+          value={formatCurrencyCompact(summary.total_stock_value || 0)}
+          icon={IndianRupee}
+          variant="success"
+        />
+        <StatCard
+          title="Low Stock"
+          value={summary.low_stock_count || 0}
+          icon={AlertTriangle}
+          variant={summary.low_stock_count > 0 ? "danger" : "default"}
+        />
+      </StatCardGrid>
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
