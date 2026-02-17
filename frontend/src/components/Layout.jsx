@@ -99,16 +99,24 @@ const navItems = [
   ]},
   { section: "Finance", items: [
     { name: "Expenses", path: "/expenses", icon: Receipt },
+    { name: "Recurring Expenses", path: "/recurring-expenses", icon: Repeat },
     { name: "Banking", path: "/banking", icon: Wallet },
     { name: "Chart of Accounts", path: "/chart-of-accounts", icon: Layers },
     { name: "Journal Entries", path: "/journal-entries", icon: BookOpen },
+    { name: "Opening Balances", path: "/opening-balances", icon: Landmark },
+    { name: "Exchange Rates", path: "/exchange-rates", icon: ArrowRightLeft },
     { name: "Reports", path: "/reports", icon: BarChart3 },
     { name: "GST Returns", path: "/gst-reports", icon: FileText },
     { name: "Accounting", path: "/accounting", icon: Calculator },
   ]},
+  { section: "Projects", items: [
+    { name: "Projects", path: "/projects", icon: FolderKanban },
+    { name: "Project Tasks", path: "/project-tasks", icon: CheckSquare },
+  ]},
   { section: "Administration", items: [
     { name: "Taxes", path: "/taxes", icon: Percent, adminOnly: true },
     { name: "Users", path: "/users", icon: Users, adminOnly: true },
+    { name: "Activity Logs", path: "/activity-logs", icon: Activity, adminOnly: true },
     { name: "Data Migration", path: "/data-migration", icon: Database, adminOnly: true },
   ]},
 ];
