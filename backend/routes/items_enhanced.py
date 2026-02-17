@@ -1020,7 +1020,14 @@ async def get_stock_summary(warehouse_id: str = ""):
     
     for item in items:
         stock = item.get("stock_on_hand", 0) or item.get("available_stock", 0)
+        if isinstance(stock, str):
+            stock = float(stock) if stock else 0
         rate = item.get("purchase_rate", 0) or item.get("sales_rate", 0)
+        if isinstance(rate, str):
+            rate = float(rate) if rate else 0
+        reorder_level = item.get("reorder_level", 0)
+        if isinstance(reorder_level, str):
+            reorder_level = float(reorder_level) if reorder_level else 0
         value = stock * rate
         
         item_summary = {
@@ -1028,10 +1035,10 @@ async def get_stock_summary(warehouse_id: str = ""):
             "name": item.get("name"),
             "sku": item.get("sku"),
             "stock": stock,
-            "reorder_level": item.get("reorder_level", 0),
+            "reorder_level": reorder_level,
             "rate": rate,
             "value": round(value, 2),
-            "is_low_stock": stock < item.get("reorder_level", 0),
+            "is_low_stock": stock < reorder_level,
             "is_out_of_stock": stock <= 0
         }
         
