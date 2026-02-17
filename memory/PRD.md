@@ -824,8 +824,7 @@ Route (thin) → Service (business logic + emit event) → Dispatcher → Handle
 
 ### P1 (Future)
 - [ ] **Real Email Integration** - Un-mock email sending for portal invites, statements, and quotes using SendGrid/Resend
-- [ ] **Legacy Data Migration** - Migration script to move 346 legacy customers/vendors into unified Contacts model
-- [ ] **Purchase Side Modules** - Bills and Purchase Orders modules (symmetric to sales-side)
+- [ ] **Code Cleanup** - Delete deprecated customers_enhanced files, rename contacts_enhanced_v2 to contacts_enhanced
 - [ ] Elasticsearch for production-scale search
 - [ ] Cron job setup for automated scheduler execution
 - [ ] On-demand Sync button to pull latest data from Zoho Books
