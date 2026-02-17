@@ -496,10 +496,9 @@ async def seed_failure_data(request: Request):
     
     result = await seed_failure_cards_and_trees(_db)
     
-    # Generate embeddings for seeded cards
-    if _embedding_manager and result["cards_inserted"] > 0:
-        embed_result = await _embedding_manager.embed_all_cards()
-        result["embeddings_generated"] = embed_result["success"]
+    # Skip embedding generation during seeding to avoid timeouts
+    # Embeddings will be generated on-demand or via separate endpoint
+    result["embeddings_note"] = "Use /api/efi-guided/embeddings/generate-all to generate embeddings"
     
     return {
         "status": "success",
