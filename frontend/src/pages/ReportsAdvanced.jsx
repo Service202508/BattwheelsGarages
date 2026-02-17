@@ -310,53 +310,33 @@ export default function ReportsAdvanced() {
 
       {/* KPI Cards */}
       {dashboardSummary && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-100 text-xs">This Month Revenue</p>
-                  <p className="text-2xl font-bold mt-1">{formatCurrency(dashboardSummary.this_month?.revenue)}</p>
-                  <p className="text-xs text-blue-200 mt-1">{dashboardSummary.this_month?.invoices} invoices</p>
-                </div>
-                <TrendingUp className="h-10 w-10 text-blue-200" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-green-100 text-xs">Year to Date</p>
-                  <p className="text-2xl font-bold mt-1">{formatCurrency(dashboardSummary.year_to_date?.revenue)}</p>
-                </div>
-                <DollarSign className="h-10 w-10 text-green-200" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white">
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-orange-100 text-xs">Total Outstanding</p>
-                  <p className="text-2xl font-bold mt-1">{formatCurrency(dashboardSummary.receivables?.total_outstanding)}</p>
-                </div>
-                <Wallet className="h-10 w-10 text-orange-200" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card className={`bg-gradient-to-br ${dashboardSummary.receivables?.overdue_count > 0 ? 'from-red-500 to-red-600' : 'from-gray-500 to-gray-600'} text-white`}>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-red-100 text-xs">Overdue Amount</p>
-                  <p className="text-2xl font-bold mt-1">{formatCurrency(dashboardSummary.receivables?.overdue_amount)}</p>
-                  <p className="text-xs text-red-200 mt-1">{dashboardSummary.receivables?.overdue_count} invoices</p>
-                </div>
-                <AlertTriangle className="h-10 w-10 text-red-200" />
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <GradientKPICard
+            title="This Month Revenue"
+            value={formatCurrencyCompact(dashboardSummary.this_month?.revenue)}
+            subtitle={`${dashboardSummary.this_month?.invoices} invoices`}
+            icon={TrendingUp}
+            gradient="from-blue-500 to-blue-600"
+          />
+          <GradientKPICard
+            title="Year to Date"
+            value={formatCurrencyCompact(dashboardSummary.year_to_date?.revenue)}
+            icon={DollarSign}
+            gradient="from-green-500 to-green-600"
+          />
+          <GradientKPICard
+            title="Total Outstanding"
+            value={formatCurrencyCompact(dashboardSummary.receivables?.total_outstanding)}
+            icon={Wallet}
+            gradient="from-orange-500 to-orange-600"
+          />
+          <GradientKPICard
+            title="Overdue Amount"
+            value={formatCurrencyCompact(dashboardSummary.receivables?.overdue_amount)}
+            subtitle={`${dashboardSummary.receivables?.overdue_count} invoices`}
+            icon={AlertTriangle}
+            gradient={dashboardSummary.receivables?.overdue_count > 0 ? "from-red-500 to-red-600" : "from-gray-500 to-gray-600"}
+          />
         </div>
       )}
 
