@@ -279,8 +279,8 @@ def run_audit():
             resp = client.get(f"{API_URL}/estimates-enhanced/{estimate_id}", headers=headers)
             test("Estimate Read", resp.status_code == 200)
     
-    resp = client.get(f"{API_URL}/estimates-enhanced/conversion-funnel", headers=headers)
-    test("Conversion Funnel", resp.status_code == 200)
+    resp = client.get(f"{API_URL}/estimates-enhanced/reports/conversion-funnel", headers=headers)
+    test("Conversion Funnel", resp.status_code == 200 and 'funnel' in resp.json())
     
     # ==================== SALES ORDERS ENHANCED MODULE ====================
     print("\n" + "-"*50)
