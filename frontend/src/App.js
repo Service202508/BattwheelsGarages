@@ -371,6 +371,13 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/inventory-management" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <ItemsEnhanced user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/price-lists" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
