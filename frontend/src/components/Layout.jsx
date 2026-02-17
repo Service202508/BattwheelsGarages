@@ -310,7 +310,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
               </div>
               <div>
                 <h1 className="text-lg font-bold text-gray-900 tracking-tight" data-testid="sidebar-title">
-                  Battwheels
+                  Battwheels OS
                 </h1>
                 <p className="text-[10px] text-gray-400 font-medium tracking-wider uppercase">EV Intelligence</p>
               </div>
