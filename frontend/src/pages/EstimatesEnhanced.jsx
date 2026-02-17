@@ -60,6 +60,7 @@ export default function EstimatesEnhanced() {
 
   // Items search
   const [items, setItems] = useState([]);
+  const location = useLocation();
 
   // Form states
   const [newEstimate, setNewEstimate] = useState({
@@ -77,6 +78,21 @@ export default function EstimatesEnhanced() {
 
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+
+  // Handle URL params for Quick Quote from Contacts
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const customerId = params.get('customer_id');
+    const customerName = params.get('customer_name');
+    if (customerId && customerName) {
+      setNewEstimate(prev => ({ ...prev, customer_id: customerId }));
+      setContactSearch(decodeURIComponent(customerName));
+      setSelectedContact({ contact_id: customerId, name: decodeURIComponent(customerName) });
+      setActiveTab("create");
+      // Clear URL params
+      window.history.replaceState({}, '', '/estimates');
+    }
+  }, [location.search]);
 
   useEffect(() => {
     fetchData();
