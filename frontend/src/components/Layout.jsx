@@ -93,8 +93,9 @@ const navItems = [
   ]},
   { section: "Sales", items: [
     { name: "Estimates", path: "/estimates", icon: FileText },
+    { name: "Sales Orders", path: "/sales-orders", icon: ShoppingCart },
     { name: "Quotes (Legacy)", path: "/quotes", icon: FileText },
-    { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
+    { name: "Sales Orders (Legacy)", path: "/sales", icon: ShoppingCart },
     { name: "Delivery Challans", path: "/delivery-challans", icon: Truck },
     { name: "Invoices", path: "/invoices", icon: Receipt },
     { name: "Recurring Invoices", path: "/recurring-transactions", icon: Repeat },
