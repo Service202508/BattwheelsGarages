@@ -486,16 +486,6 @@ export default function Login({ onLogin }) {
                         </svg>
                         <span>Continue with Google</span>
                       </PremiumButton>
-
-                      {/* Demo Credentials */}
-                      <div className="mt-8 text-center">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl border border-gray-100">
-                          <div className="w-2 h-2 bg-[#22EDA9] rounded-full animate-pulse" />
-                          <span className="text-xs text-gray-500 font-medium">
-                            Demo: <span className="text-gray-700">admin@battwheels.in</span> / <span className="text-gray-700">admin123</span>
-                          </span>
-                        </div>
-                      </div>
                     </TabsContent>
 
                     <TabsContent value="register" className="mt-0">
