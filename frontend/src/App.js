@@ -51,6 +51,8 @@ import SalesOrdersEnhanced from "@/pages/SalesOrdersEnhanced";
 import InvoicesEnhanced from "@/pages/InvoicesEnhanced";
 import CustomerPortal from "@/pages/CustomerPortal";
 import ReportsAdvanced from "@/pages/ReportsAdvanced";
+import BillsEnhanced from "@/pages/BillsEnhanced";
+import InventoryEnhanced from "@/pages/InventoryEnhanced";
 // CustomersEnhanced has been merged into ContactsEnhanced - redirect below
 import PriceLists from "@/pages/PriceLists";
 import InventoryAdjustments from "@/pages/InventoryAdjustments";
