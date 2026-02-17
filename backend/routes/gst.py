@@ -19,7 +19,14 @@ import os
 import re
 import openpyxl
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
-from services.pdf_service import generate_pdf_from_html
+
+# Soft import for PDF service (may not be available in all environments)
+try:
+    from services.pdf_service import generate_pdf_from_html
+    PDF_SERVICE_AVAILABLE = True
+except ImportError:
+    PDF_SERVICE_AVAILABLE = False
+    generate_pdf_from_html = None
 
 router = APIRouter(prefix="/gst", tags=["GST Compliance"])
 
