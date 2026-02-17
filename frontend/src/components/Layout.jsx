@@ -42,7 +42,8 @@ import {
   Activity,
   Landmark,
   CheckSquare,
-  CloudDownload
+  CloudDownload,
+  Warehouse
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
