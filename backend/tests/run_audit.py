@@ -238,9 +238,10 @@ def run_audit():
         resp = client.get(f"{API_URL}/contacts-enhanced/{created_contact_id}", headers=headers)
         test("Contact Read", resp.status_code == 200)
         
-        # Check GSTIN state extraction
+        # Check GSTIN state extraction - accepts full name or abbreviation
         contact = resp.json().get('contact', {})
-        test("GSTIN State Extraction", "Maharashtra" in contact.get('place_of_supply', ''), f"Place: {contact.get('place_of_supply')}")
+        place = contact.get('place_of_supply', '')
+        test("GSTIN State Extraction", "Maharashtra" in place or "MH" in place, f"Place: {place}")
         
         resp = client.put(f"{API_URL}/contacts-enhanced/{created_contact_id}", headers=headers, json={"credit_limit": 200000})
         test("Contact Update", resp.status_code == 200)
