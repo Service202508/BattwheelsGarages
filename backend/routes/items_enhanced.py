@@ -488,6 +488,468 @@ async def get_low_stock_items():
     
     return {"code": 0, "low_stock_items": low_stock_items, "count": len(low_stock_items)}
 
+# ============== STOCK LOCATIONS (MUST BE BEFORE /{item_id}) ==============
+
+@router.post("/stock-locations")
+async def create_stock_location(location: ItemStockLocationCreate):
+    """Create or update stock location"""
+    db = get_db()
+    
+    # Get warehouse name
+    warehouse = await db.warehouses.find_one({"warehouse_id": location.warehouse_id})
+    warehouse_name = warehouse.get("name", "") if warehouse else ""
+    
+    # Check if exists
+    existing = await db.item_stock_locations.find_one({
+        "item_id": location.item_id,
+        "warehouse_id": location.warehouse_id
+    })
+    
+    if existing:
+        await db.item_stock_locations.update_one(
+            {"_id": existing["_id"]},
+            {"$set": {"stock": location.stock, "updated_time": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"code": 0, "message": "Stock location updated"}
+    
+    location_dict = {
+        "location_id": f"ISL-{uuid.uuid4().hex[:8].upper()}",
+        "item_id": location.item_id,
+        "warehouse_id": location.warehouse_id,
+        "warehouse_name": warehouse_name,
+        "stock": location.stock,
+        "created_time": datetime.now(timezone.utc).isoformat(),
+        "updated_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.item_stock_locations.insert_one(location_dict)
+    
+    return {"code": 0, "message": "Stock location created"}
+
+@router.post("/stock-locations/bulk-update")
+async def bulk_update_stock(bulk: BulkStockUpdate):
+    """Bulk update stock locations"""
+    db = get_db()
+    updated = 0
+    
+    for update in bulk.updates:
+        item_id = update.get("item_id")
+        warehouse_id = update.get("warehouse_id")
+        stock = update.get("stock", 0)
+        
+        result = await db.item_stock_locations.update_one(
+            {"item_id": item_id, "warehouse_id": warehouse_id},
+            {"$set": {"stock": stock, "updated_time": datetime.now(timezone.utc).isoformat()}},
+            upsert=True
+        )
+        if result.modified_count > 0 or result.upserted_id:
+            updated += 1
+    
+    return {"code": 0, "message": f"Updated {updated} stock locations"}
+
+# ============== INVENTORY ADJUSTMENTS (MUST BE BEFORE /{item_id}) ==============
+
+@router.post("/adjustments")
+async def create_item_adjustment(adj: ItemAdjustmentCreate):
+    """Create inventory adjustment"""
+    db = get_db()
+    
+    # Get item
+    item = await db.items.find_one({"item_id": adj.item_id})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    if item.get("item_type") not in ["inventory", "sales_and_purchases"]:
+        raise HTTPException(status_code=400, detail="Item is not an inventory item")
+    
+    # Get or create stock location
+    stock_loc = await db.item_stock_locations.find_one({
+        "item_id": adj.item_id,
+        "warehouse_id": adj.warehouse_id
+    })
+    
+    current_stock = stock_loc.get("stock", 0) if stock_loc else 0
+    
+    # Calculate new stock
+    if adj.adjustment_type == "add":
+        new_stock = current_stock + adj.quantity
+    else:
+        if current_stock < adj.quantity:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Insufficient stock. Current: {current_stock}, Requested: {adj.quantity}"
+            )
+        new_stock = current_stock - adj.quantity
+    
+    # Create adjustment record
+    adj_id = f"ADJ-{uuid.uuid4().hex[:8].upper()}"
+    adj_date = adj.date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    # Get warehouse name
+    warehouse = await db.warehouses.find_one({"warehouse_id": adj.warehouse_id})
+    warehouse_name = warehouse.get("name", "") if warehouse else ""
+    
+    adj_dict = {
+        "adjustment_id": adj_id,
+        "item_id": adj.item_id,
+        "item_name": item.get("name", ""),
+        "warehouse_id": adj.warehouse_id,
+        "warehouse_name": warehouse_name,
+        "adjustment_type": adj.adjustment_type,
+        "quantity": adj.quantity,
+        "stock_before": current_stock,
+        "stock_after": new_stock,
+        "reason": adj.reason,
+        "notes": adj.notes,
+        "reference_number": adj.reference_number,
+        "date": adj_date,
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.item_adjustments.insert_one(adj_dict)
+    
+    # Update stock location
+    if stock_loc:
+        await db.item_stock_locations.update_one(
+            {"_id": stock_loc["_id"]},
+            {"$set": {"stock": new_stock, "updated_time": datetime.now(timezone.utc).isoformat()}}
+        )
+    else:
+        await db.item_stock_locations.insert_one({
+            "location_id": f"ISL-{uuid.uuid4().hex[:8].upper()}",
+            "item_id": adj.item_id,
+            "warehouse_id": adj.warehouse_id,
+            "warehouse_name": warehouse_name,
+            "stock": new_stock,
+            "created_time": datetime.now(timezone.utc).isoformat(),
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        })
+    
+    # Update item total stock
+    all_locations = await db.item_stock_locations.find({"item_id": adj.item_id}).to_list(100)
+    total_stock = sum(loc.get("stock", 0) for loc in all_locations)
+    await db.items.update_one(
+        {"item_id": adj.item_id},
+        {"$set": {
+            "stock_on_hand": total_stock,
+            "available_stock": total_stock,
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    del adj_dict["_id"]
+    return {"code": 0, "message": "Adjustment created", "adjustment": adj_dict}
+
+@router.get("/adjustments")
+async def list_item_adjustments(
+    item_id: str = "",
+    warehouse_id: str = "",
+    reason: str = "",
+    page: int = 1,
+    per_page: int = 50
+):
+    """List inventory adjustments"""
+    db = get_db()
+    
+    query = {}
+    if item_id:
+        query["item_id"] = item_id
+    if warehouse_id:
+        query["warehouse_id"] = warehouse_id
+    if reason:
+        query["reason"] = reason
+    
+    skip = (page - 1) * per_page
+    adjustments = await db.item_adjustments.find(query, {"_id": 0}).sort("date", -1).skip(skip).limit(per_page).to_list(per_page)
+    total = await db.item_adjustments.count_documents(query)
+    
+    return {
+        "code": 0,
+        "adjustments": adjustments,
+        "page_context": {"page": page, "per_page": per_page, "total": total}
+    }
+
+@router.get("/adjustments/{adj_id}")
+async def get_item_adjustment(adj_id: str):
+    """Get adjustment details"""
+    db = get_db()
+    adj = await db.item_adjustments.find_one({"adjustment_id": adj_id}, {"_id": 0})
+    if not adj:
+        raise HTTPException(status_code=404, detail="Adjustment not found")
+    return {"code": 0, "adjustment": adj}
+
+# ============== PRICE LISTS (MUST BE BEFORE /{item_id}) ==============
+
+@router.post("/price-lists")
+async def create_price_list(price_list: PriceListCreate):
+    """Create a price list"""
+    db = get_db()
+    
+    existing = await db.price_lists.find_one({"name": price_list.name})
+    if existing:
+        raise HTTPException(status_code=400, detail="Price list with this name already exists")
+    
+    pl_id = f"PL-{uuid.uuid4().hex[:8].upper()}"
+    
+    pl_dict = {
+        "pricelist_id": pl_id,
+        "name": price_list.name,
+        "description": price_list.description,
+        "discount_percentage": price_list.discount_percentage,
+        "markup_percentage": price_list.markup_percentage,
+        "is_active": price_list.is_active,
+        "item_count": 0,
+        "created_time": datetime.now(timezone.utc).isoformat(),
+        "updated_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.price_lists.insert_one(pl_dict)
+    del pl_dict["_id"]
+    
+    return {"code": 0, "message": "Price list created", "price_list": pl_dict}
+
+@router.get("/price-lists")
+async def list_price_lists(include_inactive: bool = False):
+    """List all price lists"""
+    db = get_db()
+    query = {} if include_inactive else {"is_active": True}
+    price_lists = await db.price_lists.find(query, {"_id": 0}).to_list(100)
+    
+    # Count items per price list
+    for pl in price_lists:
+        count = await db.item_prices.count_documents({"price_list_id": pl["pricelist_id"]})
+        pl["item_count"] = count
+    
+    return {"code": 0, "price_lists": price_lists}
+
+@router.get("/price-lists/{pricelist_id}")
+async def get_price_list(pricelist_id: str):
+    """Get price list with item prices"""
+    db = get_db()
+    pl = await db.price_lists.find_one({"pricelist_id": pricelist_id}, {"_id": 0})
+    if not pl:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    # Get item prices
+    prices = await db.item_prices.aggregate([
+        {"$match": {"price_list_id": pricelist_id}},
+        {"$lookup": {
+            "from": "items",
+            "localField": "item_id",
+            "foreignField": "item_id",
+            "as": "item_info"
+        }},
+        {"$unwind": {"path": "$item_info", "preserveNullAndEmptyArrays": True}},
+        {"$project": {
+            "_id": 0,
+            "item_id": 1,
+            "rate": 1,
+            "item_name": "$item_info.name",
+            "sku": "$item_info.sku",
+            "base_rate": "$item_info.sales_rate"
+        }}
+    ]).to_list(1000)
+    
+    pl["item_prices"] = prices
+    return {"code": 0, "price_list": pl}
+
+@router.put("/price-lists/{pricelist_id}")
+async def update_price_list(pricelist_id: str, price_list: PriceListCreate):
+    """Update price list"""
+    db = get_db()
+    
+    result = await db.price_lists.update_one(
+        {"pricelist_id": pricelist_id},
+        {"$set": {
+            "name": price_list.name,
+            "description": price_list.description,
+            "discount_percentage": price_list.discount_percentage,
+            "markup_percentage": price_list.markup_percentage,
+            "is_active": price_list.is_active,
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    return {"code": 0, "message": "Price list updated"}
+
+@router.delete("/price-lists/{pricelist_id}")
+async def delete_price_list(pricelist_id: str):
+    """Delete price list"""
+    db = get_db()
+    
+    # Delete associated item prices
+    await db.item_prices.delete_many({"price_list_id": pricelist_id})
+    
+    result = await db.price_lists.delete_one({"pricelist_id": pricelist_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    return {"code": 0, "message": "Price list deleted"}
+
+# ============== ITEM PRICES (MUST BE BEFORE /{item_id}) ==============
+
+@router.post("/prices")
+async def create_item_price(price: ItemPriceCreate):
+    """Set item price for a price list"""
+    db = get_db()
+    
+    # Check if exists
+    existing = await db.item_prices.find_one({
+        "item_id": price.item_id,
+        "price_list_id": price.price_list_id
+    })
+    
+    if existing:
+        await db.item_prices.update_one(
+            {"_id": existing["_id"]},
+            {"$set": {"rate": price.rate, "updated_time": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"code": 0, "message": "Item price updated"}
+    
+    # Get names
+    item = await db.items.find_one({"item_id": price.item_id})
+    pl = await db.price_lists.find_one({"pricelist_id": price.price_list_id})
+    
+    price_dict = {
+        "price_id": f"IP-{uuid.uuid4().hex[:8].upper()}",
+        "item_id": price.item_id,
+        "item_name": item.get("name", "") if item else "",
+        "price_list_id": price.price_list_id,
+        "price_list_name": pl.get("name", "") if pl else "",
+        "rate": price.rate,
+        "created_time": datetime.now(timezone.utc).isoformat(),
+        "updated_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.item_prices.insert_one(price_dict)
+    
+    return {"code": 0, "message": "Item price created"}
+
+@router.get("/prices/{item_id}")
+async def get_item_prices(item_id: str):
+    """Get all prices for an item"""
+    db = get_db()
+    prices = await db.item_prices.find({"item_id": item_id}, {"_id": 0}).to_list(100)
+    return {"code": 0, "prices": prices}
+
+@router.delete("/prices/{item_id}/{price_list_id}")
+async def delete_item_price(item_id: str, price_list_id: str):
+    """Delete item price from a price list"""
+    db = get_db()
+    result = await db.item_prices.delete_one({
+        "item_id": item_id,
+        "price_list_id": price_list_id
+    })
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Item price not found")
+    return {"code": 0, "message": "Item price deleted"}
+
+# ============== INVENTORY REPORTS (MUST BE BEFORE /{item_id}) ==============
+
+@router.get("/reports/stock-summary")
+async def get_stock_summary(warehouse_id: str = ""):
+    """Get stock summary report"""
+    db = get_db()
+    
+    match_stage = {"item_type": {"$in": ["inventory", "sales_and_purchases"]}}
+    
+    items = await db.items.find(match_stage, {"_id": 0}).to_list(10000)
+    
+    summary = {
+        "total_items": len(items),
+        "total_stock_value": 0,
+        "low_stock_count": 0,
+        "out_of_stock_count": 0,
+        "items": []
+    }
+    
+    for item in items:
+        stock = item.get("stock_on_hand", 0) or item.get("available_stock", 0)
+        if isinstance(stock, str):
+            stock = float(stock) if stock else 0
+        rate = item.get("purchase_rate", 0) or item.get("sales_rate", 0)
+        if isinstance(rate, str):
+            rate = float(rate) if rate else 0
+        reorder_level = item.get("reorder_level", 0)
+        if isinstance(reorder_level, str):
+            reorder_level = float(reorder_level) if reorder_level else 0
+        value = stock * rate
+        
+        item_summary = {
+            "item_id": item.get("item_id"),
+            "name": item.get("name"),
+            "sku": item.get("sku"),
+            "stock": stock,
+            "reorder_level": reorder_level,
+            "rate": rate,
+            "value": round(value, 2),
+            "is_low_stock": stock < reorder_level,
+            "is_out_of_stock": stock <= 0
+        }
+        
+        summary["items"].append(item_summary)
+        summary["total_stock_value"] += value
+        
+        if item_summary["is_low_stock"]:
+            summary["low_stock_count"] += 1
+        if item_summary["is_out_of_stock"]:
+            summary["out_of_stock_count"] += 1
+    
+    summary["total_stock_value"] = round(summary["total_stock_value"], 2)
+    
+    return {"code": 0, "stock_summary": summary}
+
+@router.get("/reports/valuation")
+async def get_inventory_valuation():
+    """Get inventory valuation report"""
+    db = get_db()
+    
+    pipeline = [
+        {"$match": {"item_type": {"$in": ["inventory", "sales_and_purchases"]}}},
+        {"$project": {
+            "_id": 0,
+            "item_id": 1,
+            "name": 1,
+            "sku": 1,
+            "stock_on_hand": {"$ifNull": ["$stock_on_hand", {"$ifNull": ["$available_stock", 0]}]},
+            "purchase_rate": {"$ifNull": ["$purchase_rate", "$sales_rate"]},
+            "sales_rate": 1
+        }},
+        {"$addFields": {
+            "purchase_value": {"$multiply": ["$stock_on_hand", "$purchase_rate"]},
+            "sales_value": {"$multiply": ["$stock_on_hand", "$sales_rate"]}
+        }},
+        {"$group": {
+            "_id": None,
+            "items": {"$push": "$$ROOT"},
+            "total_purchase_value": {"$sum": "$purchase_value"},
+            "total_sales_value": {"$sum": "$sales_value"},
+            "total_items": {"$sum": 1},
+            "total_stock": {"$sum": "$stock_on_hand"}
+        }}
+    ]
+    
+    result = await db.items.aggregate(pipeline).to_list(1)
+    
+    if result:
+        return {
+            "code": 0,
+            "valuation": {
+                "total_items": result[0].get("total_items", 0),
+                "total_stock": result[0].get("total_stock", 0),
+                "total_purchase_value": round(result[0].get("total_purchase_value", 0), 2),
+                "total_sales_value": round(result[0].get("total_sales_value", 0), 2),
+                "items": result[0].get("items", [])
+            }
+        }
+    
+    return {"code": 0, "valuation": {"total_items": 0, "total_stock": 0, "total_purchase_value": 0, "total_sales_value": 0, "items": []}}
+
+# ============== ITEM ROUTES WITH PATH PARAMETERS (MUST BE LAST) ==============
+
 @router.get("/{item_id}")
 async def get_enhanced_item(item_id: str):
     """Get item with full details"""
