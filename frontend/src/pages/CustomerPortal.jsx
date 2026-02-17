@@ -1,0 +1,697 @@
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+import { 
+  LogIn, LogOut, Receipt, FileText, CreditCard, User, Building2, 
+  Calendar, DollarSign, AlertTriangle, CheckCircle, Clock, Eye,
+  Download, ChevronRight, RefreshCw
+} from "lucide-react";
+import { API } from "@/App";
+
+const statusColors = {
+  sent: "bg-blue-100 text-blue-700",
+  viewed: "bg-purple-100 text-purple-700",
+  partially_paid: "bg-yellow-100 text-yellow-700",
+  paid: "bg-green-100 text-green-700",
+  overdue: "bg-red-100 text-red-700",
+  accepted: "bg-green-100 text-green-700",
+  declined: "bg-red-100 text-red-700"
+};
+
+export default function CustomerPortal() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [sessionToken, setSessionToken] = useState("");
+  const [portalToken, setPortalToken] = useState("");
+  const [contact, setContact] = useState(null);
+  const [dashboard, setDashboard] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("dashboard");
+  
+  // Data
+  const [invoices, setInvoices] = useState([]);
+  const [estimates, setEstimates] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [statement, setStatement] = useState(null);
+  
+  // Detail dialogs
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [selectedEstimate, setSelectedEstimate] = useState(null);
+  const [showInvoiceDialog, setShowInvoiceDialog] = useState(false);
+  const [showEstimateDialog, setShowEstimateDialog] = useState(false);
+
+  useEffect(() => {
+    // Check for existing session
+    const savedToken = localStorage.getItem("portal_session");
+    if (savedToken) {
+      setSessionToken(savedToken);
+      validateSession(savedToken);
+    }
+  }, []);
+
+  const validateSession = async (token) => {
+    try {
+      const res = await fetch(`${API}/customer-portal/session?session_token=${token}`);
+      if (res.ok) {
+        const data = await res.json();
+        setIsLoggedIn(true);
+        setContact(data.session);
+        fetchDashboard(token);
+      } else {
+        localStorage.removeItem("portal_session");
+      }
+    } catch (e) {
+      console.error("Session validation failed:", e);
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!portalToken) return toast.error("Please enter your portal token");
+    setLoading(true);
+    
+    try {
+      const res = await fetch(`${API}/customer-portal/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: portalToken })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setSessionToken(data.session_token);
+        setContact(data.contact);
+        setIsLoggedIn(true);
+        localStorage.setItem("portal_session", data.session_token);
+        toast.success("Login successful!");
+        fetchDashboard(data.session_token);
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || "Invalid portal token");
+      }
+    } catch (e) {
+      toast.error("Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API}/customer-portal/logout?session_token=${sessionToken}`, { method: "POST" });
+    } catch (e) {}
+    
+    setIsLoggedIn(false);
+    setSessionToken("");
+    setContact(null);
+    setDashboard(null);
+    localStorage.removeItem("portal_session");
+    toast.success("Logged out");
+  };
+
+  const fetchDashboard = async (token) => {
+    try {
+      const res = await fetch(`${API}/customer-portal/dashboard?session_token=${token}`);
+      if (res.ok) {
+        const data = await res.json();
+        setDashboard(data.dashboard);
+      }
+    } catch (e) {
+      console.error("Failed to fetch dashboard:", e);
+    }
+  };
+
+  const fetchInvoices = async () => {
+    try {
+      const res = await fetch(`${API}/customer-portal/invoices?session_token=${sessionToken}&per_page=50`);
+      if (res.ok) {
+        const data = await res.json();
+        setInvoices(data.invoices || []);
+      }
+    } catch (e) {
+      console.error("Failed to fetch invoices:", e);
+    }
+  };
+
+  const fetchInvoiceDetail = async (invoiceId) => {
+    try {
+      const res = await fetch(`${API}/customer-portal/invoices/${invoiceId}?session_token=${sessionToken}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSelectedInvoice(data.invoice);
+        setShowInvoiceDialog(true);
+      }
+    } catch (e) {
+      toast.error("Failed to load invoice");
+    }
+  };
+
+  const fetchEstimates = async () => {
+    try {
+      const res = await fetch(`${API}/customer-portal/estimates?session_token=${sessionToken}&per_page=50`);
+      if (res.ok) {
+        const data = await res.json();
+        setEstimates(data.estimates || []);
+      }
+    } catch (e) {
+      console.error("Failed to fetch estimates:", e);
+    }
+  };
+
+  const fetchEstimateDetail = async (estimateId) => {
+    try {
+      const res = await fetch(`${API}/customer-portal/estimates/${estimateId}?session_token=${sessionToken}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSelectedEstimate(data.estimate);
+        setShowEstimateDialog(true);
+      }
+    } catch (e) {
+      toast.error("Failed to load estimate");
+    }
+  };
+
+  const handleAcceptEstimate = async (estimateId) => {
+    try {
+      const res = await fetch(`${API}/customer-portal/estimates/${estimateId}/accept?session_token=${sessionToken}`, { method: "POST" });
+      if (res.ok) {
+        toast.success("Estimate accepted!");
+        setShowEstimateDialog(false);
+        fetchEstimates();
+        fetchDashboard(sessionToken);
+      }
+    } catch (e) {
+      toast.error("Failed to accept estimate");
+    }
+  };
+
+  const handleDeclineEstimate = async (estimateId) => {
+    try {
+      const res = await fetch(`${API}/customer-portal/estimates/${estimateId}/decline?session_token=${sessionToken}`, { method: "POST" });
+      if (res.ok) {
+        toast.success("Estimate declined");
+        setShowEstimateDialog(false);
+        fetchEstimates();
+      }
+    } catch (e) {
+      toast.error("Failed to decline estimate");
+    }
+  };
+
+  const fetchPayments = async () => {
+    try {
+      const res = await fetch(`${API}/customer-portal/payments?session_token=${sessionToken}&per_page=50`);
+      if (res.ok) {
+        const data = await res.json();
+        setPayments(data.payments || []);
+      }
+    } catch (e) {
+      console.error("Failed to fetch payments:", e);
+    }
+  };
+
+  const fetchStatement = async () => {
+    try {
+      const res = await fetch(`${API}/customer-portal/statement?session_token=${sessionToken}`);
+      if (res.ok) {
+        const data = await res.json();
+        setStatement(data.statement);
+      }
+    } catch (e) {
+      console.error("Failed to fetch statement:", e);
+    }
+  };
+
+  useEffect(() => {
+    if (isLoggedIn && sessionToken) {
+      if (activeTab === "invoices") fetchInvoices();
+      else if (activeTab === "estimates") fetchEstimates();
+      else if (activeTab === "payments") fetchPayments();
+      else if (activeTab === "statement") fetchStatement();
+    }
+  }, [activeTab, isLoggedIn, sessionToken]);
+
+  const formatCurrency = (amount) => `₹${(amount || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
+  const formatDate = (date) => date ? new Date(date).toLocaleDateString("en-IN") : "-";
+
+  // Login Screen
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4" data-testid="portal-login-page">
+        <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-16 h-16 bg-[#22EDA9] rounded-full flex items-center justify-center mb-4">
+              <Building2 className="h-8 w-8 text-black" />
+            </div>
+            <CardTitle className="text-2xl text-white">Customer Portal</CardTitle>
+            <p className="text-gray-400 text-sm mt-2">Access your invoices, estimates, and statements</p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm text-gray-300 mb-2 block">Portal Access Token</label>
+              <Input
+                value={portalToken}
+                onChange={(e) => setPortalToken(e.target.value)}
+                onKeyUp={(e) => e.key === "Enter" && handleLogin()}
+                placeholder="Enter your portal token"
+                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500"
+                data-testid="portal-token-input"
+              />
+              <p className="text-xs text-gray-500 mt-2">Your portal token was sent to your email</p>
+            </div>
+            <Button 
+              onClick={handleLogin} 
+              disabled={loading}
+              className="w-full bg-[#22EDA9] hover:bg-[#1DD69A] text-black"
+              data-testid="portal-login-btn"
+            >
+              {loading ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : <LogIn className="h-4 w-4 mr-2" />}
+              {loading ? "Logging in..." : "Login to Portal"}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Portal Dashboard
+  return (
+    <div className="min-h-screen bg-gray-50" data-testid="customer-portal-dashboard">
+      {/* Header */}
+      <header className="bg-white border-b px-6 py-4">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#22EDA9] rounded-full flex items-center justify-center">
+              <Building2 className="h-5 w-5 text-black" />
+            </div>
+            <div>
+              <h1 className="font-bold text-lg">{contact?.contact_name || dashboard?.contact?.name}</h1>
+              <p className="text-xs text-gray-500">{contact?.company_name || dashboard?.contact?.company}</p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            <LogOut className="h-4 w-4 mr-2" /> Logout
+          </Button>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto p-6 space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="bg-white border">
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="invoices">Invoices</TabsTrigger>
+            <TabsTrigger value="estimates">Estimates</TabsTrigger>
+            <TabsTrigger value="payments">Payments</TabsTrigger>
+            <TabsTrigger value="statement">Statement</TabsTrigger>
+          </TabsList>
+
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard" className="space-y-6">
+            {dashboard && (
+              <>
+                {/* Summary Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Card className="bg-blue-50 border-blue-200">
+                    <CardContent className="pt-4">
+                      <div className="flex items-center gap-3">
+                        <Receipt className="h-8 w-8 text-blue-500" />
+                        <div>
+                          <p className="text-xs text-gray-500">Total Invoiced</p>
+                          <p className="text-xl font-bold text-blue-700">{formatCurrency(dashboard.summary.total_invoiced)}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-green-50 border-green-200">
+                    <CardContent className="pt-4">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="h-8 w-8 text-green-500" />
+                        <div>
+                          <p className="text-xs text-gray-500">Total Paid</p>
+                          <p className="text-xl font-bold text-green-700">{formatCurrency(dashboard.summary.total_paid)}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-orange-50 border-orange-200">
+                    <CardContent className="pt-4">
+                      <div className="flex items-center gap-3">
+                        <DollarSign className="h-8 w-8 text-orange-500" />
+                        <div>
+                          <p className="text-xs text-gray-500">Outstanding</p>
+                          <p className="text-xl font-bold text-orange-700">{formatCurrency(dashboard.summary.total_outstanding)}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className={dashboard.summary.overdue_invoices > 0 ? "bg-red-50 border-red-200" : "bg-gray-50"}>
+                    <CardContent className="pt-4">
+                      <div className="flex items-center gap-3">
+                        <AlertTriangle className={`h-8 w-8 ${dashboard.summary.overdue_invoices > 0 ? "text-red-500" : "text-gray-400"}`} />
+                        <div>
+                          <p className="text-xs text-gray-500">Overdue</p>
+                          <p className={`text-xl font-bold ${dashboard.summary.overdue_invoices > 0 ? "text-red-700" : "text-gray-500"}`}>{dashboard.summary.overdue_invoices}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Recent Invoices */}
+                {dashboard.recent_invoices?.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Receipt className="h-5 w-5" /> Recent Invoices
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        {dashboard.recent_invoices.map(inv => (
+                          <div 
+                            key={inv.invoice_id} 
+                            className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
+                            onClick={() => fetchInvoiceDetail(inv.invoice_id)}
+                          >
+                            <div>
+                              <p className="font-medium">{inv.invoice_number}</p>
+                              <p className="text-xs text-gray-500">{formatDate(inv.invoice_date)}</p>
+                            </div>
+                            <div className="text-right flex items-center gap-3">
+                              <div>
+                                <p className="font-medium">{formatCurrency(inv.grand_total)}</p>
+                                <Badge className={statusColors[inv.status] || "bg-gray-100"}>{inv.status}</Badge>
+                              </div>
+                              <ChevronRight className="h-5 w-5 text-gray-400" />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Pending Estimates */}
+                {dashboard.summary.pending_estimates > 0 && (
+                  <Card className="border-yellow-200 bg-yellow-50">
+                    <CardContent className="pt-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <FileText className="h-8 w-8 text-yellow-600" />
+                          <div>
+                            <p className="font-medium">Pending Estimates</p>
+                            <p className="text-sm text-gray-600">You have {dashboard.summary.pending_estimates} estimate(s) awaiting your review</p>
+                          </div>
+                        </div>
+                        <Button size="sm" onClick={() => setActiveTab("estimates")}>View <ChevronRight className="h-4 w-4 ml-1" /></Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            )}
+          </TabsContent>
+
+          {/* Invoices Tab */}
+          <TabsContent value="invoices">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Receipt className="h-5 w-5" /> Your Invoices</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {invoices.length === 0 ? (
+                  <p className="text-center text-gray-500 py-8">No invoices found</p>
+                ) : (
+                  <div className="space-y-2">
+                    {invoices.map(inv => (
+                      <div 
+                        key={inv.invoice_id}
+                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                        onClick={() => fetchInvoiceDetail(inv.invoice_id)}
+                      >
+                        <div>
+                          <p className="font-medium text-blue-600">{inv.invoice_number}</p>
+                          <p className="text-sm text-gray-500">Date: {formatDate(inv.invoice_date)} | Due: {formatDate(inv.due_date)}</p>
+                        </div>
+                        <div className="text-right flex items-center gap-3">
+                          <div>
+                            <p className="font-bold">{formatCurrency(inv.grand_total)}</p>
+                            {inv.balance_due > 0 && <p className="text-xs text-red-600">Due: {formatCurrency(inv.balance_due)}</p>}
+                          </div>
+                          <Badge className={statusColors[inv.status]}>{inv.status}</Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Estimates Tab */}
+          <TabsContent value="estimates">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5" /> Your Estimates</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {estimates.length === 0 ? (
+                  <p className="text-center text-gray-500 py-8">No estimates found</p>
+                ) : (
+                  <div className="space-y-2">
+                    {estimates.map(est => (
+                      <div 
+                        key={est.estimate_id}
+                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                        onClick={() => fetchEstimateDetail(est.estimate_id)}
+                      >
+                        <div>
+                          <p className="font-medium text-blue-600">{est.estimate_number}</p>
+                          <p className="text-sm text-gray-500">Date: {formatDate(est.estimate_date)} | Expires: {formatDate(est.expiry_date)}</p>
+                        </div>
+                        <div className="text-right flex items-center gap-3">
+                          <p className="font-bold">{formatCurrency(est.grand_total)}</p>
+                          <Badge className={statusColors[est.status]}>{est.status}</Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Payments Tab */}
+          <TabsContent value="payments">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><CreditCard className="h-5 w-5" /> Payment History</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {payments.length === 0 ? (
+                  <p className="text-center text-gray-500 py-8">No payments found</p>
+                ) : (
+                  <div className="space-y-2">
+                    {payments.map(p => (
+                      <div key={p.payment_id} className="flex justify-between items-center p-4 border rounded-lg">
+                        <div>
+                          <p className="font-medium">{formatCurrency(p.amount)}</p>
+                          <p className="text-sm text-gray-500">{formatDate(p.payment_date)} • {p.payment_mode}</p>
+                          {p.reference_number && <p className="text-xs text-gray-400">Ref: {p.reference_number}</p>}
+                        </div>
+                        <Badge className="bg-green-100 text-green-700">Received</Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Statement Tab */}
+          <TabsContent value="statement">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5" /> Account Statement</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {statement && (
+                  <div className="space-y-6">
+                    {/* Summary */}
+                    <div className="grid grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
+                      <div className="text-center">
+                        <p className="text-sm text-gray-500">Total Invoiced</p>
+                        <p className="text-xl font-bold">{formatCurrency(statement.summary.total_invoiced)}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm text-gray-500">Total Paid</p>
+                        <p className="text-xl font-bold text-green-600">{formatCurrency(statement.summary.total_paid)}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm text-gray-500">Balance Due</p>
+                        <p className="text-xl font-bold text-red-600">{formatCurrency(statement.summary.balance_due)}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Transactions */}
+                    <div>
+                      <h4 className="font-medium mb-3">Transactions</h4>
+                      <div className="border rounded-lg overflow-hidden">
+                        <table className="w-full text-sm">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-4 py-2 text-left">Date</th>
+                              <th className="px-4 py-2 text-left">Description</th>
+                              <th className="px-4 py-2 text-right">Amount</th>
+                              <th className="px-4 py-2 text-center">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {statement.invoices?.map(inv => (
+                              <tr key={inv.invoice_id} className="border-t">
+                                <td className="px-4 py-2">{formatDate(inv.invoice_date)}</td>
+                                <td className="px-4 py-2">Invoice {inv.invoice_number}</td>
+                                <td className="px-4 py-2 text-right">{formatCurrency(inv.grand_total)}</td>
+                                <td className="px-4 py-2 text-center"><Badge className={statusColors[inv.status]}>{inv.status}</Badge></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </main>
+
+      {/* Invoice Detail Dialog */}
+      <Dialog open={showInvoiceDialog} onOpenChange={setShowInvoiceDialog}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          {selectedInvoice && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  {selectedInvoice.invoice_number}
+                  <Badge className={statusColors[selectedInvoice.status]}>{selectedInvoice.status}</Badge>
+                </DialogTitle>
+                <DialogDescription>Invoice Details</DialogDescription>
+              </DialogHeader>
+              
+              <div className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div><span className="text-gray-500">Date:</span> {formatDate(selectedInvoice.invoice_date)}</div>
+                  <div><span className="text-gray-500">Due:</span> {formatDate(selectedInvoice.due_date)}</div>
+                </div>
+                
+                {selectedInvoice.line_items?.length > 0 && (
+                  <div className="border rounded-lg overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-3 py-2 text-left">Item</th>
+                          <th className="px-3 py-2 text-right">Qty</th>
+                          <th className="px-3 py-2 text-right">Rate</th>
+                          <th className="px-3 py-2 text-right">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedInvoice.line_items.map((item, idx) => (
+                          <tr key={idx} className="border-t">
+                            <td className="px-3 py-2">{item.name}</td>
+                            <td className="px-3 py-2 text-right">{item.quantity}</td>
+                            <td className="px-3 py-2 text-right">{formatCurrency(item.rate)}</td>
+                            <td className="px-3 py-2 text-right">{formatCurrency(item.total)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                
+                <div className="bg-gray-50 p-4 rounded-lg space-y-1 text-sm w-48 ml-auto">
+                  <div className="flex justify-between"><span>Sub Total:</span><span>{formatCurrency(selectedInvoice.sub_total)}</span></div>
+                  <div className="flex justify-between"><span>Tax:</span><span>{formatCurrency(selectedInvoice.tax_total)}</span></div>
+                  <Separator />
+                  <div className="flex justify-between font-bold"><span>Total:</span><span>{formatCurrency(selectedInvoice.grand_total)}</span></div>
+                  {selectedInvoice.amount_paid > 0 && <div className="flex justify-between text-green-600"><span>Paid:</span><span>-{formatCurrency(selectedInvoice.amount_paid)}</span></div>}
+                  <div className="flex justify-between font-bold text-lg"><span>Balance:</span><span className={selectedInvoice.balance_due > 0 ? "text-red-600" : "text-green-600"}>{formatCurrency(selectedInvoice.balance_due)}</span></div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Estimate Detail Dialog */}
+      <Dialog open={showEstimateDialog} onOpenChange={setShowEstimateDialog}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          {selectedEstimate && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  {selectedEstimate.estimate_number}
+                  <Badge className={statusColors[selectedEstimate.status]}>{selectedEstimate.status}</Badge>
+                </DialogTitle>
+                <DialogDescription>Estimate Details</DialogDescription>
+              </DialogHeader>
+              
+              <div className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div><span className="text-gray-500">Date:</span> {formatDate(selectedEstimate.estimate_date)}</div>
+                  <div><span className="text-gray-500">Expires:</span> {formatDate(selectedEstimate.expiry_date)}</div>
+                </div>
+                
+                {selectedEstimate.line_items?.length > 0 && (
+                  <div className="border rounded-lg overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-3 py-2 text-left">Item</th>
+                          <th className="px-3 py-2 text-right">Qty</th>
+                          <th className="px-3 py-2 text-right">Rate</th>
+                          <th className="px-3 py-2 text-right">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedEstimate.line_items.map((item, idx) => (
+                          <tr key={idx} className="border-t">
+                            <td className="px-3 py-2">{item.name}</td>
+                            <td className="px-3 py-2 text-right">{item.quantity}</td>
+                            <td className="px-3 py-2 text-right">{formatCurrency(item.rate)}</td>
+                            <td className="px-3 py-2 text-right">{formatCurrency(item.total)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                
+                <div className="bg-gray-50 p-4 rounded-lg text-center">
+                  <p className="text-2xl font-bold">{formatCurrency(selectedEstimate.grand_total)}</p>
+                </div>
+                
+                {selectedEstimate.status === "sent" && (
+                  <div className="flex gap-3 justify-center">
+                    <Button onClick={() => handleAcceptEstimate(selectedEstimate.estimate_id)} className="bg-green-500 hover:bg-green-600 text-white">
+                      <CheckCircle className="h-4 w-4 mr-2" /> Accept Estimate
+                    </Button>
+                    <Button variant="outline" onClick={() => handleDeclineEstimate(selectedEstimate.estimate_id)}>
+                      Decline
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
