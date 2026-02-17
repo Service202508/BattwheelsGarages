@@ -933,60 +933,6 @@ async def delete_address(contact_id: str, address_id: str):
         raise HTTPException(status_code=404, detail="Address not found")
     return {"code": 0, "message": "Address deleted"}
 
-# ========================= GSTIN VALIDATION ENDPOINT =========================
-
-@router.get("/validate-gstin/{gstin}")
-async def validate_gstin(gstin: str):
-    """Validate GSTIN format and extract details"""
-    if not re.match(GSTIN_REGEX, gstin):
-        return {
-            "code": 1,
-            "valid": False,
-            "message": "Invalid GSTIN format",
-            "details": None
-        }
-    
-    state_code = get_state_from_gstin(gstin)
-    state_name = next((s[1] for s in INDIAN_STATES if s[0] == state_code), "Unknown")
-    
-    # Extract PAN from GSTIN (characters 3-12)
-    pan = gstin[2:12]
-    
-    # Entity type from 6th character of PAN
-    entity_types = {
-        'P': 'Individual', 'C': 'Company', 'H': 'HUF', 'F': 'Firm',
-        'A': 'AOP', 'T': 'Trust', 'B': 'BOI', 'L': 'Local Authority',
-        'J': 'Artificial Juridical Person', 'G': 'Government'
-    }
-    entity_type = entity_types.get(pan[3], 'Unknown')
-    
-    return {
-        "code": 0,
-        "valid": True,
-        "message": "Valid GSTIN",
-        "details": {
-            "gstin": gstin,
-            "state_code": state_code,
-            "state_name": state_name,
-            "pan": pan,
-            "entity_type": entity_type,
-            "checksum_digit": gstin[-1]
-        }
-    }
-
-# ========================= BACKWARD COMPATIBILITY ENDPOINTS =========================
-# These redirect old customer/vendor endpoints to the enhanced contacts
-
-@router.get("/customers")
-async def list_customers(search: Optional[str] = None, page: int = 1, per_page: int = 50):
-    """Backward compatible: List customers only"""
-    return await list_contacts(contact_type="customer", search=search, page=page, per_page=per_page)
-
-@router.get("/vendors")
-async def list_vendors(search: Optional[str] = None, page: int = 1, per_page: int = 50):
-    """Backward compatible: List vendors only"""
-    return await list_contacts(contact_type="vendor", search=search, page=page, per_page=per_page)
-
 # ========================= BULK OPERATIONS =========================
 
 @router.post("/bulk/import")
