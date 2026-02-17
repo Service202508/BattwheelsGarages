@@ -1,20 +1,24 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect, useCallback } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { 
-  Plus, Package, Layers, Barcode, Truck, RotateCcw, Warehouse, 
-  Box, TrendingDown, AlertTriangle, CheckCircle, Search, 
-  Settings, ArrowRight, Eye, Trash2, Edit, Sliders, ArrowUpDown
+  Package, Plus, Search, Eye, Edit, Trash2, RefreshCw, AlertTriangle, 
+  TrendingUp, TrendingDown, ArrowRightLeft, Clock, CheckCircle, XCircle, 
+  Warehouse, BarChart3, History, Upload, Download, Filter, Box, IndianRupee
 } from "lucide-react";
+import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
+import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
+import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
 
 const statusColors = {
