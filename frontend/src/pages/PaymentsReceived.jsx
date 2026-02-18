@@ -299,7 +299,7 @@ export default function PaymentsReceived() {
   // View payment details
   const viewPayment = async (paymentId) => {
     try {
-      const res = await fetch(`${API}/payments-received/${paymentId}`, { headers });
+      const res = await fetch(`${API}/api/payments-received/${paymentId}`, { headers });
       const data = await res.json();
       if (data.code === 0) {
         setSelectedPayment({ ...data.payment, invoice_details: data.invoice_details, history: data.history });
@@ -317,7 +317,7 @@ export default function PaymentsReceived() {
     }
     
     try {
-      const res = await fetch(`${API}/payments-received/${paymentId}`, {
+      const res = await fetch(`${API}/api/payments-received/${paymentId}`, {
         method: "DELETE",
         headers
       });
@@ -342,7 +342,7 @@ export default function PaymentsReceived() {
     if (!selectedPayment) return;
     
     try {
-      const res = await fetch(`${API}/payments-received/${selectedPayment.payment_id}/refund`, {
+      const res = await fetch(`${API}/api/payments-received/${selectedPayment.payment_id}/refund`, {
         method: "POST",
         headers,
         body: JSON.stringify(refundForm)
