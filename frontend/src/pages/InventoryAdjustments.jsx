@@ -1051,6 +1051,7 @@ export default function InventoryAdjustments() {
                       <div><span className="text-gray-500">Created At:</span> <span className="ml-2">{selectedAdj.created_at?.split("T")[0]}</span></div>
                       {selectedAdj.converted_at && <div><span className="text-gray-500">Converted:</span> <span className="ml-2">{selectedAdj.converted_at?.split("T")[0]}</span></div>}
                       {selectedAdj.voided_at && <div><span className="text-gray-500">Voided:</span> <span className="ml-2">{selectedAdj.voided_at?.split("T")[0]}</span></div>}
+                      {selectedAdj.ticket_id && <div><span className="text-gray-500">Linked Ticket:</span> <span className="ml-2 text-blue-600">{selectedAdj.ticket_id}</span></div>}
                     </div>
                   </div>
                   {selectedAdj.description && (
