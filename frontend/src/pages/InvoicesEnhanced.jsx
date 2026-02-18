@@ -912,6 +912,39 @@ export default function InvoicesEnhanced() {
                   </>
                 )}
 
+                {/* Online Payment Option */}
+                {selectedInvoice.balance_due > 0 && selectedInvoice.status !== "draft" && (
+                  <>
+                    <Separator />
+                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium flex items-center gap-2"><CreditCard className="h-4 w-4 text-blue-600" /> Online Payment</h4>
+                          <p className="text-sm text-gray-600 mt-1">Pay securely via Stripe (Card, UPI)</p>
+                        </div>
+                        <Button 
+                          onClick={() => handleCreatePaymentLink(selectedInvoice.invoice_id)}
+                          className="bg-blue-600 hover:bg-blue-700"
+                          data-testid="pay-online-btn"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-2" /> Pay Online
+                        </Button>
+                      </div>
+                      {selectedInvoice.payment_link && (
+                        <div className="mt-3 flex items-center gap-2 text-sm">
+                          <Badge variant="outline" className="text-blue-600">Payment Link Active</Badge>
+                          <button 
+                            className="text-blue-600 hover:underline"
+                            onClick={() => navigator.clipboard.writeText(selectedInvoice.payment_link).then(() => toast.success("Link copied!"))}
+                          >
+                            Copy Link
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
                 {/* History */}
                 {selectedInvoice.history?.length > 0 && (
                   <>
