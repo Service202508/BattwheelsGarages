@@ -1814,18 +1814,24 @@ async def add_line_item(estimate_id: str, item: LineItemCreate):
         raise HTTPException(status_code=400, detail="Cannot modify non-draft estimates")
     
     gst_type = estimate.get("gst_type", "igst")
+    customer_id = estimate.get("customer_id")
     
     item_dict = item.dict()
     
-    # Fetch item details if item_id provided
+    # Fetch item details with price list applied if item_id provided
     if item.item_id:
-        item_details = await get_item_details(item.item_id)
+        # Use new pricing function that applies customer's price list
+        item_details = await get_item_price_for_customer(item.item_id, customer_id)
         if item_details:
             item_dict["name"] = item.name or item_details.get("name", "")
             item_dict["hsn_code"] = item.hsn_code or item_details.get("hsn_code", "")
             item_dict["unit"] = item.unit or item_details.get("unit", "pcs")
             if item.rate == 0:
                 item_dict["rate"] = item_details.get("rate", 0)
+                item_dict["base_rate"] = item_details.get("base_rate", 0)
+                item_dict["price_list_applied"] = item_details.get("price_list_name")
+                item_dict["discount_from_pricelist"] = item_details.get("discount_applied", 0)
+                item_dict["markup_from_pricelist"] = item_details.get("markup_applied", 0)
             if item.tax_percentage == 0:
                 item_dict["tax_percentage"] = item_details.get("tax_percentage", 0)
     
