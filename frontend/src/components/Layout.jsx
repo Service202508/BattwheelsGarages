@@ -132,6 +132,7 @@ const navItems = [
     defaultOpen: false,
     items: [
       { name: "Items & Products", path: "/items", icon: Tag },
+      { name: "Composite Items", path: "/composite-items", icon: Layers },
       { name: "Stock Management", path: "/inventory-enhanced", icon: Warehouse },
       { name: "Price Lists", path: "/price-lists", icon: List },
       { name: "Adjustments", path: "/inventory-adjustments", icon: ClipboardList },
