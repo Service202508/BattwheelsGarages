@@ -23,7 +23,7 @@ import {
   Settings, RefreshCw, TrendingUp, Users, FileText, CheckCircle, XCircle
 } from "lucide-react";
 
-const API = process.env.REACT_APP_BACKEND_URL;
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 export default function InvoiceSettings() {
   const [loading, setLoading] = useState(true);
