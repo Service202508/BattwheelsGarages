@@ -536,13 +536,13 @@ export default function EstimatesEnhanced() {
 
       {/* Summary Cards */}
       {loading ? (
-        <StatCardGrid columns={7}>
-          {[...Array(7)].map((_, i) => (
+        <StatCardGrid columns={8}>
+          {[...Array(8)].map((_, i) => (
             <StatCard key={i} loading title="" value="" />
           ))}
         </StatCardGrid>
       ) : summary && (
-        <StatCardGrid columns={7}>
+        <StatCardGrid columns={8}>
           <StatCard
             title="Total Estimates"
             value={summary.total}
@@ -560,6 +560,14 @@ export default function EstimatesEnhanced() {
             value={summary.by_status?.sent || 0}
             icon={Send}
             variant="info"
+          />
+          <StatCard
+            title="Viewed"
+            value={summary.by_status?.customer_viewed || 0}
+            icon={Eye}
+            variant="info"
+            onClick={() => { setStatusFilter('customer_viewed'); fetchEstimates(); }}
+            className="cursor-pointer hover:ring-2 hover:ring-cyan-300"
           />
           <StatCard
             title="Accepted"
