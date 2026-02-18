@@ -1014,13 +1014,14 @@ export default function EstimatesEnhanced() {
 
                 {/* Actions */}
                 <div className="flex flex-wrap gap-2">
+                  {/* Primary Status Actions */}
                   {selectedEstimate.status === "draft" && (
                     <>
                       <Button variant="outline" onClick={() => { setSendEmail(selectedEstimate.customer_email || ""); setShowSendDialog(true); }}><Send className="h-4 w-4 mr-1" /> Send</Button>
                       <Button variant="destructive" size="sm" onClick={() => handleDeleteEstimate(selectedEstimate.estimate_id)}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
                     </>
                   )}
-                  {selectedEstimate.status === "sent" && (
+                  {(selectedEstimate.status === "sent" || selectedEstimate.status === "customer_viewed") && (
                     <>
                       <Button onClick={() => handleMarkAccepted(selectedEstimate.estimate_id)} className="bg-green-500 hover:bg-green-600"><CheckCircle className="h-4 w-4 mr-1" /> Mark Accepted</Button>
                       <Button variant="outline" onClick={() => handleMarkDeclined(selectedEstimate.estimate_id)}><XCircle className="h-4 w-4 mr-1" /> Mark Declined</Button>
@@ -1035,8 +1036,24 @@ export default function EstimatesEnhanced() {
                   {(selectedEstimate.status === "declined" || selectedEstimate.status === "expired") && (
                     <Button variant="outline" onClick={() => { setSendEmail(selectedEstimate.customer_email || ""); setShowSendDialog(true); }}><Send className="h-4 w-4 mr-1" /> Resend</Button>
                   )}
+                  
+                  {/* Common Actions */}
+                  <Separator orientation="vertical" className="h-8" />
+                  <Button variant="outline" onClick={() => { setShareLink(null); setShowShareDialog(true); }} data-testid="share-btn"><Share2 className="h-4 w-4 mr-1" /> Share</Button>
+                  <Button variant="outline" onClick={() => { fetchAttachments(selectedEstimate.estimate_id); setShowAttachmentDialog(true); }} data-testid="attachments-btn"><Paperclip className="h-4 w-4 mr-1" /> Attachments</Button>
+                  <Button variant="outline" onClick={() => handleDownloadPDF(selectedEstimate.estimate_id)} data-testid="download-pdf-btn"><Download className="h-4 w-4 mr-1" /> PDF</Button>
                   <Button variant="outline" onClick={() => handleClone(selectedEstimate.estimate_id)}><Copy className="h-4 w-4 mr-1" /> Clone</Button>
                 </div>
+
+                {/* Customer Viewed Info */}
+                {selectedEstimate.status === "customer_viewed" && selectedEstimate.first_viewed_at && (
+                  <div className="bg-cyan-50 rounded-lg p-3">
+                    <p className="text-sm text-cyan-700 flex items-center gap-2">
+                      <Eye className="h-4 w-4" />
+                      <strong>Customer viewed on:</strong> {new Date(selectedEstimate.first_viewed_at).toLocaleString('en-IN')}
+                    </p>
+                  </div>
+                )}
 
                 {/* Converted To */}
                 {selectedEstimate.converted_to && (
