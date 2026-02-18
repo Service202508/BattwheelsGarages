@@ -1096,6 +1096,9 @@ export default function InventoryAdjustments() {
 
               {/* Action Buttons */}
               <div className="flex justify-end gap-2 mt-4">
+                <Button variant="outline" onClick={() => downloadPdf(selectedAdj.adjustment_id)} data-testid="detail-pdf-btn">
+                  <Printer className="h-4 w-4 mr-1" /> PDF
+                </Button>
                 {selectedAdj.status === "draft" && (
                   <>
                     <Button variant="outline" onClick={() => { setShowDetailDialog(false); openEditDialog(selectedAdj); }}>
