@@ -49,6 +49,7 @@ import ContactsEnhanced from "@/pages/ContactsEnhanced";
 import EstimatesEnhanced from "@/pages/EstimatesEnhanced";
 import SalesOrdersEnhanced from "@/pages/SalesOrdersEnhanced";
 import InvoicesEnhanced from "@/pages/InvoicesEnhanced";
+import PaymentsReceived from "@/pages/PaymentsReceived";
 import CustomerPortal from "@/pages/CustomerPortal";
 import ReportsAdvanced from "@/pages/ReportsAdvanced";
 import BillsEnhanced from "@/pages/BillsEnhanced";
