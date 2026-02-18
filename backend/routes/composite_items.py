@@ -22,7 +22,7 @@ db = client[DB_NAME]
 
 router = APIRouter(prefix="/composite-items", tags=["Composite Items"])
 
-items_collection = db["items_enhanced"]
+items_collection = db["items"]
 composite_collection = db["composite_items"]
 bom_collection = db["bill_of_materials"]
 
