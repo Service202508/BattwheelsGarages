@@ -7,324 +7,64 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ## Implementation Status
 
-### ✅ Priority Completion Session (Feb 18, 2026)
+### Completed (Feb 18, 2026 - Latest Session)
 
-#### P0: WeasyPrint PDF Generation (COMPLETE)
+#### Composite Items Frontend (COMPLETE)
+- Full management page at `/composite-items`
+- Summary cards: Total Items, Active, Kits, Assemblies, Bundles, Inventory Value
+- Create dialog with component selection from inventory
+- Build/Unbuild actions with availability checking
+- Detail view with BOM and build history
+- Search by name/SKU, filter by type
+- Navigation item added under Inventory section
+- Bug fix: Collection name corrected from `items_enhanced` to `items`
+
+#### Invoice Automation Settings (COMPLETE - Verified)
+- 5-tab UI: Overdue, Due Soon, Recurring, Reminders, Late Fees
+- All tabs wired to backend APIs and working
+- Reminder settings save/load
+- Late fee settings save/load with conditional UI
+- Bulk reminder sending for overdue invoices
+
+#### Recurring Invoices (COMPLETE - Verified)
+- Backend CRUD + generate-now + stop/resume
+- Frontend integrated in InvoiceSettings page (Recurring tab)
+- Create dialog with customer selection, frequency, line items
+- MRR dashboard with stat cards
+
+---
+
+### Previously Completed
+
+#### WeasyPrint PDF Generation (COMPLETE)
 - Installed missing `libpangoft2-1.0-0` system library
-- PDF generation now fully functional
-- Works with quotes, invoices, and estimates
+- PDF generation fully functional for quotes, invoices, estimates
 
-#### P1: Recurring Invoices Module (COMPLETE)
+#### Composite Items Backend (COMPLETE)
+- Full CRUD for composite/kit items
+- Build/Unbuild with component stock management
+- Availability checking with shortage detection
+- Bill of Materials support with waste percentage
+
+#### Recurring Invoices Backend (COMPLETE)
 - Full CRUD for recurring invoice profiles
-- `POST /api/recurring-invoices` - Create profile
-- `GET /api/recurring-invoices` - List profiles
-- `GET /api/recurring-invoices/summary` - Dashboard stats (MRR, due today)
-- `POST /api/recurring-invoices/{id}/stop` - Pause recurring
-- `POST /api/recurring-invoices/{id}/resume` - Resume recurring
-- `POST /api/recurring-invoices/{id}/generate-now` - Manual generation
-- `POST /api/recurring-invoices/process-due` - Batch process due profiles
-- Frequency options: daily, weekly, monthly, yearly
-- Auto-calculates next invoice date
-- Email on generation option
+- Frequency: daily, weekly, monthly, yearly
+- Generate-now and batch process-due endpoints
+- Auto-calculate next invoice date
 
-#### P1: Enhanced Invoice Automation UI (COMPLETE)
-- 5 tabs: Overdue, Due Soon, Recurring, Reminders, Late Fees
-- Aging summary cards with Total AR and aging buckets
-- MRR (Monthly Recurring Revenue) dashboard
-- Create Recurring Invoice dialog with customer selection
-- Line items management with totals
-- Bulk reminder sending
+#### Zoho-Style Sales Modules - All Phases (COMPLETE)
+- Phase 1: Payments Received Module
+- Phase 2: Stripe Online Payments, Payment Reminders
+- Phase 3: Late Fees, Aging Reports, Auto Credit Application
 
-#### P2: Composite Items/Kits (COMPLETE)
-- Bill of Materials (BOM) support
-- `POST /api/composite-items` - Create kit/assembly/bundle
-- `GET /api/composite-items` - List with availability status
-- `GET /api/composite-items/summary` - Inventory stats
-- `POST /api/composite-items/{id}/build` - Build from components
-- `POST /api/composite-items/{id}/unbuild` - Disassemble
-- `GET /api/composite-items/{id}/availability` - Check buildable quantity
-- Auto-stock deduction on build
-- Component cost calculation with waste percentage
+#### Items Module - All Phases (COMPLETE)
+- Phase 1: Enhanced data model, bulk actions, import/export, custom fields
+- Phase 2: Price lists, barcode support, advanced reports
+- Phase 3: Preferences, field configuration, auto SKU, barcode scanner
 
----
-
-### ✅ Zoho-Style Sales Modules - All Phases Complete (Feb 18, 2026)
-
-#### Phase 1: Payments Received Module (COMPLETE)
-- Full Zoho-style payment recording with multi-invoice allocation
-- Overpayments automatically create customer credits
-- Retainer/advance payments support
-- Refund functionality for credits
-- Import/export payments (CSV)
-- Route: `/payments-received`
-
-#### Phase 2: Workflow & Automation (COMPLETE)
-**Online Payments (Stripe Integration):**
-- `POST /api/invoice-payments/create-payment-link` - Create Stripe checkout
-- `GET /api/invoice-payments/status/{session_id}` - Check payment status
-- "Pay Online" button in invoice detail view
-- Payment link copying and sharing
-- Auto-update invoice status on successful payment
-
-**Payment Reminders:**
-- `POST /api/invoice-automation/send-reminder/{id}` - Send reminder
-- `POST /api/invoice-automation/send-bulk-reminders` - Bulk reminders
-- Reminder settings (before/after due date)
-- Reminder history tracking
-- Include payment link option
-
-#### Phase 3: Advanced Features (COMPLETE)
-**Late Fees:**
-- Configurable fee type (percentage/fixed)
-- Grace period support
-- Maximum fee cap
-- Auto-apply option
-- `POST /api/invoice-automation/apply-late-fee/{id}`
-
-**Aging Report:**
-- `GET /api/invoice-automation/aging-report`
-- 5 aging buckets (Current, 1-30, 31-60, 61-90, Over 90 days)
-- Customer-wise breakdown
-- Total receivable summary
-
-**Auto Credit Application:**
-- `POST /api/invoice-automation/auto-apply-credits/{id}`
-- Automatically apply available credits to invoices
-
-**Invoice Automation Page:**
-- Route: `/invoice-settings`
-- Aging report dashboard
-- Overdue invoices with Remind/Late Fee buttons
-- Due soon invoices list
-- Reminder settings configuration
-- Late fee settings configuration
-
----
-
-### ✅ Items/Price Lists ↔ Quotes Integration (COMPLETE - Feb 18, 2026)
-
-**Automatic Customer Pricing:**
-- When creating quotes, automatically apply customer's assigned price list
-- Price list badge shown on customer selection (e.g., "₹ Wholesale (-15%)")
-- Item selection auto-fetches customer-specific pricing
-- Toast notification shows price adjustments
-
-**Backend Integration:**
-- `GET /api/items-enhanced/item-price/{item_id}?contact_id=` - Single item pricing with price list
-- `GET /api/items-enhanced/contact-pricing-summary/{contact_id}` - Customer's pricing config
-- `GET /api/estimates-enhanced/item-pricing/{item_id}?customer_id=` - Item pricing for UI
-- `GET /api/estimates-enhanced/customer-pricing/{customer_id}` - Customer price list info
-- Estimate creation now stores `price_list_id`, `price_list_name` on estimate
-- Line items track `base_rate`, `rate`, `price_list_applied`, `discount_from_pricelist`
-
-**Frontend Integration (EstimatesEnhanced.jsx):**
-- `customerPricing` state to track selected customer's price list
-- `fetchCustomerPricing()` - Called when customer selected
-- `fetchItemPricing()` - Gets item price with price list applied
-- `selectItem()` updated to apply customer's price list automatically
-- Line items table shows discounted rate with strikethrough original price
-- Price list badge below item name in line items
-
-**Verified Test Data:**
-- Customer: `CUST-93AE14BE3618` (Full Zoho Test Co) - Wholesale price list
-- Price List: `PL-B575D8BF` (Wholesale) - 15% discount
-- Item: `1837096000000446195` (12V Battery) - Base ₹200 → Discounted ₹170
-
----
-
-### ✅ Items Module Enhancement - Phase 3 (COMPLETE - Feb 18, 2026)
-
-**Item Preferences Page:**
-- SKU Settings: Enable/disable, auto-generate, prefix, sequence start
-- HSN/SAC Settings: Require HSN/SAC, digits required (4/6/8)
-- Alerts & Notifications: Low stock alerts, reorder point alerts
-- Default Values: Unit, item type, tax rate
-- Features: Enable images, custom fields, barcode
-- API: `GET/PUT /api/items-enhanced/preferences`
-
-**Field Configuration UI:**
-- 15 default fields with visibility controls
-- Configure: Active, Show in List, Show in Form, Show in PDF, Required
-- Per-role field access (`/api/items-enhanced/field-config/for-role/{role}`)
-- API: `GET/PUT /api/items-enhanced/field-config`
-
-**Auto SKU Generation:**
-- Generates sequential SKUs with configurable prefix
-- Respects sequence start setting
-- API: `GET /api/items-enhanced/generate-sku`
-
-**Barcode Scanner Integration:**
-- Camera-based barcode scanning using @zxing/library
-- Real-time scanning with video preview
-- Auto-lookup on scan detection
-- Manual fallback input
-
-**UI Enhancements (More Menu):**
-- Preferences option with full settings dialog
-- Field Configuration option with table UI
-- Scan Barcode option with camera dialog
-
----
-
-### ✅ Items Module Enhancement - Phase 2 (COMPLETE - Feb 18, 2026)
-
-**Contact Price List Association:**
-- Assign sales price list to customers
-- Assign purchase price list to vendors
-- Auto-apply during transaction creation
-- API: `POST/GET /api/items-enhanced/contact-price-lists`
-
-**Line-Item Level Pricing:**
-- Calculate prices based on contact's price list
-- Support custom rate overrides
-- Apply markup/discount automatically
-- Configurable rounding (none, nearest 1/5/10)
-- API: `POST /api/items-enhanced/calculate-line-prices`
-
-**Bulk Price Setting:**
-- Apply percentage markup/discount to all items
-- Custom per-item pricing option
-- API: `POST /api/items-enhanced/price-lists/{id}/set-prices`
-
-**Barcode/QR Code Support:**
-- Create barcodes for items (CODE128, EAN13, QR)
-- Auto-generate from SKU if empty
-- Barcode/SKU lookup endpoint
-- Batch lookup for multiple items
-- API: `POST /api/items-enhanced/barcodes`
-- API: `GET /api/items-enhanced/lookup/barcode/{value}`
-- API: `POST /api/items-enhanced/lookup/batch`
-
-**Advanced Reports (Phase 3 Early Delivery):**
-- **Sales by Item**: Revenue, quantity sold, avg selling price
-- **Purchases by Item**: Cost, quantity purchased, avg purchase price
-- **Inventory Valuation**: FIFO method, total value, cost rate
-- **Item Movement**: Stock in/out history, adjustments, sales, purchases
-- API: `GET /api/items-enhanced/reports/sales-by-item`
-- API: `GET /api/items-enhanced/reports/purchases-by-item`
-- API: `GET /api/items-enhanced/reports/inventory-valuation`
-- API: `GET /api/items-enhanced/reports/item-movement`
-
-**UI Enhancements:**
-- Reports tab with 3 report cards (Sales, Purchases, Valuation)
-- Barcode Lookup dialog (More menu)
-- "Assign to Contact" button on Price Lists tab
-- "Set Bulk Prices" action on price list cards
-- Refresh Reports button
-
----
-
-### ✅ Items Module Enhancement - Phase 1 (COMPLETE - Feb 18, 2026)
-
-**Enhanced Data Model:**
-- Full Zoho Books-style item schema with:
-  - SKU, HSN/SAC codes with validation
-  - Sales/Purchase descriptions and rates
-  - Tax preferences (taxable/non-taxable/exempt)
-  - Intra-state and inter-state tax rates (GST)
-  - Inventory valuation method (FIFO)
-  - Opening stock and reorder levels
-  - Item images (base64 storage)
-  - Custom fields support
-
-**List View Enhancements:**
-- Advanced search (name, SKU, description, HSN code)
-- Multi-column sorting (name, price, stock, date)
-- Filtering by type, group, active status
-- Bulk selection with checkboxes
-- Responsive table with all columns
-
-**Bulk Actions:**
-- Clone items (creates copy with suffix)
-- Activate/deactivate items
-- Delete items (with transaction check)
-
-**Import/Export:**
-- Export to CSV with column selection
-- Export to JSON format
-- Import CSV with field mapping
-- Download import template
-- Overwrite existing by SKU match
-
-**Item History:**
-- Track all changes (create, update, adjust)
-- Audit trail with user and timestamp
-- Action-specific change details
-
-**Custom Fields:**
-- Create custom fields (text, number, date, dropdown, checkbox)
-- Required field option
-- Show in list/PDF options
-- Delete unused fields
-
-**Price Lists:**
-- Sales and Purchase price list types
-- Percentage-based pricing (markup/markdown)
-- Associate with customers/vendors
-
-**Inventory Adjustments:**
-- Quantity adjustments (add/subtract)
-- Value adjustments (depreciation/appreciation)
-- Reason tracking (damage, recount, transfer)
-- Full audit trail
-
-**Reports:**
-- Stock summary with total value
-- Low stock alerts
-- Inventory valuation report
-
-**API Endpoints:**
-- `GET/POST /api/items-enhanced/` - CRUD items
-- `POST /api/items-enhanced/bulk-action` - Bulk operations
-- `GET /api/items-enhanced/export` - CSV/JSON export
-- `GET /api/items-enhanced/export/template` - Import template
-- `POST /api/items-enhanced/import` - CSV import
-- `GET /api/items-enhanced/history` - Item history
-- `GET/POST /api/items-enhanced/custom-fields` - Custom fields
-- `POST /api/items-enhanced/value-adjustments` - Value adjustments
-- `GET/POST /api/items-enhanced/preferences` - Module preferences
-- `POST /api/items-enhanced/validate-hsn` - HSN code validation
-- `POST /api/items-enhanced/validate-sac` - SAC code validation
-
-**UI Route:** `/inventory-management`
-
----
-
-### ✅ Quotes/Estimates Module (COMPLETE)
-
-**Phase 1 - Core Infrastructure:**
-- Attachments: Up to 3 files (10MB each) per estimate
-- Public Share Links: Secure URLs with expiry, password protection
-- Customer Viewed Status: Auto-tracking via public link
-- PDF Generation: HTML template with WeasyPrint fallback
-
-**Phase 2 - Workflow & Automation:**
-- Auto-conversion: Accepted quotes → invoices/sales orders
-- PDF Templates: Standard, Professional, Minimal
-- Import/Export: CSV/JSON with template
-- Custom Fields: Full CRUD management
-- Bulk Actions: Void, delete, mark_sent, mark_expired
-- Legacy Migration: 346 contacts migrated (452 total)
-
-### ✅ Backlog Items (COMPLETE - Feb 18, 2026)
-
-**1. Cmd+K Command Palette**
-- Global keyboard shortcut (⌘K / Ctrl+K)
-- Quick Actions: Create estimates, invoices, tickets, contacts, expenses
-- Page Navigation: All 20+ modules searchable
-- Recent searches with localStorage persistence
-- Keyboard navigation (↑↓ navigate, ↵ select, esc close)
-
-**2. EFI Decision Tree Images**
-- Upload images for diagnostic steps (max 5MB, JPG/PNG/GIF/WebP)
-- Store in MongoDB with base64 encoding
-- Display inline in EFI Side Panel
-- Click to view full-size
-- Endpoints:
-  - `POST /api/efi-guided/failure-cards/{id}/step-image`
-  - `GET /api/efi-guided/step-image/{image_id}`
-  - `GET /api/efi-guided/failure-cards/{id}/images`
-  - `DELETE /api/efi-guided/step-image/{image_id}`
+#### Quotes/Estimates Module (COMPLETE)
+- Attachments, public share links, PDF generation
+- Auto-conversion, templates, import/export, bulk actions
 
 ---
 
@@ -333,12 +73,13 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 - **Frontend**: React, TailwindCSS, Shadcn/UI
 - **Auth**: JWT + Emergent Google OAuth
 - **AI**: Gemini (EFI semantic analysis)
+- **Payments**: Stripe (active, test mode)
+- **PDF**: WeasyPrint (active)
 
 ---
 
 ## Mocked Services
-- **WeasyPrint PDF**: Falls back to HTML
-- **Email (Resend)**: Logs to console
+- **Email (Resend)**: Logs to console, pending `RESEND_API_KEY`
 - **Razorpay**: Mocked
 
 ---
@@ -350,82 +91,26 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ---
 
 ## Test Reports
-- `/app/test_reports/iteration_41.json` - Invoice Automation Phase 2&3 (100% pass)
-- `/app/test_reports/iteration_40.json` - Payments Received Final (100% pass)
-- `/app/test_reports/iteration_39.json` - Payments Received Module (100% pass)
-- `/app/test_reports/iteration_38.json` - Items/Price Lists Integration (100% pass)
-- `/app/test_reports/iteration_37.json` - Items Module Phase 3 (100% pass)
-- `/app/test_reports/iteration_36.json` - Items Module Phase 2 (100% pass)
-- `/app/test_reports/iteration_35.json` - Items Module Phase 1 (100% pass)
-- `/app/test_reports/iteration_34.json` - Phase 2 Estimates
-- `/app/test_reports/iteration_33.json` - Phase 1 Estimates
-
----
-
-## All Items Module Features Complete ✅
-
-### Phase 1: Core Enhancements
-- Enhanced data model (SKU, HSN/SAC, tax, inventory tracking)
-- Advanced list view (search, sort, filter)
-- Bulk actions (clone, activate/deactivate, delete)
-- Import/Export (CSV/JSON)
-- Item history tracking
-- Custom fields
-
-### Phase 2: Price Lists & Adjustments
-- Contact price list association
-- Line-item level pricing
-- Bulk price setting
-- Barcode/QR support
-- Advanced reports (Sales, Purchases, Valuation, Movement)
-
-### Phase 3: Customization
-- Item Preferences page
-- Field Configuration UI
-- Auto SKU generation
-- Barcode scanner integration
-
----
-
-## Future Tasks
-1. **Composite Items**
-   - Kit/assembly items
-   - Bill of Materials (BOM)
-   - Auto-stock deduction on sale
-
-2. **Multi-Warehouse**
-   - Per-location stock tracking
-   - Transfer between warehouses
-   - Location-specific pricing
-
-3. **Advanced Inventory**
-   - Package tracking
-   - Shipment integration
-   - Serial number tracking
+- `/app/test_reports/iteration_43.json` - Composite Items + Invoice Settings (100% pass)
+- `/app/test_reports/iteration_42.json` - Recurring Invoices + Invoice Automation UI
+- `/app/test_reports/iteration_41.json` - Invoice Automation Phase 2&3
+- `/app/test_reports/iteration_40.json` - Payments Received Final
 
 ---
 
 ## Remaining Backlog
-- ✅ Un-mock WeasyPrint PDF (DONE - libpangoft2 installed)
-- Un-mock Razorpay payments (Stripe available as alternative)
-- Un-mock Resend email (requires RESEND_API_KEY)
-- Customer portal improvements (existing portal functional)
-- Enhanced notification system
-- Signature capture on quote acceptance
+
+### P0 (High Priority)
+- Un-mock Resend email (requires RESEND_API_KEY from user)
+
+### P1 (Medium Priority)
+- Customer self-service portal improvements
+- Advanced sales reports
 - Multi-warehouse support
+
+### P2 (Low Priority)
+- Propagate standardized UI components across all pages
+- Package tracking / shipment integration
 - Serial number tracking
-
----
-
-## Zoho-Style Sales Modules - COMPLETED ✅
-
-All 3 phases of Zoho-style Sales Modules have been implemented:
-- ✅ Phase 1: Payments Received Module
-- ✅ Phase 2: Stripe Online Payments, Payment Reminders
-- ✅ Phase 3: Late Fees, Aging Reports, Auto Credit Application, Invoice Automation Page
-
-## Future Enhancements
-- Customer portal for self-service invoice viewing/payment
-- Recurring invoices with auto-payment
-- Retainer invoice generation
-- Workflow automation (approval flows)
+- Signature capture on quote acceptance
+- Un-mock Razorpay payments
