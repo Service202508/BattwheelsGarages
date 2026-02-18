@@ -363,6 +363,55 @@ def mock_generate_pdf(invoice: dict) -> bytes:
     logger.info(f"[MOCK PDF] Generating invoice PDF for {invoice.get('invoice_number')}")
     return b"PDF_CONTENT_MOCK"
 
+
+async def update_item_stock_for_invoice(invoice_id: str, reverse: bool = False):
+    """Update item stock when invoice is sent/voided
+    
+    Args:
+        invoice_id: The invoice ID
+        reverse: If True, add stock back (for voiding). If False, deduct stock.
+    """
+    # Get line items
+    line_items = await invoice_line_items_collection.find(
+        {"invoice_id": invoice_id},
+        {"_id": 0}
+    ).to_list(100)
+    
+    for item in line_items:
+        item_id = item.get("item_id")
+        if not item_id:
+            continue
+        
+        quantity = item.get("quantity", 0)
+        if reverse:
+            quantity = -quantity  # Add back for void
+        
+        # Get current item
+        db_item = await items_collection.find_one({"item_id": item_id})
+        if not db_item:
+            continue
+        
+        # Only update stock for inventory items
+        item_type = db_item.get("item_type", "inventory")
+        if item_type not in ["inventory", "goods"]:
+            continue
+        
+        current_stock = db_item.get("stock_on_hand", db_item.get("quantity", 0)) or 0
+        new_stock = current_stock - quantity  # Deduct (or add if reversed)
+        
+        await items_collection.update_one(
+            {"item_id": item_id},
+            {"$set": {
+                "stock_on_hand": new_stock,
+                "quantity": new_stock,
+                "total_stock": new_stock,
+                "updated_time": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        logger.info(f"[STOCK] Item {item_id}: {current_stock} -> {new_stock} (invoice {invoice_id})")
+
+
 # ========================= SETTINGS ENDPOINTS =========================
 
 @router.get("/settings")
