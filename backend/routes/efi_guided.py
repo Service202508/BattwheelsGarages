@@ -370,7 +370,7 @@ async def capture_completion(data: CaptureCompletionRequest, request: Request):
 @router.get("/learning/pending")
 async def get_pending_learning(request: Request, limit: int = Query(50, le=200)):
     """Get learning items pending engineer review"""
-    await get_current_user(request)
+    user = await get_current_user(request)
     
     # Require admin/engineer role
     if user.get("role") not in ["admin", "manager"]:
@@ -391,7 +391,7 @@ async def review_learning_item(
     notes: Optional[str] = None
 ):
     """Review learning item - engineer approval"""
-    await get_current_user(request)
+    user = await get_current_user(request)
     
     if user.get("role") not in ["admin", "manager"]:
         raise HTTPException(status_code=403, detail="Engineer access required")
@@ -417,7 +417,7 @@ async def review_learning_item(
 @router.post("/trees")
 async def create_decision_tree(data: CreateDecisionTreeRequest, request: Request):
     """Create decision tree for a failure card"""
-    await get_current_user(request)
+    user = await get_current_user(request)
     
     if user.get("role") not in ["admin", "manager"]:
         raise HTTPException(status_code=403, detail="Admin access required")
