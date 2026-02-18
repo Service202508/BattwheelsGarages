@@ -136,8 +136,68 @@ class EstimateUpdate(BaseModel):
     template_id: Optional[str] = None
 
 class StatusUpdate(BaseModel):
-    status: str = Field(..., pattern="^(draft|sent|accepted|declined|expired|converted|void)$")
+    status: str = Field(..., pattern="^(draft|sent|customer_viewed|accepted|declined|expired|converted|void)$")
     reason: str = ""
+
+class AttachmentResponse(BaseModel):
+    attachment_id: str
+    estimate_id: str
+    filename: str
+    file_size: int
+    content_type: str
+    uploaded_at: str
+    uploaded_by: str
+
+class ShareLinkCreate(BaseModel):
+    expiry_days: int = 30
+    allow_accept: bool = True
+    allow_decline: bool = True
+    password_protected: bool = False
+    password: Optional[str] = None
+
+class ShareLinkResponse(BaseModel):
+    share_link_id: str
+    estimate_id: str
+    share_token: str
+    public_url: str
+    expires_at: str
+    allow_accept: bool
+    allow_decline: bool
+    password_protected: bool
+    created_at: str
+
+class CustomerAction(BaseModel):
+    action: str  # accept, decline
+    comments: Optional[str] = None
+
+class EstimatePreferences(BaseModel):
+    # Automation settings
+    auto_convert_on_accept: bool = False
+    auto_convert_to: str = "draft_invoice"  # draft_invoice, open_invoice, sales_order
+    auto_send_converted: bool = False
+    # Quote acceptance settings
+    allow_public_accept: bool = True
+    allow_public_decline: bool = True
+    require_signature: bool = False
+    # Field retention on conversion
+    retain_customer_notes: bool = True
+    retain_terms: bool = True
+    retain_address: bool = True
+    # Display settings
+    hide_zero_value_items: bool = False
+    show_discount_column: bool = True
+    # Notification settings
+    notify_on_view: bool = True
+    notify_on_accept: bool = True
+    notify_on_decline: bool = True
+    # Numbering
+    prefix: str = "EST-"
+    next_number: int = 1
+    padding: int = 5
+    # Defaults
+    validity_days: int = 30
+    default_terms: str = "This estimate is valid for 30 days from the date of issue."
+    default_notes: str = ""
 
 # ========================= HELPER FUNCTIONS =========================
 
