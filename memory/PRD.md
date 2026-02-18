@@ -380,12 +380,9 @@ All 3 phases of Zoho-style Sales Modules have been implemented:
 - ✅ Phase 1: Payments Received Module
 - ✅ Phase 2: Stripe Online Payments, Payment Reminders
 - ✅ Phase 3: Late Fees, Aging Reports, Auto Credit Application, Invoice Automation Page
-- Automated payment reminders
 
-### Phase 3 - Advanced Features (PENDING)
-- Customer portal for viewing/paying invoices
+## Future Enhancements
+- Customer portal for self-service invoice viewing/payment
 - Recurring invoices with auto-payment
-- Late fees calculation
 - Retainer invoice generation
-- Advanced reporting (aging, sales summaries)
 - Workflow automation (approval flows)
