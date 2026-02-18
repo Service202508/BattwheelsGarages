@@ -689,6 +689,7 @@ export default function ItemsEnhanced() {
           <TabsTrigger value="warehouses">Warehouses</TabsTrigger>
           <TabsTrigger value="priceLists">Price Lists</TabsTrigger>
           <TabsTrigger value="adjustments">Adjustments</TabsTrigger>
+          <TabsTrigger value="reports">Reports</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
 
