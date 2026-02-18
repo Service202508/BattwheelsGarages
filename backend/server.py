@@ -4575,6 +4575,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Enhanced Invoices routes: {e}")
 
+# Include Payments Received routes (Zoho-style payment management)
+try:
+    from routes.payments_received import router as payments_received_router
+    api_router.include_router(payments_received_router)
+    logger.info("Payments Received routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Payments Received routes: {e}")
+
 # Include Customer Portal routes
 try:
     from routes.customer_portal import router as customer_portal_router
