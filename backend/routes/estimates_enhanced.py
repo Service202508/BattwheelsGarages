@@ -1006,22 +1006,39 @@ async def create_estimate(estimate: EstimateCreate, background_tasks: Background
     
     estimate_id = generate_id("EST")
     
+    # Get customer's price list info for the estimate header
+    customer_price_list = None
+    customer_price_list_id = None
+    contact_for_pricing = await db["contacts_enhanced"].find_one({"contact_id": estimate.customer_id})
+    if not contact_for_pricing:
+        contact_for_pricing = await db["contacts"].find_one({"contact_id": estimate.customer_id})
+    if contact_for_pricing:
+        customer_price_list_id = contact_for_pricing.get("sales_price_list_id")
+        if customer_price_list_id:
+            customer_price_list = await db["price_lists"].find_one({"pricelist_id": customer_price_list_id}, {"_id": 0})
+    
     # Process line items
     processed_items = []
     for idx, item in enumerate(estimate.line_items):
         item_dict = item.dict()
         
-        # If item_id provided, fetch item details
+        # If item_id provided, fetch item details WITH price list applied
         if item.item_id:
-            item_details = await get_item_details(item.item_id)
+            # Use new pricing function that applies customer's price list
+            item_details = await get_item_price_for_customer(item.item_id, estimate.customer_id)
             if item_details:
                 # Use item details as defaults, but allow overrides
                 item_dict["name"] = item.name or item_details.get("name", "")
                 item_dict["description"] = item.description or item_details.get("description", "")
                 item_dict["hsn_code"] = item.hsn_code or item_details.get("hsn_code", "")
                 item_dict["unit"] = item.unit or item_details.get("unit", "pcs")
+                # Apply price list rate if user hasn't overridden
                 if item.rate == 0:
                     item_dict["rate"] = item_details.get("rate", 0)
+                    item_dict["base_rate"] = item_details.get("base_rate", 0)
+                    item_dict["price_list_applied"] = item_details.get("price_list_name")
+                    item_dict["discount_from_pricelist"] = item_details.get("discount_applied", 0)
+                    item_dict["markup_from_pricelist"] = item_details.get("markup_applied", 0)
                 if item.tax_percentage == 0:
                     item_dict["tax_percentage"] = item_details.get("tax_percentage", 0)
         
@@ -1058,6 +1075,8 @@ async def create_estimate(estimate: EstimateCreate, background_tasks: Background
         "customer_email": customer.get("email", ""),
         "customer_gstin": customer.get("gstin", ""),
         "place_of_supply": customer_state,
+        "price_list_id": customer_price_list_id,
+        "price_list_name": customer_price_list.get("name") if customer_price_list else None,
         "date": estimate_date,
         "expiry_date": expiry_date,
         "status": "draft",
