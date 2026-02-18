@@ -245,7 +245,7 @@ async def start_diagnostic_session(data: StartSessionRequest, request: Request):
     Start EFI diagnostic session for a ticket
     Technician selects a failure card path to follow
     """
-    await get_current_user(request)
+    user = await get_current_user(request)
     
     if not _decision_engine:
         raise HTTPException(status_code=503, detail="Decision engine not initialized")
