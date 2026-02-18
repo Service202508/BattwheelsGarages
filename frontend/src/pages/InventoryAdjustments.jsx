@@ -799,6 +799,18 @@ export default function InventoryAdjustments() {
               </div>
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label>Link to Ticket (optional)</Label>
+                <Input placeholder="Ticket ID e.g. TKT-001"
+                  value={form.ticket_id}
+                  onChange={(e) => setForm({ ...form, ticket_id: e.target.value })}
+                  data-testid="form-ticket-id"
+                />
+                <p className="text-xs text-gray-400 mt-1">Optionally link this adjustment to a complaint/ticket</p>
+              </div>
+            </div>
+
             <Separator />
 
             {/* Line Items */}
