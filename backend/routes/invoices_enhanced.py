@@ -819,6 +819,27 @@ async def get_invoice(invoice_id: str):
     ).sort("payment_date", -1).to_list(50)
     invoice["payments"] = payments
     
+    # Get payments from payments_received module
+    payments_received = await db["payments_received"].find({
+        "allocations.invoice_id": invoice_id,
+        "status": {"$ne": "refunded"}
+    }, {"_id": 0, "payment_id": 1, "payment_number": 1, "payment_date": 1, "amount": 1, "payment_mode": 1, "allocations": 1}).to_list(50)
+    
+    for pr in payments_received:
+        for alloc in pr.get("allocations", []):
+            if alloc.get("invoice_id") == invoice_id:
+                pr["amount_applied"] = alloc.get("amount", 0)
+                break
+    invoice["payments_received"] = payments_received
+    
+    # Get available customer credits
+    customer_credits = await db["customer_credits"].find({
+        "customer_id": invoice.get("customer_id"),
+        "status": "available"
+    }, {"_id": 0}).to_list(50)
+    invoice["available_credits"] = customer_credits
+    invoice["total_available_credits"] = sum(c.get("amount", 0) for c in customer_credits)
+    
     # Get history
     history = await invoice_history_collection.find(
         {"invoice_id": invoice_id},
