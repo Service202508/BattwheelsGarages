@@ -429,6 +429,215 @@ export default function EstimatesEnhanced() {
     } catch (e) { toast.error("Error saving preferences"); }
   };
 
+  // Bulk Actions Functions
+  const toggleSelectAll = () => {
+    if (selectedIds.length === estimates.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(estimates.map(e => e.estimate_id));
+    }
+  };
+
+  const toggleSelect = (estimateId) => {
+    setSelectedIds(prev => 
+      prev.includes(estimateId) 
+        ? prev.filter(id => id !== estimateId)
+        : [...prev, estimateId]
+    );
+  };
+
+  const handleBulkAction = async () => {
+    if (selectedIds.length === 0) {
+      toast.error("Select at least one estimate");
+      return;
+    }
+    if (!bulkAction) {
+      toast.error("Select an action");
+      return;
+    }
+    
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/bulk/action`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          estimate_ids: selectedIds,
+          action: bulkAction,
+          reason: "Bulk action from UI"
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`${data.updated || data.deleted || 0} estimates updated`);
+        if (data.errors?.length > 0) {
+          toast.warning(`${data.errors.length} failed: ${data.errors[0].error}`);
+        }
+        setSelectedIds([]);
+        setBulkAction("");
+        setShowBulkActionDialog(false);
+        fetchData();
+      } else {
+        toast.error(data.detail || "Bulk action failed");
+      }
+    } catch (e) { toast.error("Error performing bulk action"); }
+  };
+
+  // Custom Fields Functions
+  const fetchCustomFields = async () => {
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/custom-fields`, { headers });
+      const data = await res.json();
+      if (data.code === 0) {
+        setCustomFields(data.custom_fields || []);
+      }
+    } catch (e) { console.error("Failed to fetch custom fields:", e); }
+  };
+
+  const handleAddCustomField = async () => {
+    if (!newCustomField.field_name.trim()) {
+      toast.error("Field name is required");
+      return;
+    }
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/custom-fields`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(newCustomField)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Custom field added!");
+        setNewCustomField({
+          field_name: "", field_type: "text", options: [], is_required: false,
+          default_value: "", show_in_pdf: true, show_in_portal: true
+        });
+        fetchCustomFields();
+      } else {
+        toast.error(data.detail || "Failed to add custom field");
+      }
+    } catch (e) { toast.error("Error adding custom field"); }
+  };
+
+  const handleDeleteCustomField = async (fieldName) => {
+    if (!confirm(`Delete custom field "${fieldName}"?`)) return;
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/custom-fields/${encodeURIComponent(fieldName)}`, {
+        method: "DELETE",
+        headers
+      });
+      if (res.ok) {
+        toast.success("Custom field deleted");
+        fetchCustomFields();
+      } else {
+        toast.error("Failed to delete custom field");
+      }
+    } catch (e) { toast.error("Error deleting custom field"); }
+  };
+
+  // PDF Templates Functions
+  const fetchPdfTemplates = async () => {
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/templates`, { headers });
+      const data = await res.json();
+      if (data.code === 0) {
+        setPdfTemplates(data.templates || []);
+      }
+    } catch (e) { console.error("Failed to fetch PDF templates:", e); }
+  };
+
+  const handleDownloadWithTemplate = async (estimateId, templateId) => {
+    try {
+      toast.info(`Generating PDF with ${templateId} template...`);
+      const res = await fetch(`${API}/estimates-enhanced/${estimateId}/pdf/${templateId}`, { headers });
+      
+      if (res.headers.get('content-type')?.includes('application/pdf')) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Estimate_${estimateId}_${templateId}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        toast.success("PDF downloaded!");
+      } else {
+        const data = await res.json();
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(data.html);
+        printWindow.document.close();
+        printWindow.print();
+      }
+    } catch (e) { toast.error("Error generating PDF"); }
+  };
+
+  // Import/Export Functions
+  const handleExport = async (format = "csv") => {
+    try {
+      toast.info("Exporting estimates...");
+      const params = new URLSearchParams();
+      if (statusFilter !== "all") params.append("status", statusFilter);
+      params.append("format", format);
+      
+      const res = await fetch(`${API}/estimates-enhanced/export?${params.toString()}`, { headers });
+      
+      if (format === "csv") {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `estimates_export_${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        toast.success("Export downloaded!");
+      } else {
+        const data = await res.json();
+        const blob = new Blob([JSON.stringify(data.estimates, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `estimates_export_${new Date().toISOString().slice(0, 10)}.json`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        toast.success(`Exported ${data.count} estimates!`);
+      }
+    } catch (e) { toast.error("Export failed"); }
+  };
+
+  const handleImport = async () => {
+    if (!importFile) {
+      toast.error("Please select a file");
+      return;
+    }
+    
+    setImporting(true);
+    const formData = new FormData();
+    formData.append("file", importFile);
+    
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/import?skip_errors=true`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`Imported ${data.imported} estimates!`);
+        if (data.errors?.length > 0) {
+          toast.warning(`${data.errors.length} rows had errors`);
+        }
+        setShowImportDialog(false);
+        setImportFile(null);
+        fetchData();
+      } else {
+        toast.error(data.detail || "Import failed");
+      }
+    } catch (e) { toast.error("Import error"); }
+    finally { setImporting(false); }
+  };
+
+  const downloadImportTemplate = () => {
+    window.open(`${API}/estimates-enhanced/import/template`, '_blank');
+  };
+
   const handleMarkAccepted = async (estimateId) => {
     try {
       const res = await fetch(`${API}/estimates-enhanced/${estimateId}/mark-accepted`, { method: "POST", headers });
