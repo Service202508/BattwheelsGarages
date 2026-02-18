@@ -5,6 +5,7 @@ Supports quantity and value adjustments with audit trail
 """
 
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
@@ -12,6 +13,8 @@ import motor.motor_asyncio
 import os
 import uuid
 import base64
+import csv
+import io
 import logging
 
 logger = logging.getLogger(__name__)
