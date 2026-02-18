@@ -968,7 +968,7 @@ export default function EstimatesEnhanced() {
           </div>
 
           {loading ? (
-            <TableSkeleton columns={7} rows={5} />
+            <TableSkeleton columns={8} rows={5} />
           ) : estimates.length === 0 ? (
             <Card>
               <EmptyState
@@ -984,6 +984,15 @@ export default function EstimatesEnhanced() {
             <ResponsiveTable>
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-2 py-3 text-center font-medium text-sm w-10">
+                    <input 
+                      type="checkbox" 
+                      checked={selectedIds.length === estimates.length && estimates.length > 0}
+                      onChange={toggleSelectAll}
+                      className="h-4 w-4 rounded border-gray-300"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </th>
                   <th className="px-4 py-3 text-left font-medium text-sm">Estimate #</th>
                   <th className="px-4 py-3 text-left font-medium text-sm">Customer</th>
                   <th className="px-4 py-3 text-left font-medium text-sm">Date</th>
@@ -995,7 +1004,15 @@ export default function EstimatesEnhanced() {
               </thead>
               <tbody>
                 {estimates.map(est => (
-                  <tr key={est.estimate_id} className="border-t hover:bg-gray-50 cursor-pointer" onClick={() => fetchEstimateDetail(est.estimate_id)} data-testid={`estimate-row-${est.estimate_id}`}>
+                  <tr key={est.estimate_id} className={`border-t hover:bg-gray-50 cursor-pointer ${selectedIds.includes(est.estimate_id) ? 'bg-blue-50' : ''}`} onClick={() => fetchEstimateDetail(est.estimate_id)} data-testid={`estimate-row-${est.estimate_id}`}>
+                    <td className="px-2 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                      <input 
+                        type="checkbox" 
+                        checked={selectedIds.includes(est.estimate_id)}
+                        onChange={() => toggleSelect(est.estimate_id)}
+                        className="h-4 w-4 rounded border-gray-300"
+                      />
+                    </td>
                     <td className="px-4 py-3 font-mono font-medium text-sm">{est.estimate_number}</td>
                     <td className="px-4 py-3 text-sm">{est.customer_name}</td>
                     <td className="px-4 py-3 text-gray-600 text-sm">{est.date}</td>
