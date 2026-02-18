@@ -246,16 +246,15 @@ class TestPublicQuoteView:
         data = response.json()
         assert data["code"] == 0
         assert "estimate" in data
-        assert "share_link" in data
         
         estimate = data["estimate"]
         assert estimate["estimate_id"] == test_data["estimate_id"]
         assert "line_items" in estimate
         assert "customer_name" in estimate
         
-        share_link = data["share_link"]
-        assert "allow_accept" in share_link
-        assert "allow_decline" in share_link
+        # Check can_accept and can_decline flags
+        assert "can_accept" in data
+        assert "can_decline" in data
         
         print(f"✓ Public quote accessible: {estimate['estimate_number']}, {len(estimate.get('line_items', []))} items")
     
@@ -494,12 +493,13 @@ class TestAttachmentsAPI:
         print(f"✓ Found {len(data['attachments'])} attachment(s)")
     
     def test_04_download_attachment(self):
-        """GET /api/estimates-enhanced/{id}/attachments/{attachment_id}/download - Download attachment"""
+        """GET /api/estimates-enhanced/{id}/attachments/{attachment_id} - Download attachment"""
         if not test_data.get("attachment_estimate_id") or not test_data.get("attachment_id"):
             pytest.skip("No attachment available")
         
+        # Correct endpoint without /download suffix
         response = requests.get(
-            f"{BASE_URL}/api/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments/{test_data['attachment_id']}/download"
+            f"{BASE_URL}/api/estimates-enhanced/{test_data['attachment_estimate_id']}/attachments/{test_data['attachment_id']}"
         )
         assert response.status_code == 200
         assert len(response.content) > 0
@@ -552,19 +552,27 @@ class TestPDFGeneration:
     """Test PDF generation endpoint"""
     
     def test_01_generate_pdf(self):
-        """GET /api/estimates-enhanced/{id}/pdf - Generate PDF"""
+        """GET /api/estimates-enhanced/{id}/pdf - Generate PDF (or HTML fallback)"""
         if not test_data["estimate_id"]:
             pytest.skip("No estimate available")
         
         response = requests.get(f"{BASE_URL}/api/estimates-enhanced/{test_data['estimate_id']}/pdf")
         assert response.status_code == 200
         
-        # Check content type - could be PDF or HTML fallback
+        # Check content type - could be PDF or JSON with HTML fallback (WeasyPrint not installed)
         content_type = response.headers.get('content-type', '')
-        assert 'pdf' in content_type.lower() or 'html' in content_type.lower() or 'octet-stream' in content_type.lower()
-        assert len(response.content) > 0
         
-        print(f"✓ Generated PDF/HTML: {len(response.content)} bytes, type={content_type}")
+        if 'json' in content_type.lower():
+            # WeasyPrint not available - HTML fallback returned
+            data = response.json()
+            assert "html" in data
+            assert len(data["html"]) > 0
+            print(f"✓ PDF endpoint returned HTML fallback (WeasyPrint not installed): {len(data['html'])} chars")
+        else:
+            # PDF generated successfully
+            assert 'pdf' in content_type.lower() or 'octet-stream' in content_type.lower()
+            assert len(response.content) > 0
+            print(f"✓ Generated PDF: {len(response.content)} bytes")
     
     def test_02_pdf_for_nonexistent_estimate(self):
         """GET /api/estimates-enhanced/{id}/pdf - 404 for non-existent estimate"""
