@@ -477,7 +477,6 @@ def generate_pdf_html(estimate: dict, line_items: list, template: str = "standar
     """Generate HTML for PDF rendering with template support"""
     tmpl = PDF_TEMPLATES.get(template, PDF_TEMPLATES["standard"])
     primary = tmpl["primary_color"]
-    secondary = tmpl["secondary_color"]
     font = tmpl["font_family"]
     
     items_html = ""
