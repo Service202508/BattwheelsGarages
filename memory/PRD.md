@@ -7,6 +7,40 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ## Implementation Status
 
+### ✅ Items Module Enhancement - Phase 3 (COMPLETE - Feb 18, 2026)
+
+**Item Preferences Page:**
+- SKU Settings: Enable/disable, auto-generate, prefix, sequence start
+- HSN/SAC Settings: Require HSN/SAC, digits required (4/6/8)
+- Alerts & Notifications: Low stock alerts, reorder point alerts
+- Default Values: Unit, item type, tax rate
+- Features: Enable images, custom fields, barcode
+- API: `GET/PUT /api/items-enhanced/preferences`
+
+**Field Configuration UI:**
+- 15 default fields with visibility controls
+- Configure: Active, Show in List, Show in Form, Show in PDF, Required
+- Per-role field access (`/api/items-enhanced/field-config/for-role/{role}`)
+- API: `GET/PUT /api/items-enhanced/field-config`
+
+**Auto SKU Generation:**
+- Generates sequential SKUs with configurable prefix
+- Respects sequence start setting
+- API: `GET /api/items-enhanced/generate-sku`
+
+**Barcode Scanner Integration:**
+- Camera-based barcode scanning using @zxing/library
+- Real-time scanning with video preview
+- Auto-lookup on scan detection
+- Manual fallback input
+
+**UI Enhancements (More Menu):**
+- Preferences option with full settings dialog
+- Field Configuration option with table UI
+- Scan Barcode option with camera dialog
+
+---
+
 ### ✅ Items Module Enhancement - Phase 2 (COMPLETE - Feb 18, 2026)
 
 **Contact Price List Association:**
