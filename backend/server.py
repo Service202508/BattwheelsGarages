@@ -4583,6 +4583,22 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Payments Received routes: {e}")
 
+# Include Invoice Payments routes (Stripe integration)
+try:
+    from routes.invoice_payments import router as invoice_payments_router
+    api_router.include_router(invoice_payments_router)
+    logger.info("Invoice Payments (Stripe) routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Invoice Payments routes: {e}")
+
+# Include Stripe Webhook routes
+try:
+    from routes.stripe_webhook import router as stripe_webhook_router
+    api_router.include_router(stripe_webhook_router)
+    logger.info("Stripe Webhook routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Stripe Webhook routes: {e}")
+
 # Include Customer Portal routes
 try:
     from routes.customer_portal import router as customer_portal_router
