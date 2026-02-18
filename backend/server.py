@@ -4591,6 +4591,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Invoice Payments routes: {e}")
 
+# Include Invoice Automation routes (Reminders, Late Fees, Auto Credits)
+try:
+    from routes.invoice_automation import router as invoice_automation_router
+    api_router.include_router(invoice_automation_router)
+    logger.info("Invoice Automation routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Invoice Automation routes: {e}")
+
 # Include Stripe Webhook routes
 try:
     from routes.stripe_webhook import router as stripe_webhook_router
