@@ -215,28 +215,68 @@ class ItemHistoryEntry(BaseModel):
 
 class ItemPreferences(BaseModel):
     """Module preferences"""
+    # SKU Settings
     enable_sku: bool = True
     auto_generate_sku: bool = False
     sku_prefix: str = "SKU-"
+    sku_sequence_start: int = 1
+    
+    # HSN/SAC Settings
     require_hsn_sac: bool = False
     hsn_digits_required: int = 4  # 4, 6, or 8
+    
+    # Alerts
     enable_reorder_alerts: bool = True
     enable_low_stock_alerts: bool = True
+    low_stock_threshold_days: int = 7
+    
+    # Defaults
     default_tax_preference: str = "taxable"
     default_unit: str = "pcs"
+    default_item_type: str = "inventory"
+    default_tax_rate: float = 18
+    
+    # Features
     enable_images: bool = True
     enable_custom_fields: bool = True
+    enable_barcode: bool = True
+    barcode_type: str = "CODE128"  # CODE128, EAN13, QR
+    
+    # Inventory
+    default_valuation_method: str = "fifo"  # fifo, weighted_average
+    track_serial_numbers: bool = False
+    track_batch_numbers: bool = False
+
+class FieldConfiguration(BaseModel):
+    """Field visibility and access configuration"""
+    field_name: str
+    display_name: str = ""
+    is_active: bool = True
+    show_in_list: bool = True
+    show_in_form: bool = True
+    show_in_pdf: bool = True
+    is_mandatory: bool = False
+    allowed_roles: List[str] = ["admin", "manager", "user"]
+    field_order: int = 0
 
 class CustomFieldDefinition(BaseModel):
     """Custom field definition for items"""
     field_id: str = ""
     field_name: str
-    field_type: str = "text"  # text, number, date, dropdown, checkbox
+    field_type: str = "text"  # text, number, date, dropdown, checkbox, url, email
     is_required: bool = False
     show_in_list: bool = False
     show_in_pdf: bool = False
+    show_in_form: bool = True
     dropdown_options: List[str] = []
     default_value: Optional[str] = None
+    placeholder: str = ""
+    help_text: str = ""
+    validation_regex: str = ""
+    min_value: Optional[float] = None
+    max_value: Optional[float] = None
+    allowed_roles: List[str] = ["admin", "manager", "user"]
+    field_order: int = 0
 
 class PriceListEnhanced(BaseModel):
     """Enhanced price list with type (Sales/Purchase)"""
