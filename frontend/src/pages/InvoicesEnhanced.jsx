@@ -305,6 +305,31 @@ export default function InvoicesEnhanced() {
     }
   };
 
+  const handleApplyCredit = async (creditId, amount) => {
+    if (!confirm(`Apply credit of ₹${amount.toLocaleString("en-IN")} to this invoice?`)) return;
+    try {
+      const res = await fetch(`${API}/payments-received/apply-credit`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          credit_id: creditId,
+          invoice_id: selectedInvoice.invoice_id,
+          amount: amount
+        })
+      });
+      const data = await res.json();
+      if (data.code === 0) {
+        toast.success(`Credit applied. New balance: ₹${data.new_invoice_balance?.toLocaleString("en-IN")}`);
+        fetchInvoiceDetail(selectedInvoice.invoice_id);
+        fetchData();
+      } else {
+        toast.error(data.detail || "Failed to apply credit");
+      }
+    } catch (e) {
+      toast.error("Error applying credit");
+    }
+  };
+
   // Line Items
   const addLineItem = () => {
     setNewInvoice(prev => ({
