@@ -256,6 +256,7 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ---
 
 ## Test Reports
+- `/app/test_reports/iteration_38.json` - Items/Price Lists Integration (100% pass)
 - `/app/test_reports/iteration_37.json` - Items Module Phase 3 (100% pass)
 - `/app/test_reports/iteration_36.json` - Items Module Phase 2 (100% pass)
 - `/app/test_reports/iteration_35.json` - Items Module Phase 1 (100% pass)
