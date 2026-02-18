@@ -985,6 +985,7 @@ async def get_estimates_summary():
     total = await estimates_collection.count_documents({})
     draft = await estimates_collection.count_documents({"status": "draft"})
     sent = await estimates_collection.count_documents({"status": "sent"})
+    customer_viewed = await estimates_collection.count_documents({"status": "customer_viewed"})
     accepted = await estimates_collection.count_documents({"status": "accepted"})
     declined = await estimates_collection.count_documents({"status": "declined"})
     converted = await estimates_collection.count_documents({"status": "converted"})
@@ -1000,7 +1001,7 @@ async def get_estimates_summary():
             "_id": None,
             "total_value": {"$sum": "$grand_total"},
             "accepted_value": {"$sum": {"$cond": [{"$eq": ["$status", "accepted"]}, "$grand_total", 0]}},
-            "pending_value": {"$sum": {"$cond": [{"$in": ["$status", ["draft", "sent"]]}, "$grand_total", 0]}}
+            "pending_value": {"$sum": {"$cond": [{"$in": ["$status", ["draft", "sent", "customer_viewed"]]}, "$grand_total", 0]}}
         }}
     ]
     
@@ -1014,6 +1015,7 @@ async def get_estimates_summary():
             "by_status": {
                 "draft": draft,
                 "sent": sent,
+                "customer_viewed": customer_viewed,
                 "accepted": accepted,
                 "declined": declined,
                 "converted": converted,
