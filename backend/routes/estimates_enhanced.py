@@ -1316,6 +1316,58 @@ async def list_pdf_templates():
     ]
     return {"code": 0, "templates": templates}
 
+# ========================= PRICING INTEGRATION ENDPOINTS =========================
+
+@router.get("/item-pricing/{item_id}")
+async def get_item_pricing_for_estimate(item_id: str, customer_id: str = ""):
+    """
+    Get item pricing for a customer when creating/editing estimates.
+    Applies the customer's assigned price list automatically.
+    
+    This endpoint allows the frontend to display the correct price
+    when an item is selected, based on the selected customer.
+    """
+    item_details = await get_item_price_for_customer(item_id, customer_id)
+    if not item_details:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    return {"code": 0, "item": item_details}
+
+
+@router.get("/customer-pricing/{customer_id}")
+async def get_customer_pricing_info(customer_id: str):
+    """
+    Get pricing info for a customer - which price list is assigned.
+    Useful for displaying in the UI when a customer is selected.
+    """
+    contact = await db["contacts_enhanced"].find_one({"contact_id": customer_id})
+    if not contact:
+        contact = await db["contacts"].find_one({"contact_id": customer_id})
+    
+    if not contact:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    
+    result = {
+        "customer_id": customer_id,
+        "customer_name": contact.get("company_name") or contact.get("name") or contact.get("display_name", ""),
+        "sales_price_list": None
+    }
+    
+    price_list_id = contact.get("sales_price_list_id")
+    if price_list_id:
+        pl = await db["price_lists"].find_one({"pricelist_id": price_list_id}, {"_id": 0})
+        if pl:
+            result["sales_price_list"] = {
+                "pricelist_id": price_list_id,
+                "name": pl.get("name", ""),
+                "discount_percentage": pl.get("discount_percentage", 0),
+                "markup_percentage": pl.get("markup_percentage", 0),
+                "description": pl.get("description", "")
+            }
+    
+    return {"code": 0, "pricing": result}
+
+
 # ========================= CUSTOM FIELDS ENDPOINTS =========================
 
 @router.get("/custom-fields")
