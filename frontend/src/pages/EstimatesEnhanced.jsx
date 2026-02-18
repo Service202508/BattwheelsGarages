@@ -122,6 +122,7 @@ export default function EstimatesEnhanced() {
   const [contacts, setContacts] = useState([]);
   const [contactSearch, setContactSearch] = useState("");
   const [selectedContact, setSelectedContact] = useState(null);
+  const [customerPricing, setCustomerPricing] = useState(null);
 
   // Items search
   const [items, setItems] = useState([]);
