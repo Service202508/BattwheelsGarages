@@ -726,6 +726,7 @@ async def get_estimate_settings():
     """Get estimate module settings"""
     numbering = await estimate_settings_collection.find_one({"type": "numbering"}, {"_id": 0})
     defaults = await estimate_settings_collection.find_one({"type": "defaults"}, {"_id": 0})
+    preferences = await estimate_settings_collection.find_one({"type": "preferences"}, {"_id": 0})
     
     if not numbering:
         numbering = {"type": "numbering", "prefix": "EST-", "next_number": 1, "padding": 5}
@@ -736,8 +737,11 @@ async def get_estimate_settings():
             "terms_and_conditions": "This estimate is valid for 30 days from the date of issue.",
             "notes": ""
         }
+    if not preferences:
+        preferences = EstimatePreferences().dict()
+        preferences["type"] = "preferences"
     
-    return {"code": 0, "settings": {"numbering": numbering, "defaults": defaults}}
+    return {"code": 0, "settings": {"numbering": numbering, "defaults": defaults, "preferences": preferences}}
 
 @router.put("/settings")
 async def update_estimate_settings(settings: dict):
@@ -754,6 +758,31 @@ async def update_estimate_settings(settings: dict):
             {"$set": settings["defaults"]},
             upsert=True
         )
+    if "preferences" in settings:
+        await estimate_settings_collection.update_one(
+            {"type": "preferences"},
+            {"$set": settings["preferences"]},
+            upsert=True
+        )
+    return {"code": 0, "message": "Settings updated"}
+
+@router.get("/preferences")
+async def get_preferences():
+    """Get estimate preferences for automation"""
+    prefs = await get_estimate_preferences()
+    return {"code": 0, "preferences": prefs}
+
+@router.put("/preferences")
+async def update_preferences(preferences: EstimatePreferences):
+    """Update estimate preferences"""
+    prefs_dict = preferences.dict()
+    prefs_dict["type"] = "preferences"
+    await estimate_settings_collection.update_one(
+        {"type": "preferences"},
+        {"$set": prefs_dict},
+        upsert=True
+    )
+    return {"code": 0, "message": "Preferences updated", "preferences": prefs_dict}
     return {"code": 0, "message": "Settings updated"}
 
 # ========================= ESTIMATE CRUD ENDPOINTS =========================
