@@ -1107,6 +1107,282 @@ export default function EstimatesEnhanced() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Share Link Dialog */}
+      <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Share2 className="h-5 w-5" /> Share Estimate</DialogTitle>
+            <DialogDescription>Generate a public link for customers to view, accept, or decline this estimate.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {!shareLink ? (
+              <>
+                <div className="space-y-3">
+                  <div>
+                    <Label>Link Expires In (days)</Label>
+                    <Input 
+                      type="number" 
+                      value={shareConfig.expiry_days} 
+                      onChange={(e) => setShareConfig({...shareConfig, expiry_days: parseInt(e.target.value) || 30})}
+                      min={1} 
+                      max={365} 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label>Allow Customer to Accept</Label>
+                    <input 
+                      type="checkbox" 
+                      checked={shareConfig.allow_accept} 
+                      onChange={(e) => setShareConfig({...shareConfig, allow_accept: e.target.checked})}
+                      className="h-4 w-4"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label>Allow Customer to Decline</Label>
+                    <input 
+                      type="checkbox" 
+                      checked={shareConfig.allow_decline} 
+                      onChange={(e) => setShareConfig({...shareConfig, allow_decline: e.target.checked})}
+                      className="h-4 w-4"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label>Password Protected</Label>
+                    <input 
+                      type="checkbox" 
+                      checked={shareConfig.password_protected} 
+                      onChange={(e) => setShareConfig({...shareConfig, password_protected: e.target.checked})}
+                      className="h-4 w-4"
+                    />
+                  </div>
+                  {shareConfig.password_protected && (
+                    <div>
+                      <Label>Password</Label>
+                      <Input 
+                        type="password" 
+                        value={shareConfig.password} 
+                        onChange={(e) => setShareConfig({...shareConfig, password: e.target.value})}
+                        placeholder="Enter password"
+                      />
+                    </div>
+                  )}
+                </div>
+                <Button 
+                  onClick={handleCreateShareLink} 
+                  disabled={shareLoading}
+                  className="w-full bg-[#22EDA9] text-black"
+                  data-testid="generate-share-link-btn"
+                >
+                  {shareLoading ? "Generating..." : "Generate Share Link"}
+                </Button>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <p className="text-sm text-green-700 font-medium mb-2">Share link created successfully!</p>
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      value={shareLink.full_url} 
+                      readOnly 
+                      className="text-xs font-mono"
+                    />
+                    <Button size="sm" variant="outline" onClick={copyShareLink}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500 space-y-1">
+                  <p><strong>Expires:</strong> {new Date(shareLink.expires_at).toLocaleDateString('en-IN')}</p>
+                  <p><strong>Can Accept:</strong> {shareLink.allow_accept ? 'Yes' : 'No'}</p>
+                  <p><strong>Can Decline:</strong> {shareLink.allow_decline ? 'Yes' : 'No'}</p>
+                  <p><strong>Password Protected:</strong> {shareLink.password_protected ? 'Yes' : 'No'}</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShareLink(null)} 
+                  className="w-full"
+                >
+                  Create Another Link
+                </Button>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Attachments Dialog */}
+      <Dialog open={showAttachmentDialog} onOpenChange={setShowAttachmentDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Paperclip className="h-5 w-5" /> Attachments</DialogTitle>
+            <DialogDescription>Upload files to attach to this estimate (max 3 files, 10MB each)</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* Upload Area */}
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+              <input 
+                type="file" 
+                id="attachment-upload" 
+                className="hidden" 
+                onChange={handleUploadAttachment}
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.txt,.csv"
+              />
+              <label htmlFor="attachment-upload" className="cursor-pointer">
+                <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                <p className="text-sm text-gray-600">
+                  {uploading ? "Uploading..." : "Click to upload a file"}
+                </p>
+                <p className="text-xs text-gray-400 mt-1">PDF, Images, Word, Excel (max 10MB)</p>
+              </label>
+            </div>
+
+            {/* Attachments List */}
+            {attachments.length > 0 ? (
+              <div className="space-y-2">
+                <Label>Attached Files ({attachments.length}/3)</Label>
+                {attachments.map((att) => (
+                  <div key={att.attachment_id} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <FileText className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{att.filename}</p>
+                        <p className="text-xs text-gray-400">{(att.file_size / 1024).toFixed(1)} KB</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        onClick={() => downloadAttachment(att.attachment_id, att.filename)}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="text-red-500 hover:text-red-600"
+                        onClick={() => handleDeleteAttachment(att.attachment_id)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 text-center">No attachments yet</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Preferences Dialog */}
+      <Dialog open={showPreferencesDialog} onOpenChange={setShowPreferencesDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Settings className="h-5 w-5" /> Estimate Preferences</DialogTitle>
+            <DialogDescription>Configure automation and workflow settings for estimates</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            {/* Auto-Conversion Settings */}
+            <div className="space-y-4">
+              <h4 className="font-medium text-sm">Automatic Conversion</h4>
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>Auto-convert accepted estimates</Label>
+                  <p className="text-xs text-gray-500">Automatically create invoices when estimates are accepted</p>
+                </div>
+                <input 
+                  type="checkbox" 
+                  checked={preferences.auto_convert_on_accept} 
+                  onChange={(e) => setPreferences({...preferences, auto_convert_on_accept: e.target.checked})}
+                  className="h-4 w-4"
+                />
+              </div>
+              {preferences.auto_convert_on_accept && (
+                <div>
+                  <Label>Convert to</Label>
+                  <Select 
+                    value={preferences.auto_convert_to} 
+                    onValueChange={(v) => setPreferences({...preferences, auto_convert_to: v})}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="draft_invoice">Draft Invoice</SelectItem>
+                      <SelectItem value="open_invoice">Open Invoice (ready to send)</SelectItem>
+                      <SelectItem value="sales_order">Sales Order</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+
+            <Separator />
+
+            {/* Public Link Settings */}
+            <div className="space-y-4">
+              <h4 className="font-medium text-sm">Public Link Settings</h4>
+              <div className="flex items-center justify-between">
+                <Label>Allow customers to accept via link</Label>
+                <input 
+                  type="checkbox" 
+                  checked={preferences.allow_public_accept} 
+                  onChange={(e) => setPreferences({...preferences, allow_public_accept: e.target.checked})}
+                  className="h-4 w-4"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Allow customers to decline via link</Label>
+                <input 
+                  type="checkbox" 
+                  checked={preferences.allow_public_decline} 
+                  onChange={(e) => setPreferences({...preferences, allow_public_decline: e.target.checked})}
+                  className="h-4 w-4"
+                />
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Notification Settings */}
+            <div className="space-y-4">
+              <h4 className="font-medium text-sm">Notifications</h4>
+              <div className="flex items-center justify-between">
+                <Label>Notify when customer views estimate</Label>
+                <input 
+                  type="checkbox" 
+                  checked={preferences.notify_on_view} 
+                  onChange={(e) => setPreferences({...preferences, notify_on_view: e.target.checked})}
+                  className="h-4 w-4"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Notify when customer accepts</Label>
+                <input 
+                  type="checkbox" 
+                  checked={preferences.notify_on_accept} 
+                  onChange={(e) => setPreferences({...preferences, notify_on_accept: e.target.checked})}
+                  className="h-4 w-4"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label>Notify when customer declines</Label>
+                <input 
+                  type="checkbox" 
+                  checked={preferences.notify_on_decline} 
+                  onChange={(e) => setPreferences({...preferences, notify_on_decline: e.target.checked})}
+                  className="h-4 w-4"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPreferencesDialog(false)}>Cancel</Button>
+            <Button onClick={handleSavePreferences} className="bg-[#22EDA9] text-black">Save Preferences</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
