@@ -1688,6 +1688,125 @@ export default function ItemsEnhanced() {
         </DialogContent>
       </Dialog>
 
+      {/* Bulk Set Prices Dialog - Phase 2 */}
+      <Dialog open={showBulkPriceDialog} onOpenChange={setShowBulkPriceDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Set Bulk Prices</DialogTitle>
+            <DialogDescription>
+              Apply percentage markup/discount to all items in: {selectedPriceList?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Percentage Adjustment</Label>
+              <div className="flex gap-2 mt-2">
+                <Input 
+                  type="number" 
+                  placeholder="Enter percentage (e.g., 10 for +10%, -5 for -5%)"
+                  id="bulk-price-percentage"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Positive = markup, Negative = discount</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBulkPriceDialog(false)}>Cancel</Button>
+            <Button 
+              onClick={() => {
+                const percentage = document.getElementById('bulk-price-percentage')?.value;
+                if (selectedPriceList) {
+                  handleBulkSetPrices(selectedPriceList.pricelist_id, percentage);
+                }
+              }}
+              className="bg-[#22EDA9] text-black"
+            >
+              Apply to All Items
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Assign Price List to Contact Dialog - Phase 2 */}
+      <Dialog open={showAssignPriceListDialog} onOpenChange={setShowAssignPriceListDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Assign Price List to Contact</DialogTitle>
+            <DialogDescription>Select a customer/vendor and assign their default price lists</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Contact</Label>
+              <Select onValueChange={(v) => document.getElementById('assign-contact-id').value = v}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select contact" />
+                </SelectTrigger>
+                <SelectContent>
+                  {contacts.map(c => (
+                    <SelectItem key={c.contact_id} value={c.contact_id}>
+                      {c.company_name || c.contact_name || c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <input type="hidden" id="assign-contact-id" />
+            </div>
+            <div>
+              <Label>Sales Price List</Label>
+              <Select onValueChange={(v) => document.getElementById('assign-sales-pl').value = v}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select sales price list (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {priceLists.filter(p => p.price_list_type === "sales").map(pl => (
+                    <SelectItem key={pl.pricelist_id} value={pl.pricelist_id}>{pl.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <input type="hidden" id="assign-sales-pl" />
+            </div>
+            <div>
+              <Label>Purchase Price List</Label>
+              <Select onValueChange={(v) => document.getElementById('assign-purchase-pl').value = v}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select purchase price list (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {priceLists.filter(p => p.price_list_type === "purchase").map(pl => (
+                    <SelectItem key={pl.pricelist_id} value={pl.pricelist_id}>{pl.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <input type="hidden" id="assign-purchase-pl" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAssignPriceListDialog(false)}>Cancel</Button>
+            <Button 
+              onClick={() => {
+                const contactId = document.getElementById('assign-contact-id')?.value;
+                const salesPl = document.getElementById('assign-sales-pl')?.value;
+                const purchasePl = document.getElementById('assign-purchase-pl')?.value;
+                if (contactId) {
+                  handleAssignPriceList(
+                    contactId, 
+                    salesPl === "none" ? null : salesPl,
+                    purchasePl === "none" ? null : purchasePl
+                  );
+                } else {
+                  toast.error("Please select a contact");
+                }
+              }}
+              className="bg-[#22EDA9] text-black"
+            >
+              Assign Price List
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Low Stock Alert Section */}
       {lowStockItems.length > 0 && (
         <Card className="border-red-200 bg-red-50">
