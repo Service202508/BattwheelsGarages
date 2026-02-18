@@ -1138,6 +1138,10 @@ async def void_invoice(invoice_id: str, reason: str = ""):
     if invoice.get("status") == "void":
         raise HTTPException(status_code=400, detail="Invoice is already void")
     
+    # Reverse stock if it was deducted
+    if invoice.get("stock_deducted"):
+        await update_item_stock_for_invoice(invoice_id, reverse=True)
+    
     await invoices_collection.update_one(
         {"invoice_id": invoice_id},
         {"$set": {
@@ -1145,6 +1149,7 @@ async def void_invoice(invoice_id: str, reason: str = ""):
             "voided_date": datetime.now(timezone.utc).isoformat(),
             "void_reason": reason,
             "balance_due": 0,
+            "stock_deducted": False,
             "updated_time": datetime.now(timezone.utc).isoformat()
         }}
     )
