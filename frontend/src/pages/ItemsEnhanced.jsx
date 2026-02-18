@@ -1002,6 +1002,14 @@ export default function ItemsEnhanced() {
                             <DropdownMenuItem onClick={() => { setViewItem(item); fetchItemHistory(item.item_id); }}>
                               <History className="h-4 w-4 mr-2" /> History
                             </DropdownMenuItem>
+                            {(item.item_type === "inventory" || item.item_type === "sales_and_purchases") && (
+                              <DropdownMenuItem onClick={() => {
+                                const adjUrl = `/inventory-adjustments?quick_adjust=${item.item_id}&item_name=${encodeURIComponent(item.name)}&stock=${item.stock_on_hand || item.quantity || 0}`;
+                                window.location.href = adjUrl;
+                              }}>
+                                <ArrowUpDown className="h-4 w-4 mr-2" /> Adjust Stock
+                              </DropdownMenuItem>
+                            )}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteItem(item.item_id)}>
                               <Trash2 className="h-4 w-4 mr-2" /> Delete
