@@ -748,7 +748,40 @@ export default function EstimatesEnhanced() {
     setNewEstimate(prev => ({ ...prev, line_items: prev.line_items.filter((_, i) => i !== index) }));
   };
 
-  const selectItem = (item) => {
+  const selectItem = async (item) => {
+    // If a customer is selected, fetch the price with price list applied
+    if (newEstimate.customer_id) {
+      const pricedItem = await fetchItemPricing(item.item_id, newEstimate.customer_id);
+      if (pricedItem) {
+        setNewLineItem({
+          item_id: pricedItem.item_id,
+          name: pricedItem.name,
+          description: pricedItem.description || "",
+          quantity: 1,
+          unit: pricedItem.unit || "pcs",
+          rate: pricedItem.rate,  // Price list adjusted rate
+          base_rate: pricedItem.base_rate,
+          discount_percent: 0,
+          tax_percentage: pricedItem.tax_percentage || 18,
+          hsn_code: pricedItem.hsn_code || "",
+          price_list_applied: pricedItem.price_list_name,
+          discount_from_pricelist: pricedItem.discount_applied || 0,
+          markup_from_pricelist: pricedItem.markup_applied || 0
+        });
+        
+        // Show toast if price list was applied
+        if (pricedItem.price_list_name) {
+          if (pricedItem.discount_applied > 0) {
+            toast.success(`Price adjusted: -₹${pricedItem.discount_applied} (${pricedItem.price_list_name})`, { duration: 2000 });
+          } else if (pricedItem.markup_applied > 0) {
+            toast.info(`Price adjusted: +₹${pricedItem.markup_applied} (${pricedItem.price_list_name})`, { duration: 2000 });
+          }
+        }
+        return;
+      }
+    }
+    
+    // Fallback: use item's default price
     setNewLineItem({
       item_id: item.item_id,
       name: item.name,
@@ -781,6 +814,7 @@ export default function EstimatesEnhanced() {
     });
     setSelectedContact(null);
     setContactSearch("");
+    setCustomerPricing(null);
   };
 
   const totals = calculateTotals();
