@@ -1151,6 +1151,213 @@ export default function InventoryAdjustments() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* ===== Import Dialog ===== */}
+      <Dialog open={showImportDialog} onOpenChange={setShowImportDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Import Adjustments from CSV</DialogTitle>
+            <DialogDescription>Upload a CSV file with adjustment data. Adjustments are created as drafts.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>CSV File</Label>
+              <Input type="file" accept=".csv"
+                onChange={(e) => { setImportFile(e.target.files?.[0] || null); setImportPreview(null); }}
+                data-testid="import-file-input"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Expected columns: Reference Number, Date, Type (quantity/value), Reason, Account, Item Name or Item ID, New Quantity, New Value, Description
+              </p>
+            </div>
+
+            {importFile && !importPreview && (
+              <Button onClick={handleImportValidate} disabled={importLoading} data-testid="validate-import-btn">
+                {importLoading ? "Validating..." : "Validate File"}
+              </Button>
+            )}
+
+            {importPreview && (
+              <div className="space-y-3">
+                <div className="grid grid-cols-3 gap-3">
+                  <Card>
+                    <CardContent className="p-3 text-center">
+                      <p className="text-xs text-gray-500">Rows Found</p>
+                      <p className="text-lg font-bold">{importPreview.row_count}</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-green-50">
+                    <CardContent className="p-3 text-center">
+                      <p className="text-xs text-green-600">Items Matched</p>
+                      <p className="text-lg font-bold text-green-700">{importPreview.items_found}</p>
+                    </CardContent>
+                  </Card>
+                  <Card className={importPreview.items_not_found?.length > 0 ? "bg-red-50" : ""}>
+                    <CardContent className="p-3 text-center">
+                      <p className="text-xs text-gray-500">Unmatched Items</p>
+                      <p className="text-lg font-bold">{importPreview.items_not_found?.length || 0}</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="text-xs text-gray-500">
+                  Detected fields: {importPreview.available_fields?.join(", ")}
+                </div>
+
+                {importPreview.items_not_found?.length > 0 && (
+                  <div className="p-3 bg-yellow-50 rounded-lg text-sm">
+                    <p className="font-medium text-yellow-700 flex items-center gap-1"><AlertTriangle className="h-4 w-4" /> Unmatched items:</p>
+                    <p className="text-yellow-600 mt-1">{importPreview.items_not_found.slice(0, 10).join(", ")}</p>
+                  </div>
+                )}
+
+                {/* Preview table */}
+                {importPreview.preview_rows?.length > 0 && (
+                  <div className="border rounded-lg overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          {importPreview.available_fields?.map(f => (
+                            <th key={f} className="px-2 py-1 text-left font-medium">{f}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {importPreview.preview_rows.map((row, i) => (
+                          <tr key={i}>
+                            {importPreview.available_fields?.map(f => (
+                              <td key={f} className="px-2 py-1 truncate max-w-[120px]">{row[f]}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                <div className="flex gap-2 justify-end">
+                  <Button variant="outline" onClick={() => { setImportPreview(null); setImportFile(null); }}>Cancel</Button>
+                  <Button onClick={handleImportProcess} disabled={importLoading} data-testid="process-import-btn">
+                    {importLoading ? "Importing..." : `Import ${importPreview.row_count} Rows`}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ===== ABC Classification Report Dialog ===== */}
+      <Dialog open={showAbcDialog} onOpenChange={(open) => { setShowAbcDialog(open); if (!open) { setAbcDrillDown(null); setAbcDrillItem(null); } }}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>ABC Classification Report</DialogTitle>
+            <DialogDescription>Items classified by adjustment activity (last 90 days)</DialogDescription>
+          </DialogHeader>
+
+          {abcDrillDown ? (
+            <div className="space-y-4">
+              <Button variant="outline" size="sm" onClick={() => { setAbcDrillDown(null); setAbcDrillItem(null); }}>
+                Back to ABC Report
+              </Button>
+              <div className="flex items-center gap-3">
+                <h3 className="font-semibold text-lg">{abcDrillDown.item?.name || abcDrillItem}</h3>
+                <Badge variant="outline">{abcDrillDown.item?.sku}</Badge>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <Card><CardContent className="p-3 text-center"><p className="text-xs text-gray-500">Adjustments</p><p className="text-lg font-bold">{abcDrillDown.total_adjustments}</p></CardContent></Card>
+                <Card className="bg-green-50"><CardContent className="p-3 text-center"><p className="text-xs text-green-600">Qty Change</p><p className="text-lg font-bold text-green-700">{abcDrillDown.total_qty_change}</p></CardContent></Card>
+                <Card className="bg-blue-50"><CardContent className="p-3 text-center"><p className="text-xs text-blue-600">Value Change</p><p className="text-lg font-bold text-blue-700">{fmt(abcDrillDown.total_value_change)}</p></CardContent></Card>
+              </div>
+              <div className="border rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-3 py-2 text-left">Date</th>
+                      <th className="px-3 py-2 text-left">Reference</th>
+                      <th className="px-3 py-2 text-left">Reason</th>
+                      <th className="px-3 py-2 text-center">Type</th>
+                      <th className="px-3 py-2 text-right">Qty Change</th>
+                      <th className="px-3 py-2 text-right">Value Change</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {(abcDrillDown.adjustments || []).map((a, i) => (
+                      <tr key={i} className="hover:bg-gray-50">
+                        <td className="px-3 py-2">{a.date}</td>
+                        <td className="px-3 py-2">
+                          <button className="text-blue-600 hover:underline" onClick={() => { setShowAbcDialog(false); viewDetail(a.adjustment_id); }}>
+                            {a.reference_number}
+                          </button>
+                        </td>
+                        <td className="px-3 py-2">{a.reason}</td>
+                        <td className="px-3 py-2 text-center capitalize">{a.type}</td>
+                        <td className="px-3 py-2 text-right">
+                          <span className={a.quantity_adjusted > 0 ? "text-green-600" : a.quantity_adjusted < 0 ? "text-red-600" : ""}>
+                            {a.quantity_adjusted > 0 ? "+" : ""}{a.quantity_adjusted}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2 text-right">{fmt(a.value_adjusted)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : abcReport ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-3">
+                {["A", "B", "C"].map(cls => (
+                  <Card key={cls} className={cls === "A" ? "bg-green-50 border-green-200" : cls === "B" ? "bg-yellow-50 border-yellow-200" : "bg-gray-50"}>
+                    <CardContent className="p-3 text-center">
+                      <p className="text-sm font-semibold">Class {cls}</p>
+                      <p className="text-2xl font-bold">{abcReport.class_counts?.[cls] || 0}</p>
+                      <p className="text-xs text-gray-500">items</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div className="border rounded-lg overflow-hidden">
+                <table className="w-full text-sm" data-testid="abc-report-table">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-3 py-2 text-left">Item</th>
+                      <th className="px-3 py-2 text-center">Adjustments</th>
+                      <th className="px-3 py-2 text-right">Qty Adjusted</th>
+                      <th className="px-3 py-2 text-right">% of Total</th>
+                      <th className="px-3 py-2 text-right">Cumulative %</th>
+                      <th className="px-3 py-2 text-center">Class</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {(abcReport.items || []).map((item, i) => (
+                      <tr key={i} className="hover:bg-gray-50 cursor-pointer" onClick={() => loadAbcDrillDown(item._id)}>
+                        <td className="px-3 py-2">
+                          <span className="text-blue-600 hover:underline">{item.item_name || item._id}</span>
+                        </td>
+                        <td className="px-3 py-2 text-center">{item.adjustment_count}</td>
+                        <td className="px-3 py-2 text-right">{item.total_qty_adjusted}</td>
+                        <td className="px-3 py-2 text-right">{item.value_percentage}%</td>
+                        <td className="px-3 py-2 text-right">{item.cumulative_percentage}%</td>
+                        <td className="px-3 py-2 text-center">
+                          <Badge className={item.classification === "A" ? "bg-green-100 text-green-700" : item.classification === "B" ? "bg-yellow-100 text-yellow-700" : "bg-gray-100 text-gray-700"}>
+                            {item.classification}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {(abcReport.items || []).length === 0 && (
+                <p className="text-center py-8 text-gray-400">No adjustment data in the last 90 days</p>
+              )}
+            </div>
+          ) : (
+            <p className="text-center py-8 text-gray-400">Loading report...</p>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
