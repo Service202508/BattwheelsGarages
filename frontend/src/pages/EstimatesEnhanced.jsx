@@ -1689,6 +1689,233 @@ export default function EstimatesEnhanced() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Import Dialog */}
+      <Dialog open={showImportDialog} onOpenChange={setShowImportDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><FileUp className="h-5 w-5" /> Import Estimates</DialogTitle>
+            <DialogDescription>Upload a CSV file to import estimates in bulk</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <input 
+                type="file" 
+                id="import-file" 
+                className="hidden" 
+                accept=".csv"
+                onChange={(e) => setImportFile(e.target.files[0])}
+              />
+              <label htmlFor="import-file" className="cursor-pointer">
+                <Upload className="h-10 w-10 mx-auto text-gray-400 mb-2" />
+                <p className="text-sm text-gray-600">
+                  {importFile ? importFile.name : "Click to select CSV file"}
+                </p>
+              </label>
+            </div>
+            <Button variant="outline" onClick={downloadImportTemplate} className="w-full gap-2">
+              <Download className="h-4 w-4" /> Download Template
+            </Button>
+            <p className="text-xs text-gray-500">
+              Template includes: customer_name, date, item_name, quantity, rate, tax_percentage
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setShowImportDialog(false); setImportFile(null); }}>Cancel</Button>
+            <Button onClick={handleImport} disabled={!importFile || importing} className="bg-[#22EDA9] text-black">
+              {importing ? "Importing..." : "Import"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Action Dialog */}
+      <Dialog open={showBulkActionDialog} onOpenChange={setShowBulkActionDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><ListChecks className="h-5 w-5" /> Bulk Actions</DialogTitle>
+            <DialogDescription>Apply action to {selectedIds.length} selected estimates</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Action</Label>
+              <Select value={bulkAction} onValueChange={setBulkAction}>
+                <SelectTrigger><SelectValue placeholder="Select action..." /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mark_sent">Mark as Sent</SelectItem>
+                  <SelectItem value="mark_expired">Mark as Expired</SelectItem>
+                  <SelectItem value="void">Void Estimates</SelectItem>
+                  <SelectItem value="delete">Delete (Draft only)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {bulkAction === "void" && (
+              <div className="bg-orange-50 p-3 rounded-lg text-sm text-orange-700">
+                <AlertTriangle className="h-4 w-4 inline mr-2" />
+                Voiding estimates is irreversible. Converted estimates cannot be voided.
+              </div>
+            )}
+            {bulkAction === "delete" && (
+              <div className="bg-red-50 p-3 rounded-lg text-sm text-red-700">
+                <AlertTriangle className="h-4 w-4 inline mr-2" />
+                Only draft estimates will be deleted. This action is irreversible.
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setShowBulkActionDialog(false); setBulkAction(""); }}>Cancel</Button>
+            <Button 
+              onClick={handleBulkAction} 
+              disabled={!bulkAction}
+              className={bulkAction === "delete" || bulkAction === "void" ? "bg-red-600 hover:bg-red-700" : "bg-[#22EDA9] text-black"}
+            >
+              Apply to {selectedIds.length} Estimates
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Custom Fields Dialog */}
+      <Dialog open={showCustomFieldsDialog} onOpenChange={setShowCustomFieldsDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Edit className="h-5 w-5" /> Custom Fields</DialogTitle>
+            <DialogDescription>Manage custom fields for estimates</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+            {/* Existing Fields */}
+            {customFields.length > 0 ? (
+              <div className="space-y-2">
+                <Label>Existing Fields</Label>
+                {customFields.map((field, idx) => (
+                  <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                    <div>
+                      <p className="font-medium text-sm">{field.field_name}</p>
+                      <p className="text-xs text-gray-500">
+                        {field.field_type} {field.is_required && "• Required"} 
+                        {field.show_in_pdf && " • PDF"} {field.show_in_portal && " • Portal"}
+                      </p>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="text-red-500 hover:text-red-600"
+                      onClick={() => handleDeleteCustomField(field.field_name)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 text-center py-4">No custom fields defined yet</p>
+            )}
+            
+            <Separator />
+            
+            {/* Add New Field */}
+            <div className="space-y-3">
+              <Label>Add New Field</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Field Name</Label>
+                  <Input 
+                    value={newCustomField.field_name}
+                    onChange={(e) => setNewCustomField({...newCustomField, field_name: e.target.value})}
+                    placeholder="e.g., Project Code"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Type</Label>
+                  <Select 
+                    value={newCustomField.field_type}
+                    onValueChange={(v) => setNewCustomField({...newCustomField, field_type: v})}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="text">Text</SelectItem>
+                      <SelectItem value="number">Number</SelectItem>
+                      <SelectItem value="date">Date</SelectItem>
+                      <SelectItem value="checkbox">Checkbox</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 text-sm">
+                  <input 
+                    type="checkbox"
+                    checked={newCustomField.is_required}
+                    onChange={(e) => setNewCustomField({...newCustomField, is_required: e.target.checked})}
+                    className="h-4 w-4"
+                  />
+                  Required
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input 
+                    type="checkbox"
+                    checked={newCustomField.show_in_pdf}
+                    onChange={(e) => setNewCustomField({...newCustomField, show_in_pdf: e.target.checked})}
+                    className="h-4 w-4"
+                  />
+                  Show in PDF
+                </label>
+              </div>
+              <Button onClick={handleAddCustomField} className="w-full bg-[#22EDA9] text-black">
+                <Plus className="h-4 w-4 mr-2" /> Add Field
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* PDF Templates Dialog */}
+      <Dialog open={showTemplateDialog} onOpenChange={setShowTemplateDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><LayoutTemplate className="h-5 w-5" /> PDF Templates</DialogTitle>
+            <DialogDescription>Choose a template style for PDF generation</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-4">
+            {pdfTemplates.map((template) => (
+              <div 
+                key={template.id}
+                className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                  selectedTemplate === template.id 
+                    ? 'border-[#22EDA9] bg-green-50' 
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+                onClick={() => setSelectedTemplate(template.id)}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">{template.name}</p>
+                    <p className="text-sm text-gray-500">{template.description}</p>
+                  </div>
+                  <div 
+                    className="w-8 h-8 rounded-full"
+                    style={{ backgroundColor: template.primary_color }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowTemplateDialog(false)}>Close</Button>
+            {selectedEstimate && (
+              <Button 
+                onClick={() => {
+                  handleDownloadWithTemplate(selectedEstimate.estimate_id, selectedTemplate);
+                  setShowTemplateDialog(false);
+                }}
+                className="bg-[#22EDA9] text-black"
+              >
+                <Download className="h-4 w-4 mr-2" /> Download with {selectedTemplate}
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
