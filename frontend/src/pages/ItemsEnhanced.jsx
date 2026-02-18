@@ -66,6 +66,14 @@ export default function ItemsEnhanced() {
   const [customFields, setCustomFields] = useState([]);
   const [loading, setLoading] = useState(true);
   
+  // Phase 2: Reports and Barcode
+  const [salesReport, setSalesReport] = useState(null);
+  const [purchasesReport, setPurchasesReport] = useState(null);
+  const [valuationReport, setValuationReport] = useState(null);
+  const [barcodeSearch, setBarcodeSearch] = useState("");
+  const [barcodeResult, setBarcodeResult] = useState(null);
+  const [contacts, setContacts] = useState([]);
+  
   // Filters and sorting
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("");
@@ -87,8 +95,12 @@ export default function ItemsEnhanced() {
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
   const [showCustomFieldDialog, setShowCustomFieldDialog] = useState(false);
+  const [showBarcodeDialog, setShowBarcodeDialog] = useState(false);
+  const [showBulkPriceDialog, setShowBulkPriceDialog] = useState(false);
+  const [showAssignPriceListDialog, setShowAssignPriceListDialog] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [viewItem, setViewItem] = useState(null);
+  const [selectedPriceList, setSelectedPriceList] = useState(null);
 
   // Form states
   const [newItem, setNewItem] = useState({
