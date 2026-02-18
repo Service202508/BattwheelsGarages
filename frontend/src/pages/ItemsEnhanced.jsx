@@ -751,7 +751,7 @@ export default function ItemsEnhanced() {
                   <MoreHorizontal className="h-4 w-4" /> More
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-52">
                 <DropdownMenuItem onClick={() => setShowImportDialog(true)}>
                   <Upload className="h-4 w-4 mr-2" /> Import Items
                 </DropdownMenuItem>
@@ -765,9 +765,15 @@ export default function ItemsEnhanced() {
                 <DropdownMenuItem onClick={() => { setShowBarcodeDialog(true); setBarcodeResult(null); setBarcodeSearch(""); }}>
                   <QrCode className="h-4 w-4 mr-2" /> Barcode Lookup
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowScannerDialog(true)}>
+                  <Camera className="h-4 w-4 mr-2" /> Scan Barcode
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setShowPreferencesDialog(true)}>
+                <DropdownMenuItem onClick={() => { fetchPreferences(); setShowPreferencesDialog(true); }}>
                   <Settings className="h-4 w-4 mr-2" /> Preferences
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { fetchFieldConfig(); setShowFieldConfigDialog(true); }}>
+                  <Columns className="h-4 w-4 mr-2" /> Field Configuration
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setShowCustomFieldDialog(true)}>
                   <Plus className="h-4 w-4 mr-2" /> Custom Fields
