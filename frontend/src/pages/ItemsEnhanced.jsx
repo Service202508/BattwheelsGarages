@@ -1598,6 +1598,75 @@ export default function ItemsEnhanced() {
         </DialogContent>
       </Dialog>
 
+      {/* Barcode Lookup Dialog - Phase 2 */}
+      <Dialog open={showBarcodeDialog} onOpenChange={setShowBarcodeDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <QrCode className="h-5 w-5" /> Barcode / SKU Lookup
+            </DialogTitle>
+            <DialogDescription>Scan or enter a barcode/SKU to find an item</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex gap-2">
+              <Input 
+                value={barcodeSearch} 
+                onChange={(e) => setBarcodeSearch(e.target.value)}
+                onKeyUp={(e) => e.key === 'Enter' && handleBarcodeLookup()}
+                placeholder="Enter barcode or SKU..."
+                autoFocus
+                data-testid="barcode-input"
+              />
+              <Button onClick={handleBarcodeLookup} className="bg-[#22EDA9] text-black">
+                <Search className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            {barcodeResult && (
+              <div className="border rounded-lg p-4 bg-green-50">
+                <div className="flex items-start gap-3">
+                  <div className="w-12 h-12 rounded bg-white flex items-center justify-center">
+                    <Package className="h-6 w-6 text-gray-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-lg">{barcodeResult.name}</p>
+                    <p className="text-sm text-gray-600">SKU: {barcodeResult.sku || '-'}</p>
+                    <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
+                      <div>
+                        <span className="text-gray-500">Price:</span>
+                        <span className="font-medium ml-1">₹{(barcodeResult.sales_rate || 0).toLocaleString('en-IN')}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Stock:</span>
+                        <span className="font-medium ml-1">{barcodeResult.stock_on_hand || barcodeResult.available_stock || 0} {barcodeResult.unit}</span>
+                      </div>
+                    </div>
+                    {barcodeResult.hsn_code && (
+                      <p className="text-xs text-gray-500 mt-1">HSN: {barcodeResult.hsn_code}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-3 pt-3 border-t flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => setEditItem(barcodeResult)}>
+                    <Edit className="h-3 w-3 mr-1" /> Edit
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => { 
+                    setNewAdjustment({ ...newAdjustment, item_id: barcodeResult.item_id }); 
+                    setShowAdjustmentDialog(true); 
+                    setShowBarcodeDialog(false);
+                  }}>
+                    <ArrowUpDown className="h-3 w-3 mr-1" /> Adjust Stock
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBarcodeDialog(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Low Stock Alert Section */}
       {lowStockItems.length > 0 && (
         <Card className="border-red-200 bg-red-50">
