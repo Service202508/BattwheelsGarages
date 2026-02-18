@@ -756,3 +756,393 @@ async def update_numbering_settings(prefix: str = "ADJ", next_number: int = 1):
         upsert=True
     )
     return {"code": 0, "message": "Numbering settings updated"}
+
+
+# ==================== EXPORT ====================
+
+@router.get("/export/csv")
+async def export_adjustments_csv(
+    status: Optional[str] = None,
+    adjustment_type: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None
+):
+    """Export adjustments to CSV"""
+    query = {}
+    if status:
+        query["status"] = status
+    if adjustment_type:
+        query["adjustment_type"] = adjustment_type
+    if date_from or date_to:
+        dq = {}
+        if date_from:
+            dq["$gte"] = date_from
+        if date_to:
+            dq["$lte"] = date_to
+        query["date"] = dq
+
+    adjustments = await adjustments_col.find(query, {"_id": 0}).sort("date", -1).to_list(5000)
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "Reference Number", "Date", "Type", "Status", "Account", "Reason",
+        "Warehouse", "Description", "Item Name", "Item ID", "SKU",
+        "Qty Available", "New Quantity", "Qty Adjusted",
+        "Current Value", "New Value", "Value Adjusted",
+        "Created By", "Ticket ID"
+    ])
+
+    for adj in adjustments:
+        for line in adj.get("line_items", []):
+            writer.writerow([
+                adj.get("reference_number", ""),
+                adj.get("date", ""),
+                adj.get("adjustment_type", ""),
+                adj.get("status", ""),
+                adj.get("account", ""),
+                adj.get("reason", ""),
+                adj.get("warehouse_name", ""),
+                adj.get("description", ""),
+                line.get("item_name", ""),
+                line.get("item_id", ""),
+                line.get("sku", ""),
+                line.get("quantity_available", ""),
+                line.get("new_quantity", ""),
+                line.get("quantity_adjusted", ""),
+                line.get("current_value", ""),
+                line.get("new_value", ""),
+                line.get("value_adjusted", ""),
+                adj.get("created_by", ""),
+                adj.get("ticket_id", "")
+            ])
+
+    output.seek(0)
+    return StreamingResponse(
+        io.BytesIO(output.getvalue().encode("utf-8")),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=inventory_adjustments_{datetime.now().strftime('%Y%m%d')}.csv"}
+    )
+
+
+# ==================== IMPORT ====================
+
+@router.post("/import/validate")
+async def validate_import(file: UploadFile = File(...)):
+    """Validate CSV import file and return mapping preview"""
+    content = await file.read()
+    text = content.decode("utf-8", errors="replace")
+    reader = csv.DictReader(io.StringIO(text))
+
+    rows = []
+    errors = []
+    available_fields = list(reader.fieldnames or [])
+
+    for i, row in enumerate(reader):
+        if i >= 200:
+            break
+        rows.append(row)
+
+    # Check for items that exist
+    item_names = set()
+    for row in rows:
+        for f in ["Item Name", "item_name", "Item", "item"]:
+            if row.get(f):
+                item_names.add(row[f])
+                break
+
+    found_items = {}
+    if item_names:
+        items = await items_col.find(
+            {"$or": [
+                {"name": {"$in": list(item_names)}},
+                {"item_id": {"$in": list(item_names)}}
+            ]},
+            {"_id": 0, "item_id": 1, "name": 1, "stock_on_hand": 1, "purchase_rate": 1}
+        ).to_list(500)
+        found_items = {i["name"]: i for i in items}
+        found_items.update({i["item_id"]: i for i in items})
+
+    return {
+        "code": 0,
+        "available_fields": available_fields,
+        "row_count": len(rows),
+        "preview_rows": rows[:5],
+        "items_found": len(found_items),
+        "items_not_found": [n for n in item_names if n not in found_items]
+    }
+
+
+@router.post("/import/process")
+async def process_import(file: UploadFile = File(...)):
+    """Process CSV import and create adjustments"""
+    content = await file.read()
+    text = content.decode("utf-8", errors="replace")
+    reader = csv.DictReader(io.StringIO(text))
+
+    created = 0
+    errors = []
+    grouped = {}
+
+    for i, row in enumerate(reader):
+        # Find item
+        item_name = row.get("Item Name") or row.get("item_name") or row.get("Item") or row.get("item") or ""
+        item_id = row.get("Item ID") or row.get("item_id") or ""
+
+        item = None
+        if item_id:
+            item = await items_col.find_one({"item_id": item_id}, {"_id": 0})
+        if not item and item_name:
+            item = await items_col.find_one({"name": item_name}, {"_id": 0})
+
+        if not item:
+            errors.append(f"Row {i+2}: Item '{item_name or item_id}' not found")
+            continue
+
+        ref = row.get("Reference Number") or row.get("reference_number") or ""
+        adj_type = row.get("Type") or row.get("adjustment_type") or "quantity"
+        reason = row.get("Reason") or row.get("reason") or "Other"
+        date = row.get("Date") or row.get("date") or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        account = row.get("Account") or row.get("account") or "Cost of Goods Sold"
+        desc = row.get("Description") or row.get("description") or ""
+
+        # Group by reference number or create individual
+        key = ref or f"IMPORT-{i}"
+        if key not in grouped:
+            grouped[key] = {
+                "adjustment_type": adj_type.lower(),
+                "reason": reason,
+                "date": date,
+                "account": account,
+                "description": desc or f"Imported from CSV",
+                "line_items": [],
+                "reference_number": ref
+            }
+
+        current_stock = item.get("stock_on_hand", item.get("quantity", 0)) or 0
+        current_cost = item.get("purchase_rate", 0) or 0
+
+        try:
+            new_qty = float(row.get("New Quantity") or row.get("new_quantity") or current_stock)
+            new_val = float(row.get("New Value") or row.get("new_value") or current_cost)
+        except (ValueError, TypeError):
+            errors.append(f"Row {i+2}: Invalid numeric value")
+            continue
+
+        grouped[key]["line_items"].append({
+            "item_id": item["item_id"],
+            "item_name": item.get("name", ""),
+            "quantity_available": current_stock,
+            "new_quantity": new_qty if adj_type.lower() == "quantity" else None,
+            "quantity_adjusted": round(new_qty - current_stock, 4) if adj_type.lower() == "quantity" else None,
+            "current_value": current_cost,
+            "new_value": new_val if adj_type.lower() == "value" else None,
+            "value_adjusted": round(new_val - current_cost, 2) if adj_type.lower() == "value" else None,
+        })
+
+    # Create adjustments from grouped data
+    for key, group_data in grouped.items():
+        if not group_data["line_items"]:
+            continue
+        adj_id = f"IA-{uuid.uuid4().hex[:12].upper()}"
+        ref = group_data["reference_number"] or await generate_ref_number()
+
+        at = group_data["adjustment_type"]
+        lines = group_data["line_items"]
+        if at == "quantity":
+            ti = round(sum(max(0, l.get("quantity_adjusted") or 0) for l in lines), 4)
+            td = round(sum(abs(min(0, l.get("quantity_adjusted") or 0)) for l in lines), 4)
+        else:
+            ti = round(sum(max(0, l.get("value_adjusted") or 0) for l in lines), 2)
+            td = round(sum(abs(min(0, l.get("value_adjusted") or 0)) for l in lines), 2)
+
+        adj_doc = {
+            "adjustment_id": adj_id,
+            "reference_number": ref,
+            "adjustment_type": at,
+            "date": group_data["date"],
+            "account": group_data["account"],
+            "reason": group_data["reason"],
+            "warehouse_id": None,
+            "warehouse_name": None,
+            "description": group_data["description"],
+            "line_items": lines,
+            "line_item_count": len(lines),
+            "total_increase": ti,
+            "total_decrease": td,
+            "status": "draft",
+            "attachments": [],
+            "ticket_id": None,
+            "created_by": "import",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "converted_at": None,
+            "voided_at": None
+        }
+        await adjustments_col.insert_one(adj_doc)
+        await log_audit(adj_id, "imported", f"Created from CSV import as draft")
+        created += 1
+
+    return {
+        "code": 0,
+        "message": f"Import complete: {created} adjustments created as drafts",
+        "created": created,
+        "errors": errors
+    }
+
+
+# ==================== PDF GENERATION ====================
+
+def generate_adjustment_html(adj: dict) -> str:
+    """Generate HTML for adjustment PDF"""
+    lines_html = ""
+    for line in adj.get("line_items", []):
+        if adj.get("adjustment_type") == "quantity":
+            lines_html += f"""
+            <tr>
+                <td style="padding:8px;border-bottom:1px solid #e5e7eb">{line.get('item_name','')}</td>
+                <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:center">{line.get('sku','')}</td>
+                <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:right">{line.get('quantity_available',0)}</td>
+                <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">{line.get('new_quantity','')}</td>
+                <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:right;color:{'#16a34a' if (line.get('quantity_adjusted') or 0) >= 0 else '#dc2626'}">{'+' if (line.get('quantity_adjusted') or 0) > 0 else ''}{line.get('quantity_adjusted',0)}</td>
+            </tr>"""
+        else:
+            lines_html += f"""
+            <tr>
+                <td style="padding:8px;border-bottom:1px solid #e5e7eb">{line.get('item_name','')}</td>
+                <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:center">{line.get('sku','')}</td>
+                <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:right">₹{line.get('current_value',0):,.2f}</td>
+                <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600">₹{(line.get('new_value') or 0):,.2f}</td>
+                <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:right;color:{'#16a34a' if (line.get('value_adjusted') or 0) >= 0 else '#dc2626'}">₹{(line.get('value_adjusted') or 0):,.2f}</td>
+            </tr>"""
+
+    qty_headers = """
+        <th style="padding:8px;text-align:left;border-bottom:2px solid #e5e7eb;background:#f9fafb">Item</th>
+        <th style="padding:8px;text-align:center;border-bottom:2px solid #e5e7eb;background:#f9fafb">SKU</th>
+        <th style="padding:8px;text-align:right;border-bottom:2px solid #e5e7eb;background:#f9fafb">Available</th>
+        <th style="padding:8px;text-align:right;border-bottom:2px solid #e5e7eb;background:#f9fafb">New Qty</th>
+        <th style="padding:8px;text-align:right;border-bottom:2px solid #e5e7eb;background:#f9fafb">Change</th>
+    """
+    val_headers = """
+        <th style="padding:8px;text-align:left;border-bottom:2px solid #e5e7eb;background:#f9fafb">Item</th>
+        <th style="padding:8px;text-align:center;border-bottom:2px solid #e5e7eb;background:#f9fafb">SKU</th>
+        <th style="padding:8px;text-align:right;border-bottom:2px solid #e5e7eb;background:#f9fafb">Current Cost</th>
+        <th style="padding:8px;text-align:right;border-bottom:2px solid #e5e7eb;background:#f9fafb">New Cost</th>
+        <th style="padding:8px;text-align:right;border-bottom:2px solid #e5e7eb;background:#f9fafb">Change</th>
+    """
+    headers = qty_headers if adj.get("adjustment_type") == "quantity" else val_headers
+
+    status_color = {"draft": "#eab308", "adjusted": "#16a34a", "void": "#dc2626"}.get(adj.get("status"), "#6b7280")
+    type_label = adj.get("adjustment_type", "quantity").title()
+
+    return f"""<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+  body {{ font-family: 'Segoe UI', system-ui, sans-serif; margin:0; padding:24px; color:#1f2937; font-size:13px; }}
+  .header {{ display:flex; justify-content:space-between; margin-bottom:24px; }}
+  .title {{ font-size:22px; font-weight:700; color:#111827; }}
+  .badge {{ display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; color:white; background:{status_color}; }}
+  .meta-grid {{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }}
+  .meta-item {{ }}
+  .meta-label {{ font-size:11px; color:#6b7280; text-transform:uppercase; }}
+  .meta-value {{ font-weight:500; margin-top:2px; }}
+  table {{ width:100%; border-collapse:collapse; margin-top:16px; }}
+  .footer {{ margin-top:24px; padding-top:16px; border-top:1px solid #e5e7eb; font-size:11px; color:#9ca3af; }}
+</style></head><body>
+<div class="header">
+  <div>
+    <div class="title">Inventory Adjustment</div>
+    <div style="color:#6b7280;margin-top:4px">{adj.get('reference_number','')}</div>
+  </div>
+  <div style="text-align:right">
+    <span class="badge">{adj.get('status','').upper()}</span>
+    <div style="margin-top:8px;font-size:12px;color:#6b7280">{type_label} Adjustment</div>
+  </div>
+</div>
+<div class="meta-grid">
+  <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">{adj.get('date','')}</div></div>
+  <div class="meta-item"><div class="meta-label">Account</div><div class="meta-value">{adj.get('account','')}</div></div>
+  <div class="meta-item"><div class="meta-label">Reason</div><div class="meta-value">{adj.get('reason','')}</div></div>
+  <div class="meta-item"><div class="meta-label">Warehouse</div><div class="meta-value">{adj.get('warehouse_name','N/A')}</div></div>
+</div>
+{f'<div style="margin-bottom:16px;padding:12px;background:#f9fafb;border-radius:8px"><div class="meta-label">Description</div><div style="margin-top:4px">{adj.get("description","")}</div></div>' if adj.get("description") else ''}
+<table>
+  <thead><tr>{headers}</tr></thead>
+  <tbody>{lines_html}</tbody>
+</table>
+<div style="margin-top:12px;text-align:right;font-size:12px;color:#6b7280">
+  Total Increase: <strong style="color:#16a34a">{adj.get('total_increase',0)}</strong> |
+  Total Decrease: <strong style="color:#dc2626">{adj.get('total_decrease',0)}</strong>
+</div>
+<div class="footer">
+  Created by {adj.get('created_by','')} on {adj.get('created_at','')[:10]}
+  {f"| Converted: {adj.get('converted_at','')[:10]}" if adj.get('converted_at') else ''}
+  {f"| Voided: {adj.get('voided_at','')[:10]}" if adj.get('voided_at') else ''}
+  {f"| Ticket: {adj.get('ticket_id','')}" if adj.get('ticket_id') else ''}
+</div>
+</body></html>"""
+
+
+@router.get("/{adjustment_id}/pdf")
+async def generate_pdf(adjustment_id: str):
+    """Generate and download PDF of adjustment"""
+    adj = await adjustments_col.find_one({"adjustment_id": adjustment_id}, {"_id": 0})
+    if not adj:
+        raise HTTPException(status_code=404, detail="Adjustment not found")
+
+    html_content = generate_adjustment_html(adj)
+
+    try:
+        from weasyprint import HTML
+        pdf_bytes = HTML(string=html_content).write_pdf()
+        return StreamingResponse(
+            io.BytesIO(pdf_bytes),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=Adjustment_{adj.get('reference_number', adjustment_id)}.pdf"}
+        )
+    except ImportError:
+        return {"code": 1, "message": "WeasyPrint not available", "html": html_content}
+    except Exception as e:
+        logger.error(f"PDF generation error: {str(e)}")
+        return {"code": 1, "message": f"PDF error: {str(e)}", "html": html_content}
+
+
+# ==================== ABC DRILL-DOWN ====================
+
+@router.get("/reports/abc-classification/{item_id}")
+async def abc_drill_down(item_id: str, period_days: int = 90):
+    """Drill down into adjustments for a specific item in ABC report"""
+    since = (datetime.now(timezone.utc) - timedelta(days=period_days)).strftime("%Y-%m-%d")
+
+    adjustments = await adjustments_col.find(
+        {"status": "adjusted", "date": {"$gte": since}, "line_items.item_id": item_id},
+        {"_id": 0}
+    ).sort("date", -1).to_list(200)
+
+    details = []
+    for adj in adjustments:
+        for line in adj.get("line_items", []):
+            if line.get("item_id") == item_id:
+                details.append({
+                    "adjustment_id": adj["adjustment_id"],
+                    "reference_number": adj["reference_number"],
+                    "date": adj["date"],
+                    "reason": adj.get("reason", ""),
+                    "type": adj["adjustment_type"],
+                    "quantity_adjusted": line.get("quantity_adjusted") or 0,
+                    "value_adjusted": line.get("value_adjusted") or 0,
+                    "status": adj["status"],
+                    "warehouse": adj.get("warehouse_name", "")
+                })
+
+    item = await items_col.find_one({"item_id": item_id}, {"_id": 0, "name": 1, "sku": 1, "stock_on_hand": 1, "purchase_rate": 1})
+
+    return {
+        "code": 0,
+        "item": item,
+        "adjustments": details,
+        "total_adjustments": len(details),
+        "total_qty_change": sum(d["quantity_adjusted"] for d in details),
+        "total_value_change": sum(d["value_adjusted"] for d in details)
+    }
+
