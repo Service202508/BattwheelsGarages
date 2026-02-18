@@ -49,34 +49,71 @@ class WarehouseCreate(BaseModel):
     is_active: bool = True
 
 class ItemCreate(BaseModel):
+    """Enhanced item creation model matching Zoho Books"""
     name: str
     sku: Optional[str] = None
     description: str = ""
-    item_type: str = "non_inventory"  # inventory, non_inventory, service
+    item_type: str = "inventory"  # inventory, non_inventory, service
     group_id: Optional[str] = None
     group_name: Optional[str] = None
+    
+    # Sales Information
     sales_rate: float = 0
-    purchase_rate: float = 0
-    unit: str = "pcs"
+    sales_description: str = ""
     sales_account_id: Optional[str] = None
+    
+    # Purchase Information
+    purchase_rate: float = 0
+    purchase_description: str = ""
     purchase_account_id: Optional[str] = None
+    
+    # Inventory
     inventory_account_id: Optional[str] = None
+    initial_stock: float = 0
+    opening_stock_rate: float = 0  # Cost per unit for opening stock
+    reorder_level: float = 0
+    inventory_valuation_method: str = "fifo"  # fifo, weighted_average
+    
+    # Units
+    unit: str = "pcs"
+    
+    # Tax
+    tax_preference: str = "taxable"  # taxable, non_taxable, exempt
     tax_id: Optional[str] = None
     tax_percentage: float = 18
+    intra_state_tax_rate: float = 18  # CGST + SGST
+    inter_state_tax_rate: float = 18  # IGST
+    
+    # HSN/SAC Codes
     hsn_code: str = ""
     sac_code: str = ""
-    initial_stock: float = 0
-    reorder_level: float = 0
+    
+    # Vendor
     preferred_vendor_id: Optional[str] = None
     preferred_vendor_name: str = ""
+    
+    # Image (base64 encoded)
+    image_data: Optional[str] = None
+    image_name: Optional[str] = None
+    
+    # Custom Fields
     custom_fields: Dict = {}
+    
     is_active: bool = True
+    track_inventory: bool = True
 
     @validator('item_type')
     def validate_item_type(cls, v):
         valid_types = ['inventory', 'non_inventory', 'service', 'sales', 'purchases', 'sales_and_purchases']
         if v not in valid_types:
             raise ValueError(f"Item type must be one of: {valid_types}")
+        return v
+    
+    @validator('tax_preference')
+    def validate_tax_preference(cls, v):
+        valid = ['taxable', 'non_taxable', 'exempt']
+        if v not in valid:
+            raise ValueError(f"Tax preference must be one of: {valid}")
         return v
 
 class ItemUpdate(BaseModel):
