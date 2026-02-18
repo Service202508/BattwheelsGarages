@@ -558,3 +558,123 @@ async def get_failure_card(failure_id: str, request: Request):
         **card,
         "decision_tree": tree
     }
+
+
+
+# ==================== STEP IMAGE ENDPOINTS ====================
+
+@router.post("/failure-cards/{failure_id}/step-image")
+async def upload_step_image(
+    failure_id: str,
+    request: Request,
+    step_order: int = Form(...),
+    file: UploadFile = File(...)
+):
+    """Upload an image for a specific decision tree step"""
+    await get_current_user(request)
+    
+    # Validate failure card exists
+    card = await _db.failure_cards.find_one({"failure_id": failure_id})
+    if not card:
+        raise HTTPException(status_code=404, detail="Failure card not found")
+    
+    # Validate file type
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(status_code=400, detail=f"Invalid image type. Allowed: {ALLOWED_IMAGE_TYPES}")
+    
+    # Read and validate size
+    content = await file.read()
+    if len(content) > MAX_IMAGE_SIZE_MB * 1024 * 1024:
+        raise HTTPException(status_code=400, detail=f"Image exceeds {MAX_IMAGE_SIZE_MB}MB limit")
+    
+    # Generate image ID
+    image_id = f"EFI_IMG_{uuid.uuid4().hex[:12]}"
+    
+    # Store image
+    image_doc = {
+        "image_id": image_id,
+        "failure_id": failure_id,
+        "step_order": step_order,
+        "filename": file.filename,
+        "content_type": file.content_type,
+        "file_size": len(content),
+        "image_data": base64.b64encode(content).decode('utf-8'),
+        "uploaded_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await _db.efi_step_images.insert_one(image_doc)
+    
+    # Update decision tree step with image reference
+    await _db.efi_decision_trees.update_one(
+        {"failure_card_id": failure_id, "steps.order": step_order},
+        {"$set": {"steps.$.reference_image": f"/api/efi-guided/step-image/{image_id}"}}
+    )
+    
+    # Also update failure card if decision tree is embedded
+    await _db.failure_cards.update_one(
+        {"failure_id": failure_id, "decision_tree.steps.order": step_order},
+        {"$set": {"decision_tree.steps.$.reference_image": f"/api/efi-guided/step-image/{image_id}"}}
+    )
+    
+    return {
+        "code": 0,
+        "message": "Image uploaded successfully",
+        "image_id": image_id,
+        "image_url": f"/api/efi-guided/step-image/{image_id}"
+    }
+
+
+@router.get("/step-image/{image_id}")
+async def get_step_image(image_id: str):
+    """Get a step image by ID (public endpoint for display)"""
+    image = await _db.efi_step_images.find_one({"image_id": image_id})
+    
+    if not image:
+        raise HTTPException(status_code=404, detail="Image not found")
+    
+    image_data = base64.b64decode(image["image_data"])
+    
+    return StreamingResponse(
+        io.BytesIO(image_data),
+        media_type=image["content_type"],
+        headers={"Content-Disposition": f"inline; filename={image['filename']}"}
+    )
+
+
+@router.get("/failure-cards/{failure_id}/images")
+async def list_step_images(failure_id: str, request: Request):
+    """List all images for a failure card's decision tree"""
+    await get_current_user(request)
+    
+    images = await _db.efi_step_images.find(
+        {"failure_id": failure_id},
+        {"_id": 0, "image_data": 0}
+    ).to_list(50)
+    
+    return {"code": 0, "images": images}
+
+
+@router.delete("/step-image/{image_id}")
+async def delete_step_image(image_id: str, request: Request):
+    """Delete a step image"""
+    await get_current_user(request)
+    
+    image = await _db.efi_step_images.find_one({"image_id": image_id})
+    if not image:
+        raise HTTPException(status_code=404, detail="Image not found")
+    
+    # Remove image reference from decision tree
+    await _db.efi_decision_trees.update_many(
+        {"steps.reference_image": f"/api/efi-guided/step-image/{image_id}"},
+        {"$unset": {"steps.$.reference_image": ""}}
+    )
+    
+    await _db.failure_cards.update_many(
+        {"decision_tree.steps.reference_image": f"/api/efi-guided/step-image/{image_id}"},
+        {"$unset": {"decision_tree.steps.$.reference_image": ""}}
+    )
+    
+    # Delete image
+    await _db.efi_step_images.delete_one({"image_id": image_id})
+    
+    return {"code": 0, "message": "Image deleted"}
