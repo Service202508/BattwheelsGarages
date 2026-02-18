@@ -77,6 +77,7 @@ import CustomerServiceHistory from "@/pages/customer/CustomerServiceHistory";
 import CustomerInvoices from "@/pages/customer/CustomerInvoices";
 import CustomerPayments from "@/pages/customer/CustomerPayments";
 import CustomerAMC from "@/pages/customer/CustomerAMC";
+import CommandPalette from "@/components/CommandPalette";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
