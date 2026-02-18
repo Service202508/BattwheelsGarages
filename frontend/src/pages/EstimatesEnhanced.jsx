@@ -248,6 +248,158 @@ export default function EstimatesEnhanced() {
     } catch (e) { toast.error("Error sending estimate"); }
   };
 
+  // Share Link Functions
+  const handleCreateShareLink = async () => {
+    if (!selectedEstimate) return;
+    setShareLoading(true);
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/${selectedEstimate.estimate_id}/share`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(shareConfig)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        const fullUrl = `${window.location.origin}${data.share_link.public_url}`;
+        setShareLink({ ...data.share_link, full_url: fullUrl });
+        toast.success("Share link created!");
+      } else {
+        toast.error(data.detail || "Failed to create share link");
+      }
+    } catch (e) { toast.error("Error creating share link"); }
+    finally { setShareLoading(false); }
+  };
+
+  const copyShareLink = () => {
+    if (shareLink?.full_url) {
+      navigator.clipboard.writeText(shareLink.full_url);
+      toast.success("Link copied to clipboard!");
+    }
+  };
+
+  // Attachment Functions
+  const fetchAttachments = async (estimateId) => {
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/${estimateId}/attachments`, { headers });
+      const data = await res.json();
+      setAttachments(data.attachments || []);
+    } catch (e) { console.error("Failed to fetch attachments:", e); }
+  };
+
+  const handleUploadAttachment = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !selectedEstimate) return;
+    
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File size exceeds 10MB limit");
+      return;
+    }
+    
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("uploaded_by", localStorage.getItem("user_name") || "user");
+    
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/${selectedEstimate.estimate_id}/attachments`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("File uploaded successfully");
+        fetchAttachments(selectedEstimate.estimate_id);
+      } else {
+        toast.error(data.detail || "Failed to upload file");
+      }
+    } catch (e) { toast.error("Error uploading file"); }
+    finally { setUploading(false); }
+  };
+
+  const handleDeleteAttachment = async (attachmentId) => {
+    if (!confirm("Delete this attachment?")) return;
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/${selectedEstimate.estimate_id}/attachments/${attachmentId}`, {
+        method: "DELETE",
+        headers
+      });
+      if (res.ok) {
+        toast.success("Attachment deleted");
+        fetchAttachments(selectedEstimate.estimate_id);
+      } else {
+        toast.error("Failed to delete attachment");
+      }
+    } catch (e) { toast.error("Error deleting attachment"); }
+  };
+
+  const downloadAttachment = (attachmentId, filename) => {
+    const url = `${API}/estimates-enhanced/${selectedEstimate.estimate_id}/attachments/${attachmentId}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+  };
+
+  // PDF Functions
+  const handleDownloadPDF = async (estimateId) => {
+    try {
+      toast.info("Generating PDF...");
+      const res = await fetch(`${API}/estimates-enhanced/${estimateId}/pdf`, { headers });
+      
+      if (res.headers.get('content-type')?.includes('application/pdf')) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Estimate_${estimateId}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        toast.success("PDF downloaded!");
+      } else {
+        // Server returned HTML for client-side rendering
+        const data = await res.json();
+        // Open HTML in new window for printing/PDF
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(data.html);
+        printWindow.document.close();
+        printWindow.print();
+        toast.info("PDF preview opened in new window");
+      }
+    } catch (e) { 
+      console.error("PDF error:", e);
+      toast.error("Error generating PDF"); 
+    }
+  };
+
+  // Preferences Functions
+  const fetchPreferences = async () => {
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/preferences`, { headers });
+      const data = await res.json();
+      if (data.code === 0) {
+        setPreferences(data.preferences);
+      }
+    } catch (e) { console.error("Failed to fetch preferences:", e); }
+  };
+
+  const handleSavePreferences = async () => {
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/preferences`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(preferences)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Preferences saved!");
+        setShowPreferencesDialog(false);
+      } else {
+        toast.error(data.detail || "Failed to save preferences");
+      }
+    } catch (e) { toast.error("Error saving preferences"); }
+  };
+
   const handleMarkAccepted = async (estimateId) => {
     try {
       const res = await fetch(`${API}/estimates-enhanced/${estimateId}/mark-accepted`, { method: "POST", headers });
