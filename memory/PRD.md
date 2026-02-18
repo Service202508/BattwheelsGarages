@@ -7,43 +7,56 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ## Implementation Status
 
-### ✅ Zoho-Style Sales Modules - Phase 1 (COMPLETE - Feb 18, 2026)
+### ✅ Zoho-Style Sales Modules - All Phases Complete (Feb 18, 2026)
 
-**Payments Received Module (NEW):**
+#### Phase 1: Payments Received Module (COMPLETE)
 - Full Zoho-style payment recording with multi-invoice allocation
 - Overpayments automatically create customer credits
 - Retainer/advance payments support
 - Refund functionality for credits
 - Import/export payments (CSV)
-- Payment summary and reports (by customer, by mode)
 - Route: `/payments-received`
 
-**API Endpoints:**
-- `GET /api/payments-received/` - List payments with filters
-- `POST /api/payments-received/` - Record new payment
-- `GET /api/payments-received/{id}` - Payment details
-- `DELETE /api/payments-received/{id}` - Delete payment
-- `GET /api/payments-received/customer/{id}/open-invoices` - Customer's open invoices
-- `POST /api/payments-received/{id}/refund` - Process refund
-- `POST /api/payments-received/apply-credit` - Apply credit to invoice
-- `GET /api/payments-received/credits` - List customer credits
-- `GET /api/payments-received/summary` - Summary statistics
-- `GET /api/payments-received/export` - Export to CSV
+#### Phase 2: Workflow & Automation (COMPLETE)
+**Online Payments (Stripe Integration):**
+- `POST /api/invoice-payments/create-payment-link` - Create Stripe checkout
+- `GET /api/invoice-payments/status/{session_id}` - Check payment status
+- "Pay Online" button in invoice detail view
+- Payment link copying and sharing
+- Auto-update invoice status on successful payment
 
-**Invoice Integration:**
-- Invoice detail now shows payments from new module (`payments_received`)
-- Shows available customer credits with "Apply" button
-- Credits can be applied directly to invoice balance
-- Credit application creates audit trail
+**Payment Reminders:**
+- `POST /api/invoice-automation/send-reminder/{id}` - Send reminder
+- `POST /api/invoice-automation/send-bulk-reminders` - Bulk reminders
+- Reminder settings (before/after due date)
+- Reminder history tracking
+- Include payment link option
 
-**Customer Statement Enhancement:**
-- Statement now includes payments from `payments_received` module
-- Running balance calculation
-- Available credits shown in summary
+#### Phase 3: Advanced Features (COMPLETE)
+**Late Fees:**
+- Configurable fee type (percentage/fixed)
+- Grace period support
+- Maximum fee cap
+- Auto-apply option
+- `POST /api/invoice-automation/apply-late-fee/{id}`
 
-**Test Data:**
-- Payments: PMT-00001 (₹3,000), PMT-00002 (₹4,000 with ₹510 remaining credit)
-- Customer credits tracked automatically
+**Aging Report:**
+- `GET /api/invoice-automation/aging-report`
+- 5 aging buckets (Current, 1-30, 31-60, 61-90, Over 90 days)
+- Customer-wise breakdown
+- Total receivable summary
+
+**Auto Credit Application:**
+- `POST /api/invoice-automation/auto-apply-credits/{id}`
+- Automatically apply available credits to invoices
+
+**Invoice Automation Page:**
+- Route: `/invoice-settings`
+- Aging report dashboard
+- Overdue invoices with Remind/Late Fee buttons
+- Due soon invoices list
+- Reminder settings configuration
+- Late fee settings configuration
 
 ---
 
