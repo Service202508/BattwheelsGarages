@@ -1009,13 +1009,19 @@ async def get_payment_refunds(payment_id: str):
 
 # ==================== APPLY CREDIT TO INVOICE ====================
 
-@router.post("/apply-credit")
-async def apply_credit_to_invoice(
-    credit_id: str,
-    invoice_id: str,
+class ApplyCreditRequest(BaseModel):
+    """Request to apply credit to invoice"""
+    credit_id: str
+    invoice_id: str
     amount: float
-):
+
+@router.post("/apply-credit")
+async def apply_credit_to_invoice(request: ApplyCreditRequest):
     """Apply customer credit to an invoice"""
+    credit_id = request.credit_id
+    invoice_id = request.invoice_id
+    amount = request.amount
+    
     credit = await customer_credits_collection.find_one({"credit_id": credit_id})
     if not credit:
         raise HTTPException(status_code=404, detail="Credit not found")
