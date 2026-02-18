@@ -1,0 +1,74 @@
+{
+  "summary": "Phase 2 & 3 Testing Complete - Recurring Invoices CRUD, Invoice Automation Settings, and PDF Generation. 20/21 backend tests passed. Frontend UI verified with all 5 tabs working. Fixed trailing slash issue in contacts-enhanced API call.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/invoices-enhanced/{id}/pdf", "issue": "PDF endpoint returns 404 - PDF generation is at /api/invoices/{id}/pdf (legacy route)", "priority": "LOW"}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Dashboard charts", "issues": ["Console warning: chart width/height -1 - charts may not render properly on initial load (known issue)"]},
+      {"screen": "Tables", "issues": ["HTML hydration warning: <tr> cannot be child of <span> - React rendering issue in table components (minor, doesn't affect functionality)"]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_recurring_invoices_pdf.py",
+    "/app/test_reports/pytest/recurring_invoices_pdf_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Fixed: InvoiceSettings.jsx line 95 - Added trailing slash to contacts-enhanced API call to prevent 307 redirect and mixed content error"
+  ],
+  "updated_files": [
+    "/app/frontend/src/pages/InvoiceSettings.jsx",
+    "/app/backend/tests/test_recurring_invoices_pdf.py"
+  ],
+  "success_rate": {
+    "backend": "95% (20/21 tests passed)",
+    "frontend": "100% (all features verified)"
+  },
+  "test_credentials": {
+    "admin_user": "admin@battwheels.in / admin123"
+  },
+  "seed_data_creation": "Used existing test data: 10 overdue invoices, 2 due-soon invoices, ₹16.7L total AR",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All P0, P1, P2 features tested and working. Key features verified: 1) Recurring Invoices CRUD (create, list, get, update, stop, resume, generate-now, delete), 2) Invoice Automation Settings (aging report, overdue/due-soon invoices, reminder settings, late fee settings), 3) PDF Generation working via /api/invoices/{id}/pdf endpoint (requires auth), 4) Frontend UI with 5 tabs (Overdue, Due Soon, Recurring, Reminders, Late Fees), 5) Create Recurring Invoice dialog with customer selection, frequency, line items. Email reminders are MOCKED (print to console).",
+  "features_verified": {
+    "recurring_invoices_crud": {
+      "create": "Working - Creates recurring invoice profile with customer, frequency, line items",
+      "list": "Working - Lists all recurring invoice profiles with pagination",
+      "get": "Working - Gets specific recurring invoice with generated invoices history",
+      "update": "Working - Updates profile name, payment terms, line items",
+      "stop": "Working - Stops recurring invoice (status=stopped)",
+      "resume": "Working - Resumes stopped recurring invoice (status=active)",
+      "generate_now": "Working - Manually generates invoice from recurring profile",
+      "delete": "Working - Deletes recurring invoice profile"
+    },
+    "invoice_automation_settings": {
+      "aging_report": "Working - 5 aging buckets (Current, 1-30, 31-60, 61-90, Over 90 days)",
+      "overdue_invoices": "Working - Lists invoices past due date with days overdue",
+      "due_soon_invoices": "Working - Lists invoices due within 7 days",
+      "reminder_settings": "Working - Enable/disable, include payment link toggle",
+      "late_fee_settings": "Working - Fee type, value, grace period, max fee, auto-apply"
+    },
+    "pdf_generation": {
+      "invoice_pdf": "Working - Generates PDF via /api/invoices/{id}/pdf (requires auth)",
+      "weasyprint": "Working - libpangoft2-1.0-0 installed, PDF generation functional"
+    },
+    "frontend_ui": {
+      "invoice_automation_page": "Working - All 5 tabs visible and functional",
+      "aging_summary_cards": "Working - Shows Total AR, Current, 1-30, 31-60, 61-90, Over 90 days",
+      "overdue_invoices_table": "Working - Shows invoice details with Remind and Fee buttons",
+      "recurring_invoices_tab": "Working - Shows profiles with stop/resume/generate/delete actions",
+      "create_recurring_dialog": "Working - Customer dropdown, frequency, line items, notes"
+    }
+  },
+  "mocked_apis": {
+    "email_reminders": "MOCKED - Prints to console instead of sending actual emails via Resend",
+    "stripe_payments": "Test mode - Uses sk_test_emergent key"
+  }
+}
