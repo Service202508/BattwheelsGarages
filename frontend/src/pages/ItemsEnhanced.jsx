@@ -1927,6 +1927,312 @@ export default function ItemsEnhanced() {
         </DialogContent>
       </Dialog>
 
+      {/* Preferences Dialog - Phase 3 */}
+      <Dialog open={showPreferencesDialog} onOpenChange={setShowPreferencesDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" /> Item Preferences
+            </DialogTitle>
+            <DialogDescription>Configure default settings for the Items module</DialogDescription>
+          </DialogHeader>
+          {preferences && (
+            <div className="space-y-6 py-4">
+              {/* SKU Settings */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-sm text-gray-700 border-b pb-2">SKU Settings</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between">
+                    <Label>Enable SKU</Label>
+                    <Switch 
+                      checked={preferences.enable_sku} 
+                      onCheckedChange={(v) => setPreferences({ ...preferences, enable_sku: v })} 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label>Auto-generate SKU</Label>
+                    <Switch 
+                      checked={preferences.auto_generate_sku} 
+                      onCheckedChange={(v) => setPreferences({ ...preferences, auto_generate_sku: v })} 
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>SKU Prefix</Label>
+                    <Input 
+                      value={preferences.sku_prefix || "SKU-"} 
+                      onChange={(e) => setPreferences({ ...preferences, sku_prefix: e.target.value })} 
+                    />
+                  </div>
+                  <div>
+                    <Label>Sequence Start</Label>
+                    <Input 
+                      type="number" 
+                      value={preferences.sku_sequence_start || 1} 
+                      onChange={(e) => setPreferences({ ...preferences, sku_sequence_start: parseInt(e.target.value) || 1 })} 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* HSN/SAC Settings */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-sm text-gray-700 border-b pb-2">HSN/SAC Settings</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between">
+                    <Label>Require HSN/SAC</Label>
+                    <Switch 
+                      checked={preferences.require_hsn_sac} 
+                      onCheckedChange={(v) => setPreferences({ ...preferences, require_hsn_sac: v })} 
+                    />
+                  </div>
+                  <div>
+                    <Label>HSN Digits Required</Label>
+                    <Select 
+                      value={String(preferences.hsn_digits_required || 4)}
+                      onValueChange={(v) => setPreferences({ ...preferences, hsn_digits_required: parseInt(v) })}
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="4">4 digits</SelectItem>
+                        <SelectItem value="6">6 digits</SelectItem>
+                        <SelectItem value="8">8 digits</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Alerts */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-sm text-gray-700 border-b pb-2">Alerts & Notifications</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between">
+                    <Label>Low Stock Alerts</Label>
+                    <Switch 
+                      checked={preferences.enable_low_stock_alerts} 
+                      onCheckedChange={(v) => setPreferences({ ...preferences, enable_low_stock_alerts: v })} 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label>Reorder Point Alerts</Label>
+                    <Switch 
+                      checked={preferences.enable_reorder_alerts} 
+                      onCheckedChange={(v) => setPreferences({ ...preferences, enable_reorder_alerts: v })} 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Defaults */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-sm text-gray-700 border-b pb-2">Default Values</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label>Default Unit</Label>
+                    <Select 
+                      value={preferences.default_unit || "pcs"}
+                      onValueChange={(v) => setPreferences({ ...preferences, default_unit: v })}
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {UNITS.map(u => <SelectItem key={u.value} value={u.value}>{u.label}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Default Item Type</Label>
+                    <Select 
+                      value={preferences.default_item_type || "inventory"}
+                      onValueChange={(v) => setPreferences({ ...preferences, default_item_type: v })}
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="inventory">Inventory</SelectItem>
+                        <SelectItem value="service">Service</SelectItem>
+                        <SelectItem value="non_inventory">Non-Inventory</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Default Tax Rate %</Label>
+                    <Input 
+                      type="number" 
+                      value={preferences.default_tax_rate || 18} 
+                      onChange={(e) => setPreferences({ ...preferences, default_tax_rate: parseFloat(e.target.value) || 18 })} 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Features */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-sm text-gray-700 border-b pb-2">Features</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="flex items-center justify-between">
+                    <Label>Enable Images</Label>
+                    <Switch 
+                      checked={preferences.enable_images} 
+                      onCheckedChange={(v) => setPreferences({ ...preferences, enable_images: v })} 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label>Enable Custom Fields</Label>
+                    <Switch 
+                      checked={preferences.enable_custom_fields} 
+                      onCheckedChange={(v) => setPreferences({ ...preferences, enable_custom_fields: v })} 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label>Enable Barcode</Label>
+                    <Switch 
+                      checked={preferences.enable_barcode} 
+                      onCheckedChange={(v) => setPreferences({ ...preferences, enable_barcode: v })} 
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPreferencesDialog(false)}>Cancel</Button>
+            <Button onClick={handleSavePreferences} className="bg-[#22EDA9] text-black gap-2">
+              <Save className="h-4 w-4" /> Save Preferences
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Field Configuration Dialog - Phase 3 */}
+      <Dialog open={showFieldConfigDialog} onOpenChange={setShowFieldConfigDialog}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Columns className="h-5 w-5" /> Field Configuration
+            </DialogTitle>
+            <DialogDescription>Configure field visibility in list, form, and PDF exports</DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="border rounded-lg overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-medium">Field</th>
+                    <th className="px-4 py-3 text-center font-medium">Active</th>
+                    <th className="px-4 py-3 text-center font-medium">
+                      <span className="flex items-center justify-center gap-1"><FileSpreadsheet className="h-4 w-4" /> List</span>
+                    </th>
+                    <th className="px-4 py-3 text-center font-medium">
+                      <span className="flex items-center justify-center gap-1"><Edit className="h-4 w-4" /> Form</span>
+                    </th>
+                    <th className="px-4 py-3 text-center font-medium">
+                      <span className="flex items-center justify-center gap-1"><FileText className="h-4 w-4" /> PDF</span>
+                    </th>
+                    <th className="px-4 py-3 text-center font-medium">Required</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {fieldConfig.map((field, idx) => (
+                    <tr key={field.field_name} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                      <td className="px-4 py-2 font-medium">{field.display_name || field.field_name}</td>
+                      <td className="px-4 py-2 text-center">
+                        <Switch 
+                          checked={field.is_active !== false} 
+                          onCheckedChange={() => toggleFieldConfig(field.field_name, 'is_active')}
+                          disabled={field.is_mandatory}
+                        />
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        <Checkbox 
+                          checked={field.show_in_list} 
+                          onCheckedChange={() => toggleFieldConfig(field.field_name, 'show_in_list')}
+                        />
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        <Checkbox 
+                          checked={field.show_in_form !== false} 
+                          onCheckedChange={() => toggleFieldConfig(field.field_name, 'show_in_form')}
+                          disabled={field.is_mandatory}
+                        />
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        <Checkbox 
+                          checked={field.show_in_pdf} 
+                          onCheckedChange={() => toggleFieldConfig(field.field_name, 'show_in_pdf')}
+                        />
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        {field.is_mandatory ? (
+                          <Lock className="h-4 w-4 mx-auto text-gray-400" />
+                        ) : (
+                          <Checkbox 
+                            checked={field.is_mandatory} 
+                            onCheckedChange={() => toggleFieldConfig(field.field_name, 'is_mandatory')}
+                          />
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowFieldConfigDialog(false)}>Cancel</Button>
+            <Button onClick={handleSaveFieldConfig} className="bg-[#22EDA9] text-black gap-2">
+              <Save className="h-4 w-4" /> Save Configuration
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Barcode Scanner Dialog - Phase 3 */}
+      <Dialog open={showScannerDialog} onOpenChange={(open) => {
+        setShowScannerDialog(open);
+        if (!open) stopScanner();
+      }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Camera className="h-5 w-5" /> Barcode Scanner
+            </DialogTitle>
+            <DialogDescription>Point your camera at a barcode to scan</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+              <video 
+                ref={videoRef} 
+                className="w-full h-full object-cover"
+                style={{ display: isScannerActive ? 'block' : 'none' }}
+              />
+              {!isScannerActive && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Button onClick={startScanner} className="gap-2">
+                    <Camera className="h-4 w-4" /> Start Camera
+                  </Button>
+                </div>
+              )}
+            </div>
+            {isScannerActive && (
+              <div className="text-center">
+                <p className="text-sm text-gray-500 mb-2">Scanning... Point at barcode</p>
+                <Button variant="outline" onClick={stopScanner}>Stop Scanner</Button>
+              </div>
+            )}
+            {barcodeResult && (
+              <div className="border rounded-lg p-3 bg-green-50">
+                <p className="font-medium">{barcodeResult.name}</p>
+                <p className="text-sm text-gray-600">₹{(barcodeResult.sales_rate || 0).toLocaleString('en-IN')} • Stock: {barcodeResult.stock_on_hand || 0}</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { stopScanner(); setShowScannerDialog(false); }}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Low Stock Alert Section */}
       {lowStockItems.length > 0 && (
         <Card className="border-red-200 bg-red-50">
