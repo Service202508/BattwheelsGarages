@@ -2469,6 +2469,42 @@ async def generate_pdf(estimate_id: str):
             "estimate": estimate
         })
 
+@router.get("/{estimate_id}/pdf/{template_id}")
+async def generate_pdf_with_template(estimate_id: str, template_id: str = "standard"):
+    """Generate PDF with specific template"""
+    if template_id not in PDF_TEMPLATES:
+        raise HTTPException(status_code=400, detail=f"Invalid template. Available: {list(PDF_TEMPLATES.keys())}")
+    
+    estimate = await estimates_collection.find_one({"estimate_id": estimate_id}, {"_id": 0})
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found")
+    
+    line_items = await estimate_items_collection.find(
+        {"estimate_id": estimate_id},
+        {"_id": 0}
+    ).sort("line_number", 1).to_list(100)
+    
+    html_content = generate_pdf_html(estimate, line_items, template_id)
+    
+    try:
+        from weasyprint import HTML
+        pdf_bytes = HTML(string=html_content).write_pdf()
+        
+        return StreamingResponse(
+            io.BytesIO(pdf_bytes),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=Estimate_{estimate.get('estimate_number', estimate_id)}_{template_id}.pdf"
+            }
+        )
+    except ImportError:
+        return JSONResponse({
+            "code": 1,
+            "message": "PDF generation requires WeasyPrint. Returning HTML.",
+            "html": html_content,
+            "template": template_id
+        })
+
 @router.get("/{estimate_id}/preview-html")
 async def get_preview_html(estimate_id: str):
     """Get HTML preview of the estimate (for client-side PDF generation)"""
