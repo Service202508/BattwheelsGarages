@@ -1605,21 +1605,96 @@ async def get_contact_statement(contact_id: str, start_date: str = "", end_date:
         else:
             query["date"] = {"$lte": end_date}
     
-    # Get invoices
+    # Get invoices (legacy and enhanced)
     invoices = await db["invoices"].find(query, {"_id": 0}).sort("date", 1).to_list(500)
+    invoices_enhanced = await db["invoices_enhanced"].find(
+        {"customer_id": contact_id}, {"_id": 0}
+    ).sort("invoice_date", 1).to_list(500)
     
-    # Get payments
+    # Combine invoices
+    all_invoices = []
+    for inv in invoices:
+        all_invoices.append({
+            "type": "invoice",
+            "date": inv.get("date"),
+            "number": inv.get("invoice_number"),
+            "description": f"Invoice #{inv.get('invoice_number')}",
+            "debit": inv.get("grand_total", 0),
+            "credit": 0,
+            "status": inv.get("status")
+        })
+    for inv in invoices_enhanced:
+        all_invoices.append({
+            "type": "invoice",
+            "date": inv.get("invoice_date"),
+            "number": inv.get("invoice_number"),
+            "description": f"Invoice #{inv.get('invoice_number')}",
+            "debit": inv.get("grand_total", 0),
+            "credit": 0,
+            "status": inv.get("status")
+        })
+    
+    # Get payments (legacy)
     payments = await db["payments"].find(
         {"$or": [{"customer_id": contact_id}, {"contact_id": contact_id}]},
         {"_id": 0}
     ).sort("date", 1).to_list(500)
     
+    # Get payments from payments_received module
+    payments_received = await db["payments_received"].find(
+        {"customer_id": contact_id, "status": {"$ne": "refunded"}},
+        {"_id": 0}
+    ).sort("payment_date", 1).to_list(500)
+    
+    # Combine payments
+    all_payments = []
+    for p in payments:
+        all_payments.append({
+            "type": "payment",
+            "date": p.get("date"),
+            "number": p.get("payment_number"),
+            "description": f"Payment #{p.get('payment_number')} ({p.get('payment_mode', '')})",
+            "debit": 0,
+            "credit": p.get("amount", 0),
+            "payment_mode": p.get("payment_mode")
+        })
+    for p in payments_received:
+        all_payments.append({
+            "type": "payment",
+            "date": p.get("payment_date"),
+            "number": p.get("payment_number"),
+            "description": f"Payment #{p.get('payment_number')} ({p.get('payment_mode', '')})",
+            "debit": 0,
+            "credit": p.get("amount", 0),
+            "payment_mode": p.get("payment_mode"),
+            "reference_number": p.get("reference_number")
+        })
+    
     # Get credits
     credits = await contact_credits_collection.find({"contact_id": contact_id}, {"_id": 0}).to_list(100)
+    
+    # Get customer credits from payments_received module
+    customer_credits = await db["customer_credits"].find(
+        {"customer_id": contact_id},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Build statement lines (chronological)
+    statement_lines = sorted(all_invoices + all_payments, key=lambda x: x.get("date", ""))
+    
+    # Calculate running balance
+    running_balance = 0
+    for line in statement_lines:
+        running_balance += line.get("debit", 0) - line.get("credit", 0)
+        line["balance"] = running_balance
     
     # Calculate balance
     balance = await calculate_contact_balance(contact_id)
     aging = await get_contact_aging(contact_id, "receivable")
+    
+    # Get available credits
+    available_credits = [c for c in customer_credits if c.get("status") == "available"]
+    total_available_credits = sum(c.get("amount", 0) for c in available_credits)
     
     return {
         "code": 0,
@@ -1630,14 +1705,25 @@ async def get_contact_statement(contact_id: str, start_date: str = "", end_date:
                 "display_name": contact.get("display_name"),
                 "contact_number": contact.get("contact_number"),
                 "email": contact.get("email"),
-                "gstin": contact.get("gstin")
+                "gstin": contact.get("gstin"),
+                "credit_limit": contact.get("credit_limit", 0)
             },
             "period": {"start_date": start_date, "end_date": end_date},
-            "invoices": invoices,
-            "payments": payments,
+            "statement_lines": statement_lines,
+            "invoices": invoices + invoices_enhanced,
+            "payments": all_payments,
             "credits": credits,
+            "customer_credits": customer_credits,
+            "available_credits": available_credits,
+            "total_available_credits": total_available_credits,
             "balance": balance,
-            "aging": aging
+            "aging": aging,
+            "summary": {
+                "total_invoiced": sum(line.get("debit", 0) for line in statement_lines),
+                "total_paid": sum(line.get("credit", 0) for line in statement_lines),
+                "closing_balance": running_balance,
+                "available_credits": total_available_credits
+            }
         }
     }
 
