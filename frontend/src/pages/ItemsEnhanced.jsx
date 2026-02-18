@@ -369,6 +369,98 @@ export default function ItemsEnhanced() {
     } catch (e) { toast.error("Error generating barcode"); }
   };
 
+  // Phase 3: Save preferences
+  const handleSavePreferences = async () => {
+    try {
+      const res = await fetch(`${API}/items-enhanced/preferences`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(preferences)
+      });
+      if (res.ok) {
+        toast.success("Preferences saved");
+        setShowPreferencesDialog(false);
+      }
+    } catch (e) { toast.error("Error saving preferences"); }
+  };
+
+  // Phase 3: Save field configuration
+  const handleSaveFieldConfig = async () => {
+    try {
+      const res = await fetch(`${API}/items-enhanced/field-config`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(fieldConfig)
+      });
+      if (res.ok) {
+        toast.success("Field configuration saved");
+        setShowFieldConfigDialog(false);
+      }
+    } catch (e) { toast.error("Error saving field config"); }
+  };
+
+  // Phase 3: Toggle field visibility
+  const toggleFieldConfig = (fieldName, property) => {
+    setFieldConfig(prev => prev.map(f => 
+      f.field_name === fieldName ? { ...f, [property]: !f[property] } : f
+    ));
+  };
+
+  // Phase 3: Barcode Scanner
+  const startScanner = async () => {
+    try {
+      const { BrowserMultiFormatReader } = await import('@zxing/browser');
+      const codeReader = new BrowserMultiFormatReader();
+      scannerRef.current = codeReader;
+      
+      const videoInputDevices = await codeReader.listVideoInputDevices();
+      if (videoInputDevices.length === 0) {
+        toast.error("No camera found");
+        return;
+      }
+      
+      setIsScannerActive(true);
+      
+      codeReader.decodeFromVideoDevice(
+        videoInputDevices[0].deviceId,
+        videoRef.current,
+        (result, error) => {
+          if (result) {
+            const barcode = result.getText();
+            setBarcodeSearch(barcode);
+            stopScanner();
+            handleBarcodeLookup();
+          }
+        }
+      );
+    } catch (e) {
+      console.error("Scanner error:", e);
+      toast.error("Failed to start camera");
+    }
+  };
+
+  const stopScanner = () => {
+    if (scannerRef.current) {
+      scannerRef.current.reset();
+      scannerRef.current = null;
+    }
+    setIsScannerActive(false);
+  };
+
+  // Generate SKU
+  const handleGenerateSKU = async () => {
+    try {
+      const res = await fetch(`${API}/items-enhanced/generate-sku`, { headers });
+      const data = await res.json();
+      if (data.code === 0) {
+        setNewItem({ ...newItem, sku: data.sku });
+        toast.success(`Generated SKU: ${data.sku}`);
+      } else {
+        toast.error(data.message || "SKU generation disabled");
+      }
+    } catch (e) { toast.error("Failed to generate SKU"); }
+  };
+
   // CRUD operations
   const handleCreateItem = async () => {
     if (!newItem.name) return toast.error("Item name is required");
