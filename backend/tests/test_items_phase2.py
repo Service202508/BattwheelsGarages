@@ -140,8 +140,8 @@ class TestLineItemPricing:
         data = response.json()
         assert data.get("code") == 0
         assert "line_items" in data
-        # API returns total_amount, not total
-        assert "total_amount" in data or "total" in data
+        # API returns sub_total
+        assert "sub_total" in data
         
         if data["line_items"]:
             line_item = data["line_items"][0]
@@ -149,9 +149,9 @@ class TestLineItemPricing:
             assert "quantity" in line_item
             # Check for rate fields
             assert "final_rate" in line_item or "rate" in line_item
-            assert "amount" in line_item
-        total = data.get("total_amount") or data.get("total", 0)
-        print(f"✓ Calculated line prices, total: {total}")
+            assert "line_total" in line_item
+        total = data.get("sub_total", 0)
+        print(f"✓ Calculated line prices, sub_total: {total}")
     
     def test_calculate_line_prices_with_contact(self):
         """Test POST /api/items-enhanced/calculate-line-prices - with contact price list"""
@@ -174,8 +174,8 @@ class TestLineItemPricing:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
         assert data.get("code") == 0
-        total = data.get("total_amount") or data.get("total", 0)
-        print(f"✓ Calculated line prices with contact, total: {total}")
+        total = data.get("sub_total", 0)
+        print(f"✓ Calculated line prices with contact, sub_total: {total}")
     
     def test_calculate_line_prices_multiple_items(self):
         """Test POST /api/items-enhanced/calculate-line-prices - multiple items"""
@@ -199,8 +199,8 @@ class TestLineItemPricing:
         data = response.json()
         assert data.get("code") == 0
         assert len(data.get("line_items", [])) >= 1  # At least one item should be returned
-        total = data.get("total_amount") or data.get("total", 0)
-        print(f"✓ Calculated prices for multiple items, total: {total}")
+        total = data.get("sub_total", 0)
+        print(f"✓ Calculated prices for multiple items, sub_total: {total}")
 
 
 class TestBulkPriceSetting:
@@ -406,8 +406,11 @@ class TestBarcodeFeatures:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
         assert data.get("code") == 0
-        assert "results" in data
-        print(f"✓ Batch lookup returned {len(data.get('results', []))} results")
+        # API returns items and not_found
+        assert "items" in data or "results" in data
+        items_found = data.get("items", data.get("results", []))
+        not_found = data.get("not_found", [])
+        print(f"✓ Batch lookup returned {len(items_found)} items found, {len(not_found)} not found")
 
 
 class TestAdvancedReports:
