@@ -964,9 +964,17 @@ async def list_price_lists(include_inactive: bool = False):
     query = {} if include_inactive else {"is_active": True}
     price_lists = await db.price_lists.find(query, {"_id": 0}).to_list(100)
     
-    # Count items per price list
+    # Normalize and count items per price list
     for pl in price_lists:
-        count = await db.item_prices.count_documents({"price_list_id": pl["pricelist_id"]})
+        # Handle both old (price_list_id) and new (pricelist_id) schemas
+        pl_id = pl.get("pricelist_id") or pl.get("price_list_id", "")
+        pl["pricelist_id"] = pl_id  # Ensure consistent field name
+        
+        # Normalize name field
+        if "price_list_name" in pl and "name" not in pl:
+            pl["name"] = pl["price_list_name"]
+        
+        count = await db.item_prices.count_documents({"price_list_id": pl_id})
         pl["item_count"] = count
     
     return {"code": 0, "price_lists": price_lists}
