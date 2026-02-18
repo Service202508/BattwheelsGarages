@@ -478,8 +478,7 @@ export default function InventoryAdjustments() {
                 <RefreshCw className="h-4 w-4 mr-2" /> Refresh
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>            <RefreshCw className="h-4 w-4 mr-1" /> Refresh
-          </Button>
+          </DropdownMenu>
           <Button onClick={() => { resetForm(); setShowCreateDialog(true); }} data-testid="new-adjustment-btn">
             <Plus className="h-4 w-4 mr-2" /> New Adjustment
           </Button>
