@@ -191,6 +191,9 @@ function AppRouter() {
 
   return (
     <Routes>
+      {/* Public Quote View - No Auth Required */}
+      <Route path="/quote/:shareToken" element={<PublicQuoteView />} />
+
       <Route path="/login" element={
         auth.user ? <RoleBasedRedirect user={auth.user} /> : <Login onLogin={auth.login} />
       } />
