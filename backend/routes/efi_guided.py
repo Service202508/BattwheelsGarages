@@ -128,7 +128,7 @@ async def preprocess_complaint(
     - Run similarity search
     - Store results (don't show full guidance yet)
     """
-    await get_current_user(request)
+    user = await get_current_user(request)
     
     if not _embedding_manager:
         raise HTTPException(status_code=503, detail="Embedding service not initialized")
