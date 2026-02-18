@@ -230,6 +230,117 @@ export default function ItemsEnhanced() {
     } catch (e) { console.error("Failed to fetch history:", e); }
   };
 
+  // Phase 2: Fetch reports
+  const fetchSalesReport = async () => {
+    try {
+      const res = await fetch(`${API}/items-enhanced/reports/sales-by-item`, { headers });
+      const data = await res.json();
+      setSalesReport(data.report || null);
+    } catch (e) { console.error("Failed to fetch sales report:", e); }
+  };
+
+  const fetchPurchasesReport = async () => {
+    try {
+      const res = await fetch(`${API}/items-enhanced/reports/purchases-by-item`, { headers });
+      const data = await res.json();
+      setPurchasesReport(data.report || null);
+    } catch (e) { console.error("Failed to fetch purchases report:", e); }
+  };
+
+  const fetchValuationReport = async () => {
+    try {
+      const res = await fetch(`${API}/items-enhanced/reports/inventory-valuation`, { headers });
+      const data = await res.json();
+      setValuationReport(data.report || null);
+    } catch (e) { console.error("Failed to fetch valuation report:", e); }
+  };
+
+  const fetchContacts = async () => {
+    try {
+      const res = await fetch(`${API}/contacts-enhanced/`, { headers });
+      const data = await res.json();
+      setContacts(data.contacts || []);
+    } catch (e) { console.error("Failed to fetch contacts:", e); }
+  };
+
+  // Phase 2: Barcode lookup
+  const handleBarcodeLookup = async () => {
+    if (!barcodeSearch.trim()) return;
+    try {
+      const res = await fetch(`${API}/items-enhanced/lookup/barcode/${encodeURIComponent(barcodeSearch)}`, { headers });
+      if (res.ok) {
+        const data = await res.json();
+        setBarcodeResult(data.item);
+        toast.success(`Found: ${data.item.name}`);
+      } else {
+        setBarcodeResult(null);
+        toast.error("Item not found with this barcode/SKU");
+      }
+    } catch (e) { 
+      setBarcodeResult(null);
+      toast.error("Lookup failed"); 
+    }
+  };
+
+  // Phase 2: Assign price list to contact
+  const handleAssignPriceList = async (contactId, salesPriceListId, purchasePriceListId) => {
+    try {
+      const res = await fetch(`${API}/items-enhanced/contact-price-lists`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          contact_id: contactId,
+          sales_price_list_id: salesPriceListId || null,
+          purchase_price_list_id: purchasePriceListId || null
+        })
+      });
+      if (res.ok) {
+        toast.success("Price list assigned to contact");
+        setShowAssignPriceListDialog(false);
+      } else {
+        toast.error("Failed to assign price list");
+      }
+    } catch (e) { toast.error("Error assigning price list"); }
+  };
+
+  // Phase 2: Bulk set prices
+  const handleBulkSetPrices = async (priceListId, percentage) => {
+    try {
+      const res = await fetch(`${API}/items-enhanced/price-lists/${priceListId}/set-prices`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          price_list_id: priceListId,
+          pricing_method: "percentage",
+          percentage: parseFloat(percentage) || 0,
+          items: []
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(`Prices updated: ${data.results.created} created, ${data.results.updated} updated`);
+        setShowBulkPriceDialog(false);
+        fetchPriceLists();
+      }
+    } catch (e) { toast.error("Error setting bulk prices"); }
+  };
+
+  // Phase 2: Generate barcode
+  const handleGenerateBarcode = async (itemId) => {
+    try {
+      const res = await fetch(`${API}/items-enhanced/barcodes`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ item_id: itemId, barcode_type: "CODE128" })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(`Barcode generated: ${data.barcode.barcode_value}`);
+        fetchItems();
+      }
+    } catch (e) { toast.error("Error generating barcode"); }
+  };
+
   // CRUD operations
   const handleCreateItem = async () => {
     if (!newItem.name) return toast.error("Item name is required");
