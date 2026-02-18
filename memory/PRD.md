@@ -366,20 +366,20 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ## Remaining Backlog
 - Un-mock WeasyPrint PDF (missing libpangoft2)
-- Un-mock Razorpay payments
+- Un-mock Razorpay payments (Stripe available as alternative)
 - Un-mock Resend email
+- Customer portal for self-service invoice viewing/payment
 - Enhanced notification system
 - Signature capture on quote acceptance
 
 ---
 
-## Zoho-Style Sales Modules - Remaining Phases
+## Zoho-Style Sales Modules - COMPLETED ✅
 
-### Phase 2 - Workflow & Automation (PENDING)
-- Integrate payment gateways (Razorpay/Stripe) for online payments
-- Automatic application of overpayments/credits
-- Bulk actions for payments
-- Customer statements PDF generation
+All 3 phases of Zoho-style Sales Modules have been implemented:
+- ✅ Phase 1: Payments Received Module
+- ✅ Phase 2: Stripe Online Payments, Payment Reminders
+- ✅ Phase 3: Late Fees, Aging Reports, Auto Credit Application, Invoice Automation Page
 - Automated payment reminders
 
 ### Phase 3 - Advanced Features (PENDING)
