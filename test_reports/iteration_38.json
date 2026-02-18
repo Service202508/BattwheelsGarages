@@ -1,0 +1,62 @@
+{
+  "summary": "Items/Price Lists Integration with Quotes/Estimates Module - All tests passed. Backend: 16/16 tests passed. Frontend: Price list badge, item pricing, and toast notifications all working correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Estimates page",
+        "issues": ["Console warnings about HTML nesting (span inside thead/tbody/table) - cosmetic issue, doesn't affect functionality"]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_items_estimates_integration.py",
+    "/app/test_reports/pytest/items_estimates_integration_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Console warnings about HTML nesting (span inside thead/tbody) - likely from a wrapper component, cosmetic issue only"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_items_estimates_integration.py"
+  ],
+  "success_rate": {
+    "backend": "100% (16/16 tests passed)",
+    "frontend": "100% - All price list integration features working"
+  },
+  "test_credentials": {
+    "admin_user": "admin@battwheels.in / admin123",
+    "test_customer_with_price_list": "CUST-93AE14BE3618 (Full Zoho Test Co) - Wholesale price list (15% discount)",
+    "test_item": "1837096000000446195 (12V Battery replacement) - base rate ₹200, discounted ₹170"
+  },
+  "seed_data_creation": "Test estimates created during testing with TEST_ prefix (auto-cleaned)",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Items/Price Lists integration with Estimates module is complete and working. Key features: 1) Customer selection shows price list badge (e.g., '₹ Wholesale (-15%)'), 2) Item selection auto-applies customer's price list pricing with toast notification, 3) Estimates store price_list_id, price_list_name, and line items track base_rate vs final rate. Test customer CUST-93AE14BE3618 has Wholesale price list assigned.",
+  "features_tested": {
+    "backend_endpoints": [
+      "GET /api/items-enhanced/item-price/{item_id} - Returns base rate without contact, discounted rate with contact",
+      "GET /api/items-enhanced/contact-pricing-summary/{contact_id} - Returns customer's price list configuration",
+      "GET /api/estimates-enhanced/item-pricing/{item_id}?customer_id= - Returns item pricing for estimates UI",
+      "GET /api/estimates-enhanced/customer-pricing/{customer_id} - Returns customer's price list info",
+      "POST /api/estimates-enhanced/ - Creates estimate with automatic price list application"
+    ],
+    "frontend_features": [
+      "Customer selection shows assigned price list badge with discount percentage",
+      "Item selection fetches and applies customer's price list pricing automatically",
+      "Toast notification shows price adjustment amount (e.g., 'Price adjusted: -₹30 (Wholesale)')",
+      "Line items table shows discounted rate (170 instead of 200 for test item)",
+      "Price list name displayed above rate field in line items"
+    ],
+    "price_list_calculations": [
+      "Base rate: ₹200 → Final rate: ₹170 (15% discount = ₹30 off)",
+      "Discount correctly tracked in line items (discount_from_pricelist field)",
+      "Estimate totals calculated correctly with discounted rates"
+    ]
+  }
+}
