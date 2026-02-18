@@ -7,16 +7,19 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks, UploadFile, File
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
-from bson import ObjectId
+import motor.motor_asyncio
 import uuid
 import csv
 import io
+import os
 
-from database import get_db
+MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+DB_NAME = os.environ.get("DB_NAME", "battwheels")
+client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
+db = client[DB_NAME]
 
 router = APIRouter(prefix="/payments-received", tags=["Payments Received"])
 
-db = get_db()
 payments_collection = db["payments_received"]
 invoices_collection = db["invoices_enhanced"]
 contacts_collection = db["contacts_enhanced"]
