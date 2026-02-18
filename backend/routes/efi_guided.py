@@ -2,12 +2,15 @@
 EFI Guided Execution API Routes
 Integrates with Job Card workflow for step-by-step diagnostics
 """
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, HTTPException, Request, Query, UploadFile, File, Form
+from fastapi.responses import StreamingResponse
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 import logging
 import uuid
+import base64
+import io
 
 from services.efi_embedding_service import get_efi_embedding_manager, init_efi_embedding_manager
 from services.efi_decision_engine import (
@@ -28,6 +31,10 @@ _db = None
 _embedding_manager = None
 _decision_engine = None
 _learning_engine = None
+
+# Image storage collection
+ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+MAX_IMAGE_SIZE_MB = 5
 
 
 def init_router(database):
