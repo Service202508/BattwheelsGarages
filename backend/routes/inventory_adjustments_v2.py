@@ -62,6 +62,7 @@ class AdjustmentCreate(BaseModel):
     line_items: List[AdjustmentLineCreate] = []
     status: str = "draft"  # draft or adjusted
     created_by: Optional[str] = None
+    ticket_id: Optional[str] = None  # Optional link to ticket/complaint
 
 class AdjustmentUpdate(BaseModel):
     date: Optional[str] = None
