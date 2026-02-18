@@ -1124,6 +1124,455 @@ async def get_inventory_valuation():
     
     return {"code": 0, "valuation": {"total_items": 0, "total_stock": 0, "total_purchase_value": 0, "total_sales_value": 0, "items": []}}
 
+# ============== BULK ACTIONS (MUST BE BEFORE /{item_id}) ==============
+
+@router.post("/bulk-action")
+async def perform_bulk_action(request: BulkActionRequest):
+    """Perform bulk actions on multiple items"""
+    db = get_db()
+    
+    if not request.item_ids:
+        raise HTTPException(status_code=400, detail="No items selected")
+    
+    results = {"success": 0, "failed": 0, "errors": []}
+    
+    for item_id in request.item_ids:
+        try:
+            if request.action == "activate":
+                await db.items.update_one(
+                    {"item_id": item_id},
+                    {"$set": {"is_active": True, "status": "active", "updated_time": datetime.now(timezone.utc).isoformat()}}
+                )
+                await log_item_history(db, item_id, "activated", {}, "System")
+                results["success"] += 1
+                
+            elif request.action == "deactivate":
+                await db.items.update_one(
+                    {"item_id": item_id},
+                    {"$set": {"is_active": False, "status": "inactive", "updated_time": datetime.now(timezone.utc).isoformat()}}
+                )
+                await log_item_history(db, item_id, "deactivated", {}, "System")
+                results["success"] += 1
+                
+            elif request.action == "delete":
+                # Check for transactions
+                invoice_count = await db.invoices.count_documents({"line_items.item_id": item_id})
+                bill_count = await db.bills.count_documents({"line_items.item_id": item_id})
+                
+                if invoice_count > 0 or bill_count > 0:
+                    results["errors"].append(f"Item {item_id} has transactions, cannot delete")
+                    results["failed"] += 1
+                else:
+                    await db.item_stock_locations.delete_many({"item_id": item_id})
+                    await db.item_prices.delete_many({"item_id": item_id})
+                    await db.items.delete_one({"item_id": item_id})
+                    results["success"] += 1
+                    
+            elif request.action == "clone":
+                item = await db.items.find_one({"item_id": item_id}, {"_id": 0})
+                if item:
+                    new_id = f"I-{uuid.uuid4().hex[:12].upper()}"
+                    item["item_id"] = new_id
+                    item["name"] = f"{item['name']} (Copy)"
+                    item["sku"] = f"{item.get('sku', '')}-COPY" if item.get('sku') else None
+                    item["stock_on_hand"] = 0
+                    item["available_stock"] = 0
+                    item["created_time"] = datetime.now(timezone.utc).isoformat()
+                    item["updated_time"] = datetime.now(timezone.utc).isoformat()
+                    await db.items.insert_one(item)
+                    await log_item_history(db, new_id, "cloned", {"source_item_id": item_id}, "System")
+                    results["success"] += 1
+                else:
+                    results["failed"] += 1
+                    
+        except Exception as e:
+            results["errors"].append(f"Error on {item_id}: {str(e)}")
+            results["failed"] += 1
+    
+    return {"code": 0, "results": results}
+
+# ============== IMPORT/EXPORT (MUST BE BEFORE /{item_id}) ==============
+
+@router.get("/export")
+async def export_items(
+    format: str = "csv",
+    item_type: str = "",
+    group_id: str = "",
+    include_inactive: bool = False
+):
+    """Export items to CSV or JSON"""
+    db = get_db()
+    
+    query = {}
+    if item_type:
+        query["item_type"] = item_type
+    if group_id:
+        query["$or"] = [{"group_id": group_id}, {"item_group_id": group_id}]
+    if not include_inactive:
+        query["is_active"] = True
+    
+    items = await db.items.find(query, {"_id": 0}).to_list(10000)
+    
+    if format == "json":
+        return {"code": 0, "items": items, "count": len(items)}
+    
+    # CSV export
+    output = io.StringIO()
+    fieldnames = ["item_id", "name", "sku", "item_type", "group_name", "description", 
+                  "sales_rate", "purchase_rate", "unit", "hsn_code", "sac_code",
+                  "tax_percentage", "stock_on_hand", "reorder_level", "is_active"]
+    
+    writer = csv.DictWriter(output, fieldnames=fieldnames, extrasaction='ignore')
+    writer.writeheader()
+    
+    for item in items:
+        item["stock_on_hand"] = item.get("stock_on_hand", item.get("available_stock", 0))
+        writer.writerow(item)
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=items_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"}
+    )
+
+@router.get("/export/template")
+async def get_import_template():
+    """Get CSV template for item import"""
+    output = io.StringIO()
+    fieldnames = ["name", "sku", "item_type", "group_name", "description", 
+                  "sales_rate", "purchase_rate", "unit", "hsn_code", "sac_code",
+                  "tax_percentage", "initial_stock", "reorder_level"]
+    
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+    
+    # Sample row
+    writer.writerow({
+        "name": "Sample Item",
+        "sku": "SKU-001",
+        "item_type": "inventory",
+        "group_name": "",
+        "description": "Sample description",
+        "sales_rate": "100",
+        "purchase_rate": "80",
+        "unit": "pcs",
+        "hsn_code": "8471",
+        "sac_code": "",
+        "tax_percentage": "18",
+        "initial_stock": "10",
+        "reorder_level": "5"
+    })
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=items_import_template.csv"}
+    )
+
+@router.post("/import")
+async def import_items(file: UploadFile = File(...), overwrite_existing: bool = False):
+    """Import items from CSV file"""
+    db = get_db()
+    
+    if not file.filename.endswith(('.csv', '.CSV')):
+        raise HTTPException(status_code=400, detail="Only CSV files are supported")
+    
+    # Read file content
+    content = await file.read()
+    if len(content) > 1024 * 1024:  # 1MB limit
+        raise HTTPException(status_code=400, detail="File size exceeds 1MB limit")
+    
+    try:
+        decoded = content.decode('utf-8')
+    except:
+        decoded = content.decode('latin-1')
+    
+    reader = csv.DictReader(io.StringIO(decoded))
+    
+    results = {"created": 0, "updated": 0, "skipped": 0, "errors": []}
+    
+    for row_num, row in enumerate(reader, start=2):
+        try:
+            name = row.get("name", "").strip()
+            if not name:
+                results["errors"].append(f"Row {row_num}: Name is required")
+                results["skipped"] += 1
+                continue
+            
+            sku = row.get("sku", "").strip() or None
+            
+            # Check if exists
+            existing = None
+            if sku:
+                existing = await db.items.find_one({"sku": sku})
+            if not existing:
+                existing = await db.items.find_one({"name": name})
+            
+            item_data = {
+                "name": name,
+                "sku": sku,
+                "item_type": row.get("item_type", "inventory").strip() or "inventory",
+                "group_name": row.get("group_name", "").strip(),
+                "description": row.get("description", "").strip(),
+                "sales_rate": float(row.get("sales_rate", 0) or 0),
+                "purchase_rate": float(row.get("purchase_rate", 0) or 0),
+                "unit": row.get("unit", "pcs").strip() or "pcs",
+                "hsn_code": row.get("hsn_code", "").strip(),
+                "sac_code": row.get("sac_code", "").strip(),
+                "tax_percentage": float(row.get("tax_percentage", 18) or 18),
+                "reorder_level": float(row.get("reorder_level", 0) or 0),
+                "updated_time": datetime.now(timezone.utc).isoformat()
+            }
+            
+            if existing:
+                if overwrite_existing:
+                    await db.items.update_one({"item_id": existing["item_id"]}, {"$set": item_data})
+                    await log_item_history(db, existing["item_id"], "updated", {"source": "import"}, "System")
+                    results["updated"] += 1
+                else:
+                    results["skipped"] += 1
+            else:
+                item_id = f"I-{uuid.uuid4().hex[:12].upper()}"
+                item_data["item_id"] = item_id
+                item_data["rate"] = item_data["sales_rate"]
+                item_data["hsn_or_sac"] = item_data["hsn_code"] or item_data["sac_code"]
+                item_data["initial_stock"] = float(row.get("initial_stock", 0) or 0)
+                item_data["stock_on_hand"] = item_data["initial_stock"]
+                item_data["available_stock"] = item_data["initial_stock"]
+                item_data["is_active"] = True
+                item_data["status"] = "active"
+                item_data["created_time"] = datetime.now(timezone.utc).isoformat()
+                
+                await db.items.insert_one(item_data)
+                await log_item_history(db, item_id, "created", {"source": "import"}, "System")
+                results["created"] += 1
+                
+        except Exception as e:
+            results["errors"].append(f"Row {row_num}: {str(e)}")
+            results["skipped"] += 1
+    
+    return {"code": 0, "results": results}
+
+# ============== ITEM HISTORY (MUST BE BEFORE /{item_id}) ==============
+
+async def log_item_history(db, item_id: str, action: str, changes: dict, user_name: str):
+    """Helper function to log item history"""
+    history_entry = {
+        "history_id": f"IH-{uuid.uuid4().hex[:8].upper()}",
+        "item_id": item_id,
+        "action": action,
+        "changes": changes,
+        "user_name": user_name,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+    await db.item_history.insert_one(history_entry)
+
+@router.get("/history")
+async def get_all_item_history(
+    item_id: str = "",
+    action: str = "",
+    page: int = 1,
+    per_page: int = 50
+):
+    """Get item history with filters"""
+    db = get_db()
+    
+    query = {}
+    if item_id:
+        query["item_id"] = item_id
+    if action:
+        query["action"] = action
+    
+    skip = (page - 1) * per_page
+    history = await db.item_history.find(query, {"_id": 0}).sort("timestamp", -1).skip(skip).limit(per_page).to_list(per_page)
+    total = await db.item_history.count_documents(query)
+    
+    return {
+        "code": 0,
+        "history": history,
+        "page_context": {"page": page, "per_page": per_page, "total": total}
+    }
+
+# ============== VALUE ADJUSTMENTS (MUST BE BEFORE /{item_id}) ==============
+
+@router.post("/value-adjustments")
+async def create_value_adjustment(adj: ValueAdjustmentCreate):
+    """Create inventory value adjustment"""
+    db = get_db()
+    
+    item = await db.items.find_one({"item_id": adj.item_id})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    current_rate = item.get("purchase_rate", 0) or item.get("sales_rate", 0)
+    stock = item.get("stock_on_hand", 0) or item.get("available_stock", 0)
+    
+    old_value = stock * current_rate
+    new_value = stock * adj.new_value_per_unit
+    adjustment_amount = new_value - old_value
+    
+    adj_id = f"VADJ-{uuid.uuid4().hex[:8].upper()}"
+    
+    adj_dict = {
+        "adjustment_id": adj_id,
+        "item_id": adj.item_id,
+        "item_name": item.get("name", ""),
+        "warehouse_id": adj.warehouse_id,
+        "adjustment_type": "value",
+        "old_rate": current_rate,
+        "new_rate": adj.new_value_per_unit,
+        "stock_quantity": stock,
+        "old_value": round(old_value, 2),
+        "new_value": round(new_value, 2),
+        "adjustment_amount": round(adjustment_amount, 2),
+        "adjustment_account": adj.adjustment_account,
+        "reason": adj.reason,
+        "notes": adj.notes,
+        "reference_number": adj.reference_number,
+        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.item_adjustments.insert_one(adj_dict)
+    
+    # Update item rate
+    await db.items.update_one(
+        {"item_id": adj.item_id},
+        {"$set": {
+            "purchase_rate": adj.new_value_per_unit,
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    await log_item_history(db, adj.item_id, "value_adjusted", {
+        "old_rate": current_rate,
+        "new_rate": adj.new_value_per_unit,
+        "adjustment_amount": adjustment_amount
+    }, "System")
+    
+    del adj_dict["_id"]
+    return {"code": 0, "message": "Value adjustment created", "adjustment": adj_dict}
+
+# ============== PREFERENCES & CUSTOM FIELDS (MUST BE BEFORE /{item_id}) ==============
+
+@router.get("/preferences")
+async def get_item_preferences():
+    """Get module preferences"""
+    db = get_db()
+    
+    prefs = await db.item_preferences.find_one({"type": "items_module"}, {"_id": 0})
+    if not prefs:
+        prefs = ItemPreferences().dict()
+        prefs["type"] = "items_module"
+        await db.item_preferences.insert_one(prefs)
+    
+    return {"code": 0, "preferences": prefs}
+
+@router.put("/preferences")
+async def update_item_preferences(prefs: ItemPreferences):
+    """Update module preferences"""
+    db = get_db()
+    
+    prefs_dict = prefs.dict()
+    prefs_dict["type"] = "items_module"
+    prefs_dict["updated_time"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.item_preferences.update_one(
+        {"type": "items_module"},
+        {"$set": prefs_dict},
+        upsert=True
+    )
+    
+    return {"code": 0, "message": "Preferences updated", "preferences": prefs_dict}
+
+@router.get("/custom-fields")
+async def get_custom_fields():
+    """Get custom field definitions"""
+    db = get_db()
+    
+    fields = await db.item_custom_fields.find({}, {"_id": 0}).to_list(100)
+    return {"code": 0, "custom_fields": fields}
+
+@router.post("/custom-fields")
+async def create_custom_field(field: CustomFieldDefinition):
+    """Create a custom field definition"""
+    db = get_db()
+    
+    if not field.field_id:
+        field.field_id = f"CF-{uuid.uuid4().hex[:8].upper()}"
+    
+    # Check unique name
+    existing = await db.item_custom_fields.find_one({"field_name": field.field_name})
+    if existing:
+        raise HTTPException(status_code=400, detail="Field with this name already exists")
+    
+    field_dict = field.dict()
+    field_dict["created_time"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.item_custom_fields.insert_one(field_dict)
+    del field_dict["_id"]
+    
+    return {"code": 0, "message": "Custom field created", "field": field_dict}
+
+@router.put("/custom-fields/{field_id}")
+async def update_custom_field(field_id: str, field: CustomFieldDefinition):
+    """Update a custom field"""
+    db = get_db()
+    
+    field_dict = field.dict()
+    field_dict["updated_time"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.item_custom_fields.update_one(
+        {"field_id": field_id},
+        {"$set": field_dict}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Custom field not found")
+    
+    return {"code": 0, "message": "Custom field updated"}
+
+@router.delete("/custom-fields/{field_id}")
+async def delete_custom_field(field_id: str):
+    """Delete a custom field"""
+    db = get_db()
+    
+    result = await db.item_custom_fields.delete_one({"field_id": field_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Custom field not found")
+    
+    return {"code": 0, "message": "Custom field deleted"}
+
+# ============== HSN/SAC VALIDATION (MUST BE BEFORE /{item_id}) ==============
+
+@router.post("/validate-hsn")
+async def validate_hsn_code(hsn_code: str = ""):
+    """Validate HSN code format"""
+    if not hsn_code:
+        return {"code": 0, "valid": True, "message": "No HSN code provided"}
+    
+    # HSN codes should be 4, 6, or 8 digits
+    if not re.match(r'^\d{4}$|^\d{6}$|^\d{8}$', hsn_code):
+        return {"code": 1, "valid": False, "message": "HSN code must be 4, 6, or 8 digits"}
+    
+    return {"code": 0, "valid": True, "message": "Valid HSN code"}
+
+@router.post("/validate-sac")
+async def validate_sac_code(sac_code: str = ""):
+    """Validate SAC code format"""
+    if not sac_code:
+        return {"code": 0, "valid": True, "message": "No SAC code provided"}
+    
+    # SAC codes are 6 digits starting with 99
+    if not re.match(r'^99\d{4}$', sac_code):
+        return {"code": 1, "valid": False, "message": "SAC code must be 6 digits starting with 99"}
+    
+    return {"code": 0, "valid": True, "message": "Valid SAC code"}
+
 # ============== ITEM ROUTES WITH PATH PARAMETERS (MUST BE LAST) ==============
 
 @router.get("/{item_id}")
