@@ -146,7 +146,7 @@ export default function ItemsEnhanced() {
       params.append("sort_by", sortBy);
       params.append("sort_order", sortOrder);
       
-      const url = `${API}/items-enhanced?${params.toString()}`;
+      const url = `${API}/items-enhanced/?${params.toString()}`;
       const res = await fetch(url, { headers });
       const data = await res.json();
       setItems(data.items || []);
