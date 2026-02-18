@@ -2891,3 +2891,88 @@ async def get_item_stock_locations(item_id: str):
     
     return {"code": 0, "stock_locations": locations, "total_stock": total_stock}
 
+
+
+# ============== ADMIN DATA INTEGRITY ==============
+
+@router.post("/admin/fix-negative-stock")
+async def fix_negative_stock_items():
+    """Fix items with negative stock by setting stock_on_hand to 0"""
+    db = get_db()
+    
+    # Find all items with negative stock
+    negative_items = await db.items.find(
+        {"stock_on_hand": {"$lt": 0}},
+        {"_id": 0, "item_id": 1, "name": 1, "stock_on_hand": 1}
+    ).to_list(1000)
+    
+    fixed_count = 0
+    fixed_items = []
+    
+    for item in negative_items:
+        old_stock = item.get("stock_on_hand", 0)
+        await db.items.update_one(
+            {"item_id": item["item_id"]},
+            {"$set": {
+                "stock_on_hand": 0,
+                "quantity": 0,
+                "total_stock": 0,
+                "updated_time": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        fixed_items.append({
+            "item_id": item["item_id"],
+            "name": item["name"],
+            "old_stock": old_stock,
+            "new_stock": 0
+        })
+        fixed_count += 1
+    
+    return {
+        "code": 0,
+        "message": f"Fixed {fixed_count} items with negative stock",
+        "fixed_count": fixed_count,
+        "fixed_items": fixed_items
+    }
+
+
+@router.get("/admin/stock-integrity-report")
+async def get_stock_integrity_report():
+    """Get report of stock integrity issues"""
+    db = get_db()
+    
+    # Negative stock items
+    negative_items = await db.items.find(
+        {"stock_on_hand": {"$lt": 0}},
+        {"_id": 0, "item_id": 1, "name": 1, "sku": 1, "stock_on_hand": 1}
+    ).to_list(1000)
+    
+    # Items with mismatched quantity/stock_on_hand
+    pipeline = [
+        {"$match": {
+            "$expr": {
+                "$and": [
+                    {"$ne": ["$quantity", "$stock_on_hand"]},
+                    {"$ne": [{"$ifNull": ["$quantity", 0]}, {"$ifNull": ["$stock_on_hand", 0]}]}
+                ]
+            }
+        }},
+        {"$project": {
+            "_id": 0,
+            "item_id": 1,
+            "name": 1,
+            "quantity": 1,
+            "stock_on_hand": 1
+        }},
+        {"$limit": 100}
+    ]
+    mismatched = await db.items.aggregate(pipeline).to_list(100)
+    
+    return {
+        "code": 0,
+        "negative_stock_items": negative_items,
+        "negative_count": len(negative_items),
+        "mismatched_quantity_items": mismatched,
+        "mismatched_count": len(mismatched)
+    }
+
