@@ -187,6 +187,68 @@ class ItemPriceCreate(BaseModel):
 class BulkStockUpdate(BaseModel):
     updates: List[Dict]  # [{"item_id": "...", "warehouse_id": "...", "stock": 100}, ...]
 
+# ============== NEW MODELS FOR ZOHO FEATURES ==============
+
+class BulkActionRequest(BaseModel):
+    """Bulk action on multiple items"""
+    item_ids: List[str]
+    action: str  # activate, deactivate, delete, clone
+
+class ValueAdjustmentCreate(BaseModel):
+    """Inventory value adjustment (for depreciation, appreciation)"""
+    item_id: str
+    warehouse_id: str
+    adjustment_account: str = "Inventory Adjustment"
+    new_value_per_unit: float
+    reason: str = "depreciation"  # depreciation, appreciation, revaluation
+    notes: str = ""
+    reference_number: str = ""
+
+class ItemHistoryEntry(BaseModel):
+    """Track item changes"""
+    item_id: str
+    action: str  # created, updated, stock_adjusted, value_adjusted, cloned, activated, deactivated
+    changes: Dict = {}
+    user_id: Optional[str] = None
+    user_name: str = "System"
+    timestamp: str = ""
+
+class ItemPreferences(BaseModel):
+    """Module preferences"""
+    enable_sku: bool = True
+    auto_generate_sku: bool = False
+    sku_prefix: str = "SKU-"
+    require_hsn_sac: bool = False
+    hsn_digits_required: int = 4  # 4, 6, or 8
+    enable_reorder_alerts: bool = True
+    enable_low_stock_alerts: bool = True
+    default_tax_preference: str = "taxable"
+    default_unit: str = "pcs"
+    enable_images: bool = True
+    enable_custom_fields: bool = True
+
+class CustomFieldDefinition(BaseModel):
+    """Custom field definition for items"""
+    field_id: str = ""
+    field_name: str
+    field_type: str = "text"  # text, number, date, dropdown, checkbox
+    is_required: bool = False
+    show_in_list: bool = False
+    show_in_pdf: bool = False
+    dropdown_options: List[str] = []
+    default_value: Optional[str] = None
+
+class PriceListEnhanced(BaseModel):
+    """Enhanced price list with type (Sales/Purchase)"""
+    name: str
+    description: str = ""
+    price_list_type: str = "sales"  # sales, purchase
+    pricing_scheme: str = "percentage"  # percentage, custom
+    discount_percentage: float = 0
+    markup_percentage: float = 0
+    round_off_to: str = "none"  # none, nearest_1, nearest_5, nearest_10
+    is_active: bool = True
+
 # ============== ITEM GROUPS ==============
 
 @router.post("/groups")
