@@ -342,9 +342,33 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                   )}
 
                   {currentStep.reference_image && (
-                    <div className="flex items-center gap-2 text-xs text-blue-600 mb-2 cursor-pointer hover:underline">
-                      <Image className="h-3 w-3" />
-                      <span>View reference diagram</span>
+                    <div className="mb-3">
+                      <div className="flex items-center gap-2 text-xs text-blue-600 mb-2">
+                        <Image className="h-3 w-3" />
+                        <span className="font-medium">Reference Image</span>
+                      </div>
+                      <div className="relative rounded-lg overflow-hidden border bg-gray-50">
+                        <img 
+                          src={currentStep.reference_image.startsWith('/api') 
+                            ? `${window.location.origin}${currentStep.reference_image}` 
+                            : currentStep.reference_image
+                          }
+                          alt="Step reference"
+                          className="w-full h-auto max-h-48 object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => window.open(currentStep.reference_image, '_blank')}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                        <div 
+                          className="hidden items-center justify-center p-4 text-xs text-gray-500"
+                          onClick={() => window.open(currentStep.reference_image, '_blank')}
+                        >
+                          <Image className="h-8 w-8 text-gray-300 mr-2" />
+                          Click to view reference image
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
