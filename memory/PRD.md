@@ -406,12 +406,14 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ---
 
 ## Remaining Backlog
-- Un-mock WeasyPrint PDF (missing libpangoft2)
+- ✅ Un-mock WeasyPrint PDF (DONE - libpangoft2 installed)
 - Un-mock Razorpay payments (Stripe available as alternative)
-- Un-mock Resend email
-- Customer portal for self-service invoice viewing/payment
+- Un-mock Resend email (requires RESEND_API_KEY)
+- Customer portal improvements (existing portal functional)
 - Enhanced notification system
 - Signature capture on quote acceptance
+- Multi-warehouse support
+- Serial number tracking
 
 ---
 
