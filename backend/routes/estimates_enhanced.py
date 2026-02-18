@@ -2497,7 +2497,8 @@ async def generate_pdf_with_template(estimate_id: str, template_id: str = "stand
                 "Content-Disposition": f"attachment; filename=Estimate_{estimate.get('estimate_number', estimate_id)}_{template_id}.pdf"
             }
         )
-    except ImportError:
+    except Exception as e:
+        logger.warning(f"PDF generation with template failed: {e}")
         return JSONResponse({
             "code": 1,
             "message": "PDF generation requires WeasyPrint. Returning HTML.",
