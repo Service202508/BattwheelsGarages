@@ -963,17 +963,25 @@ export default function ItemsEnhanced() {
 
         {/* Price Lists Tab */}
         <TabsContent value="priceLists" className="space-y-4">
-          <div className="flex justify-end">
-            <Button onClick={() => setShowPriceListDialog(true)} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-pricelist-btn">
-              <Plus className="h-4 w-4" /> New Price List
-            </Button>
+          <div className="flex justify-between">
+            <div className="text-sm text-gray-500">
+              Manage pricing strategies for customers and vendors
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => { fetchContacts(); setShowAssignPriceListDialog(true); }} className="gap-2">
+                <Users className="h-4 w-4" /> Assign to Contact
+              </Button>
+              <Button onClick={() => setShowPriceListDialog(true)} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-pricelist-btn">
+                <Plus className="h-4 w-4" /> New Price List
+              </Button>
+            </div>
           </div>
           {priceLists.length === 0 ? (
             <Card><CardContent className="py-12 text-center text-gray-500"><Tags className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No price lists yet</p></CardContent></Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {priceLists.map(pl => (
-                <Card key={pl.pricelist_id}>
+                <Card key={pl.pricelist_id} className="hover:border-blue-200 transition-colors">
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between">
                       <div>
@@ -982,7 +990,20 @@ export default function ItemsEnhanced() {
                           {pl.price_list_type || "sales"}
                         </Badge>
                       </div>
-                      <Button size="icon" variant="ghost" onClick={() => handleDeletePriceList(pl.pricelist_id)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="icon" variant="ghost"><MoreHorizontal className="h-4 w-4" /></Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => { setSelectedPriceList(pl); setShowBulkPriceDialog(true); }}>
+                            <Tags className="h-4 w-4 mr-2" /> Set Bulk Prices
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-red-600" onClick={() => handleDeletePriceList(pl.pricelist_id)}>
+                            <Trash2 className="h-4 w-4 mr-2" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </CardHeader>
                   <CardContent>
