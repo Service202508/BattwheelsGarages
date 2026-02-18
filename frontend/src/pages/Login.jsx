@@ -343,13 +343,8 @@ export default function Login({ onLogin }) {
 
         <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6 lg:py-0">
           <div className="w-full max-w-md">
-            {/* Mobile Logo & 3D Icons - Only on mobile */}
-            <div className="lg:hidden flex flex-col items-center mb-6">
-              <img 
-                src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
-                alt="Battwheels" 
-                className="h-12 w-auto mb-4"
-              />
+            {/* Mobile 3D Icons - Only on mobile (logo is now in top-right corner) */}
+            <div className="lg:hidden flex flex-col items-center mb-6 mt-16">
               <div className="flex gap-2 items-end">
                 <img src={VEHICLE_ICONS.twoWheeler} alt="2W" className="w-10 h-10 object-contain" />
                 <img src={VEHICLE_ICONS.threeWheeler} alt="3W" className="w-12 h-12 object-contain" />
