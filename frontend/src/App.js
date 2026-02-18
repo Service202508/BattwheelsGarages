@@ -50,6 +50,7 @@ import EstimatesEnhanced from "@/pages/EstimatesEnhanced";
 import SalesOrdersEnhanced from "@/pages/SalesOrdersEnhanced";
 import InvoicesEnhanced from "@/pages/InvoicesEnhanced";
 import PaymentsReceived from "@/pages/PaymentsReceived";
+import InvoiceSettings from "@/pages/InvoiceSettings";
 import CustomerPortal from "@/pages/CustomerPortal";
 import ReportsAdvanced from "@/pages/ReportsAdvanced";
 import BillsEnhanced from "@/pages/BillsEnhanced";
