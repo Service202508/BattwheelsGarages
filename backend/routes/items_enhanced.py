@@ -644,13 +644,15 @@ async def list_enhanced_items(
     item_type: str = "",
     group_id: str = "",
     warehouse_id: str = "",
-    is_active: bool = True,
+    is_active: Optional[bool] = None,
     low_stock: bool = False,
     search: str = "",
+    sort_by: str = "name",  # name, sku, sales_rate, purchase_rate, stock_on_hand, created_time
+    sort_order: str = "asc",  # asc, desc
     page: int = 1,
     per_page: int = 50
 ):
-    """List items with advanced filters"""
+    """List items with advanced filters and sorting"""
     db = get_db()
     
     query = {}
@@ -659,19 +661,24 @@ async def list_enhanced_items(
     if group_id:
         query["$or"] = [{"group_id": group_id}, {"item_group_id": group_id}]
     if is_active is not None:
-        query["$or"] = query.get("$or", []) + [
-            {"is_active": is_active},
-            {"status": "active" if is_active else "inactive"}
-        ]
+        query["is_active"] = is_active
     if search:
         query["$or"] = [
             {"name": {"$regex": search, "$options": "i"}},
             {"sku": {"$regex": search, "$options": "i"}},
-            {"description": {"$regex": search, "$options": "i"}}
+            {"description": {"$regex": search, "$options": "i"}},
+            {"hsn_code": {"$regex": search, "$options": "i"}}
         ]
     
+    # Sorting
+    sort_direction = 1 if sort_order == "asc" else -1
+    valid_sort_fields = ["name", "sku", "sales_rate", "purchase_rate", "stock_on_hand", "created_time", "updated_time"]
+    if sort_by not in valid_sort_fields:
+        sort_by = "name"
+    
     skip = (page - 1) * per_page
-    items = await db.items.find(query, {"_id": 0}).skip(skip).limit(per_page).to_list(per_page)
+    cursor = db.items.find(query, {"_id": 0}).sort(sort_by, sort_direction).skip(skip).limit(per_page)
+    items = await cursor.to_list(per_page)
     total = await db.items.count_documents(query)
     
     # Add stock info for inventory items
