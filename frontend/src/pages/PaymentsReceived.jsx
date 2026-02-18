@@ -108,7 +108,7 @@ export default function PaymentsReceived() {
         ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
       });
       
-      const res = await fetch(`${API}/payments-received/?${params}`, { headers });
+      const res = await fetch(`${API}/api/payments-received/?${params}`, { headers });
       const data = await res.json();
       
       if (data.code === 0) {
@@ -123,7 +123,7 @@ export default function PaymentsReceived() {
   // Fetch summary
   const fetchSummary = async () => {
     try {
-      const res = await fetch(`${API}/payments-received/summary?period=this_month`, { headers });
+      const res = await fetch(`${API}/api/payments-received/summary?period=this_month`, { headers });
       const data = await res.json();
       if (data.code === 0) {
         setSummary(data.summary || {});
@@ -136,7 +136,7 @@ export default function PaymentsReceived() {
   // Fetch all credits
   const fetchCredits = async () => {
     try {
-      const res = await fetch(`${API}/payments-received/credits?status=available`, { headers });
+      const res = await fetch(`${API}/api/payments-received/credits?status=available`, { headers });
       const data = await res.json();
       if (data.code === 0) {
         setAllCredits(data.credits || []);
@@ -173,7 +173,7 @@ export default function PaymentsReceived() {
   // Fetch customer invoices for payment
   const fetchCustomerInvoices = async (customerId) => {
     try {
-      const res = await fetch(`${API}/payments-received/customer/${customerId}/open-invoices`, { headers });
+      const res = await fetch(`${API}/api/payments-received/customer/${customerId}/open-invoices`, { headers });
       const data = await res.json();
       if (data.code === 0) {
         setCustomerInvoices(data.open_invoices || []);
