@@ -405,6 +405,320 @@ def mock_send_email(to_email: str, subject: str, body: str, attachment_name: str
     logger.info(f"[MOCK EMAIL] Body Preview: {body[:200]}...")
     return True
 
+def generate_share_token() -> str:
+    """Generate a secure share token for public links"""
+    return hashlib.sha256(f"{uuid.uuid4().hex}{datetime.now(timezone.utc).isoformat()}".encode()).hexdigest()[:32]
+
+def generate_pdf_html(estimate: dict, line_items: list) -> str:
+    """Generate HTML for PDF rendering"""
+    items_html = ""
+    for idx, item in enumerate(line_items, 1):
+        items_html += f"""
+        <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{idx}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">
+                <strong>{item.get('name', '')}</strong>
+                {f"<br><small style='color: #6b7280;'>{item.get('description', '')}</small>" if item.get('description') else ''}
+            </td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;">{item.get('hsn_code', '-')}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">{item.get('quantity', 1)} {item.get('unit', 'pcs')}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹{item.get('rate', 0):,.2f}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">{item.get('tax_percentage', 0)}%</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600;">₹{item.get('total', 0):,.2f}</td>
+        </tr>
+        """
+    
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{ font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; color: #1f2937; font-size: 12px; }}
+            .header {{ display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 2px solid #0B462F; padding-bottom: 20px; }}
+            .company {{ font-size: 24px; font-weight: bold; color: #0B462F; }}
+            .estimate-title {{ font-size: 28px; color: #0B462F; text-align: right; }}
+            .estimate-number {{ color: #6b7280; font-size: 14px; }}
+            .info-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }}
+            .info-box {{ background: #f9fafb; padding: 15px; border-radius: 8px; }}
+            .info-label {{ color: #6b7280; font-size: 11px; text-transform: uppercase; margin-bottom: 5px; }}
+            .info-value {{ font-weight: 600; }}
+            table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
+            th {{ background: #0B462F; color: white; padding: 10px 8px; text-align: left; font-weight: 600; }}
+            .totals {{ margin-left: auto; width: 300px; }}
+            .totals-row {{ display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb; }}
+            .totals-row.grand {{ font-size: 16px; font-weight: bold; color: #0B462F; border-top: 2px solid #0B462F; border-bottom: none; }}
+            .terms {{ margin-top: 30px; padding: 15px; background: #f9fafb; border-radius: 8px; }}
+            .terms-title {{ font-weight: 600; margin-bottom: 10px; }}
+            .status-badge {{ display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; }}
+            .status-draft {{ background: #e5e7eb; color: #374151; }}
+            .status-sent {{ background: #dbeafe; color: #1d4ed8; }}
+            .status-accepted {{ background: #d1fae5; color: #065f46; }}
+            .footer {{ margin-top: 40px; text-align: center; color: #9ca3af; font-size: 10px; }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div>
+                <div class="company">Battwheels OS</div>
+                <div style="color: #6b7280; margin-top: 5px;">Your Onsite EV Resolution Partner</div>
+            </div>
+            <div style="text-align: right;">
+                <div class="estimate-title">ESTIMATE</div>
+                <div class="estimate-number">{estimate.get('estimate_number', '')}</div>
+                <div style="margin-top: 10px;">
+                    <span class="status-badge status-{estimate.get('status', 'draft')}">{estimate.get('status', 'draft').upper()}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-box">
+                <div class="info-label">Bill To</div>
+                <div class="info-value">{estimate.get('customer_name', '')}</div>
+                {f"<div>{estimate.get('customer_email', '')}</div>" if estimate.get('customer_email') else ''}
+                {f"<div>GSTIN: {estimate.get('customer_gstin', '')}</div>" if estimate.get('customer_gstin') else ''}
+            </div>
+            <div class="info-box">
+                <div class="info-label">Estimate Details</div>
+                <div><strong>Date:</strong> {estimate.get('date', '')}</div>
+                <div><strong>Valid Until:</strong> {estimate.get('expiry_date', '')}</div>
+                {f"<div><strong>Reference:</strong> {estimate.get('reference_number', '')}</div>" if estimate.get('reference_number') else ''}
+                {f"<div><strong>Subject:</strong> {estimate.get('subject', '')}</div>" if estimate.get('subject') else ''}
+            </div>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 30px;">#</th>
+                    <th>Item & Description</th>
+                    <th style="width: 80px; text-align: center;">HSN/SAC</th>
+                    <th style="width: 80px; text-align: right;">Qty</th>
+                    <th style="width: 90px; text-align: right;">Rate</th>
+                    <th style="width: 60px; text-align: right;">Tax</th>
+                    <th style="width: 100px; text-align: right;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {items_html}
+            </tbody>
+        </table>
+        
+        <div class="totals">
+            <div class="totals-row"><span>Subtotal:</span><span>₹{estimate.get('subtotal', 0):,.2f}</span></div>
+            {f'<div class="totals-row"><span>Discount:</span><span>-₹{estimate.get("total_discount", 0):,.2f}</span></div>' if estimate.get('total_discount', 0) > 0 else ''}
+            <div class="totals-row"><span>Tax ({estimate.get('gst_type', 'GST').upper()}):</span><span>₹{estimate.get('total_tax', 0):,.2f}</span></div>
+            {f'<div class="totals-row"><span>Shipping:</span><span>₹{estimate.get("shipping_charge", 0):,.2f}</span></div>' if estimate.get('shipping_charge', 0) > 0 else ''}
+            {f'<div class="totals-row"><span>Adjustment:</span><span>₹{estimate.get("adjustment", 0):,.2f}</span></div>' if estimate.get('adjustment', 0) != 0 else ''}
+            <div class="totals-row grand"><span>Grand Total:</span><span>₹{estimate.get('grand_total', 0):,.2f}</span></div>
+        </div>
+        
+        {f'<div class="terms"><div class="terms-title">Terms & Conditions</div><div>{estimate.get("terms_and_conditions", "")}</div></div>' if estimate.get('terms_and_conditions') else ''}
+        {f'<div class="terms"><div class="terms-title">Notes</div><div>{estimate.get("notes", "")}</div></div>' if estimate.get('notes') else ''}
+        
+        <div class="footer">
+            <p>Generated by Battwheels OS • {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC</p>
+        </div>
+    </body>
+    </html>
+    """
+    return html
+
+async def get_estimate_preferences() -> dict:
+    """Get estimate preferences with defaults"""
+    prefs = await estimate_settings_collection.find_one({"type": "preferences"}, {"_id": 0})
+    if not prefs:
+        prefs = EstimatePreferences().dict()
+        prefs["type"] = "preferences"
+    return prefs
+
+async def auto_convert_estimate(estimate_id: str, preferences: dict):
+    """Auto-convert accepted estimate based on preferences"""
+    if not preferences.get("auto_convert_on_accept", False):
+        return None
+    
+    convert_to = preferences.get("auto_convert_to", "draft_invoice")
+    
+    if convert_to in ["draft_invoice", "open_invoice"]:
+        # Import the conversion function
+        result = await convert_to_invoice_internal(estimate_id, auto_send=preferences.get("auto_send_converted", False))
+        return result
+    elif convert_to == "sales_order":
+        result = await convert_to_sales_order_internal(estimate_id)
+        return result
+    
+    return None
+
+async def convert_to_invoice_internal(estimate_id: str, auto_send: bool = False):
+    """Internal conversion to invoice"""
+    estimate = await estimates_collection.find_one({"estimate_id": estimate_id})
+    if not estimate:
+        return None
+    
+    line_items = await estimate_items_collection.find({"estimate_id": estimate_id}, {"_id": 0}).to_list(100)
+    
+    # Generate invoice number
+    inv_settings = await db["invoice_settings"].find_one({"type": "numbering"})
+    if not inv_settings:
+        inv_settings = {"prefix": "INV-", "next_number": 1, "padding": 5}
+        await db["invoice_settings"].insert_one({**inv_settings, "type": "numbering"})
+    
+    invoice_number = f"{inv_settings.get('prefix', 'INV-')}{str(inv_settings.get('next_number', 1)).zfill(inv_settings.get('padding', 5))}"
+    await db["invoice_settings"].update_one({"type": "numbering"}, {"$inc": {"next_number": 1}})
+    
+    invoice_id = generate_id("INV")
+    today = datetime.now(timezone.utc).date().isoformat()
+    
+    invoice_doc = {
+        "invoice_id": invoice_id,
+        "invoice_number": invoice_number,
+        "customer_id": estimate["customer_id"],
+        "customer_name": estimate.get("customer_name", ""),
+        "customer_email": estimate.get("customer_email", ""),
+        "customer_gstin": estimate.get("customer_gstin", ""),
+        "place_of_supply": estimate.get("place_of_supply", ""),
+        "date": today,
+        "due_date": (datetime.now(timezone.utc) + timedelta(days=30)).date().isoformat(),
+        "status": "draft",
+        "reference_number": estimate.get("reference_number", ""),
+        "estimate_id": estimate_id,
+        "estimate_number": estimate.get("estimate_number", ""),
+        "salesperson_id": estimate.get("salesperson_id"),
+        "salesperson_name": estimate.get("salesperson_name", ""),
+        "project_id": estimate.get("project_id"),
+        "subject": estimate.get("subject", ""),
+        "billing_address": estimate.get("billing_address"),
+        "shipping_address": estimate.get("shipping_address"),
+        "line_items_count": estimate.get("line_items_count", 0),
+        "discount_type": estimate.get("discount_type", "none"),
+        "discount_value": estimate.get("discount_value", 0),
+        "shipping_charge": estimate.get("shipping_charge", 0),
+        "adjustment": estimate.get("adjustment", 0),
+        "adjustment_description": estimate.get("adjustment_description", ""),
+        "subtotal": estimate.get("subtotal", 0),
+        "total_discount": estimate.get("total_discount", 0),
+        "total_tax": estimate.get("total_tax", 0),
+        "total_cgst": estimate.get("total_cgst", 0),
+        "total_sgst": estimate.get("total_sgst", 0),
+        "total_igst": estimate.get("total_igst", 0),
+        "grand_total": estimate.get("grand_total", 0),
+        "total": estimate.get("grand_total", 0),
+        "balance_due": estimate.get("grand_total", 0),
+        "amount_paid": 0,
+        "gst_type": estimate.get("gst_type", "igst"),
+        "terms_and_conditions": estimate.get("terms_and_conditions", ""),
+        "notes": estimate.get("notes", ""),
+        "custom_fields": estimate.get("custom_fields", {}),
+        "auto_converted": True,
+        "created_time": datetime.now(timezone.utc).isoformat(),
+        "updated_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db["invoices"].insert_one(invoice_doc)
+    
+    for item in line_items:
+        item["invoice_id"] = invoice_id
+        item["line_item_id"] = generate_id("LI")
+        item.pop("estimate_id", None)
+        await db["invoice_line_items"].insert_one(item)
+    
+    await estimates_collection.update_one(
+        {"estimate_id": estimate_id},
+        {"$set": {
+            "status": "converted",
+            "converted_to": f"invoice:{invoice_id}",
+            "converted_date": today,
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    await add_estimate_history(estimate_id, "auto_converted", f"Auto-converted to Invoice {invoice_number}")
+    
+    return {"invoice_id": invoice_id, "invoice_number": invoice_number}
+
+async def convert_to_sales_order_internal(estimate_id: str):
+    """Internal conversion to sales order"""
+    estimate = await estimates_collection.find_one({"estimate_id": estimate_id})
+    if not estimate:
+        return None
+    
+    line_items = await estimate_items_collection.find({"estimate_id": estimate_id}, {"_id": 0}).to_list(100)
+    
+    so_settings = await db["sales_order_settings"].find_one({"type": "numbering"})
+    if not so_settings:
+        so_settings = {"prefix": "SO-", "next_number": 1, "padding": 5}
+        await db["sales_order_settings"].insert_one({**so_settings, "type": "numbering"})
+    
+    so_number = f"{so_settings.get('prefix', 'SO-')}{str(so_settings.get('next_number', 1)).zfill(so_settings.get('padding', 5))}"
+    await db["sales_order_settings"].update_one({"type": "numbering"}, {"$inc": {"next_number": 1}})
+    
+    so_id = generate_id("SO")
+    today = datetime.now(timezone.utc).date().isoformat()
+    
+    so_doc = {
+        "salesorder_id": so_id,
+        "salesorder_number": so_number,
+        "customer_id": estimate["customer_id"],
+        "customer_name": estimate.get("customer_name", ""),
+        "customer_email": estimate.get("customer_email", ""),
+        "customer_gstin": estimate.get("customer_gstin", ""),
+        "place_of_supply": estimate.get("place_of_supply", ""),
+        "date": today,
+        "expected_shipment_date": (datetime.now(timezone.utc) + timedelta(days=7)).date().isoformat(),
+        "status": "draft",
+        "fulfillment_status": "unfulfilled",
+        "reference_number": estimate.get("reference_number", ""),
+        "estimate_id": estimate_id,
+        "estimate_number": estimate.get("estimate_number", ""),
+        "salesperson_id": estimate.get("salesperson_id"),
+        "salesperson_name": estimate.get("salesperson_name", ""),
+        "project_id": estimate.get("project_id"),
+        "billing_address": estimate.get("billing_address"),
+        "shipping_address": estimate.get("shipping_address"),
+        "line_items_count": estimate.get("line_items_count", 0),
+        "discount_type": estimate.get("discount_type", "none"),
+        "discount_value": estimate.get("discount_value", 0),
+        "shipping_charge": estimate.get("shipping_charge", 0),
+        "adjustment": estimate.get("adjustment", 0),
+        "subtotal": estimate.get("subtotal", 0),
+        "total_discount": estimate.get("total_discount", 0),
+        "total_tax": estimate.get("total_tax", 0),
+        "grand_total": estimate.get("grand_total", 0),
+        "total": estimate.get("grand_total", 0),
+        "gst_type": estimate.get("gst_type", "igst"),
+        "terms_and_conditions": estimate.get("terms_and_conditions", ""),
+        "notes": estimate.get("notes", ""),
+        "custom_fields": estimate.get("custom_fields", {}),
+        "auto_converted": True,
+        "created_time": datetime.now(timezone.utc).isoformat(),
+        "updated_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db["sales_orders"].insert_one(so_doc)
+    
+    for item in line_items:
+        item["salesorder_id"] = so_id
+        item["line_item_id"] = generate_id("LI")
+        item["quantity_ordered"] = item.get("quantity", 0)
+        item["quantity_fulfilled"] = 0
+        item.pop("estimate_id", None)
+        await db["salesorder_line_items"].insert_one(item)
+    
+    await estimates_collection.update_one(
+        {"estimate_id": estimate_id},
+        {"$set": {
+            "status": "converted",
+            "converted_to": f"salesorder:{so_id}",
+            "converted_date": today,
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    await add_estimate_history(estimate_id, "auto_converted", f"Auto-converted to Sales Order {so_number}")
+    
+    return {"salesorder_id": so_id, "salesorder_number": so_number}
+
 # ========================= SETTINGS ENDPOINTS =========================
 
 @router.get("/settings")
