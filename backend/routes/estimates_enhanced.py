@@ -1,7 +1,9 @@
 # Enhanced Estimates/Quotes Module for Zoho Books Clone
 # Full sales cycle entry point with GST calculations, status workflow, and conversions
+# Phase 1: Attachments, Public Share Links, Customer Viewed Status, PDF Generation
 
-from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks, UploadFile, File, Form
+from fastapi.responses import StreamingResponse, JSONResponse
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
@@ -10,6 +12,9 @@ import motor.motor_asyncio
 import os
 import uuid
 import logging
+import hashlib
+import base64
+import io
 from decimal import Decimal, ROUND_HALF_UP
 
 logger = logging.getLogger(__name__)
@@ -27,6 +32,18 @@ estimates_collection = db["estimates_enhanced"]
 estimate_items_collection = db["estimate_line_items"]
 estimate_history_collection = db["estimate_history"]
 estimate_settings_collection = db["estimate_settings"]
+estimate_attachments_collection = db["estimate_attachments"]
+estimate_share_links_collection = db["estimate_share_links"]
+
+# Attachment limits (Zoho Books style)
+MAX_ATTACHMENTS_PER_ESTIMATE = 3
+MAX_ATTACHMENT_SIZE_MB = 10
+ALLOWED_ATTACHMENT_TYPES = [
+    "application/pdf", "image/jpeg", "image/png", "image/gif",
+    "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "text/plain", "text/csv"
+]
 
 # GST State codes for intra/inter-state calculation
 GSTIN_STATE_MAP = {
