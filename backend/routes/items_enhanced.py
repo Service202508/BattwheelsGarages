@@ -463,7 +463,7 @@ async def update_warehouse(warehouse_id: str, warehouse: WarehouseCreate):
 
 @router.post("/")
 async def create_enhanced_item(item: ItemCreate):
-    """Create item with full features"""
+    """Create item with full Zoho-style features"""
     db = get_db()
     
     # Check unique name/SKU
@@ -474,6 +474,22 @@ async def create_enhanced_item(item: ItemCreate):
     
     item_id = f"I-{uuid.uuid4().hex[:12].upper()}"
     
+    # Handle image storage
+    image_url = None
+    if item.image_data:
+        try:
+            image_doc = {
+                "image_id": f"IMG-{uuid.uuid4().hex[:8].upper()}",
+                "item_id": item_id,
+                "image_name": item.image_name or "item_image",
+                "image_data": item.image_data,
+                "created_time": datetime.now(timezone.utc).isoformat()
+            }
+            await db.item_images.insert_one(image_doc)
+            image_url = f"/api/items-enhanced/images/{image_doc['image_id']}"
+        except:
+            pass
+    
     item_dict = {
         "item_id": item_id,
         "name": item.name,
@@ -482,27 +498,61 @@ async def create_enhanced_item(item: ItemCreate):
         "item_type": item.item_type,
         "group_id": item.group_id,
         "group_name": item.group_name,
+        
+        # Sales info
         "sales_rate": item.sales_rate,
+        "sales_description": item.sales_description,
+        "sales_account_id": item.sales_account_id,
+        
+        # Purchase info
         "purchase_rate": item.purchase_rate,
+        "purchase_description": item.purchase_description,
+        "purchase_account_id": item.purchase_account_id,
+        
+        # Inventory
+        "inventory_account_id": item.inventory_account_id,
+        "inventory_valuation_method": item.inventory_valuation_method,
+        "track_inventory": item.track_inventory,
+        
         "rate": item.sales_rate,  # For compatibility
         "unit": item.unit,
-        "sales_account_id": item.sales_account_id,
-        "purchase_account_id": item.purchase_account_id,
-        "inventory_account_id": item.inventory_account_id,
+        
+        # Tax
+        "tax_preference": item.tax_preference,
         "tax_id": item.tax_id,
         "tax_percentage": item.tax_percentage,
+        "intra_state_tax_rate": item.intra_state_tax_rate,
+        "inter_state_tax_rate": item.inter_state_tax_rate,
+        
+        # HSN/SAC
         "hsn_code": item.hsn_code,
         "sac_code": item.sac_code,
         "hsn_or_sac": item.hsn_code or item.sac_code,
+        
+        # Stock
         "initial_stock": item.initial_stock,
+        "opening_stock_rate": item.opening_stock_rate or item.purchase_rate,
         "stock_on_hand": item.initial_stock,
         "available_stock": item.initial_stock,
+        "committed_stock": 0,
+        "stock_on_order": 0,
         "reorder_level": item.reorder_level,
+        
+        # Vendor
         "preferred_vendor_id": item.preferred_vendor_id,
         "preferred_vendor_name": item.preferred_vendor_name,
+        
+        # Image
+        "image_url": image_url,
+        
+        # Custom fields
         "custom_fields": item.custom_fields,
+        
+        # Status
         "is_active": item.is_active,
         "status": "active" if item.is_active else "inactive",
+        
+        # Timestamps
         "created_time": datetime.now(timezone.utc).isoformat(),
         "updated_time": datetime.now(timezone.utc).isoformat()
     }
@@ -511,7 +561,7 @@ async def create_enhanced_item(item: ItemCreate):
     del item_dict["_id"]
     
     # Initialize stock locations for inventory items
-    if item.item_type == "inventory":
+    if item.item_type == "inventory" or item.track_inventory:
         warehouses = await db.warehouses.find({"is_active": True}).to_list(100)
         for wh in warehouses:
             await db.item_stock_locations.insert_one({
@@ -531,7 +581,23 @@ async def create_enhanced_item(item: ItemCreate):
             {"$inc": {"item_count": 1}}
         )
     
+    # Log history
+    await log_item_history(db, item_id, "created", {"name": item.name, "type": item.item_type}, "System")
+    
     return {"code": 0, "message": "Item created successfully", "item": item_dict}
+
+# Image endpoint
+@router.get("/images/{image_id}")
+async def get_item_image(image_id: str):
+    """Get item image by ID"""
+    db = get_db()
+    
+    image = await db.item_images.find_one({"image_id": image_id}, {"_id": 0})
+    if not image:
+        raise HTTPException(status_code=404, detail="Image not found")
+    
+    # Return base64 image data
+    return {"code": 0, "image": image}
 
 @router.get("/summary")
 async def get_items_summary():
