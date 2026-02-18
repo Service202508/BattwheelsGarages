@@ -1053,6 +1053,126 @@ export default function ItemsEnhanced() {
           )}
         </TabsContent>
 
+        {/* Reports Tab - Phase 2 */}
+        <TabsContent value="reports" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Sales by Item Report */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <TrendingUp className="h-5 w-5 text-green-600" /> Sales by Item
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {salesReport ? (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="bg-green-50 rounded p-2">
+                        <p className="text-gray-500 text-xs">Total Revenue</p>
+                        <p className="font-bold text-green-700">₹{(salesReport.summary?.total_revenue || 0).toLocaleString('en-IN')}</p>
+                      </div>
+                      <div className="bg-blue-50 rounded p-2">
+                        <p className="text-gray-500 text-xs">Qty Sold</p>
+                        <p className="font-bold text-blue-700">{salesReport.summary?.total_quantity_sold || 0}</p>
+                      </div>
+                    </div>
+                    <div className="border-t pt-2">
+                      <p className="text-xs text-gray-500 mb-2">Top Selling Items</p>
+                      {(salesReport.items || []).slice(0, 5).map((item, idx) => (
+                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-gray-100">
+                          <span className="truncate flex-1">{item.item_name}</span>
+                          <span className="text-green-600 font-medium">₹{item.total_revenue?.toLocaleString('en-IN')}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-center text-gray-500 py-4 text-sm">Loading...</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Purchases by Item Report */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <ShoppingCart className="h-5 w-5 text-orange-600" /> Purchases by Item
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {purchasesReport ? (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="bg-orange-50 rounded p-2">
+                        <p className="text-gray-500 text-xs">Total Cost</p>
+                        <p className="font-bold text-orange-700">₹{(purchasesReport.summary?.total_cost || 0).toLocaleString('en-IN')}</p>
+                      </div>
+                      <div className="bg-blue-50 rounded p-2">
+                        <p className="text-gray-500 text-xs">Qty Purchased</p>
+                        <p className="font-bold text-blue-700">{purchasesReport.summary?.total_quantity_purchased || 0}</p>
+                      </div>
+                    </div>
+                    <div className="border-t pt-2">
+                      <p className="text-xs text-gray-500 mb-2">Most Purchased Items</p>
+                      {(purchasesReport.items || []).slice(0, 5).map((item, idx) => (
+                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-gray-100">
+                          <span className="truncate flex-1">{item.item_name}</span>
+                          <span className="text-orange-600 font-medium">₹{item.total_cost?.toLocaleString('en-IN')}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-center text-gray-500 py-4 text-sm">Loading...</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Inventory Valuation Report */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <DollarSign className="h-5 w-5 text-blue-600" /> Inventory Valuation
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {valuationReport ? (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="bg-blue-50 rounded p-2">
+                        <p className="text-gray-500 text-xs">Total Value</p>
+                        <p className="font-bold text-blue-700">₹{(valuationReport.summary?.total_stock_value || 0).toLocaleString('en-IN')}</p>
+                      </div>
+                      <div className="bg-purple-50 rounded p-2">
+                        <p className="text-gray-500 text-xs">Method</p>
+                        <p className="font-bold text-purple-700">{valuationReport.valuation_method || 'FIFO'}</p>
+                      </div>
+                    </div>
+                    <div className="border-t pt-2">
+                      <p className="text-xs text-gray-500 mb-2">Highest Value Items</p>
+                      {(valuationReport.items || []).slice(0, 5).map((item, idx) => (
+                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-gray-100">
+                          <span className="truncate flex-1">{item.item_name}</span>
+                          <span className="text-blue-600 font-medium">₹{item.stock_value?.toLocaleString('en-IN')}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-center text-gray-500 py-4 text-sm">Loading...</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Detailed Reports Button Row */}
+          <div className="flex gap-4 flex-wrap">
+            <Button variant="outline" onClick={fetchSalesReport} className="gap-2">
+              <RefreshCw className="h-4 w-4" /> Refresh Reports
+            </Button>
+          </div>
+        </TabsContent>
+
         {/* History Tab */}
         <TabsContent value="history" className="space-y-4">
           <Card>
