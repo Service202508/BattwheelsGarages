@@ -615,6 +615,214 @@ async def get_customer_credits_endpoint(customer_id: str):
     }
 
 
+# ==================== IMPORT/EXPORT (must be before /{payment_id}) ====================
+
+@router.get("/export")
+async def export_payments(
+    format: str = "csv",
+    start_date: str = "",
+    end_date: str = "",
+    customer_id: str = ""
+):
+    """Export payments to CSV"""
+    query = {}
+    if start_date:
+        query["payment_date"] = {"$gte": start_date}
+    if end_date:
+        if "payment_date" in query:
+            query["payment_date"]["$lte"] = end_date
+        else:
+            query["payment_date"] = {"$lte": end_date}
+    if customer_id:
+        query["customer_id"] = customer_id
+    
+    payments = await payments_collection.find(query, {"_id": 0}).to_list(10000)
+    
+    if format == "csv":
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Header
+        writer.writerow([
+            "Payment Number", "Payment Date", "Customer Name", "Amount",
+            "Payment Mode", "Reference Number", "Deposit Account", "Notes", "Status"
+        ])
+        
+        # Data
+        for p in payments:
+            writer.writerow([
+                p.get("payment_number", ""),
+                p.get("payment_date", ""),
+                p.get("customer_name", ""),
+                p.get("amount", 0),
+                p.get("payment_mode", ""),
+                p.get("reference_number", ""),
+                p.get("deposit_to_account", ""),
+                p.get("notes", ""),
+                p.get("status", "")
+            ])
+        
+        return {
+            "code": 0,
+            "format": "csv",
+            "data": output.getvalue(),
+            "filename": f"payments_export_{datetime.now().strftime('%Y%m%d')}.csv"
+        }
+    
+    return {"code": 0, "format": "json", "data": payments}
+
+@router.get("/import/template")
+async def get_import_template():
+    """Get CSV template for importing payments"""
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    writer.writerow([
+        "Customer Name", "Payment Date", "Amount", "Payment Mode",
+        "Reference Number", "Deposit Account", "Notes"
+    ])
+    
+    # Sample row
+    writer.writerow([
+        "Sample Customer", "2026-01-15", "5000", "bank_transfer",
+        "REF123", "Bank Account", "Sample payment"
+    ])
+    
+    return {
+        "code": 0,
+        "template": output.getvalue(),
+        "filename": "payments_import_template.csv"
+    }
+
+@router.post("/import")
+async def import_payments(file: UploadFile = File(...)):
+    """Import payments from CSV"""
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="Only CSV files are supported")
+    
+    content = await file.read()
+    if len(content) > 1024 * 1024:  # 1MB limit
+        raise HTTPException(status_code=400, detail="File size exceeds 1MB limit")
+    
+    try:
+        reader = csv.DictReader(io.StringIO(content.decode('utf-8')))
+        imported = 0
+        errors = []
+        
+        for row in reader:
+            try:
+                # Find customer
+                customer_name = row.get("Customer Name", "").strip()
+                customer = await contacts_collection.find_one({
+                    "$or": [
+                        {"name": {"$regex": f"^{customer_name}$", "$options": "i"}},
+                        {"company_name": {"$regex": f"^{customer_name}$", "$options": "i"}}
+                    ]
+                })
+                
+                if not customer:
+                    errors.append(f"Customer '{customer_name}' not found")
+                    continue
+                
+                payment_id = generate_id("PAY")
+                payment_number = await get_next_payment_number()
+                
+                payment_doc = {
+                    "payment_id": payment_id,
+                    "payment_number": payment_number,
+                    "customer_id": customer.get("contact_id"),
+                    "customer_name": customer.get("name", ""),
+                    "payment_date": row.get("Payment Date", datetime.now().strftime("%Y-%m-%d")),
+                    "amount": float(row.get("Amount", 0)),
+                    "payment_mode": row.get("Payment Mode", "other").lower(),
+                    "deposit_to_account": row.get("Deposit Account", "Undeposited Funds"),
+                    "reference_number": row.get("Reference Number", ""),
+                    "notes": row.get("Notes", ""),
+                    "allocations": [],
+                    "amount_allocated": 0,
+                    "is_retainer": True,  # Imported as retainer, can be applied later
+                    "status": "recorded",
+                    "imported": True,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                await payments_collection.insert_one(payment_doc)
+                
+                # Create as customer credit
+                credit_doc = {
+                    "credit_id": generate_id("CRD"),
+                    "customer_id": customer.get("contact_id"),
+                    "customer_name": customer.get("name", ""),
+                    "source_type": "imported",
+                    "source_id": payment_id,
+                    "source_number": payment_number,
+                    "amount": float(row.get("Amount", 0)),
+                    "original_amount": float(row.get("Amount", 0)),
+                    "status": "available",
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+                await customer_credits_collection.insert_one(credit_doc)
+                
+                imported += 1
+                
+            except Exception as e:
+                errors.append(f"Row error: {str(e)}")
+        
+        return {
+            "code": 0,
+            "message": f"Import completed: {imported} payments imported",
+            "imported": imported,
+            "errors": errors[:10]  # Return first 10 errors
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to parse CSV: {str(e)}")
+
+@router.post("/bulk-action")
+async def bulk_payment_action(request: BulkActionRequest):
+    """Perform bulk action on payments"""
+    if not request.payment_ids:
+        raise HTTPException(status_code=400, detail="No payments selected")
+    
+    if request.action == "delete":
+        deleted = 0
+        for payment_id in request.payment_ids:
+            try:
+                payment = await payments_collection.find_one({"payment_id": payment_id})
+                if payment:
+                    customer_id = payment.get("customer_id")
+                    
+                    # Delete payment
+                    await payments_collection.delete_one({"payment_id": payment_id})
+                    
+                    # Update invoice statuses
+                    for alloc in payment.get("allocations", []):
+                        await update_invoice_payment_status(alloc.get("invoice_id"))
+                    
+                    # Delete credits
+                    await customer_credits_collection.delete_many({"source_id": payment_id})
+                    
+                    # Update customer balance
+                    await update_customer_balance(customer_id)
+                    
+                    deleted += 1
+            except Exception:
+                pass
+        
+        return {"code": 0, "message": f"{deleted} payments deleted"}
+    
+    elif request.action == "export":
+        payments = await payments_collection.find(
+            {"payment_id": {"$in": request.payment_ids}},
+            {"_id": 0}
+        ).to_list(len(request.payment_ids))
+        
+        return {"code": 0, "payments": payments}
+    
+    raise HTTPException(status_code=400, detail=f"Unknown action: {request.action}")
+
+
 @router.get("/{payment_id}")
 async def get_payment(payment_id: str):
     """Get payment details"""
