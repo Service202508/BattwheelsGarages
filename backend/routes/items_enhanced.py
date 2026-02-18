@@ -249,6 +249,42 @@ class PriceListEnhanced(BaseModel):
     round_off_to: str = "none"  # none, nearest_1, nearest_5, nearest_10
     is_active: bool = True
 
+# ============== PHASE 2 MODELS ==============
+
+class ContactPriceListAssign(BaseModel):
+    """Assign price list to customer/vendor"""
+    contact_id: str
+    sales_price_list_id: Optional[str] = None
+    purchase_price_list_id: Optional[str] = None
+
+class LineItemPriceRequest(BaseModel):
+    """Calculate price for line items"""
+    items: List[Dict]  # [{"item_id": "...", "quantity": 1}, ...]
+    contact_id: Optional[str] = None
+    price_list_id: Optional[str] = None
+    transaction_type: str = "sales"  # sales, purchase
+
+class BulkItemPriceSet(BaseModel):
+    """Set prices for multiple items in a price list"""
+    price_list_id: str
+    pricing_method: str = "percentage"  # percentage, custom
+    percentage: float = 0  # Markup (+) or Discount (-)
+    items: List[Dict] = []  # [{"item_id": "...", "custom_rate": 100}, ...] for custom method
+
+class ItemBarcodeCreate(BaseModel):
+    """Barcode/QR for item"""
+    item_id: str
+    barcode_type: str = "CODE128"  # CODE128, EAN13, QR
+    barcode_value: str = ""  # Auto-generate if empty
+
+class SalesByItemFilter(BaseModel):
+    """Filter for Sales by Item report"""
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    item_id: Optional[str] = None
+    group_id: Optional[str] = None
+    customer_id: Optional[str] = None
+
 # ============== ITEM GROUPS ==============
 
 @router.post("/groups")
