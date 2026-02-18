@@ -217,6 +217,32 @@ export default function EstimatesEnhanced() {
     } catch (e) { console.error("Failed to search contacts:", e); }
   };
 
+  // Fetch customer pricing info (price list)
+  const fetchCustomerPricing = async (customerId) => {
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/customer-pricing/${customerId}`, { headers });
+      const data = await res.json();
+      if (data.code === 0) {
+        setCustomerPricing(data.pricing);
+        if (data.pricing?.sales_price_list) {
+          toast.info(`Price List: ${data.pricing.sales_price_list.name}`, { duration: 3000 });
+        }
+      }
+    } catch (e) { console.error("Failed to fetch customer pricing:", e); }
+  };
+
+  // Fetch item price for selected customer
+  const fetchItemPricing = async (itemId, customerId) => {
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/item-pricing/${itemId}?customer_id=${customerId || ""}`, { headers });
+      const data = await res.json();
+      if (data.code === 0) {
+        return data.item;
+      }
+    } catch (e) { console.error("Failed to fetch item pricing:", e); }
+    return null;
+  };
+
   const fetchEstimateDetail = async (estimateId) => {
     try {
       const res = await fetch(`${API}/estimates-enhanced/${estimateId}`, { headers });
