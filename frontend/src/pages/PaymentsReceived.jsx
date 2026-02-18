@@ -248,7 +248,7 @@ export default function PaymentsReceived() {
     }
 
     try {
-      const res = await fetch(`${API}/payments-received/`, {
+      const res = await fetch(`${API}/api/payments-received/`, {
         method: "POST",
         headers,
         body: JSON.stringify(paymentForm)
