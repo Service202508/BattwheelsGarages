@@ -1,57 +1,55 @@
 <analysis>**original_problem_statement:**
-The user's initial goal was to build a production-grade accounting ERP system, Battwheels OS, cloning Zoho Books. After completing an EV Failure Intelligence (EFI) system and a comprehensive enhancement of the Quotes/Estimates module, the user provided a detailed specification to overhaul the Items module to match the functionality of Zoho Books. This involved a three-phase implementation:
-1.  **Phase 1 (Core Enhancements):** Redesign the item data model, implement an improved list view (search, sort, filter), and build a detailed item creation/editing form with stock tracking.
-2.  **Phase 2 (Price Lists & Adjustments):** Build the price lists and inventory adjustment sub-modules, along with advanced reporting (Sales by Item, Purchases by Item).
-3.  **Phase 3 (Customization & Reports):** Add an item history tab, a detailed preferences page, a field customization UI, and barcode/QR code support.
+The user's initial goal was to build a production-grade accounting ERP system, Battwheels OS, cloning Zoho Books. After completing the integration of the enhanced  module with , the user provided a comprehensive specification to overhaul the entire sales workflow to mirror Zoho Books. This involved a multi-phase implementation of the Customers, Invoices, and a new Payments Received module. The agent has now completed all requested phases for this sales module overhaul.
 
-The current request is to integrate the newly completed Items module with the existing Quotes/Invoices modules to enable automatic line-item pricing based on customer-specific price lists.
+PRODUCT REQUIREMENTS:
+- **Customers Module:** Enhance with full transaction history and statements.
+- **Invoices Module:** Implement a full lifecycle from creation to payment, including online payment integration (Stripe), partial payments, credit notes, and automated reminders/late fees.
+- **Payments Received Module:** A new module to record all payments (invoice-linked or advances), manage their allocation across multiple invoices, and handle overpayments as customer credits.
+- **General:** Ensure modular design, data integrity, consistent UX, and configurable preferences.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack ERP system (Battwheels OS) with a FastAPI backend, React frontend, and MongoDB. It features a standardized UI, a completed EV Failure Intelligence (EFI) system, a Command Palette (), and an enhanced Quotes/Estimates module.
+The application is a full-stack ERP system with a FastAPI backend, React frontend, and MongoDB. It features a completed EV Failure Intelligence (EFI) system, a Command Palette, and fully enhanced Quotes and Items modules.
 
-The  module has been completely overhauled across three phases to be enterprise-grade, mirroring Zoho Books' functionality. It now includes:
--   Advanced item list with search, sort, filters, and bulk actions.
--   Detailed item creation/editing form with stock tracking, image support, and custom fields.
--   Sub-modules for Price Lists, Inventory Adjustments, and Item History.
--   Comprehensive reporting (Sales by Item, Purchases, Inventory Valuation).
--   A detailed Preferences page for module-wide settings.
--   A Field Configuration UI to manage the visibility and properties of item fields.
--   Barcode/QR code lookup and scanning functionality.
+Most recently, a comprehensive Zoho-style sales workflow was implemented:
+-   **Payments Received Module:** A new, fully functional module to record, allocate, and manage customer payments, including overpayments and customer credits.
+-   **Invoices Module Enhancement:** Integrated with the new Payments module, allows application of customer credits, and now supports online payments via Stripe, including payment link generation.
+-   **Customers Module Enhancement:** Customer statements now include a full transaction history with invoices and payments from the new module.
+-   **Invoice Automation Module:** A new backend module and settings page foundation for advanced features like aging reports, automated reminders, and late fees.
 
 **Last working item**:
--   **Last item agent was working:** The user requested the integration of the newly-completed Items module with the Quotes/Invoices modules for automatic price list application. The agent acknowledged the request and began exploring the existing codebase () to understand the price list endpoints before starting the integration work.
--   **Status:** NOT STARTED
--   **Agent Testing Done:** N/A
--   **Which testing method agent to use?** both. The backend logic for applying price lists in the Quotes/Invoices routes will need thorough testing. The frontend will need testing to ensure prices update automatically when creating/editing transactions.
--   **User Testing Done:** N/A
+-   **Last item agent was working:** The agent finished the complete, multi-phase implementation of the Zoho-style Sales Modules. This included building the Payments Received module, integrating Stripe for online payments, creating an Invoice Automation module for aging reports, and linking all these new features into the existing Invoices and Customers modules.
+-   **Status:** USER VERIFICATION PENDING
+-   **Agent Testing Done:** Y
+-   **Which testing method agent to use?** NA
+-   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
 There are no outstanding bugs or issues.
 
 **In progress Task List**:
--   **Task 1: Integrate Items/Price Lists with Quotes/Invoices Module (P0 - HIGHEST PRIORITY)**
-    -   **Where to resume:** The agent has started exploring the  file to understand the price calculation endpoints. The next step is to modify the Quotes/Invoices backend routes (e.g., ) to fetch and apply customer-specific price lists when items are added to a transaction. Subsequently, the frontend () will need to be updated to reflect these automatic price changes.
-    -   **What will be achieved with this?** A seamless workflow where creating a quote or invoice for a customer automatically applies their designated price list, ensuring accurate, automated pricing for line items, just like in Zoho Books.
-    -   **Status:** NOT STARTED
-    -   **Should Test frontend/backend/both after fix?** both
-    -   **Blocked on something:** None.
+There are no in-progress tasks.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **Task 1 (P1): Activate Real WeasyPrint Integration:** The PDF generation for quotes is still using an HTML fallback. The missing system dependency  needs to be installed to enable true PDF downloads.
--   **Task 2 (P2): Activate Real Email Integration:** Un-mock Resend/SendGrid to enable sending quotes and other notifications via email.
+-   **Task 1 (P0): Activate Real WeasyPrint Integration:** The PDF generation for quotes and invoices is still using an HTML fallback. The missing system dependency  needs to be installed to enable true PDF downloads.
+-   **Task 2 (P1): Activate Real Email Integration:** Un-mock Resend/SendGrid to enable sending invoices, payment thank-you notes, and automated reminders via email.
+-   **Task 3 (P1): Implement Invoice Automation Settings:** The backend for invoice automation (aging reports) is built, and a placeholder UI exists (). This needs to be built out to allow users to configure and enable automated reminders and late fees.
 
 **Future Tasks:**
--   **Task 1 (P2): Propagate UI Components:** Ensure any remaining pages use the standardized , , and  components.
--   **Task 2 (P2): Advanced Inventory Module:** Implement optional features like composite items (kits/assemblies), packages, and multi-warehouse support, building on the new Items module foundation.
+-   **Task 1 (P2): Advanced Sales Features:** Implement the remaining advanced features from the user's spec, such as a customer portal, recurring invoices, and more detailed sales reports.
+-   **Task 2 (P2): Propagate UI Components:** Ensure any remaining pages use the standardized , , and  components.
+-   **Task 3 (P2): Advanced Inventory Module:** Implement optional features like composite items (kits/assemblies), packages, and multi-warehouse support.
 
 **Completed work in this session**
--   **Items Module Enhancement (Phases 1, 2, & 3 DONE):**
-    -   **Phase 1 (Core Enhancements):** Implemented a new data model, Zoho-style list view with search/sort/filters, bulk actions, import/export, item history, and a detailed creation/edit form. Fixed bugs related to API redirects and UI select components. Verified with  ().
-    -   **Phase 2 (Price Lists & Reports):** Implemented Price Lists management, advanced inventory reports (Sales by Item, Purchases, Valuation), and added initial barcode/SKU lookup support. Verified with  ().
-    -   **Phase 3 (Customization & Preferences):** Implemented a comprehensive Preferences dialog, a Field Configuration UI to manage item fields dynamically, and integrated a live barcode scanner using the device camera. Fixed an ObjectId serialization bug in the backend. Verified with  ().
+-   **Items/Price Lists ↔ Quotes Integration (DONE):** Successfully integrated the enhanced Items module with the Quotes module to enable automatic price list application for customers. Validated with  ().
+-   **Zoho-Style Sales Modules Enhancement (Phases 1, 2, & 3 DONE):**
+    -   **Phase 1 (Core Infrastructure):** Built the  module from scratch, handling payment recording, multi-invoice allocation, overpayments, and customer credits. Integrated these features into the Invoices and Customers modules. Validated with  ( and ).
+    -   **Phase 2 (Workflow & Automation):** Integrated **Stripe** for online payments, enabling a Pay Online button on invoices that generates a secure payment link.
+    -   **Phase 3 (Advanced Features):** Created the  module with an aging report API and a placeholder UI for future settings like automated reminders.
+    -   Phases 2 & 3 were validated together with  ().
+-   **Documentation:**  was updated to reflect the completion of all sales module tasks.
 
 **Earlier issues found/mentioned but not fixed**
 -   None.
@@ -64,83 +62,85 @@ There are no outstanding bugs or issues.
 
 **Key Technical Concepts**
 -   **Backend:** FastAPI, Pydantic, MongoDB.
--   **Frontend:** React, TailwindCSS, Shadcn/UI,  library,  for barcode scanning.
--   **Architecture:** Phased implementation of large features, modular design. The focus now shifts to inter-module integration (Items -> Quotes).
+-   **Frontend:** React, TailwindCSS, Shadcn/UI.
+-   **Payments:** Stripe integration for creating checkout sessions and handling payment webhooks.
+-   **Financial Logic:** Implemented a complete accounts receivable workflow including invoice creation, payment allocation, overpayments, customer credits, and credit application.
+-   **Architecture:** Continued modular expansion of the ERP by creating and integrating new, independent modules (, , ).
 
 **key DB schema**
--   **items:** Schema massively expanded with fields for , , , , , purchase/sales details, stock tracking (, ), and custom fields.
 -   **New Collections:**
-    -   : Logs all changes to items.
-    -   : Stores module-level settings.
-    -   : Stores dynamic configuration for each item field.
-    -   : Stores definitions for user-created custom fields.
-    -   : Stores price list definitions and their association with items.
+    -   : Records each payment transaction, its allocation to invoices, and any overpayment amount.
+    -   : Stores available credit for a customer, generated from overpayments.
+    -   : Logs details of payment gateway transactions (e.g., Stripe session IDs).
+-   **Modified Collections:**
+    -   : , , and  are now updated by the Payments module.
+    -   : Now aggregates data from  and .
 
 **changes in tech stack**
--   Added frontend dependency:  and its related packages for barcode scanning functionality.
+-   **Added:**  Python library for payment processing.
+-   **Added:**  environment variable for the backend.
 
 **All files of reference**
--   **/app/backend/routes/items_enhanced.py**: The completed, feature-rich backend for the Items module. Contains the pricing logic to be consumed.
--   **/app/frontend/src/pages/ItemsEnhanced.jsx**: The completed, feature-rich frontend for the Items module.
--   **/app/backend/routes/estimates_enhanced.py**: The primary backend file to be modified for the next integration task.
--   **/app/frontend/src/pages/EstimatesEnhanced.jsx**: The primary frontend file to be modified for the next integration task.
--   **/app/memory/PRD.md**: Contains the updated product requirements and completed tasks.
--   **/app/test_reports/iteration_37.json**: The latest test report confirming the successful completion of the Items module.
+-   **/app/backend/routes/payments_received.py**: Core backend logic for the new Payments Received module.
+-   **/app/frontend/src/pages/PaymentsReceived.jsx**: Core frontend UI for the new Payments Received module.
+-   **/app/backend/routes/invoice_payments.py**: Handles Stripe payment link creation.
+-   **/app/frontend/src/pages/InvoicesEnhanced.jsx**: Modified to include Pay Online button and credit application.
+-   **/app/backend/routes/invoice_automation.py**: Backend for aging reports and future automation.
+-   **/app/memory/PRD.md**: Contains the full requirements and updated status.
+-   **/app/test_reports/iteration_41.json**: The final test report confirming the successful completion of the sales modules.
 
 **Areas that need refactoring**:
--   The  and  files will need refactoring to incorporate the pricing logic from the new Items module.
+-   The  page is currently a placeholder. It needs a full implementation to connect to the  backend APIs, allowing users to configure reminders, late fees, etc.
 
 **key api endpoints**
--   : (New) GET report on item sales.
--   : (New) GET inventory valuation report.
--   : (New) POST to calculate the price for a line item based on quantity and contact-specific price lists.
--   : (New) GET to find an item by its barcode or SKU.
--   : (New) GET/PUT for module preferences.
--   : (New) GET/PUT for dynamic field configuration.
+-   : Record a new payment and allocate it to invoices.
+-   : Get dashboard stats for payments.
+-   : Apply a customer's available credit to an invoice.
+-   : Generate a Stripe payment URL for an invoice.
+-   : Endpoint for Stripe to send payment success/failure events.
+-   : Get a summary of outstanding receivables by age.
 
 **Critical Info for New Agent**
-1.  **Items Module is Complete:** All 3 phases of the Items module enhancement are finished, tested, and verified. Do not modify this module unless it's for the integration task.
-2.  **New Task is Integration:** The primary focus is to connect the  module with the  (and by extension, invoices) module. The goal is to automatically apply customer-specific price lists when adding items to a quote.
-3.  **Use Existing APIs:** Leverage the new API endpoints created in the Items module, especially , to perform the price calculations. Avoid re-implementing logic.
-4.  **Mocked Dependencies Remain:** WeasyPrint for PDF generation is still mocked due to a missing system library. This is a known upcoming task but does not block the current integration work.
+1.  **Sales Module Overhaul is Complete:** The large, multi-phase task to build Zoho-style sales modules is finished and has been verified by the testing agent. Do not modify this work unless a bug is found or a new enhancement is requested.
+2.  **Stripe is Live (Test Mode):** The Stripe integration is active and uses a test API key from the environment ().
+3.  **Focus on Mocked Services:** The most immediate high-value tasks are to activate the remaining mocked services: WeasyPrint (for PDFs) and Resend/SendGrid (for emails). These are the next logical steps to complete the core ERP functionality.
 
 **documents and test reports created in this job**
--   /app/test_reports/iteration_35.json
--   /app/test_reports/iteration_36.json
--   /app/test_reports/iteration_37.json
--   /app/memory/PRD.md (updated after each phase)
+-   /app/test_reports/iteration_38.json
+-   /app/test_reports/iteration_39.json
+-   /app/test_reports/iteration_40.json
+-   /app/test_reports/iteration_41.json
+-   /app/memory/PRD.md (Updated throughout the session)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Asks agent to complete Phase 3 and add barcode scanning. (COMPLETED)
-2.  **Agent:** Implements Phase 3 backend (Preferences, Field Config). Fixes an ObjectId serialization bug. (COMPLETED)
-3.  **Agent:** Installs  and implements Phase 3 frontend (Preferences/Field Config dialogs, Barcode scanner). (COMPLETED)
-4.  **Agent:** Takes screenshots showing the new Preferences and Field Configuration dialogs are working. (COMPLETED)
-5.  **Agent:** Runs testing agent, which passes all Phase 3 tests. (). (COMPLETED)
-6.  **Agent:** Updates PRD.md and finishes the task, summarizing the completion of all 3 phases. (COMPLETED)
-7.  **User:** Praises the enterprise-ready Items module and requests the next step: integrating it with Quotes/Invoices for automatic pricing. (PENDING)
-8.  **Agent:** Acknowledges the new integration task and begins exploring the codebase. (IN PROGRESS)
+-   **User:** Approved plan to start Phase 1 of the Sales module implementation. (COMPLETED)
+-   **Agent:** Completed Phase 1 (Payments Received module, credit application) and confirmed with tests. (COMPLETED)
+-   **User:** Requested the agent to complete the remaining phases. (COMPLETED)
+-   **Agent:** Completed Phase 2 (Stripe integration) and Phase 3 (Invoice Automation foundation). (COMPLETED)
+-   **Agent:** Ran final tests with the testing agent, updated the PRD, and finished the task, summarizing the completion of all sales module phases. (COMPLETED & AWAITING USER REVIEW)
 
 **Project Health Check:**
 -   **Broken:** None.
 -   **Mocked:**
-    -   **WeasyPrint (PDF generation):** Service is integrated but fails at runtime due to a missing  system library. The code falls back to returning raw HTML.
+    -   **WeasyPrint (PDF generation):** Service is integrated but fails at runtime due to a missing  system library. This is a high-priority upcoming task.
     -   **Resend/SendGrid (email):** Service is present but mocked.
-    -   **Razorpay (payments):** Service is present but mocked.
+    -   **Razorpay (payments):** Service is present but mocked. Stripe was added as the primary active payment gateway.
 
 **3rd Party Integrations**
+-   **Stripe (Payments):** **Active (Test Mode)**. Integrated for online invoice payments. Uses  key from the environment.
 -   **Zoho Books API (India Region):** Live and active.
 -   **Emergent-managed Google Auth:** Integrated.
 -   **Gemini (via Emergent LLM Key Proxy):** Active. Used for runtime semantic analysis in the EFI system.
--   **@zxing/browser:** (New) Integrated for frontend barcode scanning.
+-   **@zxing/browser:** Integrated for frontend barcode scanning.
 -   **WeasyPrint:** Integrated but **mocked**.
 -   **Razorpay:** Integrated but **mocked**.
 -   **OpenAI:** Dormant, awaiting user API key.
 
 **Testing status**
 -   **Testing agent used after significant changes:** YES.
-    -   Items Module Phase 1 validated via .
-    -   Items Module Phase 2 validated via .
-    -   Items Module Phase 3 validated via .
+    -   Price List Integration validated via .
+    -   Sales Module Phase 1 validated via  & .
+    -   Sales Module Phases 2 & 3 validated via .
 -   **Troubleshoot agent used after agent stuck in loop:** NO.
 -   **Test files created:** None.
 -   **Known regressions:** None.
@@ -150,4 +150,4 @@ There are no outstanding bugs or issues.
 -   **Technician:**  / 
 
 **What agent forgot to execute**
--   Nothing. The agent successfully completed all three phases of the complex Items module enhancement as requested by the user and is now correctly proceeding to the next logical step of integration.</analysis>
+-   Nothing. The agent methodically completed the large, user-defined specification for the sales modules across multiple phases, including using the integration subagent and extensive testing.</analysis>
