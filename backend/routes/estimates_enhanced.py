@@ -409,8 +409,41 @@ def generate_share_token() -> str:
     """Generate a secure share token for public links"""
     return hashlib.sha256(f"{uuid.uuid4().hex}{datetime.now(timezone.utc).isoformat()}".encode()).hexdigest()[:32]
 
-def generate_pdf_html(estimate: dict, line_items: list) -> str:
-    """Generate HTML for PDF rendering"""
+# PDF Templates System
+PDF_TEMPLATES = {
+    "standard": {
+        "name": "Standard",
+        "description": "Clean, professional layout with green branding",
+        "primary_color": "#0B462F",
+        "secondary_color": "#22EDA9",
+        "font_family": "'Segoe UI', Arial, sans-serif",
+        "header_style": "modern"
+    },
+    "professional": {
+        "name": "Professional",
+        "description": "Formal business style with navy blue accents",
+        "primary_color": "#1e3a5f",
+        "secondary_color": "#3b82f6",
+        "font_family": "'Georgia', serif",
+        "header_style": "classic"
+    },
+    "minimal": {
+        "name": "Minimal",
+        "description": "Simple, clean design with minimal styling",
+        "primary_color": "#374151",
+        "secondary_color": "#6b7280",
+        "font_family": "'Helvetica', Arial, sans-serif",
+        "header_style": "minimal"
+    }
+}
+
+def generate_pdf_html(estimate: dict, line_items: list, template: str = "standard") -> str:
+    """Generate HTML for PDF rendering with template support"""
+    tmpl = PDF_TEMPLATES.get(template, PDF_TEMPLATES["standard"])
+    primary = tmpl["primary_color"]
+    secondary = tmpl["secondary_color"]
+    font = tmpl["font_family"]
+    
     items_html = ""
     for idx, item in enumerate(line_items, 1):
         items_html += f"""
@@ -428,26 +461,41 @@ def generate_pdf_html(estimate: dict, line_items: list) -> str:
         </tr>
         """
     
+    # Custom fields section
+    custom_fields_html = ""
+    if estimate.get("custom_fields"):
+        cf_items = []
+        for key, value in estimate.get("custom_fields", {}).items():
+            if value:
+                cf_items.append(f"<div><strong>{key}:</strong> {value}</div>")
+        if cf_items:
+            custom_fields_html = f"""
+            <div class="info-box" style="margin-top: 20px;">
+                <div class="info-label">Additional Information</div>
+                {''.join(cf_items)}
+            </div>
+            """
+    
     html = f"""
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
         <style>
-            body {{ font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; color: #1f2937; font-size: 12px; }}
-            .header {{ display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 2px solid #0B462F; padding-bottom: 20px; }}
-            .company {{ font-size: 24px; font-weight: bold; color: #0B462F; }}
-            .estimate-title {{ font-size: 28px; color: #0B462F; text-align: right; }}
+            body {{ font-family: {font}; margin: 0; padding: 20px; color: #1f2937; font-size: 12px; }}
+            .header {{ display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 2px solid {primary}; padding-bottom: 20px; }}
+            .company {{ font-size: 24px; font-weight: bold; color: {primary}; }}
+            .estimate-title {{ font-size: 28px; color: {primary}; text-align: right; }}
             .estimate-number {{ color: #6b7280; font-size: 14px; }}
             .info-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }}
             .info-box {{ background: #f9fafb; padding: 15px; border-radius: 8px; }}
             .info-label {{ color: #6b7280; font-size: 11px; text-transform: uppercase; margin-bottom: 5px; }}
             .info-value {{ font-weight: 600; }}
             table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
-            th {{ background: #0B462F; color: white; padding: 10px 8px; text-align: left; font-weight: 600; }}
+            th {{ background: {primary}; color: white; padding: 10px 8px; text-align: left; font-weight: 600; }}
             .totals {{ margin-left: auto; width: 300px; }}
             .totals-row {{ display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb; }}
-            .totals-row.grand {{ font-size: 16px; font-weight: bold; color: #0B462F; border-top: 2px solid #0B462F; border-bottom: none; }}
+            .totals-row.grand {{ font-size: 16px; font-weight: bold; color: {primary}; border-top: 2px solid {primary}; border-bottom: none; }}
             .terms {{ margin-top: 30px; padding: 15px; background: #f9fafb; border-radius: 8px; }}
             .terms-title {{ font-weight: 600; margin-bottom: 10px; }}
             .status-badge {{ display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; }}
@@ -487,6 +535,8 @@ def generate_pdf_html(estimate: dict, line_items: list) -> str:
                 {f"<div><strong>Subject:</strong> {estimate.get('subject', '')}</div>" if estimate.get('subject') else ''}
             </div>
         </div>
+        
+        {custom_fields_html}
         
         <table>
             <thead>
