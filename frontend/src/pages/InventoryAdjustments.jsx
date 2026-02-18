@@ -138,6 +138,32 @@ export default function InventoryAdjustments() {
 
   useEffect(() => { fetchData(); }, []);
 
+  // Handle quick adjust from Items page (URL params)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const quickItemId = params.get("quick_adjust");
+    const itemName = params.get("item_name");
+    const stock = parseFloat(params.get("stock") || "0");
+    if (quickItemId) {
+      setQuickAdjustItem({ item_id: quickItemId, name: itemName, stock });
+      setForm(f => ({
+        ...f,
+        adjustment_type: "quantity",
+        line_items: [{
+          item_id: quickItemId,
+          item_name: itemName || "",
+          sku: "",
+          quantity_available: stock,
+          new_quantity: stock,
+          quantity_adjusted: 0
+        }]
+      }));
+      setShowCreateDialog(true);
+      // Clean URL
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
+
   const applyFilters = () => fetchData(1);
 
   const clearFilters = () => {
