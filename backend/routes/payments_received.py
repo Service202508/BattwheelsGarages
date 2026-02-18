@@ -618,7 +618,7 @@ async def update_payment(payment_id: str, update: PaymentUpdate):
         {"$set": update_data}
     )
     
-    await add_payment_history(payment_id, "updated", f"Payment details updated")
+    await add_payment_history(payment_id, "updated", "Payment details updated")
     
     updated = await payments_collection.find_one({"payment_id": payment_id}, {"_id": 0})
     
