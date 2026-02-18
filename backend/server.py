@@ -4607,6 +4607,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Recurring Invoices routes: {e}")
 
+# Include Composite Items routes (Kits/Assemblies)
+try:
+    from routes.composite_items import router as composite_items_router
+    api_router.include_router(composite_items_router)
+    logger.info("Composite Items routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Composite Items routes: {e}")
+
 # Include Stripe Webhook routes
 try:
     from routes.stripe_webhook import router as stripe_webhook_router
