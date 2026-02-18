@@ -4615,6 +4615,15 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Composite Items routes: {e}")
 
+# Include Inventory Adjustments V2 routes
+try:
+    from routes.inventory_adjustments_v2 import router as inv_adj_v2_router
+    api_router.include_router(inv_adj_v2_router)
+    logger.info("Inventory Adjustments V2 routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Inventory Adjustments V2 routes: {e}")
+
+
 # Include Stripe Webhook routes
 try:
     from routes.stripe_webhook import router as stripe_webhook_router
