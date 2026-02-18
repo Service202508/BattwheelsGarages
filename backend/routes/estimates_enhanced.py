@@ -1323,10 +1323,11 @@ async def update_estimate_status(estimate_id: str, status_update: StatusUpdate):
     current_status = estimate.get("status")
     new_status = status_update.status
     
-    # Validate status transitions
+    # Validate status transitions (including customer_viewed)
     valid_transitions = {
         "draft": ["sent", "void"],
-        "sent": ["accepted", "declined", "expired", "void"],
+        "sent": ["customer_viewed", "accepted", "declined", "expired", "void"],
+        "customer_viewed": ["accepted", "declined", "expired", "void"],
         "accepted": ["converted", "void"],
         "declined": ["sent"],  # Can resend
         "expired": ["sent"],  # Can resend
@@ -1347,9 +1348,16 @@ async def update_estimate_status(estimate_id: str, status_update: StatusUpdate):
     
     if new_status == "accepted":
         update_data["accepted_date"] = datetime.now(timezone.utc).date().isoformat()
+        # Check for auto-conversion
+        preferences = await get_estimate_preferences()
+        if preferences.get("auto_convert_on_accept", False):
+            # Will be handled after status update
+            pass
     elif new_status == "declined":
         update_data["declined_date"] = datetime.now(timezone.utc).date().isoformat()
         update_data["decline_reason"] = status_update.reason
+    elif new_status == "customer_viewed":
+        update_data["first_viewed_at"] = datetime.now(timezone.utc).isoformat()
     
     await estimates_collection.update_one({"estimate_id": estimate_id}, {"$set": update_data})
     
@@ -1359,7 +1367,14 @@ async def update_estimate_status(estimate_id: str, status_update: StatusUpdate):
         f"Status changed from '{current_status}' to '{new_status}'" + (f": {status_update.reason}" if status_update.reason else "")
     )
     
-    return {"code": 0, "message": f"Status updated to {new_status}"}
+    # Handle auto-conversion for accepted status
+    conversion_result = None
+    if new_status == "accepted":
+        preferences = await get_estimate_preferences()
+        if preferences.get("auto_convert_on_accept", False):
+            conversion_result = await auto_convert_estimate(estimate_id, preferences)
+    
+    return {"code": 0, "message": f"Status updated to {new_status}", "conversion": conversion_result}
 
 @router.post("/{estimate_id}/send")
 async def send_estimate(estimate_id: str, email_to: Optional[str] = None, message: str = ""):
