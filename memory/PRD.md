@@ -7,6 +7,54 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ## Implementation Status
 
+### ✅ Items Module Enhancement - Phase 2 (COMPLETE - Feb 18, 2026)
+
+**Contact Price List Association:**
+- Assign sales price list to customers
+- Assign purchase price list to vendors
+- Auto-apply during transaction creation
+- API: `POST/GET /api/items-enhanced/contact-price-lists`
+
+**Line-Item Level Pricing:**
+- Calculate prices based on contact's price list
+- Support custom rate overrides
+- Apply markup/discount automatically
+- Configurable rounding (none, nearest 1/5/10)
+- API: `POST /api/items-enhanced/calculate-line-prices`
+
+**Bulk Price Setting:**
+- Apply percentage markup/discount to all items
+- Custom per-item pricing option
+- API: `POST /api/items-enhanced/price-lists/{id}/set-prices`
+
+**Barcode/QR Code Support:**
+- Create barcodes for items (CODE128, EAN13, QR)
+- Auto-generate from SKU if empty
+- Barcode/SKU lookup endpoint
+- Batch lookup for multiple items
+- API: `POST /api/items-enhanced/barcodes`
+- API: `GET /api/items-enhanced/lookup/barcode/{value}`
+- API: `POST /api/items-enhanced/lookup/batch`
+
+**Advanced Reports (Phase 3 Early Delivery):**
+- **Sales by Item**: Revenue, quantity sold, avg selling price
+- **Purchases by Item**: Cost, quantity purchased, avg purchase price
+- **Inventory Valuation**: FIFO method, total value, cost rate
+- **Item Movement**: Stock in/out history, adjustments, sales, purchases
+- API: `GET /api/items-enhanced/reports/sales-by-item`
+- API: `GET /api/items-enhanced/reports/purchases-by-item`
+- API: `GET /api/items-enhanced/reports/inventory-valuation`
+- API: `GET /api/items-enhanced/reports/item-movement`
+
+**UI Enhancements:**
+- Reports tab with 3 report cards (Sales, Purchases, Valuation)
+- Barcode Lookup dialog (More menu)
+- "Assign to Contact" button on Price Lists tab
+- "Set Bulk Prices" action on price list cards
+- Refresh Reports button
+
+---
+
 ### ✅ Items Module Enhancement - Phase 1 (COMPLETE - Feb 18, 2026)
 
 **Enhanced Data Model:**
