@@ -1207,7 +1207,14 @@ export default function EstimatesEnhanced() {
                   </div>
                   <div className="col-span-1">
                     <Label className="text-xs">Rate</Label>
-                    <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({...newLineItem, rate: parseFloat(e.target.value) || 0})} min="0" />
+                    <div className="relative">
+                      <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({...newLineItem, rate: parseFloat(e.target.value) || 0})} min="0" />
+                      {newLineItem.price_list_applied && (
+                        <span className="absolute -top-5 right-0 text-[10px] text-green-600 truncate max-w-[80px]" title={newLineItem.price_list_applied}>
+                          {newLineItem.price_list_applied}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="col-span-1">
                     <Label className="text-xs">Disc %</Label>
@@ -1244,9 +1251,23 @@ export default function EstimatesEnhanced() {
                       <tbody>
                         {newEstimate.line_items.map((item, idx) => (
                           <tr key={idx} className="border-t">
-                            <td className="px-3 py-2">{item.name}</td>
+                            <td className="px-3 py-2">
+                              <div>{item.name}</div>
+                              {item.price_list_applied && (
+                                <span className="text-[10px] text-green-600 bg-green-50 px-1 rounded">
+                                  {item.price_list_applied}
+                                  {item.discount_from_pricelist > 0 && ` -₹${item.discount_from_pricelist}`}
+                                  {item.markup_from_pricelist > 0 && ` +₹${item.markup_from_pricelist}`}
+                                </span>
+                              )}
+                            </td>
                             <td className="px-3 py-2 text-right">{item.quantity}</td>
-                            <td className="px-3 py-2 text-right">₹{item.rate}</td>
+                            <td className="px-3 py-2 text-right">
+                              ₹{item.rate}
+                              {item.base_rate && item.base_rate !== item.rate && (
+                                <span className="text-[10px] text-gray-400 line-through ml-1">₹{item.base_rate}</span>
+                              )}
+                            </td>
                             <td className="px-3 py-2 text-right">{item.discount_percent}%</td>
                             <td className="px-3 py-2 text-right">{item.tax_percentage}%</td>
                             <td className="px-3 py-2 text-right font-medium">₹{item.total?.toFixed(2)}</td>
