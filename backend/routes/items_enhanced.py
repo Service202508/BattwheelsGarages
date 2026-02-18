@@ -1,22 +1,30 @@
 """
 Enhanced Items Module for Battwheels OS
-Comprehensive item management with:
+Zoho Books-style comprehensive item management with:
 - Item Groups (Categories) with hierarchy
 - Multi-Warehouse inventory tracking
-- Inventory Adjustments with reasons
-- Multiple Price Lists (Wholesale/Retail)
+- Inventory Adjustments (Quantity & Value) with audit trail
+- Multiple Price Lists (Sales/Purchase) with Markup/Markdown
 - Custom Fields support
-- GST/HSN/SAC integration
-- Low stock alerts
+- GST/HSN/SAC integration with validation
+- Import/Export (CSV/XLS)
+- Bulk Actions
+- Item History Tracking
+- Low stock alerts & reorder notifications
 """
-from fastapi import APIRouter, HTTPException, Query, UploadFile, File
+from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Form, Request
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, validator
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 from motor.motor_asyncio import AsyncIOMotorClient
 import uuid
 import os
 import re
+import csv
+import io
+import json
+import base64
 
 router = APIRouter(prefix="/items-enhanced", tags=["Items Enhanced"])
 
