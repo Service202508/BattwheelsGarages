@@ -502,6 +502,13 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/invoice-settings" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <InvoiceSettings user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       {/* Redirect old customers-enhanced route to unified contacts page */}
       <Route path="/customers-enhanced" element={<Navigate to="/contacts" replace />} />
       {/* Customer Portal - Public access with token authentication */}
