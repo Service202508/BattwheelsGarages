@@ -1537,6 +1537,171 @@ async def batch_barcode_lookup(barcodes: List[str]):
     
     return {"code": 0, "items": results, "not_found": not_found}
 
+# ============== SINGLE ITEM PRICE LOOKUP (FOR QUOTES/INVOICES INTEGRATION) ==============
+
+@router.get("/item-price/{item_id}")
+async def get_item_price_for_contact(
+    item_id: str,
+    contact_id: str = "",
+    transaction_type: str = "sales"
+):
+    """
+    Get the price for a single item based on contact's assigned price list.
+    Used by Quotes/Invoices for automatic pricing when selecting items.
+    
+    Returns:
+    - base_rate: Standard item rate
+    - final_rate: Rate after applying price list (if any)
+    - price_list_id/name: The applied price list (if any)
+    - discount/markup applied: The adjustment made
+    """
+    db = get_db()
+    
+    # Get item
+    item = await db.items.find_one({"item_id": item_id}, {"_id": 0})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    # Get base rate
+    if transaction_type == "sales":
+        base_rate = item.get("sales_rate", 0) or item.get("rate", 0)
+    else:
+        base_rate = item.get("purchase_rate", 0)
+    
+    result = {
+        "item_id": item_id,
+        "item_name": item.get("name"),
+        "sku": item.get("sku"),
+        "description": item.get("description", ""),
+        "unit": item.get("unit", "pcs"),
+        "base_rate": base_rate,
+        "final_rate": base_rate,
+        "price_list_id": None,
+        "price_list_name": None,
+        "discount_applied": 0,
+        "markup_applied": 0,
+        "tax_percentage": item.get("tax_percentage", 0),
+        "hsn_code": item.get("hsn_code", ""),
+        "stock_on_hand": item.get("stock_on_hand", 0)
+    }
+    
+    # If no contact, return base rate
+    if not contact_id:
+        return {"code": 0, "pricing": result}
+    
+    # Get contact's price list
+    contact = await db.contacts_enhanced.find_one({"contact_id": contact_id})
+    if not contact:
+        contact = await db.contacts.find_one({"contact_id": contact_id})
+    
+    if not contact:
+        return {"code": 0, "pricing": result}
+    
+    # Get assigned price list
+    if transaction_type == "sales":
+        price_list_id = contact.get("sales_price_list_id")
+    else:
+        price_list_id = contact.get("purchase_price_list_id")
+    
+    if not price_list_id:
+        return {"code": 0, "pricing": result}
+    
+    # Get price list details
+    price_list = await db.price_lists.find_one({"pricelist_id": price_list_id}, {"_id": 0})
+    if not price_list:
+        return {"code": 0, "pricing": result}
+    
+    result["price_list_id"] = price_list_id
+    result["price_list_name"] = price_list.get("name", "")
+    
+    final_rate = base_rate
+    
+    # Check for custom price in price list
+    custom_price = await db.item_prices.find_one({
+        "item_id": item_id,
+        "price_list_id": price_list_id
+    })
+    
+    if custom_price:
+        final_rate = custom_price.get("rate", base_rate)
+    else:
+        # Apply percentage markup/discount from price list
+        markup = price_list.get("markup_percentage", 0)
+        discount = price_list.get("discount_percentage", 0)
+        
+        if markup > 0:
+            final_rate = base_rate * (1 + markup / 100)
+        elif discount > 0:
+            final_rate = base_rate * (1 - discount / 100)
+        
+        # Round off
+        round_to = price_list.get("round_off_to", "none")
+        if round_to == "nearest_1":
+            final_rate = round(final_rate)
+        elif round_to == "nearest_5":
+            final_rate = round(final_rate / 5) * 5
+        elif round_to == "nearest_10":
+            final_rate = round(final_rate / 10) * 10
+    
+    result["final_rate"] = round(final_rate, 2)
+    
+    if base_rate > final_rate:
+        result["discount_applied"] = round(base_rate - final_rate, 2)
+    elif final_rate > base_rate:
+        result["markup_applied"] = round(final_rate - base_rate, 2)
+    
+    return {"code": 0, "pricing": result}
+
+
+@router.get("/contact-pricing-summary/{contact_id}")
+async def get_contact_pricing_summary(contact_id: str):
+    """
+    Get a summary of the pricing configuration for a contact.
+    Useful for displaying which price list is being applied in Quotes/Invoices UI.
+    """
+    db = get_db()
+    
+    contact = await db.contacts_enhanced.find_one({"contact_id": contact_id})
+    if not contact:
+        contact = await db.contacts.find_one({"contact_id": contact_id})
+    
+    if not contact:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    
+    result = {
+        "contact_id": contact_id,
+        "contact_name": contact.get("company_name") or contact.get("name") or contact.get("display_name", ""),
+        "sales_price_list": None,
+        "purchase_price_list": None
+    }
+    
+    # Get sales price list
+    sales_pl_id = contact.get("sales_price_list_id")
+    if sales_pl_id:
+        pl = await db.price_lists.find_one({"pricelist_id": sales_pl_id}, {"_id": 0})
+        if pl:
+            result["sales_price_list"] = {
+                "pricelist_id": sales_pl_id,
+                "name": pl.get("name", ""),
+                "discount_percentage": pl.get("discount_percentage", 0),
+                "markup_percentage": pl.get("markup_percentage", 0)
+            }
+    
+    # Get purchase price list
+    purchase_pl_id = contact.get("purchase_price_list_id")
+    if purchase_pl_id:
+        pl = await db.price_lists.find_one({"pricelist_id": purchase_pl_id}, {"_id": 0})
+        if pl:
+            result["purchase_price_list"] = {
+                "pricelist_id": purchase_pl_id,
+                "name": pl.get("name", ""),
+                "discount_percentage": pl.get("discount_percentage", 0),
+                "markup_percentage": pl.get("markup_percentage", 0)
+            }
+    
+    return {"code": 0, "pricing_summary": result}
+
+
 # ============== PHASE 3: ADVANCED REPORTS ==============
 
 @router.get("/reports/sales-by-item")
