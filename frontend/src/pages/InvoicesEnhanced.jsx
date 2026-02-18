@@ -330,6 +330,65 @@ export default function InvoicesEnhanced() {
     }
   };
 
+  // Online Payment
+  const handleCreatePaymentLink = async (invoiceId) => {
+    try {
+      const res = await fetch(`${API}/invoice-payments/create-payment-link`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          invoice_id: invoiceId,
+          origin_url: window.location.origin
+        })
+      });
+      const data = await res.json();
+      if (data.code === 0) {
+        toast.success("Payment link created! Redirecting...");
+        // Redirect to Stripe checkout
+        window.location.href = data.payment_url;
+      } else {
+        toast.error(data.detail || "Failed to create payment link");
+      }
+    } catch (e) {
+      toast.error("Error creating payment link");
+    }
+  };
+
+  // Check for payment return
+  useEffect(() => {
+    const sessionId = searchParams.get("session_id");
+    const paymentSuccess = searchParams.get("payment_success");
+    const paymentCancelled = searchParams.get("payment_cancelled");
+    
+    if (sessionId && paymentSuccess) {
+      // Poll for payment status
+      const pollPaymentStatus = async () => {
+        try {
+          const res = await fetch(`${API}/invoice-payments/status/${sessionId}`, { headers });
+          const data = await res.json();
+          if (data.payment_status === "paid") {
+            toast.success("Payment successful! Invoice updated.");
+            // Clear URL params
+            navigate("/invoices-enhanced", { replace: true });
+            fetchData();
+          } else if (data.status === "expired") {
+            toast.error("Payment session expired");
+            navigate("/invoices-enhanced", { replace: true });
+          } else {
+            // Continue polling
+            setTimeout(pollPaymentStatus, 2000);
+          }
+        } catch (e) {
+          console.error("Payment status check failed:", e);
+        }
+      };
+      pollPaymentStatus();
+    } else if (paymentCancelled) {
+      toast.info("Payment cancelled");
+      navigate("/invoices-enhanced", { replace: true });
+    }
+  }, [searchParams]);
+
   // Line Items
   const addLineItem = () => {
     setNewInvoice(prev => ({
