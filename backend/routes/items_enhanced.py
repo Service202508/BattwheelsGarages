@@ -1140,6 +1140,700 @@ async def delete_item_price(item_id: str, price_list_id: str):
         raise HTTPException(status_code=404, detail="Item price not found")
     return {"code": 0, "message": "Item price deleted"}
 
+# ============== PHASE 2: CONTACT PRICE LIST ASSOCIATION ==============
+
+@router.post("/contact-price-lists")
+async def assign_price_list_to_contact(assignment: ContactPriceListAssign):
+    """Assign sales/purchase price list to a customer/vendor"""
+    db = get_db()
+    
+    # Verify contact exists
+    contact = await db.contacts_enhanced.find_one({"contact_id": assignment.contact_id})
+    if not contact:
+        contact = await db.contacts.find_one({"contact_id": assignment.contact_id})
+    if not contact:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    
+    # Verify price lists exist
+    if assignment.sales_price_list_id:
+        pl = await db.price_lists.find_one({"pricelist_id": assignment.sales_price_list_id})
+        if not pl:
+            raise HTTPException(status_code=404, detail="Sales price list not found")
+    
+    if assignment.purchase_price_list_id:
+        pl = await db.price_lists.find_one({"pricelist_id": assignment.purchase_price_list_id})
+        if not pl:
+            raise HTTPException(status_code=404, detail="Purchase price list not found")
+    
+    # Update contact with price lists
+    update_data = {"updated_time": datetime.now(timezone.utc).isoformat()}
+    if assignment.sales_price_list_id is not None:
+        update_data["sales_price_list_id"] = assignment.sales_price_list_id
+    if assignment.purchase_price_list_id is not None:
+        update_data["purchase_price_list_id"] = assignment.purchase_price_list_id
+    
+    # Try both collections
+    result = await db.contacts_enhanced.update_one(
+        {"contact_id": assignment.contact_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        await db.contacts.update_one(
+            {"contact_id": assignment.contact_id},
+            {"$set": update_data}
+        )
+    
+    return {"code": 0, "message": "Price list assigned to contact"}
+
+@router.get("/contact-price-lists/{contact_id}")
+async def get_contact_price_lists(contact_id: str):
+    """Get price lists assigned to a contact"""
+    db = get_db()
+    
+    contact = await db.contacts_enhanced.find_one({"contact_id": contact_id}, {"_id": 0})
+    if not contact:
+        contact = await db.contacts.find_one({"contact_id": contact_id}, {"_id": 0})
+    if not contact:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    
+    result = {
+        "contact_id": contact_id,
+        "contact_name": contact.get("company_name") or contact.get("contact_name") or contact.get("name", ""),
+        "sales_price_list_id": contact.get("sales_price_list_id"),
+        "purchase_price_list_id": contact.get("purchase_price_list_id"),
+        "sales_price_list": None,
+        "purchase_price_list": None
+    }
+    
+    # Get price list details
+    if result["sales_price_list_id"]:
+        pl = await db.price_lists.find_one({"pricelist_id": result["sales_price_list_id"]}, {"_id": 0})
+        result["sales_price_list"] = pl
+    
+    if result["purchase_price_list_id"]:
+        pl = await db.price_lists.find_one({"pricelist_id": result["purchase_price_list_id"]}, {"_id": 0})
+        result["purchase_price_list"] = pl
+    
+    return {"code": 0, "contact_price_lists": result}
+
+# ============== PHASE 2: LINE ITEM PRICING ==============
+
+@router.post("/calculate-line-prices")
+async def calculate_line_item_prices(request: LineItemPriceRequest):
+    """Calculate prices for line items based on contact or specific price list"""
+    db = get_db()
+    
+    price_list_id = request.price_list_id
+    
+    # If contact provided, get their assigned price list
+    if request.contact_id and not price_list_id:
+        contact = await db.contacts_enhanced.find_one({"contact_id": request.contact_id})
+        if not contact:
+            contact = await db.contacts.find_one({"contact_id": request.contact_id})
+        
+        if contact:
+            if request.transaction_type == "sales":
+                price_list_id = contact.get("sales_price_list_id")
+            else:
+                price_list_id = contact.get("purchase_price_list_id")
+    
+    # Get price list settings
+    price_list = None
+    if price_list_id:
+        price_list = await db.price_lists.find_one({"pricelist_id": price_list_id}, {"_id": 0})
+    
+    line_items = []
+    total = 0
+    
+    for item_request in request.items:
+        item_id = item_request.get("item_id")
+        quantity = item_request.get("quantity", 1)
+        
+        item = await db.items.find_one({"item_id": item_id}, {"_id": 0})
+        if not item:
+            continue
+        
+        # Get base rate
+        if request.transaction_type == "sales":
+            base_rate = item.get("sales_rate", 0) or item.get("rate", 0)
+        else:
+            base_rate = item.get("purchase_rate", 0)
+        
+        final_rate = base_rate
+        
+        # Check for custom price in price list
+        if price_list_id:
+            custom_price = await db.item_prices.find_one({
+                "item_id": item_id,
+                "price_list_id": price_list_id
+            })
+            
+            if custom_price:
+                final_rate = custom_price.get("rate", base_rate)
+            elif price_list:
+                # Apply percentage markup/discount
+                if price_list.get("pricing_scheme") == "percentage":
+                    markup = price_list.get("markup_percentage", 0)
+                    discount = price_list.get("discount_percentage", 0)
+                    
+                    if markup > 0:
+                        final_rate = base_rate * (1 + markup / 100)
+                    elif discount > 0:
+                        final_rate = base_rate * (1 - discount / 100)
+                
+                # Round off
+                round_to = price_list.get("round_off_to", "none")
+                if round_to == "nearest_1":
+                    final_rate = round(final_rate)
+                elif round_to == "nearest_5":
+                    final_rate = round(final_rate / 5) * 5
+                elif round_to == "nearest_10":
+                    final_rate = round(final_rate / 10) * 10
+        
+        line_total = final_rate * quantity
+        total += line_total
+        
+        line_items.append({
+            "item_id": item_id,
+            "item_name": item.get("name"),
+            "sku": item.get("sku"),
+            "quantity": quantity,
+            "unit": item.get("unit", "pcs"),
+            "base_rate": base_rate,
+            "final_rate": round(final_rate, 2),
+            "discount_applied": round(base_rate - final_rate, 2) if base_rate > final_rate else 0,
+            "markup_applied": round(final_rate - base_rate, 2) if final_rate > base_rate else 0,
+            "line_total": round(line_total, 2),
+            "tax_percentage": item.get("tax_percentage", 0),
+            "hsn_code": item.get("hsn_code", "")
+        })
+    
+    return {
+        "code": 0,
+        "price_list_id": price_list_id,
+        "price_list_name": price_list.get("name") if price_list else None,
+        "line_items": line_items,
+        "sub_total": round(total, 2)
+    }
+
+# ============== PHASE 2: BULK PRICE SETTING ==============
+
+@router.post("/price-lists/{pricelist_id}/set-prices")
+async def bulk_set_prices(pricelist_id: str, request: BulkItemPriceSet):
+    """Set prices for multiple items in a price list"""
+    db = get_db()
+    
+    pl = await db.price_lists.find_one({"pricelist_id": pricelist_id})
+    if not pl:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    results = {"updated": 0, "created": 0, "errors": []}
+    
+    # If percentage method, apply to all items
+    if request.pricing_method == "percentage" and request.percentage != 0:
+        items = await db.items.find({"is_active": True}, {"_id": 0}).to_list(10000)
+        
+        for item in items:
+            base_rate = item.get("sales_rate", 0) or item.get("rate", 0)
+            new_rate = base_rate * (1 + request.percentage / 100)
+            
+            existing = await db.item_prices.find_one({
+                "item_id": item["item_id"],
+                "price_list_id": pricelist_id
+            })
+            
+            if existing:
+                await db.item_prices.update_one(
+                    {"_id": existing["_id"]},
+                    {"$set": {"rate": round(new_rate, 2), "updated_time": datetime.now(timezone.utc).isoformat()}}
+                )
+                results["updated"] += 1
+            else:
+                await db.item_prices.insert_one({
+                    "price_id": f"IP-{uuid.uuid4().hex[:8].upper()}",
+                    "item_id": item["item_id"],
+                    "item_name": item.get("name", ""),
+                    "price_list_id": pricelist_id,
+                    "price_list_name": pl.get("name", ""),
+                    "rate": round(new_rate, 2),
+                    "created_time": datetime.now(timezone.utc).isoformat(),
+                    "updated_time": datetime.now(timezone.utc).isoformat()
+                })
+                results["created"] += 1
+    
+    # Custom prices for specific items
+    elif request.pricing_method == "custom" and request.items:
+        for item_price in request.items:
+            item_id = item_price.get("item_id")
+            custom_rate = item_price.get("custom_rate", 0)
+            
+            item = await db.items.find_one({"item_id": item_id})
+            if not item:
+                results["errors"].append(f"Item {item_id} not found")
+                continue
+            
+            existing = await db.item_prices.find_one({
+                "item_id": item_id,
+                "price_list_id": pricelist_id
+            })
+            
+            if existing:
+                await db.item_prices.update_one(
+                    {"_id": existing["_id"]},
+                    {"$set": {"rate": custom_rate, "updated_time": datetime.now(timezone.utc).isoformat()}}
+                )
+                results["updated"] += 1
+            else:
+                await db.item_prices.insert_one({
+                    "price_id": f"IP-{uuid.uuid4().hex[:8].upper()}",
+                    "item_id": item_id,
+                    "item_name": item.get("name", ""),
+                    "price_list_id": pricelist_id,
+                    "price_list_name": pl.get("name", ""),
+                    "rate": custom_rate,
+                    "created_time": datetime.now(timezone.utc).isoformat(),
+                    "updated_time": datetime.now(timezone.utc).isoformat()
+                })
+                results["created"] += 1
+    
+    return {"code": 0, "message": "Prices updated", "results": results}
+
+# ============== PHASE 2: BARCODE/QR SUPPORT ==============
+
+@router.post("/barcodes")
+async def create_item_barcode(barcode: ItemBarcodeCreate):
+    """Create or update barcode for an item"""
+    db = get_db()
+    
+    item = await db.items.find_one({"item_id": barcode.item_id})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    # Generate barcode value if not provided
+    barcode_value = barcode.barcode_value
+    if not barcode_value:
+        # Use SKU if available, otherwise generate
+        barcode_value = item.get("sku") or f"ITM{barcode.item_id[-8:].upper()}"
+    
+    # Update item with barcode
+    await db.items.update_one(
+        {"item_id": barcode.item_id},
+        {"$set": {
+            "barcode_type": barcode.barcode_type,
+            "barcode_value": barcode_value,
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # Log history
+    await log_item_history(db, barcode.item_id, "barcode_added", {
+        "barcode_type": barcode.barcode_type,
+        "barcode_value": barcode_value
+    }, "System")
+    
+    return {
+        "code": 0,
+        "message": "Barcode created",
+        "barcode": {
+            "item_id": barcode.item_id,
+            "barcode_type": barcode.barcode_type,
+            "barcode_value": barcode_value
+        }
+    }
+
+@router.get("/lookup/barcode/{barcode_value}")
+async def lookup_by_barcode(barcode_value: str):
+    """Look up item by barcode or SKU"""
+    db = get_db()
+    
+    # Search by barcode_value or SKU
+    item = await db.items.find_one({
+        "$or": [
+            {"barcode_value": barcode_value},
+            {"sku": barcode_value}
+        ]
+    }, {"_id": 0})
+    
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found with this barcode/SKU")
+    
+    # Get stock info
+    stock_locations = await db.item_stock_locations.find(
+        {"item_id": item["item_id"]},
+        {"_id": 0}
+    ).to_list(100)
+    
+    item["stock_locations"] = stock_locations
+    
+    return {"code": 0, "item": item}
+
+@router.post("/lookup/batch")
+async def batch_barcode_lookup(barcodes: List[str]):
+    """Look up multiple items by barcode/SKU"""
+    db = get_db()
+    
+    results = []
+    not_found = []
+    
+    for barcode in barcodes:
+        item = await db.items.find_one({
+            "$or": [
+                {"barcode_value": barcode},
+                {"sku": barcode}
+            ]
+        }, {"_id": 0})
+        
+        if item:
+            results.append({
+                "barcode": barcode,
+                "item_id": item.get("item_id"),
+                "name": item.get("name"),
+                "sku": item.get("sku"),
+                "stock": item.get("stock_on_hand", 0) or item.get("available_stock", 0),
+                "rate": item.get("sales_rate", 0)
+            })
+        else:
+            not_found.append(barcode)
+    
+    return {"code": 0, "items": results, "not_found": not_found}
+
+# ============== PHASE 3: ADVANCED REPORTS ==============
+
+@router.get("/reports/sales-by-item")
+async def get_sales_by_item_report(
+    start_date: str = "",
+    end_date: str = "",
+    item_id: str = "",
+    group_id: str = "",
+    customer_id: str = ""
+):
+    """Sales by Item report - shows quantity sold and revenue per item"""
+    db = get_db()
+    
+    # Build query for invoices
+    query = {"status": {"$in": ["paid", "sent", "overdue", "partially_paid"]}}
+    
+    if start_date:
+        query["invoice_date"] = {"$gte": start_date}
+    if end_date:
+        query.setdefault("invoice_date", {})["$lte"] = end_date
+    if customer_id:
+        query["customer_id"] = customer_id
+    
+    invoices = await db.invoices.find(query, {"_id": 0}).to_list(10000)
+    
+    # Aggregate sales by item
+    item_sales = {}
+    
+    for invoice in invoices:
+        for line in invoice.get("line_items", []):
+            line_item_id = line.get("item_id")
+            if not line_item_id:
+                continue
+            
+            # Filter by item or group if specified
+            if item_id and line_item_id != item_id:
+                continue
+            
+            if line_item_id not in item_sales:
+                item_sales[line_item_id] = {
+                    "item_id": line_item_id,
+                    "item_name": line.get("item_name", line.get("name", "")),
+                    "sku": line.get("sku", ""),
+                    "quantity_sold": 0,
+                    "total_revenue": 0,
+                    "invoice_count": 0,
+                    "avg_selling_price": 0
+                }
+            
+            qty = line.get("quantity", 0)
+            rate = line.get("rate", 0)
+            
+            item_sales[line_item_id]["quantity_sold"] += qty
+            item_sales[line_item_id]["total_revenue"] += qty * rate
+            item_sales[line_item_id]["invoice_count"] += 1
+    
+    # Calculate averages and sort
+    report_items = []
+    for item_data in item_sales.values():
+        if item_data["quantity_sold"] > 0:
+            item_data["avg_selling_price"] = round(
+                item_data["total_revenue"] / item_data["quantity_sold"], 2
+            )
+        item_data["total_revenue"] = round(item_data["total_revenue"], 2)
+        report_items.append(item_data)
+    
+    report_items.sort(key=lambda x: x["total_revenue"], reverse=True)
+    
+    total_revenue = sum(i["total_revenue"] for i in report_items)
+    total_quantity = sum(i["quantity_sold"] for i in report_items)
+    
+    return {
+        "code": 0,
+        "report": {
+            "title": "Sales by Item",
+            "period": {"start_date": start_date or "All time", "end_date": end_date or "Present"},
+            "summary": {
+                "total_items": len(report_items),
+                "total_quantity_sold": total_quantity,
+                "total_revenue": round(total_revenue, 2)
+            },
+            "items": report_items
+        }
+    }
+
+@router.get("/reports/purchases-by-item")
+async def get_purchases_by_item_report(
+    start_date: str = "",
+    end_date: str = "",
+    item_id: str = "",
+    vendor_id: str = ""
+):
+    """Purchases by Item report"""
+    db = get_db()
+    
+    query = {"status": {"$in": ["paid", "pending", "overdue", "partially_paid"]}}
+    
+    if start_date:
+        query["bill_date"] = {"$gte": start_date}
+    if end_date:
+        query.setdefault("bill_date", {})["$lte"] = end_date
+    if vendor_id:
+        query["vendor_id"] = vendor_id
+    
+    bills = await db.bills.find(query, {"_id": 0}).to_list(10000)
+    
+    item_purchases = {}
+    
+    for bill in bills:
+        for line in bill.get("line_items", []):
+            line_item_id = line.get("item_id")
+            if not line_item_id:
+                continue
+            
+            if item_id and line_item_id != item_id:
+                continue
+            
+            if line_item_id not in item_purchases:
+                item_purchases[line_item_id] = {
+                    "item_id": line_item_id,
+                    "item_name": line.get("item_name", line.get("name", "")),
+                    "sku": line.get("sku", ""),
+                    "quantity_purchased": 0,
+                    "total_cost": 0,
+                    "bill_count": 0,
+                    "avg_purchase_price": 0
+                }
+            
+            qty = line.get("quantity", 0)
+            rate = line.get("rate", 0)
+            
+            item_purchases[line_item_id]["quantity_purchased"] += qty
+            item_purchases[line_item_id]["total_cost"] += qty * rate
+            item_purchases[line_item_id]["bill_count"] += 1
+    
+    report_items = []
+    for item_data in item_purchases.values():
+        if item_data["quantity_purchased"] > 0:
+            item_data["avg_purchase_price"] = round(
+                item_data["total_cost"] / item_data["quantity_purchased"], 2
+            )
+        item_data["total_cost"] = round(item_data["total_cost"], 2)
+        report_items.append(item_data)
+    
+    report_items.sort(key=lambda x: x["total_cost"], reverse=True)
+    
+    total_cost = sum(i["total_cost"] for i in report_items)
+    total_quantity = sum(i["quantity_purchased"] for i in report_items)
+    
+    return {
+        "code": 0,
+        "report": {
+            "title": "Purchases by Item",
+            "period": {"start_date": start_date or "All time", "end_date": end_date or "Present"},
+            "summary": {
+                "total_items": len(report_items),
+                "total_quantity_purchased": total_quantity,
+                "total_cost": round(total_cost, 2)
+            },
+            "items": report_items
+        }
+    }
+
+@router.get("/reports/inventory-valuation")
+async def get_inventory_valuation_report(
+    valuation_method: str = "fifo",
+    warehouse_id: str = "",
+    as_of_date: str = ""
+):
+    """Inventory valuation report with FIFO/LIFO tracking"""
+    db = get_db()
+    
+    query = {"item_type": {"$in": ["inventory", "sales_and_purchases"]}, "is_active": True}
+    
+    items = await db.items.find(query, {"_id": 0}).to_list(10000)
+    
+    valuation_items = []
+    total_value = 0
+    
+    for item in items:
+        stock = item.get("stock_on_hand", 0) or item.get("available_stock", 0)
+        if isinstance(stock, str):
+            stock = float(stock) if stock else 0
+        
+        # Get cost rate (purchase rate or opening stock rate)
+        cost_rate = item.get("purchase_rate", 0) or item.get("opening_stock_rate", 0)
+        if isinstance(cost_rate, str):
+            cost_rate = float(cost_rate) if cost_rate else 0
+        
+        stock_value = stock * cost_rate
+        total_value += stock_value
+        
+        # Get recent purchase lots for FIFO display
+        recent_adjustments = await db.item_adjustments.find(
+            {"item_id": item.get("item_id"), "adjustment_type": "add"},
+            {"_id": 0}
+        ).sort("created_time", -1).limit(5).to_list(5)
+        
+        valuation_items.append({
+            "item_id": item.get("item_id"),
+            "item_name": item.get("name"),
+            "sku": item.get("sku"),
+            "stock_on_hand": stock,
+            "unit": item.get("unit", "pcs"),
+            "cost_rate": round(cost_rate, 2),
+            "stock_value": round(stock_value, 2),
+            "valuation_method": item.get("inventory_valuation_method", valuation_method),
+            "recent_lots": [{
+                "date": adj.get("date", adj.get("created_time", ""))[:10],
+                "quantity": adj.get("quantity", 0),
+                "rate": adj.get("rate_per_unit", cost_rate)
+            } for adj in recent_adjustments]
+        })
+    
+    valuation_items.sort(key=lambda x: x["stock_value"], reverse=True)
+    
+    return {
+        "code": 0,
+        "report": {
+            "title": "Inventory Valuation",
+            "as_of_date": as_of_date or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "valuation_method": valuation_method.upper(),
+            "summary": {
+                "total_items": len(valuation_items),
+                "total_stock_value": round(total_value, 2)
+            },
+            "items": valuation_items
+        }
+    }
+
+@router.get("/reports/item-movement")
+async def get_item_movement_report(
+    item_id: str,
+    start_date: str = "",
+    end_date: str = ""
+):
+    """Item movement report - all stock in/out for an item"""
+    db = get_db()
+    
+    item = await db.items.find_one({"item_id": item_id}, {"_id": 0})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    movements = []
+    
+    # Get adjustments
+    adj_query = {"item_id": item_id}
+    if start_date:
+        adj_query["created_time"] = {"$gte": start_date}
+    if end_date:
+        adj_query.setdefault("created_time", {})["$lte"] = end_date + "T23:59:59"
+    
+    adjustments = await db.item_adjustments.find(adj_query, {"_id": 0}).to_list(1000)
+    
+    for adj in adjustments:
+        movements.append({
+            "date": adj.get("date", adj.get("created_time", ""))[:10],
+            "type": "adjustment",
+            "direction": "in" if adj.get("adjustment_type") == "add" else "out",
+            "quantity": adj.get("quantity", 0),
+            "reference": adj.get("adjustment_id", ""),
+            "reason": adj.get("reason", ""),
+            "warehouse": adj.get("warehouse_name", "")
+        })
+    
+    # Get invoice line items (sales = out)
+    inv_query = {"line_items.item_id": item_id}
+    if start_date:
+        inv_query["invoice_date"] = {"$gte": start_date}
+    if end_date:
+        inv_query.setdefault("invoice_date", {})["$lte"] = end_date
+    
+    invoices = await db.invoices.find(inv_query, {"_id": 0}).to_list(1000)
+    
+    for inv in invoices:
+        for line in inv.get("line_items", []):
+            if line.get("item_id") == item_id:
+                movements.append({
+                    "date": inv.get("invoice_date", "")[:10],
+                    "type": "sale",
+                    "direction": "out",
+                    "quantity": line.get("quantity", 0),
+                    "reference": inv.get("invoice_number", inv.get("invoice_id", "")),
+                    "reason": f"Sold to {inv.get('customer_name', '')}",
+                    "warehouse": ""
+                })
+    
+    # Get bill line items (purchases = in)
+    bill_query = {"line_items.item_id": item_id}
+    if start_date:
+        bill_query["bill_date"] = {"$gte": start_date}
+    if end_date:
+        bill_query.setdefault("bill_date", {})["$lte"] = end_date
+    
+    bills = await db.bills.find(bill_query, {"_id": 0}).to_list(1000)
+    
+    for bill in bills:
+        for line in bill.get("line_items", []):
+            if line.get("item_id") == item_id:
+                movements.append({
+                    "date": bill.get("bill_date", "")[:10],
+                    "type": "purchase",
+                    "direction": "in",
+                    "quantity": line.get("quantity", 0),
+                    "reference": bill.get("bill_number", bill.get("bill_id", "")),
+                    "reason": f"Purchased from {bill.get('vendor_name', '')}",
+                    "warehouse": ""
+                })
+    
+    # Sort by date
+    movements.sort(key=lambda x: x["date"], reverse=True)
+    
+    # Calculate running balance
+    total_in = sum(m["quantity"] for m in movements if m["direction"] == "in")
+    total_out = sum(m["quantity"] for m in movements if m["direction"] == "out")
+    
+    return {
+        "code": 0,
+        "report": {
+            "title": f"Item Movement: {item.get('name')}",
+            "item": {
+                "item_id": item_id,
+                "name": item.get("name"),
+                "sku": item.get("sku"),
+                "current_stock": item.get("stock_on_hand", 0) or item.get("available_stock", 0)
+            },
+            "period": {"start_date": start_date or "All time", "end_date": end_date or "Present"},
+            "summary": {
+                "total_in": total_in,
+                "total_out": total_out,
+                "net_change": total_in - total_out,
+                "transaction_count": len(movements)
+            },
+            "movements": movements
+        }
+    }
+
 # ============== INVENTORY REPORTS (MUST BE BEFORE /{item_id}) ==============
 
 @router.get("/reports/stock-summary")
