@@ -1077,6 +1077,10 @@ async def send_invoice(invoice_id: str, email_to: Optional[List[str]] = None, ba
         f"Invoice_{invoice['invoice_number']}.pdf"
     )
     
+    # Deduct stock if transitioning from draft to sent
+    if invoice.get("status") == "draft":
+        await update_item_stock_for_invoice(invoice_id, reverse=False)
+    
     # Update status
     new_status = "sent" if invoice.get("status") == "draft" else invoice.get("status")
     await invoices_collection.update_one(
@@ -1085,7 +1089,8 @@ async def send_invoice(invoice_id: str, email_to: Optional[List[str]] = None, ba
             "status": new_status,
             "is_sent": True,
             "sent_date": datetime.now(timezone.utc).isoformat(),
-            "updated_time": datetime.now(timezone.utc).isoformat()
+            "updated_time": datetime.now(timezone.utc).isoformat(),
+            "stock_deducted": True
         }}
     )
     
@@ -1104,13 +1109,17 @@ async def mark_invoice_sent(invoice_id: str):
     if invoice.get("status") != "draft":
         raise HTTPException(status_code=400, detail="Only draft invoices can be marked as sent")
     
+    # Deduct stock
+    await update_item_stock_for_invoice(invoice_id, reverse=False)
+    
     await invoices_collection.update_one(
         {"invoice_id": invoice_id},
         {"$set": {
             "status": "sent",
             "is_sent": True,
             "sent_date": datetime.now(timezone.utc).isoformat(),
-            "updated_time": datetime.now(timezone.utc).isoformat()
+            "updated_time": datetime.now(timezone.utc).isoformat(),
+            "stock_deducted": True
         }}
     )
     
