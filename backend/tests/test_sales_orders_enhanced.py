@@ -7,7 +7,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://composite-inventory.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://battwheels-erp-1.preview.emergentagent.com')
 
 # Test data
 TEST_CUSTOMER_ID = "CON-235065AEEC94"  # Rahul Sharma - customer
