@@ -125,10 +125,15 @@ class ItemUpdate(BaseModel):
     group_id: Optional[str] = None
     group_name: Optional[str] = None
     sales_rate: Optional[float] = None
+    sales_description: Optional[str] = None
     purchase_rate: Optional[float] = None
+    purchase_description: Optional[str] = None
     unit: Optional[str] = None
+    tax_preference: Optional[str] = None
     tax_id: Optional[str] = None
     tax_percentage: Optional[float] = None
+    intra_state_tax_rate: Optional[float] = None
+    inter_state_tax_rate: Optional[float] = None
     hsn_code: Optional[str] = None
     sac_code: Optional[str] = None
     reorder_level: Optional[float] = None
@@ -136,6 +141,9 @@ class ItemUpdate(BaseModel):
     preferred_vendor_name: Optional[str] = None
     custom_fields: Optional[Dict] = None
     is_active: Optional[bool] = None
+    track_inventory: Optional[bool] = None
+    image_data: Optional[str] = None
+    image_name: Optional[str] = None
 
 class ItemStockLocationCreate(BaseModel):
     item_id: str
