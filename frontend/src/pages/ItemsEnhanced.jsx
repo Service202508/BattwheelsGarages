@@ -76,6 +76,13 @@ export default function ItemsEnhanced() {
   const [barcodeResult, setBarcodeResult] = useState(null);
   const [contacts, setContacts] = useState([]);
   
+  // Phase 3: Preferences and Field Config
+  const [preferences, setPreferences] = useState(null);
+  const [fieldConfig, setFieldConfig] = useState([]);
+  const [isScannerActive, setIsScannerActive] = useState(false);
+  const videoRef = useRef(null);
+  const scannerRef = useRef(null);
+  
   // Filters and sorting
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("");
@@ -98,6 +105,8 @@ export default function ItemsEnhanced() {
   const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
   const [showCustomFieldDialog, setShowCustomFieldDialog] = useState(false);
   const [showBarcodeDialog, setShowBarcodeDialog] = useState(false);
+  const [showFieldConfigDialog, setShowFieldConfigDialog] = useState(false);
+  const [showScannerDialog, setShowScannerDialog] = useState(false);
   const [showBulkPriceDialog, setShowBulkPriceDialog] = useState(false);
   const [showAssignPriceListDialog, setShowAssignPriceListDialog] = useState(false);
   const [editItem, setEditItem] = useState(null);
