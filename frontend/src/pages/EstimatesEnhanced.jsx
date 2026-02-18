@@ -57,7 +57,37 @@ export default function EstimatesEnhanced() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showSendDialog, setShowSendDialog] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showAttachmentDialog, setShowAttachmentDialog] = useState(false);
+  const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
   const [selectedEstimate, setSelectedEstimate] = useState(null);
+
+  // Share link state
+  const [shareLink, setShareLink] = useState(null);
+  const [shareLoading, setShareLoading] = useState(false);
+  const [shareConfig, setShareConfig] = useState({
+    expiry_days: 30,
+    allow_accept: true,
+    allow_decline: true,
+    password_protected: false,
+    password: ""
+  });
+
+  // Attachments state
+  const [attachments, setAttachments] = useState([]);
+  const [uploading, setUploading] = useState(false);
+
+  // Preferences state
+  const [preferences, setPreferences] = useState({
+    auto_convert_on_accept: false,
+    auto_convert_to: "draft_invoice",
+    auto_send_converted: false,
+    allow_public_accept: true,
+    allow_public_decline: true,
+    notify_on_view: true,
+    notify_on_accept: true,
+    notify_on_decline: true
+  });
 
   // Contact search
   const [contacts, setContacts] = useState([]);
