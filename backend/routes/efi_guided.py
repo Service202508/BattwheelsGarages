@@ -128,7 +128,7 @@ async def preprocess_complaint(
     - Run similarity search
     - Store results (don't show full guidance yet)
     """
-    user = await get_current_user(request)
+    await get_current_user(request)
     
     if not _embedding_manager:
         raise HTTPException(status_code=503, detail="Embedding service not initialized")
@@ -183,7 +183,7 @@ async def get_efi_suggestions(ticket_id: str, request: Request):
     FEATURE 2: Get EFI suggestions when Job Card opened
     Returns ranked failure cards with confidence scores
     """
-    user = await get_current_user(request)
+    await get_current_user(request)
     
     # Get ticket with preprocessing data
     ticket = await _db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
@@ -245,7 +245,7 @@ async def start_diagnostic_session(data: StartSessionRequest, request: Request):
     Start EFI diagnostic session for a ticket
     Technician selects a failure card path to follow
     """
-    user = await get_current_user(request)
+    await get_current_user(request)
     
     if not _decision_engine:
         raise HTTPException(status_code=503, detail="Decision engine not initialized")
@@ -301,7 +301,7 @@ async def record_step_outcome(
     FEATURE 3: Record PASS/FAIL for diagnostic step
     Advances to next step or resolution based on decision tree
     """
-    user = await get_current_user(request)
+    await get_current_user(request)
     
     if not _decision_engine:
         raise HTTPException(status_code=503, detail="Decision engine not initialized")
@@ -349,7 +349,7 @@ async def capture_completion(data: CaptureCompletionRequest, request: Request):
     FEATURE 5: Capture job completion for learning
     Records actual steps, deviations, parts used
     """
-    user = await get_current_user(request)
+    await get_current_user(request)
     
     if not _learning_engine:
         raise HTTPException(status_code=503, detail="Learning engine not initialized")
@@ -370,7 +370,7 @@ async def capture_completion(data: CaptureCompletionRequest, request: Request):
 @router.get("/learning/pending")
 async def get_pending_learning(request: Request, limit: int = Query(50, le=200)):
     """Get learning items pending engineer review"""
-    user = await get_current_user(request)
+    await get_current_user(request)
     
     # Require admin/engineer role
     if user.get("role") not in ["admin", "manager"]:
@@ -391,7 +391,7 @@ async def review_learning_item(
     notes: Optional[str] = None
 ):
     """Review learning item - engineer approval"""
-    user = await get_current_user(request)
+    await get_current_user(request)
     
     if user.get("role") not in ["admin", "manager"]:
         raise HTTPException(status_code=403, detail="Engineer access required")
@@ -417,7 +417,7 @@ async def review_learning_item(
 @router.post("/trees")
 async def create_decision_tree(data: CreateDecisionTreeRequest, request: Request):
     """Create decision tree for a failure card"""
-    user = await get_current_user(request)
+    await get_current_user(request)
     
     if user.get("role") not in ["admin", "manager"]:
         raise HTTPException(status_code=403, detail="Admin access required")
@@ -459,7 +459,7 @@ async def get_decision_tree(failure_card_id: str, request: Request):
 @router.post("/embeddings/generate-all")
 async def generate_all_embeddings(request: Request):
     """Generate embeddings for all failure cards"""
-    user = await get_current_user(request)
+    await get_current_user(request)
     
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
@@ -494,7 +494,7 @@ async def get_embedding_status(request: Request):
 @router.post("/seed")
 async def seed_failure_data(request: Request):
     """Seed failure cards and decision trees (Admin only)"""
-    user = await get_current_user(request)
+    await get_current_user(request)
     
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
