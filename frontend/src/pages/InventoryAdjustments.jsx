@@ -25,7 +25,8 @@ import {
   Plus, Search, RefreshCw, Package, Trash2, MoreHorizontal,
   CheckCircle, XCircle, FileText, Calendar, Filter, Download,
   Upload, ArrowUp, ArrowDown, Eye, Edit, ShieldCheck, ShieldX,
-  Settings, ClipboardList, BarChart3, AlertTriangle, Paperclip
+  Settings, ClipboardList, BarChart3, AlertTriangle, Paperclip,
+  FileDown, FileUp, Printer, Link2, ArrowUpDown
 } from "lucide-react";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
