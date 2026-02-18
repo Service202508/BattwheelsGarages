@@ -7,39 +7,22 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ## Implementation Status
 
-### Completed (Feb 18, 2026 - Current Session)
+### Verified Complete (Feb 18, 2026 - Current Session)
 
-#### Inventory Adjustments Phase 2 - Import/Export & Reports (COMPLETE)
-- **CSV Export**: Stream adjustments as CSV with applied filters, all columns including Ticket ID
-- **CSV Import**: Validate endpoint (field detection, item matching, preview) + Process endpoint (creates drafts, grouped by reference number)
-- **PDF Generation**: WeasyPrint-powered professional PDF documents for any adjustment
-- **ABC Classification Report**: Items classified A/B/C by adjustment activity with drill-down to individual adjustments per item
-- **Testing**: 100% (15/15 backend + 14/14 frontend features)
-
-#### Inventory Adjustments Phase 3 - Item Integration & Ticket Linking (COMPLETE)
-- **Adjust Stock from Items Page**: Per-item "Adjust Stock" action in ItemsEnhanced dropdown menu, navigates to pre-filled adjustment form
-- **Ticket Linking**: Optional `ticket_id` field in adjustment creation, stored and visible in detail view and CSV export
-- **Quick Adjust URL Params**: `/inventory-adjustments?quick_adjust={id}&item_name={name}&stock={qty}` auto-opens create dialog
-
-#### Inventory Adjustments Phase 1 - Core Workflow (COMPLETE - Previous)
-- Full Draft -> Adjusted -> Void workflow with stock impact
-- CRUD, reasons management (9 defaults), audit trail, attachments
-- Reports: Adjustment Summary, FIFO Cost Lot Tracking
-- Paginated list with 7 summary cards, advanced filters
-
-#### Composite Items Frontend (COMPLETE - Previous)
-- Full management page with Build/Unbuild, BOM detail view
-
----
+#### All P1 Tasks - VERIFIED WORKING
+- **Invoice Automation Settings**: 5-tab UI (Overdue, Due Soon, Recurring, Reminders, Late Fees) fully connected to backend APIs
+- **Recurring Invoices**: Complete frontend/backend with create, view, manage, start/stop, generate-now functionality
+- **Inventory Adjustment Reasons Management**: Admin dialog to add/edit/delete adjustment reasons (10 default reasons seeded)
 
 ### Previously Completed
+- Inventory Adjustments v2 (Phases 1-3): Full Draft → Adjusted → Void workflow, Import/Export, PDF, ABC Report, Item Integration
+- Composite Items: Full management page with Build/Unbuild, BOM detail view
 - WeasyPrint PDF Generation (invoices/quotes)
-- Recurring Invoices (Backend + Frontend)
-- Invoice Automation Settings (5-tab UI)
-- Composite Items Backend
 - Zoho-Style Sales Modules (all phases)
 - Items Module (all phases)
 - Quotes/Estimates Module
+- Enhanced Contacts Management
+- Customer Portal
 
 ---
 
@@ -59,17 +42,12 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 - **Admin**: admin@battwheels.in / admin123
 - **Technician**: deepak@battwheelsgarages.in / tech123
 
-## Test Reports
-- `/app/test_reports/iteration_45.json` - Phase 2+3: Export/Import/PDF/ABC/Ticket (100%)
-- `/app/test_reports/iteration_44.json` - Phase 1: Core CRUD + Workflow (100%)
-- `/app/test_reports/iteration_43.json` - Composite Items + Invoice Settings
-
 ---
 
 ## Remaining Backlog
 
 ### P0 (High Priority)
-- Un-mock Resend email (requires RESEND_API_KEY)
+- Un-mock Resend email (requires RESEND_API_KEY from user)
 
 ### P1 (Medium Priority)
 - Customer self-service portal improvements
@@ -81,3 +59,32 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 - Propagate standardized UI components across all pages
 - Un-mock Razorpay payments
 - Signature capture on quote acceptance
+- PDF template customization
+
+---
+
+## Key Modules & Routes
+
+### Invoice Automation (`/invoice-settings`)
+- Aging Report with bucket breakdown
+- Overdue/Due-Soon invoice tracking
+- Payment reminder settings (before/after due date)
+- Late fee configuration (percentage/fixed, grace period)
+- Auto credit application
+
+### Recurring Invoices (`/recurring-invoices`)
+- Profile creation (daily/weekly/monthly/yearly)
+- Generate-now, pause/resume functionality
+- MRR tracking and summary stats
+
+### Inventory Adjustments (`/inventory-adjustments`)
+- Quantity and value adjustments
+- Draft → Adjusted → Void workflow
+- Import/Export CSV, PDF generation
+- ABC Classification & FIFO reports
+- Reasons management dialog
+
+### Composite Items (`/composite-items`)
+- Bundle/kit creation with component items
+- Build/Unbuild operations
+- BOM (Bill of Materials) tracking
