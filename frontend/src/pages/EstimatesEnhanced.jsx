@@ -1123,6 +1123,8 @@ export default function EstimatesEnhanced() {
                               setNewEstimate(prev => ({ ...prev, customer_id: c.contact_id }));
                               setContactSearch(c.name);
                               setContacts([]);
+                              // Fetch customer's price list info
+                              fetchCustomerPricing(c.contact_id);
                             }}
                           >
                             <p className="font-medium">{c.name}</p>
@@ -1137,6 +1139,16 @@ export default function EstimatesEnhanced() {
                       <p><strong>{selectedContact.name}</strong></p>
                       {selectedContact.email && <p>{selectedContact.email}</p>}
                       {selectedContact.gstin && <p>GSTIN: {selectedContact.gstin}</p>}
+                      {customerPricing?.sales_price_list && (
+                        <div className="mt-1 flex items-center gap-1">
+                          <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                            <IndianRupee className="h-3 w-3 mr-1" />
+                            {customerPricing.sales_price_list.name}
+                            {customerPricing.sales_price_list.discount_percentage > 0 && ` (-${customerPricing.sales_price_list.discount_percentage}%)`}
+                            {customerPricing.sales_price_list.markup_percentage > 0 && ` (+${customerPricing.sales_price_list.markup_percentage}%)`}
+                          </Badge>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
