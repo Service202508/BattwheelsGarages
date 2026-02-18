@@ -7,6 +7,46 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ## Implementation Status
 
+### ✅ Zoho-Style Sales Modules - Phase 1 (COMPLETE - Feb 18, 2026)
+
+**Payments Received Module (NEW):**
+- Full Zoho-style payment recording with multi-invoice allocation
+- Overpayments automatically create customer credits
+- Retainer/advance payments support
+- Refund functionality for credits
+- Import/export payments (CSV)
+- Payment summary and reports (by customer, by mode)
+- Route: `/payments-received`
+
+**API Endpoints:**
+- `GET /api/payments-received/` - List payments with filters
+- `POST /api/payments-received/` - Record new payment
+- `GET /api/payments-received/{id}` - Payment details
+- `DELETE /api/payments-received/{id}` - Delete payment
+- `GET /api/payments-received/customer/{id}/open-invoices` - Customer's open invoices
+- `POST /api/payments-received/{id}/refund` - Process refund
+- `POST /api/payments-received/apply-credit` - Apply credit to invoice
+- `GET /api/payments-received/credits` - List customer credits
+- `GET /api/payments-received/summary` - Summary statistics
+- `GET /api/payments-received/export` - Export to CSV
+
+**Invoice Integration:**
+- Invoice detail now shows payments from new module (`payments_received`)
+- Shows available customer credits with "Apply" button
+- Credits can be applied directly to invoice balance
+- Credit application creates audit trail
+
+**Customer Statement Enhancement:**
+- Statement now includes payments from `payments_received` module
+- Running balance calculation
+- Available credits shown in summary
+
+**Test Data:**
+- Payments: PMT-00001 (₹3,000), PMT-00002 (₹4,000 with ₹510 remaining credit)
+- Customer credits tracked automatically
+
+---
+
 ### ✅ Items/Price Lists ↔ Quotes Integration (COMPLETE - Feb 18, 2026)
 
 **Automatic Customer Pricing:**
