@@ -1,1 +1,451 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="25" time="4.953" timestamp="2026-02-18T14:59:29.405081+00:00" hostname="agent-env-e46575ba-509c-4059-832d-27367c9310bc"><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedSummary" name="test_summary_default_period" time="0.157" /><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedSummary" name="test_summary_different_periods" time="0.707" /><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedList" name="test_list_all_payments" time="0.106" /><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedList" name="test_list_payments_by_customer" time="0.123" /><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedList" name="test_list_payments_by_mode" time="0.132" /><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedList" name="test_list_payments_search" time="0.174" /><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedList" name="test_list_payments_pagination" time="0.131" /><testcase classname="backend.tests.test_payments_received.TestPaymentDetails" name="test_get_existing_payment" time="0.232" /><testcase classname="backend.tests.test_payments_received.TestPaymentDetails" name="test_get_nonexistent_payment" time="0.111" /><testcase classname="backend.tests.test_payments_received.TestCustomerOpenInvoices" name="test_get_customer_open_invoices" time="0.122" /><testcase classname="backend.tests.test_payments_received.TestCreditsEndpoints" name="test_list_all_credits" time="0.128" /><testcase classname="backend.tests.test_payments_received.TestCreditsEndpoints" name="test_list_credits_by_status" time="0.114" /><testcase classname="backend.tests.test_payments_received.TestCreditsEndpoints" name="test_get_customer_credits" time="0.120" /><testcase classname="backend.tests.test_payments_received.TestRecordPayment" name="test_record_retainer_payment" time="0.135" /><testcase classname="backend.tests.test_payments_received.TestRecordPayment" name="test_record_payment_invalid_customer" time="0.121" /><testcase classname="backend.tests.test_payments_received.TestRecordPayment" name="test_record_payment_with_bank_charges" time="0.110" /><testcase classname="backend.tests.test_payments_received.TestDeletePayment" name="test_delete_payment" time="0.391" /><testcase classname="backend.tests.test_payments_received.TestDeletePayment" name="test_delete_nonexistent_payment" time="0.109" /><testcase classname="backend.tests.test_payments_received.TestPaymentSettings" name="test_get_settings" time="0.233" /><testcase classname="backend.tests.test_payments_received.TestPaymentReports" name="test_report_by_customer" time="0.111" /><testcase classname="backend.tests.test_payments_received.TestPaymentReports" name="test_report_by_mode" time="0.105" /><testcase classname="backend.tests.test_payments_received.TestExportImport" name="test_export_payments" time="0.118" /><testcase classname="backend.tests.test_payments_received.TestExportImport" name="test_get_import_template" time="0.130" /><testcase classname="backend.tests.test_payments_received.TestRefundEndpoint" name="test_refund_requires_available_credit" time="0.390" /><testcase classname="backend.tests.test_payments_received.TestCleanup" name="test_cleanup_test_payments" time="0.581" /></testsuite></testsuites>
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="25" skipped="0" tests="25" time="0.725" timestamp="2026-02-18T15:24:09.764731+00:00" hostname="agent-env-e46575ba-509c-4059-832d-27367c9310bc"><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedSummary" name="test_summary_default_period" time="0.002"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/summary': No scheme supplied. Perhaps you meant https:///api/payments-received/summary?">backend/tests/test_payments_received.py:24: in test_summary_default_period
+    response = requests.get(f"{BASE_URL}/api/payments-received/summary")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/summary': No scheme supplied. Perhaps you meant https:///api/payments-received/summary?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedSummary" name="test_summary_different_periods" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/summary?period=today': No scheme supplied. Perhaps you meant https:///api/payments-received/summary?period=today?">backend/tests/test_payments_received.py:49: in test_summary_different_periods
+    response = requests.get(f"{BASE_URL}/api/payments-received/summary?period={period}")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/summary?period=today': No scheme supplied. Perhaps you meant https:///api/payments-received/summary?period=today?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedList" name="test_list_all_payments" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?">backend/tests/test_payments_received.py:62: in test_list_all_payments
+    response = requests.get(f"{BASE_URL}/api/payments-received/")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedList" name="test_list_payments_by_customer" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/?customer_id=CUST-93AE14BE3618': No scheme supplied. Perhaps you meant https:///api/payments-received/?customer_id=CUST-93AE14BE3618?">backend/tests/test_payments_received.py:86: in test_list_payments_by_customer
+    response = requests.get(f"{BASE_URL}/api/payments-received/?customer_id={TEST_CUSTOMER_ID}")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/?customer_id=CUST-93AE14BE3618': No scheme supplied. Perhaps you meant https:///api/payments-received/?customer_id=CUST-93AE14BE3618?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedList" name="test_list_payments_by_mode" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/?payment_mode=bank_transfer': No scheme supplied. Perhaps you meant https:///api/payments-received/?payment_mode=bank_transfer?">backend/tests/test_payments_received.py:98: in test_list_payments_by_mode
+    response = requests.get(f"{BASE_URL}/api/payments-received/?payment_mode=bank_transfer")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/?payment_mode=bank_transfer': No scheme supplied. Perhaps you meant https:///api/payments-received/?payment_mode=bank_transfer?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedList" name="test_list_payments_search" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/?search=PMT': No scheme supplied. Perhaps you meant https:///api/payments-received/?search=PMT?">backend/tests/test_payments_received.py:109: in test_list_payments_search
+    response = requests.get(f"{BASE_URL}/api/payments-received/?search=PMT")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/?search=PMT': No scheme supplied. Perhaps you meant https:///api/payments-received/?search=PMT?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestPaymentsReceivedList" name="test_list_payments_pagination" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/?page=1&amp;per_page=10': No scheme supplied. Perhaps you meant https:///api/payments-received/?page=1&amp;per_page=10?">backend/tests/test_payments_received.py:117: in test_list_payments_pagination
+    response = requests.get(f"{BASE_URL}/api/payments-received/?page=1&amp;per_page=10")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/?page=1&amp;per_page=10': No scheme supplied. Perhaps you meant https:///api/payments-received/?page=1&amp;per_page=10?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestPaymentDetails" name="test_get_existing_payment" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?">backend/tests/test_payments_received.py:132: in test_get_existing_payment
+    list_response = requests.get(f"{BASE_URL}/api/payments-received/")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestPaymentDetails" name="test_get_nonexistent_payment" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/PAY-NONEXISTENT': No scheme supplied. Perhaps you meant https:///api/payments-received/PAY-NONEXISTENT?">backend/tests/test_payments_received.py:158: in test_get_nonexistent_payment
+    response = requests.get(f"{BASE_URL}/api/payments-received/PAY-NONEXISTENT")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/PAY-NONEXISTENT': No scheme supplied. Perhaps you meant https:///api/payments-received/PAY-NONEXISTENT?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestCustomerOpenInvoices" name="test_get_customer_open_invoices" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/customer/CUST-93AE14BE3618/open-invoices': No scheme supplied. Perhaps you meant https:///api/payments-received/customer/CUST-93AE14BE3618/open-invoices?">backend/tests/test_payments_received.py:167: in test_get_customer_open_invoices
+    response = requests.get(f"{BASE_URL}/api/payments-received/customer/{TEST_CUSTOMER_ID}/open-invoices")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/customer/CUST-93AE14BE3618/open-invoices': No scheme supplied. Perhaps you meant https:///api/payments-received/customer/CUST-93AE14BE3618/open-invoices?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestCreditsEndpoints" name="test_list_all_credits" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/credits': No scheme supplied. Perhaps you meant https:///api/payments-received/credits?">backend/tests/test_payments_received.py:188: in test_list_all_credits
+    response = requests.get(f"{BASE_URL}/api/payments-received/credits")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/credits': No scheme supplied. Perhaps you meant https:///api/payments-received/credits?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestCreditsEndpoints" name="test_list_credits_by_status" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/credits?status=available': No scheme supplied. Perhaps you meant https:///api/payments-received/credits?status=available?">backend/tests/test_payments_received.py:200: in test_list_credits_by_status
+    response = requests.get(f"{BASE_URL}/api/payments-received/credits?status=available")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/credits?status=available': No scheme supplied. Perhaps you meant https:///api/payments-received/credits?status=available?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestCreditsEndpoints" name="test_get_customer_credits" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/credits/CUST-93AE14BE3618': No scheme supplied. Perhaps you meant https:///api/payments-received/credits/CUST-93AE14BE3618?">backend/tests/test_payments_received.py:211: in test_get_customer_credits
+    response = requests.get(f"{BASE_URL}/api/payments-received/credits/{TEST_CUSTOMER_ID}")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/credits/CUST-93AE14BE3618': No scheme supplied. Perhaps you meant https:///api/payments-received/credits/CUST-93AE14BE3618?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestRecordPayment" name="test_record_retainer_payment" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?">backend/tests/test_payments_received.py:246: in test_record_retainer_payment
+    response = requests.post(f"{BASE_URL}/api/payments-received/", json=payment_data)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestRecordPayment" name="test_record_payment_invalid_customer" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?">backend/tests/test_payments_received.py:271: in test_record_payment_invalid_customer
+    response = requests.post(f"{BASE_URL}/api/payments-received/", json=payment_data)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestRecordPayment" name="test_record_payment_with_bank_charges" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?">backend/tests/test_payments_received.py:288: in test_record_payment_with_bank_charges
+    response = requests.post(f"{BASE_URL}/api/payments-received/", json=payment_data)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestDeletePayment" name="test_delete_payment" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?">backend/tests/test_payments_received.py:315: in test_delete_payment
+    create_response = requests.post(f"{BASE_URL}/api/payments-received/", json=payment_data)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestDeletePayment" name="test_delete_nonexistent_payment" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/PAY-NONEXISTENT': No scheme supplied. Perhaps you meant https:///api/payments-received/PAY-NONEXISTENT?">backend/tests/test_payments_received.py:334: in test_delete_nonexistent_payment
+    response = requests.delete(f"{BASE_URL}/api/payments-received/PAY-NONEXISTENT")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:157: in delete
+    return request("delete", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/PAY-NONEXISTENT': No scheme supplied. Perhaps you meant https:///api/payments-received/PAY-NONEXISTENT?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestPaymentSettings" name="test_get_settings" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/settings': No scheme supplied. Perhaps you meant https:///api/payments-received/settings?">backend/tests/test_payments_received.py:343: in test_get_settings
+    response = requests.get(f"{BASE_URL}/api/payments-received/settings")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/settings': No scheme supplied. Perhaps you meant https:///api/payments-received/settings?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestPaymentReports" name="test_report_by_customer" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/reports/by-customer': No scheme supplied. Perhaps you meant https:///api/payments-received/reports/by-customer?">backend/tests/test_payments_received.py:361: in test_report_by_customer
+    response = requests.get(f"{BASE_URL}/api/payments-received/reports/by-customer")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/reports/by-customer': No scheme supplied. Perhaps you meant https:///api/payments-received/reports/by-customer?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestPaymentReports" name="test_report_by_mode" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/reports/by-mode': No scheme supplied. Perhaps you meant https:///api/payments-received/reports/by-mode?">backend/tests/test_payments_received.py:370: in test_report_by_mode
+    response = requests.get(f"{BASE_URL}/api/payments-received/reports/by-mode")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/reports/by-mode': No scheme supplied. Perhaps you meant https:///api/payments-received/reports/by-mode?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestExportImport" name="test_export_payments" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/export': No scheme supplied. Perhaps you meant https:///api/payments-received/export?">backend/tests/test_payments_received.py:383: in test_export_payments
+    response = requests.get(f"{BASE_URL}/api/payments-received/export")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/export': No scheme supplied. Perhaps you meant https:///api/payments-received/export?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestExportImport" name="test_get_import_template" time="0.000"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/import/template': No scheme supplied. Perhaps you meant https:///api/payments-received/import/template?">backend/tests/test_payments_received.py:393: in test_get_import_template
+    response = requests.get(f"{BASE_URL}/api/payments-received/import/template")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/import/template': No scheme supplied. Perhaps you meant https:///api/payments-received/import/template?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestRefundEndpoint" name="test_refund_requires_available_credit" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?">backend/tests/test_payments_received.py:417: in test_refund_requires_available_credit
+    create_response = requests.post(f"{BASE_URL}/api/payments-received/", json=payment_data)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/': No scheme supplied. Perhaps you meant https:///api/payments-received/?</failure></testcase><testcase classname="backend.tests.test_payments_received.TestCleanup" name="test_cleanup_test_payments" time="0.001"><failure message="requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/?search=TEST-': No scheme supplied. Perhaps you meant https:///api/payments-received/?search=TEST-?">backend/tests/test_payments_received.py:441: in test_cleanup_test_payments
+    response = requests.get(f"{BASE_URL}/api/payments-received/?search=TEST-")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:575: in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:484: in prepare_request
+    p.prepare(
+/root/.venv/lib/python3.11/site-packages/requests/models.py:367: in prepare
+    self.prepare_url(url, params)
+/root/.venv/lib/python3.11/site-packages/requests/models.py:438: in prepare_url
+    raise MissingSchema(
+E   requests.exceptions.MissingSchema: Invalid URL '/api/payments-received/?search=TEST-': No scheme supplied. Perhaps you meant https:///api/payments-received/?search=TEST-?</failure></testcase></testsuite></testsuites>
