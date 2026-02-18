@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { 
@@ -16,7 +17,8 @@ import {
   AlertTriangle, ArrowUpDown, BarChart3, RefreshCw, MoreHorizontal,
   Download, Upload, Copy, CheckCircle2, XCircle, Filter, SortAsc, SortDesc,
   History, Settings, FileText, Image as ImageIcon, ChevronDown, QrCode,
-  TrendingUp, TrendingDown, DollarSign, ShoppingCart, Barcode, Users
+  TrendingUp, TrendingDown, DollarSign, ShoppingCart, Barcode, Users,
+  Camera, Eye, EyeOff, Lock, FileSpreadsheet, Columns, Save
 } from "lucide-react";
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import PageHeader from "@/components/PageHeader";
