@@ -459,7 +459,7 @@ async def get_decision_tree(failure_card_id: str, request: Request):
 @router.post("/embeddings/generate-all")
 async def generate_all_embeddings(request: Request):
     """Generate embeddings for all failure cards"""
-    await get_current_user(request)
+    user = await get_current_user(request)
     
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
@@ -494,7 +494,7 @@ async def get_embedding_status(request: Request):
 @router.post("/seed")
 async def seed_failure_data(request: Request):
     """Seed failure cards and decision trees (Admin only)"""
-    await get_current_user(request)
+    user = await get_current_user(request)
     
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
