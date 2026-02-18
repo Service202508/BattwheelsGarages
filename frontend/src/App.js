@@ -494,6 +494,13 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/payments-received" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <PaymentsReceived user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       {/* Redirect old customers-enhanced route to unified contacts page */}
       <Route path="/customers-enhanced" element={<Navigate to="/contacts" replace />} />
       {/* Customer Portal - Public access with token authentication */}
