@@ -354,10 +354,93 @@ export default function InventoryAdjustments() {
       date: new Date().toISOString().split("T")[0],
       reference_number: "", account: "Cost of Goods Sold",
       reason: "", warehouse_id: "", warehouse_name: "",
-      description: "", line_items: []
+      description: "", line_items: [], ticket_id: ""
     });
     setEditMode(false);
     setSelectedAdj(null);
+    setQuickAdjustItem(null);
+  };
+
+  // === Export ===
+  const handleExport = () => {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([k, v]) => { if (v) params.set(k, v); });
+    const url = `${API}/inv-adjustments/export/csv?${params}`;
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "inventory_adjustments.csv");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    toast.success("Export started");
+  };
+
+  // === Import ===
+  const handleImportValidate = async () => {
+    if (!importFile) return toast.error("Select a CSV file");
+    setImportLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", importFile);
+      const res = await fetch(`${API}/inv-adjustments/import/validate`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
+        body: formData
+      });
+      const data = await res.json();
+      setImportPreview(data);
+    } catch (e) { toast.error("Failed to validate file"); }
+    setImportLoading(false);
+  };
+
+  const handleImportProcess = async () => {
+    if (!importFile) return;
+    setImportLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", importFile);
+      const res = await fetch(`${API}/inv-adjustments/import/process`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.code === 0) {
+        toast.success(data.message);
+        setShowImportDialog(false);
+        setImportFile(null);
+        setImportPreview(null);
+        fetchData();
+      }
+      if (data.errors?.length > 0) {
+        data.errors.slice(0, 5).forEach(e => toast.error(e));
+      }
+    } catch (e) { toast.error("Import failed"); }
+    setImportLoading(false);
+  };
+
+  // === PDF ===
+  const downloadPdf = (adjId) => {
+    window.open(`${API}/inv-adjustments/${adjId}/pdf`, "_blank");
+  };
+
+  // === ABC Report ===
+  const loadAbcReport = async () => {
+    try {
+      const res = await fetch(`${API}/inv-adjustments/reports/abc-classification?period_days=90`, { headers });
+      const data = await res.json();
+      setAbcReport(data.report);
+      setShowAbcDialog(true);
+    } catch (e) { toast.error("Failed to load ABC report"); }
+  };
+
+  const loadAbcDrillDown = async (itemId) => {
+    try {
+      const res = await fetch(`${API}/inv-adjustments/reports/abc-classification/${itemId}`, { headers });
+      const data = await res.json();
+      setAbcDrillDown(data);
+      setAbcDrillItem(itemId);
+    } catch (e) { toast.error("Failed to load drill-down"); }
   };
 
   const fmt = (v) => `₹${(v || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
