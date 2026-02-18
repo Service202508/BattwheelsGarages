@@ -55,6 +55,7 @@ import CustomerPortal from "@/pages/CustomerPortal";
 import ReportsAdvanced from "@/pages/ReportsAdvanced";
 import BillsEnhanced from "@/pages/BillsEnhanced";
 import InventoryEnhanced from "@/pages/InventoryEnhanced";
+import CompositeItems from "@/pages/CompositeItems";
 // CustomersEnhanced has been merged into ContactsEnhanced - redirect below
 import PriceLists from "@/pages/PriceLists";
 import InventoryAdjustments from "@/pages/InventoryAdjustments";
@@ -526,6 +527,14 @@ function AppRouter() {
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <BillsEnhanced user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      {/* Composite Items (Kits/Assemblies/Bundles) */}
+      <Route path="/composite-items" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <CompositeItems user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
