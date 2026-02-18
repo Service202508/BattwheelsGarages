@@ -2319,7 +2319,10 @@ async def get_item_preferences():
     if not prefs:
         prefs = ItemPreferences().dict()
         prefs["type"] = "items_module"
-        await db.item_preferences.insert_one(prefs)
+        prefs["created_time"] = datetime.now(timezone.utc).isoformat()
+        await db.item_preferences.insert_one(prefs.copy())
+        # Remove any _id that might have been added
+        prefs.pop("_id", None)
     
     return {"code": 0, "preferences": prefs}
 
