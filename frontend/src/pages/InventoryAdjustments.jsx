@@ -453,12 +453,32 @@ export default function InventoryAdjustments() {
           <h1 className="text-2xl font-bold" data-testid="page-title">Inventory Adjustments</h1>
           <p className="text-gray-500">Adjust stock quantities and values with full audit trail</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" size="sm" onClick={loadAbcReport} data-testid="abc-report-btn">
+            <BarChart3 className="h-4 w-4 mr-1" /> ABC Report
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setShowReasonsDialog(true)} data-testid="manage-reasons-btn">
             <Settings className="h-4 w-4 mr-1" /> Reasons
           </Button>
-          <Button variant="outline" size="sm" onClick={() => fetchData()}>
-            <RefreshCw className="h-4 w-4 mr-1" /> Refresh
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <MoreHorizontal className="h-4 w-4 mr-1" /> More
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleExport}>
+                <FileDown className="h-4 w-4 mr-2" /> Export CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { setImportFile(null); setImportPreview(null); setShowImportDialog(true); }}>
+                <FileUp className="h-4 w-4 mr-2" /> Import CSV
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => fetchData()}>
+                <RefreshCw className="h-4 w-4 mr-2" /> Refresh
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>            <RefreshCw className="h-4 w-4 mr-1" /> Refresh
           </Button>
           <Button onClick={() => { resetForm(); setShowCreateDialog(true); }} data-testid="new-adjustment-btn">
             <Plus className="h-4 w-4 mr-2" /> New Adjustment
