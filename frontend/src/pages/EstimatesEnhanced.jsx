@@ -1359,6 +1359,16 @@ export default function EstimatesEnhanced() {
                   <div><p className="text-gray-500">GSTIN</p><p className="font-medium font-mono text-xs">{selectedEstimate.customer_gstin || '-'}</p></div>
                 </div>
 
+                {/* Price List Info */}
+                {selectedEstimate.price_list_name && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-sm flex items-center gap-2">
+                    <IndianRupee className="h-4 w-4 text-green-600" />
+                    <span className="text-green-700">
+                      Price List Applied: <strong>{selectedEstimate.price_list_name}</strong>
+                    </span>
+                  </div>
+                )}
+
                 <Separator />
 
                 {/* Line Items */}
@@ -1383,10 +1393,20 @@ export default function EstimatesEnhanced() {
                               <td className="px-3 py-2">
                                 <p className="font-medium">{item.name}</p>
                                 {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
+                                {item.price_list_applied && (
+                                  <span className="text-[10px] text-green-600 bg-green-50 px-1 rounded">
+                                    {item.price_list_applied}
+                                  </span>
+                                )}
                               </td>
                               <td className="px-3 py-2 font-mono text-xs">{item.hsn_code || '-'}</td>
                               <td className="px-3 py-2 text-right">{item.quantity} {item.unit}</td>
-                              <td className="px-3 py-2 text-right">₹{item.rate?.toLocaleString('en-IN')}</td>
+                              <td className="px-3 py-2 text-right">
+                                ₹{item.rate?.toLocaleString('en-IN')}
+                                {item.base_rate && item.base_rate !== item.rate && (
+                                  <span className="text-[10px] text-gray-400 line-through ml-1">₹{item.base_rate}</span>
+                                )}
+                              </td>
                               <td className="px-3 py-2 text-right">{item.tax_percentage}%</td>
                               <td className="px-3 py-2 text-right font-medium">₹{item.total?.toLocaleString('en-IN')}</td>
                             </tr>
