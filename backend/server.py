@@ -4599,6 +4599,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Invoice Automation routes: {e}")
 
+# Include Recurring Invoices routes
+try:
+    from routes.recurring_invoices import router as recurring_invoices_router
+    api_router.include_router(recurring_invoices_router)
+    logger.info("Recurring Invoices routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Recurring Invoices routes: {e}")
+
 # Include Stripe Webhook routes
 try:
     from routes.stripe_webhook import router as stripe_webhook_router
