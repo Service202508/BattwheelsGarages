@@ -92,7 +92,7 @@ export default function InvoiceSettings() {
         fetch(`${API}/invoice-automation/late-fee-settings`, { headers }),
         fetch(`${API}/recurring-invoices`, { headers }),
         fetch(`${API}/recurring-invoices/summary`, { headers }),
-        fetch(`${API}/contacts-enhanced?contact_type=customer&per_page=200`, { headers })
+        fetch(`${API}/contacts-enhanced/?contact_type=customer&per_page=200`, { headers })
       ]);
       
       const [aging, overdue, dueSoon, reminder, lateFee, recurring, recurringSummary, customersData] = 
