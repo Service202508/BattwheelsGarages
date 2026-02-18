@@ -326,31 +326,37 @@ export default function Login({ onLogin }) {
       </div>
 
       {/* Right Panel - Premium Auth Form */}
-      <div className="flex-1 flex flex-col relative overflow-hidden">
+      <div className="flex-1 flex flex-col relative overflow-hidden min-h-screen">
         {/* Premium Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50/50 to-white" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#22EDA9]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#22EDA9]/3 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
         
-        {/* Top Right Logo - Visible on all screen sizes */}
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8 z-20">
+        {/* Top Header with Logo */}
+        <div className="relative z-10 flex justify-between items-center px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
+          {/* Spacer for mobile/tablet to push logo to right */}
+          <div className="flex-1" />
+          
+          {/* Logo */}
           <img 
             src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
             alt="Battwheels" 
-            className="h-16 sm:h-20 lg:h-24 w-auto drop-shadow-md"
+            className="h-14 sm:h-16 md:h-20 lg:h-24 w-auto drop-shadow-md"
           />
         </div>
 
-        <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6 lg:py-0">
+        <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-4 sm:py-6 lg:py-0">
           <div className="w-full max-w-md">
-            {/* Mobile 3D Icons - Only on mobile (logo is now in top-right corner) */}
-            <div className="lg:hidden flex flex-col items-center mb-6 mt-16">
-              <div className="flex gap-2 items-end">
-                <img src={VEHICLE_ICONS.twoWheeler} alt="2W" className="w-10 h-10 object-contain" />
-                <img src={VEHICLE_ICONS.threeWheeler} alt="3W" className="w-12 h-12 object-contain" />
-                <img src={VEHICLE_ICONS.car} alt="4W" className="w-14 h-14 object-contain" />
-                <img src={VEHICLE_ICONS.commercial} alt="Truck" className="w-12 h-12 object-contain" />
+            {/* Mobile/Tablet 3D Icons - Hidden on desktop */}
+            <div className="lg:hidden flex flex-col items-center mb-6">
+              <div className="flex gap-3 items-end">
+                <img src={VEHICLE_ICONS.twoWheeler} alt="2W" className="w-10 h-10 sm:w-12 sm:h-12 object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                <img src={VEHICLE_ICONS.threeWheeler} alt="3W" className="w-12 h-12 sm:w-14 sm:h-14 object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                <img src={VEHICLE_ICONS.car} alt="4W" className="w-14 h-14 sm:w-16 sm:h-16 object-contain" />
+                <img src={VEHICLE_ICONS.commercial} alt="Truck" className="w-12 h-12 sm:w-14 sm:h-14 object-contain opacity-80 hover:opacity-100 transition-opacity" />
               </div>
+              {/* Mobile tagline */}
+              <p className="text-sm text-[#22EDA9] font-medium mt-3 tracking-wide">EV Failure Intelligence</p>
             </div>
 
             {/* Premium Glass Card */}
