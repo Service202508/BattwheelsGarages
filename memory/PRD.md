@@ -7,64 +7,43 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ## Implementation Status
 
-### Completed (Feb 18, 2026 - Latest Session)
+### Completed (Feb 18, 2026 - Current Session)
+
+#### Zoho-Style Inventory Adjustments - Phase 1 (COMPLETE)
+- **Full workflow**: Draft -> Adjusted -> Void with stock impact
+- **Backend** (`/app/backend/routes/inventory_adjustments_v2.py`):
+  - CRUD: Create, List (paginated/filterable), Get with audit trail, Update, Delete
+  - Status transitions: Convert draft to adjusted (applies stock), Void (reverses stock)
+  - Attachment support (up to 5 files, 10MB each)
+  - Adjustment Reasons management (9 seeded defaults + custom CRUD)
+  - Reports: Adjustment Summary, FIFO Cost Lot Tracking, ABC Classification
+  - Auto-generated reference numbers with configurable prefix
+  - Full audit trail logging
+- **Frontend** (`/app/frontend/src/pages/InventoryAdjustments.jsx`):
+  - Complete rewrite - Zoho-style list view with sortable columns
+  - 7 summary stat cards (Total, Draft, Adjusted, Voided, This Month, Increases, Decreases)
+  - Advanced filters: Status, Type, Reason, Date range, Warehouse, Search
+  - Create/Edit dialog: Quantity & Value adjustment modes, line item management
+  - Detail dialog with tabs (Line Items, Details, Audit Trail)
+  - Reasons management dialog (add/disable)
+  - Pagination, inline editing of line item quantities/values
+- **Testing**: 100% pass rate (18/18 backend + all frontend features verified)
 
 #### Composite Items Frontend (COMPLETE)
 - Full management page at `/composite-items`
-- Summary cards: Total Items, Active, Kits, Assemblies, Bundles, Inventory Value
-- Create dialog with component selection from inventory
-- Build/Unbuild actions with availability checking
-- Detail view with BOM and build history
-- Search by name/SKU, filter by type
-- Navigation item added under Inventory section
+- Summary cards, Create dialog, Build/Unbuild, Detail view
 - Bug fix: Collection name corrected from `items_enhanced` to `items`
-
-#### Invoice Automation Settings (COMPLETE - Verified)
-- 5-tab UI: Overdue, Due Soon, Recurring, Reminders, Late Fees
-- All tabs wired to backend APIs and working
-- Reminder settings save/load
-- Late fee settings save/load with conditional UI
-- Bulk reminder sending for overdue invoices
-
-#### Recurring Invoices (COMPLETE - Verified)
-- Backend CRUD + generate-now + stop/resume
-- Frontend integrated in InvoiceSettings page (Recurring tab)
-- Create dialog with customer selection, frequency, line items
-- MRR dashboard with stat cards
 
 ---
 
 ### Previously Completed
-
-#### WeasyPrint PDF Generation (COMPLETE)
-- Installed missing `libpangoft2-1.0-0` system library
-- PDF generation fully functional for quotes, invoices, estimates
-
-#### Composite Items Backend (COMPLETE)
-- Full CRUD for composite/kit items
-- Build/Unbuild with component stock management
-- Availability checking with shortage detection
-- Bill of Materials support with waste percentage
-
-#### Recurring Invoices Backend (COMPLETE)
-- Full CRUD for recurring invoice profiles
-- Frequency: daily, weekly, monthly, yearly
-- Generate-now and batch process-due endpoints
-- Auto-calculate next invoice date
-
-#### Zoho-Style Sales Modules - All Phases (COMPLETE)
-- Phase 1: Payments Received Module
-- Phase 2: Stripe Online Payments, Payment Reminders
-- Phase 3: Late Fees, Aging Reports, Auto Credit Application
-
-#### Items Module - All Phases (COMPLETE)
-- Phase 1: Enhanced data model, bulk actions, import/export, custom fields
-- Phase 2: Price lists, barcode support, advanced reports
-- Phase 3: Preferences, field configuration, auto SKU, barcode scanner
-
-#### Quotes/Estimates Module (COMPLETE)
-- Attachments, public share links, PDF generation
-- Auto-conversion, templates, import/export, bulk actions
+- WeasyPrint PDF Generation
+- Recurring Invoices (Backend + Frontend in InvoiceSettings)
+- Invoice Automation Settings (5-tab UI)
+- Composite Items Backend (CRUD, Build/Unbuild)
+- Zoho-Style Sales Modules (all phases)
+- Items Module (all phases)
+- Quotes/Estimates Module
 
 ---
 
@@ -76,41 +55,34 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 - **Payments**: Stripe (active, test mode)
 - **PDF**: WeasyPrint (active)
 
----
-
 ## Mocked Services
 - **Email (Resend)**: Logs to console, pending `RESEND_API_KEY`
 - **Razorpay**: Mocked
-
----
 
 ## Test Credentials
 - **Admin**: admin@battwheels.in / admin123
 - **Technician**: deepak@battwheelsgarages.in / tech123
 
----
-
 ## Test Reports
-- `/app/test_reports/iteration_43.json` - Composite Items + Invoice Settings (100% pass)
+- `/app/test_reports/iteration_44.json` - Inventory Adjustments V2 (100% pass)
+- `/app/test_reports/iteration_43.json` - Composite Items + Invoice Settings
 - `/app/test_reports/iteration_42.json` - Recurring Invoices + Invoice Automation UI
-- `/app/test_reports/iteration_41.json` - Invoice Automation Phase 2&3
-- `/app/test_reports/iteration_40.json` - Payments Received Final
 
 ---
 
 ## Remaining Backlog
 
 ### P0 (High Priority)
-- Un-mock Resend email (requires RESEND_API_KEY from user)
+- Inventory Adjustments Phase 2: CSV/XLS import/export, ABC report with drill-down, PDF template for adjustments
+- Inventory Adjustments Phase 3: Reason admin settings page, Adjust Stock button on item details, optional ticket linking
 
 ### P1 (Medium Priority)
+- Un-mock Resend email (requires RESEND_API_KEY)
 - Customer self-service portal improvements
 - Advanced sales reports
 - Multi-warehouse support
 
 ### P2 (Low Priority)
-- Propagate standardized UI components across all pages
-- Package tracking / shipment integration
-- Serial number tracking
-- Signature capture on quote acceptance
+- Propagate standardized UI components
+- Package tracking / serial numbers
 - Un-mock Razorpay payments
