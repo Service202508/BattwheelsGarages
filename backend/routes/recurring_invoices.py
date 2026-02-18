@@ -154,7 +154,11 @@ async def create_recurring_invoice(data: RecurringInvoiceCreate):
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
 
-    start_date = datetime.strptime(data.start_date, "%Y-%m-%d")
+    # Validate start date format
+    try:
+        datetime.strptime(data.start_date, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid start_date format (use YYYY-MM-DD)")
 
     recurring = {
         "recurring_id": f"RI-{uuid.uuid4().hex[:12].upper()}",
