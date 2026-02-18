@@ -78,7 +78,8 @@ export default function InventoryAdjustments() {
     warehouse_id: "",
     warehouse_name: "",
     description: "",
-    line_items: []
+    line_items: [],
+    ticket_id: ""
   });
 
   // Line item add
