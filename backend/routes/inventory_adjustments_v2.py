@@ -639,7 +639,7 @@ async def fifo_cost_lot_tracking(item_id: Optional[str] = None, limit: int = 100
         for line in adj.get("line_items", []):
             if item_id and line.get("item_id") != item_id:
                 continue
-            qty = line.get("quantity_adjusted", 0)
+            qty = line.get("quantity_adjusted") or 0  # Handle None values
             lot = {
                 "date": adj["date"],
                 "reference": adj["reference_number"],
