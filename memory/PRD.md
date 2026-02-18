@@ -355,3 +355,22 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 - Un-mock Resend email
 - Enhanced notification system
 - Signature capture on quote acceptance
+
+---
+
+## Zoho-Style Sales Modules - Remaining Phases
+
+### Phase 2 - Workflow & Automation (PENDING)
+- Integrate payment gateways (Razorpay/Stripe) for online payments
+- Automatic application of overpayments/credits
+- Bulk actions for payments
+- Customer statements PDF generation
+- Automated payment reminders
+
+### Phase 3 - Advanced Features (PENDING)
+- Customer portal for viewing/paying invoices
+- Recurring invoices with auto-payment
+- Late fees calculation
+- Retainer invoice generation
+- Advanced reporting (aging, sales summaries)
+- Workflow automation (approval flows)
