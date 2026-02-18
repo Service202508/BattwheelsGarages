@@ -332,12 +332,12 @@ export default function Login({ onLogin }) {
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#22EDA9]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#22EDA9]/3 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
         
-        {/* Top Right Logo - Hidden on mobile since card has branding */}
-        <div className="relative z-10 hidden lg:flex justify-end px-8 py-6">
+        {/* Top Right Logo - Visible on all screen sizes */}
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8 z-20">
           <img 
             src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
             alt="Battwheels" 
-            className="h-12 w-auto drop-shadow-sm"
+            className="h-16 sm:h-20 lg:h-24 w-auto drop-shadow-md"
           />
         </div>
 
