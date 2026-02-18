@@ -1708,3 +1708,460 @@ async def batch_void(estimate_ids: List[str]):
     )
     
     return {"code": 0, "message": f"Voided {result.modified_count} estimates"}
+
+# ========================= ATTACHMENT ENDPOINTS =========================
+
+@router.post("/{estimate_id}/attachments")
+async def upload_attachment(
+    estimate_id: str,
+    file: UploadFile = File(...),
+    uploaded_by: str = Form(default="system")
+):
+    """Upload an attachment to an estimate (max 3 files, 10MB each)"""
+    estimate = await estimates_collection.find_one({"estimate_id": estimate_id})
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found")
+    
+    # Check attachment count
+    existing_count = await estimate_attachments_collection.count_documents({"estimate_id": estimate_id})
+    if existing_count >= MAX_ATTACHMENTS_PER_ESTIMATE:
+        raise HTTPException(status_code=400, detail=f"Maximum {MAX_ATTACHMENTS_PER_ESTIMATE} attachments allowed")
+    
+    # Validate file type
+    if file.content_type not in ALLOWED_ATTACHMENT_TYPES:
+        raise HTTPException(status_code=400, detail=f"File type {file.content_type} not allowed")
+    
+    # Read and validate file size
+    file_content = await file.read()
+    file_size = len(file_content)
+    
+    if file_size > MAX_ATTACHMENT_SIZE_MB * 1024 * 1024:
+        raise HTTPException(status_code=400, detail=f"File size exceeds {MAX_ATTACHMENT_SIZE_MB}MB limit")
+    
+    # Store attachment
+    attachment_id = generate_id("ATT")
+    attachment_doc = {
+        "attachment_id": attachment_id,
+        "estimate_id": estimate_id,
+        "filename": file.filename,
+        "file_size": file_size,
+        "content_type": file.content_type,
+        "file_data": base64.b64encode(file_content).decode('utf-8'),
+        "uploaded_by": uploaded_by,
+        "uploaded_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await estimate_attachments_collection.insert_one(attachment_doc)
+    await add_estimate_history(estimate_id, "attachment_added", f"File attached: {file.filename}")
+    
+    return {
+        "code": 0,
+        "message": "Attachment uploaded",
+        "attachment": {
+            "attachment_id": attachment_id,
+            "filename": file.filename,
+            "file_size": file_size,
+            "content_type": file.content_type,
+            "uploaded_at": attachment_doc["uploaded_at"]
+        }
+    }
+
+@router.get("/{estimate_id}/attachments")
+async def list_attachments(estimate_id: str):
+    """List all attachments for an estimate"""
+    attachments = await estimate_attachments_collection.find(
+        {"estimate_id": estimate_id},
+        {"_id": 0, "file_data": 0}
+    ).to_list(10)
+    
+    return {"code": 0, "attachments": attachments}
+
+@router.get("/{estimate_id}/attachments/{attachment_id}")
+async def download_attachment(estimate_id: str, attachment_id: str):
+    """Download an attachment"""
+    attachment = await estimate_attachments_collection.find_one(
+        {"attachment_id": attachment_id, "estimate_id": estimate_id}
+    )
+    
+    if not attachment:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    
+    file_data = base64.b64decode(attachment["file_data"])
+    
+    return StreamingResponse(
+        io.BytesIO(file_data),
+        media_type=attachment["content_type"],
+        headers={"Content-Disposition": f"attachment; filename={attachment['filename']}"}
+    )
+
+@router.delete("/{estimate_id}/attachments/{attachment_id}")
+async def delete_attachment(estimate_id: str, attachment_id: str):
+    """Delete an attachment"""
+    result = await estimate_attachments_collection.delete_one(
+        {"attachment_id": attachment_id, "estimate_id": estimate_id}
+    )
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    
+    await add_estimate_history(estimate_id, "attachment_removed", f"Attachment {attachment_id} removed")
+    
+    return {"code": 0, "message": "Attachment deleted"}
+
+# ========================= SHARE LINK ENDPOINTS =========================
+
+@router.post("/{estimate_id}/share")
+async def create_share_link(estimate_id: str, share_config: ShareLinkCreate = None):
+    """Generate a public share link for the estimate"""
+    estimate = await estimates_collection.find_one({"estimate_id": estimate_id})
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found")
+    
+    if estimate.get("status") == "void":
+        raise HTTPException(status_code=400, detail="Cannot share a voided estimate")
+    
+    config = share_config or ShareLinkCreate()
+    
+    # Generate unique share token
+    share_token = generate_share_token()
+    
+    # Calculate expiry
+    expires_at = (datetime.now(timezone.utc) + timedelta(days=config.expiry_days)).isoformat()
+    
+    # Hash password if provided
+    password_hash = None
+    if config.password_protected and config.password:
+        password_hash = hashlib.sha256(config.password.encode()).hexdigest()
+    
+    share_link_id = generate_id("SHL")
+    share_doc = {
+        "share_link_id": share_link_id,
+        "estimate_id": estimate_id,
+        "share_token": share_token,
+        "expires_at": expires_at,
+        "allow_accept": config.allow_accept,
+        "allow_decline": config.allow_decline,
+        "password_protected": config.password_protected,
+        "password_hash": password_hash,
+        "view_count": 0,
+        "last_viewed_at": None,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "is_active": True
+    }
+    
+    await estimate_share_links_collection.insert_one(share_doc)
+    await add_estimate_history(estimate_id, "share_link_created", f"Public share link created (expires: {expires_at[:10]})")
+    
+    # Update estimate with share info
+    await estimates_collection.update_one(
+        {"estimate_id": estimate_id},
+        {"$set": {
+            "has_share_link": True,
+            "share_token": share_token,
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # Generate public URL (will be relative - frontend needs to construct full URL)
+    public_url = f"/quote/{share_token}"
+    
+    return {
+        "code": 0,
+        "message": "Share link created",
+        "share_link": {
+            "share_link_id": share_link_id,
+            "share_token": share_token,
+            "public_url": public_url,
+            "expires_at": expires_at,
+            "allow_accept": config.allow_accept,
+            "allow_decline": config.allow_decline,
+            "password_protected": config.password_protected
+        }
+    }
+
+@router.get("/{estimate_id}/share-links")
+async def list_share_links(estimate_id: str):
+    """List all share links for an estimate"""
+    links = await estimate_share_links_collection.find(
+        {"estimate_id": estimate_id, "is_active": True},
+        {"_id": 0, "password_hash": 0}
+    ).to_list(10)
+    
+    return {"code": 0, "share_links": links}
+
+@router.delete("/{estimate_id}/share/{share_link_id}")
+async def revoke_share_link(estimate_id: str, share_link_id: str):
+    """Revoke a share link"""
+    result = await estimate_share_links_collection.update_one(
+        {"share_link_id": share_link_id, "estimate_id": estimate_id},
+        {"$set": {"is_active": False}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Share link not found")
+    
+    await add_estimate_history(estimate_id, "share_link_revoked", f"Share link {share_link_id} revoked")
+    
+    return {"code": 0, "message": "Share link revoked"}
+
+# ========================= PDF GENERATION ENDPOINTS =========================
+
+@router.get("/{estimate_id}/pdf")
+async def generate_pdf(estimate_id: str):
+    """Generate and download PDF of the estimate"""
+    estimate = await estimates_collection.find_one({"estimate_id": estimate_id}, {"_id": 0})
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found")
+    
+    line_items = await estimate_items_collection.find(
+        {"estimate_id": estimate_id},
+        {"_id": 0}
+    ).sort("line_number", 1).to_list(100)
+    
+    # Generate HTML
+    html_content = generate_pdf_html(estimate, line_items)
+    
+    # Try to use WeasyPrint for PDF generation
+    try:
+        from weasyprint import HTML
+        pdf_bytes = HTML(string=html_content).write_pdf()
+        
+        return StreamingResponse(
+            io.BytesIO(pdf_bytes),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=Estimate_{estimate.get('estimate_number', estimate_id)}.pdf"
+            }
+        )
+    except ImportError:
+        # WeasyPrint not available - return HTML for client-side rendering
+        logger.warning("WeasyPrint not available, returning HTML for client-side PDF generation")
+        return JSONResponse({
+            "code": 1,
+            "message": "PDF generation requires WeasyPrint. Returning HTML.",
+            "html": html_content,
+            "estimate": estimate
+        })
+    except Exception as e:
+        logger.error(f"PDF generation error: {str(e)}")
+        # Return HTML as fallback
+        return JSONResponse({
+            "code": 1,
+            "message": f"PDF generation failed: {str(e)}. Returning HTML.",
+            "html": html_content,
+            "estimate": estimate
+        })
+
+@router.get("/{estimate_id}/preview-html")
+async def get_preview_html(estimate_id: str):
+    """Get HTML preview of the estimate (for client-side PDF generation)"""
+    estimate = await estimates_collection.find_one({"estimate_id": estimate_id}, {"_id": 0})
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found")
+    
+    line_items = await estimate_items_collection.find(
+        {"estimate_id": estimate_id},
+        {"_id": 0}
+    ).sort("line_number", 1).to_list(100)
+    
+    html_content = generate_pdf_html(estimate, line_items)
+    
+    return {"code": 0, "html": html_content}
+
+# ========================= PUBLIC ACCESS ENDPOINTS =========================
+# These endpoints are accessed via the public share link (no auth required)
+
+@router.get("/public/{share_token}")
+async def get_public_estimate(share_token: str, password: Optional[str] = None):
+    """Get estimate details via public share link"""
+    # Find share link
+    share_link = await estimate_share_links_collection.find_one(
+        {"share_token": share_token, "is_active": True}
+    )
+    
+    if not share_link:
+        raise HTTPException(status_code=404, detail="Invalid or expired share link")
+    
+    # Check expiry
+    expires_at = datetime.fromisoformat(share_link["expires_at"].replace('Z', '+00:00'))
+    if expires_at < datetime.now(timezone.utc):
+        raise HTTPException(status_code=410, detail="Share link has expired")
+    
+    # Check password if required
+    if share_link.get("password_protected"):
+        if not password:
+            return {"code": 2, "message": "Password required", "password_protected": True}
+        if hashlib.sha256(password.encode()).hexdigest() != share_link.get("password_hash"):
+            raise HTTPException(status_code=401, detail="Invalid password")
+    
+    # Get estimate
+    estimate = await estimates_collection.find_one(
+        {"estimate_id": share_link["estimate_id"]},
+        {"_id": 0}
+    )
+    
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found")
+    
+    # Get line items
+    line_items = await estimate_items_collection.find(
+        {"estimate_id": share_link["estimate_id"]},
+        {"_id": 0}
+    ).sort("line_number", 1).to_list(100)
+    
+    estimate["line_items"] = line_items
+    
+    # Update view count and mark as customer_viewed if first view
+    view_count = share_link.get("view_count", 0) + 1
+    await estimate_share_links_collection.update_one(
+        {"share_token": share_token},
+        {
+            "$set": {"last_viewed_at": datetime.now(timezone.utc).isoformat()},
+            "$inc": {"view_count": 1}
+        }
+    )
+    
+    # Update estimate status to customer_viewed if it was sent
+    if estimate.get("status") == "sent":
+        await estimates_collection.update_one(
+            {"estimate_id": share_link["estimate_id"]},
+            {
+                "$set": {
+                    "status": "customer_viewed",
+                    "first_viewed_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_time": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        estimate["status"] = "customer_viewed"
+        await add_estimate_history(share_link["estimate_id"], "customer_viewed", "Customer viewed the estimate via public link")
+    
+    # Get attachments (metadata only)
+    attachments = await estimate_attachments_collection.find(
+        {"estimate_id": share_link["estimate_id"]},
+        {"_id": 0, "file_data": 0}
+    ).to_list(10)
+    
+    return {
+        "code": 0,
+        "estimate": estimate,
+        "attachments": attachments,
+        "can_accept": share_link.get("allow_accept", True) and estimate.get("status") in ["sent", "customer_viewed"],
+        "can_decline": share_link.get("allow_decline", True) and estimate.get("status") in ["sent", "customer_viewed"],
+        "view_count": view_count
+    }
+
+@router.post("/public/{share_token}/action")
+async def customer_action(share_token: str, action: CustomerAction):
+    """Handle customer accept/decline via public link"""
+    # Find share link
+    share_link = await estimate_share_links_collection.find_one(
+        {"share_token": share_token, "is_active": True}
+    )
+    
+    if not share_link:
+        raise HTTPException(status_code=404, detail="Invalid or expired share link")
+    
+    # Check expiry
+    expires_at = datetime.fromisoformat(share_link["expires_at"].replace('Z', '+00:00'))
+    if expires_at < datetime.now(timezone.utc):
+        raise HTTPException(status_code=410, detail="Share link has expired")
+    
+    # Get estimate
+    estimate = await estimates_collection.find_one({"estimate_id": share_link["estimate_id"]})
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found")
+    
+    # Validate action is allowed
+    if action.action == "accept":
+        if not share_link.get("allow_accept", True):
+            raise HTTPException(status_code=403, detail="Acceptance not allowed via this link")
+        if estimate.get("status") not in ["sent", "customer_viewed"]:
+            raise HTTPException(status_code=400, detail="Estimate cannot be accepted in current status")
+        
+        # Mark as accepted
+        update_data = {
+            "status": "accepted",
+            "accepted_date": datetime.now(timezone.utc).date().isoformat(),
+            "accepted_via": "public_link",
+            "customer_comments": action.comments,
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }
+        await estimates_collection.update_one(
+            {"estimate_id": share_link["estimate_id"]},
+            {"$set": update_data}
+        )
+        await add_estimate_history(share_link["estimate_id"], "accepted", f"Customer accepted via public link. Comments: {action.comments or 'None'}")
+        
+        # Check for auto-conversion
+        preferences = await get_estimate_preferences()
+        conversion_result = None
+        if preferences.get("auto_convert_on_accept", False):
+            conversion_result = await auto_convert_estimate(share_link["estimate_id"], preferences)
+        
+        return {
+            "code": 0,
+            "message": "Estimate accepted successfully",
+            "status": "accepted",
+            "conversion": conversion_result
+        }
+    
+    elif action.action == "decline":
+        if not share_link.get("allow_decline", True):
+            raise HTTPException(status_code=403, detail="Decline not allowed via this link")
+        if estimate.get("status") not in ["sent", "customer_viewed"]:
+            raise HTTPException(status_code=400, detail="Estimate cannot be declined in current status")
+        
+        # Mark as declined
+        update_data = {
+            "status": "declined",
+            "declined_date": datetime.now(timezone.utc).date().isoformat(),
+            "declined_via": "public_link",
+            "decline_reason": action.comments,
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }
+        await estimates_collection.update_one(
+            {"estimate_id": share_link["estimate_id"]},
+            {"$set": update_data}
+        )
+        await add_estimate_history(share_link["estimate_id"], "declined", f"Customer declined via public link. Reason: {action.comments or 'None'}")
+        
+        return {
+            "code": 0,
+            "message": "Estimate declined",
+            "status": "declined"
+        }
+    
+    else:
+        raise HTTPException(status_code=400, detail="Invalid action. Use 'accept' or 'decline'")
+
+@router.get("/public/{share_token}/pdf")
+async def get_public_pdf(share_token: str):
+    """Download PDF via public share link"""
+    # Find share link
+    share_link = await estimate_share_links_collection.find_one(
+        {"share_token": share_token, "is_active": True}
+    )
+    
+    if not share_link:
+        raise HTTPException(status_code=404, detail="Invalid or expired share link")
+    
+    # Check expiry
+    expires_at = datetime.fromisoformat(share_link["expires_at"].replace('Z', '+00:00'))
+    if expires_at < datetime.now(timezone.utc):
+        raise HTTPException(status_code=410, detail="Share link has expired")
+    
+    return await generate_pdf(share_link["estimate_id"])
+
+@router.get("/public/{share_token}/attachment/{attachment_id}")
+async def download_public_attachment(share_token: str, attachment_id: str):
+    """Download attachment via public share link"""
+    # Find share link
+    share_link = await estimate_share_links_collection.find_one(
+        {"share_token": share_token, "is_active": True}
+    )
+    
+    if not share_link:
+        raise HTTPException(status_code=404, detail="Invalid or expired share link")
+    
+    return await download_attachment(share_link["estimate_id"], attachment_id)
