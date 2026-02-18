@@ -1,46 +1,47 @@
 # Battwheels OS - Product Requirements Document
 
 ## Original Problem Statement
-Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Books functionality with comprehensive quote-to-invoice workflow.
+Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Books functionality with comprehensive quote-to-invoice workflow and EV-specific failure intelligence.
 
 ---
 
 ## Implementation Status
 
-### ✅ Phase 1 - Core Infrastructure (COMPLETE - Feb 18, 2026)
-- **Attachments**: Upload up to 3 files (10MB each) per estimate
-- **Public Share Links**: Secure URLs for customer review with expiry, password protection
-- **Customer Viewed Status**: Auto-tracks when customers access via public link
-- **PDF Generation**: HTML template generation (WeasyPrint fallback)
+### ✅ Quotes/Estimates Module (COMPLETE)
 
-### ✅ Phase 2 - Workflow & Automation (COMPLETE - Feb 18, 2026)
-- **Auto-conversion**: Backend logic for auto-converting accepted quotes (configurable in preferences)
-- **PDF Templates**: 3 templates - Standard (green), Professional (navy), Minimal (gray)
-- **Import/Export**: CSV/JSON export with status filtering, CSV import with template
-- **Custom Fields**: CRUD for custom field definitions
-- **Bulk Actions**: Multi-select for void, delete, mark_sent, mark_expired
-- **Legacy Migration**: 346 contacts migrated (452 total)
+**Phase 1 - Core Infrastructure:**
+- Attachments: Up to 3 files (10MB each) per estimate
+- Public Share Links: Secure URLs with expiry, password protection
+- Customer Viewed Status: Auto-tracking via public link
+- PDF Generation: HTML template with WeasyPrint fallback
 
----
+**Phase 2 - Workflow & Automation:**
+- Auto-conversion: Accepted quotes → invoices/sales orders
+- PDF Templates: Standard, Professional, Minimal
+- Import/Export: CSV/JSON with template
+- Custom Fields: Full CRUD management
+- Bulk Actions: Void, delete, mark_sent, mark_expired
+- Legacy Migration: 346 contacts migrated (452 total)
 
-## API Endpoints
+### ✅ Backlog Items (COMPLETE - Feb 18, 2026)
 
-### Estimates Enhanced
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /templates | List 3 PDF templates |
-| GET | /custom-fields | List custom field definitions |
-| POST | /custom-fields | Add custom field |
-| DELETE | /custom-fields/{name} | Delete custom field |
-| GET | /export | Export estimates (CSV/JSON) |
-| GET | /import/template | Download CSV import template |
-| POST | /import | Import estimates from CSV |
-| POST | /bulk/action | Bulk void/delete/mark_sent/mark_expired |
-| POST | /bulk/status | Bulk status update |
-| GET | /{id}/pdf/{template_id} | PDF with template |
-| POST | /{id}/share | Create share link |
-| GET | /public/{token} | Public quote view |
-| POST | /public/{token}/action | Customer accept/decline |
+**1. Cmd+K Command Palette**
+- Global keyboard shortcut (⌘K / Ctrl+K)
+- Quick Actions: Create estimates, invoices, tickets, contacts, expenses
+- Page Navigation: All 20+ modules searchable
+- Recent searches with localStorage persistence
+- Keyboard navigation (↑↓ navigate, ↵ select, esc close)
+
+**2. EFI Decision Tree Images**
+- Upload images for diagnostic steps (max 5MB, JPG/PNG/GIF/WebP)
+- Store in MongoDB with base64 encoding
+- Display inline in EFI Side Panel
+- Click to view full-size
+- Endpoints:
+  - `POST /api/efi-guided/failure-cards/{id}/step-image`
+  - `GET /api/efi-guided/step-image/{image_id}`
+  - `GET /api/efi-guided/failure-cards/{id}/images`
+  - `DELETE /api/efi-guided/step-image/{image_id}`
 
 ---
 
@@ -66,18 +67,13 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ---
 
 ## Test Reports
-- `/app/test_reports/iteration_34.json` - Phase 2 (100% pass)
-- `/app/test_reports/iteration_33.json` - Phase 1 (100% pass)
+- `/app/test_reports/iteration_34.json` - Phase 2 Estimates
+- `/app/test_reports/iteration_33.json` - Phase 1 Estimates
 
 ---
 
-## Upcoming Tasks (Phase 3)
-1. Email Integration - Un-mock Resend for sending quotes
-2. Enhanced notification system
-3. Signature capture on acceptance
-4. Project association for quotes
-
-## Backlog
-- Cmd+K command palette
-- EFI decision tree images
+## Remaining Backlog
 - Un-mock Razorpay payments
+- Un-mock Resend email
+- Enhanced notification system
+- Signature capture on acceptance
