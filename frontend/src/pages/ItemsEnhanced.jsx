@@ -642,6 +642,10 @@ export default function ItemsEnhanced() {
                   <FileText className="h-4 w-4 mr-2" /> Export to JSON
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => { setShowBarcodeDialog(true); setBarcodeResult(null); setBarcodeSearch(""); }}>
+                  <QrCode className="h-4 w-4 mr-2" /> Barcode Lookup
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setShowPreferencesDialog(true)}>
                   <Settings className="h-4 w-4 mr-2" /> Preferences
                 </DropdownMenuItem>
@@ -671,8 +675,15 @@ export default function ItemsEnhanced() {
       </StatCardGrid>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-flex">
+      <Tabs value={activeTab} onValueChange={(v) => {
+        setActiveTab(v);
+        if (v === "reports" && !salesReport) {
+          fetchSalesReport();
+          fetchPurchasesReport();
+          fetchValuationReport();
+        }
+      }}>
+        <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-flex">
           <TabsTrigger value="items">Items</TabsTrigger>
           <TabsTrigger value="groups">Groups</TabsTrigger>
           <TabsTrigger value="warehouses">Warehouses</TabsTrigger>
