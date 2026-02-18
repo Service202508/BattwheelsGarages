@@ -173,6 +173,39 @@ class CustomerAction(BaseModel):
     action: str  # accept, decline
     comments: Optional[str] = None
 
+class CustomFieldDefinition(BaseModel):
+    field_name: str
+    field_type: str = "text"  # text, number, date, dropdown, checkbox
+    options: Optional[List[str]] = None  # For dropdown type
+    is_required: bool = False
+    default_value: Optional[str] = None
+    show_in_pdf: bool = True
+    show_in_portal: bool = True
+
+class BulkStatusUpdate(BaseModel):
+    estimate_ids: List[str]
+    new_status: str
+    reason: Optional[str] = None
+
+class BulkAction(BaseModel):
+    estimate_ids: List[str]
+    action: str  # void, delete, mark_sent, mark_expired
+    reason: Optional[str] = None
+
+class ImportMapping(BaseModel):
+    customer_name: str = "customer_name"
+    customer_email: Optional[str] = "customer_email"
+    date: str = "date"
+    expiry_date: Optional[str] = "expiry_date"
+    reference_number: Optional[str] = "reference_number"
+    subject: Optional[str] = "subject"
+    item_name: str = "item_name"
+    quantity: str = "quantity"
+    rate: str = "rate"
+    tax_percentage: Optional[str] = "tax_percentage"
+    notes: Optional[str] = "notes"
+    terms: Optional[str] = "terms"
+
 class EstimatePreferences(BaseModel):
     # Automation settings
     auto_convert_on_accept: bool = False
