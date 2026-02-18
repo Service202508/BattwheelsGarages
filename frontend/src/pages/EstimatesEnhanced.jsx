@@ -60,7 +60,15 @@ export default function EstimatesEnhanced() {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showAttachmentDialog, setShowAttachmentDialog] = useState(false);
   const [showPreferencesDialog, setShowPreferencesDialog] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [showBulkActionDialog, setShowBulkActionDialog] = useState(false);
+  const [showCustomFieldsDialog, setShowCustomFieldsDialog] = useState(false);
+  const [showTemplateDialog, setShowTemplateDialog] = useState(false);
   const [selectedEstimate, setSelectedEstimate] = useState(null);
+
+  // Bulk selection
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [bulkAction, setBulkAction] = useState("");
 
   // Share link state
   const [shareLink, setShareLink] = useState(null);
@@ -88,6 +96,26 @@ export default function EstimatesEnhanced() {
     notify_on_accept: true,
     notify_on_decline: true
   });
+
+  // Custom fields state
+  const [customFields, setCustomFields] = useState([]);
+  const [newCustomField, setNewCustomField] = useState({
+    field_name: "",
+    field_type: "text",
+    options: [],
+    is_required: false,
+    default_value: "",
+    show_in_pdf: true,
+    show_in_portal: true
+  });
+
+  // PDF Templates state
+  const [pdfTemplates, setPdfTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState("standard");
+
+  // Import state
+  const [importFile, setImportFile] = useState(null);
+  const [importing, setImporting] = useState(false);
 
   // Contact search
   const [contacts, setContacts] = useState([]);
