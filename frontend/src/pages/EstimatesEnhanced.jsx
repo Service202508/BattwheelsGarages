@@ -835,16 +835,67 @@ export default function EstimatesEnhanced() {
       )}
 
       {/* Quick Actions Row */}
-      <div className="flex justify-end gap-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => { fetchPreferences(); setShowPreferencesDialog(true); }}
-          className="gap-2"
-          data-testid="preferences-btn"
-        >
-          <Settings className="h-4 w-4" /> Preferences
-        </Button>
+      <div className="flex flex-wrap justify-between items-center gap-2">
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => handleExport("csv")}
+            className="gap-2"
+            data-testid="export-csv-btn"
+          >
+            <FileDown className="h-4 w-4" /> Export CSV
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowImportDialog(true)}
+            className="gap-2"
+            data-testid="import-btn"
+          >
+            <FileUp className="h-4 w-4" /> Import
+          </Button>
+          {selectedIds.length > 0 && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowBulkActionDialog(true)}
+              className="gap-2 border-blue-300 text-blue-700"
+              data-testid="bulk-action-btn"
+            >
+              <ListChecks className="h-4 w-4" /> Bulk Actions ({selectedIds.length})
+            </Button>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => { fetchCustomFields(); setShowCustomFieldsDialog(true); }}
+            className="gap-2"
+            data-testid="custom-fields-btn"
+          >
+            <Edit className="h-4 w-4" /> Custom Fields
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => { fetchPdfTemplates(); setShowTemplateDialog(true); }}
+            className="gap-2"
+            data-testid="templates-btn"
+          >
+            <LayoutTemplate className="h-4 w-4" /> Templates
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => { fetchPreferences(); setShowPreferencesDialog(true); }}
+            className="gap-2"
+            data-testid="preferences-btn"
+          >
+            <Settings className="h-4 w-4" /> Preferences
+          </Button>
+        </div>
       </div>
 
       {/* Conversion Funnel */}
