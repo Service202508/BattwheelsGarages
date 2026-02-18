@@ -377,6 +377,38 @@ async def list_item_groups(include_inactive: bool = False):
     
     return {"code": 0, "groups": groups, "hierarchy": root_groups}
 
+
+@router.get("/categories")
+async def list_item_categories(include_inactive: bool = False):
+    """List all item categories (alias for groups for Zoho compatibility)"""
+    db = get_db()
+    query = {} if include_inactive else {"is_active": True}
+    groups = await db.item_groups.find(query, {"_id": 0}).to_list(1000)
+    
+    # Also get distinct categories from items collection as fallback
+    item_categories = await db.items.distinct("category")
+    
+    # Combine groups and item categories
+    categories = []
+    for g in groups:
+        categories.append({
+            "category_id": g.get("group_id"),
+            "name": g.get("name"),
+            "description": g.get("description", ""),
+            "is_group": True
+        })
+    
+    for cat in item_categories:
+        if cat and cat not in [g.get("name") for g in groups]:
+            categories.append({
+                "category_id": f"cat_{cat}",
+                "name": cat,
+                "description": "",
+                "is_group": False
+            })
+    
+    return {"code": 0, "categories": categories, "total": len(categories)}
+
 @router.get("/groups/{group_id}")
 async def get_item_group(group_id: str):
     """Get item group details with items"""
