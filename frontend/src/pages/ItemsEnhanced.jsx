@@ -15,7 +15,8 @@ import {
   Plus, Package, Search, Edit, Trash2, Warehouse, FolderTree, Tags, 
   AlertTriangle, ArrowUpDown, BarChart3, RefreshCw, MoreHorizontal,
   Download, Upload, Copy, CheckCircle2, XCircle, Filter, SortAsc, SortDesc,
-  History, Settings, FileText, Image as ImageIcon, ChevronDown
+  History, Settings, FileText, Image as ImageIcon, ChevronDown, QrCode,
+  TrendingUp, TrendingDown, DollarSign, ShoppingCart, Barcode, Users
 } from "lucide-react";
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import PageHeader from "@/components/PageHeader";
