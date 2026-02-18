@@ -334,7 +334,7 @@ export default function CompositeItems() {
             data-testid="search-input"
           />
         </div>
-        <Select value={filterType} onValueChange={setFilterType}>
+        <Select value={filterType || "all"} onValueChange={(v) => setFilterType(v === "all" ? "" : v)}>
           <SelectTrigger className="w-[180px]" data-testid="type-filter">
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
