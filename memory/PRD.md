@@ -7,6 +7,47 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ## Implementation Status
 
+### ✅ Priority Completion Session (Feb 18, 2026)
+
+#### P0: WeasyPrint PDF Generation (COMPLETE)
+- Installed missing `libpangoft2-1.0-0` system library
+- PDF generation now fully functional
+- Works with quotes, invoices, and estimates
+
+#### P1: Recurring Invoices Module (COMPLETE)
+- Full CRUD for recurring invoice profiles
+- `POST /api/recurring-invoices` - Create profile
+- `GET /api/recurring-invoices` - List profiles
+- `GET /api/recurring-invoices/summary` - Dashboard stats (MRR, due today)
+- `POST /api/recurring-invoices/{id}/stop` - Pause recurring
+- `POST /api/recurring-invoices/{id}/resume` - Resume recurring
+- `POST /api/recurring-invoices/{id}/generate-now` - Manual generation
+- `POST /api/recurring-invoices/process-due` - Batch process due profiles
+- Frequency options: daily, weekly, monthly, yearly
+- Auto-calculates next invoice date
+- Email on generation option
+
+#### P1: Enhanced Invoice Automation UI (COMPLETE)
+- 5 tabs: Overdue, Due Soon, Recurring, Reminders, Late Fees
+- Aging summary cards with Total AR and aging buckets
+- MRR (Monthly Recurring Revenue) dashboard
+- Create Recurring Invoice dialog with customer selection
+- Line items management with totals
+- Bulk reminder sending
+
+#### P2: Composite Items/Kits (COMPLETE)
+- Bill of Materials (BOM) support
+- `POST /api/composite-items` - Create kit/assembly/bundle
+- `GET /api/composite-items` - List with availability status
+- `GET /api/composite-items/summary` - Inventory stats
+- `POST /api/composite-items/{id}/build` - Build from components
+- `POST /api/composite-items/{id}/unbuild` - Disassemble
+- `GET /api/composite-items/{id}/availability` - Check buildable quantity
+- Auto-stock deduction on build
+- Component cost calculation with waste percentage
+
+---
+
 ### ✅ Zoho-Style Sales Modules - All Phases Complete (Feb 18, 2026)
 
 #### Phase 1: Payments Received Module (COMPLETE)
