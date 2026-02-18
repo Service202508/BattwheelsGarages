@@ -573,32 +573,32 @@ export default function ItemsEnhanced() {
                   data-testid="search-items" 
                 />
               </div>
-              <Select value={filterType} onValueChange={setFilterType}>
+              <Select value={filterType || "all"} onValueChange={(v) => setFilterType(v === "all" ? "" : v)}>
                 <SelectTrigger className="w-[150px]">
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="inventory">Inventory</SelectItem>
                   <SelectItem value="service">Service</SelectItem>
                   <SelectItem value="non_inventory">Non-Inventory</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={filterGroup} onValueChange={setFilterGroup}>
+              <Select value={filterGroup || "all"} onValueChange={(v) => setFilterGroup(v === "all" ? "" : v)}>
                 <SelectTrigger className="w-[150px]">
                   <SelectValue placeholder="All Groups" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Groups</SelectItem>
+                  <SelectItem value="all">All Groups</SelectItem>
                   {groups.map(g => <SelectItem key={g.group_id} value={g.group_id}>{g.name}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <Select value={filterActive} onValueChange={setFilterActive}>
+              <Select value={filterActive || "all"} onValueChange={(v) => setFilterActive(v === "all" ? "" : v)}>
                 <SelectTrigger className="w-[120px]">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Status</SelectItem>
+                  <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="true">Active</SelectItem>
                   <SelectItem value="false">Inactive</SelectItem>
                 </SelectContent>
