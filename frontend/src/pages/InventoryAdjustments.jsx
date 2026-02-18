@@ -667,6 +667,9 @@ export default function InventoryAdjustments() {
                               <DropdownMenuItem onClick={() => viewDetail(adj.adjustment_id)}>
                                 <Eye className="h-4 w-4 mr-2" /> View Details
                               </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => downloadPdf(adj.adjustment_id)}>
+                                <Printer className="h-4 w-4 mr-2" /> Download PDF
+                              </DropdownMenuItem>
                               {adj.status === "draft" && (
                                 <>
                                   <DropdownMenuItem onClick={() => openEditDialog(adj)}>
