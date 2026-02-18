@@ -678,6 +678,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <AppRouter />
+        <CommandPalette />
       </BrowserRouter>
       <Toaster position="top-right" richColors />
     </div>
