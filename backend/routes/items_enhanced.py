@@ -2398,6 +2398,129 @@ async def delete_custom_field(field_id: str):
     
     return {"code": 0, "message": "Custom field deleted"}
 
+# ============== FIELD CONFIGURATION (Phase 3) ==============
+
+# Default field definitions
+DEFAULT_FIELDS = [
+    {"field_name": "name", "display_name": "Item Name", "is_mandatory": True, "show_in_list": True, "show_in_pdf": True, "field_order": 1},
+    {"field_name": "sku", "display_name": "SKU", "is_mandatory": False, "show_in_list": True, "show_in_pdf": True, "field_order": 2},
+    {"field_name": "item_type", "display_name": "Item Type", "is_mandatory": True, "show_in_list": True, "show_in_pdf": False, "field_order": 3},
+    {"field_name": "description", "display_name": "Description", "is_mandatory": False, "show_in_list": False, "show_in_pdf": True, "field_order": 4},
+    {"field_name": "sales_rate", "display_name": "Selling Price", "is_mandatory": True, "show_in_list": True, "show_in_pdf": True, "field_order": 5},
+    {"field_name": "purchase_rate", "display_name": "Cost Price", "is_mandatory": False, "show_in_list": True, "show_in_pdf": False, "field_order": 6},
+    {"field_name": "unit", "display_name": "Unit", "is_mandatory": True, "show_in_list": True, "show_in_pdf": True, "field_order": 7},
+    {"field_name": "hsn_code", "display_name": "HSN Code", "is_mandatory": False, "show_in_list": True, "show_in_pdf": True, "field_order": 8},
+    {"field_name": "sac_code", "display_name": "SAC Code", "is_mandatory": False, "show_in_list": False, "show_in_pdf": True, "field_order": 9},
+    {"field_name": "tax_percentage", "display_name": "Tax %", "is_mandatory": False, "show_in_list": False, "show_in_pdf": True, "field_order": 10},
+    {"field_name": "stock_on_hand", "display_name": "Stock", "is_mandatory": False, "show_in_list": True, "show_in_pdf": False, "field_order": 11},
+    {"field_name": "reorder_level", "display_name": "Reorder Level", "is_mandatory": False, "show_in_list": False, "show_in_pdf": False, "field_order": 12},
+    {"field_name": "group_name", "display_name": "Item Group", "is_mandatory": False, "show_in_list": True, "show_in_pdf": False, "field_order": 13},
+    {"field_name": "barcode_value", "display_name": "Barcode", "is_mandatory": False, "show_in_list": False, "show_in_pdf": True, "field_order": 14},
+    {"field_name": "image_url", "display_name": "Image", "is_mandatory": False, "show_in_list": False, "show_in_pdf": True, "field_order": 15},
+]
+
+@router.get("/field-config")
+async def get_field_configuration():
+    """Get field visibility and access configuration"""
+    db = get_db()
+    
+    fields = await db.item_field_config.find({}, {"_id": 0}).sort("field_order", 1).to_list(100)
+    
+    # If no config exists, create defaults
+    if not fields:
+        for field in DEFAULT_FIELDS:
+            field["is_active"] = True
+            field["show_in_form"] = True
+            field["allowed_roles"] = ["admin", "manager", "user"]
+            field["created_time"] = datetime.now(timezone.utc).isoformat()
+            await db.item_field_config.insert_one(field.copy())
+        fields = DEFAULT_FIELDS
+    
+    return {"code": 0, "field_config": fields}
+
+@router.put("/field-config")
+async def update_field_configuration(fields: List[FieldConfiguration]):
+    """Update field visibility and access configuration"""
+    db = get_db()
+    
+    for field in fields:
+        field_dict = field.dict()
+        field_dict["updated_time"] = datetime.now(timezone.utc).isoformat()
+        
+        await db.item_field_config.update_one(
+            {"field_name": field.field_name},
+            {"$set": field_dict},
+            upsert=True
+        )
+    
+    return {"code": 0, "message": "Field configuration updated"}
+
+@router.put("/field-config/{field_name}")
+async def update_single_field_config(field_name: str, config: FieldConfiguration):
+    """Update configuration for a single field"""
+    db = get_db()
+    
+    config_dict = config.dict()
+    config_dict["updated_time"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.item_field_config.update_one(
+        {"field_name": field_name},
+        {"$set": config_dict},
+        upsert=True
+    )
+    
+    return {"code": 0, "message": f"Field '{field_name}' configuration updated"}
+
+@router.get("/field-config/for-role/{role}")
+async def get_fields_for_role(role: str):
+    """Get visible fields for a specific role"""
+    db = get_db()
+    
+    fields = await db.item_field_config.find(
+        {"is_active": True, "allowed_roles": role},
+        {"_id": 0}
+    ).sort("field_order", 1).to_list(100)
+    
+    return {
+        "code": 0,
+        "role": role,
+        "list_fields": [f for f in fields if f.get("show_in_list")],
+        "form_fields": [f for f in fields if f.get("show_in_form")],
+        "pdf_fields": [f for f in fields if f.get("show_in_pdf")]
+    }
+
+# ============== AUTO SKU GENERATION ==============
+
+@router.get("/generate-sku")
+async def generate_sku():
+    """Generate next SKU based on preferences"""
+    db = get_db()
+    
+    prefs = await db.item_preferences.find_one({"type": "items_module"})
+    if not prefs or not prefs.get("auto_generate_sku"):
+        return {"code": 1, "message": "Auto SKU generation is disabled"}
+    
+    prefix = prefs.get("sku_prefix", "SKU-")
+    
+    # Find the highest SKU number
+    last_item = await db.items.find_one(
+        {"sku": {"$regex": f"^{re.escape(prefix)}\\d+$"}},
+        sort=[("sku", -1)]
+    )
+    
+    if last_item and last_item.get("sku"):
+        try:
+            last_num = int(last_item["sku"].replace(prefix, ""))
+            next_num = last_num + 1
+        except:
+            next_num = prefs.get("sku_sequence_start", 1)
+    else:
+        next_num = prefs.get("sku_sequence_start", 1)
+    
+    new_sku = f"{prefix}{next_num:04d}"
+    
+    return {"code": 0, "sku": new_sku, "next_sequence": next_num}
+
 # ============== HSN/SAC VALIDATION (MUST BE BEFORE /{item_id}) ==============
 
 @router.post("/validate-hsn")
