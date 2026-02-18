@@ -155,9 +155,26 @@ export default function ItemsEnhanced() {
     await Promise.all([
       fetchItems(), fetchGroups(), fetchWarehouses(), 
       fetchPriceLists(), fetchAdjustments(), fetchLowStock(), 
-      fetchStockSummary(), fetchCustomFields()
+      fetchStockSummary(), fetchCustomFields(), fetchPreferences(),
+      fetchFieldConfig()
     ]);
     setLoading(false);
+  };
+
+  const fetchPreferences = async () => {
+    try {
+      const res = await fetch(`${API}/items-enhanced/preferences`, { headers });
+      const data = await res.json();
+      setPreferences(data.preferences || {});
+    } catch (e) { console.error("Failed to fetch preferences:", e); }
+  };
+
+  const fetchFieldConfig = async () => {
+    try {
+      const res = await fetch(`${API}/items-enhanced/field-config`, { headers });
+      const data = await res.json();
+      setFieldConfig(data.field_config || []);
+    } catch (e) { console.error("Failed to fetch field config:", e); }
   };
 
   const fetchItems = async () => {
