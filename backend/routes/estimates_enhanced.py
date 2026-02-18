@@ -1,6 +1,7 @@
 # Enhanced Estimates/Quotes Module for Zoho Books Clone
 # Full sales cycle entry point with GST calculations, status workflow, and conversions
 # Phase 1: Attachments, Public Share Links, Customer Viewed Status, PDF Generation
+# Phase 2: Auto-conversion, PDF Templates, Import/Export, Custom Fields, Bulk Actions
 
 from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks, UploadFile, File, Form
 from fastapi.responses import StreamingResponse, JSONResponse
@@ -15,6 +16,8 @@ import logging
 import hashlib
 import base64
 import io
+import csv
+import json
 from decimal import Decimal, ROUND_HALF_UP
 
 logger = logging.getLogger(__name__)
