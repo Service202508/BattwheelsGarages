@@ -1365,7 +1365,7 @@ async def update_estimate_status(estimate_id: str, status_update: StatusUpdate):
     
     await add_estimate_history(
         estimate_id,
-        f"status_changed",
+        "status_changed",
         f"Status changed from '{current_status}' to '{new_status}'" + (f": {status_update.reason}" if status_update.reason else "")
     )
     
