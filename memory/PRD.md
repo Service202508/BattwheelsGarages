@@ -191,32 +191,42 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ---
 
 ## Test Reports
+- `/app/test_reports/iteration_36.json` - Items Module Phase 2 (100% pass)
 - `/app/test_reports/iteration_35.json` - Items Module Phase 1 (100% pass)
 - `/app/test_reports/iteration_34.json` - Phase 2 Estimates
 - `/app/test_reports/iteration_33.json` - Phase 1 Estimates
 
 ---
 
-## Upcoming Tasks (Phase 2 - Items)
-1. **Advanced Inventory Reports**
-   - Sales by Item report
-   - Purchases by Item report
-   - FIFO batch-wise valuation report
-
-2. **Field Customization UI**
+## Upcoming Tasks (Phase 3 - Customization)
+1. **Field Customization UI**
    - Configure default fields visibility
    - PDF field display settings
    - Access permissions per role
 
-3. **Composite Items (Future)**
+2. **Item Preferences Page**
+   - SKU auto-generation settings
+   - HSN/SAC enforcement rules
+   - Notification preferences
+   - Default values configuration
+
+---
+
+## Future Tasks
+1. **Composite Items**
    - Kit/assembly items
    - Bill of Materials (BOM)
-   - Auto-stock deduction
+   - Auto-stock deduction on sale
 
-4. **Multi-Warehouse (Future)**
+2. **Multi-Warehouse**
    - Per-location stock tracking
    - Transfer between warehouses
    - Location-specific pricing
+
+3. **Advanced Inventory**
+   - Package tracking
+   - Shipment integration
+   - Serial number tracking
 
 ---
 
