@@ -282,6 +282,7 @@ async def create_adjustment(data: AdjustmentCreate):
         "total_decrease": round(total_decrease, 4),
         "status": data.status,
         "attachments": [],
+        "ticket_id": data.ticket_id,
         "created_by": data.created_by or "admin",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "updated_at": datetime.now(timezone.utc).isoformat(),
