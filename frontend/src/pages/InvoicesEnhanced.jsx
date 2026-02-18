@@ -838,6 +838,55 @@ export default function InvoicesEnhanced() {
                   </>
                 )}
 
+                {/* Payments from Payments Received Module */}
+                {selectedInvoice.payments_received?.length > 0 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <h4 className="font-medium mb-3 flex items-center gap-2"><CreditCard className="h-4 w-4" /> Payments (New System)</h4>
+                      <div className="space-y-2">
+                        {selectedInvoice.payments_received.map(payment => (
+                          <div key={payment.payment_id} className="flex justify-between items-center bg-green-50 p-3 rounded-lg">
+                            <div>
+                              <p className="font-medium">{formatCurrency(payment.amount_applied)}</p>
+                              <p className="text-xs text-gray-500">{payment.payment_number} • {formatDate(payment.payment_date)} • {payment.payment_mode}</p>
+                            </div>
+                            <Badge variant="outline" className="text-green-600">Applied</Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Available Credits */}
+                {selectedInvoice.balance_due > 0 && selectedInvoice.available_credits?.length > 0 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <h4 className="font-medium mb-3 flex items-center gap-2 text-orange-600"><Wallet className="h-4 w-4" /> Available Credits ({formatCurrency(selectedInvoice.total_available_credits)})</h4>
+                      <div className="space-y-2">
+                        {selectedInvoice.available_credits.map(credit => (
+                          <div key={credit.credit_id} className="flex justify-between items-center bg-orange-50 p-3 rounded-lg">
+                            <div>
+                              <p className="font-medium text-orange-700">{formatCurrency(credit.amount)}</p>
+                              <p className="text-xs text-gray-500">{credit.source_number} • {credit.source_type}</p>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="text-orange-600 border-orange-300 hover:bg-orange-100"
+                              onClick={() => handleApplyCredit(credit.credit_id, Math.min(credit.amount, selectedInvoice.balance_due))}
+                            >
+                              Apply
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 {/* History */}
                 {selectedInvoice.history?.length > 0 && (
                   <>
