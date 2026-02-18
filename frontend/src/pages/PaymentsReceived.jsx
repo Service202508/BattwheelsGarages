@@ -525,12 +525,12 @@ export default function PaymentsReceived() {
                 data-testid="payment-search"
               />
             </div>
-            <Select value={filters.payment_mode} onValueChange={(v) => setFilters(prev => ({ ...prev, payment_mode: v }))}>
+            <Select value={filters.payment_mode || "all"} onValueChange={(v) => setFilters(prev => ({ ...prev, payment_mode: v === "all" ? "" : v }))}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Payment Mode" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Modes</SelectItem>
+                <SelectItem value="all">All Modes</SelectItem>
                 <SelectItem value="cash">Cash</SelectItem>
                 <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
                 <SelectItem value="card">Card</SelectItem>
