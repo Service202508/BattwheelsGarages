@@ -345,11 +345,18 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
       {/* Quick Search (Desktop only, expanded) */}
       {!collapsed && (
         <div className="px-4 py-3 border-b border-gray-100">
-          <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl text-gray-400 text-sm cursor-pointer hover:bg-gray-100 transition-colors">
+          <button 
+            onClick={() => {
+              // Dispatch keyboard event to open command palette
+              document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl text-gray-400 text-sm cursor-pointer hover:bg-gray-100 transition-colors"
+            data-testid="quick-search-btn"
+          >
             <Search className="h-4 w-4" />
             <span>Quick search...</span>
             <kbd className="ml-auto text-[10px] bg-white px-1.5 py-0.5 rounded border border-gray-200 font-mono">⌘K</kbd>
-          </div>
+          </button>
         </div>
       )}
 
