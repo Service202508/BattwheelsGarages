@@ -849,6 +849,52 @@ async def get_invoice(invoice_id: str):
     
     return {"code": 0, "invoice": invoice}
 
+
+@router.get("/{invoice_id}/pdf")
+async def get_invoice_pdf(invoice_id: str):
+    """Generate and download invoice PDF"""
+    from fastapi.responses import StreamingResponse
+    from services.pdf_service import generate_invoice_html
+    from weasyprint import HTML
+    from io import BytesIO
+    
+    invoice = await invoices_collection.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Get line items
+    line_items = await invoice_line_items_collection.find(
+        {"invoice_id": invoice_id},
+        {"_id": 0}
+    ).to_list(100)
+    invoice["line_items"] = line_items
+    
+    # Get organization settings
+    org_settings = await db["organization_settings"].find_one({}, {"_id": 0}) or {}
+    
+    try:
+        # Generate HTML
+        html_content = generate_invoice_html(invoice, org_settings)
+        
+        # Generate PDF
+        pdf_buffer = BytesIO()
+        HTML(string=html_content).write_pdf(pdf_buffer)
+        pdf_buffer.seek(0)
+        
+        filename = f"Invoice_{invoice.get('invoice_number', invoice_id)}.pdf"
+        
+        return StreamingResponse(
+            pdf_buffer,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}"
+            }
+        )
+    except Exception as e:
+        logger.error(f"PDF generation failed: {e}")
+        raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
+
+
 @router.put("/{invoice_id}")
 async def update_invoice(invoice_id: str, update: InvoiceUpdate):
     """Update invoice (only drafts can be fully edited)"""
