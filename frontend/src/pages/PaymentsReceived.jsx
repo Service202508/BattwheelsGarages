@@ -375,7 +375,7 @@ export default function PaymentsReceived() {
     if (!window.confirm(`Delete ${selectedPayments.length} payments?`)) return;
     
     try {
-      const res = await fetch(`${API}/payments-received/bulk-action`, {
+      const res = await fetch(`${API}/api/payments-received/bulk-action`, {
         method: "POST",
         headers,
         body: JSON.stringify({ payment_ids: selectedPayments, action: "delete" })
@@ -399,7 +399,7 @@ export default function PaymentsReceived() {
       const params = new URLSearchParams(
         Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
       );
-      const res = await fetch(`${API}/payments-received/export?${params}`, { headers });
+      const res = await fetch(`${API}/api/payments-received/export?${params}`, { headers });
       const data = await res.json();
       
       if (data.code === 0) {
