@@ -7,6 +7,37 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ## Implementation Status
 
+### ✅ Items/Price Lists ↔ Quotes Integration (COMPLETE - Feb 18, 2026)
+
+**Automatic Customer Pricing:**
+- When creating quotes, automatically apply customer's assigned price list
+- Price list badge shown on customer selection (e.g., "₹ Wholesale (-15%)")
+- Item selection auto-fetches customer-specific pricing
+- Toast notification shows price adjustments
+
+**Backend Integration:**
+- `GET /api/items-enhanced/item-price/{item_id}?contact_id=` - Single item pricing with price list
+- `GET /api/items-enhanced/contact-pricing-summary/{contact_id}` - Customer's pricing config
+- `GET /api/estimates-enhanced/item-pricing/{item_id}?customer_id=` - Item pricing for UI
+- `GET /api/estimates-enhanced/customer-pricing/{customer_id}` - Customer price list info
+- Estimate creation now stores `price_list_id`, `price_list_name` on estimate
+- Line items track `base_rate`, `rate`, `price_list_applied`, `discount_from_pricelist`
+
+**Frontend Integration (EstimatesEnhanced.jsx):**
+- `customerPricing` state to track selected customer's price list
+- `fetchCustomerPricing()` - Called when customer selected
+- `fetchItemPricing()` - Gets item price with price list applied
+- `selectItem()` updated to apply customer's price list automatically
+- Line items table shows discounted rate with strikethrough original price
+- Price list badge below item name in line items
+
+**Verified Test Data:**
+- Customer: `CUST-93AE14BE3618` (Full Zoho Test Co) - Wholesale price list
+- Price List: `PL-B575D8BF` (Wholesale) - 15% discount
+- Item: `1837096000000446195` (12V Battery) - Base ₹200 → Discounted ₹170
+
+---
+
 ### ✅ Items Module Enhancement - Phase 3 (COMPLETE - Feb 18, 2026)
 
 **Item Preferences Page:**
