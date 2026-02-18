@@ -644,6 +644,7 @@ export default function EstimatesEnhanced() {
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="draft">Draft</SelectItem>
                   <SelectItem value="sent">Sent</SelectItem>
+                  <SelectItem value="customer_viewed">Viewed</SelectItem>
                   <SelectItem value="accepted">Accepted</SelectItem>
                   <SelectItem value="declined">Declined</SelectItem>
                   <SelectItem value="expired">Expired</SelectItem>
