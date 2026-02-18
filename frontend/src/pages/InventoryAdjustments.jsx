@@ -87,6 +87,21 @@ export default function InventoryAdjustments() {
   // Reason management
   const [newReason, setNewReason] = useState({ name: "", description: "" });
 
+  // Import/Export
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [importFile, setImportFile] = useState(null);
+  const [importPreview, setImportPreview] = useState(null);
+  const [importLoading, setImportLoading] = useState(false);
+
+  // ABC Report
+  const [showAbcDialog, setShowAbcDialog] = useState(false);
+  const [abcReport, setAbcReport] = useState(null);
+  const [abcDrillDown, setAbcDrillDown] = useState(null);
+  const [abcDrillItem, setAbcDrillItem] = useState(null);
+
+  // Quick adjust (from Items page)
+  const [quickAdjustItem, setQuickAdjustItem] = useState(null);
+
   const headers = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${localStorage.getItem("token")}`
