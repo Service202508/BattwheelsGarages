@@ -14,7 +14,8 @@ import { toast } from "sonner";
 import { 
   Plus, FileText, Search, Edit, Trash2, RefreshCw, Send, CheckCircle, XCircle, 
   Eye, Copy, ArrowRightLeft, Clock, Calendar, User, Building2, Package,
-  TrendingUp, AlertTriangle, ChevronRight, Percent, IndianRupee
+  TrendingUp, AlertTriangle, ChevronRight, Percent, IndianRupee, Share2, Download,
+  Paperclip, Link, Settings, ExternalLink, Upload, X
 } from "lucide-react";
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
@@ -24,6 +25,7 @@ import { API } from "@/App";
 const statusColors = {
   draft: "bg-gray-100 text-gray-700",
   sent: "bg-blue-100 text-blue-700",
+  customer_viewed: "bg-cyan-100 text-cyan-700",
   accepted: "bg-green-100 text-green-700",
   declined: "bg-red-100 text-red-700",
   expired: "bg-orange-100 text-orange-700",
@@ -34,6 +36,7 @@ const statusColors = {
 const statusLabels = {
   draft: "Draft",
   sent: "Sent",
+  customer_viewed: "Viewed",
   accepted: "Accepted",
   declined: "Declined",
   expired: "Expired",
