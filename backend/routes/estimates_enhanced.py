@@ -333,6 +333,101 @@ async def get_item_details(item_id: str) -> dict:
         "stock_on_hand": item.get("stock_on_hand") or item.get("total_stock", 0)
     }
 
+
+async def get_item_price_for_customer(item_id: str, customer_id: str) -> dict:
+    """
+    Get item price applying customer's assigned price list.
+    Returns base rate and adjusted rate based on price list.
+    """
+    # Get base item details
+    item = await db["items_enhanced"].find_one({"item_id": item_id}, {"_id": 0})
+    if not item:
+        item = await db["items"].find_one({"item_id": item_id}, {"_id": 0})
+    
+    if not item:
+        return None
+    
+    base_rate = item.get("sales_rate", 0) or item.get("rate", 0)
+    
+    result = {
+        "item_id": item_id,
+        "name": item.get("name", ""),
+        "description": item.get("description", ""),
+        "sku": item.get("sku", ""),
+        "hsn_code": item.get("hsn_code", ""),
+        "unit": item.get("unit", "pcs"),
+        "base_rate": base_rate,
+        "rate": base_rate,  # Final rate after price list
+        "tax_percentage": item.get("tax_percentage", 0),
+        "item_type": item.get("item_type", "service"),
+        "stock_on_hand": item.get("stock_on_hand") or item.get("total_stock", 0),
+        "price_list_id": None,
+        "price_list_name": None,
+        "discount_applied": 0,
+        "markup_applied": 0
+    }
+    
+    if not customer_id:
+        return result
+    
+    # Get customer's assigned price list
+    contact = await db["contacts_enhanced"].find_one({"contact_id": customer_id})
+    if not contact:
+        contact = await db["contacts"].find_one({"contact_id": customer_id})
+    
+    if not contact:
+        return result
+    
+    price_list_id = contact.get("sales_price_list_id")
+    if not price_list_id:
+        return result
+    
+    # Get price list
+    price_list = await db["price_lists"].find_one({"pricelist_id": price_list_id}, {"_id": 0})
+    if not price_list:
+        return result
+    
+    result["price_list_id"] = price_list_id
+    result["price_list_name"] = price_list.get("name", "")
+    
+    final_rate = base_rate
+    
+    # Check for custom price
+    custom_price = await db["item_prices"].find_one({
+        "item_id": item_id,
+        "price_list_id": price_list_id
+    })
+    
+    if custom_price:
+        final_rate = custom_price.get("rate", base_rate)
+    else:
+        # Apply percentage markup/discount
+        markup = price_list.get("markup_percentage", 0)
+        discount = price_list.get("discount_percentage", 0)
+        
+        if markup > 0:
+            final_rate = base_rate * (1 + markup / 100)
+        elif discount > 0:
+            final_rate = base_rate * (1 - discount / 100)
+        
+        # Round off
+        round_to = price_list.get("round_off_to", "none")
+        if round_to == "nearest_1":
+            final_rate = round(final_rate)
+        elif round_to == "nearest_5":
+            final_rate = round(final_rate / 5) * 5
+        elif round_to == "nearest_10":
+            final_rate = round(final_rate / 10) * 10
+    
+    result["rate"] = round(final_rate, 2)
+    
+    if base_rate > final_rate:
+        result["discount_applied"] = round(base_rate - final_rate, 2)
+    elif final_rate > base_rate:
+        result["markup_applied"] = round(final_rate - base_rate, 2)
+    
+    return result
+
 def calculate_gst_type(org_state: str, customer_state: str) -> str:
     """Determine if IGST or CGST+SGST applies"""
     if not org_state or not customer_state:
