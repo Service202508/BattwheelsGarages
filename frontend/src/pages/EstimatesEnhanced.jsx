@@ -596,6 +596,19 @@ export default function EstimatesEnhanced() {
         </StatCardGrid>
       )}
 
+      {/* Quick Actions Row */}
+      <div className="flex justify-end gap-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => { fetchPreferences(); setShowPreferencesDialog(true); }}
+          className="gap-2"
+          data-testid="preferences-btn"
+        >
+          <Settings className="h-4 w-4" /> Preferences
+        </Button>
+      </div>
+
       {/* Conversion Funnel */}
       {funnel && (
         <Card>
