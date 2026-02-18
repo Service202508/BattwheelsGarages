@@ -566,6 +566,55 @@ async def list_payments(
         "total_pages": (total + per_page - 1) // per_page
     }
 
+
+# ==================== CREDITS MANAGEMENT (must be before /{payment_id}) ====================
+
+@router.get("/credits")
+async def list_all_credits(
+    customer_id: str = "",
+    status: str = "",
+    page: int = 1,
+    per_page: int = 50
+):
+    """List all customer credits"""
+    query = {}
+    if customer_id:
+        query["customer_id"] = customer_id
+    if status:
+        query["status"] = status
+    
+    total = await customer_credits_collection.count_documents(query)
+    skip = (page - 1) * per_page
+    
+    credits = await customer_credits_collection.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(per_page).to_list(per_page)
+    
+    return {
+        "code": 0,
+        "credits": credits,
+        "total": total,
+        "page": page,
+        "per_page": per_page
+    }
+
+@router.get("/credits/{customer_id}")
+async def get_customer_credits_endpoint(customer_id: str):
+    """Get all credits for a specific customer"""
+    credits = await customer_credits_collection.find(
+        {"customer_id": customer_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    available = [c for c in credits if c.get("status") == "available"]
+    used = [c for c in credits if c.get("status") != "available"]
+    
+    return {
+        "code": 0,
+        "available_credits": available,
+        "used_credits": used,
+        "total_available": round_currency(sum(c.get("amount", 0) for c in available))
+    }
+
+
 @router.get("/{payment_id}")
 async def get_payment(payment_id: str):
     """Get payment details"""
