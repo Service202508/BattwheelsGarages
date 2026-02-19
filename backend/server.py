@@ -5049,6 +5049,36 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Financial Dashboard Routes (Zoho-style Home)
+try:
+    from routes.financial_dashboard import router as financial_dashboard_router
+    api_router.include_router(financial_dashboard_router)
+    logger.info("Financial Dashboard routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Financial Dashboard routes: {e}")
+    import traceback
+    traceback.print_exc()
+
+# Time Tracking Routes
+try:
+    from routes.time_tracking import router as time_tracking_router
+    api_router.include_router(time_tracking_router)
+    logger.info("Time Tracking routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Time Tracking routes: {e}")
+    import traceback
+    traceback.print_exc()
+
+# Documents Routes
+try:
+    from routes.documents import router as documents_router
+    api_router.include_router(documents_router)
+    logger.info("Documents routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Documents routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
