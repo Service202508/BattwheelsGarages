@@ -1410,44 +1410,71 @@ export default function ItemsEnhanced() {
         </TabsContent>
       </Tabs>
 
-      {/* Create Item Dialog */}
+      {/* Create Item Dialog - Full Zoho Books Compatible */}
       <Dialog open={showItemDialog} onOpenChange={setShowItemDialog}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create New Item</DialogTitle>
-            <DialogDescription>Add a new product or service to your inventory</DialogDescription>
+            <DialogDescription>Add a new product or service - Zoho Books compatible</DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 py-4">
-            {/* Basic Info */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-sm text-gray-700 border-b pb-2">Basic Information</h3>
+          <Tabs defaultValue="basic" className="w-full">
+            <TabsList className="grid w-full grid-cols-5 mb-4">
+              <TabsTrigger value="basic" className="text-xs">Basic</TabsTrigger>
+              <TabsTrigger value="sales" className="text-xs">Sales</TabsTrigger>
+              <TabsTrigger value="purchase" className="text-xs">Purchase</TabsTrigger>
+              <TabsTrigger value="tax" className="text-xs">Tax/GST</TabsTrigger>
+              <TabsTrigger value="inventory" className="text-xs">Inventory</TabsTrigger>
+            </TabsList>
+
+            {/* Basic Information Tab */}
+            <TabsContent value="basic" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Item Type *</Label>
-                  <Select value={newItem.item_type} onValueChange={(v) => setNewItem({ ...newItem, item_type: v })}>
+                  <Select value={newItem.item_type} onValueChange={(v) => setNewItem({ ...newItem, item_type: v, track_inventory: v === "inventory" || v === "goods" })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="inventory">Inventory Item</SelectItem>
                       <SelectItem value="service">Service</SelectItem>
                       <SelectItem value="non_inventory">Non-Inventory Item</SelectItem>
+                      <SelectItem value="goods">Goods</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label>Name *</Label>
+                  <Label>Product Type</Label>
+                  <Select value={newItem.product_type} onValueChange={(v) => setNewItem({ ...newItem, product_type: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="goods">Goods</SelectItem>
+                      <SelectItem value="service">Service</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Item Name *</Label>
                   <Input value={newItem.name} onChange={(e) => setNewItem({ ...newItem, name: e.target.value })} placeholder="Item name" data-testid="item-name-input" />
+                </div>
+                <div>
+                  <Label>SKU</Label>
+                  <Input value={newItem.sku} onChange={(e) => setNewItem({ ...newItem, sku: e.target.value })} placeholder="SKU code" />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4">
-                <div><Label>SKU</Label><Input value={newItem.sku} onChange={(e) => setNewItem({ ...newItem, sku: e.target.value })} placeholder="SKU code" /></div>
                 <div>
                   <Label>Unit</Label>
-                  <Select value={newItem.unit} onValueChange={(v) => setNewItem({ ...newItem, unit: v })}>
+                  <Select value={newItem.unit} onValueChange={(v) => setNewItem({ ...newItem, unit: v, usage_unit: v })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {UNITS.map(u => <SelectItem key={u.value} value={u.value}>{u.label}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                </div>
+                <div>
+                  <Label>Unit Name</Label>
+                  <Input value={newItem.unit_name} onChange={(e) => setNewItem({ ...newItem, unit_name: e.target.value })} placeholder="e.g. Pieces, Hours" />
                 </div>
                 <div>
                   <Label>Item Group</Label>
@@ -1460,64 +1487,242 @@ export default function ItemsEnhanced() {
                   </Select>
                 </div>
               </div>
-              <div><Label>Description</Label><Textarea value={newItem.description} onChange={(e) => setNewItem({ ...newItem, description: e.target.value })} placeholder="Item description" rows={2} /></div>
-            </div>
-
-            {/* Sales Information */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-sm text-gray-700 border-b pb-2">Sales Information</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div><Label>Selling Price *</Label><Input type="number" value={newItem.sales_rate} onChange={(e) => setNewItem({ ...newItem, sales_rate: parseFloat(e.target.value) || 0 })} /></div>
-                <div><Label>Sales Description</Label><Input value={newItem.sales_description} onChange={(e) => setNewItem({ ...newItem, sales_description: e.target.value })} placeholder="Description for sales" /></div>
+              <div>
+                <Label>Description</Label>
+                <Textarea value={newItem.description} onChange={(e) => setNewItem({ ...newItem, description: e.target.value })} placeholder="Item description" rows={2} />
               </div>
-            </div>
-
-            {/* Purchase Information */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-sm text-gray-700 border-b pb-2">Purchase Information</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div><Label>Cost Price</Label><Input type="number" value={newItem.purchase_rate} onChange={(e) => setNewItem({ ...newItem, purchase_rate: parseFloat(e.target.value) || 0 })} /></div>
-                <div><Label>Purchase Description</Label><Input value={newItem.purchase_description} onChange={(e) => setNewItem({ ...newItem, purchase_description: e.target.value })} placeholder="Description for purchases" /></div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="flex items-center gap-2">
+                  <Checkbox checked={newItem.sellable} onCheckedChange={(v) => setNewItem({ ...newItem, sellable: v })} />
+                  <Label>Sellable</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox checked={newItem.purchasable} onCheckedChange={(v) => setNewItem({ ...newItem, purchasable: v })} />
+                  <Label>Purchasable</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox checked={newItem.is_active} onCheckedChange={(v) => setNewItem({ ...newItem, is_active: v, status: v ? "active" : "inactive" })} />
+                  <Label>Active</Label>
+                </div>
               </div>
-            </div>
-
-            {/* Tax Information */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-sm text-gray-700 border-b pb-2">Tax Information</h3>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Tax Preference</Label>
-                  <Select value={newItem.tax_preference} onValueChange={(v) => setNewItem({ ...newItem, tax_preference: v })}>
+                  <Label>Vendor</Label>
+                  <Input value={newItem.vendor} onChange={(e) => setNewItem({ ...newItem, vendor: e.target.value, preferred_vendor_name: e.target.value })} placeholder="Preferred vendor name" />
+                </div>
+                <div>
+                  <Label>Reference ID (External)</Label>
+                  <Input value={newItem.reference_id} onChange={(e) => setNewItem({ ...newItem, reference_id: e.target.value })} placeholder="External system ID" />
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Sales Information Tab */}
+            <TabsContent value="sales" className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Selling Rate *</Label>
+                  <Input type="number" value={newItem.rate || newItem.sales_rate} onChange={(e) => setNewItem({ ...newItem, rate: parseFloat(e.target.value) || 0, sales_rate: parseFloat(e.target.value) || 0 })} />
+                </div>
+                <div>
+                  <Label>Sales Account</Label>
+                  <Input value={newItem.sales_account} onChange={(e) => setNewItem({ ...newItem, sales_account: e.target.value })} placeholder="e.g. Sales Revenue" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Account Code</Label>
+                  <Input value={newItem.sales_account_code} onChange={(e) => setNewItem({ ...newItem, sales_account_code: e.target.value })} placeholder="e.g. 4000" />
+                </div>
+                <div>
+                  <Label>Sales Description</Label>
+                  <Input value={newItem.sales_description} onChange={(e) => setNewItem({ ...newItem, sales_description: e.target.value })} placeholder="Description for invoices" />
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Purchase Information Tab */}
+            <TabsContent value="purchase" className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Purchase Rate (Cost)</Label>
+                  <Input type="number" value={newItem.purchase_rate} onChange={(e) => setNewItem({ ...newItem, purchase_rate: parseFloat(e.target.value) || 0, opening_stock_rate: parseFloat(e.target.value) || 0 })} />
+                </div>
+                <div>
+                  <Label>Purchase Account</Label>
+                  <Input value={newItem.purchase_account} onChange={(e) => setNewItem({ ...newItem, purchase_account: e.target.value })} placeholder="e.g. Cost of Goods Sold" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Purchase Account Code</Label>
+                  <Input value={newItem.purchase_account_code} onChange={(e) => setNewItem({ ...newItem, purchase_account_code: e.target.value })} placeholder="e.g. 5000" />
+                </div>
+                <div>
+                  <Label>Purchase Description</Label>
+                  <Input value={newItem.purchase_description} onChange={(e) => setNewItem({ ...newItem, purchase_description: e.target.value })} placeholder="Description for purchase orders" />
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Tax/GST Information Tab */}
+            <TabsContent value="tax" className="space-y-4">
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label>Taxable</Label>
+                  <Select value={newItem.taxable ? "Yes" : "No"} onValueChange={(v) => setNewItem({ ...newItem, taxable: v === "Yes", tax_preference: v === "Yes" ? "taxable" : "non_taxable" })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="taxable">Taxable</SelectItem>
-                      <SelectItem value="non_taxable">Non-Taxable</SelectItem>
-                      <SelectItem value="exempt">Exempt</SelectItem>
+                      <SelectItem value="Yes">Yes</SelectItem>
+                      <SelectItem value="No">No</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <div><Label>HSN Code</Label><Input value={newItem.hsn_code} onChange={(e) => setNewItem({ ...newItem, hsn_code: e.target.value })} placeholder="4-8 digits" /></div>
-                <div><Label>Intra-State Tax %</Label><Input type="number" value={newItem.intra_state_tax_rate} onChange={(e) => setNewItem({ ...newItem, intra_state_tax_rate: parseFloat(e.target.value) || 0 })} /></div>
-                <div><Label>Inter-State Tax %</Label><Input type="number" value={newItem.inter_state_tax_rate} onChange={(e) => setNewItem({ ...newItem, inter_state_tax_rate: parseFloat(e.target.value) || 0 })} /></div>
+                <div>
+                  <Label>Taxability Type</Label>
+                  <Select value={newItem.taxability_type} onValueChange={(v) => setNewItem({ ...newItem, taxability_type: v })}>
+                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Goods">Goods</SelectItem>
+                      <SelectItem value="Service">Service</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>HSN/SAC Code</Label>
+                  <Input value={newItem.hsn_code} onChange={(e) => setNewItem({ ...newItem, hsn_code: e.target.value })} placeholder="4-8 digit code" />
+                </div>
               </div>
-            </div>
-
-            {/* Inventory Information */}
-            {(newItem.item_type === "inventory" || newItem.item_type === "sales_and_purchases") && (
-              <div className="space-y-4">
-                <h3 className="font-semibold text-sm text-gray-700 border-b pb-2">Inventory Details</h3>
+              {!newItem.taxable && (
+                <div>
+                  <Label>Exemption Reason</Label>
+                  <Input value={newItem.exemption_reason} onChange={(e) => setNewItem({ ...newItem, exemption_reason: e.target.value })} placeholder="Reason for tax exemption" />
+                </div>
+              )}
+              <div className="border-t pt-4">
+                <h4 className="text-sm font-medium mb-3">Intra-State Tax (Within State - CGST+SGST)</h4>
                 <div className="grid grid-cols-3 gap-4">
-                  <div><Label>Opening Stock</Label><Input type="number" value={newItem.initial_stock} onChange={(e) => setNewItem({ ...newItem, initial_stock: parseFloat(e.target.value) || 0 })} /></div>
-                  <div><Label>Reorder Level</Label><Input type="number" value={newItem.reorder_level} onChange={(e) => setNewItem({ ...newItem, reorder_level: parseFloat(e.target.value) || 0 })} /></div>
-                  <div className="flex items-center gap-2 pt-6">
-                    <Checkbox checked={newItem.track_inventory} onCheckedChange={(v) => setNewItem({ ...newItem, track_inventory: v })} />
-                    <Label>Track Inventory</Label>
+                  <div>
+                    <Label>Tax Name</Label>
+                    <Input value={newItem.intra_state_tax_name} onChange={(e) => setNewItem({ ...newItem, intra_state_tax_name: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label>Tax Rate %</Label>
+                    <Input type="number" value={newItem.intra_state_tax_rate} onChange={(e) => setNewItem({ ...newItem, intra_state_tax_rate: parseFloat(e.target.value) || 0, tax_percentage: parseFloat(e.target.value) || 0 })} />
+                  </div>
+                  <div>
+                    <Label>Tax Type</Label>
+                    <Select value={newItem.intra_state_tax_type} onValueChange={(v) => setNewItem({ ...newItem, intra_state_tax_type: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">Percentage</SelectItem>
+                        <SelectItem value="fixed">Fixed Amount</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
-            )}
-          </div>
-          <DialogFooter>
+              <div className="border-t pt-4">
+                <h4 className="text-sm font-medium mb-3">Inter-State Tax (Outside State - IGST)</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label>Tax Name</Label>
+                    <Input value={newItem.inter_state_tax_name} onChange={(e) => setNewItem({ ...newItem, inter_state_tax_name: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label>Tax Rate %</Label>
+                    <Input type="number" value={newItem.inter_state_tax_rate} onChange={(e) => setNewItem({ ...newItem, inter_state_tax_rate: parseFloat(e.target.value) || 0 })} />
+                  </div>
+                  <div>
+                    <Label>Tax Type</Label>
+                    <Select value={newItem.inter_state_tax_type} onValueChange={(v) => setNewItem({ ...newItem, inter_state_tax_type: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">Percentage</SelectItem>
+                        <SelectItem value="fixed">Fixed Amount</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Inventory Tab */}
+            <TabsContent value="inventory" className="space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Checkbox checked={newItem.track_inventory} onCheckedChange={(v) => setNewItem({ ...newItem, track_inventory: v })} />
+                <Label>Track Inventory for this Item</Label>
+              </div>
+              {newItem.track_inventory && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Inventory Account</Label>
+                      <Input value={newItem.inventory_account} onChange={(e) => setNewItem({ ...newItem, inventory_account: e.target.value })} placeholder="e.g. Inventory Asset" />
+                    </div>
+                    <div>
+                      <Label>Inventory Account Code</Label>
+                      <Input value={newItem.inventory_account_code} onChange={(e) => setNewItem({ ...newItem, inventory_account_code: e.target.value })} placeholder="e.g. 1200" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Valuation Method</Label>
+                      <Select value={newItem.inventory_valuation_method} onValueChange={(v) => setNewItem({ ...newItem, inventory_valuation_method: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="fifo">FIFO (First In First Out)</SelectItem>
+                          <SelectItem value="weighted_average">Weighted Average</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Location/Warehouse</Label>
+                      <Select value={newItem.warehouse_id || "none"} onValueChange={(v) => {
+                        const wh = warehouses.find(w => w.warehouse_id === v);
+                        setNewItem({ ...newItem, warehouse_id: v === "none" ? "" : v, location_name: wh?.name || "" });
+                      }}>
+                        <SelectTrigger><SelectValue placeholder="Select warehouse" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Primary Warehouse</SelectItem>
+                          {warehouses.map(w => <SelectItem key={w.warehouse_id} value={w.warehouse_id}>{w.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="border-t pt-4">
+                    <h4 className="text-sm font-medium mb-3">Opening Stock</h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <Label>Opening Stock Qty</Label>
+                        <Input type="number" value={newItem.opening_stock} onChange={(e) => {
+                          const qty = parseFloat(e.target.value) || 0;
+                          const rate = newItem.opening_stock_rate || newItem.purchase_rate;
+                          setNewItem({ ...newItem, opening_stock: qty, opening_stock_value: qty * rate, stock_on_hand: qty });
+                        }} />
+                      </div>
+                      <div>
+                        <Label>Rate per Unit</Label>
+                        <Input type="number" value={newItem.opening_stock_rate || newItem.purchase_rate} onChange={(e) => {
+                          const rate = parseFloat(e.target.value) || 0;
+                          setNewItem({ ...newItem, opening_stock_rate: rate, opening_stock_value: newItem.opening_stock * rate });
+                        }} />
+                      </div>
+                      <div>
+                        <Label>Opening Stock Value</Label>
+                        <Input type="number" value={newItem.opening_stock_value} onChange={(e) => setNewItem({ ...newItem, opening_stock_value: parseFloat(e.target.value) || 0 })} className="bg-gray-50" />
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Reorder Point</Label>
+                    <Input type="number" value={newItem.reorder_level} onChange={(e) => setNewItem({ ...newItem, reorder_level: parseFloat(e.target.value) || 0 })} placeholder="Alert when stock falls below this" />
+                  </div>
+                </>
+              )}
+            </TabsContent>
+          </Tabs>
+          <DialogFooter className="mt-4 pt-4 border-t">
             <Button variant="outline" onClick={() => { setShowItemDialog(false); resetItemForm(); }}>Cancel</Button>
             <Button onClick={handleCreateItem} className="bg-[#22EDA9] text-black" data-testid="create-item-submit">Create Item</Button>
           </DialogFooter>
