@@ -630,12 +630,12 @@ export default function Documents({ user }) {
           />
         </div>
         
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
+        <Select value={typeFilter || "__all__"} onValueChange={(v) => setTypeFilter(v === "__all__" ? "" : v)}>
           <SelectTrigger className="w-40">
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Types</SelectItem>
+            <SelectItem value="__all__">All Types</SelectItem>
             <SelectItem value="receipt">Receipts</SelectItem>
             <SelectItem value="invoice">Invoices</SelectItem>
             <SelectItem value="photo">Photos</SelectItem>
