@@ -138,6 +138,8 @@ Battwheels Garages is India's first no-towing-first EV service network. The webs
 - `GET /api/marketplace/products/slug/{slug}` - Get product by slug
 - `POST /api/payments/create-order` - Create Razorpay order
 - `POST /api/payments/verify-signature` - Verify payment
+- `POST /api/callbacks` - Submit callback request
+- `GET /api/callbacks/count` - Get callback request count
 
 ### Admin
 - `POST /api/admin/auth/login` - Admin authentication
