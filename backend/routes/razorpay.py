@@ -10,7 +10,9 @@ import uuid
 import os
 import json
 
-from database import get_db
+def get_db():
+    from server import db
+    return db
 from services.razorpay_service import (
     is_razorpay_configured,
     create_razorpay_order,
