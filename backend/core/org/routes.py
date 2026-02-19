@@ -544,7 +544,7 @@ async def remove_user_from_organization(
 @router.get("/roles")
 async def get_available_roles():
     """Get list of available roles and their permissions"""
-    from core.org.models import ROLE_PERMISSIONS, OrgUserRole
+    from core.org.models import ROLE_PERMISSIONS
     
     return {
         "roles": [
