@@ -30,12 +30,12 @@ db = client[DB_NAME]
 
 router = APIRouter(prefix="/invoice-payments", tags=["Invoice Payments"])
 
-# Collections
+# Collections - Use main collections with Zoho-synced data
 payment_transactions_collection = db["payment_transactions"]
-invoices_collection = db["invoices_enhanced"]
-payments_received_collection = db["payments_received"]
+invoices_collection = db["invoices"]
+payments_received_collection = db["customerpayments"]
 customer_credits_collection = db["customer_credits"]
-contacts_collection = db["contacts_enhanced"]
+contacts_collection = db["contacts"]
 
 
 # ==================== MODELS ====================
