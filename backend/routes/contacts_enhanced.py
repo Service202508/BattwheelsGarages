@@ -972,6 +972,7 @@ async def create_contact(contact: ContactCreate, background_tasks: BackgroundTas
 
 @router.get("/")
 async def list_contacts(
+    request: Request,
     contact_type: Optional[str] = None,
     search: Optional[str] = None,
     status: Optional[str] = None,
@@ -984,7 +985,9 @@ async def list_contacts(
     per_page: int = 50
 ):
     """List contacts with filters"""
-    query = {}
+    # Get org context for multi-tenant scoping
+    org_id = await get_org_id(request)
+    query = org_query(org_id, {})
     
     if contact_type:
         if contact_type == "customer":
