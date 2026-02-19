@@ -1262,6 +1262,308 @@ async def get_item_rate_from_price_list(pl_id: str, item_id: str):
     
     raise HTTPException(status_code=404, detail="Item not found")
 
+
+@router.get("/price-lists/{pl_id}/export")
+async def export_price_list_csv(pl_id: str):
+    """Export price list items as CSV (Zoho Books compatible format)"""
+    db = get_db()
+    
+    pl = await db.price_lists.find_one({"price_list_id": pl_id}, {"_id": 0})
+    if not pl:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    # Get all item details
+    item_ids = [item.get("item_id") for item in pl.get("items", [])]
+    items_map = {}
+    
+    if item_ids:
+        items_cursor = db.items.find(
+            {"item_id": {"$in": item_ids}},
+            {"_id": 0}
+        )
+        async for item in items_cursor:
+            items_map[item["item_id"]] = item
+    
+    # Build CSV - Zoho Books format
+    csv_lines = ["Item ID,Item Name,SKU,Status,is_combo_product,Item Price,PriceList Rate,Discount"]
+    
+    for pl_item in pl.get("items", []):
+        item_id = pl_item.get("item_id", "")
+        item_data = items_map.get(item_id, {})
+        
+        row = [
+            item_id,
+            item_data.get("name", "").replace(",", ";"),  # Escape commas
+            item_data.get("sku", ""),
+            item_data.get("status", "active"),
+            str(item_data.get("is_combo_product", False)).lower(),
+            str(item_data.get("rate", 0)),
+            str(pl_item.get("pricelist_rate", pl_item.get("custom_rate", 0))),
+            str(pl_item.get("discount", 0))
+        ]
+        csv_lines.append(",".join(row))
+    
+    csv_content = "\n".join(csv_lines)
+    
+    headers = {
+        "Content-Disposition": f"attachment; filename={pl.get('price_list_name', 'pricelist').replace(' ', '_')}_export.csv",
+        "Content-Type": "text/csv"
+    }
+    
+    return StreamingResponse(
+        iter([csv_content]),
+        media_type="text/csv",
+        headers=headers
+    )
+
+
+@router.get("/price-lists/{pl_id}/export/template")
+async def get_price_list_import_template(pl_id: str):
+    """Get CSV template for importing items to price list"""
+    
+    template = """Item ID,Item Name,SKU,Status,is_combo_product,Item Price,PriceList Rate,Discount
+ITEM-001,Sample Product,SKU001,active,false,1000,900,10
+ITEM-002,Sample Service,SKU002,active,false,500,450,10"""
+    
+    headers = {
+        "Content-Disposition": "attachment; filename=pricelist_import_template.csv",
+        "Content-Type": "text/csv"
+    }
+    
+    return StreamingResponse(
+        iter([template]),
+        media_type="text/csv",
+        headers=headers
+    )
+
+
+@router.post("/price-lists/{pl_id}/import")
+async def import_price_list_items(pl_id: str, request: Request):
+    """Import items to price list from CSV (Zoho Books compatible format)"""
+    db = get_db()
+    
+    pl = await db.price_lists.find_one({"price_list_id": pl_id})
+    if not pl:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    body = await request.json()
+    csv_data = body.get("csv_data", "")
+    
+    if not csv_data:
+        raise HTTPException(status_code=400, detail="No CSV data provided")
+    
+    # Parse CSV
+    lines = csv_data.strip().split("\n")
+    if len(lines) < 2:
+        raise HTTPException(status_code=400, detail="CSV must have header and at least one data row")
+    
+    header = [h.strip().lower().replace(" ", "_") for h in lines[0].split(",")]
+    
+    # Map header columns
+    col_map = {
+        "item_id": ["item_id", "item id"],
+        "pricelist_rate": ["pricelist_rate", "pricelist rate", "custom_rate", "rate"],
+        "discount": ["discount", "discount_percent"]
+    }
+    
+    def get_col_index(field):
+        for name in col_map.get(field, [field]):
+            if name in header:
+                return header.index(name)
+        return -1
+    
+    item_id_idx = get_col_index("item_id")
+    rate_idx = get_col_index("pricelist_rate")
+    discount_idx = get_col_index("discount")
+    
+    if item_id_idx == -1:
+        raise HTTPException(status_code=400, detail="CSV must have 'Item ID' column")
+    
+    imported = 0
+    errors = []
+    
+    existing_items = {item.get("item_id"): item for item in pl.get("items", [])}
+    
+    for i, line in enumerate(lines[1:], start=2):
+        try:
+            cols = line.split(",")
+            item_id = cols[item_id_idx].strip()
+            
+            if not item_id:
+                continue
+            
+            # Verify item exists
+            item = await db.items.find_one({"item_id": item_id})
+            if not item:
+                errors.append(f"Row {i}: Item {item_id} not found")
+                continue
+            
+            pricelist_rate = float(cols[rate_idx]) if rate_idx >= 0 and len(cols) > rate_idx and cols[rate_idx].strip() else item.get("rate", 0)
+            discount = float(cols[discount_idx]) if discount_idx >= 0 and len(cols) > discount_idx and cols[discount_idx].strip() else 0
+            
+            # Update or add item
+            if item_id in existing_items:
+                existing_items[item_id]["pricelist_rate"] = pricelist_rate
+                existing_items[item_id]["custom_rate"] = pricelist_rate
+                existing_items[item_id]["discount"] = discount
+                existing_items[item_id]["updated_time"] = datetime.now(timezone.utc).isoformat()
+            else:
+                existing_items[item_id] = {
+                    "item_id": item_id,
+                    "pricelist_rate": pricelist_rate,
+                    "custom_rate": pricelist_rate,
+                    "discount": discount,
+                    "discount_type": "percentage",
+                    "added_time": datetime.now(timezone.utc).isoformat()
+                }
+            
+            imported += 1
+        except Exception as e:
+            errors.append(f"Row {i}: {str(e)}")
+    
+    # Update price list
+    await db.price_lists.update_one(
+        {"price_list_id": pl_id},
+        {"$set": {
+            "items": list(existing_items.values()),
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {
+        "code": 0,
+        "message": f"Imported {imported} items",
+        "imported_count": imported,
+        "errors": errors[:10] if errors else []
+    }
+
+
+@router.post("/price-lists/{pl_id}/sync-items")
+async def sync_price_list_with_items(pl_id: str):
+    """Sync price list item data with current Items module data (real-time refresh)"""
+    db = get_db()
+    
+    pl = await db.price_lists.find_one({"price_list_id": pl_id})
+    if not pl:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    # Get current items for all item_ids in price list
+    item_ids = [item.get("item_id") for item in pl.get("items", [])]
+    
+    if not item_ids:
+        return {"code": 0, "message": "No items to sync", "synced_count": 0}
+    
+    items_map = {}
+    items_cursor = db.items.find({"item_id": {"$in": item_ids}}, {"_id": 0})
+    async for item in items_cursor:
+        items_map[item["item_id"]] = item
+    
+    # Update price list items with current item data
+    updated_items = []
+    removed_count = 0
+    
+    for pl_item in pl.get("items", []):
+        item_id = pl_item.get("item_id")
+        item_data = items_map.get(item_id)
+        
+        if not item_data:
+            # Item was deleted, remove from price list
+            removed_count += 1
+            continue
+        
+        # Keep price list specific data, update synced data
+        updated_items.append({
+            **pl_item,
+            "synced_item_name": item_data.get("name"),
+            "synced_sku": item_data.get("sku"),
+            "synced_status": item_data.get("status"),
+            "synced_item_price": item_data.get("rate"),
+            "synced_is_combo": item_data.get("is_combo_product", False),
+            "last_synced": datetime.now(timezone.utc).isoformat()
+        })
+    
+    await db.price_lists.update_one(
+        {"price_list_id": pl_id},
+        {"$set": {
+            "items": updated_items,
+            "updated_time": datetime.now(timezone.utc).isoformat(),
+            "last_sync_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {
+        "code": 0,
+        "message": f"Synced {len(updated_items)} items, removed {removed_count} deleted items",
+        "synced_count": len(updated_items),
+        "removed_count": removed_count
+    }
+
+
+@router.post("/price-lists/{pl_id}/bulk-add")
+async def bulk_add_items_to_price_list(pl_id: str, request: Request):
+    """Bulk add items to price list with percentage markup/markdown"""
+    db = get_db()
+    
+    pl = await db.price_lists.find_one({"price_list_id": pl_id})
+    if not pl:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    body = await request.json()
+    item_ids = body.get("item_ids", [])
+    percentage_type = body.get("percentage_type", "none")  # markup_percentage, markdown_percentage, none
+    percentage_value = body.get("percentage_value", 0)
+    
+    if not item_ids:
+        raise HTTPException(status_code=400, detail="No items provided")
+    
+    # Get item data
+    items_cursor = db.items.find({"item_id": {"$in": item_ids}}, {"_id": 0})
+    items_data = {item["item_id"]: item async for item in items_cursor}
+    
+    existing_items = {item.get("item_id"): item for item in pl.get("items", [])}
+    added = 0
+    
+    for item_id in item_ids:
+        item_data = items_data.get(item_id)
+        if not item_data:
+            continue
+        
+        base_rate = item_data.get("rate", 0)
+        
+        # Calculate pricelist rate based on percentage
+        if percentage_type == "markup_percentage" and percentage_value > 0:
+            pricelist_rate = base_rate * (1 + percentage_value / 100)
+        elif percentage_type == "markdown_percentage" and percentage_value > 0:
+            pricelist_rate = base_rate * (1 - percentage_value / 100)
+        else:
+            pricelist_rate = base_rate
+        
+        if item_id in existing_items:
+            existing_items[item_id]["pricelist_rate"] = pricelist_rate
+            existing_items[item_id]["custom_rate"] = pricelist_rate
+            existing_items[item_id]["updated_time"] = datetime.now(timezone.utc).isoformat()
+        else:
+            existing_items[item_id] = {
+                "item_id": item_id,
+                "pricelist_rate": pricelist_rate,
+                "custom_rate": pricelist_rate,
+                "discount": 0,
+                "discount_type": "percentage",
+                "added_time": datetime.now(timezone.utc).isoformat()
+            }
+        added += 1
+    
+    await db.price_lists.update_one(
+        {"price_list_id": pl_id},
+        {"$set": {
+            "items": list(existing_items.values()),
+            "updated_time": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"code": 0, "message": f"Added/updated {added} items", "count": added}
+
+
 # ============== DOCUMENTS/ATTACHMENTS ==============
 
 class DocumentCreate(BaseModel):
