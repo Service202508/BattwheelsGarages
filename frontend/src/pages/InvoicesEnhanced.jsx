@@ -112,6 +112,9 @@ export default function InvoicesEnhanced() {
     send_email: false
   });
   
+  // Edit form state
+  const [editInvoice, setEditInvoice] = useState(null);
+  
   const [newPayment, setNewPayment] = useState({
     amount: 0,
     payment_mode: "bank_transfer",
