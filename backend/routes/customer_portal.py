@@ -397,7 +397,7 @@ async def decline_portal_estimate(estimate_id: str, reason: str = "", session_to
 
 @router.get("/statement")
 async def get_portal_statement(
-    session_token: str,
+    session_token: str = Depends(get_session_token_from_request),
     start_date: str = "",
     end_date: str = ""
 ):
@@ -450,7 +450,7 @@ async def get_portal_statement(
 # ========================= PAYMENTS =========================
 
 @router.get("/payments")
-async def get_portal_payments(session_token: str, page: int = 1, per_page: int = 20):
+async def get_portal_payments(session_token: str = Depends(get_session_token_from_request), page: int = 1, per_page: int = 20):
     """Get customer's payment history"""
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
@@ -472,7 +472,7 @@ async def get_portal_payments(session_token: str, page: int = 1, per_page: int =
 # ========================= PROFILE =========================
 
 @router.get("/profile")
-async def get_portal_profile(session_token: str):
+async def get_portal_profile(session_token: str = Depends(get_session_token_from_request)):
     """Get customer profile for portal"""
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
