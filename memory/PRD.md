@@ -1,7 +1,7 @@
 # Battwheels Garages - Product Requirements Document
 
 ## Overview
-Battwheels Garages is India's first no-towing-first EV service network. The website serves as the digital presence for the company, providing information about services, allowing bookings, showcasing offerings, and now includes a **Marketplace Module** for EV spare parts sales.
+Battwheels Garages is India's first no-towing-first EV service network. The website serves as the digital presence for the company, providing information about services, allowing bookings, showcasing offerings, and now includes a **Marketplace Module** for EV spare parts and refurbished vehicle sales.
 
 ## Target Audience
 - EV Fleet Operators (2W, 3W, 4W commercial vehicles)
@@ -13,28 +13,31 @@ Battwheels Garages is India's first no-towing-first EV service network. The webs
 ## Core Features
 
 ### Public Website
-- **Home Page**: Hero section, stats, services overview, testimonials, Trusted Partners section, FAQs
+- **Home Page**: Hero section with flip-card animation, stats, services overview, testimonials, Trusted Partners section, FAQs
 - **About Us**: Company vision, mission, and goals
 - **Services**: 8 service categories (Periodic EV Service, Motor & Controller, Battery & BMS, etc.)
 - **Industries**: Target industry segments served
 - **Subscriptions/Plans**: Dynamic pricing for 2W/3W/4W vehicle categories
 - **Blog**: SEO-optimized articles with category filtering and pagination (20 articles)
+- **Battwheels OS**: Technology platform page with EV Failure Intelligence section
 - **Careers**: Job listings
 - **Contact**: Contact form, Google Maps integration
 
-### Marketplace Module (NEW - Feb 8, 2025)
-- **Product Catalog**: 15 seed products across 6 categories
-- **Categories**: 2W Parts, 3W Parts, 4W Parts, Batteries, Diagnostic Tools, Refurbished Components
-- **Filters**: Vehicle Type (2W/3W/4W), Part Type (OEM/Aftermarket/Refurbished), Certified, Price Range
-- **Search**: Full-text search by name, SKU, vehicle compatibility
+### Marketplace Module
+- **Product Catalog**: 15 spare parts + 40 refurbished vehicles
+- **Two Sections**:
+  - **Spares & Components** (/marketplace/spares): 15 products across 6 categories
+  - **Electric Vehicles** (/marketplace/electric-vehicles): 40 certified refurbished 2W/3W vehicles
+- **Filters**: Vehicle Type, OEM Brand, Condition, Price Range
+- **Search**: Full-text search by name, model, OEM
 - **Cart System**: localStorage-based with quantity management
-- **Checkout**: Address form with Razorpay + COD payment options
+- **Checkout**: Address form with Razorpay (LIVE) + COD payment options
 - **Role-Based Pricing**: Public (0%), Fleet (15% discount), Technician (20% discount)
 - **Technician Quick-Order Mode**: Fast search interface for field operations
-- **Phone OTP Authentication**: Indian market standard login
+- **Phone OTP Authentication**: Indian market standard login (MOCKED - pending Twilio)
 
 ### Admin Panel
-- Dashboard with stats overview (Bookings, Contacts, Services, Blogs, Testimonials, Jobs)
+- Dashboard with stats overview
 - Bookings management
 - Services management
 - Blog management (CRUD for 20 blog posts)
@@ -46,183 +49,136 @@ Battwheels Garages is India's first no-towing-first EV service network. The webs
 - **Frontend**: React 18, Tailwind CSS, Shadcn/UI components
 - **Backend**: FastAPI (Python)
 - **Database**: MongoDB
-- **Authentication**: JWT for admin panel, Phone OTP for marketplace
-- **Payments**: Razorpay (simulated) + COD
+- **Authentication**: JWT for admin panel, Phone OTP for marketplace (mocked)
+- **Payments**: Razorpay (LIVE) + COD
+- **Analytics**: Google Tag Manager + Google Analytics 4 (base install)
 
 ## Completed Features
 
-### Marketplace Module - COMPLETED (Feb 8, 2025)
-- [x] Product catalog with 15 seed products
-- [x] 6 product categories with counts
-- [x] Filter system (vehicle type, part type, certified, price)
-- [x] Full-text search functionality
-- [x] Product detail pages with specifications
-- [x] Shopping cart with quantity controls - **Bug Fixed Feb 8**: Added toast notifications
-- [x] Checkout with address form validation
-- [x] Payment options: Razorpay (simulated) + COD
-- [x] Role-based pricing (public/fleet/technician)
-- [x] Technician Quick-Order Mode
-- [x] Phone OTP authentication
-- [x] API-first architecture (ready for Battwheels OS integration)
-- [x] Backend tests: 22/22 passed
-- [x] **GET /products/slug/{slug}** endpoint for product detail pages
+### EV Marketplace Refurbished Vehicles - COMPLETED (Feb 19, 2025)
+- [x] Updated EV marketplace to show ONLY refurbished 2W & 3W vehicles
+- [x] Seeded 40 certified refurbished vehicles (20 × 2-Wheelers, 20 × 3-Wheelers)
+- [x] Removed 4W filtering options
+- [x] Updated UI with "CERTIFIED REFURBISHED" branding
+- [x] Added route alias `/marketplace/electric-vehicles` for cleaner URLs
+- [x] OEM brands: Ather, Ola, TVS, Bajaj, Hero, Revolt, Okinawa, Greaves, Piaggio, Mahindra, Euler, Omega Seiki, Kinetic, Lohia, Atul, etc.
 
-### Marketplace Bifurcation - COMPLETED (Feb 8, 2025)
-- [x] Split marketplace into two categories (no duplicates)
-- [x] **Spares & Components** (/marketplace/spares): 15 products
-  - 2W Parts, 3W Parts, 4W Parts, Batteries, Diagnostic Tools, Refurbished Components
-- [x] **Electric Vehicles** (/marketplace/vehicles): 13 vehicles
-  - New & Certified Refurbished
-  - 2W (6), 3W (3), 4W (4)
-  - OEMs: Ather, Bajaj, MG, Mahindra, Ola, Piaggio, TVS, Tata
-- [x] Landing page with category selection
-- [x] OEM-based filtering for vehicles
-- [x] New/Refurbished condition filters
+### Razorpay Live Integration - COMPLETED (Feb 2025)
+- [x] Backend `/api/payments/create-order` endpoint
+- [x] Backend `/api/payments/verify-signature` endpoint
+- [x] Frontend Razorpay SDK integration in Checkout.jsx
+- [x] **LIVE KEYS CONFIGURED** - rzp_live_SHxrYoF4NujVFl
 
-### Marketplace UI Polish - COMPLETED (Feb 8, 2025)
-- [x] Consistent design with main Battwheels website
-- [x] GearBackground component integration
-- [x] Green gradient hero for Spares (matches website theme)
-- [x] Blue gradient hero for Vehicles (distinct but professional)
-- [x] Color-coded category pills
-- [x] OEM brand color indicators
-- [x] Premium card designs with hover effects
-- [x] Clean filter sidebar with radio buttons
-- [x] Breadcrumb navigation on all pages
-- [x] **High-quality stock images from Unsplash** for all 28 products (Feb 8, 2025)
+### Cart & Checkout Redesign - COMPLETED (Feb 2025)
+- [x] Modern e-commerce cart page design
+- [x] Quantity controls, item removal
+- [x] Order summary with totals
+- [x] Seamless checkout flow
+
+### Marketplace Images - COMPLETED (Feb 2025)
+- [x] AI-generated product-specific images for all 28 items
+- [x] High-quality vehicle images for refurbished EVs
+
+### Homepage Flip-Card Fix - COMPLETED (Feb 2025)
+- [x] Fixed glitchy 3D flip animation on hero section
+
+### Google Tag Manager - COMPLETED (Feb 2025)
+- [x] GTM script installed in index.html
+- [ ] Tags and triggers need configuration in GTM dashboard
+
+### Battwheels OS Page - COMPLETED (Feb 2025)
+- [x] Added "EV Failure Intelligence" section
+- [x] "Patented Technology" branding
+
+### Footer Redesign - COMPLETED (Feb 2025)
+- [x] Modern layout with improved spacing
+- [x] Updated company name
+
+### Site Content Updates - COMPLETED (Feb 2025)
+- [x] Updated "Trusted by" section with fleet operators
+- [x] Changed "minor repairs" to "critical electrical, electronic, and mechanical repairs"
+- [x] Updated sitemap.xml with marketplace URLs
 
 ### Blog SEO Optimization - COMPLETED (Feb 2, 2025)
-- [x] All 20 blogs have optimized meta_title (≤60 chars)
-- [x] All 20 blogs have optimized meta_desc (≤160 chars)
-- [x] All 20 blogs have focus keywords and tags
-- [x] All 20 blogs are published and indexable
-- [x] Sitemap includes all 40 URLs (20 pages + 20 blogs)
-- [x] robots.txt allows crawling of /blog
-- [x] BlogPosting JSON-LD schema on every post
-- [x] BreadcrumbList JSON-LD schema for navigation
-- [x] Related Articles section (3 posts per article)
-- [x] Featured Articles in footer for internal linking
+- [x] 20 blogs with optimized meta titles/descriptions
+- [x] BlogPosting JSON-LD schema
+- [x] BreadcrumbList JSON-LD schema
+- [x] Related Articles section
 
-### Blog Data Migration - COMPLETED (Feb 2, 2025)
-- [x] Migrated 20 blog posts from mockData.js to MongoDB
-- [x] Fixed trailing slash issues in all admin API calls
-- [x] Dashboard now shows correct blog count (20 posts, 20 published)
-- [x] Admin blog management fully functional
-- [x] Public blog page fetches from MongoDB API
-
-### Technical SEO Implementation - COMPLETED (Jan 29, 2025)
-- [x] Dynamic XML sitemap with all 20 blog URLs (`/api/sitemap.xml`)
-- [x] Static sitemap.xml in public folder with all pages
-- [x] robots.txt allowing blog crawling
-- [x] BlogPosting JSON-LD schema on all blog posts
-- [x] BreadcrumbList JSON-LD schema for navigation
-- [x] Canonical URLs on all pages
-- [x] meta robots: "index, follow" on all public pages
+### Technical SEO - COMPLETED (Jan 29, 2025)
+- [x] XML sitemap with all pages
+- [x] robots.txt configuration
+- [x] Canonical URLs
 - [x] OpenGraph and Twitter Card meta tags
-- [x] Related Articles section for internal linking (3 posts per article)
-- [x] Featured Articles in footer for homepage-to-blog linking
-- [x] H1/H2/H3 proper heading hierarchy in blog content
-- [x] Article schema with datePublished, dateModified, author
-- [x] noscript fallback content for crawlers
-
-### Blog Section - COMPLETED
-- [x] 20 SEO-optimized blog articles in MongoDB
-- [x] Category filtering (11 categories: Fleet Ops, EV Tech Deep Dive, Local Services, etc.)
-- [x] Pagination (9 posts per page)
-- [x] Post cards with images, dates, authors, excerpts
-- [x] Read More links to individual blog posts
-
-### Subscription Page - COMPLETED
-- [x] Vehicle category selector (2W/3W/4W)
-- [x] Dynamic pricing updates
-- [x] Three plans: Starter, Fleet Essential, Fleet Essential Pro
-
-### Admin Panel Fixes - COMPLETED (Feb 2, 2025)
-- [x] Fixed all trailing slash API issues
-- [x] Dashboard shows correct stats
-- [x] Blog management shows all 20 posts
-- [x] All CRUD operations working
 
 ## Admin Credentials
 - **URL**: `/admin/login`
 - **Email**: `admin@battwheelsgarages.in`
 - **Password**: `Admin@123`
 
+## Razorpay Credentials (LIVE)
+- **Key ID**: `rzp_live_SHxrYoF4NujVFl`
+- **Key Secret**: `UDVyYxshrVtPFlRSlIBQkkFV`
+- **WARNING**: These are production keys. Real transactions will be processed.
+
 ## API Endpoints
 
-### Public
-- `POST /api/bookings` - Create service booking
-- `GET /api/blogs` - Get published blogs (20 posts)
-- `GET /api/services` - Get active services
+### Marketplace
+- `GET /api/marketplace/vehicles` - Get vehicles with filters
+- `GET /api/marketplace/vehicles/oems` - Get list of OEM brands
+- `GET /api/marketplace/products` - Get spare parts
+- `GET /api/marketplace/products/slug/{slug}` - Get product by slug
+- `POST /api/payments/create-order` - Create Razorpay order
+- `POST /api/payments/verify-signature` - Verify payment
 
 ### Admin
 - `POST /api/admin/auth/login` - Admin authentication
-- `GET /api/admin/bookings` - Get all bookings
+- `GET/POST/PUT/DELETE /api/admin/blogs` - Blogs CRUD
 - `GET/POST/PUT/DELETE /api/admin/services` - Services CRUD
-- `GET/POST/PUT/DELETE /api/admin/blogs` - Blogs CRUD (20 posts)
 - `GET/POST/PUT/DELETE /api/admin/testimonials` - Testimonials CRUD
-- `GET/POST/PUT/DELETE /api/admin/jobs` - Jobs CRUD
+
+## Pending Issues
+
+### P1 - Sitemap Google Search Console
+- **Status**: BLOCKED - awaiting user feedback on exact error message
+- **What we've done**: Updated sitemap.xml with current URLs and lastmod dates
+
+### P2 - Configure GTM Tags
+- **Status**: NOT STARTED
+- **What's needed**: User to configure tags/triggers in GTM dashboard
 
 ## Upcoming Tasks
-1. Deploy latest changes to production (battwheelsgarages.in)
-2. Submit sitemap to Google Search Console
-3. Configure GA4 with actual tracking ID
+1. **Test Live Payment Flow** - End-to-end purchase test with Razorpay (needs user permission)
+2. **Twilio SMS OTP Integration** - Real phone verification (DEFERRED - awaiting credentials)
+3. **Configure GTM Tags** - Event tracking setup in Google Tag Manager
 
 ## Future/Backlog
-- Domain binding verification
-- Sentry error monitoring
-- Content humanization review
-- SEO meta tags optimization per page
-- [x] Three plans: Starter, Fleet Essential, Fleet Essential Pro
-
-### Homepage - COMPLETED
-- [x] Achievements/Awards section
-- [x] Vehicle types carousel (auto-scrolling)
-- [x] Vision/Mission moved to About Us page
-- [x] Trusted Partners section with 25 OEM/Fleet logos (Feb 6, 2025)
-  - Includes: Bajaj, JEM, Altigreen, Exponent, Indofast, Shiplog, Alt Mobility, Gentari, Magenta, Sun Mobility, Bounce, Lectrix, OSM, Zypp Electric, Delhivery, eBlu, Euler, Log9, MoEVing, Piaggio, Quantum, Ola Electric, OPG Mobility, Yulu, Lithium
-
-### Navigation - COMPLETED
-- [x] About Us added to header
-- [x] Header logo (transparent PNG)
-
-### Admin Panel - COMPLETED
-- [x] Admin login with JWT authentication
-- [x] Dashboard with stats
-- [x] CRUD for services, blogs, testimonials, jobs, bookings
-- [x] Fixed API path issues in Bookings and Services (missing `/` before IDs) - Feb 6, 2025
+- Marketplace Phase 2: Failure intelligence recommendations, predictive parts
+- Google Analytics 4 full event tracking
+- Live chat widget integration
+- Testimonials section enhancement
+- Refactor: Rename `Marketplace.jsx` to `SparesAndComponents.jsx`
 
 ## Known Issues
+- Phone OTP login is currently **MOCKED** (no real SMS verification)
+- ESLint warnings resolved (0 errors, 0 warnings)
 
-### ESLint Warnings
-- Reduced from 500+ to 7 warnings (Feb 6, 2025)
-- Remaining 7 are useEffect dependency warnings (intentional to prevent infinite loops)
-
-## Data Architecture
-- Collection: `admin_users`
-- Fields: email, hashed_password, name, role, is_active, last_login
-
-## API Endpoints
-
-### Public
-- `POST /api/bookings` - Create service booking
-- `GET /api/blogs` - Get published blogs
-- `GET /api/services` - Get active services
-
-### Admin
-- `POST /api/admin/auth/login` - Admin authentication
-- `GET /api/admin/bookings` - Get all bookings
-- `GET/POST/PUT/DELETE /api/admin/services` - Services CRUD
-- `GET/POST/PUT/DELETE /api/admin/blogs` - Blogs CRUD
-
-## Upcoming Tasks
-1. Complete Admin CRUD functionality
-2. Move blog data to MongoDB
-3. Fix ESLint warnings
-4. GA4 full event tracking
-
-## Future/Backlog
-- Domain binding (battwheelsgarages.in)
-- Sentry error monitoring
-- Content humanization review
-- SEO meta tags optimization
+## File Structure (Key Files)
+```
+/app
+├── backend
+│   ├── routes/
+│   │   ├── marketplace.py
+│   │   └── payments.py
+│   ├── seed_refurbished_vehicles.py
+│   └── server.py
+└── frontend
+    └── src
+        ├── App.js (routes)
+        ├── pages/marketplace/
+        │   ├── ElectricVehicles.jsx
+        │   ├── Marketplace.jsx (Spares)
+        │   ├── Cart.jsx
+        │   └── Checkout.jsx
+        └── pages/BattwheelsOS.jsx
+```
