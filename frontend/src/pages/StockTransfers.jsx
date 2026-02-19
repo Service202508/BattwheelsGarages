@@ -60,7 +60,7 @@ export default function StockTransfers() {
       if (activeTab !== "all") params.append("status", activeTab);
 
       const [transfersRes, warehousesRes, statsRes] = await Promise.all([
-        fetch(`${API}/stock-transfers?${params}`, { headers }),
+        fetch(`${API}/stock-transfers/?${params}`, { headers }),
         fetch(`${API}/inventory-enhanced/warehouses`, { headers }),
         fetch(`${API}/stock-transfers/stats/summary`, { headers })
       ]);
