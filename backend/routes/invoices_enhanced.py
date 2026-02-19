@@ -28,9 +28,16 @@ invoice_payments_collection = db["invoice_payments"]
 invoice_settings_collection = db["invoice_settings"]
 invoice_templates_collection = db["invoice_templates"]
 invoice_history_collection = db["invoice_history"]
+invoice_comments_collection = db["invoice_comments"]
+invoice_attachments_collection = db["invoice_attachments"]
+invoice_share_links_collection = db["invoice_share_links"]
 contacts_collection = db["contacts_enhanced"]
 items_collection = db["items"]
 recurring_invoices_collection = db["recurring_invoices"]
+
+# Constants
+MAX_ATTACHMENTS_PER_INVOICE = 5
+MAX_ATTACHMENT_SIZE_MB = 10
 
 # Tax rates mapping
 GST_RATES = {
