@@ -1010,21 +1010,46 @@ export default function EstimateItemsPanel({
         <div className="w-full flex flex-wrap justify-end gap-2 pt-4 border-t">
           {/* Send Estimate - When draft and has items */}
           {estimate.status === "draft" && lineItems.length > 0 && canEdit && (
-            <Button onClick={handleSendEstimate} disabled={loading} variant="outline">
-              <Send className="h-4 w-4 mr-2" />
-              Send Estimate
+            <Button 
+              onClick={handleSendEstimate} 
+              disabled={sendLoading} 
+              variant="outline"
+              data-testid="send-estimate-btn"
+            >
+              {sendLoading ? (
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4 mr-2" />
+              )}
+              {sendLoading ? "Sending..." : "Send Estimate"}
             </Button>
           )}
           
           {/* Approve - When draft or sent */}
           {(estimate.status === "draft" || estimate.status === "sent") && lineItems.length > 0 && canApprove && (
-            <Button onClick={handleApproveEstimate} disabled={loading}>
-              <Check className="h-4 w-4 mr-2" />
-              Approve Estimate
+            <Button 
+              onClick={handleApproveEstimate} 
+              disabled={approveLoading}
+              data-testid="approve-estimate-btn"
+            >
+              {approveLoading ? (
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Check className="h-4 w-4 mr-2" />
+              )}
+              {approveLoading ? "Approving..." : "Approve Estimate"}
             </Button>
           )}
           
-          {/* Lock - Admin/Manager only, when not locked */}
+          {/* Unlock - Admin only, when locked */}
+          {estimate.locked_at && canUnlock && (
+            <Button onClick={handleUnlockEstimate} disabled={loading} variant="outline">
+              <Unlock className="h-4 w-4 mr-2" />
+              Unlock Estimate
+            </Button>
+          )}
+          
+          {/* Lock - Admin/Manager only, when approved but not locked */}
           {!estimate.locked_at && estimate.status === "approved" && canLock && (
             <Button onClick={handleLockEstimate} disabled={loading} variant="destructive">
               <Lock className="h-4 w-4 mr-2" />
