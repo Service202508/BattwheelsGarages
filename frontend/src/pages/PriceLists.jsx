@@ -186,8 +186,9 @@ export default function PriceLists() {
 
   const handleBulkAdd = async () => {
     if (bulkAddItems.length === 0) return toast.error("Select at least one item");
+    const plId = selectedPriceList?.price_list_id || selectedPriceList?.pricelist_id;
     try {
-      const res = await fetch(`${API}/zoho/price-lists/${selectedPriceList.price_list_id}/bulk-add`, {
+      const res = await fetch(`${API}/zoho/price-lists/${plId}/bulk-add`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({
