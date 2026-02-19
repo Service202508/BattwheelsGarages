@@ -22,6 +22,15 @@ from .middleware import (
     add_org_id
 )
 from .routes import router as org_router, init_org_routes
+from .dependencies import (
+    init_org_dependencies,
+    get_org_id_from_request,
+    get_optional_org_id,
+    get_org_context,
+    OrgContext,
+    org_scoped_query as dep_org_scoped_query,
+    add_org_to_doc
+)
 
 __all__ = [
     # Models
@@ -35,6 +44,9 @@ __all__ = [
     # Middleware
     "OrganizationMiddleware", "require_org_context", "require_permission",
     "org_scoped_query", "add_org_id",
+    # Dependencies
+    "init_org_dependencies", "get_org_id_from_request", "get_optional_org_id",
+    "get_org_context", "OrgContext", "add_org_to_doc",
     # Routes
     "org_router", "init_org_routes"
 ]
