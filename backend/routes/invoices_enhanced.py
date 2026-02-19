@@ -927,10 +927,8 @@ async def get_invoice(invoice_id: str):
 @router.get("/{invoice_id}/pdf")
 async def get_invoice_pdf(invoice_id: str):
     """Generate and download invoice PDF"""
-    from fastapi.responses import StreamingResponse
     from services.pdf_service import generate_invoice_html
     from weasyprint import HTML
-    from io import BytesIO
     
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id}, {"_id": 0})
     if not invoice:
@@ -951,7 +949,7 @@ async def get_invoice_pdf(invoice_id: str):
         html_content = generate_invoice_html(invoice, org_settings)
         
         # Generate PDF
-        pdf_buffer = BytesIO()
+        pdf_buffer = io.BytesIO()
         HTML(string=html_content).write_pdf(pdf_buffer)
         pdf_buffer.seek(0)
         
