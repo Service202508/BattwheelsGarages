@@ -84,6 +84,7 @@ function App() {
             <Route path="/marketplace" element={<MarketplaceLanding />} />
             <Route path="/marketplace/spares" element={<SparesAndComponents />} />
             <Route path="/marketplace/vehicles" element={<ElectricVehicles />} />
+            <Route path="/marketplace/electric-vehicles" element={<ElectricVehicles />} />
             <Route path="/marketplace/product/:slug" element={<ProductDetail />} />
             <Route path="/marketplace/vehicle/:slug" element={<ProductDetail />} />
             <Route path="/marketplace/cart" element={<Cart />} />
