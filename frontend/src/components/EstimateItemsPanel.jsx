@@ -54,6 +54,60 @@ const lineItemTypeIcons = {
   fee: Receipt,
 };
 
+// Stock status indicator component
+const StockIndicator = ({ stockInfo, qty }) => {
+  if (!stockInfo) return null;
+  
+  const { available_stock, status } = stockInfo;
+  const isInsufficient = qty > available_stock;
+  
+  const getStatusDisplay = () => {
+    if (status === "out_of_stock" || available_stock <= 0) {
+      return {
+        icon: XCircle,
+        label: "Out of Stock",
+        className: "text-red-600 bg-red-50",
+        iconClass: "text-red-500",
+      };
+    }
+    if (isInsufficient) {
+      return {
+        icon: AlertTriangle,
+        label: `Only ${available_stock} available`,
+        className: "text-orange-600 bg-orange-50",
+        iconClass: "text-orange-500",
+      };
+    }
+    if (status === "low_stock") {
+      return {
+        icon: AlertTriangle,
+        label: `Low: ${available_stock} left`,
+        className: "text-yellow-600 bg-yellow-50",
+        iconClass: "text-yellow-500",
+      };
+    }
+    return {
+      icon: CheckCircle2,
+      label: `${available_stock} in stock`,
+      className: "text-green-600 bg-green-50",
+      iconClass: "text-green-500",
+    };
+  };
+  
+  const display = getStatusDisplay();
+  const Icon = display.icon;
+  
+  return (
+    <div 
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${display.className}`}
+      data-testid="stock-indicator"
+    >
+      <Icon className={`h-3 w-3 ${display.iconClass}`} />
+      <span>{display.label}</span>
+    </div>
+  );
+};
+
 export default function EstimateItemsPanel({ 
   ticket, 
   user, 
