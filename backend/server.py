@@ -1399,29 +1399,54 @@ async def update_vehicle_status(vehicle_id: str, status: str, request: Request):
 @api_router.post("/inventory")
 async def create_inventory_item(item_data: InventoryCreate, request: Request):
     await require_technician_or_admin(request)
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+    except HTTPException:
+        org_id = None
     
     # Get supplier name if provided
     supplier_name = None
     if item_data.supplier_id:
-        supplier = await db.suppliers.find_one({"supplier_id": item_data.supplier_id}, {"_id": 0})
+        supplier_query = {"supplier_id": item_data.supplier_id}
+        if org_id:
+            supplier_query["organization_id"] = org_id
+        supplier = await db.suppliers.find_one(supplier_query, {"_id": 0})
         supplier_name = supplier.get("name") if supplier else None
     
     item = InventoryItem(**item_data.model_dump(), supplier_name=supplier_name)
     doc = item.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
+    if org_id:
+        doc['organization_id'] = org_id
     await db.inventory.insert_one(doc)
     return item.model_dump()
 
 @api_router.get("/inventory")
 async def get_inventory(request: Request):
     await require_auth(request)
-    items = await db.inventory.find({}, {"_id": 0}).to_list(1000)
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        query = {"organization_id": org_id}
+    except HTTPException:
+        query = {}
+    items = await db.inventory.find(query, {"_id": 0}).to_list(1000)
     return items
 
 @api_router.get("/inventory/{item_id}")
 async def get_inventory_item(item_id: str, request: Request):
     await require_auth(request)
-    item = await db.inventory.find_one({"item_id": item_id}, {"_id": 0})
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        query = {"item_id": item_id, "organization_id": org_id}
+    except HTTPException:
+        query = {"item_id": item_id}
+    item = await db.inventory.find_one(query, {"_id": 0})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     return item
@@ -1429,21 +1454,40 @@ async def get_inventory_item(item_id: str, request: Request):
 @api_router.put("/inventory/{item_id}")
 async def update_inventory_item(item_id: str, update: InventoryUpdate, request: Request):
     await require_technician_or_admin(request)
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        query = {"item_id": item_id, "organization_id": org_id}
+    except HTTPException:
+        org_id = None
+        query = {"item_id": item_id}
+    
     update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
     
     # Update supplier name if supplier_id changed
     if update.supplier_id:
-        supplier = await db.suppliers.find_one({"supplier_id": update.supplier_id}, {"_id": 0})
+        supplier_query = {"supplier_id": update.supplier_id}
+        if org_id:
+            supplier_query["organization_id"] = org_id
+        supplier = await db.suppliers.find_one(supplier_query, {"_id": 0})
         update_dict["supplier_name"] = supplier.get("name") if supplier else None
     
-    await db.inventory.update_one({"item_id": item_id}, {"$set": update_dict})
-    item = await db.inventory.find_one({"item_id": item_id}, {"_id": 0})
+    await db.inventory.update_one(query, {"$set": update_dict})
+    item = await db.inventory.find_one(query, {"_id": 0})
     return item
 
 @api_router.delete("/inventory/{item_id}")
 async def delete_inventory_item(item_id: str, request: Request):
     await require_admin(request)
-    await db.inventory.delete_one({"item_id": item_id})
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        query = {"item_id": item_id, "organization_id": org_id}
+    except HTTPException:
+        query = {"item_id": item_id}
+    await db.inventory.delete_one(query)
     return {"message": "Item deleted"}
 
 # ==================== MATERIAL ALLOCATION ROUTES ====================
