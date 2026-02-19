@@ -1034,10 +1034,17 @@ async def list_contacts(
     
     # Enrich with balance and counts
     for contact in contacts:
-        contact["person_count"] = await contact_persons_collection.count_documents({"contact_id": contact["contact_id"]})
-        contact["address_count"] = await addresses_collection.count_documents({"contact_id": contact["contact_id"]})
-        balance = await calculate_contact_balance(contact["contact_id"])
-        contact["balance"] = balance
+        # Handle both Zoho-synced data (contact_id) and legacy data (may not have contact_id)
+        contact_id = contact.get("contact_id") or contact.get("zoho_contact_id") or str(contact.get("_id", ""))
+        if contact_id:
+            contact["person_count"] = await contact_persons_collection.count_documents({"contact_id": contact_id})
+            contact["address_count"] = await addresses_collection.count_documents({"contact_id": contact_id})
+            balance = await calculate_contact_balance(contact_id)
+            contact["balance"] = balance
+        else:
+            contact["person_count"] = 0
+            contact["address_count"] = 0
+            contact["balance"] = {"total_receivable": 0, "total_payable": 0}
     
     return {
         "code": 0,

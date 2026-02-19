@@ -807,9 +807,11 @@ async def list_enhanced_items(
     
     # Add stock info for inventory items
     for item in items:
-        if item.get("item_type") == "inventory":
+        # Handle both Zoho-synced data (item_id) and legacy data (may not have item_id)
+        item_id = item.get("item_id") or item.get("zoho_item_id") or str(item.get("_id", ""))
+        if item.get("item_type") == "inventory" and item_id:
             stock_locs = await db.item_stock_locations.find(
-                {"item_id": item["item_id"]},
+                {"item_id": item_id},
                 {"_id": 0}
             ).to_list(100)
             item["stock_locations"] = stock_locs
@@ -818,6 +820,10 @@ async def list_enhanced_items(
             if isinstance(reorder_level, str):
                 reorder_level = float(reorder_level) if reorder_level else 0
             item["is_low_stock"] = item["total_stock"] < reorder_level
+        elif item.get("item_type") == "inventory":
+            item["stock_locations"] = []
+            item["total_stock"] = 0
+            item["is_low_stock"] = False
     
     # Filter low stock if requested
     if low_stock:
