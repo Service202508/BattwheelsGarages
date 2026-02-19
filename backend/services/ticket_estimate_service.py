@@ -300,7 +300,7 @@ class TicketEstimateService:
                 "warehouse_id": warehouse_id
             }
         
-        # Also check items_enhanced for items that might not have stock_locations yet
+        # Check items_enhanced first for items that might not have stock_locations
         items_enhanced = await self.db.items_enhanced.find(
             {"item_id": {"$in": part_item_ids}},
             {"_id": 0, "item_id": 1, "stock_on_hand": 1, "reorder_level": 1}
@@ -314,8 +314,24 @@ class TicketEstimateService:
                     "total_stock": item.get("stock_on_hand", 0),
                     "warehouse_id": warehouse_id
                 }
-            # Add reorder level
             if item["item_id"] in stock_info:
+                stock_info[item["item_id"]]["reorder_level"] = item.get("reorder_level", 5)
+        
+        # Also check 'items' collection (legacy/alternate collection)
+        items_regular = await self.db.items.find(
+            {"item_id": {"$in": part_item_ids}},
+            {"_id": 0, "item_id": 1, "stock_on_hand": 1, "reorder_level": 1}
+        ).to_list(1000)
+        
+        for item in items_regular:
+            if item["item_id"] not in stock_info:
+                stock_info[item["item_id"]] = {
+                    "available_stock": item.get("stock_on_hand", 0),
+                    "reserved_stock": 0,
+                    "total_stock": item.get("stock_on_hand", 0),
+                    "warehouse_id": warehouse_id
+                }
+            if item["item_id"] in stock_info and "reorder_level" not in stock_info[item["item_id"]]:
                 stock_info[item["item_id"]]["reorder_level"] = item.get("reorder_level", 5)
         
         # Enrich line items
