@@ -4865,6 +4865,24 @@ try:
 except Exception as e:
     logger.error(f"Failed to load PDF Templates routes: {e}")
 
+# Include Organization (Multi-Tenant) routes
+try:
+    from core.org import init_organization_service, init_org_routes
+    from core.audit import init_audit_service
+    
+    # Initialize services
+    init_organization_service(db)
+    init_audit_service(db)
+    
+    # Initialize and include routes
+    org_router = init_org_routes(db, get_current_user)
+    api_router.include_router(org_router)
+    logger.info("Organization (Multi-Tenant) routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Organization routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
