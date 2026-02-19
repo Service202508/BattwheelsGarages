@@ -143,23 +143,29 @@ class TestMultiTenantArchitecture:
     
     def test_data_has_organization_id(self):
         """Test that data has organization_id"""
-        # Check vehicles
+        # Check invoices (more reliable endpoint)
         response = requests.get(
-            f"{BASE_URL}/vehicles?per_page=1",
+            f"{BASE_URL}/invoices-enhanced/?per_page=1",
             headers=self.admin_headers()
         )
-        if response.status_code == 200 and response.json().get("vehicles"):
-            vehicle = response.json()["vehicles"][0]
-            assert "organization_id" in vehicle
+        if response.status_code == 200:
+            data = response.json()
+            invoices = data.get("invoices", [])
+            if invoices:
+                invoice = invoices[0]
+                assert "organization_id" in invoice, "Invoice should have organization_id"
         
-        # Check tickets
+        # Check estimates
         response = requests.get(
-            f"{BASE_URL}/tickets?per_page=1",
+            f"{BASE_URL}/estimates-enhanced/?per_page=1",
             headers=self.admin_headers()
         )
-        if response.status_code == 200 and response.json().get("tickets"):
-            ticket = response.json()["tickets"][0]
-            assert "organization_id" in ticket
+        if response.status_code == 200:
+            data = response.json()
+            estimates = data.get("estimates", [])
+            if estimates:
+                estimate = estimates[0]
+                assert "organization_id" in estimate, "Estimate should have organization_id"
     
     # ==================== SETTINGS INHERITANCE TESTS ====================
     
