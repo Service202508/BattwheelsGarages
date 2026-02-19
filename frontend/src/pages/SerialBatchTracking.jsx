@@ -248,7 +248,7 @@ export default function SerialBatchTracking() {
       <PageHeader
         title="Serial & Batch Tracking"
         description="Track individual serial numbers and batch/lot numbers for inventory items"
-        icon={<Barcode className="h-6 w-6" />}
+        icon={Barcode}
       />
 
       {/* Summary Cards */}
