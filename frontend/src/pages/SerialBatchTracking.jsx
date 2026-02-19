@@ -385,12 +385,12 @@ export default function SerialBatchTracking() {
               data-testid="tracking-search-input"
             />
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={statusFilter || "all"} onValueChange={(v) => setStatusFilter(v === "all" ? "" : v)}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Status</SelectItem>
+              <SelectItem value="all">All Status</SelectItem>
               {activeTab === "serials" ? (
                 <>
                   <SelectItem value="available">Available</SelectItem>
