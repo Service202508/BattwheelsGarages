@@ -172,7 +172,7 @@ export default function Accountant() {
       return toast.error("Select account and statement date");
     }
     try {
-      const res = await fetch(`${API}/banking/reconciliation/start`, {
+      const res = await fetch(`${API}/banking/reconciliation/start/`, {
         method: "POST",
         headers,
         body: JSON.stringify(reconForm)
