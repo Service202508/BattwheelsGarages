@@ -782,7 +782,7 @@ export default function EstimateItemsPanel({
                             {newItem.item_id ? newItem.name : "Search parts..."}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="p-0 w-[350px]">
+                        <PopoverContent className="p-0 w-[400px]">
                           <Command>
                             <CommandInput 
                               placeholder="Search parts..." 
@@ -797,22 +797,49 @@ export default function EstimateItemsPanel({
                                 {catalogItems.length === 0 ? "Loading parts..." : "No parts found"}
                               </CommandEmpty>
                               <CommandGroup heading="Parts Catalog">
-                                {catalogItems.map((item) => (
-                                  <CommandItem
-                                    key={item.item_id}
-                                    onSelect={() => handleSelectCatalogItem(item)}
-                                  >
-                                    <div className="flex justify-between w-full">
-                                      <div className="flex flex-col">
-                                        <span className="truncate font-medium">{item.name}</span>
-                                        <span className="text-xs text-muted-foreground">{item.sku || item.item_id}</span>
+                                {catalogItems.map((item) => {
+                                  const stockOnHand = item.stock_on_hand || 0;
+                                  const isLowStock = stockOnHand <= (item.reorder_level || 5);
+                                  const isOutOfStock = stockOnHand <= 0;
+                                  
+                                  return (
+                                    <CommandItem
+                                      key={item.item_id}
+                                      onSelect={() => handleSelectCatalogItem(item)}
+                                      className={isOutOfStock ? "opacity-60" : ""}
+                                    >
+                                      <div className="flex justify-between w-full items-center">
+                                        <div className="flex flex-col flex-1 min-w-0">
+                                          <span className="truncate font-medium">{item.name}</span>
+                                          <span className="text-xs text-muted-foreground">{item.sku || item.item_id}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3 ml-2">
+                                          {/* Stock indicator */}
+                                          <div className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${
+                                            isOutOfStock 
+                                              ? "bg-red-50 text-red-600" 
+                                              : isLowStock 
+                                                ? "bg-yellow-50 text-yellow-600" 
+                                                : "bg-green-50 text-green-600"
+                                          }`}>
+                                            {isOutOfStock ? (
+                                              <XCircle className="h-3 w-3" />
+                                            ) : isLowStock ? (
+                                              <AlertTriangle className="h-3 w-3" />
+                                            ) : (
+                                              <CheckCircle2 className="h-3 w-3" />
+                                            )}
+                                            <span>{stockOnHand}</span>
+                                          </div>
+                                          {/* Price */}
+                                          <span className="text-muted-foreground font-medium whitespace-nowrap">
+                                            ₹{(item.rate || item.selling_price || 0).toLocaleString()}
+                                          </span>
+                                        </div>
                                       </div>
-                                      <span className="text-muted-foreground font-medium">
-                                        ₹{(item.rate || item.selling_price || 0).toLocaleString()}
-                                      </span>
-                                    </div>
-                                  </CommandItem>
-                                ))}
+                                    </CommandItem>
+                                  );
+                                })}
                               </CommandGroup>
                             </CommandList>
                           </Command>
