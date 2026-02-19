@@ -3,7 +3,7 @@
 # Phase 1: Attachments, Public Share Links, Customer Viewed Status, PDF Generation
 # Phase 2: Auto-conversion, PDF Templates, Import/Export, Custom Fields, Bulk Actions
 
-from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks, UploadFile, File, Form, Request
 from fastapi.responses import StreamingResponse, JSONResponse
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Dict, Any
@@ -37,6 +37,22 @@ estimate_history_collection = db["estimate_history"]
 estimate_settings_collection = db["estimate_settings"]
 estimate_attachments_collection = db["estimate_attachments"]
 estimate_share_links_collection = db["estimate_share_links"]
+
+# Multi-tenant helpers
+async def get_org_id(request: Request) -> Optional[str]:
+    """Get organization ID from request for multi-tenant scoping"""
+    try:
+        from core.org import get_org_id_from_request
+        return await get_org_id_from_request(request)
+    except Exception:
+        return None
+
+def org_query(org_id: Optional[str], base_query: dict = None) -> dict:
+    """Add org_id to query if available"""
+    query = base_query or {}
+    if org_id:
+        query["organization_id"] = org_id
+    return query
 
 # Attachment limits (Zoho Books style)
 MAX_ATTACHMENTS_PER_ESTIMATE = 3
