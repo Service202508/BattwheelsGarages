@@ -48,6 +48,7 @@ const statusLabels = {
 export default function EstimatesEnhanced() {
   const [activeTab, setActiveTab] = useState("estimates");
   const [estimates, setEstimates] = useState([]);
+  const [ticketEstimates, setTicketEstimates] = useState([]); // NEW: Ticket-linked estimates
   const [summary, setSummary] = useState(null);
   const [funnel, setFunnel] = useState(null);
   const [loading, setLoading] = useState(true);
