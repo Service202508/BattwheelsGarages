@@ -203,16 +203,19 @@ export default function EstimateItemsPanel({
         setConflictData(data.detail?.current_estimate);
         toast.error("Estimate was modified. Refreshing...");
         await ensureEstimate();
+        setLoading(false);
         return;
       }
       
       if (response.status === 423) {
         toast.error("Estimate is locked and cannot be modified");
+        setLoading(false);
         return;
       }
       
       if (!response.ok) {
-        throw new Error("Failed to add item");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Failed to add item");
       }
       
       const data = await response.json();
@@ -226,7 +229,7 @@ export default function EstimateItemsPanel({
       }
     } catch (err) {
       console.error("Error adding line item:", err);
-      toast.error(err.message);
+      toast.error(err.message || "Failed to add item");
     } finally {
       setLoading(false);
     }
