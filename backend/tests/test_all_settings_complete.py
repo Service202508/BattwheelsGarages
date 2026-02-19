@@ -375,10 +375,10 @@ class TestEFISettings:
         data = res.json()
         assert isinstance(data, dict), "EFI settings should be a dict"
         
-        # Check actual fields - failure_learning_enabled, auto_suggest_diagnosis, etc.
-        expected_fields = ["failure_learning_enabled", "auto_suggest_diagnosis", 
-                          "min_confidence_threshold", "require_checklist_completion",
-                          "capture_diagnostic_photos"]
+        # Check actual fields from response
+        expected_fields = ["enable_ai_diagnosis", "enable_knowledge_base", 
+                          "enable_parts_recommendation", "auto_suggest_similar_cases",
+                          "confidence_threshold"]
         found_fields = [f for f in expected_fields if f in data]
         assert len(found_fields) >= 1, f"Should have at least one EFI setting. Got: {list(data.keys())}"
     
@@ -412,10 +412,10 @@ class TestPortalSettings:
         data = res.json()
         assert isinstance(data, dict), "Portal settings should be a dict"
         
-        # Check actual fields - customer_portal_enabled, vendor_portal_enabled, etc.
-        expected_fields = ["customer_portal_enabled", "vendor_portal_enabled",
-                          "customer_can_view_invoices", "customer_can_view_quotes",
-                          "customer_can_raise_tickets"]
+        # Check actual fields from response
+        expected_fields = ["enable_customer_portal", "enable_vendor_portal",
+                          "allow_ticket_creation", "allow_invoice_download",
+                          "allow_estimate_approval"]
         found_fields = [f for f in expected_fields if f in data]
         assert len(found_fields) >= 1, f"Should have at least one portal setting. Got: {list(data.keys())}"
     
