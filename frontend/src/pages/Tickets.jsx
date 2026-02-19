@@ -12,7 +12,7 @@ import {
   Plus, Search, Download, Loader2, ChevronLeft, ChevronRight,
   Ticket, UserCheck, Clock, CheckCircle, AlertTriangle
 } from "lucide-react";
-import { API } from "@/App";
+import { API, getAuthHeaders } from "@/App";
 import JobCard from "@/components/JobCard";
 
 const statusColors = {
