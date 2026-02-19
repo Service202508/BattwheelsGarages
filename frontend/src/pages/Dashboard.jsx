@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Car, Wrench, Clock, Users } from "lucide-react";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { MetricCard } from "@/components/ui/stat-card";
-import { API } from "@/App";
+import { API, getAuthHeaders } from "@/App";
 
 const CHART_COLORS = {
   primary: "hsl(186, 70%, 50%)",
@@ -20,10 +20,9 @@ export default function Dashboard({ user }) {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await fetch(`${API}/dashboard/stats`, {
           credentials: "include",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          headers: getAuthHeaders(),
         });
         if (response.ok) {
           const data = await response.json();
