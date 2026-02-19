@@ -180,8 +180,16 @@ export default function EstimateItemsPanel({
       return;
     }
     
+    // Ensure we have the latest version
+    if (!estimate || !estimate.version) {
+      toast.error("Estimate not loaded. Please refresh.");
+      return;
+    }
+    
     setAddItemLoading(true);
     try {
+      console.log(`Adding line item with version ${estimate.version}`, newItem);
+      
       const response = await fetch(
         `${API}/ticket-estimates/${estimate.estimate_id}/line-items`,
         {
@@ -198,19 +206,19 @@ export default function EstimateItemsPanel({
         }
       );
       
+      console.log(`Add line item response status: ${response.status}`);
+      
       if (response.status === 409) {
         // Concurrency conflict - refresh estimate and let user retry
-        const data = await response.json();
-        setConflictData(data.detail?.current_estimate);
-        toast.error("Estimate was modified. Refreshing...");
+        console.log("Got 409 conflict, refreshing estimate");
+        toast.warning("Version conflict detected. Refreshing estimate...");
         await ensureEstimate();
-        setAddItemLoading(false);
+        toast.info("Please try adding the item again");
         return;
       }
       
       if (response.status === 423) {
         toast.error("Estimate is locked and cannot be modified");
-        setAddItemLoading(false);
         return;
       }
       
@@ -220,6 +228,8 @@ export default function EstimateItemsPanel({
       }
       
       const data = await response.json();
+      console.log("Add line item success, new version:", data.estimate?.version);
+      
       setEstimate(data.estimate);
       setAddDialogOpen(false);
       resetNewItem();
