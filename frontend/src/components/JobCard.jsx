@@ -547,22 +547,11 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
           </Dialog>
         )}
 
-        {/* Share Estimate - Admin/Technician, when Technician Assigned and has items */}
-        {!isCustomer && localTicket.status === "technician_assigned" && 
-         (estimatedItems.parts.length > 0 || estimatedItems.services.length > 0) && (
-          <Button onClick={handleShareEstimate} disabled={loading}>
-            <Send className="mr-2 h-4 w-4" />
-            Share Estimate
-          </Button>
-        )}
+        {/* Share Estimate - Now handled by EstimateItemsPanel */}
+        {/* The Send button is in EstimateItemsPanel */}
 
-        {/* Approve Estimate - When Estimate Shared */}
-        {localTicket.status === "estimate_shared" && (
-          <Button onClick={handleApproveEstimate} variant="outline" disabled={loading}>
-            <Check className="mr-2 h-4 w-4" />
-            {isCustomer ? "Approve Estimate" : "Approve on Customer Behalf"}
-          </Button>
-        )}
+        {/* Approve Estimate - Now handled by EstimateItemsPanel */}
+        {/* The Approve button is in EstimateItemsPanel */}
 
         {/* Start Work - Technician, when Estimate Approved */}
         {isTechnician && localTicket.status === "estimate_approved" && (
