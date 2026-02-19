@@ -25,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { AlertCircle, Lock, Plus, Trash2, Send, Check, Pencil, ExternalLink, RefreshCw, Package, Wrench, Receipt, Unlock } from "lucide-react";
+import { AlertCircle, Lock, Plus, Trash2, Send, Check, Pencil, ExternalLink, RefreshCw, Package, Wrench, Receipt, Unlock, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { API } from "@/App";
 
