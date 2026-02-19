@@ -149,7 +149,7 @@ async def verify_payment(payment_data: VerifyPaymentRequest):
             raise HTTPException(status_code=400, detail="Invalid payment signature")
         
         # Update order status in database
-        if db:
+        if db is not None:
             await db.marketplace_orders.update_one(
                 {"razorpay_order_id": payment_data.razorpay_order_id},
                 {
@@ -201,7 +201,7 @@ async def handle_webhook(request: Request):
         event = payload.get("event", "")
         
         # Log webhook event
-        if db:
+        if db is not None:
             await db.payment_webhooks.insert_one({
                 "event": event,
                 "payload": payload,
