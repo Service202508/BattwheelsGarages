@@ -1,0 +1,87 @@
+{
+  "summary": "Customer Portal Authentication tests - All 21 tests PASSED (100%). Verified that session tokens can be passed via both X-Portal-Session header and session_token query parameter. All portal endpoints working correctly.",
+  "test_date": "2026-02-19",
+  "iteration": 58,
+  "feature": "Customer Portal Authentication - Dual Token Method Support (Header + Query Parameter)",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "backend_api": {
+      "status": "PASS",
+      "tests_passed": 21,
+      "tests_total": 21,
+      "categories": [
+        "TestPortalLogin::test_portal_login_success - Login with fresh portal token ✓",
+        "TestPortalLogin::test_portal_login_invalid_token - Invalid token returns 401 ✓",
+        "TestPortalLogin::test_portal_login_short_token - Short token validation ✓",
+        "TestPortalSessionTokenMethods::test_dashboard_with_header - Dashboard via X-Portal-Session header ✓",
+        "TestPortalSessionTokenMethods::test_dashboard_with_query_param - Dashboard via session_token query ✓",
+        "TestPortalSessionTokenMethods::test_invoices_with_header - Invoices via header ✓",
+        "TestPortalSessionTokenMethods::test_invoices_with_query_param - Invoices via query ✓",
+        "TestPortalSessionTokenMethods::test_estimates_with_header - Estimates via header ✓",
+        "TestPortalSessionTokenMethods::test_estimates_with_query_param - Estimates via query ✓",
+        "TestPortalSessionTokenMethods::test_profile_with_header - Profile via header ✓",
+        "TestPortalSessionTokenMethods::test_profile_with_query_param - Profile via query ✓",
+        "TestPortalSessionTokenMethods::test_statement_with_header - Statement via header ✓",
+        "TestPortalSessionTokenMethods::test_statement_with_query_param - Statement via query ✓",
+        "TestPortalSessionValidation::test_missing_session_token - Missing token returns 401 ✓",
+        "TestPortalSessionValidation::test_invalid_session_token_header - Invalid header token returns 401 ✓",
+        "TestPortalSessionValidation::test_invalid_session_token_query - Invalid query token returns 401 ✓",
+        "TestEnablePortalEndpoint::test_enable_portal_for_contact - Enable portal for contact works ✓",
+        "TestEnablePortalEndpoint::test_enable_portal_invalid_contact - Invalid contact returns 404 ✓",
+        "TestPortalLogout::test_logout_with_header - Logout invalidates session ✓",
+        "TestPortalSessionInfo::test_session_info_with_header - Session info via header ✓",
+        "TestPortalSessionInfo::test_session_info_with_query_param - Session info via query ✓"
+      ]
+    }
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_customer_portal_auth.py",
+    "/app/test_reports/pytest/customer_portal_auth_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "The get_session_token_from_request dependency correctly extracts session tokens from both X-Portal-Session header and session_token query parameter",
+    "All portal endpoints properly use Depends(get_session_token_from_request) for authentication",
+    "Portal token changes on each enable-portal call - this is expected behavior for security",
+    "Session tokens properly invalidated on logout"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_customer_portal_auth.py"
+  ],
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "N/A (backend only test)"
+  },
+  "test_credentials": {
+    "admin": "admin@battwheels.in / admin123",
+    "test_contact_id": "1837096000000463081",
+    "note": "Portal token is regenerated on each enable-portal call"
+  },
+  "seed_data_creation": "Used existing contact 1837096000000463081 with email pratik.dasgupta@shiplog.in",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Customer portal authentication fully working with dual token support. All endpoints accept session tokens via X-Portal-Session header OR session_token query parameter. Endpoints tested: /login, /logout, /session, /dashboard, /invoices, /estimates, /profile, /statement. Enable-portal endpoint regenerates portal token each time it's called.",
+  "verified_endpoints": {
+    "POST /api/customer-portal/login": "Login with portal_token, returns session_token",
+    "POST /api/customer-portal/logout": "Logout with session_token (header or query)",
+    "GET /api/customer-portal/session": "Get session info (header or query)",
+    "GET /api/customer-portal/dashboard": "Customer dashboard (header or query)",
+    "GET /api/customer-portal/invoices": "Customer invoices list (header or query)",
+    "GET /api/customer-portal/estimates": "Customer estimates list (header or query)",
+    "GET /api/customer-portal/profile": "Customer profile (header or query)",
+    "GET /api/customer-portal/statement": "Account statement (header or query)",
+    "POST /api/contacts-enhanced/{contact_id}/enable-portal": "Enable portal for contact (admin only)"
+  },
+  "mocked_apis": {
+    "Resend email service": true,
+    "note": "Portal invite emails are mocked but portal functionality works"
+  }
+}
