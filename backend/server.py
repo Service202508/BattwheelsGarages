@@ -21,7 +21,7 @@ app = FastAPI(title="Battwheels Garages API", version="1.0.0")
 from routes import bookings, fleet_enquiries, contacts, careers, public_content, seo
 from routes import admin_auth, admin_bookings, admin_contacts, admin_services, admin_blogs, admin_testimonials, admin_jobs
 from routes import marketplace, marketplace_auth
-from routes import payments
+from routes import payments, callbacks
 
 # Health check routes (both /health and /api/health for Kubernetes compatibility)
 @app.get("/health")
@@ -56,6 +56,9 @@ app.include_router(marketplace_auth.router)
 # Include payment router
 payments.set_database(db)
 app.include_router(payments.router)
+
+# Include callbacks router
+app.include_router(callbacks.router)
 
 # CORS Middleware
 app.add_middleware(
