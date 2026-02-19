@@ -612,6 +612,7 @@ class TestStockTransfersVoid:
         self.source_wh = source_wh
         self.dest_wh = dest_wh
         self.item_id = item_id
+        self.api_client = api_client
     
     def create_fresh_transfer(self, api_client, qty=1):
         """Helper to create fresh transfer"""
@@ -627,6 +628,10 @@ class TestStockTransfersVoid:
             transfer = response.json()["transfer"]
             created_transfers.append(transfer["transfer_id"])
             return transfer
+        elif response.status_code == 400:
+            data = response.json()
+            if "insufficient" in str(data.get("detail", "")).lower():
+                return None  # Stock not available
         return None
     
     def test_void_draft_transfer(self, api_client):
