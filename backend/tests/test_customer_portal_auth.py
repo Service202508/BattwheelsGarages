@@ -101,44 +101,20 @@ class TestPortalSessionTokenMethods:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Get a valid session token for testing"""
-        # First try to login with portal token
+        # Get a fresh portal token
+        portal_token = get_fresh_portal_token()
+        if not portal_token:
+            pytest.skip("Could not get portal token - admin login or enable-portal failed")
+        
+        # Login to portal
         response = requests.post(f"{BASE_URL}/api/customer-portal/login", json={
-            "token": TEST_PORTAL_TOKEN
+            "token": portal_token
         })
         
         if response.status_code == 200:
             self.session_token = response.json()["session_token"]
             self.contact_id = response.json()["contact"]["contact_id"]
         else:
-            # Enable portal for the contact first
-            admin_response = requests.post(f"{BASE_URL}/api/auth/login", json={
-                "email": ADMIN_EMAIL,
-                "password": ADMIN_PASSWORD
-            })
-            
-            if admin_response.status_code != 200:
-                pytest.skip("Admin login failed - cannot setup portal")
-            
-            admin_token = admin_response.json()["token"]
-            
-            # Enable portal for the contact
-            enable_response = requests.post(
-                f"{BASE_URL}/api/contacts-enhanced/{TEST_CONTACT_ID}/enable-portal",
-                headers={"Authorization": f"Bearer {admin_token}"}
-            )
-            
-            if enable_response.status_code == 200:
-                # Get the new portal token
-                new_portal_token = enable_response.json().get("token")
-                if new_portal_token:
-                    login_response = requests.post(f"{BASE_URL}/api/customer-portal/login", json={
-                        "token": new_portal_token
-                    })
-                    if login_response.status_code == 200:
-                        self.session_token = login_response.json()["session_token"]
-                        self.contact_id = login_response.json()["contact"]["contact_id"]
-                        return
-            
             pytest.skip("Could not get a valid portal session token")
     
     def test_dashboard_with_header(self):
