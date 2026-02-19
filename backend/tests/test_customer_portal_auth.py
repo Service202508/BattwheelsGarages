@@ -54,15 +54,17 @@ class TestPortalLogin:
     
     def test_portal_login_success(self):
         """Test successful portal login with valid token"""
+        # Get a fresh portal token
+        portal_token = get_fresh_portal_token()
+        if not portal_token:
+            pytest.skip("Could not get portal token - admin login or enable-portal failed")
+        
         response = requests.post(f"{BASE_URL}/api/customer-portal/login", json={
-            "token": TEST_PORTAL_TOKEN
+            "token": portal_token
         })
         
         print(f"Portal login response status: {response.status_code}")
         print(f"Portal login response: {response.text[:500]}")
-        
-        if response.status_code == 401:
-            pytest.skip("Portal token invalid or contact not portal-enabled - will enable and retry")
         
         assert response.status_code == 200, f"Portal login failed: {response.text}"
         
@@ -73,7 +75,6 @@ class TestPortalLogin:
         assert data["session_token"].startswith("PS-"), f"Session token should start with PS-, got {data['session_token'][:10]}"
         
         print(f"SUCCESS: Portal login - session_token: {data['session_token'][:20]}...")
-        return data["session_token"]
     
     def test_portal_login_invalid_token(self):
         """Test portal login with invalid token"""
