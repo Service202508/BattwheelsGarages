@@ -59,6 +59,10 @@ export default function OrganizationSettings({ user }) {
   const [newMemberEmail, setNewMemberEmail] = useState("");
   const [newMemberRole, setNewMemberRole] = useState("viewer");
   const [addingMember, setAddingMember] = useState(false);
+  
+  // Import/Export state
+  const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   const getAuthHeaders = useCallback(() => {
     const token = localStorage.getItem("token");
@@ -67,6 +71,64 @@ export default function OrganizationSettings({ user }) {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
   }, []);
+
+  // Export settings
+  const exportSettings = async () => {
+    setExporting(true);
+    try {
+      const res = await fetch(`${API}/org/settings/export`, { headers: getAuthHeaders() });
+      if (res.ok) {
+        const data = await res.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `org-settings-${organization?.slug || "export"}-${new Date().toISOString().split("T")[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast.success("Settings exported successfully");
+      } else {
+        toast.error("Failed to export settings");
+      }
+    } catch (error) {
+      toast.error("Failed to export settings");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  // Import settings
+  const importSettings = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      
+      const res = await fetch(`${API}/org/settings/import`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      });
+      
+      if (res.ok) {
+        toast.success("Settings imported successfully");
+        fetchData(); // Refresh data
+      } else {
+        const error = await res.json();
+        toast.error(error.detail || "Failed to import settings");
+      }
+    } catch (error) {
+      toast.error("Invalid settings file format");
+    } finally {
+      setImporting(false);
+      event.target.value = ""; // Reset file input
+    }
+  };
 
   // Fetch organization data
   const fetchData = useCallback(async () => {
