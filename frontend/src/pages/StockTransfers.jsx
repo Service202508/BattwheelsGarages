@@ -58,9 +58,10 @@ export default function StockTransfers() {
     try {
       const params = new URLSearchParams();
       if (activeTab !== "all") params.append("status", activeTab);
+      const queryStr = params.toString() ? `?${params}` : "";
 
       const [transfersRes, warehousesRes, statsRes] = await Promise.all([
-        fetch(`${API}/stock-transfers/?${params}`, { headers }),
+        fetch(`${API}/stock-transfers/${queryStr}`, { headers }),
         fetch(`${API}/inventory-enhanced/warehouses`, { headers }),
         fetch(`${API}/stock-transfers/stats/summary`, { headers })
       ]);
@@ -71,7 +72,7 @@ export default function StockTransfers() {
 
       setTransfers(transfersData.transfers || []);
       setWarehouses(warehousesData.warehouses || []);
-      setStats(statsData);
+      setStats(statsData.stats || statsData);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to load transfers");
