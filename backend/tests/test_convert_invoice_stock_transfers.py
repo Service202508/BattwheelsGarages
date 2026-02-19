@@ -143,40 +143,46 @@ def test_estimate_for_conversion(api_client, test_ticket):
 @pytest.fixture(scope="module")
 def test_warehouses(api_client):
     """Create or get test warehouses for stock transfers"""
-    # Check if warehouses exist
-    list_response = api_client.get(f"{BASE_URL}/api/warehouses")
+    # Check if warehouses exist via inventory-enhanced endpoint
+    list_response = api_client.get(f"{BASE_URL}/api/inventory-enhanced/warehouses")
     
     if list_response.status_code == 200:
         warehouses = list_response.json().get("warehouses", [])
         if len(warehouses) >= 2:
+            print(f"Found existing warehouses: {warehouses[0]['warehouse_id']}, {warehouses[1]['warehouse_id']}")
             return warehouses[0]["warehouse_id"], warehouses[1]["warehouse_id"]
     
     # Create test warehouses
     warehouse1_data = {
         "name": f"TEST_Warehouse_Source_{uuid.uuid4().hex[:6]}",
         "code": f"TWS{uuid.uuid4().hex[:4].upper()}",
-        "address": "123 Source St",
+        "address": "123 Source St, Bangalore",
         "city": "Bangalore",
-        "is_primary": False
+        "is_primary": False,
+        "is_active": True
     }
     
     warehouse2_data = {
         "name": f"TEST_Warehouse_Dest_{uuid.uuid4().hex[:6]}",
         "code": f"TWD{uuid.uuid4().hex[:4].upper()}",
-        "address": "456 Dest St",
+        "address": "456 Dest St, Chennai",
         "city": "Chennai",
-        "is_primary": False
+        "is_primary": False,
+        "is_active": True
     }
     
-    response1 = api_client.post(f"{BASE_URL}/api/warehouses", json=warehouse1_data)
-    response2 = api_client.post(f"{BASE_URL}/api/warehouses", json=warehouse2_data)
+    response1 = api_client.post(f"{BASE_URL}/api/inventory-enhanced/warehouses", json=warehouse1_data)
+    response2 = api_client.post(f"{BASE_URL}/api/inventory-enhanced/warehouses", json=warehouse2_data)
+    
+    print(f"Warehouse 1 response: {response1.status_code} - {response1.text[:200]}")
+    print(f"Warehouse 2 response: {response2.status_code} - {response2.text[:200]}")
     
     if response1.status_code in [200, 201] and response2.status_code in [200, 201]:
         wh1 = response1.json().get("warehouse", response1.json())
         wh2 = response2.json().get("warehouse", response2.json())
         return wh1.get("warehouse_id"), wh2.get("warehouse_id")
     
-    pytest.skip(f"Could not create test warehouses")
+    pytest.skip(f"Could not create test warehouses: {response1.status_code}, {response2.status_code}")
 
 
 @pytest.fixture(scope="module")
