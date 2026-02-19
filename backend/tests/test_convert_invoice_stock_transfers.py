@@ -358,7 +358,7 @@ class TestConvertEstimateToInvoice:
         
         assert response.status_code in [400, 404], f"Expected 400/404 for fake estimate, got {response.status_code}"
         
-        print(f"Correctly rejected conversion of non-existent estimate")
+        print("Correctly rejected conversion of non-existent estimate")
 
 
 # ==================== STOCK TRANSFERS TESTS ====================
@@ -397,7 +397,7 @@ class TestStockTransfersCreate:
             data = response.json()
             if "insufficient" in str(data.get("detail", "")).lower():
                 print(f"EXPECTED: Insufficient stock error - stock not seeded in warehouse {source_wh} for item {item_id}")
-                print(f"This test validates the stock validation logic is working correctly")
+                print("This test validates the stock validation logic is working correctly")
                 # The API correctly validates stock before allowing transfer
                 return  # Test passes - API behaves correctly
         
@@ -412,7 +412,7 @@ class TestStockTransfersCreate:
         # Verify transfer fields
         assert transfer.get("transfer_id"), "Transfer should have transfer_id"
         assert transfer.get("transfer_number"), "Transfer should have transfer_number"
-        assert transfer.get("transfer_number", "").startswith("STO-"), f"Transfer number should start with STO-"
+        assert transfer.get("transfer_number", "").startswith("STO-"), "Transfer number should start with STO-"
         assert transfer.get("status") == "draft", f"New transfer should be draft, got {transfer.get('status')}"
         assert transfer.get("source_warehouse_id") == source_wh
         assert transfer.get("destination_warehouse_id") == dest_wh
@@ -442,7 +442,7 @@ class TestStockTransfersCreate:
         data = response.json()
         assert "same" in str(data.get("detail", "")).lower(), f"Error should mention same warehouse: {data}"
         
-        print(f"Correctly rejected transfer to same warehouse")
+        print("Correctly rejected transfer to same warehouse")
     
     def test_cannot_transfer_insufficient_stock(self, api_client, test_warehouses, test_item_with_stock):
         """Test that transfer with insufficient stock fails"""
@@ -464,7 +464,7 @@ class TestStockTransfersCreate:
         data = response.json()
         assert "insufficient" in str(data.get("detail", "")).lower() or "stock" in str(data.get("detail", "")).lower(), f"Error should mention insufficient stock: {data}"
         
-        print(f"Correctly rejected transfer with insufficient stock")
+        print("Correctly rejected transfer with insufficient stock")
 
 
 class TestStockTransfersWorkflow:
@@ -500,7 +500,7 @@ class TestStockTransfersWorkflow:
             data = response.json()
             if "insufficient" in str(data.get("detail", "")).lower():
                 # Stock not available in warehouse - skip workflow tests
-                pytest.skip(f"Insufficient stock in warehouse for workflow tests. Stock validation is working correctly.")
+                pytest.skip("Insufficient stock in warehouse for workflow tests. Stock validation is working correctly.")
             else:
                 pytest.skip(f"Could not create transfer: {data.get('detail')}")
         else:
@@ -537,7 +537,7 @@ class TestStockTransfersWorkflow:
         data = response.json()
         assert "draft" in str(data.get("detail", "")).lower(), f"Error should mention draft: {data}"
         
-        print(f"Correctly rejected shipping non-draft transfer")
+        print("Correctly rejected shipping non-draft transfer")
     
     def test_receive_transfer(self, api_client):
         """Test POST /api/stock-transfers/{id}/receive"""
@@ -597,7 +597,7 @@ class TestStockTransfersWorkflow:
         
         assert response.status_code == 400, f"Expected 400 for non-transit transfer, got {response.status_code}"
         
-        print(f"Correctly rejected receiving non-transit transfer")
+        print("Correctly rejected receiving non-transit transfer")
 
 
 class TestStockTransfersVoid:
@@ -726,7 +726,7 @@ class TestStockTransfersVoid:
         
         assert response.status_code == 400, f"Expected 400 for already voided, got {response.status_code}"
         
-        print(f"Correctly rejected double void")
+        print("Correctly rejected double void")
 
 
 class TestStockTransfersStats:
@@ -854,7 +854,7 @@ def cleanup(api_client):
     """Cleanup test data after all tests"""
     yield
     
-    print(f"\n=== Test Cleanup ===")
+    print("\n=== Test Cleanup ===")
     print(f"Created estimates: {created_estimates}")
     print(f"Created transfers: {created_transfers}")
     print(f"Created invoices: {created_invoices}")
