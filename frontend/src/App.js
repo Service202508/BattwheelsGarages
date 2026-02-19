@@ -461,7 +461,7 @@ function AppRouter() {
       <Route path="/items" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
-            <Items user={auth.user} />
+            <ItemsEnhanced user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
