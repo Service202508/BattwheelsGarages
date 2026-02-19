@@ -59,6 +59,7 @@ import CompositeItems from "@/pages/CompositeItems";
 // CustomersEnhanced has been merged into ContactsEnhanced - redirect below
 import PriceLists from "@/pages/PriceLists";
 import InventoryAdjustments from "@/pages/InventoryAdjustments";
+import SerialBatchTracking from "@/pages/SerialBatchTracking";
 import RecurringExpenses from "@/pages/RecurringExpenses";
 import RecurringBills from "@/pages/RecurringBills";
 import FixedAssets from "@/pages/FixedAssets";
