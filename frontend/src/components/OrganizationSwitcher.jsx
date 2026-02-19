@@ -305,15 +305,103 @@ export default function OrganizationSwitcher({ compact = false }) {
           <DropdownMenuItem
             onClick={() => {
               setOpen(false);
-              toast.info("Create organization coming soon");
+              setCreateDialogOpen(true);
             }}
             className="gap-2"
+            data-testid="create-org-btn"
           >
             <Plus className="h-4 w-4" />
             Create Organization
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>
+      
+      {/* Create Organization Dialog */}
+      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Building2 className="h-5 w-5" />
+              Create New Organization
+            </DialogTitle>
+            <DialogDescription>
+              Create a new organization to manage a separate business entity or branch.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="org-name">Organization Name *</Label>
+              <Input
+                id="org-name"
+                placeholder="e.g., EV Service Center - Delhi"
+                value={newOrgForm.name}
+                onChange={(e) => setNewOrgForm({ ...newOrgForm, name: e.target.value })}
+                data-testid="new-org-name-input"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="industry-type">Industry Type</Label>
+              <Select
+                value={newOrgForm.industry_type}
+                onValueChange={(v) => setNewOrgForm({ ...newOrgForm, industry_type: v })}
+              >
+                <SelectTrigger data-testid="new-org-industry-select">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {industryTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="org-email">Email</Label>
+              <Input
+                id="org-email"
+                type="email"
+                placeholder="contact@organization.com"
+                value={newOrgForm.email}
+                onChange={(e) => setNewOrgForm({ ...newOrgForm, email: e.target.value })}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="org-phone">Phone</Label>
+              <Input
+                id="org-phone"
+                placeholder="+91 98765 43210"
+                value={newOrgForm.phone}
+                onChange={(e) => setNewOrgForm({ ...newOrgForm, phone: e.target.value })}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={createOrganization} disabled={creating} data-testid="create-org-submit">
+              {creating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Organization
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DropdownMenu>
   );
 }
