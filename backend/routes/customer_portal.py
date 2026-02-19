@@ -492,3 +492,183 @@ async def get_portal_profile(session_token: str = Depends(get_session_token_from
     contact["addresses"] = addresses
     
     return {"code": 0, "profile": contact}
+
+
+# ========================= TICKETS (SERVICE REQUESTS) =========================
+
+class SupportRequestCreate(BaseModel):
+    subject: str = Field(..., min_length=3, max_length=200)
+    description: str = Field(..., min_length=10)
+    priority: str = Field(default="medium", pattern="^(low|medium|high)$")
+    vehicle_id: Optional[str] = None
+    category: str = Field(default="general", pattern="^(general|service|billing|technical|other)$")
+
+@router.get("/tickets")
+async def get_customer_tickets(
+    session_token: str = Depends(get_session_token_from_request),
+    status: Optional[str] = None,
+    limit: int = 50
+):
+    """Get customer's service tickets/requests"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
+    
+    # Build query
+    query = {"customer_id": contact_id}
+    if status:
+        query["status"] = status
+    
+    # Get tickets
+    tickets = await db["tickets"].find(
+        query,
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    return {"code": 0, "tickets": tickets, "count": len(tickets)}
+
+
+@router.get("/tickets/{ticket_id}")
+async def get_ticket_detail(
+    ticket_id: str,
+    session_token: str = Depends(get_session_token_from_request)
+):
+    """Get ticket details for customer"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
+    
+    ticket = await db["tickets"].find_one(
+        {"ticket_id": ticket_id, "customer_id": contact_id},
+        {"_id": 0}
+    )
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    # Get ticket updates/comments (customer-visible only)
+    updates = await db["ticket_updates"].find(
+        {"ticket_id": ticket_id, "visible_to_customer": {"$ne": False}},
+        {"_id": 0}
+    ).sort("created_at", 1).to_list(100)
+    
+    ticket["updates"] = updates
+    
+    return {"code": 0, "ticket": ticket}
+
+
+@router.post("/tickets")
+async def create_support_request(
+    request_data: SupportRequestCreate,
+    session_token: str = Depends(get_session_token_from_request)
+):
+    """Create a new support/service request from customer portal"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
+    
+    # Get contact info
+    contact = await contacts_collection.find_one({"contact_id": contact_id})
+    if not contact:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    
+    # Generate ticket ID
+    ticket_count = await db["tickets"].count_documents({})
+    ticket_id = f"TKT-{str(ticket_count + 1).zfill(6)}"
+    
+    now = datetime.now(timezone.utc)
+    ticket = {
+        "ticket_id": ticket_id,
+        "customer_id": contact_id,
+        "customer_name": contact.get("display_name", contact.get("first_name", "")),
+        "customer_email": contact.get("email", ""),
+        "customer_phone": contact.get("phone", ""),
+        "subject": request_data.subject,
+        "description": request_data.description,
+        "priority": request_data.priority,
+        "category": request_data.category,
+        "vehicle_id": request_data.vehicle_id,
+        "status": "open",
+        "source": "customer_portal",
+        "created_at": now,
+        "updated_at": now,
+        "organization_id": contact.get("organization_id"),
+    }
+    
+    await db["tickets"].insert_one(ticket)
+    ticket.pop("_id", None)
+    
+    return {"code": 0, "ticket": ticket, "message": f"Support request {ticket_id} created successfully"}
+
+
+@router.post("/tickets/{ticket_id}/comment")
+async def add_ticket_comment(
+    ticket_id: str,
+    comment: str = Query(..., min_length=1),
+    session_token: str = Depends(get_session_token_from_request)
+):
+    """Add a comment to a ticket from customer portal"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
+    
+    ticket = await db["tickets"].find_one({"ticket_id": ticket_id, "customer_id": contact_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    now = datetime.now(timezone.utc)
+    update = {
+        "update_id": f"UPD-{uuid.uuid4().hex[:8].upper()}",
+        "ticket_id": ticket_id,
+        "comment": comment,
+        "author": "Customer",
+        "author_type": "customer",
+        "visible_to_customer": True,
+        "created_at": now
+    }
+    
+    await db["ticket_updates"].insert_one(update)
+    
+    # Update ticket timestamp
+    await db["tickets"].update_one(
+        {"ticket_id": ticket_id},
+        {"$set": {"updated_at": now}}
+    )
+    
+    return {"code": 0, "message": "Comment added successfully"}
+
+
+# ========================= VEHICLES =========================
+
+@router.get("/vehicles")
+async def get_customer_vehicles(
+    session_token: str = Depends(get_session_token_from_request)
+):
+    """Get customer's registered vehicles"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
+    
+    vehicles = await db["vehicles"].find(
+        {"customer_id": contact_id},
+        {"_id": 0}
+    ).to_list(50)
+    
+    return {"code": 0, "vehicles": vehicles}
+
+
+# ========================= DOCUMENTS =========================
+
+@router.get("/documents")
+async def get_customer_documents(
+    session_token: str = Depends(get_session_token_from_request),
+    doc_type: Optional[str] = None
+):
+    """Get documents shared with customer (invoices, reports, etc.)"""
+    session = await get_portal_session(session_token)
+    contact_id = session["contact_id"]
+    
+    query = {"contact_id": contact_id, "shared_with_customer": True}
+    if doc_type:
+        query["document_type"] = doc_type
+    
+    documents = await db["documents"].find(
+        query,
+        {"_id": 0, "file_content": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return {"code": 0, "documents": documents}
