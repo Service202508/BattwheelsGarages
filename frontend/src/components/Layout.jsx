@@ -192,6 +192,7 @@ const navItems = [
     icon: Settings,
     defaultOpen: false,
     items: [
+      { name: "All Settings", path: "/all-settings", icon: Settings, adminOnly: true },
       { name: "Organization", path: "/organization-settings", icon: Building2, adminOnly: true },
       { name: "Taxes", path: "/taxes", icon: Percent, adminOnly: true },
       { name: "Users", path: "/users", icon: Users, adminOnly: true },
