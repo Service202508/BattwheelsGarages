@@ -169,6 +169,55 @@ const ElectricVehicles = () => {
 
   const hasActiveFilters = filters.vehicleType || filters.oem || filters.condition || filters.minPrice || filters.maxPrice;
 
+  // Open callback modal for a vehicle
+  const openCallbackModal = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    setCallbackForm({ name: '', phone: '', preferred_time: '', message: '' });
+    setShowCallbackModal(true);
+  };
+
+  // Handle callback form submission
+  const handleCallbackSubmit = async (e) => {
+    e.preventDefault();
+    if (!callbackForm.name || !callbackForm.phone || !callbackForm.preferred_time) {
+      toast({ title: "Please fill all required fields", variant: "destructive" });
+      return;
+    }
+    
+    setSubmittingCallback(true);
+    try {
+      const response = await fetch(`${API_URL}/api/callbacks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...callbackForm,
+          vehicle_id: selectedVehicle?.id,
+          vehicle_name: selectedVehicle?.name,
+          vehicle_slug: selectedVehicle?.slug
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        toast({ 
+          title: "Callback Request Submitted!", 
+          description: "Our team will contact you within 24 hours.",
+        });
+        setShowCallbackModal(false);
+      } else {
+        throw new Error(data.message || 'Failed to submit');
+      }
+    } catch (error) {
+      toast({ 
+        title: "Failed to submit request", 
+        description: "Please try again or call us directly.",
+        variant: "destructive" 
+      });
+    } finally {
+      setSubmittingCallback(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 relative">
       <GearBackground variant="industries" />
