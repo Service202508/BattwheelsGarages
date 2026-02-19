@@ -5039,6 +5039,16 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Data Management Routes (Sanitization & Zoho Sync)
+try:
+    from routes.data_management import router as data_management_router
+    api_router.include_router(data_management_router)
+    logger.info("Data Management routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Data Management routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
