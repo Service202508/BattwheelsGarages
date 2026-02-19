@@ -942,19 +942,28 @@ export default function EstimateItemsPanel({
                         <Button 
                           variant="ghost" 
                           size="icon"
+                          data-testid={`edit-item-${item.line_item_id}`}
                           onClick={() => {
                             setSelectedLineItem({ ...item });
                             setEditDialogOpen(true);
                           }}
+                          disabled={deleteLoading === item.line_item_id}
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button 
                           variant="ghost" 
                           size="icon"
+                          data-testid={`remove-item-${item.line_item_id}`}
                           onClick={() => handleDeleteLineItem(item.line_item_id)}
+                          disabled={deleteLoading === item.line_item_id}
+                          className="hover:bg-destructive/10"
                         >
-                          <Trash2 className="h-4 w-4 text-destructive" />
+                          {deleteLoading === item.line_item_id ? (
+                            <RefreshCw className="h-4 w-4 animate-spin text-destructive" />
+                          ) : (
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          )}
                         </Button>
                       </div>
                     </TableCell>
