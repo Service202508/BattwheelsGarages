@@ -166,7 +166,14 @@ async def create_ticket(data: TicketCreateRequest, request: Request):
     service = get_service()
     user = await get_current_user(request, service.db)
     
-    create_data = TicketCreateData(**data.model_dump())
+    # Get org context for multi-tenant scoping
+    try:
+        from core.org import get_org_id_from_request
+        org_id = await get_org_id_from_request(request)
+    except Exception:
+        org_id = None
+    
+    create_data = TicketCreateData(**data.model_dump(), organization_id=org_id)
     
     ticket = await service.create_ticket(
         data=create_data,
