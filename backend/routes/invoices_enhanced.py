@@ -1,7 +1,7 @@
 # Enhanced Invoices Module - Full Zoho Books Invoice Management
 # Comprehensive invoicing with payment tracking, partial payments, credits, recurring, and GST compliance
 
-from fastapi import APIRouter, HTTPException, Query, BackgroundTasks, UploadFile, File
+from fastapi import APIRouter, HTTPException, Query, BackgroundTasks, UploadFile, File, Request
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
@@ -38,6 +38,22 @@ invoice_share_links_collection = db["invoice_share_links"]
 contacts_collection = db["contacts_enhanced"]
 items_collection = db["items"]
 recurring_invoices_collection = db["recurring_invoices"]
+
+# Multi-tenant helpers
+async def get_org_id(request: Request) -> Optional[str]:
+    """Get organization ID from request for multi-tenant scoping"""
+    try:
+        from core.org import get_org_id_from_request
+        return await get_org_id_from_request(request)
+    except Exception:
+        return None
+
+def org_query(org_id: Optional[str], base_query: dict = None) -> dict:
+    """Add org_id to query if available"""
+    query = base_query or {}
+    if org_id:
+        query["organization_id"] = org_id
+    return query
 
 # Constants
 MAX_ATTACHMENTS_PER_INVOICE = 5
