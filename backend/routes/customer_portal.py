@@ -134,7 +134,7 @@ async def portal_login(login: PortalLogin):
     }
 
 @router.post("/logout")
-async def portal_logout(session_token: str):
+async def portal_logout(session_token: str = Depends(get_session_token_from_request)):
     """Logout from portal"""
     await portal_sessions_collection.update_one(
         {"session_token": session_token},
@@ -143,7 +143,7 @@ async def portal_logout(session_token: str):
     return {"code": 0, "message": "Logged out successfully"}
 
 @router.get("/session")
-async def get_session_info(session_token: str):
+async def get_session_info(session_token: str = Depends(get_session_token_from_request)):
     """Get current session info"""
     session = await get_portal_session(session_token)
     return {"code": 0, "session": session}
@@ -226,7 +226,7 @@ async def get_portal_dashboard(session_token: str = Depends(get_session_token_fr
 
 @router.get("/invoices")
 async def get_portal_invoices(
-    session_token: str,
+    session_token: str = Depends(get_session_token_from_request),
     status: Optional[str] = None,
     page: int = 1,
     per_page: int = 20
@@ -255,7 +255,7 @@ async def get_portal_invoices(
     }
 
 @router.get("/invoices/{invoice_id}")
-async def get_portal_invoice_detail(session_token: str, invoice_id: str):
+async def get_portal_invoice_detail(invoice_id: str, session_token: str = Depends(get_session_token_from_request)):
     """Get invoice details for portal"""
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
@@ -294,7 +294,7 @@ async def get_portal_invoice_detail(session_token: str, invoice_id: str):
 
 @router.get("/estimates")
 async def get_portal_estimates(
-    session_token: str,
+    session_token: str = Depends(get_session_token_from_request),
     status: Optional[str] = None,
     page: int = 1,
     per_page: int = 20
@@ -323,7 +323,7 @@ async def get_portal_estimates(
     }
 
 @router.get("/estimates/{estimate_id}")
-async def get_portal_estimate_detail(session_token: str, estimate_id: str):
+async def get_portal_estimate_detail(estimate_id: str, session_token: str = Depends(get_session_token_from_request)):
     """Get estimate details for portal"""
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
@@ -345,7 +345,7 @@ async def get_portal_estimate_detail(session_token: str, estimate_id: str):
     return {"code": 0, "estimate": estimate}
 
 @router.post("/estimates/{estimate_id}/accept")
-async def accept_portal_estimate(session_token: str, estimate_id: str):
+async def accept_portal_estimate(estimate_id: str, session_token: str = Depends(get_session_token_from_request)):
     """Accept an estimate from portal"""
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
@@ -369,7 +369,7 @@ async def accept_portal_estimate(session_token: str, estimate_id: str):
     return {"code": 0, "message": "Estimate accepted"}
 
 @router.post("/estimates/{estimate_id}/decline")
-async def decline_portal_estimate(session_token: str, estimate_id: str, reason: str = ""):
+async def decline_portal_estimate(estimate_id: str, reason: str = "", session_token: str = Depends(get_session_token_from_request)):
     """Decline an estimate from portal"""
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
