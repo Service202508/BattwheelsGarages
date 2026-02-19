@@ -280,14 +280,14 @@ const StartTimerDialog = ({ open, onClose, onStart, tickets, currentUser }) => {
           <div>
             <Label>Link to Ticket (Optional)</Label>
             <Select
-              value={formData.ticket_id}
-              onValueChange={(v) => setFormData({ ...formData, ticket_id: v })}
+              value={formData.ticket_id || "__none__"}
+              onValueChange={(v) => setFormData({ ...formData, ticket_id: v === "__none__" ? "" : v })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select ticket" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
+                <SelectItem value="__none__">None</SelectItem>
                 {tickets.map((ticket) => (
                   <SelectItem key={ticket.ticket_id} value={ticket.ticket_id}>
                     {ticket.issue?.substring(0, 40) || ticket.ticket_id}
