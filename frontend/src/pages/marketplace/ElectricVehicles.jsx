@@ -689,7 +689,7 @@ const ElectricVehicles = () => {
 };
 
 // Vehicle Card Component
-const VehicleCard = ({ vehicle }) => {
+const VehicleCard = ({ vehicle, onRequestCallback }) => {
   const brand = oemBrands[vehicle.brand] || { bg: 'bg-gray-500' };
   const typeConfig = vehicleTypeConfig[vehicle.vehicle_category] || { icon: Bike };
   const TypeIcon = typeConfig.icon || Bike;
