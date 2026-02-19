@@ -59,7 +59,7 @@ class TestRunner:
         print("\n=== Test: Quote to Invoice Workflow ===")
         
         # Step 1: Get a customer
-        response = requests.get(f"{BASE_URL}/contacts-v2/?per_page=1", headers=self.headers())
+        response = requests.get(f"{BASE_URL}/contacts-enhanced/?per_page=1", headers=self.headers())
         if response.status_code != 200 or not response.json().get("contacts"):
             print("  ❌ No customers found")
             return False
@@ -120,7 +120,7 @@ class TestRunner:
         print("\n=== Test: Invoice Payment Workflow ===")
         
         # Step 1: Get customer
-        response = requests.get(f"{BASE_URL}/contacts-v2/?per_page=1", headers=self.headers())
+        response = requests.get(f"{BASE_URL}/contacts-enhanced/?per_page=1", headers=self.headers())
         customer_id = response.json()["contacts"][0]["contact_id"]
         
         # Step 2: Create invoice
@@ -358,7 +358,7 @@ class TestRunner:
         print("\n=== Test: Invoice Void Workflow ===")
         
         # Get customer
-        response = requests.get(f"{BASE_URL}/contacts-v2/?per_page=1", headers=self.headers())
+        response = requests.get(f"{BASE_URL}/contacts-enhanced/?per_page=1", headers=self.headers())
         customer_id = response.json()["contacts"][0]["contact_id"]
         
         # Create invoice
@@ -400,7 +400,7 @@ class TestRunner:
         print("\n=== Test: Calculation Parity ===")
         
         # Get customer
-        response = requests.get(f"{BASE_URL}/contacts-v2/?per_page=1", headers=self.headers())
+        response = requests.get(f"{BASE_URL}/contacts-enhanced/?per_page=1", headers=self.headers())
         customer_id = response.json()["contacts"][0]["contact_id"]
         
         # Create invoice with known values
