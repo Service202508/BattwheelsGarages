@@ -109,10 +109,12 @@ export default function EstimateItemsPanel({
   const canUnlock = isAdmin; // Only admin can unlock
   
   // Fetch or create estimate
-  const ensureEstimate = useCallback(async () => {
+  const ensureEstimate = useCallback(async (showLoadingSpinner = true) => {
     if (!ticket?.ticket_id) return;
     
-    setLoading(true);
+    if (showLoadingSpinner) {
+      setLoading(true);
+    }
     setError(null);
     
     try {
