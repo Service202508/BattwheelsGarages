@@ -500,22 +500,6 @@ async def list_batch_numbers(
         "page_context": {"page": page, "per_page": per_page, "total": total}
     }
 
-@router.get("/batches/{batch_id}")
-async def get_batch_number(batch_id: str):
-    """Get batch number details with history"""
-    batch = await batch_numbers_collection.find_one({"batch_id": batch_id}, {"_id": 0})
-    if not batch:
-        raise HTTPException(status_code=404, detail="Batch number not found")
-    
-    # Get history
-    history = await tracking_history_collection.find(
-        {"tracking_id": batch_id},
-        {"_id": 0}
-    ).sort("timestamp", -1).to_list(50)
-    
-    batch["history"] = history
-    return {"code": 0, "batch": batch}
-
 @router.get("/batches/expiring")
 async def get_expiring_batches(days: int = 30):
     """Get batches expiring within specified days"""
@@ -532,6 +516,22 @@ async def get_expiring_batches(days: int = 30):
         batch["days_to_expiry"] = max(0, days_to_expiry)
     
     return {"code": 0, "expiring_batches": batches, "total": len(batches)}
+
+@router.get("/batches/{batch_id}")
+async def get_batch_number(batch_id: str):
+    """Get batch number details with history"""
+    batch = await batch_numbers_collection.find_one({"batch_id": batch_id}, {"_id": 0})
+    if not batch:
+        raise HTTPException(status_code=404, detail="Batch number not found")
+    
+    # Get history
+    history = await tracking_history_collection.find(
+        {"tracking_id": batch_id},
+        {"_id": 0}
+    ).sort("timestamp", -1).to_list(50)
+    
+    batch["history"] = history
+    return {"code": 0, "batch": batch}
 
 @router.put("/batches/{batch_id}/quantity")
 async def adjust_batch_quantity(batch_id: str, quantity_change: float, reason: str = ""):
