@@ -142,6 +142,9 @@ export default function EstimateItemsPanel({
     hsn_code: "",
   });
   
+  // Selected part stock info (for add item dialog)
+  const [selectedPartStock, setSelectedPartStock] = useState(null);
+  
   // Parts catalog search
   const [itemSearch, setItemSearch] = useState("");
   const [catalogItems, setCatalogItems] = useState([]);
