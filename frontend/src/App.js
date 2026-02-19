@@ -71,6 +71,7 @@ import ActivityLogs from "@/pages/ActivityLogs";
 import ZohoSync from "@/pages/ZohoSync";
 import OrganizationSettings from "@/pages/OrganizationSettings";
 import AllSettings from "@/pages/AllSettings";
+import DataManagement from "@/pages/DataManagement";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 import PublicQuoteView from "@/pages/PublicQuoteView";
