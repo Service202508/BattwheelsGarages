@@ -553,6 +553,137 @@ const ElectricVehicles = () => {
           </div>
         </div>
       )}
+
+      {/* Request Callback Modal */}
+      {showCallbackModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowCallbackModal(false)}>
+          <div 
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-amber-500 to-orange-600 p-6 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <PhoneCall className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold">Request Callback</h3>
+                    <p className="text-amber-100 text-sm">We&apos;ll call you within 24 hours</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowCallbackModal(false)}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              {selectedVehicle && (
+                <div className="mt-4 p-3 bg-white/10 rounded-xl">
+                  <p className="text-sm text-amber-100">Interested in:</p>
+                  <p className="font-semibold">{selectedVehicle.name}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleCallbackSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <User className="w-4 h-4 inline mr-1.5" />
+                  Your Name *
+                </label>
+                <input
+                  type="text"
+                  value={callbackForm.name}
+                  onChange={(e) => setCallbackForm(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Enter your full name"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+                  required
+                  data-testid="callback-name-input"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <Phone className="w-4 h-4 inline mr-1.5" />
+                  Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  value={callbackForm.phone}
+                  onChange={(e) => setCallbackForm(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="Enter 10-digit mobile number"
+                  pattern="[0-9]{10}"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+                  required
+                  data-testid="callback-phone-input"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <Clock className="w-4 h-4 inline mr-1.5" />
+                  Preferred Time *
+                </label>
+                <select
+                  value={callbackForm.preferred_time}
+                  onChange={(e) => setCallbackForm(prev => ({ ...prev, preferred_time: e.target.value }))}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all bg-white"
+                  required
+                  data-testid="callback-time-select"
+                >
+                  <option value="">Select a time slot</option>
+                  <option value="9am-12pm">Morning (9 AM - 12 PM)</option>
+                  <option value="12pm-3pm">Afternoon (12 PM - 3 PM)</option>
+                  <option value="3pm-6pm">Evening (3 PM - 6 PM)</option>
+                  <option value="6pm-9pm">Night (6 PM - 9 PM)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <MessageSquare className="w-4 h-4 inline mr-1.5" />
+                  Message (Optional)
+                </label>
+                <textarea
+                  value={callbackForm.message}
+                  onChange={(e) => setCallbackForm(prev => ({ ...prev, message: e.target.value }))}
+                  placeholder="Any specific questions or requirements?"
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all resize-none"
+                  data-testid="callback-message-input"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={submittingCallback}
+                className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white py-3.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                data-testid="callback-submit-btn"
+              >
+                {submittingCallback ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <PhoneCall className="w-5 h-5" />
+                    Request Callback
+                  </>
+                )}
+              </button>
+
+              <p className="text-xs text-gray-500 text-center">
+                By submitting, you agree to be contacted by our sales team
+              </p>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
