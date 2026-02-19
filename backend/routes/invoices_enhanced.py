@@ -155,7 +155,21 @@ class BulkActionRequest(BaseModel):
     invoice_ids: List[str]
     action: str  # send, void, mark_paid, delete
 
+class InvoiceCommentCreate(BaseModel):
+    comment: str = Field(..., min_length=1, max_length=2000)
+    is_internal: bool = True  # Internal notes vs customer-visible
+
+class InvoiceShareConfig(BaseModel):
+    expiry_days: int = 30
+    allow_payment: bool = True
+    password_protected: bool = False
+    password: str = ""
+
 # ========================= HELPER FUNCTIONS =========================
+
+def generate_share_token() -> str:
+    """Generate a secure share token for public links"""
+    return secrets.token_urlsafe(32)
 
 def generate_id(prefix: str) -> str:
     return f"{prefix}-{uuid.uuid4().hex[:12].upper()}"
