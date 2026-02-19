@@ -31,7 +31,35 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ---
 
-## Latest Updates (Feb 19, 2026 - Session 68)
+## Latest Updates (Feb 19, 2026 - Session 69)
+
+### NEW FEATURE: Visual Inventory Stock Indicator on Estimate Panel
+**Status:** IMPLEMENTED & TESTED (100% pass rate - 9/9 tests)
+**Location:** `/app/frontend/src/components/EstimateItemsPanel.jsx`
+
+**Features:**
+1. **Stock Column in Line Items Table** - New column showing inventory status for parts
+2. **Color-Coded Status Indicators:**
+   - Green (CheckCircle) - In stock (available > reorder_level)
+   - Yellow (AlertTriangle) - Low stock (available ≤ reorder_level)
+   - Orange (AlertTriangle) - Insufficient (requested qty > available)
+   - Red (XCircle) - Out of stock (available = 0)
+3. **Stock Info in Parts Catalog** - Dropdown shows stock count badge when searching
+4. **Stock Info in Add Item Dialog** - After selecting a part, shows available stock with warnings
+5. **Labour/Fee Items** - Show "—" dash in Stock column (no inventory tracking)
+
+**Backend Changes:**
+- Added `_enrich_line_items_with_stock()` method to ticket_estimate_service.py
+- Enriches parts with stock_info from items and items_enhanced collections
+- Returns stock_info object with: available_stock, reserved_stock, total_stock, reorder_level, status
+
+**Files Modified:**
+- `/app/frontend/src/components/EstimateItemsPanel.jsx` - Added StockIndicator component and Stock column
+- `/app/backend/services/ticket_estimate_service.py` - Added stock enrichment for line items
+
+---
+
+## Previous Updates (Feb 19, 2026 - Session 68)
 
 ### BUG FIX: Job Card Estimate Items Panel - Loading State & UI Issues
 **Status:** FIXED & TESTED (100% pass rate - 9/9 tests)
