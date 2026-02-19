@@ -272,14 +272,14 @@ const UploadDialog = ({ open, onClose, onUpload, folders }) => {
           <div>
             <Label>Folder</Label>
             <Select
-              value={formData.folder_id}
-              onValueChange={(v) => setFormData({ ...formData, folder_id: v })}
+              value={formData.folder_id || "__root__"}
+              onValueChange={(v) => setFormData({ ...formData, folder_id: v === "__root__" ? "" : v })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select folder" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Root</SelectItem>
+                <SelectItem value="__root__">Root</SelectItem>
                 {folders.map((folder) => (
                   <SelectItem key={folder.folder_id} value={folder.folder_id}>
                     {folder.name}
