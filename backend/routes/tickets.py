@@ -203,6 +203,13 @@ async def list_tickets(
     service = get_service()
     user = await get_current_user(request, service.db)
     
+    # Get org context for multi-tenant scoping
+    try:
+        from core.org import get_org_id_from_request
+        org_id = await get_org_id_from_request(request)
+    except Exception:
+        org_id = None
+    
     result = await service.list_tickets(
         user_id=user.get("user_id"),
         user_role=user.get("role"),
@@ -210,7 +217,8 @@ async def list_tickets(
         priority=priority,
         category=category,
         limit=limit,
-        skip=skip
+        skip=skip,
+        organization_id=org_id
     )
     
     return result
