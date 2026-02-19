@@ -335,10 +335,51 @@ export default function OrganizationSettings({ user }) {
             Manage your organization profile, settings, and team members
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={fetchData}>
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Import Settings */}
+          <input
+            type="file"
+            id="import-settings-file"
+            accept=".json"
+            onChange={importSettings}
+            className="hidden"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => document.getElementById("import-settings-file")?.click()}
+            disabled={importing}
+            data-testid="import-settings-btn"
+          >
+            {importing ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Upload className="h-4 w-4 mr-2" />
+            )}
+            Import
+          </Button>
+          
+          {/* Export Settings */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={exportSettings}
+            disabled={exporting}
+            data-testid="export-settings-btn"
+          >
+            {exporting ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4 mr-2" />
+            )}
+            Export
+          </Button>
+          
+          <Button variant="outline" size="sm" onClick={fetchData}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Organization Info Card */}
