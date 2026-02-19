@@ -246,7 +246,7 @@ export default function Accountant() {
     }
     
     try {
-      const res = await fetch(`${API}/banking/journal-entries/`, {
+      const res = await fetch(`${API}/banking/journal-entries`, {
         method: "POST",
         headers,
         body: JSON.stringify(journalForm)
