@@ -854,6 +854,41 @@ export default function EstimateItemsPanel({
                           </Command>
                         </PopoverContent>
                       </Popover>
+                      
+                      {/* Show stock info for selected part */}
+                      {selectedPartStock && newItem.item_id && (
+                        <div className={`flex items-center gap-2 p-2 rounded-md text-sm ${
+                          selectedPartStock.available_stock <= 0 
+                            ? "bg-red-50 text-red-700"
+                            : newItem.qty > selectedPartStock.available_stock
+                              ? "bg-orange-50 text-orange-700"
+                              : selectedPartStock.available_stock <= selectedPartStock.reorder_level
+                                ? "bg-yellow-50 text-yellow-700"
+                                : "bg-green-50 text-green-700"
+                        }`}>
+                          {selectedPartStock.available_stock <= 0 ? (
+                            <>
+                              <XCircle className="h-4 w-4" />
+                              <span>Out of stock</span>
+                            </>
+                          ) : newItem.qty > selectedPartStock.available_stock ? (
+                            <>
+                              <AlertTriangle className="h-4 w-4" />
+                              <span>Only {selectedPartStock.available_stock} available (requesting {newItem.qty})</span>
+                            </>
+                          ) : selectedPartStock.available_stock <= selectedPartStock.reorder_level ? (
+                            <>
+                              <AlertTriangle className="h-4 w-4" />
+                              <span>Low stock: {selectedPartStock.available_stock} available</span>
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle2 className="h-4 w-4" />
+                              <span>{selectedPartStock.available_stock} in stock</span>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                   
