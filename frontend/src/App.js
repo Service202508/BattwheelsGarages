@@ -69,6 +69,7 @@ import OpeningBalances from "@/pages/OpeningBalances";
 import ExchangeRates from "@/pages/ExchangeRates";
 import ActivityLogs from "@/pages/ActivityLogs";
 import ZohoSync from "@/pages/ZohoSync";
+import OrganizationSettings from "@/pages/OrganizationSettings";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 import PublicQuoteView from "@/pages/PublicQuoteView";
