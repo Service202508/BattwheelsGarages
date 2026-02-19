@@ -151,17 +151,25 @@ async def get_session_info(session_token: str):
 # ========================= DASHBOARD =========================
 
 @router.get("/dashboard")
-async def get_portal_dashboard(session_token: str):
+async def get_portal_dashboard(session_token: str = Depends(get_session_token_from_request)):
     """Get customer portal dashboard summary"""
     session = await get_portal_session(session_token)
     contact_id = session["contact_id"]
     
-    # Get invoice stats
-    total_invoices = await invoices_collection.count_documents({
-        "customer_id": contact_id, "status": {"$ne": "void"}
-    })
+    # Get invoice stats - also check zoho_contact_id
+    query_filter = {
+        "$or": [
+            {"customer_id": contact_id},
+            {"zoho_contact_id": contact_id},
+            {"contact_id": contact_id}
+        ],
+        "status": {"$ne": "void"}
+    }
+    
+    total_invoices = await invoices_collection.count_documents(query_filter)
     pending_invoices = await invoices_collection.count_documents({
-        "customer_id": contact_id, "status": {"$in": ["sent", "overdue", "partially_paid"]}
+        **query_filter,
+        "status": {"$in": ["sent", "overdue", "partially_paid"]}
     })
     overdue_invoices = await invoices_collection.count_documents({
         "customer_id": contact_id, "status": "overdue"
