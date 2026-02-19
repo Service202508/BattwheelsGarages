@@ -20,12 +20,12 @@ DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
-# Collections
-contacts_collection = db["contacts_enhanced"]
-invoices_collection = db["invoices_enhanced"]
-estimates_collection = db["estimates_enhanced"]
-salesorders_collection = db["salesorders_enhanced"]
-payments_collection = db["invoice_payments"]
+# Collections - Use main collections with Zoho-synced data
+contacts_collection = db["contacts"]
+invoices_collection = db["invoices"]
+estimates_collection = db["estimates"]
+salesorders_collection = db["salesorders"]
+payments_collection = db["customerpayments"]
 portal_sessions_collection = db["portal_sessions"]
 
 # ========================= MODELS =========================
