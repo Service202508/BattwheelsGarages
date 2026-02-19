@@ -287,6 +287,32 @@ async def list_warehouses(active_only: bool = True):
     warehouses = await warehouses_collection.find(query, {"_id": 0}).to_list(100)
     return {"code": 0, "warehouses": warehouses}
 
+@router.get("/stock")
+async def get_stock(warehouse_id: str = None):
+    """Get stock items, optionally filtered by warehouse"""
+    query = {}
+    if warehouse_id:
+        query["warehouse_id"] = warehouse_id
+    
+    pipeline = [
+        {"$match": query},
+        {"$lookup": {"from": "items_enhanced", "localField": "item_id", "foreignField": "item_id", "as": "item"}},
+        {"$unwind": {"path": "$item", "preserveNullAndEmptyArrays": True}},
+        {"$project": {
+            "_id": 0,
+            "item_id": 1,
+            "warehouse_id": 1,
+            "item_name": "$item.name",
+            "sku": "$item.sku",
+            "available_stock": 1,
+            "reserved_stock": 1,
+            "unit": "$item.unit"
+        }}
+    ]
+    stock_items = await stock_locations_collection.aggregate(pipeline).to_list(1000)
+    
+    return {"code": 0, "stock": stock_items}
+
 @router.get("/warehouses/{warehouse_id}")
 async def get_warehouse(warehouse_id: str):
     """Get warehouse details with stock summary"""
