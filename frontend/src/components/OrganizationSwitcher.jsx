@@ -37,6 +37,14 @@ const roleBadgeColors = {
   viewer: "bg-gray-500/20 text-gray-400",
 };
 
+const industryTypes = [
+  { value: "ev_garage", label: "EV Garage" },
+  { value: "fleet_operator", label: "Fleet Operator" },
+  { value: "oem_service", label: "OEM Service Center" },
+  { value: "multi_brand", label: "Multi-Brand Service" },
+  { value: "franchise", label: "Franchise" },
+];
+
 export default function OrganizationSwitcher({ compact = false }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -44,6 +52,16 @@ export default function OrganizationSwitcher({ compact = false }) {
   const [currentOrg, setCurrentOrg] = useState(null);
   const [organizations, setOrganizations] = useState([]);
   const [open, setOpen] = useState(false);
+  
+  // Create org dialog state
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [newOrgForm, setNewOrgForm] = useState({
+    name: "",
+    industry_type: "ev_garage",
+    email: "",
+    phone: "",
+  });
 
   const getAuthHeaders = useCallback(() => {
     const token = localStorage.getItem("token");
@@ -52,6 +70,42 @@ export default function OrganizationSwitcher({ compact = false }) {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
   }, []);
+
+  // Create new organization
+  const createOrganization = async () => {
+    if (!newOrgForm.name.trim()) {
+      toast.error("Organization name is required");
+      return;
+    }
+    
+    setCreating(true);
+    try {
+      const res = await fetch(`${API}/org`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(newOrgForm),
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(`Created organization: ${data.name}`);
+        setCreateDialogOpen(false);
+        setNewOrgForm({ name: "", industry_type: "ev_garage", email: "", phone: "" });
+        // Refresh and switch to new org
+        await fetchOrganizations();
+        if (data.organization_id) {
+          await switchOrganization(data.organization_id);
+        }
+      } else {
+        const error = await res.json();
+        toast.error(error.detail || "Failed to create organization");
+      }
+    } catch (error) {
+      toast.error("Failed to create organization");
+    } finally {
+      setCreating(false);
+    }
+  };
 
   // Fetch organizations
   const fetchOrganizations = useCallback(async () => {
