@@ -513,6 +513,69 @@ export default function EstimatesEnhanced() {
     } catch (e) { toast.error("Error performing bulk action"); }
   };
 
+  // ========================= EDIT ESTIMATE =========================
+  const handleOpenEdit = (estimate) => {
+    setEditEstimate({
+      estimate_id: estimate.estimate_id,
+      reference_number: estimate.reference_number || "",
+      estimate_date: estimate.estimate_date || "",
+      expiry_date: estimate.expiry_date || "",
+      payment_terms: estimate.payment_terms || 30,
+      line_items: estimate.line_items || [],
+      discount_type: estimate.discount_type || "percentage",
+      discount_value: estimate.discount_value || 0,
+      shipping_charge: estimate.shipping_charge || 0,
+      customer_notes: estimate.customer_notes || "",
+      terms_conditions: estimate.terms_conditions || "",
+      adjustment: estimate.adjustment || 0
+    });
+    setShowEditDialog(true);
+  };
+
+  const updateEditLineItem = (index, field, value) => {
+    setEditEstimate(prev => {
+      const updated = [...prev.line_items];
+      updated[index] = { ...updated[index], [field]: value };
+      return { ...prev, line_items: updated };
+    });
+  };
+
+  const addEditLineItem = () => {
+    setEditEstimate(prev => ({
+      ...prev,
+      line_items: [...prev.line_items, { name: "", description: "", quantity: 1, rate: 0, tax_percentage: 18, unit: "pcs" }]
+    }));
+  };
+
+  const removeEditLineItem = (index) => {
+    setEditEstimate(prev => ({
+      ...prev,
+      line_items: prev.line_items.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleUpdateEstimate = async () => {
+    if (!editEstimate) return;
+    try {
+      const res = await fetch(`${API}/estimates-enhanced/${editEstimate.estimate_id}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(editEstimate)
+      });
+      if (res.ok) {
+        toast.success("Estimate updated successfully");
+        setShowEditDialog(false);
+        fetchEstimateDetail(editEstimate.estimate_id);
+        fetchData();
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || "Failed to update estimate");
+      }
+    } catch (e) {
+      toast.error("Error updating estimate");
+    }
+  };
+
   // Custom Fields Functions
   const fetchCustomFields = async () => {
     try {
