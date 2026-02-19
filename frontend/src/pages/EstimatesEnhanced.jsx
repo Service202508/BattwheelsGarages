@@ -1501,6 +1501,17 @@ export default function EstimatesEnhanced() {
 
                 {/* Actions */}
                 <div className="flex flex-wrap gap-2">
+                  {/* Edit - Only for draft estimates */}
+                  {selectedEstimate.status === "draft" && (
+                    <Button 
+                      variant="outline" 
+                      onClick={() => handleOpenEdit(selectedEstimate)}
+                      data-testid="edit-estimate-btn"
+                    >
+                      <Edit className="h-4 w-4 mr-1" /> Edit
+                    </Button>
+                  )}
+                  
                   {/* Primary Status Actions */}
                   {selectedEstimate.status === "draft" && (
                     <>
