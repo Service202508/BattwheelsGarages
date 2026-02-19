@@ -1547,13 +1547,55 @@ export default function EstimatesEnhanced() {
               </DialogHeader>
 
               <div className="space-y-4 py-4">
+                {/* Linked Ticket Banner - For ticket estimates */}
+                {selectedEstimate.is_ticket_estimate && selectedEstimate.ticket_id && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Ticket className="h-5 w-5 text-blue-600" />
+                      <div>
+                        <p className="text-sm font-medium text-blue-700">Linked Service Ticket</p>
+                        <p className="text-xs text-blue-600">{selectedEstimate.ticket_id}</p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => window.open(`/tickets?id=${selectedEstimate.ticket_id}`, '_blank')}
+                      className="text-blue-700 border-blue-300 hover:bg-blue-100"
+                    >
+                      <Wrench className="h-4 w-4 mr-1" />
+                      Open Job Card
+                    </Button>
+                  </div>
+                )}
+
+                {/* Lock Banner */}
+                {selectedEstimate.locked_at && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-3 flex items-center gap-2 text-orange-800">
+                    <AlertTriangle className="h-5 w-5" />
+                    <div>
+                      <p className="font-medium">Estimate Locked</p>
+                      <p className="text-xs">{selectedEstimate.lock_reason || 'Locked for editing'} - {selectedEstimate.locked_by_name}</p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Info Grid */}
                 <div className="grid grid-cols-4 gap-4 text-sm">
                   <div><p className="text-gray-500">Date</p><p className="font-medium">{selectedEstimate.date}</p></div>
-                  <div><p className="text-gray-500">Expiry</p><p className="font-medium">{selectedEstimate.expiry_date}</p></div>
+                  <div><p className="text-gray-500">Expiry</p><p className="font-medium">{selectedEstimate.expiry_date || '-'}</p></div>
                   <div><p className="text-gray-500">Reference</p><p className="font-medium">{selectedEstimate.reference_number || '-'}</p></div>
                   <div><p className="text-gray-500">GSTIN</p><p className="font-medium font-mono text-xs">{selectedEstimate.customer_gstin || '-'}</p></div>
                 </div>
+
+                {/* Vehicle Info for Ticket Estimates */}
+                {selectedEstimate.is_ticket_estimate && selectedEstimate.vehicle_number && (
+                  <div className="grid grid-cols-3 gap-4 text-sm bg-gray-50 p-3 rounded-lg">
+                    <div><p className="text-gray-500">Vehicle</p><p className="font-medium">{selectedEstimate.vehicle_number}</p></div>
+                    <div><p className="text-gray-500">Model</p><p className="font-medium">{selectedEstimate.vehicle_model || '-'}</p></div>
+                    <div><p className="text-gray-500">Technician</p><p className="font-medium">{selectedEstimate.assigned_technician_name || '-'}</p></div>
+                  </div>
+                )}
 
                 {/* Price List Info */}
                 {selectedEstimate.price_list_name && (
