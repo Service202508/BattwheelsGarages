@@ -452,6 +452,39 @@ async def lock_estimate(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/ticket-estimates/{estimate_id}/unlock")
+async def unlock_estimate(
+    estimate_id: str, 
+    request: Request
+):
+    """Unlock an estimate to allow further edits (admin only)"""
+    service = get_service()
+    org_id = await get_org_id(request)
+    user_id, user_name = await get_user_info(request)
+    
+    # Check role - only admin can unlock
+    user = await get_current_user_from_token(request)
+    if not user or user.get("role") != "admin":
+        raise HTTPException(
+            status_code=403, 
+            detail="Only admin can unlock estimates"
+        )
+    
+    try:
+        estimate = await service.unlock_estimate(
+            estimate_id=estimate_id,
+            organization_id=org_id,
+            user_id=user_id,
+            user_name=user_name
+        )
+        return {"code": 0, "estimate": estimate, "message": "Estimate unlocked"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error unlocking estimate: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/ticket-estimates/{estimate_id}/convert-to-invoice")
 async def convert_estimate_to_invoice(estimate_id: str, request: Request):
     """
