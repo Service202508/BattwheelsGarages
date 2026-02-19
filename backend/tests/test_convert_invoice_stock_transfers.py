@@ -824,6 +824,11 @@ class TestStockTransfersList:
             "line_items": [{"item_id": item_id, "quantity": 1}]
         })
         
+        if create_response.status_code == 400:
+            data = create_response.json()
+            if "insufficient" in str(data.get("detail", "")).lower():
+                pytest.skip("Could not create transfer (insufficient stock - validation working correctly)")
+        
         if create_response.status_code != 200:
             pytest.skip("Could not create test transfer")
         
