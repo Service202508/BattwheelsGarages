@@ -156,10 +156,10 @@ class TestRunner:
             return False
         print("  ✓ Marked as sent")
         
-        # Step 4: Record partial payment
+        # Step 4: Record partial payment (use /payments endpoint)
         partial_amount = total / 2
         response = requests.post(
-            f"{BASE_URL}/invoices-enhanced/{invoice_id}/record-payment",
+            f"{BASE_URL}/invoices-enhanced/{invoice_id}/payments",
             json={
                 "amount": partial_amount,
                 "payment_mode": "bank_transfer",
@@ -182,7 +182,7 @@ class TestRunner:
         
         # Step 5: Record remaining payment
         response = requests.post(
-            f"{BASE_URL}/invoices-enhanced/{invoice_id}/record-payment",
+            f"{BASE_URL}/invoices-enhanced/{invoice_id}/payments",
             json={
                 "amount": invoice["balance_due"],
                 "payment_mode": "cash",
