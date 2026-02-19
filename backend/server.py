@@ -53,6 +53,10 @@ app.include_router(admin_jobs.router)
 app.include_router(marketplace.router)
 app.include_router(marketplace_auth.router)
 
+# Include payment router
+payments.set_database(db)
+app.include_router(payments.router)
+
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
