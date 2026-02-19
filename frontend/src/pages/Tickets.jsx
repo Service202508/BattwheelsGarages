@@ -62,7 +62,6 @@ export default function Tickets({ user }) {
   const fetchTickets = useCallback(async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
       let url = `${API}/tickets`;
       const params = new URLSearchParams();
       
@@ -79,7 +78,7 @@ export default function Tickets({ user }) {
       
       const response = await fetch(url, {
         credentials: "include",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: getAuthHeaders(),
       });
       
       if (response.ok) {
@@ -121,10 +120,9 @@ export default function Tickets({ user }) {
 
   const fetchKPIs = useCallback(async () => {
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`${API}/tickets`, {
         credentials: "include",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: getAuthHeaders(),
       });
       
       if (response.ok) {
