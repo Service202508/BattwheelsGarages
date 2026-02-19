@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { API } from "@/App";
 import EFISidePanel from "./EFISidePanel";
+import EstimateItemsPanel from "./EstimateItemsPanel";
 
 const statusColors = {
   open: "bg-yellow-500",
