@@ -67,18 +67,19 @@ import NotificationBell from "@/components/NotificationBell";
 // Reorganized & cleaned navigation - removed legacy items and duplicates
 const navItems = [
   { 
-    section: "Dashboard", 
-    icon: LayoutGrid,
+    section: "Home", 
+    icon: Home,
     defaultOpen: true,
     items: [
-      { name: "Overview", path: "/dashboard", icon: LayoutDashboard },
+      { name: "Financial Overview", path: "/home", icon: Home },
+      { name: "Workshop Dashboard", path: "/dashboard", icon: LayoutDashboard },
       { name: "Data Insights", path: "/insights", icon: TrendingUp },
     ]
   },
   { 
     section: "Intelligence", 
     icon: Brain,
-    defaultOpen: true,
+    defaultOpen: false,
     items: [
       { name: "Failure Intelligence", path: "/failure-intelligence", icon: Brain },
       { name: "AI Assistant", path: "/ai-assistant", icon: Bot },
@@ -88,12 +89,13 @@ const navItems = [
   { 
     section: "Operations", 
     icon: Ticket,
-    defaultOpen: true,
+    defaultOpen: false,
     items: [
       { name: "New Ticket", path: "/tickets/new", icon: Ticket },
       { name: "All Tickets", path: "/tickets", icon: FileText },
       { name: "Vehicles", path: "/vehicles", icon: Car },
       { name: "AMC Management", path: "/amc", icon: Shield },
+      { name: "Time Tracking", path: "/time-tracking", icon: Timer },
       { name: "Alerts", path: "/alerts", icon: Bell },
     ]
   },
