@@ -113,7 +113,7 @@ async def create_order(order_data: CreateOrderRequest):
             "updated_at": datetime.now(timezone.utc)
         }
         
-        if db:
+        if db is not None:
             await db.marketplace_orders.insert_one(order_doc)
         
         return {
