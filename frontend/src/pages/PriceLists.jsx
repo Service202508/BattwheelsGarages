@@ -263,7 +263,7 @@ export default function PriceLists() {
   const openEditDialog = (pl) => {
     setSelectedPriceList(pl);
     setNewPriceList({
-      price_list_name: pl.price_list_name,
+      price_list_name: pl.price_list_name || pl.name || "",
       description: pl.description || "",
       currency_code: pl.currency_code || "INR",
       price_type: pl.price_type || "sales",
