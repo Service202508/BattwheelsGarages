@@ -43,6 +43,17 @@ class PortalPaymentRequest(BaseModel):
 def generate_session_token() -> str:
     return f"PS-{uuid.uuid4().hex}"
 
+async def get_session_token_from_request(
+    request: Request,
+    x_portal_session: Optional[str] = Header(None, alias="X-Portal-Session"),
+    session_token: Optional[str] = Query(None)
+) -> str:
+    """Extract session token from header or query parameter"""
+    token = x_portal_session or session_token
+    if not token:
+        raise HTTPException(status_code=401, detail="Session token required (X-Portal-Session header or session_token query)")
+    return token
+
 async def validate_portal_token(token: str) -> dict:
     """Validate portal token and return contact"""
     # Try to find contact with portal_token - check multiple status field formats
