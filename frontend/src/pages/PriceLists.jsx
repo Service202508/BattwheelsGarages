@@ -385,46 +385,46 @@ export default function PriceLists() {
       ) : (
         <div className="space-y-4">
           {priceLists.map(pl => (
-            <Card key={pl.price_list_id} className="hover:shadow-md transition-shadow" data-testid={`pricelist-${pl.price_list_id}`}>
+            <Card key={pl.price_list_id || pl.pricelist_id} className="hover:shadow-md transition-shadow" data-testid={`pricelist-${pl.price_list_id || pl.pricelist_id}`}>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 cursor-pointer" onClick={() => toggleExpand(pl.price_list_id)}>
+                  <div className="flex items-center gap-3 cursor-pointer" onClick={() => toggleExpand(pl.price_list_id || pl.pricelist_id)}>
                     <div className="p-2 bg-[#22EDA9]/10 rounded-lg">
                       <List className="h-5 w-5 text-[#22EDA9]" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-lg">{pl.price_list_name}</CardTitle>
-                        {expandedPriceLists[pl.price_list_id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        <CardTitle className="text-lg">{pl.price_list_name || pl.name}</CardTitle>
+                        {expandedPriceLists[pl.price_list_id || pl.pricelist_id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                       </div>
                       {pl.description && <p className="text-sm text-gray-500">{pl.description}</p>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="capitalize">{pl.price_type}</Badge>
+                    <Badge variant="outline" className="capitalize">{pl.price_type || 'sales'}</Badge>
                     {pl.is_default && <Badge className="bg-blue-100 text-blue-700">Default</Badge>}
                     <Badge variant="outline">{pl.item_count || pl.items?.length || 0} items</Badge>
                     
                     {/* Actions */}
-                    <Button size="sm" variant="outline" onClick={() => { setSelectedPriceList(pl); setShowAddItemDialog(true); }} data-testid={`add-item-${pl.price_list_id}`}>
+                    <Button size="sm" variant="outline" onClick={() => { setSelectedPriceList(pl); setShowAddItemDialog(true); }} data-testid={`add-item-${pl.price_list_id || pl.pricelist_id}`}>
                       <Plus className="h-4 w-4 mr-1" /> Add Item
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => { setSelectedPriceList(pl); setShowBulkAddDialog(true); }}>
                       <Package className="h-4 w-4 mr-1" /> Bulk Add
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleExport(pl.price_list_id)} data-testid={`export-${pl.price_list_id}`}>
+                    <Button size="sm" variant="outline" onClick={() => handleExport(pl.price_list_id || pl.pricelist_id)} data-testid={`export-${pl.price_list_id || pl.pricelist_id}`}>
                       <Download className="h-4 w-4" />
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => { setSelectedPriceList(pl); setShowImportDialog(true); }}>
                       <Upload className="h-4 w-4" />
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleSync(pl.price_list_id)} disabled={syncing}>
+                    <Button size="sm" variant="outline" onClick={() => handleSync(pl.price_list_id || pl.pricelist_id)} disabled={syncing}>
                       <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => openEditDialog(pl)}>
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button size="sm" variant="ghost" onClick={() => handleDelete(pl.price_list_id)}>
+                    <Button size="sm" variant="ghost" onClick={() => handleDelete(pl.price_list_id || pl.pricelist_id)}>
                       <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>
                   </div>
@@ -432,7 +432,7 @@ export default function PriceLists() {
               </CardHeader>
               
               {/* Expanded Items Table - Zoho Books Format */}
-              {expandedPriceLists[pl.price_list_id] && (
+              {expandedPriceLists[pl.price_list_id || pl.pricelist_id] && (
                 <CardContent>
                   {pl.items?.length > 0 ? (
                     <div className="border rounded-lg overflow-hidden">
