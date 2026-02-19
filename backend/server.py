@@ -5023,6 +5023,22 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Include Settings routes (Zoho Books-style All Settings)
+try:
+    from core.settings import init_settings_service, init_settings_routes
+    
+    # Initialize settings service
+    init_settings_service(db)
+    
+    # Initialize and include routes
+    settings_router = init_settings_routes(db, get_current_user)
+    api_router.include_router(settings_router)
+    logger.info("Settings routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Settings routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
