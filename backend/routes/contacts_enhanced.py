@@ -2,7 +2,7 @@
 # Combines features from contacts_enhanced and customers_enhanced for single source of truth
 # Supports contact_type: customer, vendor, both
 
-from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks, Request
 from pydantic import BaseModel, Field, EmailStr, validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
@@ -33,6 +33,22 @@ contact_history_collection = db["contact_history"]
 contact_credits_collection = db["contact_credits"]
 contact_refunds_collection = db["contact_refunds"]
 contact_settings_collection = db["contact_settings"]
+
+# Multi-tenant helpers
+async def get_org_id(request: Request) -> Optional[str]:
+    """Get organization ID from request for multi-tenant scoping"""
+    try:
+        from core.org import get_org_id_from_request
+        return await get_org_id_from_request(request)
+    except Exception:
+        return None
+
+def org_query(org_id: Optional[str], base_query: dict = None) -> dict:
+    """Add org_id to query if available"""
+    query = base_query or {}
+    if org_id:
+        query["organization_id"] = org_id
+    return query
 
 # GSTIN Validation Regex
 GSTIN_REGEX = r'^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$'
