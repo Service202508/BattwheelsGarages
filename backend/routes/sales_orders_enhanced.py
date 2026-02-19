@@ -21,8 +21,8 @@ DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
-# Collections
-salesorders_collection = db["salesorders_enhanced"]
+# Collections - Use main collections with Zoho-synced data
+salesorders_collection = db["salesorders"]
 salesorder_items_collection = db["salesorder_line_items"]
 salesorder_history_collection = db["salesorder_history"]
 salesorder_settings_collection = db["salesorder_settings"]
