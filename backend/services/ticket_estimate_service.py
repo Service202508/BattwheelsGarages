@@ -616,7 +616,8 @@ class TicketEstimateService:
     ) -> Dict[str, Any]:
         """Get estimate and validate for update"""
         estimate = await self.estimates.find_one(
-            {"estimate_id": estimate_id, "organization_id": organization_id}
+            {"estimate_id": estimate_id, "organization_id": organization_id},
+            {"_id": 0}  # Exclude MongoDB _id to avoid JSON serialization issues
         )
         
         if not estimate:
