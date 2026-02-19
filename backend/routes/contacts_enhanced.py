@@ -2117,3 +2117,76 @@ async def create_quick_bill_for_contact(contact_id: str):
         "redirect": f"/bills?vendor_id={contact_id}&vendor_name={contact.get('name', '')}",
         "message": "Navigate to bills with vendor pre-filled"
     }
+
+# ==================== CONTACT ACTIVITY LOG ====================
+
+@router.get("/{contact_id}/activity")
+async def get_contact_activity(contact_id: str, limit: int = 50):
+    """Get activity log for a contact"""
+    contact = await contacts_collection.find_one({"contact_id": contact_id})
+    if not contact:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    
+    # Get from contact history collection
+    history = await db["contact_history"].find(
+        {"contact_id": contact_id},
+        {"_id": 0}
+    ).sort("timestamp", -1).limit(limit).to_list(limit)
+    
+    # If no history, create activity from related transactions
+    if not history:
+        activities = []
+        
+        # Add creation activity
+        activities.append({
+            "action": "created",
+            "details": f"Contact {contact.get('display_name', '')} was created",
+            "timestamp": contact.get("created_time", "")
+        })
+        
+        # Get recent invoices
+        invoices = await db["invoices_enhanced"].find(
+            {"customer_id": contact_id},
+            {"_id": 0, "invoice_number": 1, "grand_total": 1, "created_time": 1}
+        ).sort("created_time", -1).limit(5).to_list(5)
+        
+        for inv in invoices:
+            activities.append({
+                "action": "invoice_created",
+                "details": f"Invoice {inv.get('invoice_number', '')} created for ₹{inv.get('grand_total', 0):,.2f}",
+                "timestamp": inv.get("created_time", ""),
+                "related_type": "invoice",
+                "related_id": inv.get("invoice_id", "")
+            })
+        
+        # Get recent payments
+        payments = await db["payments_received"].find(
+            {"customer_id": contact_id},
+            {"_id": 0, "payment_number": 1, "amount": 1, "created_at": 1}
+        ).sort("created_at", -1).limit(5).to_list(5)
+        
+        for pmt in payments:
+            activities.append({
+                "action": "payment_received",
+                "details": f"Payment {pmt.get('payment_number', '')} of ₹{pmt.get('amount', 0):,.2f} received",
+                "timestamp": pmt.get("created_at", ""),
+                "related_type": "payment",
+                "related_id": pmt.get("payment_id", "")
+            })
+        
+        # Sort by timestamp
+        activities.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+        return {"code": 0, "activities": activities[:limit]}
+    
+    return {"code": 0, "activities": history}
+
+async def add_contact_history(contact_id: str, action: str, details: str):
+    """Add entry to contact history"""
+    from datetime import datetime, timezone
+    await db["contact_history"].insert_one({
+        "history_id": f"CHIST-{uuid.uuid4().hex[:12].upper()}",
+        "contact_id": contact_id,
+        "action": action,
+        "details": details,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
