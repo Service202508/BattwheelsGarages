@@ -324,7 +324,7 @@ export default function EstimateItemsPanel({
   const handleDeleteLineItem = async (lineItemId) => {
     if (!confirm("Are you sure you want to remove this item?")) return;
     
-    setLoading(true);
+    setDeleteLoading(lineItemId);
     try {
       const response = await fetch(
         `${API}/ticket-estimates/${estimate.estimate_id}/line-items/${lineItemId}?version=${estimate.version}`,
@@ -339,14 +339,14 @@ export default function EstimateItemsPanel({
       
       if (response.status === 409) {
         toast.error("Estimate was modified. Refreshing...");
-        await ensureEstimate();
-        setLoading(false);
+        await ensureEstimate(false);
+        setDeleteLoading(null);
         return;
       }
       
       if (response.status === 423) {
         toast.error("Estimate is locked and cannot be modified");
-        setLoading(false);
+        setDeleteLoading(null);
         return;
       }
       
@@ -366,7 +366,7 @@ export default function EstimateItemsPanel({
       console.error("Error deleting line item:", err);
       toast.error(err.message || "Failed to delete item");
     } finally {
-      setLoading(false);
+      setDeleteLoading(null);
     }
   };
   
