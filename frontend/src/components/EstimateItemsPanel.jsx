@@ -142,21 +142,19 @@ export default function EstimateItemsPanel({
   
   // Search parts catalog
   const searchCatalog = useCallback(async (query) => {
-    if (!query || query.length < 2) {
-      setCatalogItems([]);
-      return;
-    }
-    
     try {
-      const response = await fetch(
-        `${API}/items-enhanced/?search=${encodeURIComponent(query)}&per_page=20`,
-        {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "X-Organization-ID": organizationId || ticket.organization_id,
-          },
-        }
-      );
+      // Build URL with or without search query
+      let url = `${API}/items-enhanced/?per_page=20&item_type=inventory`;
+      if (query && query.length >= 2) {
+        url += `&search=${encodeURIComponent(query)}`;
+      }
+      
+      const response = await fetch(url, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "X-Organization-ID": organizationId || ticket.organization_id,
+        },
+      });
       
       if (response.ok) {
         const data = await response.json();
@@ -166,6 +164,13 @@ export default function EstimateItemsPanel({
       console.error("Error searching catalog:", err);
     }
   }, [token, organizationId, ticket?.organization_id]);
+  
+  // Load initial items when popover opens
+  const loadInitialCatalog = useCallback(() => {
+    if (catalogItems.length === 0) {
+      searchCatalog("");
+    }
+  }, [searchCatalog, catalogItems.length]);
   
   // Add line item
   const handleAddLineItem = async () => {
