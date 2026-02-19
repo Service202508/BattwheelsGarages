@@ -58,11 +58,11 @@ async def sanitize_data(
         report = await service.run_sanitization(
             organization_id=org_id,
             mode="audit",
-            collections=request.collections
+            collections=sanitization_request.collections
         )
         return {"code": 0, "report": report.dict()}
     
-    elif request.mode == "delete":
+    elif sanitization_request.mode == "delete":
         # Run deletion in background
         job_id = f"SAN-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
         
@@ -70,7 +70,7 @@ async def sanitize_data(
             await service.run_sanitization(
                 organization_id=org_id,
                 mode="delete",
-                collections=request.collections
+                collections=sanitization_request.collections
             )
         
         background_tasks.add_task(run_deletion)
