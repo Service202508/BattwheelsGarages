@@ -166,9 +166,21 @@ export default function AIAssistant({ user }) {
   const [query, setQuery] = useState({
     issue_description: "",
     vehicle_model: "",
+    vehicle_category: "",
     category: "",
   });
   const [response, setResponse] = useState(null);
+
+  // Get filtered vehicle models based on selected category
+  const filteredModels = useMemo(() => {
+    if (!query.vehicle_category) return [];
+    return vehicleModelsByCategory[query.vehicle_category] || [];
+  }, [query.vehicle_category]);
+
+  // Reset vehicle model when category changes
+  const handleCategoryChange = (category) => {
+    setQuery({ ...query, vehicle_category: category, vehicle_model: "" });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
