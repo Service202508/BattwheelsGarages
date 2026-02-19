@@ -711,7 +711,7 @@ async def update_warehouse(warehouse_id: str, warehouse: WarehouseCreate):
 
 @router.post("/")
 async def create_enhanced_item(item: ItemCreate):
-    """Create item with full Zoho-style features"""
+    """Create item with full Zoho Books-style features and CSV compatibility"""
     db = get_db()
     
     # Check unique name/SKU
@@ -738,69 +738,111 @@ async def create_enhanced_item(item: ItemCreate):
         except:
             pass
     
+    # Calculate opening stock rate if value provided
+    opening_stock_rate = item.opening_stock_rate
+    if not opening_stock_rate and item.opening_stock > 0 and item.opening_stock_value > 0:
+        opening_stock_rate = item.opening_stock_value / item.opening_stock
+    elif not opening_stock_rate:
+        opening_stock_rate = item.purchase_rate
+    
     item_dict = {
         "item_id": item_id,
+        
+        # ===== BASIC INFO =====
         "name": item.name,
         "sku": item.sku,
         "description": item.description,
         "item_type": item.item_type,
+        "product_type": item.product_type,
         "group_id": item.group_id,
         "group_name": item.group_name,
         
-        # Sales info
-        "sales_rate": item.sales_rate,
+        # ===== SALES INFORMATION =====
+        "rate": item.rate or item.sales_rate,  # Selling price
+        "sales_rate": item.sales_rate or item.rate,
         "sales_description": item.sales_description,
+        "sales_account": item.sales_account,
         "sales_account_id": item.sales_account_id,
+        "sales_account_code": item.sales_account_code,
         
-        # Purchase info
+        # ===== PURCHASE INFORMATION =====
         "purchase_rate": item.purchase_rate,
         "purchase_description": item.purchase_description,
+        "purchase_account": item.purchase_account,
         "purchase_account_id": item.purchase_account_id,
+        "purchase_account_code": item.purchase_account_code,
         
-        # Inventory
+        # ===== INVENTORY ACCOUNT =====
+        "inventory_account": item.inventory_account,
         "inventory_account_id": item.inventory_account_id,
+        "inventory_account_code": item.inventory_account_code,
         "inventory_valuation_method": item.inventory_valuation_method,
-        "track_inventory": item.track_inventory,
         
-        "rate": item.sales_rate,  # For compatibility
-        "unit": item.unit,
-        
-        # Tax
-        "tax_preference": item.tax_preference,
-        "tax_id": item.tax_id,
-        "tax_percentage": item.tax_percentage,
-        "intra_state_tax_rate": item.intra_state_tax_rate,
-        "inter_state_tax_rate": item.inter_state_tax_rate,
-        
-        # HSN/SAC
-        "hsn_code": item.hsn_code,
-        "sac_code": item.sac_code,
-        "hsn_or_sac": item.hsn_code or item.sac_code,
-        
-        # Stock
-        "initial_stock": item.initial_stock,
-        "opening_stock_rate": item.opening_stock_rate or item.purchase_rate,
-        "stock_on_hand": item.initial_stock,
-        "available_stock": item.initial_stock,
+        # ===== INVENTORY LEVELS =====
+        "opening_stock": item.opening_stock,
+        "opening_stock_value": item.opening_stock_value or (item.opening_stock * opening_stock_rate),
+        "opening_stock_rate": opening_stock_rate,
+        "stock_on_hand": item.stock_on_hand or item.opening_stock,
+        "available_stock": item.opening_stock,
         "committed_stock": 0,
         "stock_on_order": 0,
         "reorder_level": item.reorder_level,
         
-        # Vendor
-        "preferred_vendor_id": item.preferred_vendor_id,
-        "preferred_vendor_name": item.preferred_vendor_name,
+        # ===== UNITS =====
+        "unit": item.unit or item.usage_unit,
+        "usage_unit": item.usage_unit,
+        "unit_name": item.unit_name,
         
-        # Image
+        # ===== TAX INFORMATION =====
+        "taxable": item.taxable,
+        "tax_preference": item.tax_preference,
+        "taxability_type": item.taxability_type,
+        "exemption_reason": item.exemption_reason,
+        "tax_id": item.tax_id,
+        "tax_percentage": item.tax_percentage,
+        
+        # ===== GST TAXES (INDIA) =====
+        "intra_state_tax_name": item.intra_state_tax_name,
+        "intra_state_tax_rate": item.intra_state_tax_rate,
+        "intra_state_tax_type": item.intra_state_tax_type,
+        "inter_state_tax_name": item.inter_state_tax_name,
+        "inter_state_tax_rate": item.inter_state_tax_rate,
+        "inter_state_tax_type": item.inter_state_tax_type,
+        
+        # ===== HSN/SAC CODES =====
+        "hsn_code": item.hsn_code,
+        "sac_code": item.sac_code,
+        "hsn_or_sac": item.hsn_code or item.sac_code,
+        
+        # ===== VENDOR INFORMATION =====
+        "vendor": item.vendor,
+        "preferred_vendor_id": item.preferred_vendor_id,
+        "preferred_vendor_name": item.preferred_vendor_name or item.vendor,
+        
+        # ===== LOCATION/WAREHOUSE =====
+        "location_name": item.location_name,
+        "warehouse_id": item.warehouse_id,
+        
+        # ===== SYNC INFORMATION =====
+        "source": item.source,
+        "reference_id": item.reference_id,
+        "zoho_item_id": item.zoho_item_id,
+        "last_sync_time": item.last_sync_time,
+        
+        # ===== STATUS & FLAGS =====
+        "status": item.status if item.status else ("active" if item.is_active else "inactive"),
+        "is_active": item.is_active,
+        "sellable": item.sellable,
+        "purchasable": item.purchasable,
+        "track_inventory": item.track_inventory,
+        
+        # ===== IMAGE =====
         "image_url": image_url,
         
-        # Custom fields
+        # ===== CUSTOM FIELDS =====
         "custom_fields": item.custom_fields,
         
-        # Status
-        "is_active": item.is_active,
-        "status": "active" if item.is_active else "inactive",
-        
-        # Timestamps
+        # ===== TIMESTAMPS =====
         "created_time": datetime.now(timezone.utc).isoformat(),
         "updated_time": datetime.now(timezone.utc).isoformat()
     }
@@ -811,13 +853,21 @@ async def create_enhanced_item(item: ItemCreate):
     # Initialize stock locations for inventory items
     if item.item_type == "inventory" or item.track_inventory:
         warehouses = await db.warehouses.find({"is_active": True}).to_list(100)
+        target_warehouse_id = item.warehouse_id
+        
         for wh in warehouses:
+            stock_qty = 0
+            if target_warehouse_id and wh["warehouse_id"] == target_warehouse_id:
+                stock_qty = item.opening_stock
+            elif not target_warehouse_id and wh.get("is_primary"):
+                stock_qty = item.opening_stock
+                
             await db.item_stock_locations.insert_one({
                 "location_id": f"ISL-{uuid.uuid4().hex[:8].upper()}",
                 "item_id": item_id,
                 "warehouse_id": wh["warehouse_id"],
                 "warehouse_name": wh["name"],
-                "stock": item.initial_stock if wh.get("is_primary") else 0,
+                "stock": stock_qty,
                 "created_time": datetime.now(timezone.utc).isoformat(),
                 "updated_time": datetime.now(timezone.utc).isoformat()
             })
