@@ -155,6 +155,7 @@ const navItems = [
       { name: "Expenses", path: "/expenses", icon: Receipt },
       { name: "Recurring Expenses", path: "/recurring-expenses", icon: Repeat },
       { name: "Banking", path: "/banking", icon: Wallet },
+      { name: "Accountant", path: "/accountant", icon: Calculator },
       { name: "Fixed Assets", path: "/fixed-assets", icon: Package },
       { name: "Chart of Accounts", path: "/chart-of-accounts", icon: Layers },
       { name: "Journal Entries", path: "/journal-entries", icon: BookOpen },
