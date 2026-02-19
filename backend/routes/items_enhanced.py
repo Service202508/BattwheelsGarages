@@ -2444,7 +2444,7 @@ async def export_items(
     group_id: str = "",
     include_inactive: bool = False
 ):
-    """Export items to CSV or JSON"""
+    """Export items to CSV (Zoho Books compatible) or JSON"""
     db = get_db()
     
     query = {}
@@ -2460,18 +2460,69 @@ async def export_items(
     if format == "json":
         return {"code": 0, "items": items, "count": len(items)}
     
-    # CSV export
+    # CSV export - Zoho Books compatible columns
     output = io.StringIO()
-    fieldnames = ["item_id", "name", "sku", "item_type", "group_name", "description", 
-                  "sales_rate", "purchase_rate", "unit", "hsn_code", "sac_code",
-                  "tax_percentage", "stock_on_hand", "reorder_level", "is_active"]
+    fieldnames = [
+        "Item ID", "Item Name", "SKU", "HSN/SAC", "Description", "Rate",
+        "Account", "Account Code", "Taxable", "Exemption Reason", "Taxability Type",
+        "Product Type", "Intra State Tax Name", "Intra State Tax Rate", "Intra State Tax Type",
+        "Inter State Tax Name", "Inter State Tax Rate", "Inter State Tax Type",
+        "Source", "Reference ID", "Last Sync Time", "Status",
+        "Usage unit", "Unit Name", "Purchase Rate", "Purchase Account", "Purchase Account Code",
+        "Purchase Description", "Inventory Account", "Inventory Account Code",
+        "Inventory Valuation Method", "Reorder Point", "Vendor", "Location Name",
+        "Opening Stock", "Opening Stock Value", "Stock On Hand",
+        "Item Type", "Sellable", "Purchasable", "Track Inventory"
+    ]
     
     writer = csv.DictWriter(output, fieldnames=fieldnames, extrasaction='ignore')
     writer.writeheader()
     
     for item in items:
-        item["stock_on_hand"] = item.get("stock_on_hand", item.get("available_stock", 0))
-        writer.writerow(item)
+        row = {
+            "Item ID": item.get("item_id", ""),
+            "Item Name": item.get("name", ""),
+            "SKU": item.get("sku", ""),
+            "HSN/SAC": item.get("hsn_code", "") or item.get("sac_code", ""),
+            "Description": item.get("description", ""),
+            "Rate": item.get("rate", "") or item.get("sales_rate", ""),
+            "Account": item.get("sales_account", ""),
+            "Account Code": item.get("sales_account_code", ""),
+            "Taxable": "Yes" if item.get("taxable", True) else "No",
+            "Exemption Reason": item.get("exemption_reason", ""),
+            "Taxability Type": item.get("taxability_type", ""),
+            "Product Type": item.get("product_type", "goods"),
+            "Intra State Tax Name": item.get("intra_state_tax_name", "GST"),
+            "Intra State Tax Rate": item.get("intra_state_tax_rate", 18),
+            "Intra State Tax Type": item.get("intra_state_tax_type", "percentage"),
+            "Inter State Tax Name": item.get("inter_state_tax_name", "IGST"),
+            "Inter State Tax Rate": item.get("inter_state_tax_rate", 18),
+            "Inter State Tax Type": item.get("inter_state_tax_type", "percentage"),
+            "Source": item.get("source", "Manual"),
+            "Reference ID": item.get("reference_id", "") or item.get("zoho_item_id", ""),
+            "Last Sync Time": item.get("last_sync_time", ""),
+            "Status": item.get("status", "active"),
+            "Usage unit": item.get("usage_unit", "") or item.get("unit", "pcs"),
+            "Unit Name": item.get("unit_name", ""),
+            "Purchase Rate": item.get("purchase_rate", ""),
+            "Purchase Account": item.get("purchase_account", ""),
+            "Purchase Account Code": item.get("purchase_account_code", ""),
+            "Purchase Description": item.get("purchase_description", ""),
+            "Inventory Account": item.get("inventory_account", ""),
+            "Inventory Account Code": item.get("inventory_account_code", ""),
+            "Inventory Valuation Method": item.get("inventory_valuation_method", "FIFO").upper(),
+            "Reorder Point": item.get("reorder_level", 0),
+            "Vendor": item.get("vendor", "") or item.get("preferred_vendor_name", ""),
+            "Location Name": item.get("location_name", ""),
+            "Opening Stock": item.get("opening_stock", 0),
+            "Opening Stock Value": item.get("opening_stock_value", 0),
+            "Stock On Hand": item.get("stock_on_hand", item.get("available_stock", 0)),
+            "Item Type": item.get("item_type", "inventory"),
+            "Sellable": "Yes" if item.get("sellable", True) else "No",
+            "Purchasable": "Yes" if item.get("purchasable", True) else "No",
+            "Track Inventory": "Yes" if item.get("track_inventory", True) else "No"
+        }
+        writer.writerow(row)
     
     output.seek(0)
     
@@ -2483,30 +2534,105 @@ async def export_items(
 
 @router.get("/export/template")
 async def get_import_template():
-    """Get CSV template for item import"""
+    """Get CSV template for item import - Zoho Books compatible"""
     output = io.StringIO()
-    fieldnames = ["name", "sku", "item_type", "group_name", "description", 
-                  "sales_rate", "purchase_rate", "unit", "hsn_code", "sac_code",
-                  "tax_percentage", "initial_stock", "reorder_level"]
+    fieldnames = [
+        "Item Name", "SKU", "HSN/SAC", "Description", "Rate",
+        "Account", "Account Code", "Taxable", "Exemption Reason", "Taxability Type",
+        "Product Type", "Intra State Tax Name", "Intra State Tax Rate", "Intra State Tax Type",
+        "Inter State Tax Name", "Inter State Tax Rate", "Inter State Tax Type",
+        "Source", "Reference ID", "Status",
+        "Usage unit", "Unit Name", "Purchase Rate", "Purchase Account", "Purchase Account Code",
+        "Purchase Description", "Inventory Account", "Inventory Account Code",
+        "Inventory Valuation Method", "Reorder Point", "Vendor", "Location Name",
+        "Opening Stock", "Opening Stock Value",
+        "Item Type", "Sellable", "Purchasable", "Track Inventory"
+    ]
     
     writer = csv.DictWriter(output, fieldnames=fieldnames)
     writer.writeheader()
     
-    # Sample row
+    # Sample rows
     writer.writerow({
-        "name": "Sample Item",
-        "sku": "SKU-001",
-        "item_type": "inventory",
-        "group_name": "",
-        "description": "Sample description",
-        "sales_rate": "100",
-        "purchase_rate": "80",
-        "unit": "pcs",
-        "hsn_code": "8471",
-        "sac_code": "",
-        "tax_percentage": "18",
-        "initial_stock": "10",
-        "reorder_level": "5"
+        "Item Name": "12V 20Ah Battery",
+        "SKU": "BAT-12V20-001",
+        "HSN/SAC": "85076000",
+        "Description": "Lithium-ion battery 12V 20Ah for E-Rickshaw",
+        "Rate": "4500",
+        "Account": "Sales",
+        "Account Code": "4000",
+        "Taxable": "Yes",
+        "Exemption Reason": "",
+        "Taxability Type": "Goods",
+        "Product Type": "goods",
+        "Intra State Tax Name": "GST",
+        "Intra State Tax Rate": "18",
+        "Intra State Tax Type": "percentage",
+        "Inter State Tax Name": "IGST",
+        "Inter State Tax Rate": "18",
+        "Inter State Tax Type": "percentage",
+        "Source": "Manual",
+        "Reference ID": "",
+        "Status": "active",
+        "Usage unit": "pcs",
+        "Unit Name": "Pieces",
+        "Purchase Rate": "3500",
+        "Purchase Account": "Cost of Goods Sold",
+        "Purchase Account Code": "5000",
+        "Purchase Description": "12V 20Ah Li-ion Battery",
+        "Inventory Account": "Inventory",
+        "Inventory Account Code": "1200",
+        "Inventory Valuation Method": "FIFO",
+        "Reorder Point": "10",
+        "Vendor": "Battery Suppliers Ltd",
+        "Location Name": "Main Warehouse",
+        "Opening Stock": "50",
+        "Opening Stock Value": "175000",
+        "Item Type": "inventory",
+        "Sellable": "Yes",
+        "Purchasable": "Yes",
+        "Track Inventory": "Yes"
+    })
+    
+    writer.writerow({
+        "Item Name": "Motor Service Labour",
+        "SKU": "SRV-MOTOR-001",
+        "HSN/SAC": "998719",
+        "Description": "Motor repair and maintenance service",
+        "Rate": "500",
+        "Account": "Service Revenue",
+        "Account Code": "4100",
+        "Taxable": "Yes",
+        "Exemption Reason": "",
+        "Taxability Type": "Service",
+        "Product Type": "service",
+        "Intra State Tax Name": "GST",
+        "Intra State Tax Rate": "18",
+        "Intra State Tax Type": "percentage",
+        "Inter State Tax Name": "IGST",
+        "Inter State Tax Rate": "18",
+        "Inter State Tax Type": "percentage",
+        "Source": "Manual",
+        "Reference ID": "",
+        "Status": "active",
+        "Usage unit": "hrs",
+        "Unit Name": "Hours",
+        "Purchase Rate": "",
+        "Purchase Account": "",
+        "Purchase Account Code": "",
+        "Purchase Description": "",
+        "Inventory Account": "",
+        "Inventory Account Code": "",
+        "Inventory Valuation Method": "",
+        "Reorder Point": "",
+        "Vendor": "",
+        "Location Name": "",
+        "Opening Stock": "",
+        "Opening Stock Value": "",
+        "Item Type": "service",
+        "Sellable": "Yes",
+        "Purchasable": "No",
+        "Track Inventory": "No"
     })
     
     output.seek(0)
