@@ -824,8 +824,8 @@ export default function EstimateItemsPanel({
                   <Button variant="outline" onClick={() => { setAddDialogOpen(false); resetNewItem(); }}>
                     Cancel
                   </Button>
-                  <Button onClick={handleAddLineItem} disabled={loading || !newItem.name}>
-                    {loading ? "Adding..." : "Add Item"}
+                  <Button onClick={handleAddLineItem} disabled={addItemLoading || !newItem.name}>
+                    {addItemLoading ? "Adding..." : "Add Item"}
                   </Button>
                 </DialogFooter>
               </DialogContent>
