@@ -943,6 +943,7 @@ class ChartOfAccount(BaseModel):
 class AIQuery(BaseModel):
     issue_description: str
     vehicle_model: Optional[str] = None
+    vehicle_category: Optional[str] = None
     category: Optional[str] = None
 
 class AIResponse(BaseModel):
@@ -950,6 +951,9 @@ class AIResponse(BaseModel):
     confidence: float
     related_tickets: List[str] = []
     recommended_parts: List[str] = []
+    diagnostic_steps: List[str] = []
+    safety_warnings: List[str] = []
+    estimated_cost_range: Optional[str] = None
 
 class Alert(BaseModel):
     model_config = ConfigDict(extra="ignore")
