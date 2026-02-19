@@ -236,6 +236,142 @@ async def update_organization_settings(
     return settings
 
 
+@router.get("/settings/export")
+async def export_organization_settings(
+    request: Request,
+    org_id: Optional[str] = Query(None)
+):
+    """Export organization settings as JSON"""
+    user = await get_current_user(request)
+    service = get_organization_service()
+    
+    # Resolve org
+    resolved_org_id = org_id or request.headers.get("X-Organization-ID")
+    if not resolved_org_id:
+        user_orgs = await service.get_user_organizations(user.user_id)
+        if user_orgs:
+            resolved_org_id = user_orgs[0]["organization"].organization_id
+    
+    if not resolved_org_id:
+        raise HTTPException(status_code=400, detail="Organization ID required")
+    
+    context = await service.get_organization_context(resolved_org_id, user.user_id)
+    if not context:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    if not context.has_permission("org:settings:read"):
+        raise HTTPException(status_code=403, detail="Permission denied")
+    
+    org = await service.get_organization(resolved_org_id)
+    settings = await service.get_settings(resolved_org_id)
+    
+    export_data = {
+        "export_version": "1.0",
+        "export_date": datetime.now(timezone.utc).isoformat(),
+        "organization": {
+            "name": org.name,
+            "industry_type": org.industry_type.value if hasattr(org.industry_type, 'value') else org.industry_type,
+            "email": org.email,
+            "phone": org.phone,
+            "address": org.address,
+            "city": org.city,
+            "state": org.state,
+            "country": org.country,
+            "pincode": org.pincode,
+            "gstin": org.gstin,
+            "website": org.website,
+        },
+        "settings": {
+            "currency": settings.currency,
+            "timezone": settings.timezone,
+            "date_format": settings.date_format,
+            "fiscal_year_start": settings.fiscal_year_start,
+            "service_radius_km": settings.service_radius_km,
+            "operating_hours_start": settings.operating_hours_start,
+            "operating_hours_end": settings.operating_hours_end,
+            "working_days": settings.working_days,
+            "tickets": settings.tickets.model_dump() if settings.tickets else {},
+            "inventory": settings.inventory.model_dump() if settings.inventory else {},
+            "invoices": settings.invoices.model_dump() if settings.invoices else {},
+            "notifications": settings.notifications.model_dump() if settings.notifications else {},
+            "efi": settings.efi.model_dump() if settings.efi else {},
+        }
+    }
+    
+    return export_data
+
+
+@router.post("/settings/import")
+async def import_organization_settings(
+    request: Request,
+    org_id: Optional[str] = Query(None)
+):
+    """Import organization settings from JSON"""
+    user = await get_current_user(request)
+    service = get_organization_service()
+    
+    # Resolve org
+    resolved_org_id = org_id or request.headers.get("X-Organization-ID")
+    if not resolved_org_id:
+        user_orgs = await service.get_user_organizations(user.user_id)
+        if user_orgs:
+            resolved_org_id = user_orgs[0]["organization"].organization_id
+    
+    if not resolved_org_id:
+        raise HTTPException(status_code=400, detail="Organization ID required")
+    
+    context = await service.get_organization_context(resolved_org_id, user.user_id)
+    if not context:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    if not context.has_permission("org:settings:update"):
+        raise HTTPException(status_code=403, detail="Permission denied")
+    
+    body = await request.json()
+    
+    # Validate import format
+    if "export_version" not in body:
+        raise HTTPException(status_code=400, detail="Invalid import file format")
+    
+    # Import organization details (optional)
+    if body.get("organization"):
+        org_data = body["organization"]
+        org_update = OrganizationUpdate(
+            name=org_data.get("name"),
+            email=org_data.get("email"),
+            phone=org_data.get("phone"),
+            address=org_data.get("address"),
+            city=org_data.get("city"),
+            state=org_data.get("state"),
+            pincode=org_data.get("pincode"),
+            gstin=org_data.get("gstin"),
+            website=org_data.get("website"),
+        )
+        await service.update_organization(resolved_org_id, org_update)
+    
+    # Import settings
+    if body.get("settings"):
+        settings_data = body["settings"]
+        settings_update = OrganizationSettingsUpdate(
+            currency=settings_data.get("currency"),
+            timezone=settings_data.get("timezone"),
+            date_format=settings_data.get("date_format"),
+            fiscal_year_start=settings_data.get("fiscal_year_start"),
+            service_radius_km=settings_data.get("service_radius_km"),
+            operating_hours_start=settings_data.get("operating_hours_start"),
+            operating_hours_end=settings_data.get("operating_hours_end"),
+            working_days=settings_data.get("working_days"),
+            tickets=settings_data.get("tickets"),
+            inventory=settings_data.get("inventory"),
+            invoices=settings_data.get("invoices"),
+            notifications=settings_data.get("notifications"),
+            efi=settings_data.get("efi"),
+        )
+        await service.update_settings(resolved_org_id, settings_update)
+    
+    return {"message": "Settings imported successfully", "organization_id": resolved_org_id}
+
+
 # ==================== USERS ENDPOINTS ====================
 
 @router.get("/users")
