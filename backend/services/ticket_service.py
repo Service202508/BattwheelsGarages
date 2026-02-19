@@ -583,12 +583,17 @@ class TicketService:
         priority: Optional[str] = None,
         category: Optional[str] = None,
         limit: int = 100,
-        skip: int = 0
+        skip: int = 0,
+        organization_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         List tickets with filtering and role-based access
         """
         query = {}
+        
+        # Multi-tenant scoping
+        if organization_id:
+            query["organization_id"] = organization_id
         
         if status:
             query["status"] = status
