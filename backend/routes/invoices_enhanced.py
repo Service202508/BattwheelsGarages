@@ -696,10 +696,14 @@ async def list_invoice_templates():
 # ========================= INVOICE CRUD =========================
 
 @router.post("/")
-async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTasks):
+async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTasks, request: Request = None):
     """Create a new invoice"""
+    # Get org context for multi-tenant scoping
+    org_id = await get_org_id(request) if request else None
+    
     # Validate customer
-    customer = await contacts_collection.find_one({"contact_id": invoice.customer_id})
+    customer_query = org_query(org_id, {"contact_id": invoice.customer_id})
+    customer = await contacts_collection.find_one(customer_query)
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     
@@ -720,6 +724,8 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
         calc_item = calculate_line_item(item, is_igst, invoice.is_inclusive_tax)
         calc_item["line_item_id"] = generate_id("LI")
         calc_item["invoice_id"] = invoice_id
+        if org_id:
+            calc_item["organization_id"] = org_id
         calculated_items.append(calc_item)
     
     # Calculate invoice totals
@@ -784,6 +790,10 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
         "created_time": datetime.now(timezone.utc).isoformat(),
         "updated_time": datetime.now(timezone.utc).isoformat()
     }
+    
+    # Add org_id for multi-tenant scoping
+    if org_id:
+        invoice_doc["organization_id"] = org_id
     
     await invoices_collection.insert_one(invoice_doc)
     
