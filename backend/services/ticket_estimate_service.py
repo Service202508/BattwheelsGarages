@@ -264,9 +264,9 @@ class TicketEstimateService:
         user_name: str,
         version: int
     ) -> Dict[str, Any]:
-        """Add a line item to estimate"""
+        """Add a line item to estimate with inventory tracking for parts"""
         # Validate estimate and check lock (raises on error)
-        await self._get_and_validate_estimate(
+        estimate = await self._get_and_validate_estimate(
             estimate_id, organization_id, version
         )
         
@@ -285,6 +285,28 @@ class TicketEstimateService:
             item_data.qty, item_data.unit_price, item_data.discount, item_data.tax_rate
         )
         
+        # Get inventory info if this is a part with an item_id
+        inventory_reserved = False
+        inventory_item = None
+        if item_data.type == "part" and item_data.item_id:
+            # Check if item exists in inventory
+            inventory_item = await self.db.items_enhanced.find_one(
+                {"item_id": item_data.item_id, "organization_id": organization_id},
+                {"_id": 0}
+            )
+            
+            # Track inventory allocation for approved estimates
+            if inventory_item and estimate.get("status") == "approved":
+                # Reserve inventory when estimate is approved
+                inventory_reserved = True
+                await self._reserve_inventory(
+                    item_id=item_data.item_id,
+                    quantity=item_data.qty,
+                    estimate_id=estimate_id,
+                    organization_id=organization_id,
+                    user_id=user_id
+                )
+        
         line_item_doc = {
             "line_item_id": line_item_id,
             "estimate_id": estimate_id,
@@ -301,6 +323,7 @@ class TicketEstimateService:
             "hsn_code": item_data.hsn_code,
             "line_total": line_total,
             "sort_index": sort_index,
+            "inventory_reserved": inventory_reserved,
             "created_at": now.isoformat(),
             "updated_at": now.isoformat(),
         }
@@ -314,7 +337,7 @@ class TicketEstimateService:
         # Log history
         await self._log_history(
             estimate_id, "line_item_added",
-            f"Added {item_data.type}: {item_data.name}",
+            f"Added {item_data.type}: {item_data.name}" + (" (inventory reserved)" if inventory_reserved else ""),
             user_id, user_name
         )
         
