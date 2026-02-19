@@ -1309,6 +1309,14 @@ async def update_supplier(supplier_id: str, update: SupplierUpdate, request: Req
 @api_router.post("/vehicles")
 async def create_vehicle(vehicle_data: VehicleCreate, request: Request):
     user = await require_auth(request)
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+    except HTTPException:
+        # Fallback for backward compatibility
+        org_id = None
+    
     vehicle = Vehicle(
         owner_id=user.user_id,
         owner_name=vehicle_data.owner_name,
@@ -1322,22 +1330,41 @@ async def create_vehicle(vehicle_data: VehicleCreate, request: Request):
     )
     doc = vehicle.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
+    if org_id:
+        doc['organization_id'] = org_id
     await db.vehicles.insert_one(doc)
     return vehicle.model_dump()
 
 @api_router.get("/vehicles")
 async def get_vehicles(request: Request):
     user = await require_auth(request)
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        base_query = {"organization_id": org_id}
+    except HTTPException:
+        base_query = {}
+    
     if user.role in ["admin", "technician"]:
-        vehicles = await db.vehicles.find({}, {"_id": 0}).to_list(1000)
+        vehicles = await db.vehicles.find(base_query, {"_id": 0}).to_list(1000)
     else:
-        vehicles = await db.vehicles.find({"owner_id": user.user_id}, {"_id": 0}).to_list(100)
+        query = {**base_query, "owner_id": user.user_id}
+        vehicles = await db.vehicles.find(query, {"_id": 0}).to_list(100)
     return vehicles
 
 @api_router.get("/vehicles/{vehicle_id}")
 async def get_vehicle(vehicle_id: str, request: Request):
     await require_auth(request)
-    vehicle = await db.vehicles.find_one({"vehicle_id": vehicle_id}, {"_id": 0})
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        query = {"vehicle_id": vehicle_id, "organization_id": org_id}
+    except HTTPException:
+        query = {"vehicle_id": vehicle_id}
+    
+    vehicle = await db.vehicles.find_one(query, {"_id": 0})
     if not vehicle:
         raise HTTPException(status_code=404, detail="Vehicle not found")
     return vehicle
@@ -1347,7 +1374,15 @@ async def update_vehicle_status(vehicle_id: str, status: str, request: Request):
     await require_technician_or_admin(request)
     if status not in ["active", "in_workshop", "serviced"]:
         raise HTTPException(status_code=400, detail="Invalid status")
-    await db.vehicles.update_one({"vehicle_id": vehicle_id}, {"$set": {"current_status": status}})
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        query = {"vehicle_id": vehicle_id, "organization_id": org_id}
+    except HTTPException:
+        query = {"vehicle_id": vehicle_id}
+    
+    await db.vehicles.update_one(query, {"$set": {"current_status": status}})
     return {"message": "Status updated"}
 
 # ==================== TICKET ROUTES (MIGRATED TO /routes/tickets.py) ====================
