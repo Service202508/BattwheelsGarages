@@ -138,7 +138,7 @@ export default function Accountant() {
   const fetchTrialBalance = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/banking/reports/trial-balance`, { headers });
+      const res = await fetch(`${API}/banking/reports/trial-balance/`, { headers });
       const data = await res.json();
       setTrialBalance(data);
     } catch (error) {
@@ -152,9 +152,9 @@ export default function Accountant() {
     setLoading(true);
     try {
       const [plRes, bsRes, cfRes] = await Promise.all([
-        fetch(`${API}/banking/reports/profit-loss`, { headers }),
-        fetch(`${API}/banking/reports/balance-sheet`, { headers }),
-        fetch(`${API}/banking/reports/cash-flow`, { headers })
+        fetch(`${API}/banking/reports/profit-loss/`, { headers }),
+        fetch(`${API}/banking/reports/balance-sheet/`, { headers }),
+        fetch(`${API}/banking/reports/cash-flow/`, { headers })
       ]);
       const [plData, bsData, cfData] = await Promise.all([plRes.json(), bsRes.json(), cfRes.json()]);
       setProfitLoss(plData);
