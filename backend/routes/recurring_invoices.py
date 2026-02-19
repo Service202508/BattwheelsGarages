@@ -23,9 +23,10 @@ db = client[DB_NAME]
 
 router = APIRouter(prefix="/recurring-invoices", tags=["Recurring Invoices"])
 
+# Collections - Use main collections with Zoho-synced data
 recurring_collection = db["recurring_invoices"]
-invoices_collection = db["invoices_enhanced"]
-contacts_collection = db["contacts_enhanced"]
+invoices_collection = db["invoices"]
+contacts_collection = db["contacts"]
 
 
 # ==================== MODELS ====================
