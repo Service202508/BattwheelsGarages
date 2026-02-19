@@ -2190,9 +2190,115 @@ async def get_ticket_financials(ticket_id: str, request: Request):
 
 # ==================== AI DIAGNOSIS ====================
 
+# Issue category knowledge base for EV-specific diagnosis
+ISSUE_CATEGORY_KNOWLEDGE = {
+    "battery": {
+        "common_causes": ["Cell degradation", "BMS fault", "Thermal runaway risk", "Connection corrosion", "Overcharging damage"],
+        "diagnostic_steps": ["Check battery voltage levels", "Measure cell balance", "Inspect BMS error codes", "Check temperature sensors", "Verify charging history"],
+        "safety_warnings": ["High voltage hazard - use insulated tools", "Do not puncture or damage cells", "Ensure proper ventilation"],
+        "parts": ["Battery cells", "BMS module", "Thermal sensors", "Cooling fan", "Battery connectors"]
+    },
+    "motor": {
+        "common_causes": ["Bearing wear", "Winding damage", "Controller failure", "Overheating", "Magnet demagnetization"],
+        "diagnostic_steps": ["Listen for unusual sounds", "Check motor temperature", "Measure phase resistance", "Inspect motor controller", "Test regenerative braking"],
+        "safety_warnings": ["Allow motor to cool before inspection", "Disconnect power before testing", "Beware of moving parts"],
+        "parts": ["Motor bearings", "Motor controller", "Hall sensors", "Motor windings", "Cooling system"]
+    },
+    "charging": {
+        "common_causes": ["Charger malfunction", "Port damage", "Communication error", "Cable fault", "Onboard charger failure"],
+        "diagnostic_steps": ["Check charging port pins", "Verify charger output", "Test communication protocol", "Inspect cable condition", "Check fuses"],
+        "safety_warnings": ["Never charge with damaged cable", "Ensure proper grounding", "Don't use in wet conditions"],
+        "parts": ["Charging port", "Onboard charger", "Charging cable", "DC-DC converter", "Fuses"]
+    },
+    "electrical": {
+        "common_causes": ["Short circuit", "Ground fault", "Wire damage", "Connector corrosion", "Relay failure"],
+        "diagnostic_steps": ["Check all fuses", "Inspect wire harness", "Test relay operation", "Measure insulation resistance", "Check ground connections"],
+        "safety_warnings": ["Isolate HV battery before work", "Use multimeter properly", "Check for arc flash risk"],
+        "parts": ["Fuses", "Relays", "Connectors", "Wire harness", "Junction box"]
+    },
+    "mechanical": {
+        "common_causes": ["Brake wear", "Drivetrain issues", "Gear damage", "Belt/chain wear", "Transmission fault"],
+        "diagnostic_steps": ["Inspect brake pads/discs", "Check drivetrain noise", "Test gear engagement", "Measure belt tension", "Check fluid levels"],
+        "safety_warnings": ["Support vehicle properly on stands", "Use wheel chocks", "Wear safety glasses"],
+        "parts": ["Brake pads", "Brake discs", "Drive belt", "Gearbox components", "CV joints"]
+    },
+    "software": {
+        "common_causes": ["Firmware bug", "ECU error", "Communication failure", "Calibration issue", "Software corruption"],
+        "diagnostic_steps": ["Read diagnostic codes", "Check ECU communication", "Verify firmware version", "Test CAN bus", "Check software updates"],
+        "safety_warnings": ["Don't interrupt firmware updates", "Backup settings before reset", "Use authorized diagnostic tools"],
+        "parts": ["ECU module", "Diagnostic interface", "Software license", "Communication module"]
+    },
+    "suspension": {
+        "common_causes": ["Shock absorber wear", "Spring damage", "Bushing deterioration", "Alignment issues", "Strut mount failure"],
+        "diagnostic_steps": ["Check ride height", "Inspect shock absorbers", "Test bushings for play", "Measure wheel alignment", "Check for leaks"],
+        "safety_warnings": ["Use spring compressor carefully", "Support vehicle securely", "Beware of compressed springs"],
+        "parts": ["Shock absorbers", "Coil springs", "Control arm bushings", "Strut mounts", "Ball joints"]
+    },
+    "braking": {
+        "common_causes": ["Brake pad wear", "Rotor damage", "Brake fluid contamination", "ABS sensor fault", "Regenerative brake issue"],
+        "diagnostic_steps": ["Measure pad thickness", "Check rotor condition", "Test brake fluid", "Read ABS codes", "Test regenerative braking"],
+        "safety_warnings": ["Brake dust is hazardous", "Use proper brake cleaner", "Check for asbestos in older vehicles"],
+        "parts": ["Brake pads", "Rotors/discs", "Brake fluid", "ABS sensors", "Calipers"]
+    },
+    "cooling": {
+        "common_causes": ["Coolant leak", "Pump failure", "Radiator blockage", "Thermostat fault", "Fan malfunction"],
+        "diagnostic_steps": ["Check coolant level", "Inspect for leaks", "Test pump operation", "Check thermostat", "Test cooling fan"],
+        "safety_warnings": ["Don't open hot cooling system", "Coolant is toxic", "Allow system to cool"],
+        "parts": ["Coolant pump", "Radiator", "Thermostat", "Cooling fan", "Hoses and clamps"]
+    },
+    "hvac": {
+        "common_causes": ["Compressor failure", "Refrigerant leak", "Blower motor issue", "Heater core problem", "Climate control fault"],
+        "diagnostic_steps": ["Check refrigerant pressure", "Test compressor clutch", "Check blower motor", "Inspect heater core", "Test climate controls"],
+        "safety_warnings": ["Refrigerant requires special handling", "Don't release to atmosphere", "Use certified equipment"],
+        "parts": ["AC compressor", "Condenser", "Blower motor", "Heater core", "Climate control module"]
+    },
+    "other": {
+        "common_causes": ["General wear", "Environmental damage", "User error", "Design defect", "Unknown"],
+        "diagnostic_steps": ["Visual inspection", "Functional testing", "Document symptoms", "Review service history", "Consult technical manual"],
+        "safety_warnings": ["Follow general safety procedures", "Use PPE", "Document all findings"],
+        "parts": ["Varies by issue"]
+    }
+}
+
+# Vehicle category specific considerations
+VEHICLE_CATEGORY_CONTEXT = {
+    "2_wheeler": {
+        "description": "Electric Scooters and Motorcycles",
+        "specific_issues": ["Hub motor issues", "Swappable battery problems", "Compact controller faults", "Kick-start backup failure"],
+        "typical_range": "80-150 km per charge",
+        "voltage_range": "48V-72V systems",
+        "special_notes": "Smaller battery packs, more exposed to weather, often swappable batteries"
+    },
+    "3_wheeler": {
+        "description": "Electric Auto-Rickshaws, E-Rickshaws, and Cargo Loaders",
+        "specific_issues": ["Overloading damage", "Lead-acid to lithium conversion issues", "Controller overheating", "Differential problems"],
+        "typical_range": "80-120 km per charge",
+        "voltage_range": "48V-60V systems (passenger), 72V+ (cargo)",
+        "special_notes": "Heavy-duty usage, frequent charging, often lead-acid batteries in older models"
+    },
+    "4_wheeler_commercial": {
+        "description": "Electric LCVs, Delivery Vans, and Pickup Trucks",
+        "specific_issues": ["Payload stress on motor", "Frequent start-stop wear", "Cargo area electrical issues", "Fleet telematics problems"],
+        "typical_range": "100-200 km per charge",
+        "voltage_range": "300V-400V high voltage systems",
+        "special_notes": "Commercial duty cycles, need for quick turnaround, fleet management integration"
+    },
+    "car": {
+        "description": "Electric Passenger Cars",
+        "specific_issues": ["Infotainment system glitches", "Advanced driver assistance faults", "Complex HV battery management", "Thermal management issues"],
+        "typical_range": "200-500 km per charge",
+        "voltage_range": "350V-800V high voltage systems",
+        "special_notes": "Most complex systems, multiple ECUs, advanced safety features, OTA updates"
+    }
+}
+
 @api_router.post("/ai/diagnose")
 async def ai_diagnose(query: AIQuery, request: Request):
     await require_auth(request)
+    
+    # Get category-specific knowledge
+    issue_knowledge = ISSUE_CATEGORY_KNOWLEDGE.get(query.category, ISSUE_CATEGORY_KNOWLEDGE["other"])
+    vehicle_context = VEHICLE_CATEGORY_CONTEXT.get(query.vehicle_category, {})
     
     similar_tickets = await db.tickets.find(
         {"category": query.category} if query.category else {},
@@ -2209,9 +2315,32 @@ async def ai_diagnose(query: AIQuery, request: Request):
     try:
         from emergentintegrations.llm.chat import LlmChat, UserMessage
         
-        system_message = """You are an expert EV diagnostic assistant for Battwheels OS.
-Provide clear, actionable solutions for EV issues including batteries, motors, charging systems.
-Include: 1. Likely cause 2. Diagnostic steps 3. Solution 4. Parts needed 5. Safety warnings"""
+        # Build vehicle-category-specific system message
+        vehicle_type_desc = vehicle_context.get("description", "Electric Vehicle")
+        vehicle_specific = vehicle_context.get("specific_issues", [])
+        vehicle_notes = vehicle_context.get("special_notes", "")
+        
+        system_message = f"""You are an expert EV diagnostic assistant for Battwheels OS, specializing in Indian electric vehicles.
+
+VEHICLE CONTEXT:
+- Type: {vehicle_type_desc}
+- Typical Voltage: {vehicle_context.get('voltage_range', 'Varies')}
+- Common Category Issues: {', '.join(vehicle_specific) if vehicle_specific else 'General EV issues'}
+- Special Notes: {vehicle_notes}
+
+ISSUE CATEGORY: {query.category or 'General'}
+Common causes for this category: {', '.join(issue_knowledge['common_causes'][:3])}
+
+Provide clear, actionable solutions tailored to Indian EV market. Include:
+1. Most likely cause based on vehicle type and symptoms
+2. Step-by-step diagnostic procedure
+3. Recommended solution with alternatives
+4. Parts likely needed (with Indian market availability)
+5. Estimated repair time
+6. Safety precautions specific to this vehicle type
+7. Cost estimate range in INR
+
+Be specific to the vehicle model when possible. Consider Indian driving conditions, weather, and common usage patterns."""
 
         chat = LlmChat(
             api_key=os.environ.get('EMERGENT_LLM_KEY'),
@@ -2221,29 +2350,77 @@ Include: 1. Likely cause 2. Diagnostic steps 3. Solution 4. Parts needed 5. Safe
         chat.with_model("openai", "gpt-5.2")
         
         user_prompt = f"""
-Vehicle Issue: {query.issue_description}
+VEHICLE DIAGNOSIS REQUEST:
+
+Vehicle Category: {query.vehicle_category or 'Not specified'}
 Vehicle Model: {query.vehicle_model or 'Not specified'}
-Category: {query.category or 'General'}
+Issue Category: {query.category or 'General'}
+
+PROBLEM DESCRIPTION:
+{query.issue_description}
+
 {historical_context}
 
-Provide comprehensive diagnosis and solution.
+Please provide a comprehensive diagnosis with:
+1. Likely root cause analysis
+2. Diagnostic steps to confirm
+3. Recommended solution
+4. Parts needed
+5. Safety warnings
+6. Estimated cost range (INR)
 """
         user_message = UserMessage(text=user_prompt)
         response = await chat.send_message(user_message)
+        
+        # Extract diagnostic steps and safety warnings from knowledge base
+        diagnostic_steps = issue_knowledge.get("diagnostic_steps", [])
+        safety_warnings = issue_knowledge.get("safety_warnings", [])
+        recommended_parts = issue_knowledge.get("parts", [])
         
         return AIResponse(
             solution=response,
             confidence=0.85,
             related_tickets=[t["ticket_id"] for t in similar_tickets[:3] if t.get("resolution")],
-            recommended_parts=[]
+            recommended_parts=recommended_parts[:5],
+            diagnostic_steps=diagnostic_steps,
+            safety_warnings=safety_warnings,
+            estimated_cost_range="₹500 - ₹50,000 depending on issue severity"
         )
     except Exception as e:
         logger.error(f"AI diagnosis error: {e}")
+        
+        # Provide fallback response with category-specific information
+        diagnostic_steps = issue_knowledge.get("diagnostic_steps", ["Visual inspection", "Check error codes"])
+        safety_warnings = issue_knowledge.get("safety_warnings", ["Follow safety procedures"])
+        
+        fallback_solution = f"""Based on your description: '{query.issue_description}'
+
+**Vehicle Type:** {vehicle_context.get('description', 'Electric Vehicle')}
+**Issue Category:** {query.category or 'General'}
+
+**Likely Causes:**
+{chr(10).join(['• ' + cause for cause in issue_knowledge['common_causes'][:3]])}
+
+**Recommended Diagnostic Steps:**
+{chr(10).join(['1. ' + step if i == 0 else str(i+1) + '. ' + step for i, step in enumerate(diagnostic_steps[:4])])}
+
+**Safety Precautions:**
+{chr(10).join(['⚠️ ' + warning for warning in safety_warnings[:3]])}
+
+**Recommended Action:**
+Schedule a workshop inspection for detailed diagnosis. Our technicians are trained specifically for {query.vehicle_model or 'your vehicle'}.
+
+**Estimated Time:** 1-3 hours for diagnosis
+"""
+        
         return AIResponse(
-            solution=f"Based on '{query.issue_description}':\n\n1. Check diagnostic codes with OBD-II\n2. Inspect components\n3. Schedule workshop inspection\n\nCategory: {query.category or 'General'}",
-            confidence=0.5,
+            solution=fallback_solution,
+            confidence=0.6,
             related_tickets=[],
-            recommended_parts=[]
+            recommended_parts=issue_knowledge.get("parts", [])[:5],
+            diagnostic_steps=diagnostic_steps,
+            safety_warnings=safety_warnings,
+            estimated_cost_range="Contact workshop for estimate"
         )
 
 # ==================== DASHBOARD & ANALYTICS ====================
