@@ -355,8 +355,13 @@ class TestPortalLogout:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Get a valid session token"""
+        # Get a fresh portal token
+        portal_token = get_fresh_portal_token()
+        if not portal_token:
+            pytest.skip("Could not get portal token")
+        
         response = requests.post(f"{BASE_URL}/api/customer-portal/login", json={
-            "token": TEST_PORTAL_TOKEN
+            "token": portal_token
         })
         
         if response.status_code != 200:
