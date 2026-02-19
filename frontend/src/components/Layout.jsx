@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import OrganizationSwitcher from "./OrganizationSwitcher";
 import { 
   LayoutDashboard, 
   Ticket, 
