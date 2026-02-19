@@ -559,17 +559,23 @@ const VehicleCard = ({ vehicle }) => {
         </Link>
 
         {/* Specs */}
-        <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
-          {vehicle.specifications?.range && (
+        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mb-4">
+          {vehicle.specifications?.range_km && (
             <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full">
               <Gauge className="w-3.5 h-3.5 text-blue-500" />
-              {vehicle.specifications.range}
+              {vehicle.specifications.range_km} km
             </span>
           )}
-          {vehicle.specifications?.battery && (
+          {vehicle.specifications?.battery_kwh && (
             <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full">
               <Battery className="w-3.5 h-3.5 text-green-500" />
-              {vehicle.specifications.battery}
+              {vehicle.specifications.battery_kwh} kWh
+            </span>
+          )}
+          {vehicle.specifications?.top_speed_kmph && (
+            <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full">
+              <Zap className="w-3.5 h-3.5 text-amber-500" />
+              {vehicle.specifications.top_speed_kmph} km/h
             </span>
           )}
         </div>
@@ -577,25 +583,20 @@ const VehicleCard = ({ vehicle }) => {
         {/* Price */}
         <div className="mb-4">
           <span className="text-2xl font-bold text-gray-900">
-            ₹{(vehicle.final_price || vehicle.base_price)?.toLocaleString()}
+            ₹{(vehicle.final_price || vehicle.price)?.toLocaleString()}
           </span>
-          {vehicle.oem_aftermarket === 'refurbished' && vehicle.original_price && (
-            <span className="text-sm text-gray-400 line-through ml-2">
-              ₹{vehicle.original_price?.toLocaleString()}
-            </span>
-          )}
         </div>
 
         {/* CTA */}
         <div className="flex gap-2">
           <Link
             to={`/marketplace/vehicle/${vehicle.slug}`}
-            className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-center py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm"
+            className="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-center py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm"
           >
             View Details
           </Link>
           <a
-            href="tel:+919876543210"
+            href="tel:+918076331607"
             className="px-4 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center"
           >
             <Phone className="w-4 h-4 text-gray-600" />
