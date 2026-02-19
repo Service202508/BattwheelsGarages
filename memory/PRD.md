@@ -13,6 +13,17 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ---
 
+## Latest Updates (Feb 19, 2026)
+
+### AI ASSISTANT VEHICLE CATEGORY ENHANCEMENT ✅
+Added comprehensive vehicle category filter and 80 EV models:
+- **2 Wheeler** (20 models): Ola, Ather, TVS, Bajaj, Hero, Ampere, Okinawa, Revolt, Tork, etc.
+- **3 Wheeler** (20 models): Mahindra, Piaggio, Euler, Omega Seiki, Kinetic, TVS King, etc.
+- **4 Wheeler Commercial** (20 models): Tata Ace EV, Switch IeV, EKA, Altigreen, etc.
+- **Car** (20 models): Tata Nexon/Punch/Tiago EV, Mahindra XUV400/BE6, MG, Hyundai, BYD, etc.
+
+---
+
 ## Completed Work (Feb 19, 2026)
 
 ### ZOHO BOOKS PARITY IMPLEMENTATION - ALL PHASES COMPLETE ✅
