@@ -479,6 +479,43 @@ export default function EstimateItemsPanel({
     }
   };
   
+  // Unlock estimate (admin only)
+  const handleUnlockEstimate = async () => {
+    if (!confirm("Are you sure you want to unlock this estimate for editing?")) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${API}/ticket-estimates/${estimate.estimate_id}/unlock`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "X-Organization-ID": organizationId || ticket.organization_id,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      
+      if (!response.ok) {
+        throw new Error("Failed to unlock estimate");
+      }
+      
+      const data = await response.json();
+      setEstimate(data.estimate);
+      toast.success("Estimate unlocked for editing");
+      
+      if (onEstimateChange) {
+        onEstimateChange(data.estimate);
+      }
+    } catch (err) {
+      console.error("Error unlocking estimate:", err);
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   // Reset new item form
   const resetNewItem = () => {
     setNewItem({
