@@ -60,6 +60,7 @@ export default function EstimateItemsPanel({
 }) {
   const [estimate, setEstimate] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [addItemLoading, setAddItemLoading] = useState(false);
   const [error, setError] = useState(null);
   
   // Add item dialog state
