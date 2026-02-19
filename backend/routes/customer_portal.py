@@ -1,7 +1,7 @@
 # Customer Portal Module - Self-Service Portal for Customers
 # Allows customers to view invoices, estimates, statements, and make payments
 
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, Request, Header
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/customer-portal", tags=["Customer Portal"])
 
 # MongoDB connection
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
+DB_NAME = os.environ.get("DB_NAME", "test_database")
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
