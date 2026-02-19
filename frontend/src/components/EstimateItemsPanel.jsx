@@ -149,7 +149,7 @@ export default function EstimateItemsPanel({
     
     try {
       const response = await fetch(
-        `${API}/items-enhanced?search=${encodeURIComponent(query)}&per_page=10`,
+        `${API}/items-enhanced/?search=${encodeURIComponent(query)}&per_page=20`,
         {
           headers: {
             "Authorization": `Bearer ${token}`,
