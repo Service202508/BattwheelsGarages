@@ -9,7 +9,7 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ### Assessment Date: February 19, 2026 (Updated)
 ### Overall Score: 98% Zoho Books Feature Parity
-### Regression Test Suite: 100% Pass Rate (Iteration 59)
+### Regression Test Suite: 100% Pass Rate (Iteration 60)
 ### Multi-Tenant Architecture: IMPLEMENTED
 ### All Settings (Zoho-style): FULLY IMPLEMENTED
 ### Data Management & Zoho Sync: FULLY IMPLEMENTED
@@ -19,10 +19,50 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ### Documents Module: FULLY IMPLEMENTED
 ### Customer Portal: FIXED & VERIFIED (Session 58-59)
 ### Inventory Enhanced: FIXED & VERIFIED (Session 59)
+### Ticket-Estimate Integration: IMPLEMENTED (Session 60) ✅
 
 ---
 
-## Latest Updates (Feb 19, 2026 - Session 59)
+## Latest Updates (Feb 19, 2026 - Session 60)
+
+### NEW: Ticket-Estimate Integration (Phase 1 + 2)
+**Status:** IMPLEMENTED & TESTED (16/16 backend tests pass)
+
+**Core Features:**
+1. **Auto-create estimate** on technician assignment
+2. **Single source of truth** - Same estimate record in Job Card and Estimates module
+3. **Line item CRUD** - Add/Edit/Remove parts, labour, and fees
+4. **Server-side total calculation** - Subtotal, tax, discount, grand total
+5. **Optimistic concurrency** - Version check with 409 response on mismatch
+6. **Locking mechanism** - Admin/manager can lock estimates (423 response when locked)
+7. **Status workflow** - draft → sent → approved → locked
+
+**New Backend APIs:**
+- `POST /api/tickets/{id}/estimate/ensure` - Create/get linked estimate (idempotent)
+- `GET /api/tickets/{id}/estimate` - Get estimate with line items
+- `POST /api/ticket-estimates/{id}/line-items` - Add line item
+- `PATCH /api/ticket-estimates/{id}/line-items/{line_id}` - Update line item
+- `DELETE /api/ticket-estimates/{id}/line-items/{line_id}` - Remove line item
+- `POST /api/ticket-estimates/{id}/approve` - Approve estimate
+- `POST /api/ticket-estimates/{id}/send` - Send to customer
+- `POST /api/ticket-estimates/{id}/lock` - Lock estimate
+- `GET /api/ticket-estimates` - List all ticket estimates
+
+**New Frontend Components:**
+- `EstimateItemsPanel.jsx` - Job Card estimate management UI
+- Parts catalog search integration
+- Real-time totals display
+- Lock banner when locked
+- Status badge (Draft/Sent/Approved/Locked)
+
+**Database Collections:**
+- `ticket_estimates` - Main estimate records
+- `ticket_estimate_line_items` - Line items with type, qty, price, tax
+- `ticket_estimate_history` - Audit trail
+
+---
+
+## Previous Updates (Feb 19, 2026 - Session 59)
 
 ### FIX: Customer Portal Authentication (Session 58-59)
 **Status:** FIXED & VERIFIED (21/21 tests passed)
