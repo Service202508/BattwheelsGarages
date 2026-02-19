@@ -22,6 +22,13 @@ Added comprehensive vehicle category filter and 80 EV models:
 - **4 Wheeler Commercial** (20 models): Tata Ace EV, Switch IeV, EKA, Altigreen, etc.
 - **Car** (20 models): Tata Nexon/Punch/Tiago EV, Mahindra XUV400/BE6, MG, Hyundai, BYD, etc.
 
+### AI DIAGNOSTIC SYSTEM ENHANCEMENT ✅
+Added 11 issue categories with vehicle-category-aware diagnosis:
+- **Issue Categories**: Battery, Motor, Charging, Electrical, Mechanical (NEW), Software (NEW), Suspension (NEW), Braking (NEW), Cooling (NEW), AC/Heating (NEW), Other
+- **Enhanced Response**: Diagnostic steps, safety warnings, recommended parts, estimated cost
+- **Vehicle Context**: Category-specific advice (2-wheeler vs car vs commercial)
+- **Knowledge Base**: Category-specific causes, diagnostics, parts, and safety info
+
 ---
 
 ## Completed Work (Feb 19, 2026)
