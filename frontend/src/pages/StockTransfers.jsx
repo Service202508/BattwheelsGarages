@@ -102,10 +102,13 @@ export default function StockTransfers() {
     }
 
     try {
-      const res = await fetch(`${API}/stock-transfers`, {
+      const res = await fetch(`${API}/stock-transfers/`, {
         method: "POST",
         headers,
-        body: JSON.stringify(newTransfer)
+        body: JSON.stringify({
+          ...newTransfer,
+          line_items: newTransfer.items
+        })
       });
       
       if (res.ok) {
