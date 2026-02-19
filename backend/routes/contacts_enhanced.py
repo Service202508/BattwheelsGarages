@@ -835,16 +835,21 @@ async def report_new_contacts(days: int = 30, contact_type: Optional[str] = None
 # ========================= CONTACT CRUD =========================
 
 @router.post("/")
-async def create_contact(contact: ContactCreate, background_tasks: BackgroundTasks):
+async def create_contact(contact: ContactCreate, background_tasks: BackgroundTasks, request: Request = None):
     """Create a new contact (customer, vendor, or both)"""
-    # Check for duplicate by GSTIN or email
+    # Get org context for multi-tenant scoping
+    org_id = await get_org_id(request) if request else None
+    
+    # Check for duplicate by GSTIN or email (org-scoped)
     if contact.gstin:
-        existing = await contacts_collection.find_one({"gstin": contact.gstin.upper()})
+        existing_query = org_query(org_id, {"gstin": contact.gstin.upper()})
+        existing = await contacts_collection.find_one(existing_query)
         if existing:
             raise HTTPException(status_code=400, detail=f"Contact with GSTIN {contact.gstin} already exists")
     
     if contact.email:
-        existing = await contacts_collection.find_one({"email": contact.email.lower()})
+        existing_query = org_query(org_id, {"email": contact.email.lower()})
+        existing = await contacts_collection.find_one(existing_query)
         if existing:
             raise HTTPException(status_code=400, detail=f"Contact with email {contact.email} already exists")
     
@@ -913,6 +918,10 @@ async def create_contact(contact: ContactCreate, background_tasks: BackgroundTas
         "updated_time": datetime.now(timezone.utc).isoformat(),
         "last_activity_time": datetime.now(timezone.utc).isoformat()
     }
+    
+    # Add org_id for multi-tenant scoping
+    if org_id:
+        contact_doc["organization_id"] = org_id
     
     await contacts_collection.insert_one(contact_doc)
     
