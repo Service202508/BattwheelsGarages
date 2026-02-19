@@ -6,11 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { 
   LogIn, LogOut, Receipt, FileText, CreditCard, User, Building2, 
   Calendar, DollarSign, AlertTriangle, CheckCircle, Clock, Eye,
-  Download, ChevronRight, RefreshCw
+  Download, ChevronRight, RefreshCw, Ticket, Plus, MessageSquare,
+  Car, Send, Loader2
 } from "lucide-react";
 import { API } from "@/App";
 
