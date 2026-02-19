@@ -65,7 +65,11 @@ export default function EstimatesEnhanced() {
   const [showBulkActionDialog, setShowBulkActionDialog] = useState(false);
   const [showCustomFieldsDialog, setShowCustomFieldsDialog] = useState(false);
   const [showTemplateDialog, setShowTemplateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [selectedEstimate, setSelectedEstimate] = useState(null);
+  
+  // Edit form state
+  const [editEstimate, setEditEstimate] = useState(null);
 
   // Bulk selection
   const [selectedIds, setSelectedIds] = useState([]);
