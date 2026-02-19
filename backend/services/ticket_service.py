@@ -345,6 +345,22 @@ class TicketService:
             {"ticket_id": ticket_id}, {"$set": update_dict}
         )
         
+        # AUTO-CREATE ESTIMATE on technician assignment
+        if data.assigned_technician_id and existing.get("organization_id"):
+            try:
+                from services.ticket_estimate_service import get_ticket_estimate_service
+                estimate_service = get_ticket_estimate_service()
+                await estimate_service.ensure_estimate(
+                    ticket_id=ticket_id,
+                    organization_id=existing.get("organization_id"),
+                    user_id=user_id,
+                    user_name=user_name
+                )
+                logger.info(f"Auto-created estimate for ticket {ticket_id} on technician assignment")
+            except Exception as e:
+                # Don't fail ticket update if estimate creation fails
+                logger.warning(f"Failed to auto-create estimate for ticket {ticket_id}: {e}")
+        
         # EMIT TICKET_UPDATED EVENT
         await self.dispatcher.emit(
             EventType.TICKET_UPDATED,
