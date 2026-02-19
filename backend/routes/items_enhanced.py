@@ -65,48 +65,101 @@ class WarehouseCreate(BaseModel):
     is_active: bool = True
 
 class ItemCreate(BaseModel):
-    """Enhanced item creation model matching Zoho Books"""
-    name: str
-    sku: Optional[str] = None
-    description: str = ""
-    item_type: str = "inventory"  # inventory, non_inventory, service
+    """Enhanced item creation model - Full Zoho Books CSV compatibility
+    
+    Columns supported:
+    Item ID, Item Name, SKU, HSN/SAC, Description, Rate, Account, Account Code,
+    Taxable, Exemption Reason, Taxability Type, Product Type,
+    Intra State Tax Name/Rate/Type, Inter State Tax Name/Rate/Type,
+    Source, Reference ID, Last Sync Time, Status, Usage unit, Unit Name,
+    Purchase Rate, Purchase Account, Purchase Account Code, Purchase Description,
+    Inventory Account, Inventory Account Code, Inventory Valuation Method,
+    Reorder Point, Vendor, Location Name, Opening Stock, Opening Stock Value,
+    Stock On Hand, Item Type, Sellable, Purchasable, Track Inventory
+    """
+    # Basic Info
+    name: str = Field(..., alias="Item Name")
+    sku: Optional[str] = Field(None, alias="SKU")
+    description: str = Field("", alias="Description")
+    item_type: str = Field("inventory", alias="Item Type")  # inventory, non_inventory, service, goods
+    product_type: str = Field("goods", alias="Product Type")  # goods, service
     group_id: Optional[str] = None
     group_name: Optional[str] = None
     
     # Sales Information
-    sales_rate: float = 0
+    rate: float = Field(0, alias="Rate")  # Selling price
+    sales_rate: float = 0  # Same as rate
     sales_description: str = ""
+    sales_account: Optional[str] = Field(None, alias="Account")  # Sales Account Name
     sales_account_id: Optional[str] = None
+    sales_account_code: Optional[str] = Field(None, alias="Account Code")
     
     # Purchase Information
-    purchase_rate: float = 0
-    purchase_description: str = ""
+    purchase_rate: float = Field(0, alias="Purchase Rate")
+    purchase_description: str = Field("", alias="Purchase Description")
+    purchase_account: Optional[str] = Field(None, alias="Purchase Account")
     purchase_account_id: Optional[str] = None
+    purchase_account_code: Optional[str] = Field(None, alias="Purchase Account Code")
     
-    # Inventory
+    # Inventory Account
+    inventory_account: Optional[str] = Field(None, alias="Inventory Account")
     inventory_account_id: Optional[str] = None
-    initial_stock: float = 0
-    opening_stock_rate: float = 0  # Cost per unit for opening stock
-    reorder_level: float = 0
-    inventory_valuation_method: str = "fifo"  # fifo, weighted_average
+    inventory_account_code: Optional[str] = Field(None, alias="Inventory Account Code")
+    inventory_valuation_method: str = Field("fifo", alias="Inventory Valuation Method")  # fifo, weighted_average
+    
+    # Inventory Levels
+    opening_stock: float = Field(0, alias="Opening Stock")
+    opening_stock_value: float = Field(0, alias="Opening Stock Value")  # Total value
+    opening_stock_rate: float = 0  # Cost per unit (calculated from value/stock)
+    stock_on_hand: float = Field(0, alias="Stock On Hand")
+    reorder_level: float = Field(0, alias="Reorder Point")
     
     # Units
     unit: str = "pcs"
+    usage_unit: str = Field("pcs", alias="Usage unit")
+    unit_name: str = Field("", alias="Unit Name")  # Full unit name
     
-    # Tax
+    # Tax Information - Complete Zoho Fields
+    taxable: bool = Field(True, alias="Taxable")
     tax_preference: str = "taxable"  # taxable, non_taxable, exempt
+    taxability_type: str = Field("", alias="Taxability Type")  # Goods, Service
+    exemption_reason: str = Field("", alias="Exemption Reason")
     tax_id: Optional[str] = None
     tax_percentage: float = 18
-    intra_state_tax_rate: float = 18  # CGST + SGST
-    inter_state_tax_rate: float = 18  # IGST
     
-    # HSN/SAC Codes
-    hsn_code: str = ""
-    sac_code: str = ""
+    # GST Taxes (India)
+    intra_state_tax_name: str = Field("GST", alias="Intra State Tax Name")
+    intra_state_tax_rate: float = Field(18, alias="Intra State Tax Rate")  # CGST + SGST
+    intra_state_tax_type: str = Field("percentage", alias="Intra State Tax Type")
+    inter_state_tax_name: str = Field("IGST", alias="Inter State Tax Name")
+    inter_state_tax_rate: float = Field(18, alias="Inter State Tax Rate")  # IGST
+    inter_state_tax_type: str = Field("percentage", alias="Inter State Tax Type")
     
-    # Vendor
+    # HSN/SAC Codes (GST India)
+    hsn_code: str = Field("", alias="HSN/SAC")
+    sac_code: str = ""  # Service Accounting Code
+    
+    # Vendor Information
+    vendor: Optional[str] = Field(None, alias="Vendor")  # Vendor name
     preferred_vendor_id: Optional[str] = None
     preferred_vendor_name: str = ""
+    
+    # Location/Warehouse
+    location_name: str = Field("", alias="Location Name")
+    warehouse_id: Optional[str] = None
+    
+    # Sync Information (Zoho Integration)
+    source: str = Field("Manual", alias="Source")  # Manual, Zoho Books, Import
+    reference_id: Optional[str] = Field(None, alias="Reference ID")  # External system ID
+    zoho_item_id: Optional[str] = None
+    last_sync_time: Optional[str] = Field(None, alias="Last Sync Time")
+    
+    # Status & Flags
+    status: str = Field("active", alias="Status")  # active, inactive
+    is_active: bool = True
+    sellable: bool = Field(True, alias="Sellable")
+    purchasable: bool = Field(True, alias="Purchasable")
+    track_inventory: bool = Field(True, alias="Track Inventory")
     
     # Image (base64 encoded)
     image_data: Optional[str] = None
@@ -115,22 +168,29 @@ class ItemCreate(BaseModel):
     # Custom Fields
     custom_fields: Dict = {}
     
-    is_active: bool = True
-    track_inventory: bool = True
+    class Config:
+        populate_by_name = True  # Allow both alias and field name
 
     @validator('item_type')
     def validate_item_type(cls, v):
-        valid_types = ['inventory', 'non_inventory', 'service', 'sales', 'purchases', 'sales_and_purchases']
-        if v not in valid_types:
+        valid_types = ['inventory', 'non_inventory', 'service', 'sales', 'purchases', 'sales_and_purchases', 'goods']
+        if v.lower() not in [t.lower() for t in valid_types]:
             raise ValueError(f"Item type must be one of: {valid_types}")
-        return v
+        return v.lower()
     
     @validator('tax_preference')
     def validate_tax_preference(cls, v):
         valid = ['taxable', 'non_taxable', 'exempt']
-        if v not in valid:
+        if v.lower() not in [t.lower() for t in valid]:
             raise ValueError(f"Tax preference must be one of: {valid}")
-        return v
+        return v.lower()
+    
+    @validator('inventory_valuation_method')
+    def validate_valuation_method(cls, v):
+        valid = ['fifo', 'weighted_average', 'lifo', 'specific']
+        if v.lower() not in valid:
+            return 'fifo'  # Default to FIFO
+        return v.lower()
 
 class ItemUpdate(BaseModel):
     """Partial update model - all fields optional"""
