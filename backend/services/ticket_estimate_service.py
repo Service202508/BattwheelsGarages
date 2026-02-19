@@ -112,6 +112,10 @@ class TicketEstimateService:
                 {"estimate_id": existing["estimate_id"]},
                 {"_id": 0}
             ).sort("sort_index", 1).to_list(1000)
+            
+            # Enrich parts with stock information
+            line_items = await self._enrich_line_items_with_stock(line_items, organization_id)
+            
             existing["line_items"] = line_items
             return existing
         
