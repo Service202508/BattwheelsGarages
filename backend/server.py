@@ -4284,16 +4284,32 @@ async def get_my_payroll(request: Request):
 @api_router.post("/customers")
 async def create_customer(data: CustomerCreate, request: Request):
     await require_technician_or_admin(request)
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+    except HTTPException:
+        org_id = None
+    
     customer = Customer(**data.model_dump())
     doc = customer.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
+    if org_id:
+        doc['organization_id'] = org_id
     await db.customers.insert_one(doc)
     return customer.model_dump()
 
 @api_router.get("/customers")
 async def get_customers(request: Request, search: Optional[str] = None, status: Optional[str] = None):
     await require_auth(request)
-    query = {}
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        query = {"organization_id": org_id}
+    except HTTPException:
+        query = {}
+    
     if search:
         query["$or"] = [
             {"display_name": {"$regex": search, "$options": "i"}},
@@ -4308,7 +4324,14 @@ async def get_customers(request: Request, search: Optional[str] = None, status: 
 @api_router.get("/customers/{customer_id}")
 async def get_customer(customer_id: str, request: Request):
     await require_auth(request)
-    customer = await db.customers.find_one({"customer_id": customer_id}, {"_id": 0})
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        query = {"customer_id": customer_id, "organization_id": org_id}
+    except HTTPException:
+        query = {"customer_id": customer_id}
+    customer = await db.customers.find_one(query, {"_id": 0})
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     return customer
@@ -4316,10 +4339,17 @@ async def get_customer(customer_id: str, request: Request):
 @api_router.put("/customers/{customer_id}")
 async def update_customer(customer_id: str, update: CustomerUpdate, request: Request):
     await require_technician_or_admin(request)
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        query = {"customer_id": customer_id, "organization_id": org_id}
+    except HTTPException:
+        query = {"customer_id": customer_id}
     update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
     update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
-    await db.customers.update_one({"customer_id": customer_id}, {"$set": update_dict})
-    customer = await db.customers.find_one({"customer_id": customer_id}, {"_id": 0})
+    await db.customers.update_one(query, {"$set": update_dict})
+    customer = await db.customers.find_one(query, {"_id": 0})
     return customer
 
 # ==================== EXPENSE ROUTES ====================
