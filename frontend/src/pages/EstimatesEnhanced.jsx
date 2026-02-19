@@ -1077,6 +1077,10 @@ export default function EstimatesEnhanced() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="estimates">Estimates</TabsTrigger>
+          <TabsTrigger value="ticket-estimates" className="flex items-center gap-1">
+            <Ticket className="h-4 w-4" />
+            Ticket Estimates ({ticketEstimates.length})
+          </TabsTrigger>
           <TabsTrigger value="create">Create New</TabsTrigger>
         </TabsList>
 
