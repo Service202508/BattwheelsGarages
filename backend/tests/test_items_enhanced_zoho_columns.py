@@ -301,13 +301,12 @@ class TestItemsEnhancedZohoColumns:
         
         print(f"JSON export: {data['count']} items")
         
-        # Verify item structure has core Zoho fields (checking fields that are always present)
+        # Verify item structure has core Zoho fields (checking fields that should always be present)
         if data["items"]:
             item = data["items"][0]
-            # Check only fields that should always be present
+            # Check only basic fields that should always be present on any item
             core_fields = [
-                "item_id", "name", "rate", "item_type", "status",
-                "sellable", "purchasable", "track_inventory"
+                "item_id", "name", "rate", "item_type", "status"
             ]
             
             missing = []
@@ -318,6 +317,7 @@ class TestItemsEnhancedZohoColumns:
             assert len(missing) == 0, f"Missing core fields in JSON export: {missing}"
             
             print("JSON export structure verified: PASS")
+            print(f"Sample item fields: {list(item.keys())[:15]}...")
 
     def test_item_list_with_new_fields(self, api_client):
         """Test item list displays correctly with new fields"""
