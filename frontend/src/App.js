@@ -75,6 +75,8 @@ import DataManagement from "@/pages/DataManagement";
 import Home from "@/pages/Home";
 import TimeTracking from "@/pages/TimeTracking";
 import Documents from "@/pages/Documents";
+import StockTransfers from "@/pages/StockTransfers";
+import Accountant from "@/pages/Accountant";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 import PublicQuoteView from "@/pages/PublicQuoteView";
