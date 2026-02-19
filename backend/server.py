@@ -5090,6 +5090,16 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Stock Transfers Routes
+try:
+    from routes.stock_transfers import router as stock_transfers_router
+    api_router.include_router(stock_transfers_router)
+    logger.info("Stock Transfers routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Stock Transfers routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
