@@ -1176,6 +1176,119 @@ export default function EstimatesEnhanced() {
           )}
         </TabsContent>
 
+        {/* Ticket Estimates Tab */}
+        <TabsContent value="ticket-estimates" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Ticket className="h-5 w-5" />
+                Ticket-Linked Estimates
+              </CardTitle>
+              <CardDescription>
+                Estimates created from service tickets. These are managed through the Job Card interface.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {ticketEstimates.length === 0 ? (
+                <EmptyState 
+                  icon={<Ticket className="h-12 w-12" />}
+                  title="No Ticket Estimates"
+                  description="Estimates will appear here when technicians are assigned to service tickets."
+                />
+              ) : (
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-left font-medium">Estimate #</th>
+                        <th className="px-4 py-3 text-left font-medium">Linked Ticket</th>
+                        <th className="px-4 py-3 text-left font-medium">Customer</th>
+                        <th className="px-4 py-3 text-left font-medium">Vehicle</th>
+                        <th className="px-4 py-3 text-left font-medium">Status</th>
+                        <th className="px-4 py-3 text-right font-medium">Amount</th>
+                        <th className="px-4 py-3 text-left font-medium">Created</th>
+                        <th className="px-4 py-3 text-center font-medium">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ticketEstimates.map((est) => (
+                        <tr key={est.estimate_id} className="border-t hover:bg-gray-50">
+                          <td className="px-4 py-3 font-mono text-sm">{est.estimate_number}</td>
+                          <td className="px-4 py-3">
+                            <a 
+                              href={`/tickets?id=${est.ticket_id}`}
+                              className="flex items-center gap-1 text-primary hover:underline"
+                            >
+                              <Ticket className="h-4 w-4" />
+                              {est.ticket_id?.slice(0, 12)}...
+                            </a>
+                          </td>
+                          <td className="px-4 py-3">{est.customer_name || '-'}</td>
+                          <td className="px-4 py-3">
+                            {est.vehicle_number ? (
+                              <span>{est.vehicle_number} <span className="text-xs text-gray-500">{est.vehicle_model}</span></span>
+                            ) : '-'}
+                          </td>
+                          <td className="px-4 py-3">
+                            <Badge 
+                              variant="outline" 
+                              className={
+                                est.status === 'approved' ? 'bg-green-100 text-green-700' :
+                                est.status === 'sent' ? 'bg-blue-100 text-blue-700' :
+                                est.locked_at ? 'bg-orange-100 text-orange-700' :
+                                'bg-gray-100 text-gray-700'
+                              }
+                            >
+                              {est.locked_at ? 'Locked' : est.status}
+                            </Badge>
+                          </td>
+                          <td className="px-4 py-3 text-right font-mono font-semibold">
+                            ₹{(est.grand_total || 0).toLocaleString('en-IN')}
+                          </td>
+                          <td className="px-4 py-3 text-xs text-gray-500">
+                            {new Date(est.created_at).toLocaleDateString()}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <div className="flex justify-center gap-1">
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => window.open(`/tickets?id=${est.ticket_id}`, '_blank')}
+                                title="View Job Card"
+                              >
+                                <Wrench className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => {
+                                  setSelectedEstimate({
+                                    ...est,
+                                    is_ticket_estimate: true,
+                                    estimate_number: est.estimate_number,
+                                    status: est.status,
+                                    customer_name: est.customer_name,
+                                    line_items: est.line_items || [],
+                                    date: est.created_at?.split('T')[0],
+                                  });
+                                  setShowDetailDialog(true);
+                                }}
+                                title="View Details"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Create Tab */}
         <TabsContent value="create" className="space-y-6">
           <Card>
