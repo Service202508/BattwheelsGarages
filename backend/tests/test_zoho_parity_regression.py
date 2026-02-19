@@ -84,15 +84,23 @@ class TestRunner:
         estimate_id = estimate["estimate_id"]
         print(f"  ✓ Created estimate: {estimate['estimate_number']} (status: {estimate['status']})")
         
-        # Step 3: Mark as sent
-        response = requests.post(f"{BASE_URL}/estimates-enhanced/{estimate_id}/mark-sent", headers=self.headers())
+        # Step 3: Mark as sent (use PUT /status endpoint)
+        response = requests.put(
+            f"{BASE_URL}/estimates-enhanced/{estimate_id}/status",
+            json={"status": "sent"},
+            headers=self.headers()
+        )
         if response.status_code != 200:
             print(f"  ❌ Mark sent failed: {response.status_code}")
             return False
         print("  ✓ Marked as sent")
         
-        # Step 4: Accept estimate
-        response = requests.post(f"{BASE_URL}/estimates-enhanced/{estimate_id}/accept", headers=self.headers())
+        # Step 4: Accept estimate (use PUT /status endpoint)
+        response = requests.put(
+            f"{BASE_URL}/estimates-enhanced/{estimate_id}/status",
+            json={"status": "accepted"},
+            headers=self.headers()
+        )
         if response.status_code != 200:
             print(f"  ❌ Accept failed: {response.status_code}")
             return False
