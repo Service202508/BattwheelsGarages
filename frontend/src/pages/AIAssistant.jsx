@@ -336,13 +336,15 @@ export default function AIAssistant({ user }) {
                         </SelectGroup>
                       </>
                     ) : (
-                      <SelectItem value="" disabled>No models available</SelectItem>
+                      <div className="p-2 text-sm text-muted-foreground text-center">
+                        Select a vehicle category first
+                      </div>
                     )}
                   </SelectContent>
                 </Select>
                 {query.vehicle_category && (
                   <p className="text-xs text-muted-foreground">
-                    {filteredModels.length} {query.vehicle_category.replace('_', ' ')} models available
+                    {filteredModels.length} {query.vehicle_category.replace(/_/g, ' ')} models available
                   </p>
                 )}
               </div>
