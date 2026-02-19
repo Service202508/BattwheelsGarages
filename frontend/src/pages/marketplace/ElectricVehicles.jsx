@@ -79,6 +79,7 @@ const oemBrands = {
 const ElectricVehicles = () => {
   const [searchParams] = useSearchParams();
   const { getCartCount } = useMarketplace();
+  const { toast } = useToast();
   
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -87,6 +88,17 @@ const ElectricVehicles = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [oems, setOems] = useState([]);
+  
+  // Callback modal state
+  const [showCallbackModal, setShowCallbackModal] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [callbackForm, setCallbackForm] = useState({
+    name: '',
+    phone: '',
+    preferred_time: '',
+    message: ''
+  });
+  const [submittingCallback, setSubmittingCallback] = useState(false);
   
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
