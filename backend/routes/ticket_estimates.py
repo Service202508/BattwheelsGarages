@@ -69,10 +69,22 @@ async def get_current_user_from_token(request: Request) -> Optional[Dict[str, An
         token = auth_header.split(" ")[1]
         try:
             payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            # The JWT payload already contains user_id, email, role
+            # Return it directly - role is in the token
+            user_from_token = {
+                "user_id": payload.get("user_id"),
+                "email": payload.get("email"),
+                "role": payload.get("role"),
+            }
+            
+            # Optionally enrich with DB data if available
             if _db:
-                user = await _db.users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
-                if user:
-                    return user
+                db_user = await _db.users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
+                if db_user:
+                    return db_user
+            
+            # Return token data if DB lookup failed
+            return user_from_token
         except Exception as e:
             logger.warning(f"JWT decode error: {e}")
     
