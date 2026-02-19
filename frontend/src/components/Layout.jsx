@@ -489,7 +489,12 @@ export default function Layout({ children, user, onLogout }) {
               </Button>
             </div>
             
-            {/* Center - Breadcrumb or Page Title could go here */}
+            {/* Left side desktop - Organization Switcher */}
+            <div className="hidden lg:flex items-center">
+              <OrganizationSwitcher />
+            </div>
+            
+            {/* Center - Spacer */}
             <div className="flex-1" />
             
             {/* Right side - Actions */}
