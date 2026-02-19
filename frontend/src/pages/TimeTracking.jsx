@@ -178,14 +178,14 @@ const NewEntryDialog = ({ open, onClose, onSave, tickets, users }) => {
           <div>
             <Label>Ticket (Optional)</Label>
             <Select
-              value={formData.ticket_id}
-              onValueChange={(v) => setFormData({ ...formData, ticket_id: v })}
+              value={formData.ticket_id || "__none__"}
+              onValueChange={(v) => setFormData({ ...formData, ticket_id: v === "__none__" ? "" : v })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Link to ticket" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
+                <SelectItem value="__none__">None</SelectItem>
                 {tickets.map((ticket) => (
                   <SelectItem key={ticket.ticket_id} value={ticket.ticket_id}>
                     {ticket.issue?.substring(0, 40) || ticket.ticket_id}
