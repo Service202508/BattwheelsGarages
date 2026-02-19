@@ -1,6 +1,6 @@
 /**
- * Electric Vehicles Marketplace - Premium Design
- * New & Certified Refurbished EVs organized by OEM
+ * Electric Vehicles Marketplace - Refurbished 2W & 3W Only
+ * Certified Refurbished EVs organized by OEM
  */
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -13,7 +13,6 @@ import { Input } from '../../components/ui/input';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import {
   Search,
-  Car,
   Bike,
   Truck,
   CheckCircle,
@@ -26,29 +25,48 @@ import {
   Phone,
   Sparkles,
   AlertCircle,
-  Zap
+  Zap,
+  RefreshCw,
+  Package
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Vehicle type config
+// Vehicle type config - Only 2W and 3W (refurbished)
 const vehicleTypeConfig = {
-  '2W': { icon: Bike, label: '2-Wheelers', color: 'from-blue-500 to-blue-600' },
-  '3W': { icon: Truck, label: '3-Wheelers', color: 'from-orange-500 to-orange-600' },
-  '4W': { icon: Car, label: '4-Wheelers', color: 'from-purple-500 to-purple-600' }
+  '2W': { icon: Bike, label: '2-Wheelers', sublabel: 'Scooters & Motorcycles', color: 'from-blue-500 to-indigo-600' },
+  '3W': { icon: Truck, label: '3-Wheelers', sublabel: 'Autos & Cargo', color: 'from-orange-500 to-amber-600' }
 };
 
-// OEM brand colors
+// OEM brand colors - Updated with all brands
 const oemBrands = {
-  'Ather': { color: '#00A86B', bg: 'bg-teal-500' },
-  'Ola': { color: '#1E90FF', bg: 'bg-blue-500' },
-  'TVS': { color: '#E31937', bg: 'bg-red-500' },
-  'Bajaj': { color: '#004B93', bg: 'bg-blue-700' },
-  'Hero': { color: '#CC0000', bg: 'bg-red-600' },
-  'Tata': { color: '#1C3664', bg: 'bg-blue-900' },
-  'Mahindra': { color: '#C41230', bg: 'bg-red-700' },
-  'MG': { color: '#B71234', bg: 'bg-red-700' },
-  'Piaggio': { color: '#006847', bg: 'bg-green-700' }
+  'Ola Electric': { color: '#2ECC71', bg: 'bg-green-500' },
+  'Ather Energy': { color: '#00A86B', bg: 'bg-teal-500' },
+  'TVS Motor': { color: '#1E90FF', bg: 'bg-blue-500' },
+  'Bajaj Auto': { color: '#FF6B00', bg: 'bg-orange-500' },
+  'Hero MotoCorp': { color: '#E31837', bg: 'bg-red-600' },
+  'Hero Electric': { color: '#E31837', bg: 'bg-red-600' },
+  'Greaves Electric': { color: '#4A90D9', bg: 'bg-blue-400' },
+  'Okinawa': { color: '#FF4500', bg: 'bg-orange-600' },
+  'Revolt Motors': { color: '#000000', bg: 'bg-gray-800' },
+  'Tork Motors': { color: '#FF0000', bg: 'bg-red-500' },
+  'Simple Energy': { color: '#6B5B95', bg: 'bg-purple-500' },
+  'PURE EV': { color: '#32CD32', bg: 'bg-green-500' },
+  'Oben Electric': { color: '#FF6347', bg: 'bg-red-400' },
+  'Ultraviolette': { color: '#4B0082', bg: 'bg-indigo-700' },
+  'Kinetic Green': { color: '#228B22', bg: 'bg-green-600' },
+  'Wardwizard Joy e-Bike': { color: '#FFD700', bg: 'bg-yellow-500' },
+  'Mahindra': { color: '#E31837', bg: 'bg-red-700' },
+  'Piaggio': { color: '#00599C', bg: 'bg-blue-700' },
+  'Euler Motors': { color: '#FF8C00', bg: 'bg-orange-500' },
+  'Omega Seiki': { color: '#2F4F4F', bg: 'bg-gray-600' },
+  'Lohia Auto': { color: '#8B4513', bg: 'bg-amber-700' },
+  'Atul Auto': { color: '#006400', bg: 'bg-green-700' },
+  'YC Electric': { color: '#4169E1', bg: 'bg-blue-500' },
+  'Mini Metro': { color: '#808080', bg: 'bg-gray-500' },
+  'Saarthi': { color: '#CD853F', bg: 'bg-amber-600' },
+  'Udaan': { color: '#20B2AA', bg: 'bg-teal-400' },
+  'Montra Electric': { color: '#9932CC', bg: 'bg-purple-600' }
 };
 
 const ElectricVehicles = () => {
