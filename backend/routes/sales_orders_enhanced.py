@@ -1339,3 +1339,192 @@ async def report_fulfillment_summary():
             "fulfillment_rate": round((fulfilled / total) * 100, 1) if total > 0 else 0
         }
     }
+
+# ==================== SALES ORDER PDF ====================
+
+@router.get("/{salesorder_id}/pdf")
+async def get_sales_order_pdf(salesorder_id: str):
+    """Generate Sales Order PDF"""
+    from io import BytesIO
+    
+    order = await salesorders_collection.find_one({"salesorder_id": salesorder_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Sales Order not found")
+    
+    # Get line items
+    line_items = await salesorder_items_collection.find(
+        {"salesorder_id": salesorder_id},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Get organization settings
+    org_settings = await db["organization_settings"].find_one({}, {"_id": 0}) or {}
+    
+    # Generate HTML
+    status_badge = {
+        "draft": "#6B7280",
+        "confirmed": "#3B82F6",
+        "fulfilled": "#22C55E",
+        "partially_fulfilled": "#F59E0B",
+        "closed": "#9333EA",
+        "void": "#EF4444"
+    }.get(order.get("status", "draft"), "#6B7280")
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{ font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 20px; color: #333; font-size: 12px; }}
+            .document {{ max-width: 800px; margin: 0 auto; }}
+            .header {{ display: flex; justify-content: space-between; border-bottom: 3px solid #22EDA9; padding-bottom: 20px; margin-bottom: 20px; }}
+            .company-name {{ font-size: 20px; font-weight: bold; }}
+            .doc-title {{ font-size: 24px; color: #22EDA9; font-weight: bold; }}
+            .doc-number {{ color: #666; font-size: 14px; }}
+            .status-badge {{ display: inline-block; padding: 4px 12px; border-radius: 20px; color: white; font-size: 11px; background: {status_badge}; }}
+            .section {{ margin-bottom: 20px; }}
+            .section-title {{ font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }}
+            table {{ width: 100%; border-collapse: collapse; }}
+            th {{ background: #f8f9fa; padding: 10px; text-align: left; font-size: 11px; text-transform: uppercase; border-bottom: 2px solid #22EDA9; }}
+            td {{ padding: 10px; border-bottom: 1px solid #eee; }}
+            .totals {{ margin-top: 20px; text-align: right; }}
+            .totals-row {{ display: flex; justify-content: flex-end; margin-bottom: 5px; }}
+            .totals-label {{ width: 150px; color: #666; }}
+            .totals-value {{ width: 100px; font-weight: bold; }}
+            .grand-total {{ font-size: 18px; color: #22EDA9; background: #f8f9fa; padding: 10px; }}
+        </style>
+    </head>
+    <body>
+        <div class="document">
+            <div class="header">
+                <div>
+                    <div class="company-name">{org_settings.get('company_name', 'Battwheels OS')}</div>
+                    <div style="color: #666; margin-top: 5px;">
+                        {org_settings.get('address', '')}<br>
+                        GSTIN: {org_settings.get('gstin', '')}
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="doc-title">SALES ORDER</div>
+                    <div class="doc-number">#{order.get('salesorder_number', salesorder_id)}</div>
+                    <div style="margin-top: 10px;"><span class="status-badge">{order.get('status', 'draft').upper()}</span></div>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between;">
+                <div class="section">
+                    <div class="section-title">Customer</div>
+                    <div style="font-weight: bold;">{order.get('customer_name', 'N/A')}</div>
+                    <div style="color: #666;">{order.get('billing_address', {}).get('street', '')}</div>
+                    <div style="color: #666;">{order.get('billing_address', {}).get('city', '')} {order.get('billing_address', {}).get('state', '')}</div>
+                </div>
+                <div class="section" style="text-align: right;">
+                    <div class="section-title">Order Date</div>
+                    <div>{order.get('date', '')}</div>
+                    <div class="section-title" style="margin-top: 10px;">Expected Ship Date</div>
+                    <div>{order.get('expected_shipment_date', 'N/A')}</div>
+                </div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Item</th>
+                        <th style="text-align: center;">Qty</th>
+                        <th style="text-align: right;">Rate</th>
+                        <th style="text-align: right;">Tax</th>
+                        <th style="text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+    """
+    
+    for idx, item in enumerate(line_items, 1):
+        html_content += f"""
+                    <tr>
+                        <td>{idx}</td>
+                        <td>
+                            <div style="font-weight: bold;">{item.get('name', item.get('item_name', ''))}</div>
+                            <div style="font-size: 10px; color: #666;">{item.get('description', '')}</div>
+                        </td>
+                        <td style="text-align: center;">{item.get('quantity', 0)} {item.get('unit', '')}</td>
+                        <td style="text-align: right;">₹{item.get('rate', 0):,.2f}</td>
+                        <td style="text-align: right;">{item.get('tax_percentage', item.get('tax_rate', 0))}%</td>
+                        <td style="text-align: right;">₹{item.get('item_total', item.get('amount', 0)):,.2f}</td>
+                    </tr>
+        """
+    
+    html_content += f"""
+                </tbody>
+            </table>
+            
+            <div class="totals">
+                <div class="totals-row">
+                    <div class="totals-label">Sub Total:</div>
+                    <div class="totals-value">₹{order.get('sub_total', 0):,.2f}</div>
+                </div>
+                {f'<div class="totals-row"><div class="totals-label">Discount:</div><div class="totals-value">-₹{order.get("discount_total", 0):,.2f}</div></div>' if order.get('discount_total', 0) > 0 else ''}
+                <div class="totals-row">
+                    <div class="totals-label">Tax:</div>
+                    <div class="totals-value">₹{order.get('tax_total', 0):,.2f}</div>
+                </div>
+                {f'<div class="totals-row"><div class="totals-label">Shipping:</div><div class="totals-value">₹{order.get("shipping_charge", 0):,.2f}</div></div>' if order.get('shipping_charge', 0) > 0 else ''}
+                <div class="totals-row grand-total">
+                    <div class="totals-label">Grand Total:</div>
+                    <div class="totals-value">₹{order.get('grand_total', 0):,.2f}</div>
+                </div>
+            </div>
+            
+            {f'<div class="section" style="margin-top: 30px;"><div class="section-title">Notes</div><div>{order.get("notes", "")}</div></div>' if order.get('notes') else ''}
+            {f'<div class="section"><div class="section-title">Terms & Conditions</div><div style="font-size: 10px; color: #666;">{order.get("terms_conditions", "")}</div></div>' if order.get('terms_conditions') else ''}
+        </div>
+    </body>
+    </html>
+    """
+    
+    try:
+        from weasyprint import HTML
+        from fastapi.responses import StreamingResponse
+        
+        pdf_buffer = BytesIO()
+        HTML(string=html_content).write_pdf(pdf_buffer)
+        pdf_buffer.seek(0)
+        
+        return StreamingResponse(
+            pdf_buffer,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=SalesOrder_{order.get('salesorder_number', salesorder_id)}.pdf"
+            }
+        )
+    except Exception as e:
+        from fastapi.responses import HTMLResponse
+        return HTMLResponse(content=html_content)
+
+# ==================== ACTIVITY LOG ====================
+
+@router.get("/{salesorder_id}/activity")
+async def get_sales_order_activity(salesorder_id: str, limit: int = 50):
+    """Get activity log for a sales order"""
+    order = await salesorders_collection.find_one({"salesorder_id": salesorder_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Sales Order not found")
+    
+    # Get from history collection
+    history = await salesorder_history_collection.find(
+        {"salesorder_id": salesorder_id},
+        {"_id": 0}
+    ).sort("timestamp", -1).limit(limit).to_list(limit)
+    
+    if not history:
+        # Create basic activity from order data
+        history = [
+            {
+                "action": "created",
+                "details": f"Sales Order {order.get('salesorder_number', '')} created",
+                "timestamp": order.get("created_at", order.get("date", ""))
+            }
+        ]
+    
+    return {"code": 0, "activities": history}
