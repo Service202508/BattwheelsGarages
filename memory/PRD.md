@@ -155,12 +155,11 @@ Full Zoho Books-style settings dashboard with 8 categories:
 ### P1 (High Priority)
 - Activate email service (requires RESEND_API_KEY)
 - PDF Template Editor (WYSIWYG)
-- Execute test data deletion (159 records) after user approval
 
 ### P2 (Medium)
-- Razorpay payment activation
-- Run full Zoho sync to refresh all data
+- Razorpay payment activation (credentials needed)
 - Advanced audit logging
+- Negative stock root cause investigation
 
 ### P3 (Future)
 - Multi-organization switcher UI
