@@ -9,7 +9,7 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ### Assessment Date: February 19, 2026 (Updated)
 ### Overall Score: 99% Zoho Books Feature Parity
-### Regression Test Suite: 100% Pass Rate (Iteration 63)
+### Regression Test Suite: 100% Pass Rate (Iteration 64)
 ### Multi-Tenant Architecture: IMPLEMENTED
 ### All Settings (Zoho-style): FULLY IMPLEMENTED
 ### Data Management & Zoho Sync: FULLY IMPLEMENTED
@@ -17,7 +17,7 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ### Financial Dashboard (Zoho-style): FULLY IMPLEMENTED
 ### Time Tracking Module: FULLY IMPLEMENTED
 ### Documents Module: FULLY IMPLEMENTED
-### Customer Portal: FIXED & VERIFIED (Session 58-59)
+### Customer Portal: ENHANCED with Support Tickets (Session 64) ✅
 ### Inventory Enhanced: FIXED & VERIFIED (Session 59)
 ### Ticket-Estimate Integration: IMPLEMENTED (Session 60-61) ✅
 ### Convert Estimate to Invoice: IMPLEMENTED (Session 61) ✅
@@ -25,41 +25,75 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ### Banking/Accountant Module: FRONTEND IMPLEMENTED (Session 62) ✅
 ### Seed Utility: IMPLEMENTED (Session 62) ✅
 ### Enhanced Items Module (Zoho CSV): IMPLEMENTED (Session 63) ✅
+### Organization Settings Import/Export: IMPLEMENTED (Session 64) ✅
+### Organization Switcher with Create Org: IMPLEMENTED (Session 64) ✅
 
 ---
 
-## Latest Updates (Feb 19, 2026 - Session 63)
+## Latest Updates (Feb 19, 2026 - Session 64)
 
-### ENHANCED: Items Module - Full Zoho Books CSV Compatibility
-**Status:** IMPLEMENTED & TESTED (100% pass rate - 14/14 tests)
-**Location:** `/items` (now uses ItemsEnhanced component)
+### BUG FIX: Inventory Stock Endpoint 404
+**Status:** FIXED & TESTED
+**Issue:** `GET /api/inventory-enhanced/stock` was returning 404
+**Fix:** Added `/stock` endpoint to inventory_enhanced routes
+**Location:** `/app/backend/routes/inventory_enhanced.py` (line 283-314)
 
-**39+ Zoho Books CSV Columns Supported:**
+### NEW: Organization Settings Import/Export
+**Status:** IMPLEMENTED & TESTED (100% pass rate)
+**Location:** `/organization-settings` page
 
-| Category | Fields |
-|----------|--------|
-| **Basic** | Item ID, Item Name, SKU, HSN/SAC, Description, Item Type, Product Type, Status |
-| **Sales** | Rate, Account, Account Code, Sales Description |
-| **Purchase** | Purchase Rate, Purchase Account, Purchase Account Code, Purchase Description |
-| **Inventory** | Inventory Account, Inventory Account Code, Inventory Valuation Method, Opening Stock, Opening Stock Value, Stock On Hand, Reorder Point |
-| **Tax/GST** | Taxable, Exemption Reason, Taxability Type, Intra State Tax Name/Rate/Type, Inter State Tax Name/Rate/Type |
-| **Other** | Usage unit, Unit Name, Vendor, Location Name, Source, Reference ID, Last Sync Time, Sellable, Purchasable, Track Inventory |
+**Features:**
+1. **Export Settings** - Download organization configuration as JSON
+   - Includes organization profile (name, email, phone, address, GSTIN, etc.)
+   - Includes all settings (currency, timezone, tickets, inventory, invoices, notifications, EFI)
+   - File format: `org-settings-{slug}-{date}.json`
+2. **Import Settings** - Upload JSON to restore/clone settings
+   - Validates export format version
+   - Updates both organization details and settings
+
+**New Endpoints:**
+- `GET /api/org/settings/export` - Export organization settings as JSON
+- `POST /api/org/settings/import` - Import settings from JSON
+
+### ENHANCED: Organization Switcher with Create Organization Dialog
+**Status:** IMPLEMENTED & TESTED (100% pass rate)
+**Location:** OrganizationSwitcher component in sidebar
+
+**Features:**
+1. **Create Organization Dialog** - Opens from dropdown menu (for admin/owner users)
+2. **Form Fields:**
+   - Organization Name (required)
+   - Industry Type (EV Garage, Fleet Operator, OEM Service, Multi-Brand, Franchise)
+   - Email
+   - Phone
+3. **Auto-switch** - Automatically switches to newly created organization
+
+### ENHANCED: Customer Self-Service Portal with Support Tickets
+**Status:** IMPLEMENTED & TESTED (100% pass rate)
+**Location:** `/customer-portal`
 
 **New Features:**
-1. **Tabbed Create Dialog** - 5 tabs: Basic, Sales, Purchase, Tax/GST, Inventory
-2. **CSV Export** - 41 columns matching Zoho Books format
-3. **Import Template** - 38-column CSV template with sample data
-4. **Field Aliases** - Accepts both internal names and Zoho CSV column names
-5. **Service Items** - Support for SAC codes and service-type items
+1. **Support Tab** - New tab with ticket icon for support requests
+2. **Support Request List** - View all customer tickets with status, priority badges
+3. **Create Support Request Dialog:**
+   - Subject, Description fields
+   - Category (General, Service, Billing, Technical, Other)
+   - Priority (Low, Medium, High)
+   - Vehicle selection (if customer has registered vehicles)
+4. **Ticket Detail View:**
+   - Full ticket information
+   - Updates/comments thread with customer-visible filtering
+   - Add comment functionality (for open tickets)
 
-**Updated Endpoints:**
-- `POST /api/items-enhanced/` - Accepts all 39+ fields
-- `GET /api/items-enhanced/export?format=csv` - Zoho-compatible export
-- `GET /api/items-enhanced/export/template` - Import template download
+**New Backend Endpoints:**
+- `GET /api/customer-portal/tickets` - List customer tickets
+- `POST /api/customer-portal/tickets` - Create support request
+- `GET /api/customer-portal/tickets/{ticket_id}` - Get ticket details with updates
+- `POST /api/customer-portal/tickets/{ticket_id}/comment` - Add comment to ticket
+- `GET /api/customer-portal/vehicles` - List customer vehicles
+- `GET /api/customer-portal/documents` - List shared documents
 
 ---
-
-## Previous Updates (Feb 19, 2026 - Session 62)
 
 ### NEW: Stock Transfers Frontend UI
 **Status:** IMPLEMENTED & TESTED (100% pass rate)
