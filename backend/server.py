@@ -4867,12 +4867,13 @@ except Exception as e:
 
 # Include Organization (Multi-Tenant) routes
 try:
-    from core.org import init_organization_service, init_org_routes
+    from core.org import init_organization_service, init_org_routes, init_org_dependencies
     from core.audit import init_audit_service
     
     # Initialize services
     init_organization_service(db)
     init_audit_service(db)
+    init_org_dependencies(db)  # Initialize org dependencies for route injection
     
     # Initialize and include routes
     org_router = init_org_routes(db, get_current_user)
