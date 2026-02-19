@@ -230,8 +230,7 @@ class TestRunner:
                     {
                         "item_id": item_id,
                         "item_name": item["name"],
-                        "quantity_adjusted": 5,
-                        "adjustment_type": "add"
+                        "quantity_adjusted": 5
                     }
                 ],
                 "notes": "Regression test adjustment"
@@ -241,9 +240,13 @@ class TestRunner:
         if response.status_code != 200:
             print(f"  ❌ Create adjustment failed: {response.status_code} - {response.text[:200]}")
             return False
-        adjustment = response.json()["adjustment"]
-        adjustment_id = adjustment["adjustment_id"]
-        print(f"  ✓ Created adjustment: {adjustment['reference_number']} (Status: {adjustment['status']})")
+        
+        # Response structure is different - get adjustment_id directly from response
+        resp_data = response.json()
+        adjustment_id = resp_data.get("adjustment_id")
+        ref_number = resp_data.get("reference_number")
+        status = resp_data.get("status")
+        print(f"  ✓ Created adjustment: {ref_number} (Status: {status})")
         
         # Step 3: Apply adjustment (convert)
         response = requests.post(f"{BASE_URL}/inv-adjustments/{adjustment_id}/convert", headers=self.headers())
