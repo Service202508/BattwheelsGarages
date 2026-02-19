@@ -339,7 +339,12 @@ class TicketEstimateService:
             if item.get("type") == "part" and item.get("item_id"):
                 item_stock = stock_info.get(item["item_id"], {})
                 available = item_stock.get("available_stock", 0)
-                reorder = item_stock.get("reorder_level", 5)
+                reorder_raw = item_stock.get("reorder_level", 5)
+                # Handle non-numeric reorder_level (e.g., empty string '')
+                try:
+                    reorder = float(reorder_raw) if reorder_raw not in (None, '', 'null') else 5
+                except (ValueError, TypeError):
+                    reorder = 5
                 
                 item["stock_info"] = {
                     "available_stock": available,
