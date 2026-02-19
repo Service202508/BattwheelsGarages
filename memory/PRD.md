@@ -31,7 +31,38 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ---
 
-## Latest Updates (Feb 19, 2026 - Session 65)
+## Latest Updates (Feb 19, 2026 - Session 68)
+
+### BUG FIX: Job Card Estimate Items Panel - Loading State & UI Issues
+**Status:** FIXED & TESTED (100% pass rate - 9/9 tests)
+**Location:** `/app/frontend/src/components/EstimateItemsPanel.jsx`
+
+**Issues Resolved:**
+1. **Loading State Stuck** - Fixed by separating loading states (sendLoading, approveLoading, editLoading, deleteLoading, addItemLoading) to prevent UI blocking
+2. **Send Estimate Button Not Clickable** - Fixed button state, now properly shows loading spinner and enables/disables correctly
+3. **Approve Estimate Button Not Clickable** - Fixed button state management
+4. **Remove Item Button Missing** - Added visible trash icon with data-testid for each line item
+5. **Cannot Edit Approved Estimates** - Changed canEdit logic to allow editing approved estimates until locked
+
+**New Features:**
+1. **Unlock Estimate (Admin Only)** - Admin can unlock locked estimates for editing
+2. **Inventory Tracking** - Parts now track inventory allocations:
+   - `_reserve_inventory` - Reserve stock when estimate is approved
+   - `_release_inventory` - Release stock when line item is removed
+   - `_consume_inventory` - Consume stock when estimate converts to invoice
+3. **Separate Loading States** - Each action (send, approve, edit, delete, add) has its own loading state
+
+**New API Endpoints:**
+- `POST /api/ticket-estimates/{id}/unlock` - Admin-only endpoint to unlock locked estimates
+
+**Files Modified:**
+- `/app/frontend/src/components/EstimateItemsPanel.jsx` - Separated loading states, added unlock button, improved remove button UX
+- `/app/backend/routes/ticket_estimates.py` - Added unlock endpoint
+- `/app/backend/services/ticket_estimate_service.py` - Added unlock_estimate method and inventory tracking methods
+
+---
+
+## Previous Updates (Feb 19, 2026 - Session 65)
 
 ### ENHANCED: Price Lists Module - Full Zoho Books CSV Compatibility
 **Status:** IMPLEMENTED & TESTED (100% pass rate - 18/18 tests)
