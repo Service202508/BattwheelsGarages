@@ -55,6 +55,14 @@ Battwheels Garages is India's first no-towing-first EV service network. The webs
 
 ## Completed Features
 
+### Request Callback Feature - COMPLETED (Feb 19, 2025)
+- [x] "Request Callback" button on vehicle cards (green phone icon)
+- [x] Modal with form: Name, Phone, Preferred Time, Message (optional)
+- [x] Backend API: POST /api/callbacks stores requests in MongoDB
+- [x] Toast notification on successful submission
+- [x] Modal auto-closes after submission
+- [x] GET /api/callbacks/count endpoint for admin dashboard
+
 ### EV Marketplace Refurbished Vehicles - COMPLETED (Feb 19, 2025)
 - [x] Updated EV marketplace to show ONLY refurbished 2W & 3W vehicles
 - [x] Seeded 40 certified refurbished vehicles (20 × 2-Wheelers, 20 × 3-Wheelers)
