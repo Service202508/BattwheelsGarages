@@ -11,7 +11,7 @@ import hmac
 import hashlib
 import os
 
-router = APIRouter(prefix="/payments", tags=["payments"])
+router = APIRouter(prefix="/api/payments", tags=["payments"])
 
 # Initialize Razorpay client
 RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID", "")
