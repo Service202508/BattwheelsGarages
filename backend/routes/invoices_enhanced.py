@@ -1908,18 +1908,6 @@ async def delete_invoice_comment(invoice_id: str, comment_id: str):
 
 # ========================= HISTORY =========================
 
-async def add_invoice_history(invoice_id: str, action: str, details: str):
-    """Add entry to invoice history"""
-    history_doc = {
-        "history_id": generate_id("INVHIST"),
-        "invoice_id": invoice_id,
-        "action": action,
-        "details": details,
-        "performed_by": "system",
-        "timestamp": datetime.now(timezone.utc).isoformat()
-    }
-    await invoice_history_collection.insert_one(history_doc)
-
 @router.get("/{invoice_id}/history")
 async def get_invoice_history(invoice_id: str, limit: int = 50):
     """Get invoice history/activity log"""
