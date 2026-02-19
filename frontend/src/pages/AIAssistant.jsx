@@ -258,7 +258,7 @@ export default function AIAssistant({ user }) {
               {/* Issue Category Selection */}
               <div className="space-y-3">
                 <Label>Issue Category</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                   {issueCategories.map((cat) => {
                     const Icon = cat.icon;
                     return (
@@ -266,17 +266,18 @@ export default function AIAssistant({ user }) {
                         key={cat.value}
                         type="button"
                         onClick={() => setQuery({ ...query, category: cat.value })}
-                        className={`p-4 rounded-lg border transition-all text-left ${
+                        className={`p-3 rounded-lg border transition-all text-left group ${
                           query.category === cat.value
                             ? "border-primary bg-primary/10"
                             : "border-white/10 hover:border-white/20 bg-background/50"
                         }`}
                         data-testid={`category-btn-${cat.value}`}
+                        title={cat.description}
                       >
-                        <Icon className={`h-5 w-5 mb-2 ${
-                          query.category === cat.value ? "text-primary" : "text-muted-foreground"
+                        <Icon className={`h-4 w-4 mb-1 ${
+                          query.category === cat.value ? "text-primary" : "text-muted-foreground group-hover:text-white"
                         }`} />
-                        <p className="text-sm font-medium">{cat.label}</p>
+                        <p className="text-xs font-medium truncate">{cat.label}</p>
                       </button>
                     );
                   })}
