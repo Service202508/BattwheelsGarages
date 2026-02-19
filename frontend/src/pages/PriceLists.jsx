@@ -146,9 +146,10 @@ export default function PriceLists() {
 
   const handleAddItem = async () => {
     if (!newPriceItem.item_id || newPriceItem.pricelist_rate < 0) return toast.error("Select item and enter rate");
+    const plId = selectedPriceList?.price_list_id || selectedPriceList?.pricelist_id;
     try {
       const res = await fetch(
-        `${API}/zoho/price-lists/${selectedPriceList.price_list_id}/items?item_id=${newPriceItem.item_id}&pricelist_rate=${newPriceItem.pricelist_rate}&discount=${newPriceItem.discount}&discount_type=${newPriceItem.discount_type}`,
+        `${API}/zoho/price-lists/${plId}/items?item_id=${newPriceItem.item_id}&pricelist_rate=${newPriceItem.pricelist_rate}&discount=${newPriceItem.discount}&discount_type=${newPriceItem.discount_type}`,
         { method: "POST", headers: getAuthHeaders() }
       );
       if (res.ok) {
