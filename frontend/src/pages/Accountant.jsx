@@ -77,7 +77,7 @@ export default function Accountant() {
 
   const fetchDashboard = async () => {
     try {
-      const res = await fetch(`${API}/banking/dashboard/stats/`, { headers });
+      const res = await fetch(`${API}/banking/dashboard/stats`, { headers });
       const data = await res.json();
       setDashboardStats(data.stats);
     } catch (error) {
@@ -87,7 +87,7 @@ export default function Accountant() {
 
   const fetchBankAccounts = async () => {
     try {
-      const res = await fetch(`${API}/banking/accounts/`, { headers });
+      const res = await fetch(`${API}/banking/accounts`, { headers });
       const data = await res.json();
       setBankAccounts(data.bank_accounts || []);
     } catch (error) {
@@ -97,7 +97,7 @@ export default function Accountant() {
 
   const fetchTransactions = async (accountId) => {
     try {
-      const res = await fetch(`${API}/banking/transactions/?bank_account_id=${accountId}`, { headers });
+      const res = await fetch(`${API}/banking/transactions?bank_account_id=${accountId}`, { headers });
       const data = await res.json();
       setTransactions(data.transactions || []);
     } catch (error) {
@@ -107,7 +107,7 @@ export default function Accountant() {
 
   const fetchReconciliations = async () => {
     try {
-      const res = await fetch(`${API}/banking/reconciliation/history/`, { headers });
+      const res = await fetch(`${API}/banking/reconciliation/history`, { headers });
       const data = await res.json();
       setReconciliations(data.reconciliations || []);
     } catch (error) {
