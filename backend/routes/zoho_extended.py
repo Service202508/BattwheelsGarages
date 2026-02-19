@@ -925,7 +925,7 @@ async def get_inventory_adjustment(adj_id: str):
         raise HTTPException(status_code=404, detail="Adjustment not found")
     return {"code": 0, "adjustment": adj}
 
-# ============== PRICE LISTS ==============
+# ============== PRICE LISTS (ENHANCED - Zoho Books Compatible) ==============
 
 class PriceListCreate(BaseModel):
     price_list_name: str
@@ -934,6 +934,25 @@ class PriceListCreate(BaseModel):
     price_type: str = "sales"  # sales, purchase
     is_default: bool = False
     round_off_to: str = "never"  # never, nearest_1, nearest_5, nearest_10
+    percentage_type: Optional[str] = None  # markup_percentage, markdown_percentage
+    percentage_value: Optional[float] = 0  # Default percentage for all items
+
+class PriceListItemCreate(BaseModel):
+    item_id: str
+    pricelist_rate: Optional[float] = None  # Custom rate for this item
+    discount: Optional[float] = 0  # Discount percentage (0-100)
+    discount_type: str = "percentage"  # percentage, fixed_amount
+
+class PriceListUpdate(BaseModel):
+    price_list_name: Optional[str] = None
+    description: Optional[str] = None
+    currency_code: Optional[str] = None
+    price_type: Optional[str] = None
+    is_default: Optional[bool] = None
+    round_off_to: Optional[str] = None
+    percentage_type: Optional[str] = None
+    percentage_value: Optional[float] = None
+    status: Optional[str] = None
 
 @router.post("/price-lists")
 async def create_price_list(pl: PriceListCreate):
