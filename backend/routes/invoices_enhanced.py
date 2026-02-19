@@ -1,7 +1,8 @@
 # Enhanced Invoices Module - Full Zoho Books Invoice Management
 # Comprehensive invoicing with payment tracking, partial payments, credits, recurring, and GST compliance
 
-from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Query, BackgroundTasks, UploadFile, File
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
@@ -10,6 +11,9 @@ import motor.motor_asyncio
 import os
 import uuid
 import logging
+import secrets
+import base64
+import io
 
 logger = logging.getLogger(__name__)
 
