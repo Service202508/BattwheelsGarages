@@ -16,7 +16,7 @@ import {
   Eye, Copy, ArrowRightLeft, Clock, Calendar, User, Building2, Package,
   TrendingUp, AlertTriangle, ChevronRight, Percent, IndianRupee, Share2, Download,
   Paperclip, Link, Settings, ExternalLink, Upload, X, FileUp, FileDown, ListChecks, 
-  Palette, LayoutTemplate, CheckSquare
+  Palette, LayoutTemplate, CheckSquare, Ticket, Wrench
 } from "lucide-react";
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
