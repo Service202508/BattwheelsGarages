@@ -1276,22 +1276,45 @@ async def get_technicians(request: Request):
 @api_router.post("/suppliers")
 async def create_supplier(data: SupplierCreate, request: Request):
     await require_technician_or_admin(request)
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+    except HTTPException:
+        org_id = None
+    
     supplier = Supplier(**data.model_dump())
     doc = supplier.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
+    if org_id:
+        doc['organization_id'] = org_id
     await db.suppliers.insert_one(doc)
     return supplier.model_dump()
 
 @api_router.get("/suppliers")
 async def get_suppliers(request: Request):
     await require_auth(request)
-    suppliers = await db.suppliers.find({}, {"_id": 0}).to_list(1000)
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        query = {"organization_id": org_id}
+    except HTTPException:
+        query = {}
+    suppliers = await db.suppliers.find(query, {"_id": 0}).to_list(1000)
     return suppliers
 
 @api_router.get("/suppliers/{supplier_id}")
 async def get_supplier(supplier_id: str, request: Request):
     await require_auth(request)
-    supplier = await db.suppliers.find_one({"supplier_id": supplier_id}, {"_id": 0})
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        query = {"supplier_id": supplier_id, "organization_id": org_id}
+    except HTTPException:
+        query = {"supplier_id": supplier_id}
+    supplier = await db.suppliers.find_one(query, {"_id": 0})
     if not supplier:
         raise HTTPException(status_code=404, detail="Supplier not found")
     return supplier
@@ -1299,9 +1322,16 @@ async def get_supplier(supplier_id: str, request: Request):
 @api_router.put("/suppliers/{supplier_id}")
 async def update_supplier(supplier_id: str, update: SupplierUpdate, request: Request):
     await require_technician_or_admin(request)
+    # Get org context for multi-tenant scoping
+    from core.org import get_org_id_from_request
+    try:
+        org_id = await get_org_id_from_request(request)
+        query = {"supplier_id": supplier_id, "organization_id": org_id}
+    except HTTPException:
+        query = {"supplier_id": supplier_id}
     update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
-    await db.suppliers.update_one({"supplier_id": supplier_id}, {"$set": update_dict})
-    supplier = await db.suppliers.find_one({"supplier_id": supplier_id}, {"_id": 0})
+    await db.suppliers.update_one(query, {"$set": update_dict})
+    supplier = await db.suppliers.find_one(query, {"_id": 0})
     return supplier
 
 # ==================== VEHICLE ROUTES ====================
