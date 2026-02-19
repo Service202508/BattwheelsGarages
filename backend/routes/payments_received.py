@@ -1149,3 +1149,198 @@ async def delete_payment_attachment(payment_id: str, attachment_id: str):
     
     return {"code": 0, "message": "Attachment deleted"}
 
+
+# ==================== PAYMENT RECEIPT PDF ====================
+
+@router.get("/{payment_id}/receipt-pdf")
+async def get_payment_receipt_pdf(payment_id: str):
+    """Generate payment receipt PDF"""
+    from io import BytesIO
+    
+    payment = await payments_collection.find_one({"payment_id": payment_id}, {"_id": 0})
+    if not payment:
+        raise HTTPException(status_code=404, detail="Payment not found")
+    
+    # Get customer details
+    customer = await contacts_collection.find_one(
+        {"contact_id": payment.get("customer_id")},
+        {"_id": 0, "display_name": 1, "company_name": 1, "billing_address": 1, "email": 1}
+    ) or {}
+    
+    # Get organization settings
+    org_settings = await db["organization_settings"].find_one({}, {"_id": 0}) or {}
+    
+    # Generate HTML for receipt
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{ font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 20px; color: #333; }}
+            .receipt {{ max-width: 800px; margin: 0 auto; border: 1px solid #ddd; padding: 40px; }}
+            .header {{ display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 3px solid #22EDA9; padding-bottom: 20px; }}
+            .company {{ font-size: 24px; font-weight: bold; color: #1a1a1a; }}
+            .receipt-title {{ font-size: 28px; color: #22EDA9; text-align: right; }}
+            .receipt-number {{ font-size: 14px; color: #666; }}
+            .section {{ margin-bottom: 25px; }}
+            .label {{ font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }}
+            .value {{ font-size: 14px; }}
+            .amount-box {{ background: #f8f8f8; padding: 20px; text-align: center; margin-top: 30px; }}
+            .amount-label {{ font-size: 14px; color: #666; margin-bottom: 10px; }}
+            .amount {{ font-size: 36px; font-weight: bold; color: #22EDA9; }}
+            .details-table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
+            .details-table th, .details-table td {{ padding: 12px; text-align: left; border-bottom: 1px solid #eee; }}
+            .details-table th {{ background: #f8f9fa; font-weight: 600; font-size: 12px; text-transform: uppercase; }}
+            .footer {{ margin-top: 40px; text-align: center; color: #888; font-size: 12px; }}
+        </style>
+    </head>
+    <body>
+        <div class="receipt">
+            <div class="header">
+                <div>
+                    <div class="company">{org_settings.get('company_name', 'Battwheels OS')}</div>
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                        {org_settings.get('address', '')}<br>
+                        {org_settings.get('phone', '')} | {org_settings.get('email', '')}
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="receipt-title">PAYMENT RECEIPT</div>
+                    <div class="receipt-number">#{payment.get('payment_number', payment_id)}</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between;">
+                <div class="section">
+                    <div class="label">Received From</div>
+                    <div class="value" style="font-weight: bold;">{customer.get('display_name', payment.get('customer_name', 'N/A'))}</div>
+                    <div class="value" style="font-size: 12px; color: #666;">{customer.get('billing_address', {}).get('street', '')}</div>
+                </div>
+                <div class="section" style="text-align: right;">
+                    <div class="label">Payment Date</div>
+                    <div class="value">{payment.get('payment_date', '')}</div>
+                    <div class="label" style="margin-top: 15px;">Payment Mode</div>
+                    <div class="value">{payment.get('payment_mode', 'N/A').replace('_', ' ').title()}</div>
+                </div>
+            </div>
+            
+            <div class="amount-box">
+                <div class="amount-label">Amount Received</div>
+                <div class="amount">₹{payment.get('amount', 0):,.2f}</div>
+            </div>
+            
+            <table class="details-table">
+                <thead>
+                    <tr>
+                        <th>Invoice #</th>
+                        <th style="text-align: right;">Invoice Amount</th>
+                        <th style="text-align: right;">Payment Applied</th>
+                    </tr>
+                </thead>
+                <tbody>
+    """
+    
+    # Add invoice allocations
+    allocations = payment.get("allocations", [])
+    if allocations:
+        for alloc in allocations:
+            html_content += f"""
+                    <tr>
+                        <td>{alloc.get('invoice_number', alloc.get('invoice_id', 'N/A'))}</td>
+                        <td style="text-align: right;">₹{alloc.get('invoice_amount', 0):,.2f}</td>
+                        <td style="text-align: right;">₹{alloc.get('amount', 0):,.2f}</td>
+                    </tr>
+            """
+    else:
+        html_content += """
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #888;">Unapplied Payment</td>
+                    </tr>
+        """
+    
+    html_content += f"""
+                </tbody>
+            </table>
+            
+            <div style="margin-top: 20px;">
+                <div class="label">Reference Number</div>
+                <div class="value">{payment.get('reference_number', 'N/A')}</div>
+            </div>
+            
+            {f'<div style="margin-top: 15px;"><div class="label">Notes</div><div class="value">{payment.get("notes", "")}</div></div>' if payment.get('notes') else ''}
+            
+            <div class="footer">
+                <p>Thank you for your payment!</p>
+                <p>Generated on {datetime.now().strftime('%d %B %Y at %H:%M')}</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    try:
+        from weasyprint import HTML
+        from fastapi.responses import StreamingResponse
+        
+        pdf_buffer = BytesIO()
+        HTML(string=html_content).write_pdf(pdf_buffer)
+        pdf_buffer.seek(0)
+        
+        return StreamingResponse(
+            pdf_buffer,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=Receipt_{payment.get('payment_number', payment_id)}.pdf"
+            }
+        )
+    except Exception as e:
+        # Return HTML if WeasyPrint not available
+        from fastapi.responses import HTMLResponse
+        return HTMLResponse(content=html_content)
+
+# ==================== ACTIVITY LOG ====================
+
+@router.get("/{payment_id}/activity")
+async def get_payment_activity(payment_id: str, limit: int = 50):
+    """Get activity log for a payment"""
+    payment = await payments_collection.find_one({"payment_id": payment_id})
+    if not payment:
+        raise HTTPException(status_code=404, detail="Payment not found")
+    
+    # Get from history collection
+    history = await payment_history_collection.find(
+        {"payment_id": payment_id},
+        {"_id": 0}
+    ).sort("timestamp", -1).limit(limit).to_list(limit)
+    
+    # If no history, create basic activity from payment data
+    if not history:
+        history = [
+            {
+                "action": "created",
+                "details": f"Payment of ₹{payment.get('amount', 0):,.2f} recorded",
+                "timestamp": payment.get("created_at", payment.get("payment_date", ""))
+            }
+        ]
+        
+        if payment.get("allocations"):
+            for alloc in payment.get("allocations", []):
+                history.append({
+                    "action": "applied",
+                    "details": f"₹{alloc.get('amount', 0):,.2f} applied to {alloc.get('invoice_number', 'invoice')}",
+                    "timestamp": payment.get("created_at", "")
+                })
+    
+    return {"code": 0, "activities": history}
+
+# ==================== HISTORY HELPER ====================
+
+async def add_payment_history(payment_id: str, action: str, details: str):
+    """Add entry to payment history"""
+    await payment_history_collection.insert_one({
+        "history_id": generate_id("HIST"),
+        "payment_id": payment_id,
+        "action": action,
+        "details": details,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
