@@ -841,6 +841,7 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
 
 @router.get("/")
 async def list_invoices(
+    request: Request,
     customer_id: Optional[str] = None,
     status: Optional[str] = None,
     search: Optional[str] = None,
@@ -853,7 +854,9 @@ async def list_invoices(
     per_page: int = 50
 ):
     """List invoices with filters"""
-    query = {}
+    # Get org context for multi-tenant scoping
+    org_id = await get_org_id(request)
+    query = org_query(org_id, {})
     
     if customer_id:
         query["customer_id"] = customer_id
@@ -899,9 +902,13 @@ async def list_invoices(
     }
 
 @router.get("/{invoice_id}")
-async def get_invoice(invoice_id: str):
+async def get_invoice(invoice_id: str, request: Request):
     """Get invoice details with line items, payments, and history"""
-    invoice = await invoices_collection.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    # Get org context for multi-tenant scoping
+    org_id = await get_org_id(request)
+    invoice_query = org_query(org_id, {"invoice_id": invoice_id})
+    
+    invoice = await invoices_collection.find_one(invoice_query, {"_id": 0})
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
