@@ -493,8 +493,8 @@ const ElectricVehicles = () => {
 // Vehicle Card Component
 const VehicleCard = ({ vehicle }) => {
   const brand = oemBrands[vehicle.brand] || { bg: 'bg-gray-500' };
-  const typeConfig = vehicleTypeConfig[vehicle.vehicle_category?.[0]] || { icon: Car };
-  const TypeIcon = typeConfig.icon;
+  const typeConfig = vehicleTypeConfig[vehicle.vehicle_category] || { icon: Bike };
+  const TypeIcon = typeConfig.icon || Bike;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 group">
@@ -504,20 +504,20 @@ const VehicleCard = ({ vehicle }) => {
           {vehicle.images?.[0] ? (
             <img src={vehicle.images[0]} alt={vehicle.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300" />
           ) : (
-            <Car className="w-20 h-20 text-gray-300" />
+            <TypeIcon className="w-20 h-20 text-gray-300" />
           )}
         </div>
         
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
-          {vehicle.oem_aftermarket === 'oem' && (
-            <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
-              <Sparkles className="w-3 h-3" /> New
+          {vehicle.condition === 'refurbished' && (
+            <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm font-semibold">
+              <RefreshCw className="w-3 h-3" /> Refurbished
             </span>
           )}
-          {vehicle.oem_aftermarket === 'refurbished' && (
-            <span className="bg-gradient-to-r from-purple-500 to-purple-600 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
-              <Shield className="w-3 h-3" /> Refurbished
+          {vehicle.is_certified && (
+            <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+              <Shield className="w-3 h-3" /> Certified
             </span>
           )}
         </div>
@@ -526,9 +526,19 @@ const VehicleCard = ({ vehicle }) => {
         <div className="absolute top-3 right-3">
           <span className="bg-white/95 backdrop-blur text-gray-700 text-xs px-2.5 py-1.5 rounded-full flex items-center gap-1 shadow-sm font-medium">
             <TypeIcon className="w-3.5 h-3.5" />
-            {vehicle.vehicle_category?.[0]}
+            {vehicle.vehicle_category}
           </span>
         </div>
+        
+        {/* Low Stock Warning */}
+        {vehicle.stock_status === 'low_stock' && (
+          <div className="absolute bottom-3 left-3 right-3">
+            <span className="bg-red-500/90 text-white text-xs px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 justify-center">
+              <AlertCircle className="w-3.5 h-3.5" />
+              Only {vehicle.stock_quantity} left
+            </span>
+          </div>
+        )}
       </Link>
 
       {/* Content */}
@@ -537,10 +547,13 @@ const VehicleCard = ({ vehicle }) => {
         <div className="flex items-center gap-2 mb-2">
           <span className={`w-2.5 h-2.5 rounded-full ${brand.bg}`} />
           <span className="text-sm font-semibold text-gray-600">{vehicle.brand}</span>
+          {vehicle.vehicle_subtype && (
+            <span className="text-xs text-gray-400">• {vehicle.vehicle_subtype}</span>
+          )}
         </div>
         
         <Link to={`/marketplace/vehicle/${vehicle.slug}`}>
-          <h3 className="font-bold text-gray-900 mb-3 line-clamp-2 hover:text-blue-600 transition-colors text-lg leading-snug">
+          <h3 className="font-bold text-gray-900 mb-3 line-clamp-2 hover:text-orange-600 transition-colors text-lg leading-snug">
             {vehicle.name}
           </h3>
         </Link>
