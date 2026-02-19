@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 import os
 import sys
 
-BASE_URL = os.environ.get('API_BASE_URL', 'https://accounting-suite-14.preview.emergentagent.com')
+BASE_URL = os.environ.get('API_BASE_URL', 'https://price-automation.preview.emergentagent.com')
 API_URL = f"{BASE_URL}/api"
 
 # Test credentials
