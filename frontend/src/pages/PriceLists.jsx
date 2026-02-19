@@ -116,8 +116,9 @@ export default function PriceLists() {
 
   const handleUpdate = async () => {
     if (!selectedPriceList) return;
+    const plId = selectedPriceList?.price_list_id || selectedPriceList?.pricelist_id;
     try {
-      const res = await fetch(`${API}/zoho/price-lists/${selectedPriceList.price_list_id}`, {
+      const res = await fetch(`${API}/zoho/price-lists/${plId}`, {
         method: "PUT",
         headers: getAuthHeaders(),
         body: JSON.stringify(newPriceList)
