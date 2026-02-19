@@ -117,7 +117,7 @@ export default function Accountant() {
 
   const fetchJournalEntries = async () => {
     try {
-      const res = await fetch(`${API}/banking/journal-entries/`, { headers });
+      const res = await fetch(`${API}/banking/journal-entries`, { headers });
       const data = await res.json();
       setJournalEntries(data.journal_entries || []);
     } catch (error) {
@@ -127,7 +127,7 @@ export default function Accountant() {
 
   const fetchChartOfAccounts = async () => {
     try {
-      const res = await fetch(`${API}/banking/chart-of-accounts/`, { headers });
+      const res = await fetch(`${API}/banking/chart-of-accounts`, { headers });
       const data = await res.json();
       setChartOfAccounts(data.chart_of_accounts || []);
     } catch (error) {
