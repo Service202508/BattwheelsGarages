@@ -3,7 +3,7 @@ Battwheels OS - Data Management API Routes
 Provides endpoints for data sanitization, sync management, and monitoring
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends, Request
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 from pydantic import BaseModel
 from typing import Optional, List, Dict
 from datetime import datetime, timezone
@@ -11,7 +11,6 @@ import logging
 
 from services.data_sanitization_service import DataSanitizationService, DataValidationService
 from services.zoho_realtime_sync import ZohoRealTimeSyncService
-from core.org.dependencies import get_org_id_from_request
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/data-management", tags=["Data Management"])
@@ -22,19 +21,19 @@ def get_db():
     return db
 
 
-# ============== SANITIZATION ENDPOINTS ==============
-
-class SanitizationRequest(BaseModel):
-    mode: str = "audit"  # "audit" or "delete"
-    collections: Optional[List[str]] = None
-
-
 async def get_org_id(request: Request) -> str:
     """Get organization ID from request header"""
     org_id = request.headers.get("X-Organization-ID")
     if not org_id:
         raise HTTPException(status_code=400, detail="X-Organization-ID header required")
     return org_id
+
+
+# ============== SANITIZATION ENDPOINTS ==============
+
+class SanitizationRequest(BaseModel):
+    mode: str = "audit"  # "audit" or "delete"
+    collections: Optional[List[str]] = None
 
 
 @router.post("/sanitize")
@@ -86,7 +85,7 @@ async def sanitize_data(
 
 
 @router.get("/sanitize/status/{job_id}")
-async def get_sanitization_status(job_id: str, org_id: str = Depends(require_organization)):
+async def get_sanitization_status(request: Request, job_id: str):
     """Get status of a sanitization job"""
     db = get_db()
     service = DataSanitizationService(db)
@@ -99,7 +98,7 @@ async def get_sanitization_status(job_id: str, org_id: str = Depends(require_org
 
 
 @router.post("/sanitize/rollback/{job_id}")
-async def rollback_sanitization(job_id: str, org_id: str = Depends(require_organization)):
+async def rollback_sanitization(request: Request, job_id: str):
     """Rollback a sanitization job using backups"""
     db = get_db()
     service = DataSanitizationService(db)
@@ -109,9 +108,10 @@ async def rollback_sanitization(job_id: str, org_id: str = Depends(require_organ
 
 
 @router.get("/sanitize/history")
-async def get_sanitization_history(limit: int = 20, org_id: str = Depends(require_organization)):
+async def get_sanitization_history(request: Request, limit: int = 20):
     """Get history of sanitization jobs"""
     db = get_db()
+    org_id = await get_org_id(request)
     service = DataSanitizationService(db)
     
     jobs = await service.list_sanitization_jobs(org_id, limit)
@@ -121,9 +121,10 @@ async def get_sanitization_history(limit: int = 20, org_id: str = Depends(requir
 # ============== VALIDATION ENDPOINTS ==============
 
 @router.get("/validate/integrity")
-async def validate_data_integrity(org_id: str = Depends(require_organization)):
+async def validate_data_integrity(request: Request):
     """Validate referential integrity of data"""
     db = get_db()
+    org_id = await get_org_id(request)
     service = DataValidationService(db)
     
     result = await service.validate_referential_integrity(org_id)
@@ -131,9 +132,10 @@ async def validate_data_integrity(org_id: str = Depends(require_organization)):
 
 
 @router.get("/validate/completeness")
-async def validate_data_completeness(org_id: str = Depends(require_organization)):
+async def validate_data_completeness(request: Request):
     """Validate data completeness"""
     db = get_db()
+    org_id = await get_org_id(request)
     service = DataValidationService(db)
     
     result = await service.validate_data_completeness(org_id)
@@ -153,12 +155,10 @@ async def test_zoho_connection():
 
 
 @router.post("/sync/full")
-async def run_full_sync(
-    background_tasks: BackgroundTasks,
-    org_id: str = Depends(require_organization)
-):
+async def run_full_sync(request: Request, background_tasks: BackgroundTasks):
     """Run full sync from Zoho Books (runs in background)"""
     db = get_db()
+    org_id = await get_org_id(request)
     service = ZohoRealTimeSyncService(db)
     
     # Start sync in background
@@ -182,27 +182,26 @@ class ModuleSyncRequest(BaseModel):
 
 
 @router.post("/sync/module")
-async def sync_single_module(
-    request: ModuleSyncRequest,
-    org_id: str = Depends(require_organization)
-):
+async def sync_single_module(request: Request, sync_request: ModuleSyncRequest):
     """Sync a single module from Zoho Books"""
     db = get_db()
+    org_id = await get_org_id(request)
     service = ZohoRealTimeSyncService(db)
     
     result = await service.sync_module(
-        module=request.module,
+        module=sync_request.module,
         organization_id=org_id,
-        full_sync=request.full_sync
+        full_sync=sync_request.full_sync
     )
     
     return {"code": 0, "result": result}
 
 
 @router.get("/sync/status")
-async def get_sync_status(org_id: str = Depends(require_organization)):
+async def get_sync_status(request: Request):
     """Get sync status for all modules"""
     db = get_db()
+    org_id = await get_org_id(request)
     service = ZohoRealTimeSyncService(db)
     
     status = await service.get_sync_status(org_id)
@@ -210,9 +209,10 @@ async def get_sync_status(org_id: str = Depends(require_organization)):
 
 
 @router.get("/sync/history")
-async def get_sync_history(limit: int = 20, org_id: str = Depends(require_organization)):
+async def get_sync_history(request: Request, limit: int = 20):
     """Get sync job history"""
     db = get_db()
+    org_id = await get_org_id(request)
     service = ZohoRealTimeSyncService(db)
     
     history = await service.get_sync_history(org_id, limit)
@@ -254,9 +254,10 @@ async def receive_zoho_webhook(payload: WebhookPayload):
 # ============== DATA COUNTS ==============
 
 @router.get("/counts")
-async def get_data_counts(org_id: str = Depends(require_organization)):
+async def get_data_counts(request: Request):
     """Get record counts for all collections"""
     db = get_db()
+    org_id = await get_org_id(request)
     
     collections = [
         "vehicles", "tickets", "work_orders", "items", "contacts",
@@ -287,9 +288,10 @@ async def get_data_counts(org_id: str = Depends(require_organization)):
 # ============== CLEANUP OPERATIONS ==============
 
 @router.post("/cleanup/negative-stock")
-async def fix_negative_stock(org_id: str = Depends(require_organization)):
+async def fix_negative_stock(request: Request):
     """Fix negative stock values in inventory"""
     db = get_db()
+    org_id = await get_org_id(request)
     
     # Find items with negative stock
     result = await db.items.update_many(
@@ -304,9 +306,10 @@ async def fix_negative_stock(org_id: str = Depends(require_organization)):
 
 
 @router.post("/cleanup/orphaned-records")
-async def cleanup_orphaned_records(org_id: str = Depends(require_organization)):
+async def cleanup_orphaned_records(request: Request):
     """Clean up orphaned records (e.g., invoices without customers)"""
     db = get_db()
+    org_id = await get_org_id(request)
     
     cleaned = {
         "invoice_line_items_without_invoice": 0,
@@ -353,9 +356,10 @@ async def cleanup_orphaned_records(org_id: str = Depends(require_organization)):
 
 
 @router.delete("/cleanup/test-data")
-async def delete_test_data(org_id: str = Depends(require_organization)):
+async def delete_test_data(request: Request):
     """Quick delete of obvious test data (TEST_, DUMMY_, etc.)"""
     db = get_db()
+    org_id = await get_org_id(request)
     
     test_patterns = ["^TEST_", "^DUMMY_", "^test_", "^dummy_"]
     deleted = {}
