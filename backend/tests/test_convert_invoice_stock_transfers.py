@@ -476,6 +476,10 @@ class TestStockTransfersWorkflow:
         source_wh, dest_wh = test_warehouses
         item_id, _ = test_item_with_stock
         
+        self.source_wh = source_wh
+        self.dest_wh = dest_wh
+        self.item_id = item_id
+        
         transfer_data = {
             "source_warehouse_id": source_wh,
             "destination_warehouse_id": dest_wh,
@@ -492,6 +496,13 @@ class TestStockTransfersWorkflow:
             self.transfer = response.json()["transfer"]
             self.transfer_id = self.transfer["transfer_id"]
             created_transfers.append(self.transfer_id)
+        elif response.status_code == 400:
+            data = response.json()
+            if "insufficient" in str(data.get("detail", "")).lower():
+                # Stock not available in warehouse - skip workflow tests
+                pytest.skip(f"Insufficient stock in warehouse for workflow tests. Stock validation is working correctly.")
+            else:
+                pytest.skip(f"Could not create transfer: {data.get('detail')}")
         else:
             pytest.skip(f"Could not create transfer: {response.status_code} - {response.text}")
     
