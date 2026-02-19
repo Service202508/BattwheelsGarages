@@ -265,8 +265,8 @@ class TicketEstimateService:
         version: int
     ) -> Dict[str, Any]:
         """Add a line item to estimate"""
-        # Validate estimate and check lock
-        estimate = await self._get_and_validate_estimate(
+        # Validate estimate and check lock (raises on error)
+        await self._get_and_validate_estimate(
             estimate_id, organization_id, version
         )
         
