@@ -1191,7 +1191,7 @@ export default function EstimatesEnhanced() {
             <CardContent>
               {ticketEstimates.length === 0 ? (
                 <EmptyState 
-                  icon={<Ticket className="h-12 w-12" />}
+                  icon={Ticket}
                   title="No Ticket Estimates"
                   description="Estimates will appear here when technicians are assigned to service tickets."
                 />
