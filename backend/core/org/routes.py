@@ -36,7 +36,10 @@ def init_org_routes(database, auth_function):
 async def get_current_user(request: Request):
     """Get current authenticated user"""
     if _auth_func:
-        return await _auth_func(request)
+        user = await _auth_func(request)
+        if user is None:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        return user
     raise HTTPException(status_code=401, detail="Authentication required")
 
 
