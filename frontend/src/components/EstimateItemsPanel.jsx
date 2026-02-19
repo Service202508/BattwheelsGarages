@@ -407,7 +407,7 @@ export default function EstimateItemsPanel({
   
   // Approve estimate
   const handleApproveEstimate = async () => {
-    setLoading(true);
+    setApproveLoading(true);
     try {
       const response = await fetch(
         `${API}/ticket-estimates/${estimate.estimate_id}/approve`,
@@ -436,7 +436,7 @@ export default function EstimateItemsPanel({
       console.error("Error approving estimate:", err);
       toast.error(err.message);
     } finally {
-      setLoading(false);
+      setApproveLoading(false);
     }
   };
   
