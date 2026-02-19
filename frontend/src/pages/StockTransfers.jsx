@@ -107,7 +107,9 @@ export default function StockTransfers() {
         method: "POST",
         headers,
         body: JSON.stringify({
-          ...newTransfer,
+          source_warehouse_id: newTransfer.source_warehouse_id,
+          destination_warehouse_id: newTransfer.destination_warehouse_id,
+          notes: newTransfer.notes,
           line_items: newTransfer.items
         })
       });
