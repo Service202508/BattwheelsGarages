@@ -578,6 +578,48 @@ class TicketEstimateService:
         
         return await self.get_estimate_by_id(estimate_id, organization_id)
     
+    async def unlock_estimate(
+        self,
+        estimate_id: str,
+        organization_id: str,
+        user_id: str,
+        user_name: str
+    ) -> Dict[str, Any]:
+        """Unlock an estimate to allow further edits (admin only)"""
+        estimate = await self.estimates.find_one(
+            {"estimate_id": estimate_id, "organization_id": organization_id}
+        )
+        
+        if not estimate:
+            raise ValueError(f"Estimate {estimate_id} not found")
+        
+        if not estimate.get("locked_at"):
+            raise ValueError("Estimate is not locked")
+        
+        now = datetime.now(timezone.utc)
+        await self.estimates.update_one(
+            {"estimate_id": estimate_id},
+            {
+                "$set": {
+                    "lock_reason": None,
+                    "locked_at": None,
+                    "locked_by": None,
+                    "locked_by_name": None,
+                    "updated_at": now.isoformat()
+                },
+                "$inc": {"version": 1}
+            }
+        )
+        
+        # Log history
+        await self._log_history(
+            estimate_id, "unlocked",
+            "Estimate unlocked for editing",
+            user_id, user_name
+        )
+        
+        return await self.get_estimate_by_id(estimate_id, organization_id)
+    
     # ==================== CONVERSION TO INVOICE ====================
     
     async def convert_to_invoice(
