@@ -5079,6 +5079,17 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Ticket-Estimate Integration Routes
+try:
+    from routes.ticket_estimates import router as ticket_estimates_router, init_router as init_ticket_estimates_router
+    init_ticket_estimates_router(db)
+    api_router.include_router(ticket_estimates_router)
+    logger.info("Ticket-Estimate Integration routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Ticket-Estimate routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
