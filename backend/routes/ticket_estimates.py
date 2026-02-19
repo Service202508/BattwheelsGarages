@@ -15,8 +15,10 @@ Endpoints:
 
 from fastapi import APIRouter, HTTPException, Request, Query
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 import logging
+import jwt
+import os
 
 from services.ticket_estimate_service import (
     TicketEstimateService,
@@ -33,12 +35,17 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["Ticket Estimates"])
 
 _service: Optional[TicketEstimateService] = None
+_db = None  # Store database reference
+
+JWT_SECRET = os.environ.get("JWT_SECRET", "battwheels-os-secret-key-2026-secure-512")
+JWT_ALGORITHM = "HS256"
 
 
 def init_router(database):
     """Initialize router with database"""
-    global _service
+    global _service, _db
     _service = init_ticket_estimate_service(database)
+    _db = database
     logger.info("Ticket-Estimate routes initialized")
     return router
 
@@ -52,12 +59,41 @@ def get_service() -> TicketEstimateService:
 
 # ==================== HELPERS ====================
 
+async def get_current_user_from_token(request: Request) -> Optional[Dict[str, Any]]:
+    """Get current user from JWT token or session"""
+    global _db
+    
+    # Try JWT token first
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ")[1]
+        try:
+            payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            if _db:
+                user = await _db.users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
+                if user:
+                    return user
+        except Exception as e:
+            logger.warning(f"JWT decode error: {e}")
+    
+    # Try session cookie
+    session_token = request.cookies.get("session_token")
+    if session_token and _db:
+        session = await _db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+        if session:
+            user = await _db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+            if user:
+                return user
+    
+    return None
+
+
 async def get_org_id(request: Request) -> str:
     """Extract organization ID from request"""
     org_id = request.headers.get("X-Organization-ID")
     if not org_id:
-        # Try from JWT or session
-        user = getattr(request.state, "user", None)
+        # Try from JWT user
+        user = await get_current_user_from_token(request)
         if user:
             org_id = user.get("organization_id")
     
@@ -68,7 +104,7 @@ async def get_org_id(request: Request) -> str:
 
 async def get_user_info(request: Request) -> tuple:
     """Extract user ID and name from request"""
-    user = getattr(request.state, "user", None)
+    user = await get_current_user_from_token(request)
     if user:
         return user.get("user_id", "system"), user.get("name", "System")
     
