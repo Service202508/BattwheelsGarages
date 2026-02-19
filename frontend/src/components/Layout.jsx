@@ -200,6 +200,7 @@ const navItems = [
       { name: "All Settings", path: "/all-settings", icon: Settings, adminOnly: true },
       { name: "Organization", path: "/organization-settings", icon: Building2, adminOnly: true },
       { name: "Data Management", path: "/data-management", icon: Database, adminOnly: true },
+      { name: "Documents", path: "/documents", icon: FolderOpen, adminOnly: true },
       { name: "Taxes", path: "/taxes", icon: Percent, adminOnly: true },
       { name: "Users", path: "/users", icon: Users, adminOnly: true },
       { name: "Custom Modules", path: "/custom-modules", icon: Database, adminOnly: true },
