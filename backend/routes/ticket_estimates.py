@@ -452,6 +452,36 @@ async def lock_estimate(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/ticket-estimates/{estimate_id}/convert-to-invoice")
+async def convert_estimate_to_invoice(estimate_id: str, request: Request):
+    """
+    Convert an approved estimate to an invoice.
+    Only approved estimates can be converted.
+    """
+    service = get_service()
+    org_id = await get_org_id(request)
+    user_id, user_name = await get_user_info(request)
+    
+    try:
+        result = await service.convert_to_invoice(
+            estimate_id=estimate_id,
+            organization_id=org_id,
+            user_id=user_id,
+            user_name=user_name
+        )
+        return {
+            "code": 0,
+            "invoice": result["invoice"],
+            "estimate": result["estimate"],
+            "message": f"Invoice {result['invoice']['invoice_number']} created from estimate"
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error converting estimate to invoice: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/ticket-estimates/{estimate_id}")
 async def get_estimate_by_id(estimate_id: str, request: Request):
     """Get estimate by ID"""
