@@ -407,7 +407,7 @@ class TicketEstimateService:
     ) -> Dict[str, Any]:
         """Delete a line item with inventory release"""
         # Validate estimate and check lock (raises on error)
-        estimate = await self._get_and_validate_estimate(
+        await self._get_and_validate_estimate(
             estimate_id, organization_id, version
         )
         
