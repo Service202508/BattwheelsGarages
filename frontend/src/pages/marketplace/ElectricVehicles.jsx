@@ -790,15 +790,18 @@ const VehicleCard = ({ vehicle, onRequestCallback }) => {
           <Link
             to={`/marketplace/vehicle/${vehicle.slug}`}
             className="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-center py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm"
+            data-testid={`view-details-${vehicle.slug}`}
           >
             View Details
           </Link>
-          <a
-            href="tel:+918076331607"
-            className="px-4 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center"
+          <button
+            onClick={() => onRequestCallback(vehicle)}
+            className="px-4 py-2.5 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100 transition-colors flex items-center justify-center group"
+            title="Request Callback"
+            data-testid={`request-callback-${vehicle.slug}`}
           >
-            <Phone className="w-4 h-4 text-gray-600" />
-          </a>
+            <PhoneCall className="w-4 h-4 text-green-600 group-hover:scale-110 transition-transform" />
+          </button>
         </div>
 
         {/* Warranty */}
