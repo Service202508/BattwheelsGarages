@@ -5100,6 +5100,26 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Banking & Accountant Module Routes
+try:
+    from routes.banking_module import router as banking_module_router
+    api_router.include_router(banking_module_router)
+    logger.info("Banking Module routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Banking Module routes: {e}")
+    import traceback
+    traceback.print_exc()
+
+# Seed Utility Routes (for testing)
+try:
+    from routes.seed_utility import router as seed_utility_router
+    api_router.include_router(seed_utility_router)
+    logger.info("Seed Utility routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Seed Utility routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
