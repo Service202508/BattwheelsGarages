@@ -2108,6 +2108,169 @@ export default function EstimatesEnhanced() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Estimate Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Edit className="h-5 w-5" /> Edit Estimate</DialogTitle>
+            <DialogDescription>Modify estimate details (only available for draft estimates)</DialogDescription>
+          </DialogHeader>
+          
+          {editEstimate && (
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label>Reference Number</Label>
+                  <Input 
+                    value={editEstimate.reference_number} 
+                    onChange={(e) => setEditEstimate({...editEstimate, reference_number: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label>Estimate Date</Label>
+                  <Input 
+                    type="date" 
+                    value={editEstimate.estimate_date} 
+                    onChange={(e) => setEditEstimate({...editEstimate, estimate_date: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label>Expiry Date</Label>
+                  <Input 
+                    type="date" 
+                    value={editEstimate.expiry_date} 
+                    onChange={(e) => setEditEstimate({...editEstimate, expiry_date: e.target.value})}
+                  />
+                </div>
+              </div>
+              
+              {/* Line Items */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <Label>Line Items</Label>
+                  <Button size="sm" variant="outline" onClick={addEditLineItem}><Plus className="h-4 w-4 mr-1" /> Add Item</Button>
+                </div>
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 py-2 text-left">Item</th>
+                        <th className="px-3 py-2 text-right w-20">Qty</th>
+                        <th className="px-3 py-2 text-right w-28">Rate</th>
+                        <th className="px-3 py-2 text-right w-20">Tax %</th>
+                        <th className="px-3 py-2 w-10"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {editEstimate.line_items.map((item, idx) => (
+                        <tr key={idx} className="border-t">
+                          <td className="px-3 py-2">
+                            <Input 
+                              value={item.name} 
+                              onChange={(e) => updateEditLineItem(idx, "name", e.target.value)}
+                              placeholder="Item name"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <Input 
+                              type="number" 
+                              value={item.quantity} 
+                              onChange={(e) => updateEditLineItem(idx, "quantity", parseFloat(e.target.value) || 1)}
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <Input 
+                              type="number" 
+                              value={item.rate} 
+                              onChange={(e) => updateEditLineItem(idx, "rate", parseFloat(e.target.value) || 0)}
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <Select value={String(item.tax_percentage || 18)} onValueChange={(v) => updateEditLineItem(idx, "tax_percentage", parseFloat(v))}>
+                              <SelectTrigger><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="0">0%</SelectItem>
+                                <SelectItem value="5">5%</SelectItem>
+                                <SelectItem value="12">12%</SelectItem>
+                                <SelectItem value="18">18%</SelectItem>
+                                <SelectItem value="28">28%</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </td>
+                          <td className="px-3 py-2 text-center">
+                            <Button size="icon" variant="ghost" onClick={() => removeEditLineItem(idx)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Customer Notes</Label>
+                  <Textarea 
+                    value={editEstimate.customer_notes} 
+                    onChange={(e) => setEditEstimate({...editEstimate, customer_notes: e.target.value})}
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <Label>Terms & Conditions</Label>
+                  <Textarea 
+                    value={editEstimate.terms_conditions} 
+                    onChange={(e) => setEditEstimate({...editEstimate, terms_conditions: e.target.value})}
+                    rows={2}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label>Discount</Label>
+                  <div className="flex gap-2">
+                    <Select value={editEstimate.discount_type} onValueChange={(v) => setEditEstimate({...editEstimate, discount_type: v})}>
+                      <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">%</SelectItem>
+                        <SelectItem value="amount">₹</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input 
+                      type="number" 
+                      value={editEstimate.discount_value} 
+                      onChange={(e) => setEditEstimate({...editEstimate, discount_value: parseFloat(e.target.value) || 0})}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>Shipping Charge</Label>
+                  <Input 
+                    type="number" 
+                    value={editEstimate.shipping_charge} 
+                    onChange={(e) => setEditEstimate({...editEstimate, shipping_charge: parseFloat(e.target.value) || 0})}
+                  />
+                </div>
+                <div>
+                  <Label>Adjustment</Label>
+                  <Input 
+                    type="number" 
+                    value={editEstimate.adjustment} 
+                    onChange={(e) => setEditEstimate({...editEstimate, adjustment: parseFloat(e.target.value) || 0})}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
+            <Button onClick={handleUpdateEstimate} className="bg-[#22EDA9] text-black" data-testid="save-estimate-btn">Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
