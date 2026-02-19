@@ -437,6 +437,10 @@ export default function CustomerPortal() {
             <TabsTrigger value="estimates">Estimates</TabsTrigger>
             <TabsTrigger value="payments">Payments</TabsTrigger>
             <TabsTrigger value="statement">Statement</TabsTrigger>
+            <TabsTrigger value="support" data-testid="support-tab">
+              <Ticket className="h-4 w-4 mr-1" />
+              Support
+            </TabsTrigger>
           </TabsList>
 
           {/* Dashboard Tab */}
