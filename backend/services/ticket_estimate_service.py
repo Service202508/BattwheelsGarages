@@ -957,6 +957,141 @@ class TicketEstimateService:
             "user_name": user_name,
             "timestamp": datetime.now(timezone.utc).isoformat()
         })
+    
+    # ==================== INVENTORY TRACKING ====================
+    
+    async def _reserve_inventory(
+        self,
+        item_id: str,
+        quantity: float,
+        estimate_id: str,
+        organization_id: str,
+        user_id: str
+    ):
+        """Reserve inventory for an estimate line item"""
+        now = datetime.now(timezone.utc)
+        
+        # Get the item's stock location (use primary warehouse)
+        warehouse = await self.db.warehouses.find_one(
+            {"organization_id": organization_id, "is_primary": True}
+        )
+        warehouse_id = warehouse["warehouse_id"] if warehouse else "default"
+        
+        # Update stock location - increase reserved_stock
+        await self.db.item_stock_locations.update_one(
+            {"item_id": item_id, "warehouse_id": warehouse_id},
+            {
+                "$inc": {"reserved_stock": quantity},
+                "$set": {"updated_time": now.isoformat()}
+            },
+            upsert=True
+        )
+        
+        # Log inventory allocation
+        await self.db.inventory_allocations.insert_one({
+            "allocation_id": f"alloc_{uuid.uuid4().hex[:12]}",
+            "item_id": item_id,
+            "estimate_id": estimate_id,
+            "organization_id": organization_id,
+            "quantity": quantity,
+            "warehouse_id": warehouse_id,
+            "status": "reserved",
+            "created_at": now.isoformat(),
+            "created_by": user_id
+        })
+        
+        logger.info(f"Reserved {quantity} units of item {item_id} for estimate {estimate_id}")
+    
+    async def _release_inventory(
+        self,
+        item_id: str,
+        quantity: float,
+        estimate_id: str,
+        organization_id: str,
+        user_id: str
+    ):
+        """Release reserved inventory when line item is removed"""
+        now = datetime.now(timezone.utc)
+        
+        # Find the allocation
+        allocation = await self.db.inventory_allocations.find_one({
+            "item_id": item_id,
+            "estimate_id": estimate_id,
+            "status": "reserved"
+        })
+        
+        if allocation:
+            warehouse_id = allocation.get("warehouse_id", "default")
+            
+            # Update stock location - decrease reserved_stock
+            await self.db.item_stock_locations.update_one(
+                {"item_id": item_id, "warehouse_id": warehouse_id},
+                {
+                    "$inc": {"reserved_stock": -quantity},
+                    "$set": {"updated_time": now.isoformat()}
+                }
+            )
+            
+            # Update allocation status
+            await self.db.inventory_allocations.update_one(
+                {"allocation_id": allocation["allocation_id"]},
+                {"$set": {"status": "released", "released_at": now.isoformat()}}
+            )
+            
+            logger.info(f"Released {quantity} units of item {item_id} from estimate {estimate_id}")
+    
+    async def _consume_inventory(
+        self,
+        item_id: str,
+        quantity: float,
+        estimate_id: str,
+        organization_id: str,
+        user_id: str
+    ):
+        """Consume reserved inventory when estimate is converted to invoice"""
+        now = datetime.now(timezone.utc)
+        
+        # Find the allocation
+        allocation = await self.db.inventory_allocations.find_one({
+            "item_id": item_id,
+            "estimate_id": estimate_id,
+            "status": "reserved"
+        })
+        
+        if allocation:
+            warehouse_id = allocation.get("warehouse_id", "default")
+            
+            # Update stock location - decrease both available and reserved
+            await self.db.item_stock_locations.update_one(
+                {"item_id": item_id, "warehouse_id": warehouse_id},
+                {
+                    "$inc": {
+                        "available_stock": -quantity,
+                        "reserved_stock": -quantity
+                    },
+                    "$set": {"updated_time": now.isoformat()}
+                }
+            )
+            
+            # Update allocation status
+            await self.db.inventory_allocations.update_one(
+                {"allocation_id": allocation["allocation_id"]},
+                {"$set": {"status": "consumed", "consumed_at": now.isoformat()}}
+            )
+            
+            # Log inventory history
+            await self.db.inventory_history.insert_one({
+                "history_id": f"hist_{uuid.uuid4().hex[:12]}",
+                "item_id": item_id,
+                "warehouse_id": warehouse_id,
+                "action": "consumed_for_estimate",
+                "quantity_change": -quantity,
+                "reason": f"Consumed for estimate {estimate_id}",
+                "user_id": user_id,
+                "timestamp": now.isoformat()
+            })
+            
+            logger.info(f"Consumed {quantity} units of item {item_id} for estimate {estimate_id}")
 
 
 # ==================== CUSTOM EXCEPTIONS ====================
