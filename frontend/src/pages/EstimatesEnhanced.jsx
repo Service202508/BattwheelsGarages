@@ -171,7 +171,7 @@ export default function EstimatesEnhanced() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    await Promise.all([fetchEstimates(), fetchSummary(), fetchFunnel(), fetchItems()]);
+    await Promise.all([fetchEstimates(), fetchTicketEstimates(), fetchSummary(), fetchFunnel(), fetchItems()]);
     setLoading(false);
   }, []);
 
@@ -184,6 +184,17 @@ export default function EstimatesEnhanced() {
       const data = await res.json();
       setEstimates(data.estimates || []);
     } catch (e) { console.error("Failed to fetch estimates:", e); }
+  };
+
+  // NEW: Fetch ticket-linked estimates
+  const fetchTicketEstimates = async () => {
+    try {
+      let url = `${API}/ticket-estimates?per_page=100`;
+      if (statusFilter !== "all") url += `&status=${statusFilter}`;
+      const res = await fetch(url, { headers });
+      const data = await res.json();
+      setTicketEstimates(data.estimates || []);
+    } catch (e) { console.error("Failed to fetch ticket estimates:", e); }
   };
 
   const fetchSummary = async () => {
