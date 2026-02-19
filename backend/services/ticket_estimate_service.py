@@ -405,18 +405,28 @@ class TicketEstimateService:
         user_name: str,
         version: int
     ) -> Dict[str, Any]:
-        """Delete a line item"""
+        """Delete a line item with inventory release"""
         # Validate estimate and check lock (raises on error)
-        await self._get_and_validate_estimate(
+        estimate = await self._get_and_validate_estimate(
             estimate_id, organization_id, version
         )
         
-        # Get line item for logging
+        # Get line item for logging and inventory release
         existing = await self.estimate_line_items.find_one(
             {"line_item_id": line_item_id, "estimate_id": estimate_id}
         )
         if not existing:
             raise ValueError(f"Line item {line_item_id} not found")
+        
+        # Release inventory if this was a reserved part
+        if existing.get("type") == "part" and existing.get("item_id") and existing.get("inventory_reserved"):
+            await self._release_inventory(
+                item_id=existing["item_id"],
+                quantity=existing.get("qty", 0),
+                estimate_id=estimate_id,
+                organization_id=organization_id,
+                user_id=user_id
+            )
         
         await self.estimate_line_items.delete_one(
             {"line_item_id": line_item_id, "estimate_id": estimate_id}
