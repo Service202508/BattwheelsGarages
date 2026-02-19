@@ -24,7 +24,29 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 ADMIN_EMAIL = "admin@battwheels.in"
 ADMIN_PASSWORD = "test_pwd_placeholder"
 TEST_CONTACT_ID = "1837096000000463081"
-TEST_PORTAL_TOKEN = "REDACTED-UUID"
+
+# Helper function to get a fresh portal token
+def get_fresh_portal_token():
+    """Enable portal for the contact and get a fresh token"""
+    # Login as admin first
+    login_resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+        "email": ADMIN_EMAIL,
+        "password": ADMIN_PASSWORD
+    })
+    if login_resp.status_code != 200:
+        return None
+    
+    admin_token = login_resp.json()["token"]
+    admin_headers = {"Authorization": f"Bearer {admin_token}"}
+    
+    # Enable portal for contact
+    enable_resp = requests.post(
+        f"{BASE_URL}/api/contacts-enhanced/{TEST_CONTACT_ID}/enable-portal",
+        headers=admin_headers
+    )
+    if enable_resp.status_code == 200:
+        return enable_resp.json().get("token")
+    return None
 
 
 class TestPortalLogin:
