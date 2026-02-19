@@ -193,33 +193,97 @@ class ItemCreate(BaseModel):
         return v.lower()
 
 class ItemUpdate(BaseModel):
-    """Partial update model - all fields optional"""
+    """Partial update model - all fields optional. Full Zoho Books compatibility."""
+    # Basic Info
     name: Optional[str] = None
     sku: Optional[str] = None
     description: Optional[str] = None
     item_type: Optional[str] = None
+    product_type: Optional[str] = None
     group_id: Optional[str] = None
     group_name: Optional[str] = None
+    
+    # Sales Information
+    rate: Optional[float] = None
     sales_rate: Optional[float] = None
     sales_description: Optional[str] = None
+    sales_account: Optional[str] = None
+    sales_account_id: Optional[str] = None
+    sales_account_code: Optional[str] = None
+    
+    # Purchase Information
     purchase_rate: Optional[float] = None
     purchase_description: Optional[str] = None
+    purchase_account: Optional[str] = None
+    purchase_account_id: Optional[str] = None
+    purchase_account_code: Optional[str] = None
+    
+    # Inventory Account
+    inventory_account: Optional[str] = None
+    inventory_account_id: Optional[str] = None
+    inventory_account_code: Optional[str] = None
+    inventory_valuation_method: Optional[str] = None
+    
+    # Inventory Levels
+    opening_stock: Optional[float] = None
+    opening_stock_value: Optional[float] = None
+    opening_stock_rate: Optional[float] = None
+    stock_on_hand: Optional[float] = None
+    reorder_level: Optional[float] = None
+    
+    # Units
     unit: Optional[str] = None
+    usage_unit: Optional[str] = None
+    unit_name: Optional[str] = None
+    
+    # Tax Information
+    taxable: Optional[bool] = None
     tax_preference: Optional[str] = None
+    taxability_type: Optional[str] = None
+    exemption_reason: Optional[str] = None
     tax_id: Optional[str] = None
     tax_percentage: Optional[float] = None
+    
+    # GST Taxes
+    intra_state_tax_name: Optional[str] = None
     intra_state_tax_rate: Optional[float] = None
+    intra_state_tax_type: Optional[str] = None
+    inter_state_tax_name: Optional[str] = None
     inter_state_tax_rate: Optional[float] = None
+    inter_state_tax_type: Optional[str] = None
+    
+    # HSN/SAC
     hsn_code: Optional[str] = None
     sac_code: Optional[str] = None
-    reorder_level: Optional[float] = None
+    
+    # Vendor
+    vendor: Optional[str] = None
     preferred_vendor_id: Optional[str] = None
     preferred_vendor_name: Optional[str] = None
-    custom_fields: Optional[Dict] = None
+    
+    # Location
+    location_name: Optional[str] = None
+    warehouse_id: Optional[str] = None
+    
+    # Sync Info
+    source: Optional[str] = None
+    reference_id: Optional[str] = None
+    zoho_item_id: Optional[str] = None
+    last_sync_time: Optional[str] = None
+    
+    # Status & Flags
+    status: Optional[str] = None
     is_active: Optional[bool] = None
+    sellable: Optional[bool] = None
+    purchasable: Optional[bool] = None
     track_inventory: Optional[bool] = None
+    
+    # Image
     image_data: Optional[str] = None
     image_name: Optional[str] = None
+    
+    # Custom Fields
+    custom_fields: Optional[Dict] = None
 
 class ItemStockLocationCreate(BaseModel):
     item_id: str
