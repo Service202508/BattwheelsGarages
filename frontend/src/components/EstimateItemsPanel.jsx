@@ -372,7 +372,7 @@ export default function EstimateItemsPanel({
   
   // Send estimate
   const handleSendEstimate = async () => {
-    setLoading(true);
+    setSendLoading(true);
     try {
       const response = await fetch(
         `${API}/ticket-estimates/${estimate.estimate_id}/send`,
@@ -401,7 +401,7 @@ export default function EstimateItemsPanel({
       console.error("Error sending estimate:", err);
       toast.error(err.message);
     } finally {
-      setLoading(false);
+      setSendLoading(false);
     }
   };
   
