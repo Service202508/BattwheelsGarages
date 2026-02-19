@@ -189,7 +189,7 @@ export default function Accountant() {
 
   const handleReconcileTransaction = async (txnId) => {
     try {
-      await fetch(`${API}/banking/transactions/${txnId}/reconcile`, { method: "POST", headers });
+      await fetch(`${API}/banking/transactions/${txnId}/reconcile/`, { method: "POST", headers });
       if (activeRecon) {
         setActiveRecon({
           ...activeRecon,
@@ -205,7 +205,7 @@ export default function Accountant() {
   const handleCompleteReconciliation = async () => {
     if (!activeRecon) return;
     try {
-      await fetch(`${API}/banking/reconciliation/${activeRecon.reconciliation_id}/complete`, {
+      await fetch(`${API}/banking/reconciliation/${activeRecon.reconciliation_id}/complete/`, {
         method: "POST",
         headers,
         body: JSON.stringify({ transaction_ids: [] })
