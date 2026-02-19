@@ -416,55 +416,107 @@ export default function AIAssistant({ user }) {
                 <p className="text-muted-foreground mt-4">Analyzing your issue...</p>
               </div>
             ) : response ? (
-              <div className="space-y-6" data-testid="ai-response">
-                {/* Confidence */}
-                <div className="flex items-center gap-2">
-                  <div className="h-2 flex-1 bg-background/50 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-primary rounded-full transition-all duration-500"
-                      style={{ width: `${response.confidence * 100}%` }}
-                    />
+              <div className="space-y-4" data-testid="ai-response">
+                {/* Confidence & Cost */}
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2 flex-1">
+                    <div className="h-2 flex-1 bg-background/50 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-primary rounded-full transition-all duration-500"
+                        style={{ width: `${response.confidence * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-sm text-muted-foreground mono whitespace-nowrap">
+                      {Math.round(response.confidence * 100)}% confidence
+                    </span>
                   </div>
-                  <span className="text-sm text-muted-foreground mono">
-                    {Math.round(response.confidence * 100)}% confidence
-                  </span>
+                  {response.estimated_cost_range && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <DollarSign className="h-3 w-3" />
+                      <span>{response.estimated_cost_range}</span>
+                    </div>
+                  )}
                 </div>
+
+                {/* Safety Warnings */}
+                {response.safety_warnings?.length > 0 && (
+                  <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30">
+                    <h4 className="font-semibold mb-2 text-xs text-red-400 flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4" />
+                      Safety Warnings
+                    </h4>
+                    <div className="space-y-1">
+                      {response.safety_warnings.map((warning, i) => (
+                        <p key={i} className="text-xs text-red-300 flex items-start gap-2">
+                          <Shield className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                          {warning}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Solution */}
                 <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                  <h4 className="font-semibold mb-3 text-primary">Diagnosis & Solution</h4>
+                  <h4 className="font-semibold mb-3 text-primary text-sm">Diagnosis & Solution</h4>
                   <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
                     {response.solution}
                   </div>
                 </div>
 
-                {/* Related Tickets */}
-                {response.related_tickets?.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold mb-2 text-sm">Related Tickets</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {response.related_tickets.map((ticket, i) => (
-                        <span key={i} className="px-2 py-1 bg-background/50 rounded text-xs mono">
-                          {ticket}
-                        </span>
+                {/* Diagnostic Steps */}
+                {response.diagnostic_steps?.length > 0 && (
+                  <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
+                    <h4 className="font-semibold mb-2 text-xs text-blue-400 flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4" />
+                      Quick Diagnostic Checklist
+                    </h4>
+                    <div className="space-y-1">
+                      {response.diagnostic_steps.map((step, i) => (
+                        <p key={i} className="text-xs text-blue-200/80 flex items-start gap-2">
+                          <span className="font-mono text-blue-400">{i + 1}.</span>
+                          {step}
+                        </p>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Recommended Parts */}
-                {response.recommended_parts?.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold mb-2 text-sm">Recommended Parts</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {response.recommended_parts.map((part, i) => (
-                        <span key={i} className="px-2 py-1 bg-chart-2/10 text-chart-2 rounded text-xs">
-                          {part}
-                        </span>
-                      ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Recommended Parts */}
+                  {response.recommended_parts?.length > 0 && (
+                    <div className="p-3 rounded-lg bg-background/50">
+                      <h4 className="font-semibold mb-2 text-xs text-muted-foreground flex items-center gap-2">
+                        <Cog className="h-3 w-3" />
+                        Likely Parts Needed
+                      </h4>
+                      <div className="flex flex-wrap gap-1">
+                        {response.recommended_parts.map((part, i) => (
+                          <span key={i} className="px-2 py-0.5 bg-chart-2/10 text-chart-2 rounded text-xs">
+                            {part}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+
+                  {/* Related Tickets */}
+                  {response.related_tickets?.length > 0 && (
+                    <div className="p-3 rounded-lg bg-background/50">
+                      <h4 className="font-semibold mb-2 text-xs text-muted-foreground flex items-center gap-2">
+                        <Clock className="h-3 w-3" />
+                        Similar Past Cases
+                      </h4>
+                      <div className="flex flex-wrap gap-1">
+                        {response.related_tickets.map((ticket, i) => (
+                          <span key={i} className="px-2 py-0.5 bg-background/80 rounded text-xs mono">
+                            {ticket}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
