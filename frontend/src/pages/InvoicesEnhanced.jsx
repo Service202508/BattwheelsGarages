@@ -65,7 +65,38 @@ export default function InvoicesEnhanced() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showAttachmentDialog, setShowAttachmentDialog] = useState(false);
+  const [showCommentsDialog, setShowCommentsDialog] = useState(false);
+  const [showSendDialog, setShowSendDialog] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [detailViewMode, setDetailViewMode] = useState("details"); // details or pdf
+  
+  // Share link state
+  const [shareLink, setShareLink] = useState(null);
+  const [shareLoading, setShareLoading] = useState(false);
+  const [shareConfig, setShareConfig] = useState({
+    expiry_days: 30,
+    allow_payment: true,
+    password_protected: false,
+    password: ""
+  });
+  
+  // Attachments state
+  const [attachments, setAttachments] = useState([]);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  
+  // Comments state
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  
+  // History state
+  const [history, setHistory] = useState([]);
+  
+  // Send email state
+  const [sendEmail, setSendEmail] = useState("");
+  const [sendMessage, setSendMessage] = useState("");
   
   // Form state
   const [newInvoice, setNewInvoice] = useState({
