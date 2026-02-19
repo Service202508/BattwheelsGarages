@@ -965,37 +965,269 @@ async def create_price_list(pl: PriceListCreate):
         **pl.dict(),
         "items": [],
         "status": "active",
-        "created_time": datetime.now(timezone.utc).isoformat()
+        "item_count": 0,
+        "created_time": datetime.now(timezone.utc).isoformat(),
+        "updated_time": datetime.now(timezone.utc).isoformat()
     }
+    
+    # If setting as default, unset other defaults
+    if pl.is_default:
+        await db.price_lists.update_many(
+            {"price_type": pl.price_type, "is_default": True},
+            {"$set": {"is_default": False}}
+        )
     
     await db.price_lists.insert_one(pl_dict)
     del pl_dict["_id"]
     return {"code": 0, "message": "Price list created", "price_list": pl_dict}
 
+
 @router.get("/price-lists")
-async def list_price_lists(price_type: str = ""):
-    """List all price lists"""
+async def list_price_lists(price_type: str = "", include_items: bool = True):
+    """List all price lists with enriched item data"""
     db = get_db()
-    query = {"status": "active"}
+    query = {"status": {"$ne": "deleted"}}
     if price_type:
         query["price_type"] = price_type
     
-    cursor = db.price_lists.find(query, {"_id": 0})
-    items = await cursor.to_list(length=100)
-    return {"code": 0, "price_lists": items}
+    cursor = db.price_lists.find(query, {"_id": 0}).sort("created_time", -1)
+    price_lists = await cursor.to_list(length=100)
+    
+    if include_items:
+        # Enrich items with current item details for real-time sync
+        items_cache = {}
+        all_item_ids = set()
+        for pl in price_lists:
+            for item in pl.get("items", []):
+                all_item_ids.add(item.get("item_id"))
+        
+        if all_item_ids:
+            items_cursor = db.items.find(
+                {"item_id": {"$in": list(all_item_ids)}},
+                {"_id": 0, "item_id": 1, "name": 1, "sku": 1, "status": 1, 
+                 "is_combo_product": 1, "rate": 1, "item_type": 1, "unit": 1}
+            )
+            async for item in items_cursor:
+                items_cache[item["item_id"]] = item
+        
+        # Enrich price list items with current item data
+        for pl in price_lists:
+            enriched_items = []
+            for pl_item in pl.get("items", []):
+                item_data = items_cache.get(pl_item.get("item_id"), {})
+                enriched_item = {
+                    **pl_item,
+                    "item_name": item_data.get("name", "Unknown"),
+                    "sku": item_data.get("sku", ""),
+                    "item_status": item_data.get("status", "active"),
+                    "is_combo_product": item_data.get("is_combo_product", False),
+                    "item_price": item_data.get("rate", 0),
+                    "item_type": item_data.get("item_type", "goods"),
+                    "unit": item_data.get("unit", "pcs")
+                }
+                enriched_items.append(enriched_item)
+            pl["items"] = enriched_items
+            pl["item_count"] = len(enriched_items)
+    
+    return {"code": 0, "price_lists": price_lists}
 
-@router.post("/price-lists/{pl_id}/items")
-async def add_item_to_price_list(pl_id: str, item_id: str, custom_rate: float):
-    """Add item with custom price to price list"""
+
+@router.get("/price-lists/{pl_id}")
+async def get_price_list(pl_id: str):
+    """Get single price list with enriched item data"""
+    db = get_db()
+    
+    pl = await db.price_lists.find_one({"price_list_id": pl_id}, {"_id": 0})
+    if not pl:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    # Enrich items with current item details
+    items_cache = {}
+    item_ids = [item.get("item_id") for item in pl.get("items", [])]
+    
+    if item_ids:
+        items_cursor = db.items.find(
+            {"item_id": {"$in": item_ids}},
+            {"_id": 0, "item_id": 1, "name": 1, "sku": 1, "status": 1,
+             "is_combo_product": 1, "rate": 1, "item_type": 1, "unit": 1}
+        )
+        async for item in items_cursor:
+            items_cache[item["item_id"]] = item
+    
+    enriched_items = []
+    for pl_item in pl.get("items", []):
+        item_data = items_cache.get(pl_item.get("item_id"), {})
+        enriched_item = {
+            **pl_item,
+            "item_name": item_data.get("name", "Unknown"),
+            "sku": item_data.get("sku", ""),
+            "item_status": item_data.get("status", "active"),
+            "is_combo_product": item_data.get("is_combo_product", False),
+            "item_price": item_data.get("rate", 0),
+            "item_type": item_data.get("item_type", "goods"),
+            "unit": item_data.get("unit", "pcs")
+        }
+        enriched_items.append(enriched_item)
+    
+    pl["items"] = enriched_items
+    pl["item_count"] = len(enriched_items)
+    
+    return {"code": 0, "price_list": pl}
+
+
+@router.put("/price-lists/{pl_id}")
+async def update_price_list(pl_id: str, update: PriceListUpdate):
+    """Update price list details"""
+    db = get_db()
+    
+    update_data = {k: v for k, v in update.dict().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No update data provided")
+    
+    update_data["updated_time"] = datetime.now(timezone.utc).isoformat()
+    
+    # If setting as default, unset other defaults
+    if update.is_default:
+        pl = await db.price_lists.find_one({"price_list_id": pl_id})
+        if pl:
+            await db.price_lists.update_many(
+                {"price_type": pl.get("price_type"), "is_default": True, "price_list_id": {"$ne": pl_id}},
+                {"$set": {"is_default": False}}
+            )
+    
+    result = await db.price_lists.update_one(
+        {"price_list_id": pl_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    return {"code": 0, "message": "Price list updated"}
+
+
+@router.delete("/price-lists/{pl_id}")
+async def delete_price_list(pl_id: str):
+    """Soft delete a price list"""
     db = get_db()
     
     result = await db.price_lists.update_one(
         {"price_list_id": pl_id},
-        {"$push": {"items": {"item_id": item_id, "custom_rate": custom_rate}}}
+        {"$set": {"status": "deleted", "updated_time": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    return {"code": 0, "message": "Price list deleted"}
+
+
+@router.post("/price-lists/{pl_id}/items")
+async def add_item_to_price_list(
+    pl_id: str, 
+    item_id: str, 
+    custom_rate: Optional[float] = None,
+    pricelist_rate: Optional[float] = None,
+    discount: float = 0,
+    discount_type: str = "percentage"
+):
+    """Add item with custom price to price list (Zoho compatible)"""
+    db = get_db()
+    
+    # Use pricelist_rate or custom_rate (backward compatible)
+    rate = pricelist_rate if pricelist_rate is not None else custom_rate
+    
+    # Verify item exists and get its data
+    item = await db.items.find_one({"item_id": item_id}, {"_id": 0})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    # Check if item already exists in price list
+    pl = await db.price_lists.find_one({"price_list_id": pl_id})
+    if not pl:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    existing_items = pl.get("items", [])
+    for i, existing in enumerate(existing_items):
+        if existing.get("item_id") == item_id:
+            # Update existing item
+            existing_items[i] = {
+                "item_id": item_id,
+                "pricelist_rate": rate,
+                "custom_rate": rate,  # Keep for backward compatibility
+                "discount": discount,
+                "discount_type": discount_type,
+                "added_time": existing.get("added_time", datetime.now(timezone.utc).isoformat()),
+                "updated_time": datetime.now(timezone.utc).isoformat()
+            }
+            await db.price_lists.update_one(
+                {"price_list_id": pl_id},
+                {"$set": {"items": existing_items, "updated_time": datetime.now(timezone.utc).isoformat()}}
+            )
+            return {"code": 0, "message": "Item updated in price list"}
+    
+    # Add new item
+    new_item = {
+        "item_id": item_id,
+        "pricelist_rate": rate,
+        "custom_rate": rate,  # Keep for backward compatibility
+        "discount": discount,
+        "discount_type": discount_type,
+        "added_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    result = await db.price_lists.update_one(
+        {"price_list_id": pl_id},
+        {
+            "$push": {"items": new_item},
+            "$set": {"updated_time": datetime.now(timezone.utc).isoformat()}
+        }
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Price list not found")
     return {"code": 0, "message": "Item added to price list"}
+
+
+@router.put("/price-lists/{pl_id}/items/{item_id}")
+async def update_item_in_price_list(
+    pl_id: str,
+    item_id: str,
+    pricelist_rate: Optional[float] = None,
+    discount: Optional[float] = None,
+    discount_type: Optional[str] = None
+):
+    """Update item pricing in price list"""
+    db = get_db()
+    
+    pl = await db.price_lists.find_one({"price_list_id": pl_id})
+    if not pl:
+        raise HTTPException(status_code=404, detail="Price list not found")
+    
+    items = pl.get("items", [])
+    item_found = False
+    
+    for i, item in enumerate(items):
+        if item.get("item_id") == item_id:
+            if pricelist_rate is not None:
+                items[i]["pricelist_rate"] = pricelist_rate
+                items[i]["custom_rate"] = pricelist_rate
+            if discount is not None:
+                items[i]["discount"] = discount
+            if discount_type is not None:
+                items[i]["discount_type"] = discount_type
+            items[i]["updated_time"] = datetime.now(timezone.utc).isoformat()
+            item_found = True
+            break
+    
+    if not item_found:
+        raise HTTPException(status_code=404, detail="Item not found in price list")
+    
+    await db.price_lists.update_one(
+        {"price_list_id": pl_id},
+        {"$set": {"items": items, "updated_time": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"code": 0, "message": "Item updated in price list"}
 
 @router.delete("/price-lists/{pl_id}/items/{item_id}")
 async def remove_item_from_price_list(pl_id: str, item_id: str):
