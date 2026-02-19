@@ -211,9 +211,9 @@ class TestRunner:
         initial_stock = item.get("stock_on_hand", item.get("on_hand_stock", 0))
         print(f"  ✓ Got item: {item['name']} (Stock: {initial_stock})")
         
-        # Step 2: Create adjustment
+        # Step 2: Create adjustment (use /inv-adjustments endpoint)
         response = requests.post(
-            f"{BASE_URL}/inventory-adjustments-v2/",
+            f"{BASE_URL}/inv-adjustments",
             json={
                 "adjustment_type": "quantity",
                 "reason": "Stock Recount",
@@ -231,14 +231,14 @@ class TestRunner:
             headers=self.headers()
         )
         if response.status_code != 200:
-            print(f"  ❌ Create adjustment failed: {response.status_code}")
+            print(f"  ❌ Create adjustment failed: {response.status_code} - {response.text[:200]}")
             return False
         adjustment = response.json()["adjustment"]
         adjustment_id = adjustment["adjustment_id"]
         print(f"  ✓ Created adjustment: {adjustment['reference_number']} (Status: {adjustment['status']})")
         
-        # Step 3: Apply adjustment
-        response = requests.post(f"{BASE_URL}/inventory-adjustments-v2/{adjustment_id}/convert", headers=self.headers())
+        # Step 3: Apply adjustment (convert)
+        response = requests.post(f"{BASE_URL}/inv-adjustments/{adjustment_id}/convert", headers=self.headers())
         if response.status_code != 200:
             print(f"  ❌ Apply adjustment failed: {response.status_code}")
             return False
