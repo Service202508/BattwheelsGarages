@@ -2891,3 +2891,33 @@ async def download_public_attachment(share_token: str, attachment_id: str):
         raise HTTPException(status_code=404, detail="Invalid or expired share link")
     
     return await download_attachment(share_link["estimate_id"], attachment_id)
+
+# ========================= ACTIVITY LOG ENDPOINT =========================
+
+@router.get("/{estimate_id}/activity")
+async def get_estimate_activity(estimate_id: str, limit: int = 50):
+    """Get activity log for an estimate"""
+    estimate = await estimates_collection.find_one({"estimate_id": estimate_id})
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found")
+    
+    # Get from history collection
+    history = await estimate_history_collection.find(
+        {"estimate_id": estimate_id},
+        {"_id": 0}
+    ).sort("timestamp", -1).limit(limit).to_list(limit)
+    
+    # Also get from unified activity log if available
+    try:
+        from services.activity_service import get_entity_activities, EntityType
+        activities = await get_entity_activities(
+            entity_type=EntityType.ESTIMATE,
+            entity_id=estimate_id,
+            limit=limit
+        )
+        # Merge and sort
+        all_activities = history + activities
+        all_activities.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+        return {"code": 0, "activities": all_activities[:limit]}
+    except:
+        return {"code": 0, "activities": history}
