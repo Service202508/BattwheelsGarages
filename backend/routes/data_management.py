@@ -29,11 +29,19 @@ class SanitizationRequest(BaseModel):
     collections: Optional[List[str]] = None
 
 
+async def get_org_id(request: Request) -> str:
+    """Get organization ID from request header"""
+    org_id = request.headers.get("X-Organization-ID")
+    if not org_id:
+        raise HTTPException(status_code=400, detail="X-Organization-ID header required")
+    return org_id
+
+
 @router.post("/sanitize")
 async def sanitize_data(
-    request: SanitizationRequest,
+    request: Request,
+    sanitization_request: SanitizationRequest,
     background_tasks: BackgroundTasks,
-    org_id: str = Depends(require_organization)
 ):
     """
     Sanitize test/dummy data from the organization.
@@ -42,9 +50,10 @@ async def sanitize_data(
     - collections: specific collections to sanitize (optional, defaults to all)
     """
     db = get_db()
+    org_id = await get_org_id(request)
     service = DataSanitizationService(db)
     
-    if request.mode == "audit":
+    if sanitization_request.mode == "audit":
         # Run audit synchronously for preview
         report = await service.run_sanitization(
             organization_id=org_id,
