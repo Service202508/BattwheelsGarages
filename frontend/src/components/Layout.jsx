@@ -50,7 +50,8 @@ import {
   Banknote,
   UserCircle,
   Briefcase,
-  LayoutGrid
+  LayoutGrid,
+  Hash
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
