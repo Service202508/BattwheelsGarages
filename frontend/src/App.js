@@ -502,6 +502,13 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/data-management" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <DataManagement user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/accounting" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
