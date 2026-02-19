@@ -218,9 +218,10 @@ export default function PriceLists() {
 
   const handleImport = async () => {
     if (!importCsvData.trim()) return toast.error("Paste CSV data");
+    const plId = selectedPriceList?.price_list_id || selectedPriceList?.pricelist_id;
     setImporting(true);
     try {
-      const res = await fetch(`${API}/zoho/price-lists/${selectedPriceList.price_list_id}/import`, {
+      const res = await fetch(`${API}/zoho/price-lists/${plId}/import`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ csv_data: importCsvData })
