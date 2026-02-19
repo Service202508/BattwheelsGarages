@@ -1332,11 +1332,42 @@ export default function InvoicesEnhanced() {
 
                 <Separator />
 
-                {/* Actions */}
+                {/* View Toggle */}
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-sm text-gray-500">View:</span>
+                  <Button 
+                    size="sm" 
+                    variant={detailViewMode === "details" ? "default" : "outline"}
+                    onClick={() => setDetailViewMode("details")}
+                  >
+                    <Eye className="h-4 w-4 mr-1" /> Details
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant={detailViewMode === "pdf" ? "default" : "outline"}
+                    onClick={() => handleDownloadPDF(selectedInvoice.invoice_id)}
+                  >
+                    <FileText className="h-4 w-4 mr-1" /> PDF Preview
+                  </Button>
+                </div>
+
+                {/* Primary Actions */}
                 <div className="flex flex-wrap gap-2">
+                  {/* Edit - Only for draft invoices */}
+                  {selectedInvoice.status === "draft" && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleOpenEdit(selectedInvoice)}
+                      data-testid="edit-invoice-btn"
+                    >
+                      <Edit className="h-4 w-4 mr-1" /> Edit
+                    </Button>
+                  )}
+                  
                   {selectedInvoice.status === "draft" && (
                     <>
-                      <Button variant="outline" size="sm" onClick={() => handleSendInvoice(selectedInvoice.invoice_id)}><Send className="h-4 w-4 mr-1" /> Send</Button>
+                      <Button variant="outline" size="sm" onClick={() => { setSendEmail(selectedInvoice.customer_email || ""); setShowSendDialog(true); }}><Send className="h-4 w-4 mr-1" /> Send</Button>
                       <Button variant="outline" size="sm" onClick={() => handleMarkSent(selectedInvoice.invoice_id)}><CheckCircle className="h-4 w-4 mr-1" /> Mark Sent</Button>
                     </>
                   )}
@@ -1350,15 +1381,446 @@ export default function InvoicesEnhanced() {
                       <DollarSign className="h-4 w-4 mr-1" /> Record Payment
                     </Button>
                   )}
+                  
+                  <Separator orientation="vertical" className="h-8" />
+                  
+                  {/* Share Link */}
+                  {selectedInvoice.status !== "draft" && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => { setShareLink(null); setShowShareDialog(true); }}
+                      data-testid="share-invoice-btn"
+                    >
+                      <Share2 className="h-4 w-4 mr-1" /> Share
+                    </Button>
+                  )}
+                  
+                  {/* Attachments */}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => { fetchAttachments(selectedInvoice.invoice_id); setShowAttachmentDialog(true); }}
+                    data-testid="attachments-btn"
+                  >
+                    <Paperclip className="h-4 w-4 mr-1" /> Attachments
+                  </Button>
+                  
+                  {/* Comments */}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => { fetchComments(selectedInvoice.invoice_id); fetchHistory(selectedInvoice.invoice_id); setShowCommentsDialog(true); }}
+                    data-testid="comments-btn"
+                  >
+                    <MessageSquare className="h-4 w-4 mr-1" /> Notes
+                  </Button>
+                  
+                  {/* Download PDF */}
+                  <Button variant="outline" size="sm" onClick={() => handleDownloadPDF(selectedInvoice.invoice_id)} data-testid="download-pdf-btn">
+                    <Download className="h-4 w-4 mr-1" /> PDF
+                  </Button>
+                  
+                  {/* Clone */}
                   <Button variant="outline" size="sm" onClick={() => handleCloneInvoice(selectedInvoice.invoice_id)}><Copy className="h-4 w-4 mr-1" /> Clone</Button>
+                  
+                  {/* Void */}
                   {selectedInvoice.status !== "void" && selectedInvoice.status !== "paid" && (
                     <Button variant="outline" size="sm" onClick={() => handleVoidInvoice(selectedInvoice.invoice_id)}><Ban className="h-4 w-4 mr-1" /> Void</Button>
                   )}
+                  
+                  {/* Delete */}
                   <Button variant="destructive" size="sm" onClick={() => handleDeleteInvoice(selectedInvoice.invoice_id)}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
                 </div>
+
+                {/* History Section */}
+                {selectedInvoice.history?.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="font-medium mb-2 flex items-center gap-2"><History className="h-4 w-4" /> Recent Activity</h4>
+                    <div className="space-y-1 text-sm max-h-32 overflow-y-auto">
+                      {selectedInvoice.history.slice(0, 5).map((h, idx) => (
+                        <div key={idx} className="flex justify-between text-gray-600 py-1">
+                          <span>{h.action}: {h.details}</span>
+                          <span className="text-xs text-gray-400">{new Date(h.timestamp).toLocaleString("en-IN")}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Invoice Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Invoice</DialogTitle>
+            <DialogDescription>Modify invoice details (only available for draft invoices)</DialogDescription>
+          </DialogHeader>
+          
+          {editInvoice && (
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label>Reference Number</Label>
+                  <Input 
+                    value={editInvoice.reference_number} 
+                    onChange={(e) => setEditInvoice({...editInvoice, reference_number: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label>Invoice Date</Label>
+                  <Input 
+                    type="date" 
+                    value={editInvoice.invoice_date} 
+                    onChange={(e) => setEditInvoice({...editInvoice, invoice_date: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label>Payment Terms (days)</Label>
+                  <Input 
+                    type="number" 
+                    value={editInvoice.payment_terms} 
+                    onChange={(e) => setEditInvoice({...editInvoice, payment_terms: parseInt(e.target.value) || 30})}
+                  />
+                </div>
+              </div>
+              
+              {/* Line Items */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <Label>Line Items</Label>
+                  <Button size="sm" variant="outline" onClick={addEditLineItem}><Plus className="h-4 w-4 mr-1" /> Add Item</Button>
+                </div>
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 py-2 text-left">Item</th>
+                        <th className="px-3 py-2 text-right w-20">Qty</th>
+                        <th className="px-3 py-2 text-right w-28">Rate</th>
+                        <th className="px-3 py-2 text-right w-20">Tax %</th>
+                        <th className="px-3 py-2 w-10"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {editInvoice.line_items.map((item, idx) => (
+                        <tr key={idx} className="border-t">
+                          <td className="px-3 py-2">
+                            <Input 
+                              value={item.name} 
+                              onChange={(e) => updateEditLineItem(idx, "name", e.target.value)}
+                              placeholder="Item name"
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <Input 
+                              type="number" 
+                              value={item.quantity} 
+                              onChange={(e) => updateEditLineItem(idx, "quantity", parseFloat(e.target.value) || 1)}
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <Input 
+                              type="number" 
+                              value={item.rate} 
+                              onChange={(e) => updateEditLineItem(idx, "rate", parseFloat(e.target.value) || 0)}
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <Select value={String(item.tax_rate)} onValueChange={(v) => updateEditLineItem(idx, "tax_rate", parseFloat(v))}>
+                              <SelectTrigger><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="0">0%</SelectItem>
+                                <SelectItem value="5">5%</SelectItem>
+                                <SelectItem value="12">12%</SelectItem>
+                                <SelectItem value="18">18%</SelectItem>
+                                <SelectItem value="28">28%</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </td>
+                          <td className="px-3 py-2 text-center">
+                            <Button size="icon" variant="ghost" onClick={() => removeEditLineItem(idx)}><X className="h-4 w-4 text-red-500" /></Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Customer Notes</Label>
+                  <Textarea 
+                    value={editInvoice.customer_notes} 
+                    onChange={(e) => setEditInvoice({...editInvoice, customer_notes: e.target.value})}
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <Label>Terms & Conditions</Label>
+                  <Textarea 
+                    value={editInvoice.terms_conditions} 
+                    onChange={(e) => setEditInvoice({...editInvoice, terms_conditions: e.target.value})}
+                    rows={2}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label>Discount</Label>
+                  <div className="flex gap-2">
+                    <Select value={editInvoice.discount_type} onValueChange={(v) => setEditInvoice({...editInvoice, discount_type: v})}>
+                      <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">%</SelectItem>
+                        <SelectItem value="amount">₹</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input 
+                      type="number" 
+                      value={editInvoice.discount_value} 
+                      onChange={(e) => setEditInvoice({...editInvoice, discount_value: parseFloat(e.target.value) || 0})}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>Shipping Charge</Label>
+                  <Input 
+                    type="number" 
+                    value={editInvoice.shipping_charge} 
+                    onChange={(e) => setEditInvoice({...editInvoice, shipping_charge: parseFloat(e.target.value) || 0})}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
+            <Button onClick={handleUpdateInvoice} className="bg-[#22EDA9] text-black" data-testid="save-invoice-btn">Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Share Link Dialog */}
+      <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Share2 className="h-5 w-5" /> Share Invoice</DialogTitle>
+            <DialogDescription>Generate a public link for customers to view and pay this invoice.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {!shareLink ? (
+              <>
+                <div className="space-y-3">
+                  <div>
+                    <Label>Link Expires In (days)</Label>
+                    <Input 
+                      type="number" 
+                      value={shareConfig.expiry_days} 
+                      onChange={(e) => setShareConfig({...shareConfig, expiry_days: parseInt(e.target.value) || 30})}
+                      min={1} max={365}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label>Allow Online Payment</Label>
+                    <input 
+                      type="checkbox" 
+                      checked={shareConfig.allow_payment} 
+                      onChange={(e) => setShareConfig({...shareConfig, allow_payment: e.target.checked})}
+                      className="h-4 w-4"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label>Password Protected</Label>
+                    <input 
+                      type="checkbox" 
+                      checked={shareConfig.password_protected} 
+                      onChange={(e) => setShareConfig({...shareConfig, password_protected: e.target.checked})}
+                      className="h-4 w-4"
+                    />
+                  </div>
+                  {shareConfig.password_protected && (
+                    <div>
+                      <Label>Password</Label>
+                      <Input 
+                        type="password" 
+                        value={shareConfig.password} 
+                        onChange={(e) => setShareConfig({...shareConfig, password: e.target.value})}
+                        placeholder="Enter password"
+                      />
+                    </div>
+                  )}
+                </div>
+                <Button 
+                  onClick={handleCreateShareLink} 
+                  disabled={shareLoading}
+                  className="w-full bg-[#22EDA9] text-black"
+                  data-testid="generate-share-link-btn"
+                >
+                  {shareLoading ? "Generating..." : "Generate Share Link"}
+                </Button>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <p className="text-sm text-green-700 mb-2">Share link created successfully!</p>
+                  <div className="flex items-center gap-2">
+                    <Input value={shareLink.full_url} readOnly className="text-xs" />
+                    <Button size="sm" onClick={copyShareLink}><Link className="h-4 w-4" /></Button>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500">Expires: {new Date(shareLink.expiry_date).toLocaleDateString("en-IN")}</p>
+                <Button variant="outline" className="w-full" onClick={() => setShareLink(null)}>Create New Link</Button>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Attachments Dialog */}
+      <Dialog open={showAttachmentDialog} onOpenChange={setShowAttachmentDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Paperclip className="h-5 w-5" /> Attachments</DialogTitle>
+            <DialogDescription>Upload supporting documents (max 5 files, 10MB each)</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* Upload Area */}
+            <div className="border-2 border-dashed rounded-lg p-6 text-center">
+              <input 
+                type="file" 
+                id="attachment-upload" 
+                className="hidden" 
+                onChange={handleUploadAttachment}
+                disabled={uploadingAttachment}
+              />
+              <label htmlFor="attachment-upload" className="cursor-pointer">
+                <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                <p className="text-sm text-gray-600">Click to upload or drag & drop</p>
+                <p className="text-xs text-gray-400">PDF, DOC, XLS, Images (max 10MB)</p>
+              </label>
+              {uploadingAttachment && <p className="text-sm text-blue-600 mt-2">Uploading...</p>}
+            </div>
+            
+            {/* Attachments List */}
+            {attachments.length > 0 ? (
+              <div className="space-y-2">
+                {attachments.map(att => (
+                  <div key={att.attachment_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-blue-600" />
+                      <div>
+                        <p className="text-sm font-medium">{att.filename}</p>
+                        <p className="text-xs text-gray-500">{(att.size_bytes / 1024).toFixed(1)} KB</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button size="icon" variant="ghost" onClick={() => downloadAttachment(att.attachment_id, att.filename)}><Download className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => handleDeleteAttachment(att.attachment_id)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-gray-500 py-4">No attachments yet</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Comments & History Dialog */}
+      <Dialog open={showCommentsDialog} onOpenChange={setShowCommentsDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><MessageSquare className="h-5 w-5" /> Notes & History</DialogTitle>
+            <DialogDescription>Internal notes and activity log for this invoice</DialogDescription>
+          </DialogHeader>
+          <Tabs defaultValue="comments" className="py-4">
+            <TabsList className="w-full">
+              <TabsTrigger value="comments" className="flex-1">Notes ({comments.length})</TabsTrigger>
+              <TabsTrigger value="history" className="flex-1">History ({history.length})</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="comments" className="space-y-4 mt-4">
+              {/* Add Comment */}
+              <div className="flex gap-2">
+                <Textarea 
+                  value={newComment} 
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Add a note..."
+                  rows={2}
+                  className="flex-1"
+                />
+                <Button onClick={handleAddComment} disabled={!newComment.trim()}><Plus className="h-4 w-4" /></Button>
+              </div>
+              
+              {/* Comments List */}
+              {comments.length > 0 ? (
+                <div className="space-y-3 max-h-64 overflow-y-auto">
+                  {comments.map(c => (
+                    <div key={c.comment_id} className="p-3 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-start">
+                        <p className="text-sm">{c.comment}</p>
+                        <Button size="icon" variant="ghost" onClick={() => handleDeleteComment(c.comment_id)}><X className="h-3 w-3" /></Button>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">{new Date(c.created_time).toLocaleString("en-IN")}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-gray-500 py-8">No notes yet</p>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="history" className="mt-4">
+              {history.length > 0 ? (
+                <div className="space-y-2 max-h-72 overflow-y-auto">
+                  {history.map((h, idx) => (
+                    <div key={idx} className="flex justify-between items-center py-2 border-b last:border-0">
+                      <div>
+                        <p className="text-sm font-medium">{h.action}</p>
+                        <p className="text-xs text-gray-500">{h.details}</p>
+                      </div>
+                      <span className="text-xs text-gray-400">{new Date(h.timestamp).toLocaleString("en-IN")}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-gray-500 py-8">No history available</p>
+              )}
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
+
+      {/* Send Email Dialog */}
+      <Dialog open={showSendDialog} onOpenChange={setShowSendDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send Invoice</DialogTitle>
+            <DialogDescription>Email this invoice to the customer</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Email To</Label>
+              <Input value={sendEmail} onChange={(e) => setSendEmail(e.target.value)} placeholder="customer@example.com" />
+            </div>
+            <div>
+              <Label>Message (optional)</Label>
+              <Textarea value={sendMessage} onChange={(e) => setSendMessage(e.target.value)} placeholder="Add a personal message..." rows={3} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowSendDialog(false)}>Cancel</Button>
+            <Button onClick={handleSendInvoiceEmail} className="bg-[#22EDA9] text-black">Send Invoice</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
