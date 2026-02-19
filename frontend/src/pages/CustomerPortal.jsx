@@ -25,7 +25,18 @@ const statusColors = {
   paid: "bg-green-100 text-green-700",
   overdue: "bg-red-100 text-red-700",
   accepted: "bg-green-100 text-green-700",
-  declined: "bg-red-100 text-red-700"
+  declined: "bg-red-100 text-red-700",
+  // Ticket statuses
+  open: "bg-blue-100 text-blue-700",
+  in_progress: "bg-yellow-100 text-yellow-700",
+  resolved: "bg-green-100 text-green-700",
+  closed: "bg-gray-100 text-gray-700",
+};
+
+const priorityColors = {
+  low: "bg-gray-100 text-gray-700",
+  medium: "bg-yellow-100 text-yellow-700",
+  high: "bg-red-100 text-red-700",
 };
 
 export default function CustomerPortal() {
@@ -42,12 +53,31 @@ export default function CustomerPortal() {
   const [estimates, setEstimates] = useState([]);
   const [payments, setPayments] = useState([]);
   const [statement, setStatement] = useState(null);
+  const [tickets, setTickets] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
   
   // Detail dialogs
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [selectedEstimate, setSelectedEstimate] = useState(null);
+  const [selectedTicket, setSelectedTicket] = useState(null);
   const [showInvoiceDialog, setShowInvoiceDialog] = useState(false);
   const [showEstimateDialog, setShowEstimateDialog] = useState(false);
+  const [showTicketDialog, setShowTicketDialog] = useState(false);
+  
+  // Create ticket dialog
+  const [showCreateTicket, setShowCreateTicket] = useState(false);
+  const [creatingTicket, setCreatingTicket] = useState(false);
+  const [newTicket, setNewTicket] = useState({
+    subject: "",
+    description: "",
+    priority: "medium",
+    category: "general",
+    vehicle_id: ""
+  });
+  
+  // Comment state
+  const [ticketComment, setTicketComment] = useState("");
+  const [addingComment, setAddingComment] = useState(false);
 
   useEffect(() => {
     // Check for existing session
