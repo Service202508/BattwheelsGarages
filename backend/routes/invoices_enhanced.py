@@ -1685,3 +1685,310 @@ async def create_invoice_from_estimate(estimate_id: str, background_tasks: Backg
     )
     
     return result
+
+# ========================= SHARE LINKS =========================
+
+@router.post("/{invoice_id}/share")
+async def create_invoice_share_link(invoice_id: str, config: InvoiceShareConfig):
+    """Create a public share link for an invoice"""
+    invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    if invoice.get("status") == "draft":
+        raise HTTPException(status_code=400, detail="Cannot share draft invoices")
+    
+    # Deactivate existing share links
+    await invoice_share_links_collection.update_many(
+        {"invoice_id": invoice_id, "is_active": True},
+        {"$set": {"is_active": False}}
+    )
+    
+    # Create new share link
+    share_token = generate_share_token()
+    share_link_id = generate_id("INVLINK")
+    expiry_date = (datetime.now(timezone.utc) + timedelta(days=config.expiry_days)).isoformat()
+    
+    share_doc = {
+        "share_link_id": share_link_id,
+        "invoice_id": invoice_id,
+        "invoice_number": invoice.get("invoice_number"),
+        "customer_id": invoice.get("customer_id"),
+        "share_token": share_token,
+        "public_url": f"/public/invoice/{share_token}",
+        "expiry_date": expiry_date,
+        "allow_payment": config.allow_payment,
+        "password_protected": config.password_protected,
+        "password_hash": config.password if config.password_protected else None,
+        "is_active": True,
+        "view_count": 0,
+        "first_viewed_at": None,
+        "last_viewed_at": None,
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await invoice_share_links_collection.insert_one(share_doc)
+    await add_invoice_history(invoice_id, "share_link_created", f"Share link created, expires {expiry_date[:10]}")
+    
+    return {
+        "code": 0,
+        "share_link": {
+            "share_link_id": share_link_id,
+            "public_url": share_doc["public_url"],
+            "expiry_date": expiry_date,
+            "share_token": share_token
+        }
+    }
+
+@router.get("/{invoice_id}/share-links")
+async def list_invoice_share_links(invoice_id: str):
+    """List all share links for an invoice"""
+    links = await invoice_share_links_collection.find(
+        {"invoice_id": invoice_id},
+        {"_id": 0, "password_hash": 0}
+    ).sort("created_time", -1).to_list(20)
+    
+    return {"code": 0, "share_links": links}
+
+@router.delete("/{invoice_id}/share-links/{share_link_id}")
+async def revoke_invoice_share_link(invoice_id: str, share_link_id: str):
+    """Revoke a share link"""
+    result = await invoice_share_links_collection.update_one(
+        {"share_link_id": share_link_id, "invoice_id": invoice_id},
+        {"$set": {"is_active": False}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Share link not found")
+    
+    await add_invoice_history(invoice_id, "share_link_revoked", "Share link was revoked")
+    return {"code": 0, "message": "Share link revoked"}
+
+# ========================= ATTACHMENTS =========================
+
+@router.post("/{invoice_id}/attachments")
+async def upload_invoice_attachment(
+    invoice_id: str,
+    file: UploadFile = File(...)
+):
+    """Upload an attachment to an invoice (max 5 files, 10MB each)"""
+    invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Check attachment count
+    existing_count = await invoice_attachments_collection.count_documents({"invoice_id": invoice_id})
+    if existing_count >= MAX_ATTACHMENTS_PER_INVOICE:
+        raise HTTPException(status_code=400, detail=f"Maximum {MAX_ATTACHMENTS_PER_INVOICE} attachments allowed")
+    
+    # Read and validate file
+    content = await file.read()
+    size_mb = len(content) / (1024 * 1024)
+    if size_mb > MAX_ATTACHMENT_SIZE_MB:
+        raise HTTPException(status_code=400, detail=f"File size exceeds {MAX_ATTACHMENT_SIZE_MB}MB limit")
+    
+    # Store attachment
+    attachment_id = generate_id("INVATT")
+    attachment_doc = {
+        "attachment_id": attachment_id,
+        "invoice_id": invoice_id,
+        "filename": file.filename,
+        "content_type": file.content_type,
+        "size_bytes": len(content),
+        "file_data": base64.b64encode(content).decode("utf-8"),
+        "uploaded_at": datetime.now(timezone.utc).isoformat(),
+        "uploaded_by": "system"
+    }
+    
+    await invoice_attachments_collection.insert_one(attachment_doc)
+    await add_invoice_history(invoice_id, "attachment_added", f"File attached: {file.filename}")
+    
+    return {
+        "code": 0,
+        "message": "Attachment uploaded",
+        "attachment": {
+            "attachment_id": attachment_id,
+            "filename": file.filename,
+            "content_type": file.content_type,
+            "size_bytes": len(content),
+            "uploaded_at": attachment_doc["uploaded_at"]
+        }
+    }
+
+@router.get("/{invoice_id}/attachments")
+async def list_invoice_attachments(invoice_id: str):
+    """List all attachments for an invoice"""
+    attachments = await invoice_attachments_collection.find(
+        {"invoice_id": invoice_id},
+        {"_id": 0, "file_data": 0}
+    ).to_list(MAX_ATTACHMENTS_PER_INVOICE)
+    
+    return {"code": 0, "attachments": attachments}
+
+@router.get("/{invoice_id}/attachments/{attachment_id}")
+async def download_invoice_attachment(invoice_id: str, attachment_id: str):
+    """Download an attachment"""
+    attachment = await invoice_attachments_collection.find_one({
+        "attachment_id": attachment_id,
+        "invoice_id": invoice_id
+    })
+    if not attachment:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    
+    content = base64.b64decode(attachment["file_data"])
+    return Response(
+        content=content,
+        media_type=attachment["content_type"],
+        headers={
+            "Content-Disposition": f'attachment; filename="{attachment["filename"]}"'
+        }
+    )
+
+@router.delete("/{invoice_id}/attachments/{attachment_id}")
+async def delete_invoice_attachment(invoice_id: str, attachment_id: str):
+    """Delete an attachment"""
+    result = await invoice_attachments_collection.delete_one({
+        "attachment_id": attachment_id,
+        "invoice_id": invoice_id
+    })
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    
+    await add_invoice_history(invoice_id, "attachment_deleted", "Attachment removed")
+    return {"code": 0, "message": "Attachment deleted"}
+
+# ========================= COMMENTS =========================
+
+@router.post("/{invoice_id}/comments")
+async def add_invoice_comment(invoice_id: str, comment_data: InvoiceCommentCreate):
+    """Add a comment/note to an invoice"""
+    invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    comment_id = generate_id("INVCMT")
+    comment_doc = {
+        "comment_id": comment_id,
+        "invoice_id": invoice_id,
+        "comment": comment_data.comment,
+        "is_internal": comment_data.is_internal,
+        "created_by": "system",
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await invoice_comments_collection.insert_one(comment_doc)
+    await add_invoice_history(invoice_id, "comment_added", "Comment added")
+    
+    comment_doc.pop("_id", None)
+    return {"code": 0, "comment": comment_doc}
+
+@router.get("/{invoice_id}/comments")
+async def list_invoice_comments(invoice_id: str, include_internal: bool = True):
+    """List all comments for an invoice"""
+    query = {"invoice_id": invoice_id}
+    if not include_internal:
+        query["is_internal"] = False
+    
+    comments = await invoice_comments_collection.find(
+        query, {"_id": 0}
+    ).sort("created_time", -1).to_list(100)
+    
+    return {"code": 0, "comments": comments}
+
+@router.delete("/{invoice_id}/comments/{comment_id}")
+async def delete_invoice_comment(invoice_id: str, comment_id: str):
+    """Delete a comment"""
+    result = await invoice_comments_collection.delete_one({
+        "comment_id": comment_id,
+        "invoice_id": invoice_id
+    })
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    
+    return {"code": 0, "message": "Comment deleted"}
+
+# ========================= HISTORY =========================
+
+async def add_invoice_history(invoice_id: str, action: str, details: str):
+    """Add entry to invoice history"""
+    history_doc = {
+        "history_id": generate_id("INVHIST"),
+        "invoice_id": invoice_id,
+        "action": action,
+        "details": details,
+        "performed_by": "system",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+    await invoice_history_collection.insert_one(history_doc)
+
+@router.get("/{invoice_id}/history")
+async def get_invoice_history(invoice_id: str, limit: int = 50):
+    """Get invoice history/activity log"""
+    history = await invoice_history_collection.find(
+        {"invoice_id": invoice_id},
+        {"_id": 0}
+    ).sort("timestamp", -1).limit(limit).to_list(limit)
+    
+    return {"code": 0, "history": history}
+
+# ========================= EXPORT =========================
+
+@router.get("/export/csv")
+async def export_invoices_csv(
+    status: str = "",
+    customer_id: str = "",
+    from_date: str = "",
+    to_date: str = ""
+):
+    """Export invoices to CSV"""
+    import csv
+    
+    query = {}
+    if status:
+        query["status"] = status
+    if customer_id:
+        query["customer_id"] = customer_id
+    if from_date:
+        query["invoice_date"] = {"$gte": from_date}
+    if to_date:
+        if "invoice_date" in query:
+            query["invoice_date"]["$lte"] = to_date
+        else:
+            query["invoice_date"] = {"$lte": to_date}
+    
+    invoices = await invoices_collection.find(query, {"_id": 0}).to_list(5000)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Header
+    writer.writerow([
+        "Invoice Number", "Date", "Due Date", "Customer", "Status",
+        "Subtotal", "Tax", "Total", "Paid", "Balance", "Reference"
+    ])
+    
+    # Rows
+    for inv in invoices:
+        writer.writerow([
+            inv.get("invoice_number", ""),
+            inv.get("invoice_date", ""),
+            inv.get("due_date", ""),
+            inv.get("customer_name", ""),
+            inv.get("status", ""),
+            inv.get("sub_total", 0),
+            inv.get("tax_total", 0),
+            inv.get("grand_total", 0),
+            inv.get("amount_paid", 0),
+            inv.get("balance_due", 0),
+            inv.get("reference_number", "")
+        ])
+    
+    csv_content = output.getvalue()
+    output.close()
+    
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename=invoices_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        }
+    )
