@@ -141,6 +141,7 @@ const navItems = [
       { name: "Items & Products", path: "/items", icon: Tag },
       { name: "Composite Items", path: "/composite-items", icon: Layers },
       { name: "Stock Management", path: "/inventory-enhanced", icon: Warehouse },
+      { name: "Stock Transfers", path: "/stock-transfers", icon: ArrowRightLeft },
       { name: "Price Lists", path: "/price-lists", icon: List },
       { name: "Adjustments", path: "/inventory-adjustments", icon: ClipboardList },
       { name: "Serial & Batch", path: "/serial-batch-tracking", icon: Hash },
