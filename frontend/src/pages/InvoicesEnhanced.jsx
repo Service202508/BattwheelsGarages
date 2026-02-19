@@ -492,6 +492,282 @@ export default function InvoicesEnhanced() {
     });
   };
 
+  // ========================= EDIT INVOICE =========================
+  const handleOpenEdit = (invoice) => {
+    setEditInvoice({
+      invoice_id: invoice.invoice_id,
+      reference_number: invoice.reference_number || "",
+      invoice_date: invoice.invoice_date || "",
+      due_date: invoice.due_date || "",
+      payment_terms: invoice.payment_terms || 30,
+      line_items: invoice.line_items || [],
+      discount_type: invoice.discount_type || "percentage",
+      discount_value: invoice.discount_value || 0,
+      shipping_charge: invoice.shipping_charge || 0,
+      customer_notes: invoice.customer_notes || "",
+      terms_conditions: invoice.terms_conditions || ""
+    });
+    setShowEditDialog(true);
+  };
+
+  const updateEditLineItem = (index, field, value) => {
+    setEditInvoice(prev => {
+      const updated = [...prev.line_items];
+      updated[index] = { ...updated[index], [field]: value };
+      return { ...prev, line_items: updated };
+    });
+  };
+
+  const addEditLineItem = () => {
+    setEditInvoice(prev => ({
+      ...prev,
+      line_items: [...prev.line_items, { name: "", description: "", quantity: 1, rate: 0, tax_rate: 18 }]
+    }));
+  };
+
+  const removeEditLineItem = (index) => {
+    setEditInvoice(prev => ({
+      ...prev,
+      line_items: prev.line_items.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleUpdateInvoice = async () => {
+    if (!editInvoice) return;
+    try {
+      const res = await fetch(`${API}/invoices-enhanced/${editInvoice.invoice_id}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(editInvoice)
+      });
+      if (res.ok) {
+        toast.success("Invoice updated successfully");
+        setShowEditDialog(false);
+        fetchInvoiceDetail(editInvoice.invoice_id);
+        fetchData();
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || "Failed to update invoice");
+      }
+    } catch (e) {
+      toast.error("Error updating invoice");
+    }
+  };
+
+  // ========================= PDF DOWNLOAD =========================
+  const handleDownloadPDF = async (invoiceId) => {
+    try {
+      toast.info("Generating PDF...");
+      const res = await fetch(`${API}/invoices-enhanced/${invoiceId}/pdf`, { headers });
+      
+      if (res.headers.get('content-type')?.includes('application/pdf')) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `Invoice_${invoiceId}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        toast.success("PDF downloaded!");
+      } else {
+        // Might be HTML for print
+        const html = await res.text();
+        const printWindow = window.open("", "_blank");
+        printWindow.document.write(html);
+        printWindow.document.close();
+        toast.info("PDF preview opened in new window");
+      }
+    } catch (e) {
+      console.error("PDF error:", e);
+      toast.error("Failed to generate PDF");
+    }
+  };
+
+  // ========================= SHARE LINK =========================
+  const handleCreateShareLink = async () => {
+    if (!selectedInvoice) return;
+    setShareLoading(true);
+    try {
+      const res = await fetch(`${API}/invoices-enhanced/${selectedInvoice.invoice_id}/share`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(shareConfig)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        const fullUrl = `${window.location.origin}${data.share_link.public_url}`;
+        setShareLink({ ...data.share_link, full_url: fullUrl });
+        toast.success("Share link created!");
+      } else {
+        toast.error(data.detail || "Failed to create share link");
+      }
+    } catch (e) {
+      toast.error("Error creating share link");
+    } finally {
+      setShareLoading(false);
+    }
+  };
+
+  const copyShareLink = () => {
+    if (shareLink?.full_url) {
+      navigator.clipboard.writeText(shareLink.full_url);
+      toast.success("Link copied to clipboard!");
+    }
+  };
+
+  // ========================= ATTACHMENTS =========================
+  const fetchAttachments = async (invoiceId) => {
+    try {
+      const res = await fetch(`${API}/invoices-enhanced/${invoiceId}/attachments`, { headers });
+      const data = await res.json();
+      setAttachments(data.attachments || []);
+    } catch (e) {
+      console.error("Failed to fetch attachments:", e);
+    }
+  };
+
+  const handleUploadAttachment = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !selectedInvoice) return;
+    
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File size exceeds 10MB limit");
+      return;
+    }
+    
+    setUploadingAttachment(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      const res = await fetch(`${API}/invoices-enhanced/${selectedInvoice.invoice_id}/attachments`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Attachment uploaded");
+        fetchAttachments(selectedInvoice.invoice_id);
+      } else {
+        toast.error(data.detail || "Failed to upload");
+      }
+    } catch (e) {
+      toast.error("Error uploading attachment");
+    } finally {
+      setUploadingAttachment(false);
+    }
+  };
+
+  const handleDeleteAttachment = async (attachmentId) => {
+    if (!confirm("Delete this attachment?")) return;
+    try {
+      const res = await fetch(`${API}/invoices-enhanced/${selectedInvoice.invoice_id}/attachments/${attachmentId}`, {
+        method: "DELETE",
+        headers
+      });
+      if (res.ok) {
+        toast.success("Attachment deleted");
+        fetchAttachments(selectedInvoice.invoice_id);
+      } else {
+        toast.error("Failed to delete attachment");
+      }
+    } catch (e) {
+      toast.error("Error deleting attachment");
+    }
+  };
+
+  const downloadAttachment = (attachmentId, filename) => {
+    const url = `${API}/invoices-enhanced/${selectedInvoice.invoice_id}/attachments/${attachmentId}`;
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+  };
+
+  // ========================= COMMENTS =========================
+  const fetchComments = async (invoiceId) => {
+    try {
+      const res = await fetch(`${API}/invoices-enhanced/${invoiceId}/comments`, { headers });
+      const data = await res.json();
+      setComments(data.comments || []);
+    } catch (e) {
+      console.error("Failed to fetch comments:", e);
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim() || !selectedInvoice) return;
+    try {
+      const res = await fetch(`${API}/invoices-enhanced/${selectedInvoice.invoice_id}/comments`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ comment: newComment, is_internal: true })
+      });
+      if (res.ok) {
+        toast.success("Comment added");
+        setNewComment("");
+        fetchComments(selectedInvoice.invoice_id);
+      } else {
+        toast.error("Failed to add comment");
+      }
+    } catch (e) {
+      toast.error("Error adding comment");
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!confirm("Delete this comment?")) return;
+    try {
+      const res = await fetch(`${API}/invoices-enhanced/${selectedInvoice.invoice_id}/comments/${commentId}`, {
+        method: "DELETE",
+        headers
+      });
+      if (res.ok) {
+        toast.success("Comment deleted");
+        fetchComments(selectedInvoice.invoice_id);
+      }
+    } catch (e) {
+      toast.error("Error deleting comment");
+    }
+  };
+
+  // ========================= HISTORY =========================
+  const fetchHistory = async (invoiceId) => {
+    try {
+      const res = await fetch(`${API}/invoices-enhanced/${invoiceId}/history`, { headers });
+      const data = await res.json();
+      setHistory(data.history || []);
+    } catch (e) {
+      console.error("Failed to fetch history:", e);
+    }
+  };
+
+  // ========================= SEND EMAIL =========================
+  const handleSendInvoiceEmail = async () => {
+    if (!selectedInvoice || !sendEmail) {
+      toast.error("Please enter email address");
+      return;
+    }
+    try {
+      const url = `${API}/invoices-enhanced/${selectedInvoice.invoice_id}/send?email_to=${encodeURIComponent(sendEmail)}&message=${encodeURIComponent(sendMessage)}`;
+      const res = await fetch(url, { method: "POST", headers });
+      if (res.ok) {
+        toast.success("Invoice sent!");
+        setShowSendDialog(false);
+        setSendEmail("");
+        setSendMessage("");
+        fetchInvoiceDetail(selectedInvoice.invoice_id);
+        fetchData();
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || "Failed to send invoice");
+      }
+    } catch (e) {
+      toast.error("Error sending invoice");
+    }
+  };
+
   const formatCurrency = (amount) => `₹${(amount || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
   const formatDate = (date) => date ? new Date(date).toLocaleDateString("en-IN") : "-";
 
