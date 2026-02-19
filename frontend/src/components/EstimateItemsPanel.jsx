@@ -1138,8 +1138,8 @@ export default function EstimateItemsPanel({
             <Button variant="outline" onClick={() => { setEditDialogOpen(false); setSelectedLineItem(null); }}>
               Cancel
             </Button>
-            <Button onClick={handleUpdateLineItem} disabled={loading}>
-              {loading ? "Saving..." : "Save Changes"}
+            <Button onClick={handleUpdateLineItem} disabled={editLoading}>
+              {editLoading ? "Saving..." : "Save Changes"}
             </Button>
           </DialogFooter>
         </DialogContent>
