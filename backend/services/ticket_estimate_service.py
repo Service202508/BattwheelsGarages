@@ -309,7 +309,7 @@ class TicketEstimateService:
         
         # Recalculate totals and increment version
         await self._recalculate_totals(estimate_id)
-        new_version = await self._increment_version(estimate_id)
+        await self._increment_version(estimate_id)
         
         # Log history
         await self._log_history(
