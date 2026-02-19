@@ -235,7 +235,7 @@ class TicketEstimateService:
         estimate_id: str,
         organization_id: str
     ) -> Optional[Dict[str, Any]]:
-        """Get estimate by ID with line items"""
+        """Get estimate by ID with line items and stock info"""
         estimate = await self.estimates.find_one(
             {"estimate_id": estimate_id, "organization_id": organization_id},
             {"_id": 0}
@@ -250,8 +250,91 @@ class TicketEstimateService:
             {"_id": 0}
         ).sort("sort_index", 1).to_list(1000)
         
+        # Enrich parts with stock information
+        line_items = await self._enrich_line_items_with_stock(line_items, organization_id)
+        
         estimate["line_items"] = line_items
         return estimate
+    
+    async def _enrich_line_items_with_stock(
+        self,
+        line_items: list,
+        organization_id: str
+    ) -> list:
+        """Add stock information to part-type line items"""
+        # Get unique item_ids from parts
+        part_item_ids = [
+            item["item_id"] for item in line_items 
+            if item.get("type") == "part" and item.get("item_id")
+        ]
+        
+        if not part_item_ids:
+            return line_items
+        
+        # Fetch stock info for all parts
+        stock_info = {}
+        
+        # Get primary warehouse
+        warehouse = await self.db.warehouses.find_one(
+            {"organization_id": organization_id, "is_primary": True}
+        )
+        warehouse_id = warehouse["warehouse_id"] if warehouse else "default"
+        
+        # Fetch stock locations for all parts
+        stock_locations = await self.db.item_stock_locations.find(
+            {"item_id": {"$in": part_item_ids}, "warehouse_id": warehouse_id},
+            {"_id": 0}
+        ).to_list(1000)
+        
+        # Build stock lookup
+        for loc in stock_locations:
+            available = loc.get("available_stock", 0)
+            reserved = loc.get("reserved_stock", 0)
+            stock_info[loc["item_id"]] = {
+                "available_stock": available,
+                "reserved_stock": reserved,
+                "total_stock": available + reserved,
+                "warehouse_id": warehouse_id
+            }
+        
+        # Also check items_enhanced for items that might not have stock_locations yet
+        items_enhanced = await self.db.items_enhanced.find(
+            {"item_id": {"$in": part_item_ids}},
+            {"_id": 0, "item_id": 1, "stock_on_hand": 1, "reorder_level": 1}
+        ).to_list(1000)
+        
+        for item in items_enhanced:
+            if item["item_id"] not in stock_info:
+                stock_info[item["item_id"]] = {
+                    "available_stock": item.get("stock_on_hand", 0),
+                    "reserved_stock": 0,
+                    "total_stock": item.get("stock_on_hand", 0),
+                    "warehouse_id": warehouse_id
+                }
+            # Add reorder level
+            if item["item_id"] in stock_info:
+                stock_info[item["item_id"]]["reorder_level"] = item.get("reorder_level", 5)
+        
+        # Enrich line items
+        for item in line_items:
+            if item.get("type") == "part" and item.get("item_id"):
+                item_stock = stock_info.get(item["item_id"], {})
+                available = item_stock.get("available_stock", 0)
+                reorder = item_stock.get("reorder_level", 5)
+                
+                item["stock_info"] = {
+                    "available_stock": available,
+                    "reserved_stock": item_stock.get("reserved_stock", 0),
+                    "total_stock": item_stock.get("total_stock", 0),
+                    "reorder_level": reorder,
+                    "status": (
+                        "out_of_stock" if available <= 0 else
+                        "low_stock" if available <= reorder else
+                        "in_stock"
+                    )
+                }
+        
+        return line_items
     
     # ==================== LINE ITEM CRUD ====================
     
