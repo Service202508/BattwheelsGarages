@@ -836,7 +836,7 @@ async def send_payment_reminders():
                     }
                     await db.payment_reminder_records.insert_one(reminder_record)
                     reminders_sent += 1
-        except:
+        except Exception:
             continue
     
     return {"code": 0, "message": f"Sent {reminders_sent} payment reminders"}
