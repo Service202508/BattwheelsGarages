@@ -3,7 +3,7 @@ Battwheels OS - Data Management API Routes
 Provides endpoints for data sanitization, sync management, and monitoring
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends, Request
 from pydantic import BaseModel
 from typing import Optional, List, Dict
 from datetime import datetime, timezone
@@ -11,7 +11,7 @@ import logging
 
 from services.data_sanitization_service import DataSanitizationService, DataValidationService
 from services.zoho_realtime_sync import ZohoRealTimeSyncService
-from core.org.org_context import require_organization
+from core.org.dependencies import get_org_id_from_request
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/data-management", tags=["Data Management"])
