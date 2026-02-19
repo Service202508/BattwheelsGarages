@@ -180,7 +180,7 @@ export default function EstimateItemsPanel({
       return;
     }
     
-    setLoading(true);
+    setAddItemLoading(true);
     try {
       const response = await fetch(
         `${API}/ticket-estimates/${estimate.estimate_id}/line-items`,
@@ -199,18 +199,18 @@ export default function EstimateItemsPanel({
       );
       
       if (response.status === 409) {
-        // Concurrency conflict
+        // Concurrency conflict - refresh estimate and let user retry
         const data = await response.json();
         setConflictData(data.detail?.current_estimate);
         toast.error("Estimate was modified. Refreshing...");
         await ensureEstimate();
-        setLoading(false);
+        setAddItemLoading(false);
         return;
       }
       
       if (response.status === 423) {
         toast.error("Estimate is locked and cannot be modified");
-        setLoading(false);
+        setAddItemLoading(false);
         return;
       }
       
@@ -232,7 +232,7 @@ export default function EstimateItemsPanel({
       console.error("Error adding line item:", err);
       toast.error(err.message || "Failed to add item");
     } finally {
-      setLoading(false);
+      setAddItemLoading(false);
     }
   };
   
