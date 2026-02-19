@@ -410,7 +410,7 @@ async def void_transfer(transfer_id: str, voided_by: str = "system", reason: str
                 item_id=item["item_id"],
                 warehouse_id=transfer["source_warehouse_id"],
                 qty_change=item["quantity"],  # Add back
-                reason=f"Stock transfer void",
+                reason="Stock transfer void",
                 reference_id=transfer_id
             )
     elif transfer.get("status") == "received":
@@ -420,14 +420,14 @@ async def void_transfer(transfer_id: str, voided_by: str = "system", reason: str
                 item_id=item["item_id"],
                 warehouse_id=transfer["source_warehouse_id"],
                 qty_change=item["quantity"],
-                reason=f"Stock transfer void",
+                reason="Stock transfer void",
                 reference_id=transfer_id
             )
             await adjust_warehouse_stock(
                 item_id=item["item_id"],
                 warehouse_id=transfer["destination_warehouse_id"],
                 qty_change=-item["quantity"],
-                reason=f"Stock transfer void",
+                reason="Stock transfer void",
                 reference_id=transfer_id
             )
     
