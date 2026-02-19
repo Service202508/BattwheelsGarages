@@ -260,12 +260,108 @@ export default function CustomerPortal() {
     }
   };
 
+  const fetchTickets = async () => {
+    try {
+      const res = await fetch(`${API}/customer-portal/tickets?session_token=${sessionToken}`);
+      if (res.ok) {
+        const data = await res.json();
+        setTickets(data.tickets || []);
+      }
+    } catch (e) {
+      console.error("Failed to fetch tickets:", e);
+    }
+  };
+
+  const fetchVehicles = async () => {
+    try {
+      const res = await fetch(`${API}/customer-portal/vehicles?session_token=${sessionToken}`);
+      if (res.ok) {
+        const data = await res.json();
+        setVehicles(data.vehicles || []);
+      }
+    } catch (e) {
+      console.error("Failed to fetch vehicles:", e);
+    }
+  };
+
+  const viewTicketDetails = async (ticketId) => {
+    try {
+      const res = await fetch(`${API}/customer-portal/tickets/${ticketId}?session_token=${sessionToken}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSelectedTicket(data.ticket);
+        setShowTicketDialog(true);
+      }
+    } catch (e) {
+      toast.error("Failed to load ticket details");
+    }
+  };
+
+  const createSupportTicket = async () => {
+    if (!newTicket.subject.trim() || !newTicket.description.trim()) {
+      toast.error("Subject and description are required");
+      return;
+    }
+    
+    setCreatingTicket(true);
+    try {
+      const res = await fetch(`${API}/customer-portal/tickets?session_token=${sessionToken}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTicket)
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(`Support request ${data.ticket.ticket_id} created`);
+        setShowCreateTicket(false);
+        setNewTicket({ subject: "", description: "", priority: "medium", category: "general", vehicle_id: "" });
+        fetchTickets();
+      } else {
+        const error = await res.json();
+        toast.error(error.detail || "Failed to create support request");
+      }
+    } catch (e) {
+      toast.error("Failed to create support request");
+    } finally {
+      setCreatingTicket(false);
+    }
+  };
+
+  const addCommentToTicket = async () => {
+    if (!ticketComment.trim() || !selectedTicket) return;
+    
+    setAddingComment(true);
+    try {
+      const res = await fetch(
+        `${API}/customer-portal/tickets/${selectedTicket.ticket_id}/comment?session_token=${sessionToken}&comment=${encodeURIComponent(ticketComment)}`,
+        { method: "POST" }
+      );
+      
+      if (res.ok) {
+        toast.success("Comment added");
+        setTicketComment("");
+        viewTicketDetails(selectedTicket.ticket_id); // Refresh ticket
+      } else {
+        toast.error("Failed to add comment");
+      }
+    } catch (e) {
+      toast.error("Failed to add comment");
+    } finally {
+      setAddingComment(false);
+    }
+  };
+
   useEffect(() => {
     if (isLoggedIn && sessionToken) {
       if (activeTab === "invoices") fetchInvoices();
       else if (activeTab === "estimates") fetchEstimates();
       else if (activeTab === "payments") fetchPayments();
       else if (activeTab === "statement") fetchStatement();
+      else if (activeTab === "support") {
+        fetchTickets();
+        fetchVehicles();
+      }
     }
   }, [activeTab, isLoggedIn, sessionToken]);
 
