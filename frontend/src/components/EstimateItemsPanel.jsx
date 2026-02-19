@@ -650,7 +650,10 @@ export default function EstimateItemsPanel({
                   {newItem.type === "part" && (
                     <div className="space-y-2">
                       <Label>Search Parts Catalog</Label>
-                      <Popover open={searchOpen} onOpenChange={setSearchOpen}>
+                      <Popover open={searchOpen} onOpenChange={(open) => {
+                        setSearchOpen(open);
+                        if (open) loadInitialCatalog();
+                      }}>
                         <PopoverTrigger asChild>
                           <Button variant="outline" className="w-full justify-start">
                             {newItem.item_id ? newItem.name : "Search parts..."}
@@ -667,16 +670,21 @@ export default function EstimateItemsPanel({
                               }}
                             />
                             <CommandList>
-                              <CommandEmpty>No parts found</CommandEmpty>
-                              <CommandGroup>
+                              <CommandEmpty>
+                                {catalogItems.length === 0 ? "Loading parts..." : "No parts found"}
+                              </CommandEmpty>
+                              <CommandGroup heading="Parts Catalog">
                                 {catalogItems.map((item) => (
                                   <CommandItem
                                     key={item.item_id}
                                     onSelect={() => handleSelectCatalogItem(item)}
                                   >
                                     <div className="flex justify-between w-full">
-                                      <span className="truncate">{item.name}</span>
-                                      <span className="text-muted-foreground">
+                                      <div className="flex flex-col">
+                                        <span className="truncate font-medium">{item.name}</span>
+                                        <span className="text-xs text-muted-foreground">{item.sku || item.item_id}</span>
+                                      </div>
+                                      <span className="text-muted-foreground font-medium">
                                         ₹{(item.rate || item.selling_price || 0).toLocaleString()}
                                       </span>
                                     </div>
