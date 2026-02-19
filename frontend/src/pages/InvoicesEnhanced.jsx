@@ -15,7 +15,8 @@ import {
   Plus, Search, RefreshCw, Receipt, Eye, Send, Copy, Ban, Trash2, 
   DollarSign, CreditCard, Calendar, Clock, AlertTriangle, CheckCircle,
   FileText, ArrowRight, Download, Filter, MoreVertical, Users, Building2,
-  TrendingUp, TrendingDown, Wallet, PieChart, ExternalLink
+  TrendingUp, TrendingDown, Wallet, PieChart, ExternalLink, Edit, Share2,
+  Paperclip, MessageSquare, Printer, History, Link, X, Upload
 } from "lucide-react";
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
