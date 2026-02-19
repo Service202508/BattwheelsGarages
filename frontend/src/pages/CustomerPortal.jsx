@@ -702,10 +702,234 @@ export default function CustomerPortal() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Support Tab */}
+          <TabsContent value="support" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-lg font-semibold">Support Requests</h2>
+                <p className="text-sm text-gray-500">View your service tickets and submit new requests</p>
+              </div>
+              <Button onClick={() => setShowCreateTicket(true)} data-testid="create-ticket-btn">
+                <Plus className="h-4 w-4 mr-2" />
+                New Request
+              </Button>
+            </div>
+            
+            <Card>
+              <CardContent className="p-0">
+                {tickets.length === 0 ? (
+                  <div className="p-8 text-center text-gray-500">
+                    <Ticket className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                    <p>No support requests found</p>
+                    <Button variant="outline" className="mt-4" onClick={() => setShowCreateTicket(true)}>
+                      Submit Your First Request
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="divide-y">
+                    {tickets.map((ticket) => (
+                      <div
+                        key={ticket.ticket_id}
+                        className="p-4 hover:bg-gray-50 cursor-pointer flex justify-between items-center"
+                        onClick={() => viewTicketDetails(ticket.ticket_id)}
+                        data-testid={`ticket-${ticket.ticket_id}`}
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs text-gray-400">{ticket.ticket_id}</span>
+                            <Badge className={statusColors[ticket.status]}>{ticket.status?.replace("_", " ")}</Badge>
+                            <Badge variant="outline" className={priorityColors[ticket.priority]}>{ticket.priority}</Badge>
+                          </div>
+                          <p className="font-medium mt-1">{ticket.subject}</p>
+                          <p className="text-xs text-gray-500 mt-1">Created: {formatDate(ticket.created_at)}</p>
+                        </div>
+                        <ChevronRight className="h-5 w-5 text-gray-400" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </main>
 
-      {/* Invoice Detail Dialog */}
+      {/* Create Ticket Dialog */}
+      <Dialog open={showCreateTicket} onOpenChange={setShowCreateTicket}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Ticket className="h-5 w-5" />
+              New Support Request
+            </DialogTitle>
+            <DialogDescription>
+              Submit a support or service request. We'll get back to you as soon as possible.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Subject *</Label>
+              <Input
+                placeholder="Brief description of your issue"
+                value={newTicket.subject}
+                onChange={(e) => setNewTicket({ ...newTicket, subject: e.target.value })}
+                data-testid="ticket-subject-input"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Description *</Label>
+              <Textarea
+                placeholder="Please provide details about your request..."
+                rows={4}
+                value={newTicket.description}
+                onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })}
+                data-testid="ticket-description-input"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select value={newTicket.category} onValueChange={(v) => setNewTicket({ ...newTicket, category: v })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="general">General Inquiry</SelectItem>
+                    <SelectItem value="service">Service Request</SelectItem>
+                    <SelectItem value="billing">Billing</SelectItem>
+                    <SelectItem value="technical">Technical Issue</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Priority</Label>
+                <Select value={newTicket.priority} onValueChange={(v) => setNewTicket({ ...newTicket, priority: v })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            {vehicles.length > 0 && (
+              <div className="space-y-2">
+                <Label>Related Vehicle (Optional)</Label>
+                <Select value={newTicket.vehicle_id} onValueChange={(v) => setNewTicket({ ...newTicket, vehicle_id: v })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a vehicle" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {vehicles.map((v) => (
+                      <SelectItem key={v.vehicle_id} value={v.vehicle_id}>
+                        <div className="flex items-center gap-2">
+                          <Car className="h-4 w-4" />
+                          {v.registration_number || v.model || v.vehicle_id}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateTicket(false)}>Cancel</Button>
+            <Button onClick={createSupportTicket} disabled={creatingTicket} data-testid="submit-ticket-btn">
+              {creatingTicket ? (
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Submitting...</>
+              ) : (
+                <><Send className="h-4 w-4 mr-2" />Submit Request</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Ticket Detail Dialog */}
+      <Dialog open={showTicketDialog} onOpenChange={setShowTicketDialog}>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          {selectedTicket && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <span className="font-mono text-sm text-gray-500">{selectedTicket.ticket_id}</span>
+                  <Badge className={statusColors[selectedTicket.status]}>{selectedTicket.status?.replace("_", " ")}</Badge>
+                </DialogTitle>
+                <DialogDescription>{selectedTicket.subject}</DialogDescription>
+              </DialogHeader>
+              
+              <div className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div><span className="text-gray-500">Category:</span> {selectedTicket.category}</div>
+                  <div><span className="text-gray-500">Priority:</span> <Badge variant="outline" className={priorityColors[selectedTicket.priority]}>{selectedTicket.priority}</Badge></div>
+                  <div><span className="text-gray-500">Created:</span> {formatDate(selectedTicket.created_at)}</div>
+                  <div><span className="text-gray-500">Updated:</span> {formatDate(selectedTicket.updated_at)}</div>
+                </div>
+                
+                <Separator />
+                
+                <div>
+                  <h4 className="font-medium mb-2">Description</h4>
+                  <p className="text-sm text-gray-600 whitespace-pre-wrap">{selectedTicket.description}</p>
+                </div>
+                
+                {selectedTicket.updates?.length > 0 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <h4 className="font-medium mb-3">Updates</h4>
+                      <div className="space-y-3">
+                        {selectedTicket.updates.map((update, idx) => (
+                          <div key={idx} className={`p-3 rounded-lg text-sm ${update.author_type === "customer" ? "bg-blue-50 ml-8" : "bg-gray-50 mr-8"}`}>
+                            <div className="flex justify-between mb-1">
+                              <span className="font-medium">{update.author}</span>
+                              <span className="text-xs text-gray-400">{formatDate(update.created_at)}</span>
+                            </div>
+                            <p className="text-gray-600">{update.comment}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+                
+                {selectedTicket.status !== "closed" && selectedTicket.status !== "resolved" && (
+                  <>
+                    <Separator />
+                    <div className="space-y-2">
+                      <Label>Add Comment</Label>
+                      <div className="flex gap-2">
+                        <Textarea
+                          placeholder="Type your message..."
+                          value={ticketComment}
+                          onChange={(e) => setTicketComment(e.target.value)}
+                          rows={2}
+                          className="flex-1"
+                        />
+                        <Button onClick={addCommentToTicket} disabled={addingComment || !ticketComment.trim()}>
+                          {addingComment ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
       <Dialog open={showInvoiceDialog} onOpenChange={setShowInvoiceDialog}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           {selectedInvoice && (
