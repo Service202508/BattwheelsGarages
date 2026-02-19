@@ -136,6 +136,7 @@ const navItems = [
       { name: "Stock Management", path: "/inventory-enhanced", icon: Warehouse },
       { name: "Price Lists", path: "/price-lists", icon: List },
       { name: "Adjustments", path: "/inventory-adjustments", icon: ClipboardList },
+      { name: "Serial & Batch", path: "/serial-batch-tracking", icon: Hash },
     ]
   },
   { 
