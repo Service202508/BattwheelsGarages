@@ -6,15 +6,26 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Bot, Send, Loader2, Zap, Battery, Plug, Wrench, AlertCircle, Bike, Car, Truck } from "lucide-react";
+import { 
+  Bot, Send, Loader2, Zap, Battery, Plug, Wrench, AlertCircle, 
+  Bike, Car, Truck, Cog, Cpu, ArrowUpDown, Disc, Thermometer, Wind,
+  Shield, DollarSign, Clock, CheckCircle, AlertTriangle
+} from "lucide-react";
 import { API } from "@/App";
 
+// Issue Categories - comprehensive list for EV diagnostics
 const issueCategories = [
-  { value: "battery", label: "Battery Issues", icon: Battery },
-  { value: "motor", label: "Motor Problems", icon: Wrench },
-  { value: "charging", label: "Charging System", icon: Plug },
-  { value: "electrical", label: "Electrical", icon: Zap },
-  { value: "other", label: "Other", icon: AlertCircle },
+  { value: "battery", label: "Battery Issues", icon: Battery, description: "Battery performance, charging issues, BMS problems" },
+  { value: "motor", label: "Motor Problems", icon: Wrench, description: "Motor noise, power loss, vibration" },
+  { value: "charging", label: "Charging System", icon: Plug, description: "Charging port, cable, onboard charger" },
+  { value: "electrical", label: "Electrical", icon: Zap, description: "Wiring, fuses, relays, short circuits" },
+  { value: "mechanical", label: "Mechanical", icon: Cog, description: "Drivetrain, gears, belts, transmission" },
+  { value: "software", label: "Software Issues", icon: Cpu, description: "ECU errors, firmware, display glitches" },
+  { value: "suspension", label: "Suspension", icon: ArrowUpDown, description: "Shocks, springs, alignment issues" },
+  { value: "braking", label: "Braking System", icon: Disc, description: "Brake pads, rotors, ABS, regenerative" },
+  { value: "cooling", label: "Cooling System", icon: Thermometer, description: "Overheating, coolant, fans, thermal" },
+  { value: "hvac", label: "AC/Heating", icon: Wind, description: "Climate control, AC, heater issues" },
+  { value: "other", label: "Other", icon: AlertCircle, description: "Other issues not listed above" },
 ];
 
 // Vehicle Categories
