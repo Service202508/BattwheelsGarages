@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Bot, Send, Loader2, Zap, Battery, Plug, Wrench, AlertCircle } from "lucide-react";
+import { Bot, Send, Loader2, Zap, Battery, Plug, Wrench, AlertCircle, Bike, Car, Truck } from "lucide-react";
 import { API } from "@/App";
 
-const categories = [
+const issueCategories = [
   { value: "battery", label: "Battery Issues", icon: Battery },
   { value: "motor", label: "Motor Problems", icon: Wrench },
   { value: "charging", label: "Charging System", icon: Plug },
@@ -17,19 +17,149 @@ const categories = [
   { value: "other", label: "Other", icon: AlertCircle },
 ];
 
-const vehicleModels = [
-  "Tata Nexon EV",
-  "Tata Tigor EV",
-  "Mahindra XUV400",
-  "MG ZS EV",
-  "Hyundai Kona Electric",
-  "Kia EV6",
-  "BYD Atto 3",
-  "Mercedes EQS",
-  "BMW iX",
-  "Audi e-tron",
-  "Other"
+// Vehicle Categories
+const vehicleCategories = [
+  { value: "2_wheeler", label: "2 Wheeler", icon: Bike },
+  { value: "3_wheeler", label: "3 Wheeler", icon: Truck },
+  { value: "4_wheeler_commercial", label: "4 Wheeler Commercial", icon: Truck },
+  { value: "car", label: "Car", icon: Car },
 ];
+
+// Comprehensive EV Models by Category
+const vehicleModelsByCategory = {
+  "2_wheeler": [
+    // Ola Electric
+    { name: "Ola S1 Pro", brand: "Ola Electric" },
+    { name: "Ola S1 Air", brand: "Ola Electric" },
+    // Ather Energy
+    { name: "Ather 450X", brand: "Ather Energy" },
+    { name: "Ather 450S", brand: "Ather Energy" },
+    // TVS Motor
+    { name: "TVS iQube", brand: "TVS Motor" },
+    // Bajaj Auto
+    { name: "Bajaj Chetak Electric", brand: "Bajaj Auto" },
+    // Hero
+    { name: "Hero Vida V1", brand: "Hero MotoCorp" },
+    { name: "Hero Optima", brand: "Hero Electric" },
+    // Greaves Electric (Ampere)
+    { name: "Ampere Magnus EX", brand: "Greaves Electric" },
+    { name: "Ampere Nexus", brand: "Greaves Electric" },
+    // Okinawa
+    { name: "Okinawa Praise Pro", brand: "Okinawa" },
+    { name: "Okinawa iPraise+", brand: "Okinawa" },
+    // Revolt Motors
+    { name: "Revolt RV400", brand: "Revolt Motors" },
+    // Tork Motors
+    { name: "Tork Kratos R", brand: "Tork Motors" },
+    // Simple Energy
+    { name: "Simple One", brand: "Simple Energy" },
+    // PURE EV
+    { name: "Pure EV EPluto 7G", brand: "PURE EV" },
+    // Oben Electric
+    { name: "Oben Rorr", brand: "Oben Electric" },
+    // Ultraviolette
+    { name: "Ultraviolette F77", brand: "Ultraviolette" },
+    // Kinetic Green
+    { name: "Kinetic Green Zing", brand: "Kinetic Green" },
+    // Joy e-Bike
+    { name: "Wardwizard Joy e-Bike Mihos", brand: "Joy e-Bike" },
+  ],
+  "3_wheeler": [
+    // Mahindra
+    { name: "Mahindra Treo", brand: "Mahindra" },
+    { name: "Mahindra Treo Zor (cargo)", brand: "Mahindra" },
+    { name: "Mahindra e-Alfa Mini", brand: "Mahindra" },
+    // Bajaj
+    { name: "Bajaj RE E-TEC", brand: "Bajaj Auto" },
+    // Piaggio
+    { name: "Piaggio Ape E-City", brand: "Piaggio" },
+    { name: "Piaggio Ape E-Xtra (cargo)", brand: "Piaggio" },
+    // Euler
+    { name: "Euler HiLoad EV (cargo)", brand: "Euler Motors" },
+    { name: "Euler Storm EV", brand: "Euler Motors" },
+    // Omega Seiki
+    { name: "Omega Seiki Rage+", brand: "Omega Seiki" },
+    { name: "Omega Seiki Stream", brand: "Omega Seiki" },
+    // Kinetic
+    { name: "Kinetic Safar Jumbo (cargo)", brand: "Kinetic Green" },
+    // Lohia
+    { name: "Lohia Humsafar", brand: "Lohia Auto" },
+    { name: "Lohia Narain ICE-converted EV", brand: "Lohia Auto" },
+    // Atul
+    { name: "Atul Elite Cargo", brand: "Atul Auto" },
+    // YC Electric
+    { name: "YC Electric Yatri", brand: "YC Electric" },
+    // E-Rickshaws
+    { name: "Mini Metro E-Rickshaw", brand: "Mini Metro" },
+    { name: "Saarthi DLX E-Rickshaw", brand: "Saarthi" },
+    { name: "Udaan E-Rickshaw", brand: "Udaan" },
+    // TVS
+    { name: "TVS King EV Max", brand: "TVS Motor" },
+    // Montra
+    { name: "Montra Super Auto EV", brand: "Montra Electric" },
+  ],
+  "4_wheeler_commercial": [
+    // Tata
+    { name: "Tata Ace EV", brand: "Tata Motors" },
+    { name: "Tata Ace EV Zip", brand: "Tata Motors" },
+    // Mahindra
+    { name: "Mahindra Treo Zor Pickup", brand: "Mahindra" },
+    { name: "Mahindra eSupro Cargo Van", brand: "Mahindra" },
+    // Switch Mobility (Ashok Leyland)
+    { name: "Ashok Leyland Dost Electric (Switch IeV)", brand: "Switch Mobility" },
+    { name: "Switch Mobility IeV3", brand: "Switch Mobility" },
+    { name: "Switch Mobility IeV4", brand: "Switch Mobility" },
+    // Euler
+    { name: "Euler HiLoad EV (4W)", brand: "Euler Motors" },
+    // EKA (Pinnacle Mobility)
+    { name: "EKA K1.5", brand: "Pinnacle Mobility" },
+    // Altigreen
+    { name: "Altigreen neEV Tez", brand: "Altigreen" },
+    { name: "Altigreen neEV Low Deck", brand: "Altigreen" },
+    // Montra
+    { name: "Montra Eviator", brand: "Montra Electric" },
+    { name: "Montra Electric Super Cargo", brand: "Montra Electric" },
+    // Omega Seiki
+    { name: "Omega Seiki M1KA", brand: "Omega Seiki" },
+    { name: "Omega Seiki Rage+ Rapid", brand: "Omega Seiki" },
+    // Others
+    { name: "Gayam Motor Works eLCV", brand: "Gayam Motor Works" },
+    { name: "PMV Eas-E Cargo", brand: "PMV Electric" },
+    { name: "Force Electric Traveller", brand: "Force Motors" },
+    { name: "Tata Winger EV", brand: "Tata Motors" },
+    { name: "JBM ECOLIFE Electric LCV", brand: "JBM Auto" },
+  ],
+  "car": [
+    // Tata Motors
+    { name: "Tata Nexon EV", brand: "Tata Motors" },
+    { name: "Tata Punch EV", brand: "Tata Motors" },
+    { name: "Tata Tiago EV", brand: "Tata Motors" },
+    { name: "Tata Tigor EV", brand: "Tata Motors" },
+    // Mahindra
+    { name: "Mahindra XUV400", brand: "Mahindra" },
+    { name: "Mahindra BE 6", brand: "Mahindra" },
+    { name: "Mahindra XEV 9e", brand: "Mahindra" },
+    // MG Motor
+    { name: "MG Comet EV", brand: "MG Motor" },
+    { name: "MG Windsor EV", brand: "MG Motor" },
+    { name: "MG ZS EV", brand: "MG Motor" },
+    // Hyundai
+    { name: "Hyundai Kona Electric", brand: "Hyundai" },
+    // BYD
+    { name: "BYD Atto 3", brand: "BYD" },
+    { name: "BYD e6", brand: "BYD" },
+    // Citroën
+    { name: "Citroën ë-C3", brand: "Citroën" },
+    // Premium/Luxury
+    { name: "Volvo XC40 Recharge", brand: "Volvo" },
+    { name: "Kia EV6", brand: "Kia" },
+    { name: "BMW i4", brand: "BMW" },
+    { name: "Mercedes-Benz EQB", brand: "Mercedes-Benz" },
+    { name: "Audi Q8 e-tron", brand: "Audi" },
+    // Maruti Suzuki
+    { name: "Maruti Suzuki e-Vitara", brand: "Maruti Suzuki" },
+  ],
+};
 
 export default function AIAssistant({ user }) {
   const [loading, setLoading] = useState(false);
