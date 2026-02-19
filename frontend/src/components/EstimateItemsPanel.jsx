@@ -589,6 +589,7 @@ export default function EstimateItemsPanel({
     });
     setItemSearch("");
     setCatalogItems([]);
+    setSelectedPartStock(null);
   };
   
   // Select item from catalog
@@ -602,6 +603,11 @@ export default function EstimateItemsPanel({
       hsn_code: item.hsn_sac_code || item.hsn_code || "",
       tax_rate: item.tax_percentage || 18,
       unit: item.unit || "pcs",
+    });
+    // Store stock info for the selected part
+    setSelectedPartStock({
+      available_stock: item.stock_on_hand || 0,
+      reorder_level: item.reorder_level || 5,
     });
     setSearchOpen(false);
     setItemSearch("");
