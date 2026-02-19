@@ -952,6 +952,7 @@ export default function EstimateItemsPanel({
             <TableRow>
               <TableHead>Item</TableHead>
               <TableHead>Type</TableHead>
+              <TableHead>Stock</TableHead>
               <TableHead className="text-right">Qty</TableHead>
               <TableHead className="text-right">Rate</TableHead>
               <TableHead className="text-right">Tax</TableHead>
@@ -977,6 +978,13 @@ export default function EstimateItemsPanel({
                       <ItemIcon className="h-3 w-3" />
                       {item.type}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {item.type === "part" ? (
+                      <StockIndicator stockInfo={item.stock_info} qty={item.qty} />
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell className="text-right font-mono">
                     {item.qty} {item.unit}
@@ -1027,7 +1035,7 @@ export default function EstimateItemsPanel({
             })}
             {lineItems.length === 0 && (
               <TableRow>
-                <TableCell colSpan={canEdit ? 7 : 6} className="text-center h-24 text-muted-foreground">
+                <TableCell colSpan={canEdit ? 8 : 7} className="text-center h-24 text-muted-foreground">
                   No items added yet. Click "Add Item" to get started.
                 </TableCell>
               </TableRow>
