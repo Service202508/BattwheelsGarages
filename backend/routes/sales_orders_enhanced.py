@@ -1,7 +1,7 @@
 # Enhanced Sales Orders Module for Zoho Books Clone
 # Handles post-estimate confirmation: reserve inventory, track fulfillment, convert to Invoice
 
-from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks, Request
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
@@ -26,6 +26,22 @@ salesorders_collection = db["salesorders_enhanced"]
 salesorder_items_collection = db["salesorder_line_items"]
 salesorder_history_collection = db["salesorder_history"]
 salesorder_settings_collection = db["salesorder_settings"]
+
+# Multi-tenant helpers
+async def get_org_id(request: Request) -> Optional[str]:
+    """Get organization ID from request for multi-tenant scoping"""
+    try:
+        from core.org import get_org_id_from_request
+        return await get_org_id_from_request(request)
+    except Exception:
+        return None
+
+def org_query(org_id: Optional[str], base_query: dict = None) -> dict:
+    """Add org_id to query if available"""
+    query = base_query or {}
+    if org_id:
+        query["organization_id"] = org_id
+    return query
 
 # GST State codes for intra/inter-state calculation
 GSTIN_STATE_MAP = {
