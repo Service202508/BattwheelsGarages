@@ -9,6 +9,8 @@
  * - Status management (draft, sent, approved, locked)
  * - Optimistic concurrency with conflict resolution
  * - Parts catalog search integration
+ * - Inventory tracking for parts
+ * - Editable even when approved (until locked)
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -23,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { AlertCircle, Lock, Plus, Trash2, Send, Check, Pencil, ExternalLink, RefreshCw, Package, Wrench, Receipt } from "lucide-react";
+import { AlertCircle, Lock, Plus, Trash2, Send, Check, Pencil, ExternalLink, RefreshCw, Package, Wrench, Receipt, Unlock } from "lucide-react";
 import { toast } from "sonner";
 import { API } from "@/App";
 
@@ -61,11 +63,15 @@ export default function EstimateItemsPanel({
   const [estimate, setEstimate] = useState(null);
   const [loading, setLoading] = useState(false);
   const [addItemLoading, setAddItemLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(null); // Track which item is being deleted
+  const [sendLoading, setSendLoading] = useState(false);
+  const [approveLoading, setApproveLoading] = useState(false);
   const [error, setError] = useState(null);
   
   // Add item dialog state
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
   const [selectedLineItem, setSelectedLineItem] = useState(null);
   
   // New item form state
@@ -94,9 +100,13 @@ export default function EstimateItemsPanel({
   const isAdmin = user?.role === "admin";
   const isManager = user?.role === "manager";
   const isTechnician = user?.role === "technician";
+  
+  // Allow editing until estimate is locked (even when approved)
+  // Only locked estimates cannot be edited
   const canEdit = !estimate?.locked_at && (isAdmin || isManager || isTechnician);
   const canApprove = isAdmin || isManager || isTechnician;
   const canLock = isAdmin || isManager;
+  const canUnlock = isAdmin; // Only admin can unlock
   
   // Fetch or create estimate
   const ensureEstimate = useCallback(async () => {
