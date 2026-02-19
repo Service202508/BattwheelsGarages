@@ -113,11 +113,19 @@ export const useAuth = () => {
     }
   };
 
-  const login = (userData, token) => {
+  const login = async (userData, token) => {
     if (token) {
       localStorage.setItem("token", token);
     }
     setUser(userData);
+    
+    // Initialize organization context after login
+    try {
+      const { initializeOrganization } = await import('@/utils/api');
+      await initializeOrganization(API);
+    } catch (e) {
+      console.error("Failed to initialize organization:", e);
+    }
   };
 
   const logout = async () => {
@@ -132,11 +140,23 @@ export const useAuth = () => {
       console.error("Logout error:", e);
     }
     localStorage.removeItem("token");
+    localStorage.removeItem("organization_id");
     setUser(null);
   };
 
   useEffect(() => {
     checkAuth();
+    // Also initialize org on page load if already logged in
+    const initOrg = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const { initializeOrganization } = await import('@/utils/api');
+          await initializeOrganization(API);
+        } catch (e) {}
+      }
+    };
+    initOrg();
   }, []);
 
   return { user, loading, login, logout, checkAuth };
