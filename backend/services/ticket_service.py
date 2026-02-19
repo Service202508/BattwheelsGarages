@@ -76,6 +76,7 @@ class TicketCreateData(BaseModel):
     attachments_count: int = 0
     estimated_cost: Optional[float] = None
     error_codes_reported: List[str] = []
+    organization_id: Optional[str] = None  # Multi-tenant scoping
 
 
 class TicketUpdateData(BaseModel):
