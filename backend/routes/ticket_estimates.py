@@ -78,7 +78,7 @@ async def get_current_user_from_token(request: Request) -> Optional[Dict[str, An
             }
             
             # Optionally enrich with DB data if available
-            if _db:
+            if _db is not None:
                 db_user = await _db.users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
                 if db_user:
                     return db_user
@@ -90,7 +90,7 @@ async def get_current_user_from_token(request: Request) -> Optional[Dict[str, An
     
     # Try session cookie
     session_token = request.cookies.get("session_token")
-    if session_token and _db:
+    if session_token and _db is not None:
         session = await _db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
         if session:
             user = await _db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
