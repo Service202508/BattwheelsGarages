@@ -45,8 +45,17 @@ def generate_session_token() -> str:
 
 async def validate_portal_token(token: str) -> dict:
     """Validate portal token and return contact"""
+    # Try to find contact with portal_token - check multiple status field formats
     contact = await contacts_collection.find_one(
-        {"portal_token": token, "portal_enabled": True, "is_active": True},
+        {
+            "portal_token": token, 
+            "portal_enabled": True,
+            "$or": [
+                {"is_active": True},
+                {"status": "active"},
+                {"status": {"$exists": False}}  # If status field doesn't exist, allow
+            ]
+        },
         {"_id": 0}
     )
     if not contact:
