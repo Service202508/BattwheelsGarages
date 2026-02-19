@@ -61,6 +61,9 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
   const [estimatedItems, setEstimatedItems] = useState(localTicket.estimated_items || { parts: [], services: [] });
   const [actualItems, setActualItems] = useState(localTicket.actual_items || { parts: [], services: [] });
   const [statusHistory, setStatusHistory] = useState(localTicket.status_history || []);
+  
+  // Linked estimate state (from ticket-estimate integration)
+  const [linkedEstimate, setLinkedEstimate] = useState(null);
 
   useEffect(() => {
     fetchTechnicians();
