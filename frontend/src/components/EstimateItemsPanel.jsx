@@ -262,7 +262,7 @@ export default function EstimateItemsPanel({
   const handleUpdateLineItem = async () => {
     if (!selectedLineItem) return;
     
-    setLoading(true);
+    setEditLoading(true);
     try {
       const response = await fetch(
         `${API}/ticket-estimates/${estimate.estimate_id}/line-items/${selectedLineItem.line_item_id}`,
@@ -287,14 +287,14 @@ export default function EstimateItemsPanel({
       
       if (response.status === 409) {
         toast.error("Estimate was modified. Refreshing...");
-        await ensureEstimate();
-        setLoading(false);
+        await ensureEstimate(false);
+        setEditLoading(false);
         return;
       }
       
       if (response.status === 423) {
         toast.error("Estimate is locked and cannot be modified");
-        setLoading(false);
+        setEditLoading(false);
         return;
       }
       
@@ -316,7 +316,7 @@ export default function EstimateItemsPanel({
       console.error("Error updating line item:", err);
       toast.error(err.message || "Failed to update item");
     } finally {
-      setLoading(false);
+      setEditLoading(false);
     }
   };
   
