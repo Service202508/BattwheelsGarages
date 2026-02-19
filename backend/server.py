@@ -4668,6 +4668,22 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Inventory Enhanced routes: {e}")
 
+# Include Serial/Batch Tracking routes
+try:
+    from routes.serial_batch_tracking import router as serial_batch_router
+    api_router.include_router(serial_batch_router)
+    logger.info("Serial/Batch Tracking routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Serial/Batch Tracking routes: {e}")
+
+# Include PDF Templates routes
+try:
+    from routes.pdf_templates import router as pdf_templates_router
+    api_router.include_router(pdf_templates_router)
+    logger.info("PDF Templates routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load PDF Templates routes: {e}")
+
 # Include main router
 app.include_router(api_router)
 
