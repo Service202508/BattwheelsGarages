@@ -244,11 +244,11 @@ export default function AIAssistant({ user }) {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Category Selection */}
+              {/* Issue Category Selection */}
               <div className="space-y-3">
                 <Label>Issue Category</Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {categories.map((cat) => {
+                  {issueCategories.map((cat) => {
                     const Icon = cat.icon;
                     return (
                       <button
@@ -272,22 +272,79 @@ export default function AIAssistant({ user }) {
                 </div>
               </div>
 
+              {/* Vehicle Category Selection */}
+              <div className="space-y-3">
+                <Label>Vehicle Category</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {vehicleCategories.map((cat) => {
+                    const Icon = cat.icon;
+                    return (
+                      <button
+                        key={cat.value}
+                        type="button"
+                        onClick={() => handleCategoryChange(cat.value)}
+                        className={`p-3 rounded-lg border transition-all text-center ${
+                          query.vehicle_category === cat.value
+                            ? "border-primary bg-primary/10"
+                            : "border-white/10 hover:border-white/20 bg-background/50"
+                        }`}
+                        data-testid={`vehicle-category-btn-${cat.value}`}
+                      >
+                        <Icon className={`h-5 w-5 mx-auto mb-1 ${
+                          query.vehicle_category === cat.value ? "text-primary" : "text-muted-foreground"
+                        }`} />
+                        <p className="text-xs font-medium">{cat.label}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Vehicle Model */}
               <div className="space-y-2">
                 <Label>Vehicle Model</Label>
                 <Select
                   value={query.vehicle_model}
                   onValueChange={(value) => setQuery({ ...query, vehicle_model: value })}
+                  disabled={!query.vehicle_category}
                 >
                   <SelectTrigger className="bg-background/50" data-testid="vehicle-model-select">
-                    <SelectValue placeholder="Select your vehicle model" />
+                    <SelectValue placeholder={query.vehicle_category ? "Select your vehicle model" : "Select vehicle category first"} />
                   </SelectTrigger>
-                  <SelectContent>
-                    {vehicleModels.map((model) => (
-                      <SelectItem key={model} value={model}>{model}</SelectItem>
-                    ))}
+                  <SelectContent className="max-h-[300px]">
+                    {filteredModels.length > 0 ? (
+                      <>
+                        {/* Group by brand */}
+                        {Object.entries(
+                          filteredModels.reduce((acc, model) => {
+                            if (!acc[model.brand]) acc[model.brand] = [];
+                            acc[model.brand].push(model);
+                            return acc;
+                          }, {})
+                        ).map(([brand, models]) => (
+                          <SelectGroup key={brand}>
+                            <SelectLabel className="text-xs text-muted-foreground font-semibold">{brand}</SelectLabel>
+                            {models.map((model) => (
+                              <SelectItem key={model.name} value={model.name}>
+                                {model.name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        ))}
+                        <SelectGroup>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectGroup>
+                      </>
+                    ) : (
+                      <SelectItem value="" disabled>No models available</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
+                {query.vehicle_category && (
+                  <p className="text-xs text-muted-foreground">
+                    {filteredModels.length} {query.vehicle_category.replace('_', ' ')} models available
+                  </p>
+                )}
               </div>
 
               {/* Issue Description */}
