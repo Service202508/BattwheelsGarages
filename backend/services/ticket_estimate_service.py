@@ -578,6 +578,180 @@ class TicketEstimateService:
         
         return await self.get_estimate_by_id(estimate_id, organization_id)
     
+    # ==================== CONVERSION TO INVOICE ====================
+    
+    async def convert_to_invoice(
+        self,
+        estimate_id: str,
+        organization_id: str,
+        user_id: str,
+        user_name: str
+    ) -> Dict[str, Any]:
+        """
+        Convert an approved estimate to an invoice.
+        Only approved estimates can be converted.
+        """
+        estimate = await self.estimates.find_one(
+            {"estimate_id": estimate_id, "organization_id": organization_id}
+        )
+        
+        if not estimate:
+            raise ValueError(f"Estimate {estimate_id} not found")
+        
+        if estimate.get("status") != EstimateStatus.APPROVED:
+            raise ValueError("Only approved estimates can be converted to invoices")
+        
+        if estimate.get("converted_to_invoice"):
+            raise ValueError("Estimate has already been converted to an invoice")
+        
+        # Get line items
+        line_items = await self.estimate_line_items.find(
+            {"estimate_id": estimate_id}
+        ).to_list(1000)
+        
+        now = datetime.now(timezone.utc)
+        
+        # Generate invoice number
+        invoice_number = await self._get_next_invoice_number(organization_id)
+        invoice_id = f"inv_{uuid.uuid4().hex[:12]}"
+        
+        # Create invoice document
+        invoice_doc = {
+            "invoice_id": invoice_id,
+            "invoice_number": invoice_number,
+            "organization_id": organization_id,
+            "source": "ticket_estimate",
+            "source_estimate_id": estimate_id,
+            "ticket_id": estimate.get("ticket_id"),
+            
+            # Customer info
+            "customer_id": estimate.get("customer_id"),
+            "customer_name": estimate.get("customer_name"),
+            "customer_email": estimate.get("customer_email"),
+            "contact_number": estimate.get("contact_number"),
+            
+            # Vehicle info
+            "vehicle_id": estimate.get("vehicle_id"),
+            "vehicle_number": estimate.get("vehicle_number"),
+            "vehicle_make": estimate.get("vehicle_make"),
+            "vehicle_model": estimate.get("vehicle_model"),
+            
+            # Line items
+            "line_items": [{
+                "line_item_id": item.get("line_item_id"),
+                "type": item.get("type"),
+                "item_id": item.get("item_id"),
+                "name": item.get("name"),
+                "description": item.get("description"),
+                "qty": item.get("qty"),
+                "unit": item.get("unit"),
+                "unit_price": item.get("unit_price"),
+                "discount": item.get("discount", 0),
+                "tax_rate": item.get("tax_rate", 0),
+                "hsn_code": item.get("hsn_code", ""),
+                "line_total": item.get("line_total", 0),
+            } for item in line_items],
+            
+            # Totals
+            "subtotal": estimate.get("subtotal", 0),
+            "tax_total": estimate.get("tax_total", 0),
+            "discount_total": estimate.get("discount_total", 0),
+            "grand_total": estimate.get("grand_total", 0),
+            "currency": estimate.get("currency", "INR"),
+            
+            # Status
+            "status": "draft",
+            "payment_status": "unpaid",
+            "balance_due": estimate.get("grand_total", 0),
+            
+            # Dates
+            "invoice_date": now.strftime("%Y-%m-%d"),
+            "due_date": (now.replace(day=1) + timedelta(days=32)).replace(day=1).strftime("%Y-%m-%d"),
+            
+            # Metadata
+            "created_at": now.isoformat(),
+            "updated_at": now.isoformat(),
+            "created_by": user_id,
+            "created_by_name": user_name,
+        }
+        
+        await self.db.ticket_invoices.insert_one(invoice_doc)
+        
+        # Update estimate
+        await self.estimates.update_one(
+            {"estimate_id": estimate_id},
+            {
+                "$set": {
+                    "status": EstimateStatus.CONVERTED,
+                    "converted_to_invoice": invoice_id,
+                    "converted_at": now.isoformat(),
+                    "converted_by": user_id,
+                    "updated_at": now.isoformat()
+                },
+                "$inc": {"version": 1}
+            }
+        )
+        
+        # Log history
+        await self._log_history(
+            estimate_id, "converted",
+            f"Converted to invoice {invoice_number}",
+            user_id, user_name
+        )
+        
+        # Update ticket status
+        if estimate.get("ticket_id"):
+            await self.db.tickets.update_one(
+                {"ticket_id": estimate["ticket_id"]},
+                {
+                    "$set": {
+                        "status": "invoiced",
+                        "invoice_id": invoice_id,
+                        "updated_at": now.isoformat()
+                    },
+                    "$push": {
+                        "status_history": {
+                            "status": "invoiced",
+                            "timestamp": now.isoformat(),
+                            "updated_by": user_name
+                        }
+                    }
+                }
+            )
+        
+        # Return invoice document (without _id)
+        invoice_doc.pop("_id", None)
+        return {
+            "invoice": invoice_doc,
+            "estimate": await self.get_estimate_by_id(estimate_id, organization_id)
+        }
+    
+    async def _get_next_invoice_number(self, organization_id: str) -> str:
+        """Generate next invoice number for organization"""
+        settings = await self.db.ticket_estimate_settings.find_one(
+            {"organization_id": organization_id, "type": "invoice_numbering"}
+        )
+        
+        if not settings:
+            settings = {
+                "organization_id": organization_id,
+                "type": "invoice_numbering",
+                "prefix": "TKT-INV-",
+                "next_number": 1,
+                "padding": 5
+            }
+            await self.db.ticket_estimate_settings.insert_one(settings)
+        
+        number = str(settings["next_number"]).zfill(settings.get("padding", 5))
+        invoice_number = f"{settings.get('prefix', 'TKT-INV-')}{number}"
+        
+        await self.db.ticket_estimate_settings.update_one(
+            {"organization_id": organization_id, "type": "invoice_numbering"},
+            {"$inc": {"next_number": 1}}
+        )
+        
+        return invoice_number
+    
     # ==================== HELPER METHODS ====================
     
     async def _get_next_estimate_number(self, organization_id: str) -> str:
