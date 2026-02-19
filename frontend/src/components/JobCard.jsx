@@ -458,154 +458,23 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
             </CardContent>
           </Card>
 
-          {/* Items and Costing - Only show after technician assigned */}
+          {/* Estimate Items Panel - Only show after technician assigned */}
           {localTicket.status !== "open" && (
-            <Card>
-              <CardHeader>
-                <CardTitle>{isEstimateStage ? "Estimated Cost" : "Final Bill"}</CardTitle>
-                <CardDescription>
-                  {isEstimateStage && !isCustomer 
-                    ? "Add or remove items to generate the cost estimate."
-                    : "Parts and services for this job."}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {/* Add Items UI - Only for admin/technician in estimate stage */}
-                {!isCustomer && isEstimateStage && (
-                  <div className="my-4 p-4 border rounded-lg bg-background">
-                    <h4 className="font-semibold mb-2">Add Items to Estimate</h4>
-                    <div className="flex gap-2">
-                      <Select value={itemType} onValueChange={(v) => { setItemType(v); setSelectedItem(null); }}>
-                        <SelectTrigger className="w-[120px]">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="part">Part</SelectItem>
-                          <SelectItem value="service">Service</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      
-                      <Popover open={itemsOpen} onOpenChange={setItemsOpen}>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" className="flex-1 justify-between">
-                            {selectedItem ? selectedItem.name : `Select a ${itemType}...`}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-0 w-[300px]">
-                          <Command>
-                            <CommandInput 
-                              placeholder={`Search ${itemType}s...`}
-                              value={itemSearch}
-                              onValueChange={setItemSearch}
-                            />
-                            <CommandList>
-                              <CommandEmpty>No items found</CommandEmpty>
-                              <CommandGroup>
-                                {availableItems.slice(0, 10).map((item) => (
-                                  <CommandItem
-                                    key={item.item_id || item.service_id}
-                                    onSelect={() => {
-                                      setSelectedItem(item);
-                                      setItemsOpen(false);
-                                    }}
-                                  >
-                                    <span className="truncate">{item.name}</span>
-                                    <span className="ml-auto text-xs text-muted-foreground">
-                                      ₹{(item.unit_price || item.base_price || 0).toLocaleString()}
-                                    </span>
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      
-                      <Button onClick={handleAddItem} disabled={!selectedItem}>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Add
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Items Table */}
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Item</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>GST</TableHead>
-                      <TableHead>Qty</TableHead>
-                      <TableHead className="text-right">Cost</TableHead>
-                      {!isCustomer && isEstimateStage && <TableHead className="text-right">Actions</TableHead>}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {(items.services || []).map((service, index) => (
-                      <TableRow key={`service-${index}`}>
-                        <TableCell>{service.name}</TableCell>
-                        <TableCell><Badge variant="secondary">Service</Badge></TableCell>
-                        <TableCell>{service.gst_rate || 18}%</TableCell>
-                        <TableCell>{service.quantity || 1}</TableCell>
-                        <TableCell className="text-right font-mono">
-                          ₹{((service.unit_price || 0) * (service.quantity || 1)).toLocaleString()}
-                        </TableCell>
-                        {!isCustomer && isEstimateStage && (
-                          <TableCell className="text-right">
-                            <Button variant="ghost" size="icon" onClick={() => handleRemoveItem(index, "service", isEstimateStage)}>
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </TableCell>
-                        )}
-                      </TableRow>
-                    ))}
-                    {(items.parts || []).map((part, index) => (
-                      <TableRow key={`part-${index}`}>
-                        <TableCell>{part.name}</TableCell>
-                        <TableCell><Badge variant="outline">Part</Badge></TableCell>
-                        <TableCell>{part.gst_rate || 18}%</TableCell>
-                        <TableCell>{part.quantity || 1}</TableCell>
-                        <TableCell className="text-right font-mono">
-                          ₹{((part.unit_price || 0) * (part.quantity || 1)).toLocaleString()}
-                        </TableCell>
-                        {!isCustomer && isEstimateStage && (
-                          <TableCell className="text-right">
-                            <Button variant="ghost" size="icon" onClick={() => handleRemoveItem(index, "part", isEstimateStage)}>
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </TableCell>
-                        )}
-                      </TableRow>
-                    ))}
-                    {(!items.services?.length && !items.parts?.length) && (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center text-muted-foreground h-24">
-                          No items added yet.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-              <CardFooter>
-                <div className="w-full max-w-sm space-y-2 ml-auto text-right text-sm">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span className="font-mono">₹{subtotal.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Total Tax (GST)</span>
-                    <span className="font-mono">₹{totalTax.toLocaleString()}</span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between font-bold text-lg">
-                    <p>Grand Total</p>
-                    <p className="font-mono">₹{grandTotal.toLocaleString()}</p>
-                  </div>
-                </div>
-              </CardFooter>
-            </Card>
+            <EstimateItemsPanel
+              ticket={localTicket}
+              user={user}
+              organizationId={localTicket.organization_id}
+              onEstimateChange={(estimate) => {
+                setLinkedEstimate(estimate);
+                // Update ticket grand_total from estimate if needed
+                if (estimate?.grand_total) {
+                  setLocalTicket(prev => ({
+                    ...prev,
+                    grand_total: estimate.grand_total
+                  }));
+                }
+              }}
+            />
           )}
 
           {/* Status History */}
