@@ -1051,9 +1051,13 @@ async def list_contacts(
     }
 
 @router.get("/{contact_id}")
-async def get_contact(contact_id: str):
+async def get_contact(contact_id: str, request: Request):
     """Get contact details with persons, addresses, balance, aging, and transactions"""
-    contact = await contacts_collection.find_one({"contact_id": contact_id}, {"_id": 0})
+    # Get org context for multi-tenant scoping
+    org_id = await get_org_id(request)
+    contact_query = org_query(org_id, {"contact_id": contact_id})
+    
+    contact = await contacts_collection.find_one(contact_query, {"_id": 0})
     if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")
     
