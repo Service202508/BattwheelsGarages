@@ -155,23 +155,23 @@ const ElectricVehicles = () => {
       <GearBackground variant="industries" />
       
       <Helmet>
-        <title>Electric Vehicles - New & Refurbished | Battwheels Marketplace</title>
-        <meta name="description" content="Browse certified new and refurbished electric vehicles. 2W, 3W, 4W EVs from top OEMs like Ather, Ola, TVS, Tata, Mahindra." />
+        <title>Certified Refurbished Electric Vehicles - 2W & 3W | Battwheels Marketplace</title>
+        <meta name="description" content="Browse certified refurbished electric 2-wheelers and 3-wheelers. Quality checked scooters, motorcycles, autos, and cargo EVs from top OEMs." />
       </Helmet>
 
       <Header />
 
       <main>
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-blue-600 to-indigo-700 py-12 md:py-16 relative overflow-hidden">
+        <section className="bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 py-12 md:py-16 relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-10 right-10 w-64 h-64 bg-white rounded-full blur-3xl" />
-            <div className="absolute bottom-10 left-10 w-48 h-48 bg-blue-300 rounded-full blur-3xl" />
+            <div className="absolute bottom-10 left-10 w-48 h-48 bg-yellow-300 rounded-full blur-3xl" />
           </div>
           
           <div className="container mx-auto px-4 relative z-10">
             {/* Breadcrumb */}
-            <nav className="flex items-center gap-2 text-blue-200 text-sm mb-6">
+            <nav className="flex items-center gap-2 text-amber-100 text-sm mb-6">
               <Link to="/marketplace" className="hover:text-white transition-colors">Marketplace</Link>
               <ChevronRight className="w-4 h-4" />
               <span className="text-white font-medium">Electric Vehicles</span>
@@ -180,15 +180,35 @@ const ElectricVehicles = () => {
             <div className="max-w-4xl">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-14 h-14 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
-                  <Car className="w-7 h-7 text-white" />
+                  <RefreshCw className="w-7 h-7 text-white" />
                 </div>
-                <h1 className="text-3xl md:text-4xl font-bold text-white">
-                  Electric Vehicles
-                </h1>
+                <div>
+                  <span className="inline-flex items-center gap-1.5 bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-2">
+                    <Shield className="w-3.5 h-3.5" />
+                    CERTIFIED REFURBISHED
+                  </span>
+                  <h1 className="text-3xl md:text-4xl font-bold text-white">
+                    Electric Vehicles
+                  </h1>
+                </div>
               </div>
-              <p className="text-blue-100 text-lg mb-8 max-w-2xl">
-                New & Certified Refurbished EVs from India&apos;s top OEMs
+              <p className="text-amber-50 text-lg mb-4 max-w-2xl">
+                Quality-checked 2-Wheelers & 3-Wheelers from India&apos;s top OEMs
               </p>
+              <div className="flex flex-wrap gap-3 mb-8">
+                <span className="inline-flex items-center gap-1.5 bg-white/15 text-white text-sm px-3 py-1.5 rounded-full">
+                  <Bike className="w-4 h-4" />
+                  Scooters & Motorcycles
+                </span>
+                <span className="inline-flex items-center gap-1.5 bg-white/15 text-white text-sm px-3 py-1.5 rounded-full">
+                  <Truck className="w-4 h-4" />
+                  Autos & Cargo
+                </span>
+                <span className="inline-flex items-center gap-1.5 bg-white/15 text-white text-sm px-3 py-1.5 rounded-full">
+                  <CheckCircle className="w-4 h-4" />
+                  Battery Health Verified
+                </span>
+              </div>
               
               {/* Search Bar */}
               <div className="max-w-xl">
