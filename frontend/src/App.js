@@ -231,6 +231,34 @@ function AppRouter() {
       <Route path="/login" element={
         auth.user ? <RoleBasedRedirect user={auth.user} /> : <Login onLogin={auth.login} />
       } />
+      
+      {/* Zoho-style Financial Home Dashboard */}
+      <Route path="/home" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Home user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      {/* Time Tracking */}
+      <Route path="/time-tracking" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "technician"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <TimeTracking user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      {/* Documents */}
+      <Route path="/documents" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <Documents user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
       <Route path="/dashboard" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
