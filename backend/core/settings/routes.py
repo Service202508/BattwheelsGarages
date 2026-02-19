@@ -50,12 +50,14 @@ async def require_admin(request: Request) -> Dict:
     if _get_current_user is None:
         raise HTTPException(status_code=500, detail="Auth not configured")
     
-    user = await _get_current_user(request, _db)
+    user = await _get_current_user(request)
     if not user:
         raise HTTPException(status_code=401, detail="Authentication required")
-    if user.get("role") not in ["admin", "owner"]:
+    # User is a pydantic model, convert to dict
+    user_dict = user.model_dump() if hasattr(user, 'model_dump') else dict(user)
+    if user_dict.get("role") not in ["admin", "owner"]:
         raise HTTPException(status_code=403, detail="Admin access required")
-    return user
+    return user_dict
 
 
 # ==================== ALL SETTINGS ====================
