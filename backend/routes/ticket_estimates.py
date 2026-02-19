@@ -430,10 +430,11 @@ async def lock_estimate(
     
     # Check role - only admin/manager can lock
     user = await get_current_user_from_token(request)
+    logger.info(f"Lock estimate: user={user}, role={user.get('role') if user else None}")
     if not user or user.get("role") not in ["admin", "manager"]:
         raise HTTPException(
             status_code=403, 
-            detail="Only admin or manager can lock estimates"
+            detail=f"Only admin or manager can lock estimates. User role: {user.get('role') if user else 'None'}"
         )
     
     try:
