@@ -1,11 +1,12 @@
-import UnifiedAIChat from "@/components/ai/UnifiedAIChat";
+import AIKnowledgeBrain from "@/components/ai/AIKnowledgeBrain";
 
 export default function TechnicianAIAssistant({ user }) {
   return (
-    <UnifiedAIChat 
-      user={user} 
-      portalType="technician"
-      apiEndpoint="/technician/ai-assist"
-    />
+    <div className="h-[calc(100vh-8rem)]">
+      <AIKnowledgeBrain 
+        user={user} 
+        portalType="technician"
+      />
+    </div>
   );
 }
