@@ -37,7 +37,7 @@ class TicketState:
     Two workflows exist:
     1. Basic workflow: OPEN → ASSIGNED → IN_PROGRESS → RESOLVED → CLOSED
     2. Estimate workflow: OPEN → ASSIGNED → ESTIMATE_SHARED → ESTIMATE_APPROVED → 
-                         WORK_IN_PROGRESS → WORK_COMPLETED → INVOICED → CLOSED
+                         WORK_IN_PROGRESS → WORK_COMPLETED → INVOICED → PENDING_PAYMENT → CLOSED
     """
     # Basic states
     OPEN = "open"
@@ -55,6 +55,7 @@ class TicketState:
     WORK_IN_PROGRESS = "work_in_progress"
     WORK_COMPLETED = "work_completed"
     INVOICED = "invoiced"
+    PENDING_PAYMENT = "pending_payment"  # Awaiting customer payment
 
 # Valid state transitions - comprehensive workflow including estimate states
 VALID_TRANSITIONS = {
@@ -73,7 +74,8 @@ VALID_TRANSITIONS = {
     TicketState.ESTIMATE_APPROVED: [TicketState.WORK_IN_PROGRESS, TicketState.ESTIMATE_SHARED, TicketState.CLOSED],
     TicketState.WORK_IN_PROGRESS: [TicketState.WORK_COMPLETED, TicketState.PENDING_PARTS, TicketState.ESTIMATE_APPROVED],
     TicketState.WORK_COMPLETED: [TicketState.INVOICED, TicketState.CLOSED, TicketState.WORK_IN_PROGRESS],
-    TicketState.INVOICED: [TicketState.CLOSED, TicketState.WORK_COMPLETED],
+    TicketState.INVOICED: [TicketState.PENDING_PAYMENT, TicketState.CLOSED, TicketState.WORK_COMPLETED],
+    TicketState.PENDING_PAYMENT: [TicketState.CLOSED, TicketState.INVOICED],
 }
 
 
