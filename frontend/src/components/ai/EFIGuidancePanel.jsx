@@ -499,33 +499,44 @@ export default function EFIGuidancePanel({
               <Zap className="h-6 w-6 text-emerald-400" />
             </div>
             <div>
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-white flex items-center gap-2 text-base sm:text-lg">
                 EFI Guidance
                 <Badge variant="outline" className="text-xs border-emerald-500/50 text-emerald-400">
-                  Hinglish Mode
+                  Hinglish
                 </Badge>
               </CardTitle>
-              <p className="text-xs text-slate-400">AI-powered diagnostic assistance</p>
+              <p className="text-xs text-slate-400">
+                {guidance?.from_cache && !loading ? "Cached" : "AI-powered"}
+              </p>
             </div>
           </div>
           
           <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => fetchGuidance(true)}
-              disabled={loading}
-              className="text-slate-400 hover:text-white"
-            >
-              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            </Button>
+            {/* Regenerate button - only show when context changed */}
+            {showRegenerateBtn && !loading && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => fetchGuidance(true)}
+                className="border-amber-500/50 text-amber-400 hover:bg-amber-500/20 text-xs"
+                data-testid="regenerate-guidance-btn"
+              >
+                <RefreshCw className="h-3 w-3 mr-1" />
+                Update
+              </Button>
+            )}
+            
+            {/* Refresh/Loading indicator */}
+            {loading && (
+              <RefreshCw className="h-4 w-4 animate-spin text-emerald-400" />
+            )}
             
             {/* Mode Toggle */}
-            <div className="flex bg-slate-800 rounded-lg p-1">
+            <div className="flex bg-slate-800 rounded-lg p-0.5">
               <Button
                 size="sm"
                 variant={mode === "quick" ? "default" : "ghost"}
-                className={mode === "quick" ? "bg-emerald-600" : "text-slate-400"}
+                className={`text-xs px-2 py-1 h-7 ${mode === "quick" ? "bg-emerald-600" : "text-slate-400"}`}
                 onClick={() => setMode("quick")}
               >
                 Quick
@@ -533,7 +544,7 @@ export default function EFIGuidancePanel({
               <Button
                 size="sm"
                 variant={mode === "deep" ? "default" : "ghost"}
-                className={mode === "deep" ? "bg-emerald-600" : "text-slate-400"}
+                className={`text-xs px-2 py-1 h-7 ${mode === "deep" ? "bg-emerald-600" : "text-slate-400"}`}
                 onClick={() => setMode("deep")}
               >
                 Deep
@@ -542,8 +553,8 @@ export default function EFIGuidancePanel({
           </div>
         </div>
         
-        {/* Confidence Badge */}
-        {guidance?.confidence && (
+        {/* Confidence Badge - Only show to Supervisor/Admin */}
+        {isSupervisorOrAdmin && guidance?.confidence && (
           <div className="mt-3 flex items-center gap-2">
             <Badge className={`text-xs ${
               guidance.confidence === 'high' ? 'bg-emerald-500/20 text-emerald-400' :
@@ -552,9 +563,14 @@ export default function EFIGuidancePanel({
             }`}>
               {guidance.confidence} confidence
             </Badge>
-            {guidance.sources?.length > 0 && (
+            {guidance.sources_count > 0 && (
               <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
-                {guidance.sources.length} sources
+                {guidance.sources_count} sources
+              </Badge>
+            )}
+            {guidance.generation_time_ms && (
+              <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
+                {guidance.generation_time_ms}ms
               </Badge>
             )}
           </div>
