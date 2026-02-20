@@ -727,8 +727,22 @@ Type: {doc_type}
         return suggestions[:10]  # Max 10 suggestions
     
     def _generate_context_hash(self, context: GuidanceContext) -> str:
-        """Generate hash for caching purposes"""
-        hash_input = f"{context.ticket_id}|{context.vehicle_make}|{context.vehicle_model}|{context.description}|{','.join(context.symptoms or [])}|{','.join(context.dtc_codes or [])}"
+        """
+        Generate deterministic hash for idempotency.
+        Same input context = same hash = can reuse existing snapshot.
+        """
+        components = [
+            context.ticket_id,
+            context.vehicle_make or "",
+            context.vehicle_model or "",
+            context.vehicle_variant or "",
+            context.category,
+            context.description[:200] if context.description else "",
+            ",".join(sorted(context.symptoms or [])),
+            ",".join(sorted(context.dtc_codes or [])),
+            str(context.ask_back_answers) if context.ask_back_answers else ""
+        ]
+        hash_input = "|".join(components).lower().strip()
         return hashlib.md5(hash_input.encode()).hexdigest()[:12]
     
     async def _get_cached_guidance(
@@ -737,26 +751,141 @@ Type: {doc_type}
         context_hash: str,
         mode: GuidanceMode
     ) -> Optional[Dict]:
-        """Get cached guidance if available"""
+        """
+        Get cached guidance snapshot if available.
+        Implements idempotency - reuse if context unchanged.
+        """
         cached = await self.guidance_collection.find_one({
             "ticket_id": ticket_id,
-            "context_hash": context_hash,
-            "mode": mode.value
+            "input_context_hash": context_hash,
+            "mode": mode.value,
+            "status": "active"  # Only return active snapshots
         }, {"_id": 0})
+        
+        if cached:
+            # Update view count
+            await self.guidance_collection.update_one(
+                {"snapshot_id": cached.get("snapshot_id", cached.get("guidance_id"))},
+                {
+                    "$inc": {"view_count": 1},
+                    "$set": {"last_viewed_at": datetime.now(timezone.utc).isoformat()}
+                }
+            )
+            logger.info(f"Reusing cached guidance snapshot for ticket {ticket_id}")
         
         return cached
     
-    async def _cache_guidance(self, guidance: Dict):
-        """Cache generated guidance"""
-        await self.guidance_collection.update_one(
+    async def _cache_guidance(self, guidance: Dict, context: GuidanceContext):
+        """
+        Cache generated guidance as a versioned snapshot.
+        Supersedes any existing active snapshot for same ticket/mode.
+        """
+        snapshot_id = f"GS-{uuid.uuid4().hex[:12].upper()}"
+        
+        # Mark existing active snapshots as superseded
+        await self.guidance_collection.update_many(
             {
                 "ticket_id": guidance["ticket_id"],
-                "context_hash": guidance["context_hash"],
-                "mode": guidance["mode"]
+                "mode": guidance["mode"],
+                "status": "active"
             },
-            {"$set": guidance},
-            upsert=True
+            {
+                "$set": {
+                    "status": "superseded",
+                    "superseded_by": snapshot_id,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
         )
+        
+        # Get version number
+        version_count = await self.guidance_collection.count_documents({
+            "ticket_id": guidance["ticket_id"],
+            "mode": guidance["mode"]
+        })
+        
+        # Create snapshot document
+        snapshot_doc = {
+            **guidance,
+            "snapshot_id": snapshot_id,
+            "input_context_hash": guidance.get("context_hash"),
+            "version": version_count + 1,
+            "status": "active",
+            "organization_id": context.organization_id,
+            "vehicle_make": context.vehicle_make,
+            "vehicle_model": context.vehicle_model,
+            "vehicle_variant": context.vehicle_variant,
+            "symptoms": context.symptoms or [],
+            "dtc_codes": context.dtc_codes or [],
+            "category": context.category,
+            "description": context.description,
+            "feedback_count": 0,
+            "helpful_count": 0,
+            "not_helpful_count": 0,
+            "unsafe_count": 0,
+            "view_count": 1,
+            "regenerated_count": 0
+        }
+        
+        await self.guidance_collection.insert_one(snapshot_doc)
+        logger.info(f"Created guidance snapshot {snapshot_id} v{version_count + 1} for ticket {guidance['ticket_id']}")
+    
+    async def get_snapshot_info(self, ticket_id: str, mode: str = "quick") -> Optional[Dict]:
+        """
+        Get snapshot info to determine if regeneration is needed.
+        Used by frontend to show "Regenerate" button only when context changed.
+        """
+        snapshot = await self.guidance_collection.find_one(
+            {
+                "ticket_id": ticket_id,
+                "mode": mode,
+                "status": "active"
+            },
+            {
+                "_id": 0,
+                "snapshot_id": 1,
+                "guidance_id": 1,
+                "input_context_hash": 1,
+                "version": 1,
+                "created_at": 1,
+                "feedback_count": 1,
+                "helpful_count": 1
+            }
+        )
+        return snapshot
+    
+    async def check_context_changed(self, context: GuidanceContext, mode: str = "quick") -> Dict:
+        """
+        Check if context has changed since last snapshot.
+        Returns whether regeneration is needed.
+        """
+        current_hash = self._generate_context_hash(context)
+        
+        existing = await self.guidance_collection.find_one(
+            {
+                "ticket_id": context.ticket_id,
+                "mode": mode,
+                "status": "active"
+            },
+            {"_id": 0, "input_context_hash": 1, "version": 1, "created_at": 1}
+        )
+        
+        if not existing:
+            return {"needs_regeneration": True, "reason": "no_existing_snapshot"}
+        
+        if existing.get("input_context_hash") != current_hash:
+            return {
+                "needs_regeneration": True,
+                "reason": "context_changed",
+                "existing_version": existing.get("version", 1)
+            }
+        
+        return {
+            "needs_regeneration": False,
+            "reason": "context_unchanged",
+            "existing_version": existing.get("version", 1),
+            "snapshot_created_at": existing.get("created_at")
+        }
     
     async def submit_feedback(
         self,
@@ -767,38 +896,96 @@ Type: {doc_type}
         helped: bool,
         unsafe: bool = False,
         step_failed: Optional[int] = None,
-        comment: Optional[str] = None
+        comment: Optional[str] = None,
+        user_name: Optional[str] = None,
+        user_role: Optional[str] = None,
+        correct_diagnosis: Optional[str] = None,
+        actual_fix: Optional[str] = None,
+        rating: Optional[int] = None
     ) -> bool:
-        """Submit feedback on guidance quality"""
+        """
+        Submit feedback on guidance quality.
+        Feeds into continuous learning loop (Part D).
+        """
         feedback_doc = {
-            "feedback_id": f"GF-{uuid.uuid4().hex[:8].upper()}",
+            "feedback_id": f"GF-{uuid.uuid4().hex[:12].upper()}",
             "guidance_id": guidance_id,
             "ticket_id": ticket_id,
             "organization_id": organization_id,
             "user_id": user_id,
+            "user_name": user_name,
+            "user_role": user_role,
+            "feedback_type": "helpful" if helped else ("unsafe" if unsafe else "not_helpful"),
             "helped": helped,
+            "rating": rating,
             "unsafe": unsafe,
+            "incorrect": not helped and not unsafe,
             "step_failed": step_failed,
             "comment": comment,
+            "correct_diagnosis": correct_diagnosis,
+            "actual_fix": actual_fix,
+            "processed_for_learning": False,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         await self.feedback_collection.insert_one(feedback_doc)
         
-        # Update guidance stats
+        # Update guidance snapshot stats
+        update_ops = {
+            "$inc": {
+                "feedback_count": 1,
+                "helpful_count": 1 if helped else 0,
+                "not_helpful_count": 0 if helped else 1,
+                "unsafe_count": 1 if unsafe else 0
+            }
+        }
+        
+        # Recalculate average rating if rating provided
+        if rating:
+            snapshot = await self.guidance_collection.find_one(
+                {"guidance_id": guidance_id},
+                {"_id": 0, "feedback_count": 1, "avg_rating": 1}
+            )
+            if snapshot:
+                old_avg = snapshot.get("avg_rating", 0)
+                old_count = snapshot.get("feedback_count", 0)
+                new_avg = ((old_avg * old_count) + rating) / (old_count + 1)
+                update_ops["$set"] = {"avg_rating": round(new_avg, 2)}
+        
         await self.guidance_collection.update_one(
             {"guidance_id": guidance_id},
-            {
-                "$inc": {
-                    "feedback_count": 1,
-                    "helpful_count": 1 if helped else 0,
-                    "unsafe_count": 1 if unsafe else 0
-                }
-            }
+            update_ops
         )
         
-        logger.info(f"Recorded guidance feedback: {feedback_doc['feedback_id']}")
+        # Trigger learning pipeline for negative/unsafe feedback
+        if not helped or unsafe:
+            await self._queue_for_learning(feedback_doc)
+        
+        logger.info(f"Recorded guidance feedback: {feedback_doc['feedback_id']} (helped={helped})")
         return True
+    
+    async def _queue_for_learning(self, feedback: Dict):
+        """
+        Queue feedback for continuous learning processing.
+        Part D - Background learning loop.
+        """
+        learning_event = {
+            "event_id": f"LE-{uuid.uuid4().hex[:8].upper()}",
+            "event_type": "guidance_feedback",
+            "feedback_id": feedback["feedback_id"],
+            "guidance_id": feedback["guidance_id"],
+            "ticket_id": feedback["ticket_id"],
+            "organization_id": feedback["organization_id"],
+            "helped": feedback["helped"],
+            "unsafe": feedback["unsafe"],
+            "correct_diagnosis": feedback.get("correct_diagnosis"),
+            "actual_fix": feedback.get("actual_fix"),
+            "status": "pending",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await self.db.efi_learning_queue.insert_one(learning_event)
+        logger.info(f"Queued feedback for learning: {learning_event['event_id']}")
     
     async def update_context_with_answers(
         self,
@@ -825,3 +1012,31 @@ Type: {doc_type}
         )
         
         return True
+    
+    async def get_feedback_summary(self, guidance_id: str) -> Dict:
+        """Get feedback summary for a guidance snapshot"""
+        pipeline = [
+            {"$match": {"guidance_id": guidance_id}},
+            {"$group": {
+                "_id": None,
+                "total_feedback": {"$sum": 1},
+                "helpful_count": {"$sum": {"$cond": ["$helped", 1, 0]}},
+                "unsafe_count": {"$sum": {"$cond": ["$unsafe", 1, 0]}},
+                "avg_rating": {"$avg": "$rating"}
+            }}
+        ]
+        
+        result = await self.feedback_collection.aggregate(pipeline).to_list(1)
+        
+        if result:
+            data = result[0]
+            return {
+                "total_feedback": data.get("total_feedback", 0),
+                "helpful_rate": round(
+                    data.get("helpful_count", 0) / max(data.get("total_feedback", 1), 1) * 100, 1
+                ),
+                "unsafe_count": data.get("unsafe_count", 0),
+                "avg_rating": round(data.get("avg_rating") or 0, 1)
+            }
+        
+        return {"total_feedback": 0, "helpful_rate": 0, "unsafe_count": 0, "avg_rating": 0}
