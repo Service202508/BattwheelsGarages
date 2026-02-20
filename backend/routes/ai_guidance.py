@@ -462,6 +462,107 @@ async def get_checklist_template(category: str):
     )
 
 
+# ==================== SNAPSHOT MANAGEMENT ====================
+
+@router.get("/snapshot/{ticket_id}")
+async def get_snapshot_info(
+    ticket_id: str,
+    http_request: Request,
+    mode: str = "quick"
+):
+    """
+    Get snapshot info for a ticket.
+    Used to show "Regenerate" button only when context changed.
+    """
+    org_id = http_request.headers.get("X-Organization-ID")
+    if not org_id:
+        raise HTTPException(status_code=400, detail="Organization ID required")
+    
+    service = get_guidance_service()
+    snapshot = await service.get_snapshot_info(ticket_id, mode)
+    
+    if not snapshot:
+        return {
+            "exists": False,
+            "ticket_id": ticket_id,
+            "mode": mode
+        }
+    
+    return {
+        "exists": True,
+        "ticket_id": ticket_id,
+        "mode": mode,
+        **snapshot
+    }
+
+
+@router.post("/check-context")
+async def check_context_changed(
+    data: GenerateGuidanceRequest,
+    http_request: Request
+):
+    """
+    Check if context has changed since last snapshot.
+    Returns whether regeneration is needed.
+    
+    Use this before calling generate to determine if
+    "Regenerate" button should be shown.
+    """
+    org_id = http_request.headers.get("X-Organization-ID")
+    if not org_id:
+        raise HTTPException(status_code=400, detail="Organization ID required")
+    
+    db = get_db()
+    
+    # Get ticket
+    ticket = await db.tickets.find_one(
+        {"ticket_id": data.ticket_id},
+        {"_id": 0}
+    )
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    # Build context
+    context = GuidanceContext(
+        ticket_id=data.ticket_id,
+        organization_id=org_id,
+        vehicle_make=data.vehicle_make or ticket.get("vehicle_info", {}).get("make"),
+        vehicle_model=data.vehicle_model or ticket.get("vehicle_info", {}).get("model"),
+        vehicle_variant=ticket.get("vehicle_info", {}).get("variant"),
+        symptoms=data.symptoms or ticket.get("symptoms", []),
+        dtc_codes=data.dtc_codes or ticket.get("dtc_codes", []),
+        category=ticket.get("category", "general"),
+        description=data.description or ticket.get("description", ""),
+        ask_back_answers=ticket.get("ask_back_answers")
+    )
+    
+    service = get_guidance_service()
+    result = await service.check_context_changed(context, data.mode)
+    
+    return {
+        "ticket_id": data.ticket_id,
+        "mode": data.mode,
+        **result
+    }
+
+
+@router.get("/feedback-summary/{guidance_id}")
+async def get_feedback_summary(
+    guidance_id: str,
+    http_request: Request
+):
+    """
+    Get feedback summary for a guidance snapshot.
+    """
+    org_id = http_request.headers.get("X-Organization-ID")
+    if not org_id:
+        raise HTTPException(status_code=400, detail="Organization ID required")
+    
+    service = get_guidance_service()
+    return await service.get_feedback_summary(guidance_id)
+
+
 # ==================== METRICS ====================
 
 @router.get("/metrics")
@@ -478,9 +579,15 @@ async def get_guidance_metrics(
     
     db = get_db()
     
-    # Get guidance stats
+    # Get guidance stats (tenant isolated)
     guidance_count = await db.ai_guidance_snapshots.count_documents({
-        "ticket_id": {"$regex": f"^{org_id[:8]}"}  # Simple tenant filter
+        "organization_id": org_id
+    })
+    
+    # Get active snapshots
+    active_snapshots = await db.ai_guidance_snapshots.count_documents({
+        "organization_id": org_id,
+        "status": "active"
     })
     
     # Get feedback stats
@@ -490,7 +597,8 @@ async def get_guidance_metrics(
             "_id": None,
             "total_feedback": {"$sum": 1},
             "helpful_count": {"$sum": {"$cond": ["$helped", 1, 0]}},
-            "unsafe_reports": {"$sum": {"$cond": ["$unsafe", 1, 0]}}
+            "unsafe_reports": {"$sum": {"$cond": ["$unsafe", 1, 0]}},
+            "avg_rating": {"$avg": "$rating"}
         }}
     ]
     
@@ -498,7 +606,8 @@ async def get_guidance_metrics(
     feedback = feedback_stats[0] if feedback_stats else {
         "total_feedback": 0,
         "helpful_count": 0,
-        "unsafe_reports": 0
+        "unsafe_reports": 0,
+        "avg_rating": 0
     }
     
     # Get estimate integration stats
@@ -507,15 +616,24 @@ async def get_guidance_metrics(
         "line_items.added_via": "ai_guidance"
     })
     
+    # Get learning queue stats
+    pending_learning = await db.efi_learning_queue.count_documents({
+        "organization_id": org_id,
+        "status": "pending"
+    })
+    
     return {
         "organization_id": org_id,
         "metrics": {
             "guidance_generated": guidance_count,
+            "active_snapshots": active_snapshots,
             "total_feedback": feedback.get("total_feedback", 0),
             "helpful_rate": round(
                 feedback.get("helpful_count", 0) / max(feedback.get("total_feedback", 1), 1) * 100, 1
             ),
+            "avg_rating": round(feedback.get("avg_rating") or 0, 1),
             "unsafe_reports": feedback.get("unsafe_reports", 0),
-            "estimate_integrations": estimate_items
+            "estimate_integrations": estimate_items,
+            "pending_learning_events": pending_learning
         }
     }
