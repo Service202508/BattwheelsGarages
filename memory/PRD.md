@@ -43,6 +43,86 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ## Latest Updates (Feb 20, 2026 - Session 77)
 
+### TECHNICIAN GUIDANCE LAYER (EFI) - HINGLISH MODE
+**Status:** CORE IMPLEMENTATION COMPLETE
+
+**What was implemented:**
+
+#### Backend Services
+
+1. **AI Guidance Service** (`/app/backend/services/ai_guidance_service.py`)
+   - Hinglish (Hindi-English) prompt templates for Indian technicians
+   - Two verbosity modes: QUICK (60-90 sec) and DEEP (full decision tree)
+   - Ask-back guided troubleshooting when information is missing
+   - Context extraction from Job Card
+   - Estimate suggestion generation (parts + labour)
+   - Guidance caching and feedback collection
+
+2. **Visual Spec Service** (`/app/backend/services/visual_spec_service.py`)
+   - Mermaid flowchart generation for diagnostic flows
+   - Gauge charts for SOC/confidence indicators
+   - Horizontal bar charts for probable causes
+   - Predefined EV diagnostic templates:
+     - Battery Not Charging Flow
+     - Motor Not Running Flow
+     - Reduced Range Flow
+
+3. **AI Guidance Routes** (`/app/backend/routes/ai_guidance.py`)
+   - `GET /api/ai/guidance/status` - Check EFI feature status
+   - `POST /api/ai/guidance/generate` - Generate guidance for ticket
+   - `POST /api/ai/guidance/ask-back` - Submit ask-back answers
+   - `POST /api/ai/guidance/feedback` - Submit guidance feedback
+   - `POST /api/ai/guidance/add-to-estimate` - One-click add suggestions to estimate
+   - `GET /api/ai/guidance/templates/diagrams` - Get predefined templates
+   - `GET /api/ai/guidance/templates/checklist/{category}` - Get diagnostic checklists
+   - `GET /api/ai/guidance/metrics` - Get usage metrics
+
+#### Frontend Components
+
+4. **EFI Guidance Panel** (`/app/frontend/src/components/ai/EFIGuidancePanel.jsx`)
+   - Full-featured guidance panel with tabs (Steps, Visuals, Estimate)
+   - Mermaid diagram rendering
+   - Gauge and bar chart micro-visualizations
+   - Ask-back questionnaire with quick-select options
+   - Diagnostic step checklist with "Mark as Done"
+   - One-click "Add All to Estimate" integration
+   - Feedback (helpful/not helpful) collection
+   - Escalate to Expert button
+
+5. **Job Card Integration** (`/app/frontend/src/components/JobCard.jsx`)
+   - Mode toggle: "Hinglish" (new) vs "Classic" (legacy)
+   - Side panel with EFI Guidance for technicians/admins
+   - Seamless switching between guidance modes
+
+#### Feature Flags Added
+
+- `efi_guidance_layer_enabled` - Main feature toggle
+- `hinglish_mode_enabled` - Hinglish output toggle
+- `visual_diagrams_enabled` - Mermaid diagrams toggle
+- `ask_back_enabled` - Ask-back questionnaire toggle
+
+#### Test Suite
+
+6. **EFI Guidance Tests** (`/app/backend/tests/test_efi_guidance.py`)
+   - 22 tests covering:
+     - Hinglish template validation
+     - Visual spec generation (flowcharts, gauges, bars)
+     - EV diagnostic templates
+     - Ask-back logic
+     - Feature flags
+     - Confidence determination
+     - Estimate suggestions
+   - All tests passing (100%)
+
+**Non-Negotiables Met:**
+- ✅ Tenant isolation maintained
+- ✅ Feature flag gated (`EFI_GUIDANCE_LAYER_ENABLED`)
+- ✅ Insufficient data triggers ask-back + safe checklist
+- ✅ Structured, scannable, mobile-friendly output
+- ✅ Deterministic visuals (no external image downloads)
+
+---
+
 ### BATTWHEELS KNOWLEDGE BRAIN - AI DIAGNOSTIC ASSISTANT
 **Status:** CORE IMPLEMENTATION COMPLETE - RAG + Expert Queue
 
