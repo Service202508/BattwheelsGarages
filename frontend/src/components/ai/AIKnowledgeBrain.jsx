@@ -434,7 +434,17 @@ export default function AIKnowledgeBrain({ user, portalType = "technician" }) {
                           <Shield className="h-4 w-4" />
                           <span className="font-semibold text-sm">Expert Review Recommended</span>
                         </div>
-                        <p className="text-xs text-rose-200">{message.escalationReason}</p>
+                        <p className="text-xs text-rose-200 mb-3">{message.escalationReason}</p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-rose-500/50 text-rose-400 hover:bg-rose-500/20"
+                          onClick={() => handleEscalate(message)}
+                          data-testid="escalate-to-expert-btn"
+                        >
+                          <HelpCircle className="h-3.5 w-3.5 mr-1.5" />
+                          Escalate to Expert Queue
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -478,6 +488,15 @@ export default function AIKnowledgeBrain({ user, portalType = "technician" }) {
                         <ThumbsDown className="h-3 w-3" />
                         Not helpful
                       </button>
+                      {!message.escalationRecommended && (
+                        <button 
+                          onClick={() => handleEscalate(message)}
+                          className="text-xs hover:text-amber-400 flex items-center gap-1 transition-colors"
+                        >
+                          <HelpCircle className="h-3 w-3" />
+                          Escalate
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
