@@ -1,0 +1,113 @@
+{
+  "summary": "Comprehensive backend API testing for EFI Intelligence Engine Phase 2 (Model-Aware Continuous Learning Failure Intelligence). All 30 tests passed (15 unit tests + 15 API integration tests). All endpoints working correctly with proper tenant isolation.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "features_tested": {
+    "p0_5_ai_guidance_snapshots": {
+      "status": "PASS",
+      "endpoints_verified": [
+        "GET /api/ai/guidance/snapshot/{ticket_id} - Returns snapshot info with exists field",
+        "POST /api/ai/guidance/check-context - Returns 404 for non-existing ticket (correct behavior)",
+        "GET /api/ai/guidance/feedback-summary/{guidance_id} - Returns feedback stats",
+        "GET /api/ai/guidance/status - Returns feature flags and enabled status"
+      ],
+      "models_verified": [
+        "AIGuidanceSnapshot with input_context_hash for idempotency",
+        "AIGuidanceFeedback with all required fields"
+      ]
+    },
+    "part_a_failure_cards": {
+      "status": "PASS",
+      "endpoints_verified": [
+        "POST /api/efi/intelligence/failure-cards - Creates failure card with FC- prefix",
+        "GET /api/efi/intelligence/failure-cards - Returns cards with tenant isolation",
+        "GET /api/efi/intelligence/failure-cards/{card_id} - Returns single card",
+        "PUT /api/efi/intelligence/failure-cards/{card_id}/approve - Approves draft card"
+      ],
+      "tenant_isolation": "Verified - ORG_A cannot see ORG_B's tenant-scoped cards"
+    },
+    "part_b_model_aware_ranking": {
+      "status": "PASS",
+      "endpoint": "POST /api/efi/intelligence/ranking/rank-causes",
+      "features_verified": [
+        "Returns top 3 ranked causes only",
+        "Model match gets highest weight in scoring",
+        "DTC match contributes to ranking",
+        "Success rate impacts ranking"
+      ]
+    },
+    "part_c_low_confidence_handling": {
+      "status": "PASS",
+      "verified": [
+        "Low confidence (<60%) returns safe_checklist",
+        "should_escalate=true with reason for low confidence",
+        "Safe checklist includes HV isolation, PPE, basic checks"
+      ]
+    },
+    "part_d_continuous_learning": {
+      "status": "PASS",
+      "endpoints_verified": [
+        "POST /api/efi/intelligence/learning/capture-closure/{ticket_id} - Captures learning event with LE- prefix",
+        "GET /api/efi/intelligence/learning/stats - Returns learning statistics"
+      ],
+      "features_verified": [
+        "Captures actual root cause, parts replaced",
+        "Records AI correctness feedback",
+        "Creates learning event for pattern detection"
+      ]
+    },
+    "part_e_risk_alerts": {
+      "status": "PASS",
+      "endpoints_verified": [
+        "GET /api/efi/intelligence/risk-alerts - Returns alerts with count",
+        "GET /api/efi/intelligence/risk-alerts?status=active - Filters by status"
+      ],
+      "pattern_detection": "Logic verified in unit tests - triggers on 3+ similar failures in 30 days"
+    },
+    "dashboard_summary": {
+      "status": "PASS",
+      "endpoint": "GET /api/efi/intelligence/dashboard-summary",
+      "sections_returned": [
+        "risk_alerts (active count, recent alerts)",
+        "failure_cards (draft, approved, total)",
+        "learning (pending_events)",
+        "guidance (total_generated, feedback_count, helpful_rate)"
+      ]
+    }
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_efi_intelligence_api.py",
+    "/app/backend/tests/test_efi_intelligence.py",
+    "/app/test_reports/pytest/efi_intelligence_api_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_efi_intelligence_api.py"
+  ],
+  "success_rate": {
+    "backend": "100% (30/30 tests passed)"
+  },
+  "test_credentials": {
+    "admin": "admin@battwheels.in / admin123",
+    "technician": "deepak@battwheelsgarages.in / tech123"
+  },
+  "seed_data_creation": "Created test failure card FC-49226B998A06 (approved) and learning event LE-6EDE063DCCD8",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "mocked_integrations": {
+    "value": {
+      "has_mocked_apis": false,
+      "mocked_apis_list": []
+    }
+  },
+  "context_for_next_testing_agent": "EFI Intelligence Engine Phase 2 fully implemented and tested. All DB models (ai_guidance_snapshot, ai_guidance_feedback, structured_failure_card, model_risk_alert) working correctly. Model-aware ranking service uses weighted scoring (MODEL_MATCH=35, DTC_MATCH=25, SUBSYSTEM_MATCH=15, SUCCESS_RATE=20, SYMPTOM_SIMILARITY=20). Low confidence (<60%) returns safe checklist with escalation suggestion. Continuous learning captures ticket closure data and triggers pattern detection for risk alerts (≥3 similar failures in 30 days). All APIs use X-Organization-ID header for tenant isolation.",
+  "rca_of_issue": "N/A - All features working correctly"
+}
