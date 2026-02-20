@@ -1141,8 +1141,8 @@ export default function EstimateItemsPanel({
         
         {/* Action Buttons */}
         <div className="w-full flex flex-wrap justify-end gap-2 pt-4 border-t">
-          {/* Send Estimate - When draft and has items */}
-          {estimate.status === "draft" && lineItems.length > 0 && canEdit && (
+          {/* Send Estimate - Available until locked (can resend even when approved) */}
+          {!estimate.locked_at && lineItems.length > 0 && canEdit && (
             <Button 
               onClick={handleSendEstimate} 
               disabled={sendLoading} 
@@ -1154,12 +1154,12 @@ export default function EstimateItemsPanel({
               ) : (
                 <Send className="h-4 w-4 mr-2" />
               )}
-              {sendLoading ? "Sending..." : "Send Estimate"}
+              {sendLoading ? "Sending..." : estimate.status === "sent" || estimate.status === "approved" ? "Resend Estimate" : "Send Estimate"}
             </Button>
           )}
           
-          {/* Approve - When draft or sent */}
-          {(estimate.status === "draft" || estimate.status === "sent") && lineItems.length > 0 && canApprove && (
+          {/* Approve - Available until locked (for draft or sent status) */}
+          {!estimate.locked_at && (estimate.status === "draft" || estimate.status === "sent") && lineItems.length > 0 && canApprove && (
             <Button 
               onClick={handleApproveEstimate} 
               disabled={approveLoading}
