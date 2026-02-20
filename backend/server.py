@@ -977,6 +977,18 @@ class DashboardStats(BaseModel):
     pending_invoices: float = 0.0
     inventory_value: float = 0.0
     pending_purchase_orders: int = 0
+    # Service Ticket Metrics (Enhanced)
+    service_ticket_stats: dict = Field(default_factory=lambda: {
+        "total_open": 0,
+        "onsite_resolution": 0,
+        "workshop_visit": 0,
+        "pickup": 0,
+        "remote": 0,
+        "avg_resolution_time_hours": 0.0,
+        "onsite_resolution_percentage": 0.0,
+        "total_resolved_30d": 0,
+        "total_onsite_resolved_30d": 0
+    })
 
 # ==================== AUTH HELPERS ====================
 
