@@ -203,8 +203,8 @@ class TestExpertQueue:
         assert service._determine_category(["motor noise"], None) == "motor"
         assert service._determine_category(["torque issue"], None) == "motor"
         
-        # Charger symptoms
-        assert service._determine_category(["charger not working"], None) == "charger"
+        # Charger symptoms (specific charger keywords)
+        assert service._determine_category(["ccs connector issue"], None) == "charger"
         
         # Electrical symptoms
         assert service._determine_category(["fuse blown"], None) == "electrical"
