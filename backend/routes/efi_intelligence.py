@@ -350,7 +350,8 @@ async def update_failure_card(
 ):
     """Update a failure card"""
     org_id = http_request.headers.get("X-Organization-ID")
-    user_id = http_request.headers.get("X-User-ID", "unknown")
+    # user_id available for audit but not currently used
+    _ = http_request.headers.get("X-User-ID", "unknown")
     
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
