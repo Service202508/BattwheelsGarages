@@ -87,9 +87,9 @@ class AIAssistService:
                 request, retrieved_docs
             )
             
-            # Step 3: Generate response with LLM
+            # Step 3: Generate response with LLM (using swappable provider)
             response_text = await self._generate_response(
-                prompt, system_message, request.category
+                prompt, system_message, request.category, organization_id
             )
             
             # Step 4: Parse and structure response
