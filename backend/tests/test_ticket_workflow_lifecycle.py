@@ -20,7 +20,7 @@ from datetime import datetime
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
-    BASE_URL = "https://ticket-system-93.preview.emergentagent.com"
+    BASE_URL = "https://ticket-estimate-fix.preview.emergentagent.com"
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
