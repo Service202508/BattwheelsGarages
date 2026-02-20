@@ -15,7 +15,8 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { 
   Printer, CheckCircle, PlusCircle, Trash2, Send, Check, Play, Flag, 
-  FileText, UserCog, Paperclip, Download, ExternalLink, Phone, Mail, MapPin, Brain
+  FileText, UserCog, Paperclip, Download, ExternalLink, Phone, Mail, MapPin, Brain,
+  ClipboardList, CheckSquare, Clock, XCircle
 } from "lucide-react";
 import { API } from "@/App";
 import EFISidePanel from "./EFISidePanel";
