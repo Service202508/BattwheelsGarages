@@ -34,10 +34,58 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ### Map Integration (Leaflet/OpenStreetMap): IMPLEMENTED (Session 75) ✅
 ### AI Issue Suggestions (Gemini-powered): IMPLEMENTED (Session 75) ✅
 ### Technician AI Assistant: IMPLEMENTED (Session 75) ✅
+### QA Audit Phase 1-2: COMPLETED (Session 76) ✅
 
 ---
 
-## Latest Updates (Feb 20, 2026 - Session 75)
+## Latest Updates (Feb 20, 2026 - Session 76)
+
+### QA AUDIT: Phase 1 (Calculations) & Phase 2 (Workflows)
+**Status:** COMPLETED - Issues Found & Fixed
+
+**Audit Scope:**
+- Finance Calculator functions (line items, totals, taxes)
+- Payment allocation logic
+- GST/IGST calculations
+- Aging bucket calculations
+- Invoice data integrity
+- Zoho sync field mapping
+- Ticket state machine completeness
+
+**Key Findings:**
+
+1. **Finance Calculator:** ✅ ALL PASS
+   - Line item calculations correct
+   - Tax split (CGST/SGST/IGST) working
+   - Payment allocation (oldest-first, proportional) correct
+   - Rounding uses ROUND_HALF_UP
+
+2. **Zoho Sync Field Mapping:** ⚠️ FIXED
+   - Issue: `total` → `total` should be `total` → `grand_total`
+   - Issue: `balance` → `balance` should be `balance` → `balance_due`
+   - Fixed in `/app/backend/services/zoho_realtime_sync.py`
+
+3. **Ticket State Machine:** ⚠️ FIXED
+   - Issue: Extended estimate workflow states missing from VALID_TRANSITIONS
+   - Added 6 new states: technician_assigned, estimate_shared, estimate_approved, 
+     work_in_progress, work_completed, invoiced
+   - Full workflow path now validated
+
+4. **Data Integrity Issues:** 2 anomalous invoices found (0.02% error rate)
+   - INV-00034: subtotal=0 with grand_total=19400 (import artifact)
+   - INV-00027: 200 rupee calculation discrepancy
+
+**Files Modified:**
+- `/app/backend/services/zoho_realtime_sync.py` - Fixed field mappings
+- `/app/backend/services/ticket_service.py` - Extended state machine
+
+**Audit Documents Created:**
+- `/app/memory/QA_AUDIT_SYSTEM_MAP.md` - Full system architecture
+- `/app/memory/QA_AUDIT_PHASE1_FINDINGS.md` - Detailed audit findings
+
+---
+
+## Previous Updates (Feb 20, 2026 - Session 75)
 
 ### MAJOR FEATURE: Map Integration & AI-Powered Features
 **Status:** IMPLEMENTED & TESTED (100% success rate - Iteration 75)
