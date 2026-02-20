@@ -421,15 +421,38 @@ export default function Login({ onLogin }) {
             </p>
             
             <p className="text-gray-500 text-base leading-relaxed mb-10 max-w-md mx-auto">
-              AI-powered diagnostics for electric 2-wheelers, 3-wheelers & 4-wheelers. 
-              Transform every repair into enterprise-grade knowledge.
+              AI-powered diagnostics for Electric 2W, 3W & 4W Vehicles—turning every breakdown into structured, reusable enterprise intelligence.
             </p>
 
-            {/* Feature badges */}
-            <div className="flex flex-wrap justify-center gap-3">
-              <FeatureBadge icon={Zap} text="AI Diagnostics" />
-              <FeatureBadge icon={ChevronRight} text="Real-time Insights" />
-              <FeatureBadge icon={Sparkles} text="Fleet Management" />
+            {/* Tagline with glowing icons */}
+            <div className="flex flex-wrap justify-center items-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-[#22EDA9]/40 rounded-full blur-md animate-pulse" />
+                  <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] flex items-center justify-center shadow-lg shadow-[#22EDA9]/30">
+                    <Zap className="w-4 h-4 text-gray-900" />
+                  </div>
+                </div>
+                <span className="text-sm font-semibold text-gray-700">Diagnose faster.</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-[#22EDA9]/40 rounded-full blur-md animate-pulse" style={{ animationDelay: '0.3s' }} />
+                  <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] flex items-center justify-center shadow-lg shadow-[#22EDA9]/30">
+                    <Sparkles className="w-4 h-4 text-gray-900" />
+                  </div>
+                </div>
+                <span className="text-sm font-semibold text-gray-700">Resolve smarter.</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-[#22EDA9]/40 rounded-full blur-md animate-pulse" style={{ animationDelay: '0.6s' }} />
+                  <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] flex items-center justify-center shadow-lg shadow-[#22EDA9]/30">
+                    <Brain className="w-4 h-4 text-gray-900" />
+                  </div>
+                </div>
+                <span className="text-sm font-semibold text-gray-700">Learn forever.</span>
+              </div>
             </div>
 
             {/* Auto-Scrolling Feature Cards */}
