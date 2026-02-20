@@ -660,20 +660,71 @@ export default function PublicTicketForm() {
                   Issue Details
                 </Label>
                 <div className="space-y-2 relative">
-                  <Label className="text-slate-300">Issue Title *</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-slate-300">Issue Title *</Label>
+                    {aiLoading && (
+                      <span className="text-xs text-green-400 flex items-center gap-1">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        AI analyzing...
+                      </span>
+                    )}
+                  </div>
                   <Input
-                    placeholder="Describe the issue briefly..."
+                    placeholder="Describe the issue briefly... (AI will suggest related issues)"
                     className="bg-slate-700/50 border-slate-600"
                     value={formData.title}
-                    onChange={(e) => {
-                      setFormData(prev => ({ ...prev, title: e.target.value }));
-                      setShowSuggestions(true);
+                    onChange={(e) => handleTitleChange(e.target.value)}
+                    onFocus={() => {
+                      if (issueSuggestions.length > 0) setShowSuggestions(true);
+                      if (aiSuggestions.length > 0) setShowAiSuggestions(true);
                     }}
-                    onFocus={() => setShowSuggestions(true)}
                     data-testid="issue-title-input"
                   />
-                  {/* Issue Suggestions Dropdown */}
-                  {showSuggestions && issueSuggestions.length > 0 && (
+                  
+                  {/* AI-Powered Suggestions Dropdown */}
+                  {showAiSuggestions && aiSuggestions.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-green-500/50 rounded-lg shadow-lg max-h-60 overflow-auto">
+                      <div className="p-2 text-xs text-green-400 border-b border-slate-700 flex items-center gap-1">
+                        <Zap className="h-3 w-3" />
+                        AI-Powered Suggestions based on your description:
+                      </div>
+                      {aiSuggestions.slice(0, 5).map((suggestion, idx) => (
+                        <div
+                          key={idx}
+                          className="px-3 py-2 hover:bg-green-500/10 cursor-pointer border-b border-slate-700/50 last:border-b-0"
+                          onClick={() => handleSuggestionSelect(suggestion)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <p className="text-white text-sm font-medium">{suggestion.title}</p>
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs ${
+                                suggestion.severity === 'critical' ? 'border-red-500 text-red-400' :
+                                suggestion.severity === 'high' ? 'border-orange-500 text-orange-400' :
+                                suggestion.severity === 'medium' ? 'border-yellow-500 text-yellow-400' :
+                                'border-green-500 text-green-400'
+                              }`}
+                            >
+                              {suggestion.severity}
+                            </Badge>
+                          </div>
+                          {suggestion.description && (
+                            <p className="text-xs text-slate-400 mt-0.5">{suggestion.description}</p>
+                          )}
+                          <span className="text-xs text-green-500/70 mt-1 inline-block">Type: {suggestion.issue_type}</span>
+                        </div>
+                      ))}
+                      <div 
+                        className="px-3 py-2 text-xs text-slate-500 hover:bg-slate-700 cursor-pointer text-center"
+                        onClick={() => setShowAiSuggestions(false)}
+                      >
+                        Close AI suggestions
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Database Issue Suggestions Dropdown (fallback) */}
+                  {!showAiSuggestions && showSuggestions && issueSuggestions.length > 0 && (
                     <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg shadow-lg max-h-60 overflow-auto">
                       <div className="p-2 text-xs text-slate-400 border-b border-slate-700">
                         Common EV issues for your vehicle:
