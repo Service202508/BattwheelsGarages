@@ -707,38 +707,26 @@ export default function PublicTicketForm() {
                     <MapPin className="h-5 w-5 text-green-500" />
                     Service Location
                   </Label>
-                  <div className="space-y-2">
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <Input
-                          placeholder="Enter your address or landmark..."
-                          className="bg-slate-700/50 border-slate-600 pl-10"
-                          value={formData.incident_location}
-                          onChange={(e) => setFormData(prev => ({ ...prev, incident_location: e.target.value }))}
-                          data-testid="location-input"
-                        />
-                      </div>
-                      <Button 
-                        type="button" 
-                        variant="outline"
-                        onClick={handleLocationSearch}
-                        disabled={searchingLocation}
-                        className="border-slate-600"
-                      >
-                        {searchingLocation ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm"}
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {/* Map Placeholder */}
-                  <div className="h-48 bg-slate-700/50 rounded-lg border border-slate-600 flex items-center justify-center">
-                    <div className="text-center text-slate-400">
-                      <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">Map integration available</p>
-                      <p className="text-xs">Enter address above</p>
-                    </div>
-                  </div>
+                  <LocationPicker
+                    value={
+                      formData.incident_location 
+                        ? { address: formData.incident_location, lat: formData.location_lat, lng: formData.location_lng }
+                        : null
+                    }
+                    onChange={(location) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        incident_location: location.address,
+                        location_lat: location.lat,
+                        location_lng: location.lng
+                      }));
+                    }}
+                    placeholder="Click to select location on map"
+                    buttonText="Open Map"
+                  />
+                  <p className="text-xs text-slate-400">
+                    Select your exact location on the map for accurate on-site service
+                  </p>
                 </div>
               )}
 
