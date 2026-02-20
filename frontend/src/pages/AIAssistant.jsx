@@ -1,11 +1,10 @@
-import UnifiedAIChat from "@/components/ai/UnifiedAIChat";
+import AIDiagnosticAssistant from "@/components/ai/AIDiagnosticAssistant";
 
 export default function AIAssistant({ user }) {
   return (
-    <UnifiedAIChat 
-      user={user} 
-      portalType="admin"
-      apiEndpoint="/ai/diagnose"
-    />
+    <div className="p-6">
+      <AIDiagnosticAssistant user={user} />
+    </div>
   );
 }
+
