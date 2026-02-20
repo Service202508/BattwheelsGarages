@@ -13,18 +13,12 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-
-@pytest.fixture
-def event_loop():
-    """Create event loop for async tests"""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+# Configure pytest-asyncio
+pytest_plugins = ('pytest_asyncio',)
 
 
-@pytest.fixture
-async def db():
-    """Get database connection"""
+def get_db():
+    """Get database connection synchronously"""
     MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
     DB_NAME = os.environ.get("DB_NAME", "test_database")
     client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
