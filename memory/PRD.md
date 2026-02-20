@@ -38,46 +38,158 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ### QA Audit Phase 5-7 (Security, Performance, Reliability): COMPLETED (Session 76) ✅
 ### Unified AI Chat Interface: IMPLEMENTED (Session 76) ✅
 ### **Battwheels Knowledge Brain (RAG + Expert Queue): IMPLEMENTED (Session 77) ✅**
+### **EFI Intelligence Engine (Model-Aware Continuous Learning): IMPLEMENTED (Session 78) ✅**
 
 ---
 
-## Latest Updates (Feb 20, 2026 - Session 77)
+## Latest Updates (Feb 20, 2026 - Session 78)
 
-### TECHNICIAN GUIDANCE LAYER (EFI) - HINGLISH MODE
-**Status:** CORE IMPLEMENTATION COMPLETE
+### EFI INTELLIGENCE ENGINE - MODEL-AWARE CONTINUOUS LEARNING
+**Status:** FULLY IMPLEMENTED AND TESTED (30/30 tests passed)
 
 **What was implemented:**
 
-#### Backend Services
+#### P0.5 - Foundation (Database Models)
 
-1. **AI Guidance Service** (`/app/backend/services/ai_guidance_service.py`)
-   - Hinglish (Hindi-English) prompt templates for Indian technicians
-   - Two verbosity modes: QUICK (60-90 sec) and DEEP (full decision tree)
-   - Ask-back guided troubleshooting when information is missing
-   - Context extraction from Job Card
-   - Estimate suggestion generation (parts + labour)
-   - Guidance caching and feedback collection
+1. **AI Guidance Models** (`/app/backend/models/ai_guidance_models.py`)
+   - `AIGuidanceSnapshot`: Versioned guidance snapshots with idempotency via `input_context_hash`
+   - `AIGuidanceFeedback`: Feedback collection for continuous learning
+   - `StructuredFailureCard`: Normalized failure ontology with intelligence metrics
+   - `ModelRiskAlert`: Pattern detection alerts for supervisor dashboard
+   - Snapshot reuse when context unchanged (no regeneration needed)
+   - "Regenerate" button only shown when context changed
 
-2. **Visual Spec Service** (`/app/backend/services/visual_spec_service.py`)
-   - Mermaid flowchart generation for diagnostic flows
-   - Gauge charts for SOC/confidence indicators
-   - Horizontal bar charts for probable causes
-   - Predefined EV diagnostic templates:
-     - Battery Not Charging Flow
-     - Motor Not Running Flow
-     - Reduced Range Flow
+2. **Enhanced AI Guidance Service** (`/app/backend/services/ai_guidance_service.py`)
+   - `_generate_context_hash()`: Deterministic hash for idempotency
+   - `_get_cached_guidance()`: Snapshot reuse with view counting
+   - `_cache_guidance()`: Versioned snapshot storage
+   - `check_context_changed()`: Detects if regeneration needed
+   - `get_snapshot_info()`: Returns snapshot metadata
+   - `submit_feedback()`: Enhanced feedback with learning queue integration
 
-3. **AI Guidance Routes** (`/app/backend/routes/ai_guidance.py`)
-   - `GET /api/ai/guidance/status` - Check EFI feature status
-   - `POST /api/ai/guidance/generate` - Generate guidance for ticket
-   - `POST /api/ai/guidance/ask-back` - Submit ask-back answers
-   - `POST /api/ai/guidance/feedback` - Submit guidance feedback
-   - `POST /api/ai/guidance/add-to-estimate` - One-click add suggestions to estimate
-   - `GET /api/ai/guidance/templates/diagrams` - Get predefined templates
-   - `GET /api/ai/guidance/templates/checklist/{category}` - Get diagnostic checklists
-   - `GET /api/ai/guidance/metrics` - Get usage metrics
+#### Phase 2 - Intelligence Engine
 
-#### Frontend Components
+3. **Part A: Structured Failure Ontology**
+   - `StructuredFailureCard` schema with:
+     - `vehicle_make`, `vehicle_model`, `vehicle_variant`, `vehicle_category`
+     - `subsystem`, `component`, `symptom_cluster`, `dtc_codes`
+     - `probable_root_cause`, `verified_fix`, `fix_steps`
+     - `historical_success_rate`, `recurrence_counter`, `usage_count`
+     - `positive_feedback_count`, `negative_feedback_count`
+     - Approval workflow: `draft` → `pending_review` → `approved`
+
+4. **Part B: Model-Aware Ranking Service** (`/app/backend/services/model_aware_ranking_service.py`)
+   - Weighted scoring algorithm:
+     - `MODEL_MATCH = 35` (highest weight for same vehicle model)
+     - `DTC_MATCH = 25`
+     - `SYMPTOM_SIMILARITY = 20`
+     - `SUCCESS_RATE = 20`
+     - `MAKE_MATCH = 15`
+     - `SUBSYSTEM_MATCH = 15`
+     - `RECENCY_BONUS = 10`
+     - `USAGE_BONUS = 5`
+   - Returns **Top 3 ranked causes only** (UI simplicity)
+   - `ConfidenceLevel`: HIGH (≥70%), MEDIUM (40-70%), LOW (<40%)
+
+5. **Part C: Low Confidence Handling**
+   - If confidence < 60%: Returns safe checklist + escalation suggestion
+   - `get_safe_checklist()`: Subsystem-specific safety steps
+   - `should_escalate()`: Determines if expert review needed
+   - Safe checklists for: battery, motor, charger, general
+
+6. **Part D: Continuous Learning Service** (`/app/backend/services/continuous_learning_service.py`)
+   - `capture_ticket_closure()`: Captures learning data when ticket closed
+     - Actual root cause, parts replaced, repair actions
+     - AI correctness (was guidance helpful?)
+     - Resolution time calculation
+   - `process_learning_event()`: Updates failure card metrics
+     - Increments `recurrence_counter`, `usage_count`
+     - Recalculates `historical_success_rate`
+   - `_create_draft_failure_card()`: Auto-generates cards from field discoveries
+   - `_queue_for_learning()`: Queues negative feedback for learning
+   - Background processing via `process_pending_events()`
+
+7. **Part E: Pattern Detection (Model Risk Alerts)**
+   - `_check_for_patterns()`: Detects ≥3 similar failures in 30 days
+   - `ModelRiskAlert`: Created for supervisor dashboard
+   - Alert fields: `vehicle_model`, `subsystem`, `occurrence_count`, `affected_ticket_ids`
+   - Status workflow: `active` → `acknowledged` → `resolved`
+   - Small banner in supervisor dashboard (no complex analytics)
+
+8. **EFI Intelligence Routes** (`/app/backend/routes/efi_intelligence.py`)
+   - Model Risk Alerts:
+     - `GET /api/efi/intelligence/risk-alerts`
+     - `GET /api/efi/intelligence/risk-alerts/{alert_id}`
+     - `PUT /api/efi/intelligence/risk-alerts/{alert_id}/acknowledge`
+     - `PUT /api/efi/intelligence/risk-alerts/{alert_id}/resolve`
+   - Failure Cards:
+     - `GET /api/efi/intelligence/failure-cards`
+     - `POST /api/efi/intelligence/failure-cards`
+     - `PUT /api/efi/intelligence/failure-cards/{card_id}`
+     - `PUT /api/efi/intelligence/failure-cards/{card_id}/approve`
+   - Learning:
+     - `POST /api/efi/intelligence/learning/capture-closure/{ticket_id}`
+     - `POST /api/efi/intelligence/learning/process-pending`
+     - `GET /api/efi/intelligence/learning/stats`
+   - Ranking:
+     - `POST /api/efi/intelligence/ranking/rank-causes`
+   - Dashboard:
+     - `GET /api/efi/intelligence/dashboard-summary`
+
+#### Frontend Enhancements
+
+9. **EFI Guidance Panel** (`/app/frontend/src/components/ai/EFIGuidancePanel.jsx`)
+   - Role-based visibility (`isSupervisorOrAdmin`)
+   - Confidence badge hidden from technicians (only supervisors see)
+   - Sources section hidden from technicians
+   - "Regenerate" button only shown when context changed
+   - Top 3 probable causes only (simplified for mobile)
+   - Generation time displayed for supervisors
+   - Snapshot reuse indicator ("Cached" vs "AI-powered")
+
+#### Feature Flags Added
+- `efi_intelligence_engine_enabled` - Main engine toggle
+- `model_aware_ranking_enabled` - Ranking system toggle
+- `continuous_learning_enabled` - Learning loop toggle
+- `pattern_detection_enabled` - Risk alerts toggle
+
+#### Test Suite
+
+10. **EFI Intelligence Tests** (`/app/backend/tests/test_efi_intelligence.py`)
+    - 15 unit tests covering:
+      - Model-aware ranking weight validation
+      - DTC code matching
+      - Success rate impact
+      - Safe checklist generation
+      - Escalation logic
+      - Ticket closure capture
+      - Draft failure card creation
+      - Pattern detection trigger
+      - Snapshot model validation
+      - Context hash computation
+      - Feedback model creation
+      - Failure card metrics
+      - Model risk alert creation
+      - Tenant isolation
+    - All tests passing (100%)
+
+11. **EFI Intelligence API Tests** (created by testing agent)
+    - 15 API integration tests
+    - Tenant isolation verified
+    - All endpoints working correctly
+
+**Non-Negotiables Met:**
+- ✅ Intelligence increases, UI complexity decreases
+- ✅ Only top 3 causes shown to technicians
+- ✅ Confidence breakdown hidden from technicians
+- ✅ Feature flag controlled (`EFI_INTELLIGENCE_ENGINE_ENABLED`)
+- ✅ Strict tenant isolation throughout
+- ✅ Mobile-first layout (large buttons, bullet steps max 5)
+- ✅ Guidance generation under 2 seconds (logged when exceeded)
+- ✅ No new screens added (existing Job Card panel enhanced)
+- ✅ Pattern detection creates supervisor alerts only
+
+---
 
 4. **EFI Guidance Panel** (`/app/frontend/src/components/ai/EFIGuidancePanel.jsx`)
    - Full-featured guidance panel with tabs (Steps, Visuals, Estimate)
