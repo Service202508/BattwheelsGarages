@@ -5140,6 +5140,36 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Role Permissions routes
+try:
+    from routes.permissions import router as permissions_router
+    api_router.include_router(permissions_router)
+    logger.info("Permissions routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Permissions routes: {e}")
+    import traceback
+    traceback.print_exc()
+
+# Technician Portal routes
+try:
+    from routes.technician_portal import router as technician_portal_router
+    api_router.include_router(technician_portal_router)
+    logger.info("Technician Portal routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Technician Portal routes: {e}")
+    import traceback
+    traceback.print_exc()
+
+# Business Customer Portal routes
+try:
+    from routes.business_portal import router as business_portal_router
+    api_router.include_router(business_portal_router)
+    logger.info("Business Portal routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Business Portal routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
