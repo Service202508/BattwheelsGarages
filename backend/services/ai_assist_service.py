@@ -255,7 +255,7 @@ Type: {doc_type}
         
         # Add vehicle context
         if request.vehicle_make or request.vehicle_model:
-            context_parts.append(f"\n### VEHICLE INFO ###")
+            context_parts.append("\n### VEHICLE INFO ###")
             if request.vehicle_make:
                 context_parts.append(f"Make: {request.vehicle_make}")
             if request.vehicle_model:
@@ -263,12 +263,12 @@ Type: {doc_type}
         
         # Add DTC codes
         if request.dtc_codes:
-            context_parts.append(f"\n### ERROR CODES ###")
+            context_parts.append("\n### ERROR CODES ###")
             context_parts.append(f"DTC Codes: {', '.join(request.dtc_codes)}")
         
         # Add symptoms
         if request.symptoms:
-            context_parts.append(f"\n### REPORTED SYMPTOMS ###")
+            context_parts.append("\n### REPORTED SYMPTOMS ###")
             context_parts.append(f"Symptoms: {', '.join(request.symptoms)}")
         
         # Build final prompt
