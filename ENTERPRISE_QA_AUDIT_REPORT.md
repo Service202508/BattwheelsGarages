@@ -88,23 +88,46 @@
 
 ## 3. DATA INTEGRITY FINDINGS
 
+### Post-Repair Status (February 20, 2026)
+| Metric | Before Repair | After Repair |
+|--------|--------------|--------------|
+| Invoices with null grand_total | 7 | 0 |
+| Invoice customer orphans | 1,124 | 0 |
+| Bill vendor orphans | 12 | 0 |
+| Payment customer orphans | 25 | 0 |
+| Missing organization_id | 175 | 0 |
+
+### Field Normalization Applied
+- Invoices: 4,236 normalized (date→invoice_date, total→grand_total, etc.)
+- Estimates: 3,451 normalized
+- Payments: 2,565 normalized (date→payment_date, payment_method→payment_mode)
+- Expenses: 4,465 normalized
+- Placeholder contacts created: 91 (for orphan references)
+
+### Zoho Books Standard Fields Added
+All major collections now have Zoho-standard fields:
+- `payment_terms`, `payment_terms_label`
+- `is_inclusive_tax`, `is_discount_before_tax`
+- `shipping_charge`, `adjustment`
+- `custom_fields`, `documents`
+
 ### Current Data Stats
-- **Total Expenses:** 4,466
 - **Total Invoices:** 4,236
 - **Total Estimates:** 3,451
-- **Total Contacts:** 352
-- **Total Items:** 1,665
-- **Total Users:** 14
+- **Total Contacts:** 443
+- **Total Items:** 1,670
+- **Total Payments:** 2,565
+- **Total Expenses:** 4,466
 
-### Issues Found & Status
-
-| Issue | Severity | Count | Status |
-|-------|----------|-------|--------|
-| Invoices with null grand_total | P1 | 7 | ⚠️ KNOWN |
-| Tickets without org_id | P0 | 0 | ✅ FIXED |
-| Duplicate invoice numbers | P1 | 0 | ✅ FIXED |
-| Negative stock items | P1 | 0 | ✅ FIXED |
-| Orphan line items | P2 | 0 | ✅ FIXED |
+### Data Quality Status
+| Check | Status |
+|-------|--------|
+| Duplicate invoice numbers | ✅ 0 |
+| Balance > Total invoices | ✅ 0 |
+| Negative totals | ✅ 0 |
+| Far-future invoices | ✅ 0 |
+| Orphan line items | ✅ 0 |
+| Unallocated payments | ✅ 0 |
 
 ---
 
