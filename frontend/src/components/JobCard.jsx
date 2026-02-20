@@ -233,7 +233,69 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
   };
 
   const handleStartWork = async () => {
-    await updateTicketStatus("in_progress");
+    try {
+      setLoading(true);
+      const response = await fetch(`${API}/tickets/${localTicket.ticket_id}/start-work`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ notes: "Work started" }),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Failed to start work");
+      }
+      
+      const updatedTicket = await response.json();
+      setLocalTicket(updatedTicket);
+      setStatusHistory(updatedTicket.status_history || []);
+      if (onUpdate) onUpdate(updatedTicket);
+      toast.success("Work started!");
+      fetchActivities();
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCompleteWork = async () => {
+    const summary = prompt("Enter work summary:");
+    if (!summary) return;
+    
+    try {
+      setLoading(true);
+      const response = await fetch(`${API}/tickets/${localTicket.ticket_id}/complete-work`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ 
+          work_summary: summary,
+          notes: "Work completed successfully"
+        }),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Failed to complete work");
+      }
+      
+      const updatedTicket = await response.json();
+      setLocalTicket(updatedTicket);
+      setStatusHistory(updatedTicket.status_history || []);
+      if (onUpdate) onUpdate(updatedTicket);
+      toast.success("Work completed!");
+      fetchActivities();
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleMarkResolved = async () => {
