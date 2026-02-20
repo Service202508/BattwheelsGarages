@@ -173,7 +173,7 @@ class FeatureFlagService:
         """Increment usage counter for rate limiting"""
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         
-        result = await self.db.ai_usage.update_one(
+        await self.db.ai_usage.update_one(
             {
                 "organization_id": organization_id,
                 "date": today
