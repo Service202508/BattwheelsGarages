@@ -702,6 +702,13 @@ export default function Login({ onLogin }) {
                 </CardContent>
               </Card>
             </div>
+            
+            {/* Copyright Footer - Mobile/Tablet (shown below card) */}
+            <div className="lg:hidden mt-6 text-center">
+              <p className="text-xs text-gray-400 font-medium tracking-wide">
+                © 2026 BATTWHEELS SERVICES PRIVATE LIMITED. All rights reserved.
+              </p>
+            </div>
           </div>
         </div>
       </div>
