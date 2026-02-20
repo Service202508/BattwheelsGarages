@@ -5170,7 +5170,17 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
-# Unified AI Assistant routes
+# Knowledge Brain AI routes (RAG-based)
+try:
+    from routes.knowledge_brain import router as knowledge_brain_router
+    api_router.include_router(knowledge_brain_router)
+    logger.info("Knowledge Brain AI routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Knowledge Brain routes: {e}")
+    import traceback
+    traceback.print_exc()
+
+# Legacy AI Assistant routes (kept for compatibility)
 try:
     from routes.ai_assistant import router as ai_assistant_router
     api_router.include_router(ai_assistant_router)
