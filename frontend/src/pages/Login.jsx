@@ -458,14 +458,17 @@ export default function Login({ onLogin }) {
           <div className="flex-1" />
           
           {/* Logo with Emerald Glow */}
-          <div className="relative">
-            {/* Emerald glow gradient behind logo */}
-            <div className="absolute -inset-4 bg-gradient-to-br from-[#22EDA9]/20 via-[#22EDA9]/10 to-transparent rounded-3xl blur-2xl opacity-60" />
-            <div className="absolute -inset-2 bg-[#22EDA9]/10 rounded-2xl blur-xl opacity-40" />
+          <div className="relative group">
+            {/* Outer emerald glow */}
+            <div className="absolute -inset-6 bg-gradient-to-br from-[#22EDA9]/30 via-[#22EDA9]/15 to-transparent rounded-[2rem] blur-2xl opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
+            {/* Inner glow ring */}
+            <div className="absolute -inset-3 bg-gradient-to-r from-[#22EDA9]/20 to-[#1DD69A]/20 rounded-2xl blur-xl opacity-60" />
+            {/* Subtle pulse animation */}
+            <div className="absolute -inset-4 bg-[#22EDA9]/10 rounded-3xl blur-lg animate-pulse opacity-40" style={{ animationDuration: '3s' }} />
             <img 
               src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
               alt="Battwheels" 
-              className="relative h-14 sm:h-16 md:h-20 lg:h-24 w-auto drop-shadow-md"
+              className="relative h-14 sm:h-16 md:h-20 lg:h-24 w-auto drop-shadow-lg"
             />
           </div>
         </div>
