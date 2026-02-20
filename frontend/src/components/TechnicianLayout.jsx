@@ -65,7 +65,7 @@ export default function TechnicianLayout({ children, user, onLogout }) {
           </button>
           <div className="flex items-center gap-2">
             <Zap className="h-6 w-6 text-green-500" />
-            <span className="font-bold text-lg text-white">Battwheels</span>
+            <span className="font-bold text-lg text-white">Battwheels OS</span>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -96,7 +96,7 @@ export default function TechnicianLayout({ children, user, onLogout }) {
                 <Zap className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="font-bold text-lg text-white">Battwheels</h1>
+                <h1 className="font-bold text-lg text-white">Battwheels OS</h1>
                 <p className="text-xs text-slate-500">Technician Portal</p>
               </div>
             </div>
