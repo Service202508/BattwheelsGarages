@@ -102,6 +102,7 @@ import TechnicianAttendance from "@/pages/technician/TechnicianAttendance";
 import TechnicianLeave from "@/pages/technician/TechnicianLeave";
 import TechnicianPayroll from "@/pages/technician/TechnicianPayroll";
 import TechnicianProductivityPage from "@/pages/technician/TechnicianProductivity";
+import TechnicianAIAssistant from "@/pages/technician/TechnicianAIAssistant";
 
 // Business Customer Portal Pages
 import BusinessLayout from "@/components/BusinessLayout";
