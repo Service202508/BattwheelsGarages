@@ -585,6 +585,217 @@ class TicketService:
         
         return await self.db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
     
+    # ==================== WORKFLOW OPERATIONS ====================
+    
+    async def start_work(
+        self,
+        ticket_id: str,
+        notes: Optional[str],
+        user_id: str,
+        user_name: str
+    ) -> Dict[str, Any]:
+        """
+        Start work on a ticket - transitions to work_in_progress
+        
+        Usually auto-triggered when estimate is approved.
+        Can be manually triggered if needed.
+        """
+        existing = await self.db.tickets.find_one(
+            {"ticket_id": ticket_id}, {"_id": 0}
+        )
+        if not existing:
+            raise ValueError(f"Ticket {ticket_id} not found")
+        
+        current_status = existing.get("status")
+        if current_status == "work_in_progress":
+            raise ValueError("Work already in progress")
+        
+        if current_status == "closed":
+            raise ValueError("Cannot start work on closed ticket")
+        
+        now = datetime.now(timezone.utc)
+        
+        # Update status history
+        history = existing.get("status_history", [])
+        history.append({
+            "status": "work_in_progress",
+            "timestamp": now.isoformat(),
+            "updated_by": user_name,
+            "notes": notes or "Work started"
+        })
+        
+        await self.db.tickets.update_one(
+            {"ticket_id": ticket_id},
+            {"$set": {
+                "status": "work_in_progress",
+                "work_started_at": now.isoformat(),
+                "status_history": history,
+                "updated_at": now.isoformat()
+            }}
+        )
+        
+        # Log activity
+        await self._log_activity(
+            ticket_id, "work_started",
+            notes or "Technician started working on this ticket",
+            user_id, user_name
+        )
+        
+        return await self.db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    
+    async def complete_work(
+        self,
+        ticket_id: str,
+        work_summary: str,
+        parts_used: Optional[List[str]],
+        labor_hours: Optional[float],
+        notes: Optional[str],
+        user_id: str,
+        user_name: str
+    ) -> Dict[str, Any]:
+        """
+        Mark work as completed on a ticket
+        
+        Transitions ticket to "work_completed" status.
+        Ticket can still be edited until officially closed.
+        """
+        existing = await self.db.tickets.find_one(
+            {"ticket_id": ticket_id}, {"_id": 0}
+        )
+        if not existing:
+            raise ValueError(f"Ticket {ticket_id} not found")
+        
+        current_status = existing.get("status")
+        if current_status == "closed":
+            raise ValueError("Ticket is already closed")
+        
+        if current_status not in ["work_in_progress", "estimate_approved", "technician_assigned"]:
+            raise ValueError(f"Cannot complete work from status: {current_status}")
+        
+        now = datetime.now(timezone.utc)
+        
+        # Update status history
+        history = existing.get("status_history", [])
+        history.append({
+            "status": "work_completed",
+            "timestamp": now.isoformat(),
+            "updated_by": user_name,
+            "notes": f"Work completed: {work_summary}"
+        })
+        
+        update_data = {
+            "status": "work_completed",
+            "work_completed_at": now.isoformat(),
+            "work_summary": work_summary,
+            "status_history": history,
+            "updated_at": now.isoformat()
+        }
+        
+        if parts_used:
+            update_data["parts_used"] = parts_used
+        if labor_hours:
+            update_data["labor_hours"] = labor_hours
+        if notes:
+            update_data["completion_notes"] = notes
+        
+        await self.db.tickets.update_one(
+            {"ticket_id": ticket_id},
+            {"$set": update_data}
+        )
+        
+        # Log activity
+        activity_desc = f"Work completed: {work_summary}"
+        if labor_hours:
+            activity_desc += f" | Labor: {labor_hours} hours"
+        if parts_used:
+            activity_desc += f" | Parts: {len(parts_used)} items used"
+        
+        await self._log_activity(
+            ticket_id, "work_completed",
+            activity_desc,
+            user_id, user_name
+        )
+        
+        return await self.db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    
+    async def add_activity(
+        self,
+        ticket_id: str,
+        action: str,
+        description: str,
+        user_id: str,
+        user_name: str
+    ) -> Dict[str, Any]:
+        """Add a manual activity log entry"""
+        # Verify ticket exists
+        existing = await self.db.tickets.find_one(
+            {"ticket_id": ticket_id}, {"_id": 0}
+        )
+        if not existing:
+            raise ValueError(f"Ticket {ticket_id} not found")
+        
+        return await self._log_activity(
+            ticket_id, action, description, user_id, user_name
+        )
+    
+    async def update_activity(
+        self,
+        ticket_id: str,
+        activity_id: str,
+        description: str,
+        user_id: str,
+        user_name: str
+    ) -> Dict[str, Any]:
+        """Update an activity log entry (admin only)"""
+        # Verify activity exists
+        existing = await self.db.ticket_activities.find_one({
+            "activity_id": activity_id,
+            "ticket_id": ticket_id
+        }, {"_id": 0})
+        
+        if not existing:
+            raise ValueError(f"Activity {activity_id} not found")
+        
+        now = datetime.now(timezone.utc)
+        
+        await self.db.ticket_activities.update_one(
+            {"activity_id": activity_id},
+            {"$set": {
+                "description": description,
+                "edited_at": now.isoformat(),
+                "edited_by": user_name
+            }}
+        )
+        
+        return await self.db.ticket_activities.find_one(
+            {"activity_id": activity_id}, {"_id": 0}
+        )
+    
+    async def _log_activity(
+        self,
+        ticket_id: str,
+        action: str,
+        description: str,
+        user_id: str,
+        user_name: str
+    ) -> Dict[str, Any]:
+        """Log activity to ticket activity log"""
+        now = datetime.now(timezone.utc)
+        activity = {
+            "activity_id": f"act_{uuid.uuid4().hex[:12]}",
+            "ticket_id": ticket_id,
+            "action": action,
+            "description": description,
+            "user_id": user_id,
+            "user_name": user_name,
+            "timestamp": now.isoformat(),
+            "editable": True
+        }
+        await self.db.ticket_activities.insert_one(activity)
+        
+        # Return without _id
+        return {k: v for k, v in activity.items() if k != "_id"}
+    
     # ==================== TICKET QUERIES ====================
     
     async def get_ticket(self, ticket_id: str) -> Optional[Dict[str, Any]]:
