@@ -285,13 +285,50 @@ export default function EFIGuidancePanel({
   const [completedSteps, setCompletedSteps] = useState([]);
   const [showDiagram, setShowDiagram] = useState(true);
   const [feedbackGiven, setFeedbackGiven] = useState(false);
+  const [showRegenerateBtn, setShowRegenerateBtn] = useState(false);
   
   const orgId = user?.organization_id;
+  
+  // Role-based visibility
+  const isSupervisorOrAdmin = user?.role === "admin" || user?.role === "supervisor";
   
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
+  
+  // Check if regeneration is needed (context changed)
+  const checkContextChanged = useCallback(async () => {
+    if (!ticketId || !orgId) return;
+    
+    try {
+      const res = await fetch(`${API}/api/ai/guidance/check-context`, {
+        method: "POST",
+        headers: {
+          ...getAuthHeaders(),
+          "Content-Type": "application/json",
+          "X-Organization-ID": orgId
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          ticket_id: ticketId,
+          mode,
+          vehicle_make: vehicleInfo?.make,
+          vehicle_model: vehicleInfo?.model,
+          symptoms,
+          dtc_codes: dtcCodes,
+          description
+        })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setShowRegenerateBtn(data.needs_regeneration && data.reason === "context_changed");
+      }
+    } catch (error) {
+      console.error("Context check error:", error);
+    }
+  }, [ticketId, orgId, mode, vehicleInfo, symptoms, dtcCodes, description]);
   
   // Fetch guidance
   const fetchGuidance = useCallback(async (forceRegenerate = false) => {
@@ -324,6 +361,12 @@ export default function EFIGuidancePanel({
         const data = await res.json();
         setGuidance(data);
         setCompletedSteps([]);
+        setShowRegenerateBtn(false);  // Reset after fetch
+        
+        // Check for context changes if loaded from cache
+        if (data.from_cache) {
+          await checkContextChanged();
+        }
       } else if (res.status === 403) {
         setGuidance({ enabled: false, message: "EFI Guidance not enabled" });
       } else {
@@ -335,7 +378,7 @@ export default function EFIGuidancePanel({
     } finally {
       setLoading(false);
     }
-  }, [ticketId, orgId, mode, vehicleInfo, symptoms, dtcCodes, description, user]);
+  }, [ticketId, orgId, mode, vehicleInfo, symptoms, dtcCodes, description, user, checkContextChanged]);
   
   useEffect(() => {
     fetchGuidance();
