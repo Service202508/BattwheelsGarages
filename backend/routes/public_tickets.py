@@ -650,3 +650,117 @@ async def get_service_charges():
         },
         "note": "These charges are applicable for Individual customers opting for On-Site Resolution only."
     }
+
+
+# ==================== AI ISSUE SUGGESTIONS ====================
+
+class AIIssueSuggestionRequest(BaseModel):
+    vehicle_category: str  # e.g., "2W_EV", "3W_EV", "4W_EV"
+    vehicle_model: Optional[str] = None
+    vehicle_oem: Optional[str] = None
+    user_input: str  # What the user is typing/describing
+
+@router.post("/ai/issue-suggestions")
+async def get_ai_issue_suggestions(data: AIIssueSuggestionRequest):
+    """
+    Get AI-powered issue suggestions based on vehicle type and user input.
+    Uses Gemini to analyze the input and suggest relevant issues.
+    """
+    import os
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    
+    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    if not api_key:
+        # Fallback to static suggestions if no API key
+        return {
+            "suggestions": [
+                {"title": "Battery not charging", "issue_type": "battery", "severity": "high"},
+                {"title": "Motor making noise", "issue_type": "motor", "severity": "medium"},
+                {"title": "Display/Dashboard error", "issue_type": "electrical", "severity": "medium"},
+            ],
+            "ai_enabled": False
+        }
+    
+    try:
+        # Get vehicle category context
+        vehicle_context = {
+            "2W_EV": "Electric 2-wheeler (scooter/motorcycle)",
+            "3W_EV": "Electric 3-wheeler (auto-rickshaw/cargo)",
+            "4W_EV": "Electric 4-wheeler (car/SUV)",
+            "COMM_EV": "Commercial Electric Vehicle (bus/truck)",
+            "LEV": "Light Electric Vehicle"
+        }.get(data.vehicle_category, "Electric Vehicle")
+        
+        # Create the prompt for Gemini
+        system_message = f"""You are an expert EV service diagnostic assistant for Battwheels, an electric vehicle service company in India.
+
+Based on the user's description of their vehicle issue, suggest the 3-5 most likely problems they might be facing.
+
+Vehicle Type: {vehicle_context}
+Vehicle Model: {data.vehicle_model or 'Not specified'}
+Vehicle Manufacturer: {data.vehicle_oem or 'Not specified'}
+
+For each suggestion, provide:
+1. A clear, concise title (max 50 characters)
+2. Issue type: one of [battery, motor, controller, charger, electrical, brakes, suspension, tires, body, software, other]
+3. Severity: one of [low, medium, high, critical]
+4. Brief description (max 100 characters)
+
+Respond ONLY with a valid JSON array in this exact format:
+[
+  {{"title": "Issue title here", "issue_type": "battery", "severity": "high", "description": "Brief description"}},
+  ...
+]
+
+Be specific to EV problems. Consider common issues for the vehicle type mentioned.
+Do not include any text before or after the JSON array."""
+
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"ai_suggestions_{uuid.uuid4().hex[:8]}",
+            system_message=system_message
+        ).with_model("gemini", "gemini-3-flash-preview")
+        
+        user_message = UserMessage(
+            text=f"Customer's description of the problem: {data.user_input}"
+        )
+        
+        response = await chat.send_message(user_message)
+        
+        # Parse the response
+        import json
+        import re
+        
+        # Extract JSON from response (handle potential markdown wrapping)
+        json_match = re.search(r'\[[\s\S]*\]', response)
+        if json_match:
+            suggestions = json.loads(json_match.group())
+            return {
+                "suggestions": suggestions[:5],  # Limit to 5 suggestions
+                "ai_enabled": True
+            }
+        else:
+            # If parsing fails, return fallback
+            return {
+                "suggestions": [
+                    {"title": "Battery issue detected", "issue_type": "battery", "severity": "medium", "description": "Based on your description"},
+                ],
+                "ai_enabled": True,
+                "parsing_note": "AI response parsed with fallback"
+            }
+            
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"AI suggestion error: {e}")
+        
+        # Return fallback suggestions on error
+        return {
+            "suggestions": [
+                {"title": "Battery not holding charge", "issue_type": "battery", "severity": "high"},
+                {"title": "Motor performance issue", "issue_type": "motor", "severity": "medium"},
+                {"title": "Electrical system fault", "issue_type": "electrical", "severity": "medium"},
+            ],
+            "ai_enabled": False,
+            "error": "AI service temporarily unavailable"
+        }
