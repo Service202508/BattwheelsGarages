@@ -37,35 +37,75 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ### QA Audit Phase 1-4: COMPLETED (Session 76) ✅
 ### QA Audit Phase 5-7 (Security, Performance, Reliability): COMPLETED (Session 76) ✅
 ### Unified AI Chat Interface: IMPLEMENTED (Session 76) ✅
+### **Battwheels Knowledge Brain (RAG + Expert Queue): IMPLEMENTED (Session 77) ✅**
 
 ---
 
-## Latest Updates (Feb 20, 2026 - Session 76 Final)
+## Latest Updates (Feb 20, 2026 - Session 77)
 
-### UNIFIED AI CHAT INTERFACE
-**Status:** IMPLEMENTED - All Portals Consistent
+### BATTWHEELS KNOWLEDGE BRAIN - AI DIAGNOSTIC ASSISTANT
+**Status:** CORE IMPLEMENTATION COMPLETE - RAG + Expert Queue
 
-**What was done:**
-- Created unified AI chat component (`/app/frontend/src/components/ai/UnifiedAIChat.jsx`)
-- Replaced separate AI implementations in Technician and Main portals
-- Created centralized `/api/ai/diagnose` endpoint for all portals
-- Portal-specific categories and quick prompts
+**What was implemented:**
 
-**Features:**
-- Modern dark theme with chat bubble design
-- Category pills (context-aware per portal)
-- Quick question prompts
-- Copy response functionality
-- Thumbs up/down feedback
-- "Gemini Powered" badge
-- Real-time "Online" status indicator
-- Typing animation for AI responses
+#### 1. LLM Provider Interface (`/app/backend/services/llm_provider.py`)
+- Abstract `LLMProvider` base class for model swappability
+- Implementations: `GeminiProvider`, `OpenAIProvider`, `AnthropicProvider`
+- `LLMProviderFactory` for provider instantiation
+- Default: Gemini (`gemini-3-flash-preview`) via Emergent LLM Key
+- Can swap models without refactoring RAG pipeline
 
-**Portal Customization:**
-- **Admin:** General, Inventory, Reports, Customers
-- **Technician:** General, Battery, Motor, Electrical, Diagnosis
-- **Business Customer:** General, Invoices, Service
-- **Individual Customer:** General, My Vehicle, Service
+#### 2. Expert Queue System (`/app/backend/services/expert_queue_service.py`)
+- Internal escalation system (Zendesk replacement)
+- `ZendeskBridge` stubbed interface (ready for future integration)
+- Features:
+  - Create escalations from AI queries
+  - Assign experts to handle escalations
+  - Track resolution in ticket timeline
+  - Auto-capture knowledge from resolutions
+  - Priority levels: critical, high, medium, low
+  - Status workflow: open → assigned → in_progress → resolved
+
+#### 3. Feature Flags Service (`/app/backend/services/feature_flags.py`)
+- Tenant-level AI configuration
+- Feature flags: `ai_assist_enabled`, `rag_enabled`, `citations_enabled`, `expert_queue_enabled`
+- Rate limiting: `daily_query_limit` (default: 1000 queries/day)
+- Per-tenant LLM provider/model selection
+
+#### 4. Expert Queue API Routes (`/app/backend/routes/expert_queue.py`)
+- `GET /api/expert-queue/escalations` - List escalations
+- `GET /api/expert-queue/escalations/{id}` - Get escalation details
+- `POST /api/expert-queue/escalations/{id}/assign` - Assign expert
+- `POST /api/expert-queue/escalations/{id}/resolve` - Resolve with knowledge capture
+- `GET /api/expert-queue/stats` - Queue statistics
+- `GET /api/expert-queue/my-queue` - Expert's assigned escalations
+
+#### 5. Enhanced Frontend (`/app/frontend/src/components/ai/AIKnowledgeBrain.jsx`)
+- Escalation button on AI responses
+- "Escalate to Expert Queue" functionality
+- Escalation confirmation in chat
+- Updated `TechnicianAIAssistant.jsx` to use new component
+
+#### 6. Test Suite (`/app/backend/tests/test_knowledge_brain.py`)
+- 16 tests covering:
+  - LLM Provider Factory
+  - Feature Flags
+  - Expert Queue
+  - Tenant Isolation
+  - Integration scenarios
+- All tests passing (100%)
+
+**API Endpoints Verified:**
+- `GET /api/ai/health` - AI service health check ✅
+- `POST /api/ai/assist/query` - RAG-powered query ✅
+- `POST /api/ai/assist/escalate` - Create escalation ✅
+- `GET /api/expert-queue/stats` - Queue statistics ✅
+
+**Non-Negotiables Met:**
+- ✅ Tenant isolation (global + tenant knowledge separation)
+- ✅ Feature flags (AI disabled = no behavior change)
+- ✅ Citations in responses (sources shown in UI)
+- ✅ Escalation path when insufficient sources
 
 ---
 
