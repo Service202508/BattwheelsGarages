@@ -666,3 +666,99 @@ async def get_my_productivity(request: Request):
         "rank": rank,
         "total_technicians": len(all_tech_resolved)
     }
+
+
+
+# ==================== AI ASSISTANT ====================
+
+class AIAssistRequest(BaseModel):
+    query: str
+    category: str = "general"
+    context: Optional[dict] = None
+
+@router.post("/ai-assist")
+async def technician_ai_assist(data: AIAssistRequest, user: dict = Depends(get_current_technician)):
+    """
+    AI-powered diagnostic assistant for technicians.
+    Uses Gemini to provide repair guidance and fault diagnosis.
+    """
+    import os
+    import uuid
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    
+    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    if not api_key:
+        return {
+            "response": "AI assistant is currently unavailable. Please check your configuration or contact support.",
+            "ai_enabled": False
+        }
+    
+    try:
+        # Build system message based on category
+        category_prompts = {
+            "battery": "Focus on battery-related issues including BMS, cells, charging, and thermal management.",
+            "motor": "Focus on motor and controller issues including BLDC motors, inverters, and regenerative braking.",
+            "electrical": "Focus on electrical system issues including wiring, fuses, relays, and high-voltage systems.",
+            "diagnosis": "Focus on systematic fault diagnosis using symptom analysis and error code interpretation.",
+            "general": "Provide comprehensive EV service guidance."
+        }
+        
+        category_focus = category_prompts.get(data.category, category_prompts["general"])
+        
+        technician_name = data.context.get("technician_name", "Technician") if data.context else "Technician"
+        
+        system_message = f"""You are an expert EV Service Technician AI Assistant for Battwheels, an electric vehicle service company in India. You are helping {technician_name} with EV repairs and diagnostics.
+
+Your expertise includes:
+- Electric 2-wheelers (Ola, Ather, TVS iQube, Hero Electric, Bajaj Chetak)
+- Electric 3-wheelers (Mahindra Treo, Piaggio Ape E-City, Euler HiLoad)
+- Electric 4-wheelers (Tata Nexon EV, MG ZS EV, Hyundai Kona)
+- Battery systems (Li-ion, LFP, NMC), BMS diagnostics
+- Motor controllers, BLDC/PMSM motors
+- Charging systems (AC/DC chargers, CCS, CHAdeMO)
+- CAN bus diagnostics and error code interpretation
+
+{category_focus}
+
+Guidelines:
+1. Be concise but thorough - technicians need actionable information
+2. Include specific steps, measurements, and safety warnings where applicable
+3. Reference common Indian EV models when relevant
+4. Suggest proper tools and equipment needed
+5. Highlight safety precautions for high-voltage work
+6. If uncertain, recommend escalation or further diagnosis
+
+Format your responses with:
+- Clear headings using ## or ###
+- Bullet points for steps
+- **Bold** for important values or warnings
+- Numbered lists for procedures"""
+
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"tech_ai_{uuid.uuid4().hex[:8]}",
+            system_message=system_message
+        ).with_model("gemini", "gemini-3-flash-preview")
+        
+        user_message = UserMessage(
+            text=f"Query: {data.query}"
+        )
+        
+        response = await chat.send_message(user_message)
+        
+        return {
+            "response": response,
+            "ai_enabled": True,
+            "category": data.category
+        }
+            
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"AI assist error: {e}")
+        
+        return {
+            "response": "I apologize, but I encountered an error processing your request. Please try rephrasing your question or contact support if the issue persists.",
+            "ai_enabled": False,
+            "error": str(e)
+        }
