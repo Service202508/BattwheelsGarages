@@ -29,12 +29,65 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ### Organization Switcher with Create Org: IMPLEMENTED (Session 64) ✅
 ### Price Lists Module (Zoho Books CSV): ENHANCED (Session 65) ✅
 ### Public Ticket Submission System: IMPLEMENTED (Session 72) ✅
+### Role-Based Access Control & Portals: IMPLEMENTED (Session 73) ✅
 
 ---
 
-## Latest Updates (Feb 20, 2026 - Session 72)
+## Latest Updates (Feb 20, 2026 - Session 73)
 
-### NEW FEATURE: Public Service Ticket Submission System
+### NEW FEATURE: Role-Based Access Control & Separate Portals
+**Status:** IMPLEMENTED & TESTED (96% backend pass rate + 100% UI verified)
+**Location:** `/app/backend/routes/permissions.py`, `/app/backend/routes/technician_portal.py`, `/app/backend/routes/business_portal.py`, `/app/frontend/src/pages/technician/*`, `/app/frontend/src/pages/business/*`, `/app/frontend/src/pages/settings/PermissionsManager.jsx`
+
+**Features Implemented:**
+
+1. **Role Permissions System:**
+   - 5 predefined roles: admin, manager, technician, customer, business_customer
+   - 31 modules with granular permissions (View, Create, Edit, Delete)
+   - Admin UI at `/settings/permissions` for managing permissions
+   - Custom role creation support
+
+2. **Technician Portal (`/technician/*`):**
+   - Separate dark-themed layout with Battwheels branding
+   - Dashboard showing ONLY assigned tickets, personal stats
+   - My Tickets page with Start Work / Complete Work actions
+   - Personal Attendance (Check In/Out), Leave Management, Payroll (self-only)
+   - My Performance / Productivity metrics
+   - AI Assistant access
+
+3. **Business Customer Portal (`/business/*`):**
+   - Separate light-themed professional design
+   - Dashboard with fleet stats, ticket overview, financial summary
+   - Fleet Management - add/remove vehicles
+   - Service Tickets - raise and track
+   - Invoices with Bulk Payment support (Razorpay)
+   - AMC Contracts view
+   - Reports
+
+**New API Endpoints:**
+- `GET /api/permissions/roles` - List all roles
+- `GET /api/permissions/roles/{role}` - Get role permissions
+- `PUT /api/permissions/roles/{role}` - Update role permissions
+- `PATCH /api/permissions/roles/{role}/module/{module_id}` - Toggle single permission
+- `POST /api/permissions/roles` - Create custom role
+- `DELETE /api/permissions/roles/{role}` - Delete custom role
+- `GET /api/technician/dashboard` - Technician stats
+- `GET /api/technician/tickets` - Assigned tickets only
+- `POST /api/technician/tickets/{id}/start-work` - Start work
+- `POST /api/technician/tickets/{id}/complete-work` - Complete work
+- `GET /api/technician/attendance` - Personal attendance
+- `POST /api/technician/attendance/check-in` - Clock in
+- `POST /api/technician/attendance/check-out` - Clock out
+- `GET /api/business/dashboard` - Business dashboard
+- `GET /api/business/fleet` - Fleet vehicles
+- `POST /api/business/tickets` - Create ticket
+- `POST /api/business/invoices/bulk-payment` - Bulk payment
+
+---
+
+## Previous Updates (Feb 20, 2026 - Session 72)
+
+### Public Service Ticket Submission System
 **Status:** IMPLEMENTED & TESTED (100% pass rate - 21/21 backend tests + UI verified)
 **Location:** `/app/backend/routes/public_tickets.py`, `/app/backend/routes/master_data.py`, `/app/frontend/src/pages/PublicTicketForm.jsx`, `/app/frontend/src/pages/TrackTicket.jsx`
 
