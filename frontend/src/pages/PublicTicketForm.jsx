@@ -15,6 +15,7 @@ import {
   Phone, Mail, Search, Zap, Building2, IndianRupee, CreditCard,
   CheckCircle, Loader2, Bike, Truck, Bus
 } from "lucide-react";
+import LocationPicker from "@/components/LocationPicker";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
