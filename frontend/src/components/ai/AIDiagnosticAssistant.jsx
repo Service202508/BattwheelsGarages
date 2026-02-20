@@ -450,14 +450,24 @@ Please provide:
           <CardContent className="p-5">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="relative mb-4">
-                  <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-xl animate-pulse" />
-                  <div className="relative p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
-                    <Loader2 className="h-8 w-8 text-emerald-500 animate-spin" />
+                <div className="relative mb-6">
+                  {/* Glowing ring animation */}
+                  <div className="absolute inset-0 bg-emerald-500/30 rounded-2xl blur-xl animate-pulse" />
+                  <div className="absolute -inset-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-2xl blur-lg animate-pulse" style={{ animationDelay: '150ms' }} />
+                  <div className="relative p-5 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-2xl border border-emerald-200 dark:border-emerald-700 shadow-lg">
+                    <Bot className="h-12 w-12 text-emerald-500 animate-bounce" style={{ animationDuration: '1.5s' }} />
                   </div>
+                  {/* Scanning line effect */}
+                  <div className="absolute inset-x-0 top-1/2 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent animate-pulse" />
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 font-medium">Analyzing your issue...</p>
-                <p className="text-sm text-gray-500 mt-1">This may take a few seconds</p>
+                <p className="text-gray-800 dark:text-white font-semibold text-lg">Analyzing your issue...</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5">EFI Intelligence is processing</p>
+                {/* Loading dots */}
+                <div className="flex gap-1.5 mt-4">
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0ms', animationDuration: '0.8s' }} />
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '150ms', animationDuration: '0.8s' }} />
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '300ms', animationDuration: '0.8s' }} />
+                </div>
               </div>
             ) : diagnosis ? (
               <ScrollArea className="h-[500px] pr-4">
