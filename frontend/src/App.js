@@ -860,28 +860,28 @@ function AppRouter() {
       <Route path="/technician/attendance" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
           <TechnicianLayout user={auth.user} onLogout={auth.logout}>
-            <Attendance user={auth.user} selfOnly />
+            <TechnicianAttendance user={auth.user} />
           </TechnicianLayout>
         </ProtectedRoute>
       } />
       <Route path="/technician/leave" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
           <TechnicianLayout user={auth.user} onLogout={auth.logout}>
-            <LeaveManagement user={auth.user} selfOnly />
+            <TechnicianLeave user={auth.user} />
           </TechnicianLayout>
         </ProtectedRoute>
       } />
       <Route path="/technician/payroll" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
           <TechnicianLayout user={auth.user} onLogout={auth.logout}>
-            <Payroll user={auth.user} selfOnly />
+            <TechnicianPayroll user={auth.user} />
           </TechnicianLayout>
         </ProtectedRoute>
       } />
       <Route path="/technician/productivity" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
           <TechnicianLayout user={auth.user} onLogout={auth.logout}>
-            <TechnicianProductivity user={auth.user} selfOnly />
+            <TechnicianProductivityPage user={auth.user} />
           </TechnicianLayout>
         </ProtectedRoute>
       } />
@@ -901,10 +901,59 @@ function AppRouter() {
           </BusinessLayout>
         </ProtectedRoute>
       } />
-      <Route path="/business/*" element={
+      <Route path="/business/fleet" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["business_customer", "customer"]}>
           <BusinessLayout user={auth.user} onLogout={auth.logout}>
-            <BusinessDashboard user={auth.user} />
+            <BusinessFleet user={auth.user} />
+          </BusinessLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/business/tickets" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["business_customer", "customer"]}>
+          <BusinessLayout user={auth.user} onLogout={auth.logout}>
+            <BusinessTickets user={auth.user} />
+          </BusinessLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/business/tickets/:ticketId" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["business_customer", "customer"]}>
+          <BusinessLayout user={auth.user} onLogout={auth.logout}>
+            <BusinessTickets user={auth.user} />
+          </BusinessLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/business/tickets/new" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["business_customer", "customer"]}>
+          <BusinessLayout user={auth.user} onLogout={auth.logout}>
+            <BusinessTickets user={auth.user} />
+          </BusinessLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/business/invoices" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["business_customer", "customer"]}>
+          <BusinessLayout user={auth.user} onLogout={auth.logout}>
+            <BusinessInvoices user={auth.user} />
+          </BusinessLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/business/payments" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["business_customer", "customer"]}>
+          <BusinessLayout user={auth.user} onLogout={auth.logout}>
+            <BusinessInvoices user={auth.user} />
+          </BusinessLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/business/amc" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["business_customer", "customer"]}>
+          <BusinessLayout user={auth.user} onLogout={auth.logout}>
+            <BusinessAMC user={auth.user} />
+          </BusinessLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/business/reports" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["business_customer", "customer"]}>
+          <BusinessLayout user={auth.user} onLogout={auth.logout}>
+            <BusinessReports user={auth.user} />
           </BusinessLayout>
         </ProtectedRoute>
       } />
