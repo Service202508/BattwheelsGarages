@@ -71,7 +71,7 @@ const QUICK_QUESTIONS = {
   ],
 };
 
-export default function AIKnowledgeBrain({ user, portalType = "technician" }) {
+export default function AIKnowledgeBrain({ user, portalType = "technician", ticketId = null, vehicleInfo = null }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -79,6 +79,8 @@ export default function AIKnowledgeBrain({ user, portalType = "technician" }) {
   const [showSources, setShowSources] = useState(false);
   const [currentSources, setCurrentSources] = useState([]);
   const [queryId, setQueryId] = useState(null);
+  const [lastUserQuery, setLastUserQuery] = useState("");
+  const [escalating, setEscalating] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -102,8 +104,70 @@ export default function AIKnowledgeBrain({ user, portalType = "technician" }) {
     }]);
   }, [user]);
 
+  // Handle escalation to Expert Queue
+  const handleEscalate = async (message) => {
+    if (escalating) return;
+    setEscalating(true);
+    
+    try {
+      const escalationData = {
+        query_id: message.queryId || queryId,
+        ticket_id: ticketId,
+        organization_id: user?.organization_id,
+        original_query: lastUserQuery,
+        ai_response: message.content,
+        sources_checked: (message.sources || []).map(s => s.source_id),
+        vehicle_info: vehicleInfo,
+        symptoms: [],
+        dtc_codes: [],
+        images: [],
+        documents: [],
+        urgency: message.escalationRecommended ? "high" : "normal",
+        reason: message.escalationReason || "User requested expert review",
+        user_id: user?.user_id,
+        user_name: user?.name || "Technician"
+      };
+      
+      const res = await fetch(`${API}/ai/assist/escalate`, {
+        method: "POST",
+        headers: {
+          ...getAuthHeaders(),
+          "Content-Type": "application/json",
+          "X-Organization-ID": user?.organization_id || "",
+          "X-User-ID": user?.user_id || "",
+          "X-User-Name": user?.name || ""
+        },
+        credentials: "include",
+        body: JSON.stringify(escalationData)
+      });
+      
+      if (res.ok) {
+        const result = await res.json();
+        toast.success(`Escalation created: ${result.escalation_id}. An expert will review your query.`);
+        
+        // Add escalation confirmation to chat
+        setMessages(prev => [...prev, {
+          id: Date.now().toString(),
+          role: "assistant",
+          content: `✅ **Escalation Created**\n\nYour query has been escalated to the Expert Queue (ID: ${result.escalation_id}).\n\nAn expert technician will review your issue and respond. You'll be notified when they respond.\n\n**Priority:** ${result.priority || "normal"}`,
+          timestamp: new Date().toISOString(),
+          isEscalationConfirmation: true
+        }]);
+      } else {
+        throw new Error("Failed to create escalation");
+      }
+    } catch (error) {
+      console.error("Escalation error:", error);
+      toast.error("Failed to escalate. Please try again.");
+    } finally {
+      setEscalating(false);
+    }
+  };
+
   const sendMessage = async (messageText = input) => {
     if (!messageText.trim()) return;
+    
+    setLastUserQuery(messageText);
 
     const userMessage = {
       id: Date.now().toString(),
