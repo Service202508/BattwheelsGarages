@@ -15,6 +15,9 @@ import secrets
 import base64
 import io
 
+# Import invoice validation
+from services.invoice_validation import pre_save_validation, validate_and_correct_invoice
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/invoices-enhanced", tags=["Invoices Enhanced"])
