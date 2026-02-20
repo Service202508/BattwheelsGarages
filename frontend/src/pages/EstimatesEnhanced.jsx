@@ -148,7 +148,12 @@ export default function EstimatesEnhanced() {
   const [sendMessage, setSendMessage] = useState("");
 
   const token = localStorage.getItem("token");
-  const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+  const organizationId = localStorage.getItem("organization_id");
+  const headers = { 
+    Authorization: `Bearer ${token}`, 
+    "Content-Type": "application/json",
+    ...(organizationId && { "X-Organization-ID": organizationId })
+  };
 
   // Handle URL params for Quick Quote from Contacts
   useEffect(() => {
