@@ -64,11 +64,16 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
   
   // Linked estimate state (from ticket-estimate integration)
   const [linkedEstimate, setLinkedEstimate] = useState(null);
+  
+  // Activity log state
+  const [activities, setActivities] = useState([]);
+  const [showActivities, setShowActivities] = useState(false);
 
   useEffect(() => {
     fetchTechnicians();
     fetchInventory();
     fetchServices();
+    fetchActivities();
   }, []);
 
   useEffect(() => {
