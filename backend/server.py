@@ -5120,6 +5120,26 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Master Data routes (Vehicle Categories, Models, Issue Suggestions)
+try:
+    from routes.master_data import router as master_data_router
+    api_router.include_router(master_data_router)
+    logger.info("Master Data routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Master Data routes: {e}")
+    import traceback
+    traceback.print_exc()
+
+# Public Ticket routes (Public form submission, tracking, payments)
+try:
+    from routes.public_tickets import router as public_tickets_router
+    api_router.include_router(public_tickets_router)
+    logger.info("Public Tickets routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Public Tickets routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
