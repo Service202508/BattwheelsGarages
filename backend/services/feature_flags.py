@@ -109,7 +109,7 @@ class FeatureFlagService:
         filtered_updates["updated_at"] = now
         filtered_updates["updated_by"] = updated_by
         
-        result = await self.config_collection.update_one(
+        await self.config_collection.update_one(
             {"organization_id": organization_id},
             {
                 "$set": filtered_updates,
