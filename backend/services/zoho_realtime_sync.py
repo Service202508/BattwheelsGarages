@@ -145,9 +145,9 @@ FIELD_MAPPINGS = {
             "date": "bill_date",
             "due_date": "due_date",
             "line_items": "line_items",
-            "sub_total": "sub_total",
-            "total": "total",
-            "balance": "balance",
+            "sub_total": "subtotal",           # Normalized field name
+            "total": "grand_total",            # Fixed: consistent naming
+            "balance": "balance_due",          # Fixed: consistent naming
         }
     },
     "estimates": {
@@ -160,8 +160,8 @@ FIELD_MAPPINGS = {
             "date": "estimate_date",
             "expiry_date": "expiry_date",
             "line_items": "line_items",
-            "sub_total": "sub_total",
-            "total": "total",
+            "sub_total": "subtotal",           # Normalized field name
+            "total": "grand_total",            # Fixed: consistent naming
         }
     },
     "taxes": {
