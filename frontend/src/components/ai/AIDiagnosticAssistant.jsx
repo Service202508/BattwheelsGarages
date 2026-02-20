@@ -10,32 +10,31 @@ import {
   Battery, Wrench, Plug, Zap, Settings, Code, ArrowUpDown, 
   CircleDot, Thermometer, Wind, HelpCircle,
   Bike, Truck, Car, CheckCircle, AlertTriangle, Lightbulb,
-  Copy, RotateCcw, Brain, Target, Shield, Clock, FileText,
-  ChevronRight, Cpu, CircuitBoard
+  Copy, RotateCcw, Brain, Target, Shield, Clock, Cpu
 } from "lucide-react";
 import { API, getAuthHeaders } from "@/App";
 
-// Enhanced issue categories with gradient colors
+// Issue categories - clean single-color design
 const ISSUE_CATEGORIES = [
-  { id: "battery", label: "Battery Issues", icon: Battery, gradient: "from-amber-500 to-orange-600", bgLight: "bg-amber-50 dark:bg-amber-900/20" },
-  { id: "motor", label: "Motor Problems", icon: Cpu, gradient: "from-blue-500 to-indigo-600", bgLight: "bg-blue-50 dark:bg-blue-900/20" },
-  { id: "charging", label: "Charging System", icon: Plug, gradient: "from-emerald-500 to-teal-600", bgLight: "bg-emerald-50 dark:bg-emerald-900/20" },
-  { id: "electrical", label: "Electrical", icon: Zap, gradient: "from-yellow-500 to-amber-600", bgLight: "bg-yellow-50 dark:bg-yellow-900/20" },
-  { id: "mechanical", label: "Mechanical", icon: Settings, gradient: "from-slate-500 to-gray-600", bgLight: "bg-slate-50 dark:bg-slate-900/20" },
-  { id: "software", label: "Software Issues", icon: Code, gradient: "from-purple-500 to-violet-600", bgLight: "bg-purple-50 dark:bg-purple-900/20" },
-  { id: "suspension", label: "Suspension", icon: ArrowUpDown, gradient: "from-cyan-500 to-blue-600", bgLight: "bg-cyan-50 dark:bg-cyan-900/20" },
-  { id: "braking", label: "Braking System", icon: CircleDot, gradient: "from-red-500 to-rose-600", bgLight: "bg-red-50 dark:bg-red-900/20" },
-  { id: "cooling", label: "Cooling System", icon: Thermometer, gradient: "from-sky-500 to-cyan-600", bgLight: "bg-sky-50 dark:bg-sky-900/20" },
-  { id: "hvac", label: "AC/Heating", icon: Wind, gradient: "from-teal-500 to-emerald-600", bgLight: "bg-teal-50 dark:bg-teal-900/20" },
-  { id: "other", label: "Other", icon: HelpCircle, gradient: "from-gray-500 to-slate-600", bgLight: "bg-gray-50 dark:bg-gray-900/20" },
+  { id: "battery", label: "Battery Issues", icon: Battery },
+  { id: "motor", label: "Motor Problems", icon: Cpu },
+  { id: "charging", label: "Charging System", icon: Plug },
+  { id: "electrical", label: "Electrical", icon: Zap },
+  { id: "mechanical", label: "Mechanical", icon: Settings },
+  { id: "software", label: "Software Issues", icon: Code },
+  { id: "suspension", label: "Suspension", icon: ArrowUpDown },
+  { id: "braking", label: "Braking System", icon: CircleDot },
+  { id: "cooling", label: "Cooling System", icon: Thermometer },
+  { id: "hvac", label: "AC/Heating", icon: Wind },
+  { id: "other", label: "Other", icon: HelpCircle },
 ];
 
-// Vehicle categories with icons
+// Vehicle categories
 const VEHICLE_CATEGORIES = [
-  { id: "2_wheeler", label: "2 Wheeler", icon: Bike, gradient: "from-emerald-500 to-teal-600" },
-  { id: "3_wheeler", label: "3 Wheeler", icon: Truck, gradient: "from-blue-500 to-indigo-600" },
-  { id: "4_wheeler_commercial", label: "4W Commercial", icon: Truck, gradient: "from-orange-500 to-amber-600" },
-  { id: "car", label: "Car", icon: Car, gradient: "from-violet-500 to-purple-600" },
+  { id: "2_wheeler", label: "2 Wheeler", icon: Bike },
+  { id: "3_wheeler", label: "3 Wheeler", icon: Truck },
+  { id: "4_wheeler_commercial", label: "4W Commercial", icon: Truck },
+  { id: "car", label: "Car", icon: Car },
 ];
 
 // Vehicle models by category
@@ -72,7 +71,6 @@ export default function AIDiagnosticAssistant({ user, ticketContext = null }) {
   const [diagnosis, setDiagnosis] = useState(null);
   const [dtcCodes, setDtcCodes] = useState("");
 
-  // Pre-fill from ticket context if available
   useEffect(() => {
     if (ticketContext) {
       setIssueDescription(ticketContext.description || "");
@@ -194,16 +192,14 @@ Please provide:
     return content.split('\n').map((line, i) => {
       if (line.startsWith('### ')) {
         return (
-          <h3 key={i} className="text-base font-semibold text-emerald-400 mt-5 mb-2 flex items-center gap-2">
-            <ChevronRight className="h-4 w-4" />
+          <h3 key={i} className="text-sm font-semibold text-emerald-500 mt-4 mb-2">
             {line.substring(4)}
           </h3>
         );
       }
       if (line.startsWith('## ')) {
         return (
-          <h2 key={i} className="text-lg font-bold text-white mt-6 mb-3 pb-2 border-b border-slate-700/50 flex items-center gap-2">
-            <Target className="h-5 w-5 text-emerald-400" />
+          <h2 key={i} className="text-base font-bold text-gray-800 dark:text-white mt-5 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700">
             {line.substring(3)}
           </h2>
         );
@@ -211,291 +207,209 @@ Please provide:
       if (line.includes('**')) {
         const parts = line.split(/\*\*(.*?)\*\*/g);
         return (
-          <p key={i} className="mb-2 text-slate-300 leading-relaxed">
+          <p key={i} className="mb-1.5 text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
             {parts.map((part, j) => 
-              j % 2 === 1 ? <strong key={j} className="text-emerald-400 font-semibold">{part}</strong> : part
+              j % 2 === 1 ? <strong key={j} className="text-emerald-600 dark:text-emerald-400 font-medium">{part}</strong> : part
             )}
           </p>
         );
       }
       if (line.startsWith('- ') || line.startsWith('• ')) {
         return (
-          <li key={i} className="ml-5 mb-2 list-none flex items-start gap-2 text-slate-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 flex-shrink-0" />
-            <span>{line.substring(2)}</span>
+          <li key={i} className="ml-4 mb-1.5 list-disc text-gray-600 dark:text-gray-300 text-sm">
+            {line.substring(2)}
           </li>
         );
       }
       if (/^\d+\.\s/.test(line)) {
-        const num = line.match(/^(\d+)\./)[1];
         return (
-          <li key={i} className="ml-4 mb-3 list-none flex items-start gap-3 text-slate-300">
-            <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-semibold flex items-center justify-center flex-shrink-0">
-              {num}
-            </span>
-            <span className="pt-0.5">{line.substring(line.indexOf('.') + 2)}</span>
+          <li key={i} className="ml-4 mb-2 list-decimal text-gray-600 dark:text-gray-300 text-sm">
+            {line.substring(line.indexOf('.') + 2)}
           </li>
         );
       }
       if (line.trim() === '') {
         return <div key={i} className="h-2" />;
       }
-      return <p key={i} className="mb-2 text-slate-300 leading-relaxed">{line}</p>;
+      return <p key={i} className="mb-1.5 text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{line}</p>;
     });
   };
 
-  const selectedCategoryData = ISSUE_CATEGORIES.find(c => c.id === selectedCategory);
-  const selectedVehicleData = VEHICLE_CATEGORIES.find(v => v.id === selectedVehicleType);
-
   return (
     <div className="space-y-6">
-      {/* Enhanced Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-6 border border-slate-700/50">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMjIiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyem0wLTR2Mkg yNHYtMmgxMnptMC00djJIMjR2LTJoMTJ6bTAtNHYySDI0di0yaDEyem0wLTR2MkgyNFYxOGgxMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20" />
-        <div className="relative flex items-center gap-5">
-          <div className="relative">
-            <div className="absolute inset-0 bg-emerald-500/30 rounded-2xl blur-xl animate-pulse" />
-            <div className="relative p-4 bg-gradient-to-br from-emerald-500/20 to-teal-500/10 rounded-2xl border border-emerald-500/30">
-              <Brain className="h-10 w-10 text-emerald-400" />
-            </div>
+      {/* Clean Header */}
+      <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-xl p-6 shadow-lg">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+            <Brain className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-              AI Diagnostic Assistant
-              <span className="px-3 py-1 text-xs font-medium bg-emerald-500/20 text-emerald-400 rounded-full border border-emerald-500/30">
-                Powered by Gemini
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold text-white">AI Diagnostic Assistant</h1>
+              <span className="px-3 py-1 text-xs font-medium bg-white/20 text-white rounded-full backdrop-blur-sm">
+                Powered by EFI
               </span>
-            </h1>
-            <p className="text-slate-400 mt-1">Get instant AI-powered diagnosis for your EV issues</p>
+            </div>
+            <p className="text-emerald-100 mt-1">Get instant AI-powered diagnosis for your EV issues</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Panel - Input Form */}
-        <div className="space-y-6">
-          {/* Issue Category Card */}
-          <Card className="border-slate-700/50 bg-slate-900/50 backdrop-blur-sm overflow-hidden">
-            <CardHeader className="pb-4 border-b border-slate-700/50">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-500/10 rounded-lg">
-                  <Sparkles className="h-5 w-5 text-emerald-400" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg text-white">Describe Your Issue</CardTitle>
-                  <p className="text-sm text-slate-400 mt-0.5">Select category and provide details</p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-5 space-y-6">
-              {/* Issue Category Grid */}
-              <div className="space-y-3">
-                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <CircuitBoard className="h-4 w-4 text-emerald-400" />
-                  Issue Category
-                </label>
-                <div className="grid grid-cols-4 gap-2">
-                  {ISSUE_CATEGORIES.map((category) => {
-                    const Icon = category.icon;
-                    const isSelected = selectedCategory === category.id;
-                    return (
-                      <button
-                        key={category.id}
-                        onClick={() => setSelectedCategory(category.id)}
-                        className={`group relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all duration-200 ${
-                          isSelected
-                            ? `bg-gradient-to-br ${category.gradient} border-transparent text-white shadow-lg shadow-${category.gradient.split('-')[1]}-500/20`
-                            : "bg-slate-800/50 border-slate-700/50 text-slate-400 hover:border-slate-600 hover:bg-slate-800"
-                        }`}
-                        data-testid={`category-${category.id}`}
-                      >
-                        <div className={`p-2 rounded-lg transition-colors ${
-                          isSelected ? "bg-white/20" : "bg-slate-700/50 group-hover:bg-slate-700"
-                        }`}>
-                          <Icon className={`h-5 w-5 ${isSelected ? "text-white" : "text-slate-400 group-hover:text-white"}`} />
+        <Card className="border border-gray-200 dark:border-gray-700 shadow-sm">
+          <CardHeader className="pb-4 border-b border-gray-100 dark:border-gray-800">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-emerald-500" />
+              <CardTitle className="text-lg text-gray-800 dark:text-white">Describe Your Issue</CardTitle>
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Select category and provide details about your EV problem</p>
+          </CardHeader>
+          <CardContent className="p-5 space-y-5">
+            {/* Issue Category */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Issue Category</label>
+              <div className="grid grid-cols-4 gap-2">
+                {ISSUE_CATEGORIES.map((category) => {
+                  const Icon = category.icon;
+                  const isSelected = selectedCategory === category.id;
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(category.id)}
+                      className={`relative flex flex-col items-center gap-2 p-3 rounded-lg border transition-all duration-150 ${
+                        isSelected
+                          ? "bg-emerald-500 border-emerald-500 text-white shadow-md"
+                          : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                      }`}
+                      data-testid={`category-${category.id}`}
+                    >
+                      <Icon className={`h-5 w-5 ${isSelected ? "text-white" : ""}`} />
+                      <span className="text-xs font-medium text-center leading-tight">{category.label}</span>
+                      {isSelected && (
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center shadow">
+                          <CheckCircle className="h-3 w-3 text-emerald-500" />
                         </div>
-                        <span className={`text-xs font-medium text-center leading-tight ${isSelected ? "text-white" : ""}`}>
-                          {category.label}
-                        </span>
-                        {isSelected && (
-                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
-                            <CheckCircle className="h-3 w-3 text-emerald-600" />
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
+            </div>
 
-              {/* Vehicle Category */}
-              <div className="space-y-3">
-                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <Car className="h-4 w-4 text-emerald-400" />
-                  Vehicle Category
-                </label>
-                <div className="grid grid-cols-4 gap-3">
-                  {VEHICLE_CATEGORIES.map((vehicle) => {
-                    const Icon = vehicle.icon;
-                    const isSelected = selectedVehicleType === vehicle.id;
-                    return (
-                      <button
-                        key={vehicle.id}
-                        onClick={() => {
-                          setSelectedVehicleType(vehicle.id);
-                          setSelectedModel("");
-                        }}
-                        className={`group relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 ${
-                          isSelected
-                            ? `bg-gradient-to-br ${vehicle.gradient} border-transparent text-white shadow-lg`
-                            : "bg-slate-800/50 border-slate-700/50 text-slate-400 hover:border-slate-600 hover:bg-slate-800"
-                        }`}
-                        data-testid={`vehicle-${vehicle.id}`}
-                      >
-                        <Icon className={`h-6 w-6 ${isSelected ? "text-white" : "text-slate-400 group-hover:text-white"}`} />
-                        <span className={`text-xs font-medium text-center ${isSelected ? "text-white" : ""}`}>
-                          {vehicle.label}
-                        </span>
-                        {isSelected && (
-                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
-                            <CheckCircle className="h-3 w-3 text-emerald-600" />
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
+            {/* Vehicle Category */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Vehicle Category</label>
+              <div className="grid grid-cols-4 gap-3">
+                {VEHICLE_CATEGORIES.map((vehicle) => {
+                  const Icon = vehicle.icon;
+                  const isSelected = selectedVehicleType === vehicle.id;
+                  return (
+                    <button
+                      key={vehicle.id}
+                      onClick={() => {
+                        setSelectedVehicleType(vehicle.id);
+                        setSelectedModel("");
+                      }}
+                      className={`relative flex flex-col items-center gap-2 p-4 rounded-lg border transition-all duration-150 ${
+                        isSelected
+                          ? "bg-emerald-500 border-emerald-500 text-white shadow-md"
+                          : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                      }`}
+                      data-testid={`vehicle-${vehicle.id}`}
+                    >
+                      <Icon className={`h-6 w-6 ${isSelected ? "text-white" : ""}`} />
+                      <span className="text-xs font-medium text-center">{vehicle.label}</span>
+                      {isSelected && (
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center shadow">
+                          <CheckCircle className="h-3 w-3 text-emerald-500" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
+            </div>
 
-              {/* Vehicle Model */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-emerald-400" />
-                  Vehicle Model
-                </label>
-                <Select
-                  value={selectedModel}
-                  onValueChange={setSelectedModel}
-                  disabled={!selectedVehicleType}
-                >
-                  <SelectTrigger 
-                    className="w-full bg-slate-800/50 border-slate-700/50 text-white"
-                    data-testid="vehicle-model-select"
-                  >
-                    <SelectValue placeholder={selectedVehicleType ? "Select vehicle model" : "Select vehicle category first"} />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700">
-                    {selectedVehicleType && VEHICLE_MODELS[selectedVehicleType]?.map((model) => (
-                      <SelectItem key={model} value={model} className="text-white hover:bg-slate-700">
-                        {model}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* DTC Codes */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <Code className="h-4 w-4 text-emerald-400" />
-                  DTC/Error Codes 
-                  <span className="text-slate-500 font-normal">(Optional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={dtcCodes}
-                  onChange={(e) => setDtcCodes(e.target.value)}
-                  placeholder="e.g., P0A80, U0100, B1234"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
-                  data-testid="dtc-codes-input"
-                />
-              </div>
-
-              {/* Issue Description */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                  <Wrench className="h-4 w-4 text-emerald-400" />
-                  Describe the Issue 
-                  <span className="text-red-400">*</span>
-                </label>
-                <Textarea
-                  value={issueDescription}
-                  onChange={(e) => setIssueDescription(e.target.value)}
-                  placeholder="Example: My scooter won't charge past 80%. The charging port light blinks red after reaching 80% and charging stops automatically. This started happening 2 days ago after a software update..."
-                  className="min-h-[140px] resize-none bg-slate-800/50 border-slate-700/50 text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 rounded-xl"
-                  data-testid="issue-description"
-                />
-              </div>
-
-              {/* Submit Button */}
-              <Button
-                onClick={handleGetDiagnosis}
-                disabled={loading || !issueDescription.trim()}
-                className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-semibold text-base rounded-xl shadow-lg shadow-emerald-500/25 border-0 transition-all duration-200"
-                data-testid="get-diagnosis-btn"
+            {/* Vehicle Model */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Vehicle Model</label>
+              <Select
+                value={selectedModel}
+                onValueChange={setSelectedModel}
+                disabled={!selectedVehicleType}
               >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    Analyzing with AI...
-                  </>
-                ) : (
-                  <>
-                    <Send className="h-5 w-5 mr-2" />
-                    Get AI Diagnosis
-                  </>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
+                <SelectTrigger className="w-full" data-testid="vehicle-model-select">
+                  <SelectValue placeholder={selectedVehicleType ? "Select vehicle model" : "Select vehicle category first"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {selectedVehicleType && VEHICLE_MODELS[selectedVehicleType]?.map((model) => (
+                    <SelectItem key={model} value={model}>
+                      {model}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Tips Card */}
-          <Card className="border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 backdrop-blur-sm">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-emerald-500/10 rounded-lg flex-shrink-0">
-                  <Lightbulb className="h-5 w-5 text-emerald-400" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-emerald-400 mb-2">Tips for better diagnosis</h4>
-                  <ul className="text-sm text-slate-400 space-y-1.5">
-                    <li className="flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5" />
-                      Be specific about symptoms (sounds, warning lights, behavior)
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5" />
-                      Include any DTC/error codes displayed
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5" />
-                      Mention when the issue started and conditions
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5" />
-                      Note any recent repairs or changes
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            {/* DTC Codes */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                DTC/Error Codes <span className="text-gray-400 font-normal">(Optional)</span>
+              </label>
+              <input
+                type="text"
+                value={dtcCodes}
+                onChange={(e) => setDtcCodes(e.target.value)}
+                placeholder="e.g., P0A80, U0100, B1234"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                data-testid="dtc-codes-input"
+              />
+            </div>
+
+            {/* Issue Description */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Describe the Issue <span className="text-red-500">*</span>
+              </label>
+              <Textarea
+                value={issueDescription}
+                onChange={(e) => setIssueDescription(e.target.value)}
+                placeholder="Example: My scooter won't charge past 80%. The charging port light blinks red after reaching 80% and charging stops automatically..."
+                className="min-h-[120px] resize-none"
+                data-testid="issue-description"
+              />
+            </div>
+
+            {/* Submit Button */}
+            <Button
+              onClick={handleGetDiagnosis}
+              disabled={loading || !issueDescription.trim()}
+              className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg shadow-md shadow-emerald-500/20"
+              data-testid="get-diagnosis-btn"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Send className="h-5 w-5 mr-2" />
+                  Get AI Diagnosis
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
 
         {/* Right Panel - Diagnosis Results */}
-        <Card className="border-slate-700/50 bg-slate-900/50 backdrop-blur-sm overflow-hidden">
-          <CardHeader className="pb-4 border-b border-slate-700/50">
+        <Card className="border border-gray-200 dark:border-gray-700 shadow-sm">
+          <CardHeader className="pb-4 border-b border-gray-100 dark:border-gray-800">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-500/10 rounded-lg">
-                  <Brain className="h-5 w-5 text-emerald-400" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg text-white">AI Diagnosis</CardTitle>
-                  <p className="text-sm text-slate-400 mt-0.5">
-                    {diagnosis ? "AI-powered analysis of your issue" : "Submit query for diagnosis"}
-                  </p>
-                </div>
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-emerald-500" />
+                <CardTitle className="text-lg text-gray-800 dark:text-white">AI Diagnosis</CardTitle>
               </div>
               {diagnosis && (
                 <div className="flex items-center gap-2">
@@ -503,122 +417,91 @@ Please provide:
                     variant="ghost"
                     size="sm"
                     onClick={copyDiagnosis}
-                    className="text-slate-400 hover:text-white hover:bg-slate-800"
+                    className="text-gray-500 hover:text-gray-700 dark:hover:text-white"
                   >
-                    <Copy className="h-4 w-4 mr-1.5" />
+                    <Copy className="h-4 w-4 mr-1" />
                     Copy
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleReset}
-                    className="text-slate-400 hover:text-white hover:bg-slate-800"
+                    className="text-gray-500 hover:text-gray-700 dark:hover:text-white"
                   >
-                    <RotateCcw className="h-4 w-4 mr-1.5" />
+                    <RotateCcw className="h-4 w-4 mr-1" />
                     Reset
                   </Button>
                 </div>
               )}
             </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {diagnosis ? "AI-powered analysis of your issue" : "Submit your query for diagnosis"}
+            </p>
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent className="p-5">
             {loading ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 bg-emerald-500/30 rounded-full blur-xl animate-pulse" />
-                  <div className="relative p-5 bg-gradient-to-br from-emerald-500/20 to-teal-500/10 rounded-full border border-emerald-500/30">
-                    <Loader2 className="h-10 w-10 text-emerald-400 animate-spin" />
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="relative mb-4">
+                  <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-xl animate-pulse" />
+                  <div className="relative p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
+                    <Loader2 className="h-8 w-8 text-emerald-500 animate-spin" />
                   </div>
                 </div>
-                <p className="text-white font-medium text-lg">Analyzing your issue...</p>
-                <p className="text-sm text-slate-400 mt-2">Our AI is processing your diagnosis</p>
-                <div className="flex gap-2 mt-6">
-                  <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                </div>
+                <p className="text-gray-700 dark:text-gray-300 font-medium">Analyzing your issue...</p>
+                <p className="text-sm text-gray-500 mt-1">This may take a few seconds</p>
               </div>
             ) : diagnosis ? (
-              <ScrollArea className="h-[600px]">
-                <div className="p-5">
-                  {/* Confidence & Context Summary */}
-                  <div className="grid grid-cols-3 gap-3 mb-6">
-                    {diagnosis.confidence && (
-                      <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Shield className="h-4 w-4 text-emerald-400" />
-                          <span className="text-xs text-slate-400">Confidence</span>
-                        </div>
-                        <p className="text-lg font-bold text-emerald-400">{Math.round(diagnosis.confidence * 100)}%</p>
-                      </div>
-                    )}
-                    {selectedCategoryData && (
-                      <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
-                        <div className="flex items-center gap-2 mb-1">
-                          <selectedCategoryData.icon className="h-4 w-4 text-slate-400" />
-                          <span className="text-xs text-slate-400">Category</span>
-                        </div>
-                        <p className="text-sm font-medium text-white truncate">{selectedCategoryData.label}</p>
-                      </div>
-                    )}
-                    {selectedModel && (
-                      <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Car className="h-4 w-4 text-slate-400" />
-                          <span className="text-xs text-slate-400">Vehicle</span>
-                        </div>
-                        <p className="text-sm font-medium text-white truncate">{selectedModel}</p>
-                      </div>
-                    )}
+              <ScrollArea className="h-[500px] pr-4">
+                {/* Confidence Indicator */}
+                {diagnosis.confidence && (
+                  <div className="flex items-center gap-2 mb-4 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                    <CheckCircle className="h-5 w-5 text-emerald-500" />
+                    <span className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">
+                      AI Confidence: {Math.round(diagnosis.confidence * 100)}%
+                    </span>
                   </div>
+                )}
+                
+                {/* Diagnosis Content */}
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  {formatDiagnosis(diagnosis.content)}
+                </div>
 
-                  {/* Diagnosis Content */}
-                  <div className="prose prose-invert max-w-none">
-                    {formatDiagnosis(diagnosis.content)}
+                {/* Disclaimer */}
+                <div className="mt-6 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-amber-700 dark:text-amber-400">
+                      This AI diagnosis is for reference only. Always verify with proper diagnostic tools and follow manufacturer guidelines.
+                    </p>
                   </div>
+                </div>
 
-                  {/* Disclaimer */}
-                  <div className="mt-8 p-4 bg-amber-500/10 rounded-xl border border-amber-500/20">
-                    <div className="flex items-start gap-3">
-                      <AlertTriangle className="h-5 w-5 text-amber-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <p className="text-sm font-medium text-amber-400 mb-1">Important Notice</p>
-                        <p className="text-xs text-amber-300/80">
-                          This AI diagnosis is for reference only. Always verify with proper diagnostic tools and follow manufacturer guidelines. For high-voltage systems, ensure proper safety protocols and use appropriate PPE.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Timestamp */}
-                  <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-500">
-                    <Clock className="h-3 w-3" />
-                    Generated at {new Date(diagnosis.timestamp).toLocaleTimeString()}
-                  </div>
+                {/* Timestamp */}
+                <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-400">
+                  <Clock className="h-3 w-3" />
+                  Generated at {new Date(diagnosis.timestamp).toLocaleTimeString()}
                 </div>
               </ScrollArea>
             ) : (
-              <div className="flex flex-col items-center justify-center py-20 text-center px-8">
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 bg-slate-700/30 rounded-full blur-xl" />
-                  <div className="relative p-6 bg-slate-800/50 rounded-full border border-slate-700/50">
-                    <Bot className="h-14 w-14 text-slate-500" />
-                  </div>
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-full mb-4">
+                  <Bot className="h-12 w-12 text-gray-400" />
                 </div>
-                <p className="text-white font-medium text-lg mb-2">Describe your issue to get started</p>
-                <p className="text-sm text-slate-400 max-w-sm">
-                  Fill in the details on the left panel and click "Get AI Diagnosis" to receive instant diagnostic assistance
+                <p className="text-gray-700 dark:text-gray-300 font-medium">Describe your issue to get started</p>
+                <p className="text-sm text-gray-500 mt-1 max-w-xs">
+                  Fill in the details on the left panel and click "Get AI Diagnosis"
                 </p>
-                <div className="mt-6 flex items-center gap-6 text-xs text-slate-500">
-                  <div className="flex items-center gap-1.5">
+                <div className="mt-6 flex items-center gap-4 text-xs text-gray-400">
+                  <div className="flex items-center gap-1">
                     <Zap className="h-3.5 w-3.5 text-emerald-500" />
                     Instant Analysis
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <Shield className="h-3.5 w-3.5 text-emerald-500" />
                     Expert Knowledge
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <Target className="h-3.5 w-3.5 text-emerald-500" />
                     Accurate Results
                   </div>
@@ -628,6 +511,24 @@ Please provide:
           </CardContent>
         </Card>
       </div>
+
+      {/* Tips Section */}
+      <Card className="border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/10">
+        <CardContent className="py-4">
+          <div className="flex items-start gap-3">
+            <Lightbulb className="h-5 w-5 text-emerald-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="font-medium text-emerald-700 dark:text-emerald-400 mb-1">Tips for better diagnosis</h4>
+              <ul className="text-sm text-emerald-600 dark:text-emerald-300/80 space-y-1">
+                <li>• Be specific about symptoms (sounds, warning lights, behavior)</li>
+                <li>• Include any DTC/error codes if available</li>
+                <li>• Mention when the issue started and under what conditions</li>
+                <li>• Note any recent repairs or changes made to the vehicle</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
