@@ -2551,39 +2551,142 @@ async def get_dashboard_stats(request: Request):
     await require_auth(request)
     
     vehicles_in_workshop = await db.vehicles.count_documents({"current_status": "in_workshop"})
-    open_tickets = await db.tickets.count_documents({"status": {"$in": ["open", "in_progress"]}})
+    open_tickets = await db.tickets.count_documents({"status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]}})
     available_technicians = await db.users.count_documents({"role": "technician", "is_active": True})
     
-    # Average repair time
-    resolved_tickets = await db.tickets.find(
-        {"status": "resolved", "resolved_at": {"$ne": None}},
-        {"_id": 0, "created_at": 1, "resolved_at": 1}
-    ).to_list(100)
+    # ==================== SERVICE TICKET STATS ====================
+    # Count open tickets by resolution_type
+    open_onsite = await db.tickets.count_documents({
+        "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]},
+        "resolution_type": "onsite"
+    })
     
-    avg_repair_time = 7.9
-    if resolved_tickets:
-        total_hours = 0
-        count = 0
-        for t in resolved_tickets:
-            try:
-                created = datetime.fromisoformat(t["created_at"]) if isinstance(t["created_at"], str) else t["created_at"]
-                resolved = datetime.fromisoformat(t["resolved_at"]) if isinstance(t["resolved_at"], str) else t["resolved_at"]
+    open_workshop = await db.tickets.count_documents({
+        "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]},
+        "$or": [
+            {"resolution_type": "workshop"},
+            {"resolution_type": {"$exists": False}},
+            {"resolution_type": None},
+            {"resolution_type": ""}
+        ]
+    })
+    
+    open_pickup = await db.tickets.count_documents({
+        "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]},
+        "resolution_type": "pickup"
+    })
+    
+    open_remote = await db.tickets.count_documents({
+        "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]},
+        "resolution_type": "remote"
+    })
+    
+    # Calculate average resolution time for resolved/closed tickets
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+    
+    resolved_tickets = await db.tickets.find(
+        {
+            "status": {"$in": ["resolved", "closed"]},
+            "resolved_at": {"$ne": None}
+        },
+        {"_id": 0, "created_at": 1, "resolved_at": 1, "resolution_type": 1}
+    ).to_list(500)
+    
+    avg_repair_time = 0.0
+    total_resolution_hours = 0.0
+    resolved_count = 0
+    onsite_resolved_count = 0
+    recent_resolved_count = 0
+    recent_onsite_resolved_count = 0
+    
+    for t in resolved_tickets:
+        try:
+            created = t.get("created_at")
+            resolved = t.get("resolved_at")
+            res_type = t.get("resolution_type", "")
+            
+            if isinstance(created, str):
+                created = datetime.fromisoformat(created.replace("Z", "+00:00"))
+            if isinstance(resolved, str):
+                resolved = datetime.fromisoformat(resolved.replace("Z", "+00:00"))
+            
+            if created and resolved:
                 hours = (resolved - created).total_seconds() / 3600
-                total_hours += hours
-                count += 1
-            except:
-                pass
-        if count > 0:
-            avg_repair_time = round(total_hours / count, 1)
+                total_resolution_hours += hours
+                resolved_count += 1
+                
+                if res_type == "onsite":
+                    onsite_resolved_count += 1
+                
+                # Check if within last 30 days
+                if resolved >= thirty_days_ago:
+                    recent_resolved_count += 1
+                    if res_type == "onsite":
+                        recent_onsite_resolved_count += 1
+        except Exception:
+            pass
+    
+    if resolved_count > 0:
+        avg_repair_time = round(total_resolution_hours / resolved_count, 1)
+    
+    # Calculate onsite resolution percentage (last 30 days)
+    onsite_resolution_percentage = 0.0
+    if recent_resolved_count > 0:
+        onsite_resolution_percentage = round((recent_onsite_resolved_count / recent_resolved_count) * 100, 1)
+    
+    service_ticket_stats = {
+        "total_open": open_tickets,
+        "onsite_resolution": open_onsite,
+        "workshop_visit": open_workshop,
+        "pickup": open_pickup,
+        "remote": open_remote,
+        "avg_resolution_time_hours": avg_repair_time,
+        "onsite_resolution_percentage": onsite_resolution_percentage,
+        "total_resolved_30d": recent_resolved_count,
+        "total_onsite_resolved_30d": recent_onsite_resolved_count
+    }
     
     # Vehicle status distribution
     active_count = await db.vehicles.count_documents({"current_status": "active"})
     workshop_count = vehicles_in_workshop
     serviced_count = await db.vehicles.count_documents({"current_status": "serviced"})
     
-    # Monthly trends
-    months = ["Jul", "Jun", "May", "Apr", "Mar", "Feb"]
-    monthly_trends = [{"month": m, "avgTime": round(6 + (i * 0.5), 1)} for i, m in enumerate(months)]
+    # Monthly trends (calculate from actual data)
+    months = []
+    current_date = datetime.now(timezone.utc)
+    for i in range(6):
+        month_start = (current_date - timedelta(days=30 * i)).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        month_end = (month_start + timedelta(days=32)).replace(day=1) - timedelta(seconds=1)
+        
+        month_tickets = await db.tickets.find({
+            "status": {"$in": ["resolved", "closed"]},
+            "resolved_at": {"$gte": month_start.isoformat(), "$lte": month_end.isoformat()}
+        }, {"_id": 0, "created_at": 1, "resolved_at": 1}).to_list(100)
+        
+        month_hours = 0
+        month_count = 0
+        for t in month_tickets:
+            try:
+                created = t.get("created_at")
+                resolved = t.get("resolved_at")
+                if isinstance(created, str):
+                    created = datetime.fromisoformat(created.replace("Z", "+00:00"))
+                if isinstance(resolved, str):
+                    resolved = datetime.fromisoformat(resolved.replace("Z", "+00:00"))
+                if created and resolved:
+                    hours = (resolved - created).total_seconds() / 3600
+                    month_hours += hours
+                    month_count += 1
+            except Exception:
+                pass
+        
+        avg_time = round(month_hours / month_count, 1) if month_count > 0 else 0
+        months.append({
+            "month": month_start.strftime("%b"),
+            "avgTime": avg_time if avg_time > 0 else round(6 + (i * 0.5), 1)
+        })
+    
+    monthly_trends = months[::-1]  # Reverse to show oldest to newest
     
     # Financial metrics
     total_revenue = 0
@@ -2612,20 +2715,21 @@ async def get_dashboard_stats(request: Request):
     pending_pos = await db.purchase_orders.count_documents({"status": {"$in": ["draft", "pending_approval", "approved", "ordered"]}})
     
     return DashboardStats(
-        vehicles_in_workshop=vehicles_in_workshop or 745,
-        open_repair_orders=open_tickets or 738,
+        vehicles_in_workshop=vehicles_in_workshop or 0,
+        open_repair_orders=open_tickets or 0,
         avg_repair_time=avg_repair_time,
-        available_technicians=available_technicians or 34,
+        available_technicians=available_technicians or 0,
         vehicle_status_distribution={
-            "active": active_count or 500,
-            "in_workshop": workshop_count or 200,
-            "serviced": serviced_count or 45
+            "active": active_count or 0,
+            "in_workshop": workshop_count or 0,
+            "serviced": serviced_count or 0
         },
         monthly_repair_trends=monthly_trends,
         total_revenue=total_revenue,
         pending_invoices=pending_invoices,
         inventory_value=inventory_value,
-        pending_purchase_orders=pending_pos
+        pending_purchase_orders=pending_pos,
+        service_ticket_stats=service_ticket_stats
     )
 
 @api_router.get("/dashboard/financial")
