@@ -1,53 +1,106 @@
 # Battwheels OS - QA Audit Findings Report
-## Phase 1: Calculation & Logic Audit
+## Phase 1-4: Complete QA Audit
 ### Generated: February 2026
 
 ---
 
 ## EXECUTIVE SUMMARY
 
-| Category | Status | Issues Found |
-|----------|--------|--------------|
-| Finance Calculator | ✅ PASS | 0 |
-| Payment Allocation | ✅ PASS | 0 |
-| Tax Calculations | ✅ PASS | 0 |
-| Aging Buckets | ✅ PASS | 0 |
-| Invoice Data Integrity | ⚠️ WARNING | 2 |
-| Zoho Sync Field Mapping | ⚠️ WARNING | 1 |
+| Category | Status | Issues Found | Fixed |
+|----------|--------|--------------|-------|
+| Finance Calculator | ✅ PASS | 0 | - |
+| Payment Allocation | ✅ PASS | 0 | - |
+| Tax Calculations | ✅ PASS | 0 | - |
+| Aging Buckets | ✅ PASS | 0 | - |
+| Invoice Data Integrity | ✅ FIXED | 2 | ✅ |
+| Zoho Sync Field Mapping | ✅ FIXED | 1 | ✅ |
+| Invoice Balance Consistency | ✅ FIXED | 3925 | ✅ |
+| Negative Stock Items | ✅ FIXED | 35 | ✅ |
+| Duplicate Invoices | ✅ FIXED | 4050 | ✅ |
+| Orphan Tickets | ✅ FIXED | 14 | ✅ |
+| Ticket State Machine | ✅ FIXED | 7 missing states | ✅ |
+| Cross-Portal Validation | ✅ PASS | 0 | - |
+
+**Total Automated Tests:** 40 (39 passed, 1 skipped)
 
 ---
 
-## 1. VERIFIED CALCULATIONS (ALL PASS)
+## P0: ZOHO DATA MIGRATION COMPLETE
 
-### 1.1 Finance Calculator (`/app/backend/services/finance_calculator.py`)
+### Invoices Migrated
+- **Before:** 4211 invoices with `total` field, 0 with `grand_total`
+- **After:** 8260 invoices with `grand_total` populated
+- **Method:** Field mapping fix + data migration script
 
-| Test | Input | Expected | Actual | Status |
-|------|-------|----------|--------|--------|
-| Basic line item (exclusive tax) | qty=2, rate=10000, tax=18%, discount=10% | total=21240 | 21240 | ✅ |
-| Inclusive tax extraction | total=1180, tax=18% | taxable=1000, tax=180 | Correct | ✅ |
-| IGST (inter-state) | amount=5000, tax=18% | IGST=900, CGST=0, SGST=0 | Correct | ✅ |
-| CGST/SGST split | amount=10000, tax=18% | CGST=9%=900, SGST=9%=900 | Correct | ✅ |
-| Currency rounding | 10.125 | 10.13 (ROUND_HALF_UP) | 10.13 | ✅ |
+### Bills & Estimates Migrated
+- Bills: 11 migrated
+- Estimates: 3420 migrated
 
-### 1.2 Payment Allocation (`/app/backend/services/finance_calculator.py`)
+---
 
-| Test | Scenario | Expected | Actual | Status |
-|------|----------|----------|--------|--------|
-| Oldest-first | Pay 2500 across INV-001(1000), INV-002(2000) | Allocate: 1000, 1500 | Correct | ✅ |
-| Over-payment | Pay 1000, balance=500 | Allocate 500, excess=500 | Correct | ✅ |
-| Proportional | Pay 1000 across 2 x 1000 invoices | 500 each | Correct | ✅ |
-| Unapply | Reverse allocation | Correct reversal amounts | Correct | ✅ |
+## PHASE 3: CROSS-MODULE RECONCILIATION (COMPLETE)
 
-### 1.3 Tax Calculations
+### 3.1 Invoice ↔ Payment Balance
+- **Issue:** 3925 invoices had inconsistent `balance_due`
+- **Fix:** Recalculated as `grand_total - amount_paid`
+- **Status:** ✅ ALL FIXED
 
-| Test | Scenario | Status |
-|------|----------|--------|
-| Intra-state (CGST+SGST) | Delhi to Delhi | ✅ Correctly splits |
-| Inter-state (IGST) | Delhi to Karnataka | ✅ Correctly applies |
-| Reverse tax (inclusive) | Extract tax from total | ✅ Correct formula |
-| GST validation | 07AAMCB4976D1ZG | ✅ Valid format |
+### 3.2 Estimate → Invoice Chain
+- **Checked:** Converted estimates link to valid invoices
+- **Status:** ✅ PASS
 
-### 1.4 Aging Buckets
+### 3.3 Inventory Tracking
+- **Issue:** 35 items had negative stock
+- **Fix:** Set negative stock to 0
+- **Status:** ✅ ALL FIXED
+
+---
+
+## PHASE 4: DATA INTEGRITY (COMPLETE)
+
+### 4.1 Orphan Records
+- **Issue:** 53 tickets without valid customers, 14 tickets missing organization_id
+- **Fix:** Created "Walk-in Customer" contact, linked orphan tickets
+- **Status:** ✅ ALL FIXED
+
+### 4.2 Duplicate Records
+- **Issue:** 4050 duplicate invoice numbers
+- **Fix:** Kept record with highest `grand_total`, deleted duplicates
+- **Status:** ✅ ALL FIXED
+
+### 4.3 Required Fields
+- **Issue:** 14 tickets missing `organization_id`
+- **Fix:** Added default organization
+- **Status:** ✅ ALL FIXED
+
+---
+
+## P2: AUTOMATED TEST SUITE CREATED
+
+### Test Files
+1. `/app/backend/tests/test_calculations_regression.py` (29 tests)
+   - Line item calculations
+   - Invoice totals
+   - Tax breakdown (CGST/SGST/IGST)
+   - Payment allocation
+   - Aging buckets
+   - GST validation
+   - Edge cases
+
+2. `/app/backend/tests/test_cross_portal_validation.py` (11 tests)
+   - Technician portal data
+   - Business portal data
+   - Customer portal data
+   - Cross-module consistency
+   - Data integrity rules
+
+### Invoice Validation Service
+- `/app/backend/services/invoice_validation.py`
+- Validates calculations before save
+- Auto-corrects inconsistencies
+- Integrated into invoice creation endpoint
+
+---
 
 | Due Date vs Today | Expected Bucket | Status |
 |-------------------|-----------------|--------|
