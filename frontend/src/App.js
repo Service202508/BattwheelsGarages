@@ -814,6 +814,89 @@ function AppRouter() {
         </ProtectedRoute>
       } />
       
+      {/* Technician Portal Routes */}
+      <Route path="/technician" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
+          <TechnicianLayout user={auth.user} onLogout={auth.logout}>
+            <TechnicianDashboard user={auth.user} />
+          </TechnicianLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/technician/tickets" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
+          <TechnicianLayout user={auth.user} onLogout={auth.logout}>
+            <TechnicianTickets user={auth.user} />
+          </TechnicianLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/technician/tickets/:ticketId" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
+          <TechnicianLayout user={auth.user} onLogout={auth.logout}>
+            <TechnicianTickets user={auth.user} />
+          </TechnicianLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/technician/attendance" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
+          <TechnicianLayout user={auth.user} onLogout={auth.logout}>
+            <Attendance user={auth.user} selfOnly />
+          </TechnicianLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/technician/leave" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
+          <TechnicianLayout user={auth.user} onLogout={auth.logout}>
+            <LeaveManagement user={auth.user} selfOnly />
+          </TechnicianLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/technician/payroll" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
+          <TechnicianLayout user={auth.user} onLogout={auth.logout}>
+            <Payroll user={auth.user} selfOnly />
+          </TechnicianLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/technician/productivity" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
+          <TechnicianLayout user={auth.user} onLogout={auth.logout}>
+            <TechnicianProductivity user={auth.user} selfOnly />
+          </TechnicianLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/technician/ai-assist" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
+          <TechnicianLayout user={auth.user} onLogout={auth.logout}>
+            <AIAssistant user={auth.user} />
+          </TechnicianLayout>
+        </ProtectedRoute>
+      } />
+      
+      {/* Business Customer Portal Routes */}
+      <Route path="/business" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["business_customer", "customer"]}>
+          <BusinessLayout user={auth.user} onLogout={auth.logout}>
+            <BusinessDashboard user={auth.user} />
+          </BusinessLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/business/*" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["business_customer", "customer"]}>
+          <BusinessLayout user={auth.user} onLogout={auth.logout}>
+            <BusinessDashboard user={auth.user} />
+          </BusinessLayout>
+        </ProtectedRoute>
+      } />
+      
+      {/* Admin Settings - Permissions */}
+      <Route path="/settings/permissions" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <PermissionsManager user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
       <Route path="/" element={auth.user ? <RoleBasedRedirect user={auth.user} /> : <Navigate to="/login" replace />} />
       <Route path="*" element={auth.user ? <RoleBasedRedirect user={auth.user} /> : <Navigate to="/login" replace />} />
     </Routes>
