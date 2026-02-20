@@ -80,6 +80,8 @@ import Accountant from "@/pages/Accountant";
 import Layout from "@/components/Layout";
 import AuthCallback from "@/components/AuthCallback";
 import PublicQuoteView from "@/pages/PublicQuoteView";
+import PublicTicketForm from "@/pages/PublicTicketForm";
+import TrackTicket from "@/pages/TrackTicket";
 
 // Customer Portal Pages
 import CustomerLayout from "@/components/CustomerLayout";
