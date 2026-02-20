@@ -5200,6 +5200,16 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# EFI Intelligence Engine routes (Model-Aware Ranking, Continuous Learning, Risk Alerts)
+try:
+    from routes.efi_intelligence import router as efi_intelligence_router
+    api_router.include_router(efi_intelligence_router)
+    logger.info("EFI Intelligence Engine routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load EFI Intelligence Engine routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Legacy AI Assistant routes (kept for compatibility)
 try:
     from routes.ai_assistant import router as ai_assistant_router
