@@ -2,7 +2,7 @@
 Battwheels OS - Technician Portal API Routes
 Technician-specific endpoints for their portal
 """
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
