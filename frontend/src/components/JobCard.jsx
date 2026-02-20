@@ -62,6 +62,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
   
   // EFI Panel state
   const [efiPanelOpen, setEfiPanelOpen] = useState(true);
+  const [efiMode, setEfiMode] = useState("guidance"); // "guidance" or "legacy"
   
   // Items state
   const [estimatedItems, setEstimatedItems] = useState(localTicket.estimated_items || { parts: [], services: [] });
