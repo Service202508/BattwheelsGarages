@@ -332,13 +332,15 @@ class TestRounding:
         assert float(round_currency(10.124)) == 10.12
         
     def test_round_negative(self):
-        """Test rounding negative numbers"""
-        assert float(round_currency(-10.125)) == -10.12  # Rounds towards zero
+        """Test rounding negative numbers - ROUND_HALF_UP rounds away from zero"""
+        assert float(round_currency(-10.125)) == -10.13  # Away from zero
         
     def test_round_whole_numbers(self):
         """Test rounding whole numbers"""
-        assert float(round_currency(100)) == 100
-        assert float(round_currency(100.00)) == 100
+        # round_currency expects Decimal, so we pass Decimal
+        from decimal import Decimal
+        assert float(round_currency(Decimal('100'))) == 100
+        assert float(round_currency(Decimal('100.00'))) == 100
 
 
 class TestEdgeCases:
