@@ -797,14 +797,66 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
       </div>
 
       {/* EFI Side Panel - Only for technicians and admins */}
-      {(isTechnician || isAdmin) && (
-        <EFISidePanel
-          ticket={localTicket}
-          user={user}
-          isOpen={efiPanelOpen}
-          onToggle={() => setEfiPanelOpen(!efiPanelOpen)}
-          onEstimateSuggested={handleEfiEstimateSuggested}
-        />
+      {(isTechnician || isAdmin) && efiPanelOpen && (
+        <div className="w-[420px] border-l border-slate-700 bg-slate-900/95 flex flex-col overflow-hidden">
+          {/* Panel Header with Mode Toggle */}
+          <div className="p-3 border-b border-slate-700 flex items-center justify-between bg-slate-800/50">
+            <div className="flex items-center gap-2">
+              <Brain className="h-5 w-5 text-emerald-400" />
+              <span className="font-semibold text-white">EFI Assistant</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex bg-slate-700 rounded p-0.5 text-xs">
+                <button
+                  className={`px-2 py-1 rounded ${efiMode === "guidance" ? "bg-emerald-600 text-white" : "text-slate-400"}`}
+                  onClick={() => setEfiMode("guidance")}
+                >
+                  Hinglish
+                </button>
+                <button
+                  className={`px-2 py-1 rounded ${efiMode === "legacy" ? "bg-emerald-600 text-white" : "text-slate-400"}`}
+                  onClick={() => setEfiMode("legacy")}
+                >
+                  Classic
+                </button>
+              </div>
+              <button
+                onClick={() => setEfiPanelOpen(false)}
+                className="text-slate-400 hover:text-white p-1"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+          
+          {/* Panel Content */}
+          <div className="flex-1 overflow-y-auto">
+            {efiMode === "guidance" ? (
+              <EFIGuidancePanel
+                ticketId={localTicket.ticket_id}
+                user={user}
+                vehicleInfo={{
+                  make: localTicket.vehicle_oem,
+                  model: localTicket.vehicle_model,
+                  variant: localTicket.vehicle_variant
+                }}
+                symptoms={localTicket.symptoms || []}
+                dtcCodes={localTicket.dtc_codes || []}
+                category={localTicket.category || "general"}
+                description={localTicket.description || localTicket.title}
+                onEstimateUpdated={() => fetchLinkedEstimate()}
+              />
+            ) : (
+              <EFISidePanel
+                ticket={localTicket}
+                user={user}
+                isOpen={true}
+                onToggle={() => {}}
+                onEstimateSuggested={handleEfiEstimateSuggested}
+              />
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
