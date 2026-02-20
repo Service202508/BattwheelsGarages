@@ -60,8 +60,11 @@ def technician_token():
     return data["token"]
 
 
-def get_auth_headers(token):
-    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+def get_auth_headers(token, include_org=False):
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    if include_org:
+        headers["X-Organization-ID"] = ORGANIZATION_ID
+    return headers
 
 
 class TestAdminLogin:
