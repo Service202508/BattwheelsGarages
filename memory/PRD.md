@@ -34,7 +34,116 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ---
 
-## Latest Updates (Feb 20, 2026 - Session 73)
+## Latest Updates (Feb 20, 2026 - Session 74)
+
+### MAJOR FEATURE: Full Business & Technician Portal Implementation
+**Status:** IMPLEMENTED & TESTED (100% frontend pass rate)
+**Testing:** Iteration 74 - All pages and features verified
+
+**Business Customer Portal Features:**
+1. **Dashboard (`/business`):**
+   - Welcome message with user name
+   - Stats cards: Fleet Vehicles, Open Tickets, Pending Approval, Pending Payment
+   - Resolution TAT progress bar with 24-hour target
+   - AMC Status with View Contracts button
+   - This Month tickets resolved with View Reports button
+   - Active Service Tickets section
+   - Pending Invoices section
+   - Financial Summary footer
+
+2. **Fleet Management (`/business/fleet`):**
+   - Stats cards: Total Vehicles, Active, In Service
+   - Add Vehicle dialog with form (Vehicle Number, Category, Model, OEM, Year, Driver)
+   - Search and filter vehicles
+   - Vehicle table with actions
+
+3. **Service Tickets (`/business/tickets`):**
+   - Stats cards: Total Tickets, Active, Completed
+   - Filter tabs: All, Active, Completed
+   - Raise Ticket dialog with issue type, priority, resolution type
+   - Ticket cards with status, priority, and details
+
+4. **Invoices (`/business/invoices`):**
+   - Summary cards: Total Invoiced, Pending Payment, Paid
+   - Filter tabs: All, Unpaid, Paid
+   - Bulk payment with Select All Unpaid
+   - Razorpay integration (mock mode)
+
+5. **AMC Contracts (`/business/amc`):**
+   - Stats cards: Active Contracts, Total Contracts, Contract Value
+   - Contract cards with progress, vehicles covered, services used
+   - Available AMC Plans section
+   - Request New AMC functionality
+
+6. **Reports & Analytics (`/business/reports`):**
+   - Date range selector (Week, Month, Quarter, Year)
+   - Tickets by Status breakdown
+   - Tickets by Priority breakdown
+   - Tickets by Vehicle breakdown
+   - Financial Summary gradient card
+
+**Technician Portal Features:**
+1. **Dashboard (`/technician`):**
+   - Welcome greeting with check-in status
+   - Check In/Out functionality
+   - Stats: Open, In Progress, Estimate Pending, Completed Today, This Month
+   - My Active Tickets section
+   - My Performance card with resolution time
+   - Quick Actions: Apply for Leave, AI Diagnosis, View Attendance
+
+2. **Attendance (`/technician/attendance`):**
+   - Today's Status card with present/absent badge
+   - Summary cards: Present, Absent, Late, Half Day
+   - Month navigation
+   - Attendance records list with check-in/out times
+   - Check In/Out buttons with confirmation dialog
+
+3. **Leave Management (`/technician/leave`):**
+   - Leave balance cards with progress bars (Casual, Sick, Earned, Total Used)
+   - Request Leave button
+   - Leave request dialog with date picker
+   - Leave request history
+
+4. **Payroll (`/technician/payroll`):**
+   - Summary cards: Latest Salary, YTD Earnings, Avg Monthly
+   - Latest Payslip detail view
+   - Earnings breakdown: Basic, HRA, Allowances, Overtime, Gross
+   - Deductions breakdown: PF, ESI, PT, TDS, Total Deductions
+   - Net Pay with Download Payslip button
+   - Payslip History list
+
+5. **My Performance (`/technician/productivity`):**
+   - Your Rank card with trophy badge
+   - Stats: Tickets Resolved, Avg Resolution Time, Total Resolved, Critical
+   - Weekly Trend chart
+   - By Priority breakdown
+   - Performance Tips section
+
+**UI/UX Theme Uniformity:**
+- Business Portal: Light theme with indigo (#4F46E5) accents
+- Technician Portal: Dark theme (#0F172A) with green (#22C55E) accents
+- Consistent card styles, spacing, and typography
+- Proper data-testid attributes on all interactive elements
+
+**Files Created:**
+- `/app/frontend/src/pages/business/BusinessFleet.jsx`
+- `/app/frontend/src/pages/business/BusinessTickets.jsx`
+- `/app/frontend/src/pages/business/BusinessInvoices.jsx`
+- `/app/frontend/src/pages/business/BusinessAMC.jsx`
+- `/app/frontend/src/pages/business/BusinessReports.jsx`
+- `/app/frontend/src/pages/technician/TechnicianAttendance.jsx`
+- `/app/frontend/src/pages/technician/TechnicianLeave.jsx`
+- `/app/frontend/src/pages/technician/TechnicianPayroll.jsx`
+- `/app/frontend/src/pages/technician/TechnicianProductivity.jsx`
+
+**Test Credentials:**
+- Admin: `admin@battwheels.in` / `admin123`
+- Technician: `deepak@battwheelsgarages.in` / `tech123`
+- Business Customer: `business@bluwheelz.co.in` / `business123`
+
+---
+
+## Previous Updates (Feb 20, 2026 - Session 73)
 
 ### NEW FEATURE: Role-Based Access Control & Separate Portals
 **Status:** IMPLEMENTED & TESTED (96% backend pass rate + 100% UI verified)
