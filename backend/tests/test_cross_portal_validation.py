@@ -122,7 +122,8 @@ class TestCustomerPortalData:
             "open", "assigned", "in_progress", "pending_parts", 
             "resolved", "closed", "reopened",
             "technician_assigned", "estimate_shared", "estimate_approved",
-            "work_in_progress", "work_completed", "invoiced"
+            "work_in_progress", "work_completed", "invoiced",
+            "pending_payment"  # Added: status for awaiting payment
         ]
         
         tickets = await db.tickets.find({}).to_list(1000)
