@@ -85,6 +85,116 @@ const FeatureBadge = ({ icon: Icon, text }) => (
   </div>
 );
 
+// Auto-Scrolling Feature Cards
+const FEATURE_CARDS = [
+  { 
+    icon: Brain, 
+    title: "AI Diagnostics & Resolutions", 
+    description: "Intelligent fault detection with ML-powered root cause analysis and step-by-step repair guidance" 
+  },
+  { 
+    icon: Truck, 
+    title: "Fleet Service & Uptime Management", 
+    description: "Maximize fleet availability with predictive maintenance and real-time service scheduling" 
+  },
+  { 
+    icon: BarChart3, 
+    title: "Realtime Fleet Insights", 
+    description: "Live dashboards with vehicle health metrics, usage patterns, and performance analytics" 
+  },
+  { 
+    icon: Building2, 
+    title: "Dealer Management System", 
+    description: "Streamline dealer operations with inventory tracking, order management, and performance metrics" 
+  },
+  { 
+    icon: Wrench, 
+    title: "Service Center Management", 
+    description: "End-to-end workshop operations including job cards, technician allocation, and parts tracking" 
+  },
+];
+
+const AutoScrollFeatureCards = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex(prev => (prev + 1) % FEATURE_CARDS.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      const cardWidth = 280;
+      const scrollPosition = activeIndex * cardWidth;
+      scrollRef.current.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth'
+      });
+    }
+  }, [activeIndex]);
+
+  return (
+    <div className="w-full mt-8">
+      {/* Scrolling Container */}
+      <div 
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {FEATURE_CARDS.map((feature, index) => {
+          const Icon = feature.icon;
+          const isActive = index === activeIndex;
+          return (
+            <div
+              key={feature.title}
+              onClick={() => setActiveIndex(index)}
+              className={`flex-shrink-0 w-[260px] p-4 rounded-2xl cursor-pointer transition-all duration-500 snap-start ${
+                isActive 
+                  ? 'bg-gradient-to-br from-[#22EDA9]/10 to-[#22EDA9]/5 border-2 border-[#22EDA9]/30 shadow-lg shadow-[#22EDA9]/10 scale-105' 
+                  : 'bg-white/50 border border-gray-100 hover:border-[#22EDA9]/20 hover:bg-[#22EDA9]/5'
+              }`}
+            >
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-all duration-500 ${
+                isActive 
+                  ? 'bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] shadow-lg shadow-[#22EDA9]/30' 
+                  : 'bg-gray-100'
+              }`}>
+                <Icon className={`w-5 h-5 transition-colors duration-500 ${isActive ? 'text-gray-900' : 'text-gray-500'}`} />
+              </div>
+              <h3 className={`font-semibold text-sm mb-1.5 transition-colors duration-500 ${
+                isActive ? 'text-[#22EDA9]' : 'text-gray-700'
+              }`}>
+                {feature.title}
+              </h3>
+              <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
+                {feature.description}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+      
+      {/* Progress Indicators */}
+      <div className="flex justify-center gap-2 mt-4">
+        {FEATURE_CARDS.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setActiveIndex(index)}
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              index === activeIndex 
+                ? 'w-6 bg-[#22EDA9]' 
+                : 'w-1.5 bg-gray-300 hover:bg-gray-400'
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // Premium Input Component with 3D styling
 const PremiumInput = ({ icon: Icon, type, id, placeholder, value, onChange, required, showPasswordToggle, dataTestId }) => {
   const [showPassword, setShowPassword] = useState(false);
