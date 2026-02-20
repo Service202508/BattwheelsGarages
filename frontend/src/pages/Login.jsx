@@ -457,18 +457,18 @@ export default function Login({ onLogin }) {
           {/* Spacer for mobile/tablet to push logo to right */}
           <div className="flex-1" />
           
-          {/* Logo with Emerald Glow */}
+          {/* Logo with Emerald Glow - Compact */}
           <div className="relative group">
             {/* Outer emerald glow */}
-            <div className="absolute -inset-6 bg-gradient-to-br from-[#22EDA9]/30 via-[#22EDA9]/15 to-transparent rounded-[2rem] blur-2xl opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
+            <div className="absolute -inset-3 sm:-inset-4 bg-gradient-to-br from-[#22EDA9]/30 via-[#22EDA9]/15 to-transparent rounded-2xl blur-xl opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
             {/* Inner glow ring */}
-            <div className="absolute -inset-3 bg-gradient-to-r from-[#22EDA9]/20 to-[#1DD69A]/20 rounded-2xl blur-xl opacity-60" />
+            <div className="absolute -inset-2 sm:-inset-2.5 bg-gradient-to-r from-[#22EDA9]/20 to-[#1DD69A]/20 rounded-xl blur-lg opacity-60" />
             {/* Subtle pulse animation */}
-            <div className="absolute -inset-4 bg-[#22EDA9]/10 rounded-3xl blur-lg animate-pulse opacity-40" style={{ animationDuration: '3s' }} />
+            <div className="absolute -inset-2.5 sm:-inset-3 bg-[#22EDA9]/10 rounded-2xl blur-md animate-pulse opacity-40" style={{ animationDuration: '3s' }} />
             <img 
               src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
               alt="Battwheels" 
-              className="relative h-14 sm:h-16 md:h-20 lg:h-24 w-auto drop-shadow-lg"
+              className="relative h-10 sm:h-12 md:h-14 lg:h-16 w-auto drop-shadow-lg"
             />
           </div>
         </div>
