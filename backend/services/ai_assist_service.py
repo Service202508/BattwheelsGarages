@@ -284,25 +284,48 @@ Type: {doc_type}
         self,
         prompt: str,
         system_message: str,
-        category: str
+        category: str,
+        organization_id: str = "global"
     ) -> str:
-        """Generate response using LLM"""
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        """
+        Generate response using LLM via provider interface.
+        Uses swappable LLMProvider for model flexibility.
+        """
+        from services.llm_provider import LLMProviderFactory, LLMProviderType
+        from services.feature_flags import FeatureFlagService
         
-        api_key = os.environ.get('EMERGENT_LLM_KEY')
-        if not api_key:
-            raise Exception("EMERGENT_LLM_KEY not configured")
+        # Get LLM config for tenant (allows per-tenant model selection)
+        flag_service = FeatureFlagService(self.db)
+        llm_config = await flag_service.get_llm_config(organization_id)
         
-        chat = LlmChat(
-            api_key=api_key,
-            session_id=f"kb_rag_{uuid.uuid4().hex[:8]}",
-            system_message=system_message
-        ).with_model("gemini", "gemini-3-flash-preview")
+        # Get appropriate provider
+        provider_map = {
+            "gemini": LLMProviderType.GEMINI,
+            "openai": LLMProviderType.OPENAI,
+            "anthropic": LLMProviderType.ANTHROPIC,
+        }
+        provider_type = provider_map.get(llm_config["provider"], LLMProviderType.GEMINI)
         
-        user_message = UserMessage(text=prompt)
-        response = await chat.send_message(user_message)
+        provider = LLMProviderFactory.get_provider(
+            provider_type=provider_type,
+            model=llm_config.get("model")
+        )
         
-        return response
+        if not provider.is_available():
+            raise Exception("LLM service unavailable - API key not configured")
+        
+        # Generate response
+        response = await provider.generate(
+            prompt=prompt,
+            system_message=system_message,
+            session_id=f"kb_rag_{uuid.uuid4().hex[:8]}"
+        )
+        
+        if response.error:
+            logger.error(f"LLM generation error: {response.error}")
+            raise Exception(f"LLM generation failed: {response.error}")
+        
+        return response.content
     
     def _parse_response(
         self,
