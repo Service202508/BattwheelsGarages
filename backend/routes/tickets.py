@@ -301,6 +301,184 @@ async def close_ticket(ticket_id: str, data: TicketCloseRequest, request: Reques
         raise HTTPException(status_code=404, detail=str(e))
 
 
+# ==================== WORKFLOW ROUTES ====================
+
+class StartWorkRequest(BaseModel):
+    """Request to start work on a ticket"""
+    notes: Optional[str] = None
+
+
+class CompleteWorkRequest(BaseModel):
+    """Request to complete work on a ticket"""
+    work_summary: str
+    parts_used: Optional[List[str]] = None
+    labor_hours: Optional[float] = None
+    notes: Optional[str] = None
+
+
+class AddActivityRequest(BaseModel):
+    """Request to add activity log entry"""
+    action: str
+    description: str
+
+
+class UpdateActivityRequest(BaseModel):
+    """Request to update activity log entry"""
+    description: str
+
+
+@router.post("/{ticket_id}/start-work")
+async def start_work(ticket_id: str, data: StartWorkRequest, request: Request):
+    """
+    Start work on a ticket (transitions to work_in_progress)
+    
+    - Usually auto-triggered when estimate is approved
+    - Can be manually triggered if estimate was already approved
+    """
+    service = get_service()
+    user = await get_current_user(request, service.db)
+    await require_technician_or_admin(user)
+    
+    try:
+        ticket = await service.start_work(
+            ticket_id=ticket_id,
+            notes=data.notes,
+            user_id=user.get("user_id"),
+            user_name=user.get("name", "System")
+        )
+        return ticket
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/{ticket_id}/complete-work")
+async def complete_work(ticket_id: str, data: CompleteWorkRequest, request: Request):
+    """
+    Mark work as completed on a ticket
+    
+    - Transitions ticket to "work_completed" status
+    - Records work summary and parts used
+    - Ticket can still be edited until closed
+    """
+    service = get_service()
+    user = await get_current_user(request, service.db)
+    await require_technician_or_admin(user)
+    
+    try:
+        ticket = await service.complete_work(
+            ticket_id=ticket_id,
+            work_summary=data.work_summary,
+            parts_used=data.parts_used,
+            labor_hours=data.labor_hours,
+            notes=data.notes,
+            user_id=user.get("user_id"),
+            user_name=user.get("name", "System")
+        )
+        return ticket
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/{ticket_id}/activities")
+async def get_ticket_activities(ticket_id: str, request: Request):
+    """
+    Get all activity logs for a ticket
+    
+    - Returns chronological list of all activities
+    - Editable flag indicates if admin can edit
+    """
+    service = get_service()
+    await get_current_user(request, service.db)
+    
+    activities = await service.db.ticket_activities.find(
+        {"ticket_id": ticket_id},
+        {"_id": 0}
+    ).sort("timestamp", 1).to_list(500)
+    
+    return {"activities": activities}
+
+
+@router.post("/{ticket_id}/activities")
+async def add_activity(ticket_id: str, data: AddActivityRequest, request: Request):
+    """
+    Add a manual activity log entry
+    
+    - Useful for recording notes, observations
+    - All activities are editable by admin
+    """
+    service = get_service()
+    user = await get_current_user(request, service.db)
+    await require_technician_or_admin(user)
+    
+    try:
+        activity = await service.add_activity(
+            ticket_id=ticket_id,
+            action=data.action,
+            description=data.description,
+            user_id=user.get("user_id"),
+            user_name=user.get("name", "System")
+        )
+        return activity
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.put("/{ticket_id}/activities/{activity_id}")
+async def update_activity(
+    ticket_id: str, 
+    activity_id: str, 
+    data: UpdateActivityRequest, 
+    request: Request
+):
+    """
+    Update an activity log entry (admin only)
+    
+    - Only admin can edit activities
+    - Original timestamp preserved
+    """
+    service = get_service()
+    user = await get_current_user(request, service.db)
+    
+    # Only admin can edit activities
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Only admin can edit activities")
+    
+    try:
+        activity = await service.update_activity(
+            ticket_id=ticket_id,
+            activity_id=activity_id,
+            description=data.description,
+            user_id=user.get("user_id"),
+            user_name=user.get("name", "System")
+        )
+        return activity
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.delete("/{ticket_id}/activities/{activity_id}")
+async def delete_activity(ticket_id: str, activity_id: str, request: Request):
+    """
+    Delete an activity log entry (admin only)
+    """
+    service = get_service()
+    user = await get_current_user(request, service.db)
+    
+    # Only admin can delete activities
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Only admin can delete activities")
+    
+    result = await service.db.ticket_activities.delete_one({
+        "activity_id": activity_id,
+        "ticket_id": ticket_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    
+    return {"message": "Activity deleted"}
+
+
 @router.post("/{ticket_id}/assign")
 async def assign_ticket(ticket_id: str, data: AssignTicketRequest, request: Request):
     """
