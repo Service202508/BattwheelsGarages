@@ -677,24 +677,21 @@ export default function EFIGuidancePanel({
                 </div>
               </div>
               
-              {/* Probable Causes */}
+              {/* Probable Causes - Top 3 only (simplified for technicians) */}
               {guidance?.probable_causes?.length > 0 && (
                 <div className="p-3 bg-slate-800/50 rounded-lg">
                   <h4 className="text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
                     <Zap className="h-4 w-4 text-amber-400" />
-                    Probable Causes
+                    Top Probable Causes
                   </h4>
                   <div className="space-y-2">
-                    {guidance.probable_causes.slice(0, 4).map((cause, i) => (
+                    {guidance.probable_causes.slice(0, 3).map((cause, i) => (
                       <div key={i} className="flex items-center gap-2">
-                        <div className="h-2 flex-1 bg-slate-700 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-amber-500 rounded-full"
-                            style={{ width: `${cause.confidence}%` }}
-                          />
-                        </div>
-                        <span className="text-xs text-slate-400 w-10">{cause.confidence}%</span>
+                        <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs flex items-center justify-center">
+                          {i + 1}
+                        </span>
                         <span className="text-sm text-white flex-1">{cause.cause}</span>
+                        <span className="text-xs text-slate-400">{cause.confidence}%</span>
                       </div>
                     ))}
                   </div>
@@ -712,8 +709,8 @@ export default function EFIGuidancePanel({
                 </div>
               )}
               
-              {/* Sources */}
-              {guidance?.sources?.length > 0 && (
+              {/* Sources - Only show to Supervisor/Admin */}
+              {isSupervisorOrAdmin && guidance?.sources?.length > 0 && (
                 <div className="p-3 bg-slate-800/50 rounded-lg">
                   <h4 className="text-xs font-medium text-slate-400 mb-2 flex items-center gap-2">
                     <BookOpen className="h-3 w-3" />
