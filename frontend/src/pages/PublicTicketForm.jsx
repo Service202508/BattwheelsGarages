@@ -66,6 +66,8 @@ export default function PublicTicketForm() {
   const [models, setModels] = useState([]);
   const [modelsByOem, setModelsByOem] = useState({});
   const [issueSuggestions, setIssueSuggestions] = useState([]);
+  const [aiSuggestions, setAiSuggestions] = useState([]);
+  const [aiLoading, setAiLoading] = useState(false);
   const [serviceCharges, setServiceCharges] = useState({ visit_fee: 299, diagnostic_fee: 199 });
   
   // Form data
@@ -109,6 +111,10 @@ export default function PublicTicketForm() {
   // Search states
   const [searchingLocation, setSearchingLocation] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showAiSuggestions, setShowAiSuggestions] = useState(false);
+
+  // AI suggestion debounce
+  const aiDebounceRef = useRef(null);
 
   // Load master data on mount
   useEffect(() => {
