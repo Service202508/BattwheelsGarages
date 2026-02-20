@@ -32,6 +32,12 @@ DEFAULT_AI_CONFIG = {
     "visual_diagrams_enabled": True,
     "ask_back_enabled": True,
     
+    # EFI Intelligence Engine (Phase 2)
+    "efi_intelligence_engine_enabled": True,
+    "model_aware_ranking_enabled": True,
+    "continuous_learning_enabled": True,
+    "pattern_detection_enabled": True,
+    
     # Knowledge management
     "knowledge_ingestion_enabled": True,
     "knowledge_approval_required": True,
