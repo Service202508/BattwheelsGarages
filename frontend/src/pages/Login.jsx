@@ -431,7 +431,17 @@ export default function Login({ onLogin }) {
               <FeatureBadge icon={ChevronRight} text="Real-time Insights" />
               <FeatureBadge icon={Sparkles} text="Fleet Management" />
             </div>
+
+            {/* Auto-Scrolling Feature Cards */}
+            <AutoScrollFeatureCards />
           </div>
+        </div>
+        
+        {/* Copyright Footer - Left Panel */}
+        <div className="absolute bottom-6 left-0 right-0 text-center z-10">
+          <p className="text-xs text-gray-400 font-medium tracking-wide">
+            © 2026 BATTWHEELS SERVICES PRIVATE LIMITED. All rights reserved.
+          </p>
         </div>
       </div>
 
