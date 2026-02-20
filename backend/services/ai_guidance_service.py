@@ -155,6 +155,10 @@ class AIGuidanceService:
         """
         Generate EFI guidance for a Job Card/Ticket.
         
+        Implements idempotency via input_context_hash:
+        - Same context = reuse existing snapshot
+        - Changed context or force_regenerate = generate new snapshot
+        
         Returns structured guidance with:
         - guidance_text (Hinglish)
         - diagram_spec (Mermaid or JSON)
@@ -164,6 +168,9 @@ class AIGuidanceService:
         - confidence
         - ask_back_questions (if insufficient data)
         """
+        import time
+        start_time = time.time()
+        
         # Check feature flag
         if not await self.is_enabled(context.organization_id):
             return {
@@ -171,7 +178,7 @@ class AIGuidanceService:
                 "message": "EFI Guidance Layer is not enabled for your organization."
             }
         
-        # Generate context hash for caching
+        # Generate context hash for idempotency
         context_hash = self._generate_context_hash(context)
         
         # Check for cached guidance (unless force regenerate)
@@ -180,6 +187,9 @@ class AIGuidanceService:
                 context.ticket_id, context_hash, mode
             )
             if cached:
+                # Return cached with reuse indicator
+                cached["from_cache"] = True
+                cached["regeneration_available"] = False
                 return cached
         
         # Retrieve relevant knowledge
@@ -208,36 +218,53 @@ class AIGuidanceService:
         diagram_spec = await self._generate_diagram_spec(context, guidance_result)
         charts_spec = await self._generate_charts_spec(context, guidance_result, sources)
         
-        # Generate estimate suggestions
+        # Generate estimate suggestions (limit to top 3 for technician simplicity)
         estimate_suggestions = await self._generate_estimate_suggestions(
             context, guidance_result
         )
+        
+        # Calculate generation time
+        generation_time_ms = int((time.time() - start_time) * 1000)
         
         # Build response
         response = {
             "enabled": True,
             "guidance_id": f"GD-{uuid.uuid4().hex[:8].upper()}",
+            "snapshot_id": f"GS-{uuid.uuid4().hex[:12].upper()}",
             "ticket_id": context.ticket_id,
             "mode": mode.value,
             "confidence": confidence.value,
             "guidance_text": guidance_result.get("text", ""),
             "safety_block": guidance_result.get("safety_block", ""),
             "symptom_summary": guidance_result.get("symptom_summary", ""),
-            "diagnostic_steps": guidance_result.get("diagnostic_steps", []),
-            "probable_causes": guidance_result.get("probable_causes", []),
+            "diagnostic_steps": guidance_result.get("diagnostic_steps", [])[:7],  # Max 7 steps for mobile
+            "probable_causes": guidance_result.get("probable_causes", [])[:3],    # Top 3 only
             "recommended_fix": guidance_result.get("recommended_fix", ""),
             "diagram_spec": diagram_spec,
             "charts_spec": charts_spec,
-            "estimate_suggestions": estimate_suggestions,
+            "estimate_suggestions": estimate_suggestions[:5],  # Max 5 suggestions
             "sources": [s.model_dump() if hasattr(s, 'model_dump') else s for s in sources],
+            "sources_count": len(sources),
             "needs_ask_back": needs_ask_back,
             "ask_back_questions": missing_info if needs_ask_back else [],
             "context_hash": context_hash,
+            "input_context_hash": context_hash,  # For idempotency
+            "from_cache": False,
+            "regeneration_available": False,
+            "generation_time_ms": generation_time_ms,
+            "llm_provider": "gemini",
+            "llm_model": "gemini-3-flash-preview",
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         
-        # Cache the guidance
-        await self._cache_guidance(response)
+        # Cache the guidance as a versioned snapshot
+        await self._cache_guidance(response, context)
+        
+        # Log performance
+        if generation_time_ms > 2000:
+            logger.warning(f"Guidance generation exceeded 2s target: {generation_time_ms}ms for ticket {context.ticket_id}")
+        else:
+            logger.info(f"Generated guidance in {generation_time_ms}ms for ticket {context.ticket_id}")
         
         return response
     
