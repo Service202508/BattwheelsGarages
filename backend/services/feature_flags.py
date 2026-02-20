@@ -26,6 +26,12 @@ DEFAULT_AI_CONFIG = {
     "expert_queue_enabled": True,
     "zendesk_enabled": False,  # Always false - using internal queue
     
+    # EFI Guidance Layer (Hinglish mode)
+    "efi_guidance_layer_enabled": True,
+    "hinglish_mode_enabled": True,
+    "visual_diagrams_enabled": True,
+    "ask_back_enabled": True,
+    
     # Knowledge management
     "knowledge_ingestion_enabled": True,
     "knowledge_approval_required": True,
