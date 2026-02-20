@@ -5190,6 +5190,16 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# AI Guidance routes (EFI Guidance Layer - Hinglish technician mode)
+try:
+    from routes.ai_guidance import router as ai_guidance_router
+    api_router.include_router(ai_guidance_router)
+    logger.info("AI Guidance (EFI Layer) routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load AI Guidance routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Legacy AI Assistant routes (kept for compatibility)
 try:
     from routes.ai_assistant import router as ai_assistant_router
