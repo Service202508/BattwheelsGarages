@@ -5170,6 +5170,16 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Unified AI Assistant routes
+try:
+    from routes.ai_assistant import router as ai_assistant_router
+    api_router.include_router(ai_assistant_router)
+    logger.info("AI Assistant routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load AI Assistant routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
