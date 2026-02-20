@@ -128,7 +128,7 @@ Please provide:
 5. Safety precautions
 6. Estimated repair time and difficulty level`;
 
-      const res = await fetch(`${API}/ai/diagnose`, {
+      const res = await fetch(`${API}/ai-assist/diagnose`, {
         method: "POST",
         headers: {
           ...getAuthHeaders(),
