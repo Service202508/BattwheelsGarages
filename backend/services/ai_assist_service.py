@@ -442,41 +442,36 @@ Type: {doc_type}
         self,
         escalation: EscalationRequest
     ) -> Dict:
-        """Create an escalation ticket for human expert review"""
-        escalation_id = f"ESC-{uuid.uuid4().hex[:8].upper()}"
-        now = datetime.now(timezone.utc).isoformat()
+        """
+        Create an escalation for human expert review.
+        Uses internal Expert Queue (Zendesk is stubbed).
+        """
+        from services.expert_queue_service import ExpertQueueService
         
-        escalation_doc = {
-            "escalation_id": escalation_id,
-            "query_id": escalation.query_id,
-            "ticket_id": escalation.ticket_id,
-            "organization_id": escalation.organization_id,
-            "original_query": escalation.original_query,
-            "ai_response": escalation.ai_response,
-            "sources_checked": escalation.sources_checked,
-            "vehicle_info": escalation.vehicle_info,
-            "symptoms": escalation.symptoms,
-            "dtc_codes": escalation.dtc_codes,
-            "images": escalation.images,
-            "documents": escalation.documents,
-            "urgency": escalation.urgency,
-            "reason": escalation.reason,
-            "user_id": escalation.user_id,
-            "user_name": escalation.user_name,
-            "status": "open",
-            "assigned_expert": None,
-            "expert_response": None,
-            "created_at": now,
-            "updated_at": now
-        }
+        expert_queue = ExpertQueueService(self.db)
         
-        await self.escalations_collection.insert_one(escalation_doc)
+        # Create escalation in Expert Queue
+        result = await expert_queue.create_escalation(
+            query_id=escalation.query_id,
+            ticket_id=escalation.ticket_id,
+            organization_id=escalation.organization_id,
+            original_query=escalation.original_query,
+            ai_response=escalation.ai_response,
+            sources_checked=escalation.sources_checked,
+            vehicle_info=escalation.vehicle_info,
+            symptoms=escalation.symptoms,
+            dtc_codes=escalation.dtc_codes,
+            images=escalation.images,
+            documents=escalation.documents,
+            urgency=escalation.urgency,
+            reason=escalation.reason,
+            user_id=escalation.user_id,
+            user_name=escalation.user_name
+        )
         
-        logger.info(f"Created escalation: {escalation_id}")
+        logger.info(f"Created expert queue escalation: {result['escalation_id']}")
         
-        # TODO: If Zendesk enabled, create Zendesk ticket
-        
-        return {"escalation_id": escalation_id, "status": "created"}
+        return result
     
     async def get_ticket_suggestions(
         self,
