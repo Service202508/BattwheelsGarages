@@ -201,6 +201,57 @@ export default function PublicTicketForm() {
       issue_type: suggestion.issue_type || "general"
     }));
     setShowSuggestions(false);
+    setShowAiSuggestions(false);
+  };
+
+  // Fetch AI-powered suggestions
+  const fetchAiSuggestions = async (userInput) => {
+    if (!userInput || userInput.length < 3 || !formData.vehicle_category) return;
+    
+    setAiLoading(true);
+    try {
+      const res = await fetch(`${API}/public/ai/issue-suggestions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          vehicle_category: formData.vehicle_category,
+          vehicle_model: formData.vehicle_model_name || null,
+          vehicle_oem: formData.vehicle_oem || null,
+          user_input: userInput
+        })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setAiSuggestions(data.suggestions || []);
+        if (data.suggestions && data.suggestions.length > 0) {
+          setShowAiSuggestions(true);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch AI suggestions:", error);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // Debounced AI suggestion handler
+  const handleTitleChange = (value) => {
+    setFormData(prev => ({ ...prev, title: value }));
+    
+    // Clear previous timeout
+    if (aiDebounceRef.current) {
+      clearTimeout(aiDebounceRef.current);
+    }
+    
+    // Set new timeout for AI suggestions (500ms debounce)
+    if (value.length >= 3) {
+      aiDebounceRef.current = setTimeout(() => {
+        fetchAiSuggestions(value);
+      }, 500);
+    } else {
+      setShowAiSuggestions(false);
+    }
   };
 
   const handleFileChange = (e) => {
