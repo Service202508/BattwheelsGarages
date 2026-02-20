@@ -598,26 +598,59 @@ class TicketEstimateService:
             user_id, user_name
         )
         
-        # Update ticket status if needed
+        # Update ticket status to work_in_progress when estimate is approved
         if estimate.get("ticket_id"):
             await self.db.tickets.update_one(
                 {"ticket_id": estimate["ticket_id"]},
                 {
                     "$set": {
-                        "status": "estimate_approved",
+                        "status": "work_in_progress",
+                        "work_started_at": now.isoformat(),
                         "updated_at": now.isoformat()
                     },
                     "$push": {
                         "status_history": {
-                            "status": "estimate_approved",
+                            "status": "work_in_progress",
                             "timestamp": now.isoformat(),
-                            "updated_by": user_name
+                            "updated_by": user_name,
+                            "note": "Estimate approved - Work started"
                         }
                     }
                 }
             )
+            
+            # Log ticket activity
+            await self._log_ticket_activity(
+                estimate["ticket_id"],
+                "estimate_approved",
+                f"Estimate {estimate.get('estimate_number')} approved. Work in progress started.",
+                user_id,
+                user_name
+            )
         
         return await self.get_estimate_by_id(estimate_id, organization_id)
+    
+    async def _log_ticket_activity(
+        self,
+        ticket_id: str,
+        action: str,
+        description: str,
+        user_id: str,
+        user_name: str
+    ):
+        """Log activity to ticket activity log"""
+        now = datetime.now(timezone.utc)
+        activity = {
+            "activity_id": f"act_{uuid.uuid4().hex[:12]}",
+            "ticket_id": ticket_id,
+            "action": action,
+            "description": description,
+            "user_id": user_id,
+            "user_name": user_name,
+            "timestamp": now.isoformat(),
+            "editable": True
+        }
+        await self.db.ticket_activities.insert_one(activity)
     
     async def send_estimate(
         self,
