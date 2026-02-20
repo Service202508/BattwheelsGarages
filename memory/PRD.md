@@ -39,10 +39,56 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ### Unified AI Chat Interface: IMPLEMENTED (Session 76) ✅
 ### **Battwheels Knowledge Brain (RAG + Expert Queue): IMPLEMENTED (Session 77) ✅**
 ### **EFI Intelligence Engine (Model-Aware Continuous Learning): IMPLEMENTED (Session 78) ✅**
+### **Workshop Dashboard Enhancement (Service Ticket Metrics): IMPLEMENTED (Session 78) ✅**
 
 ---
 
 ## Latest Updates (Feb 20, 2026 - Session 78)
+
+### WORKSHOP DASHBOARD - SERVICE TICKET METRICS
+**Status:** FULLY IMPLEMENTED AND TESTED (15/15 tests passed)
+
+**What was implemented:**
+
+#### Backend API Enhancement (`/api/dashboard/stats`)
+- Added `service_ticket_stats` object with:
+  - `total_open` - Total active service tickets
+  - `onsite_resolution` - Tickets with resolution_type='onsite'
+  - `workshop_visit` - Tickets with resolution_type='workshop' or unspecified
+  - `pickup` - Pickup service tickets
+  - `remote` - Remote support tickets
+  - `avg_resolution_time_hours` - Average time to resolve (calculated from resolved/closed tickets)
+  - `onsite_resolution_percentage` - % of onsite resolutions in last 30 days
+  - `total_resolved_30d` - Total tickets resolved in last 30 days
+  - `total_onsite_resolved_30d` - Onsite tickets resolved in last 30 days
+- Real-time calculations from MongoDB tickets collection
+- Monthly repair trends calculated from actual data
+
+#### Frontend Dashboard Enhancement (`Dashboard.jsx`)
+- Added new **"Service Tickets"** tab with:
+  - **Metric Cards Row 1:**
+    - Total Open Tickets (with alert icon)
+    - Onsite Resolution (green, with MapPin icon)
+    - Workshop Visit (blue, with Building icon)
+    - Avg. Resolution Time (amber, with Clock icon)
+  - **KPI Row 2:**
+    - Onsite Resolution Rate with progress bar (30-day performance)
+    - Other Resolution Types (Pickup Service, Remote Support)
+    - 30-Day Summary with Onsite vs Workshop breakdown
+  - **Charts Row:**
+    - Open Tickets by Type pie chart
+    - Resolution Efficiency panel with target metrics
+    - Real-time sync indicator (30s auto-refresh)
+
+**Key Features:**
+- ✅ Real-time sync with 30-second auto-refresh
+- ✅ Bifurcation of open tickets: Onsite vs Workshop
+- ✅ Average Resolution Time calculated from actual data
+- ✅ Onsite Resolution Percentage (30-day KPI)
+- ✅ Pickup and Remote support tracking
+- ✅ Visual progress bars and target indicators
+
+---
 
 ### EFI INTELLIGENCE ENGINE - MODEL-AWARE CONTINUOUS LEARNING
 **Status:** FULLY IMPLEMENTED AND TESTED (30/30 tests passed)
