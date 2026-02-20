@@ -237,11 +237,20 @@ Please provide:
 
   return (
     <div className="space-y-6">
-      {/* Clean Header */}
+      {/* Clean Header with Glowing Brain Icon */}
       <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-xl p-6 shadow-lg">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
-            <Brain className="h-8 w-8 text-white" />
+          <div className="relative">
+            {/* Glowing effect */}
+            <div className="absolute inset-0 bg-white/40 rounded-xl blur-md animate-pulse" />
+            <div className="relative p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-lg shadow-white/20">
+              <Brain className="h-8 w-8 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+            </div>
+            {/* Live indicator dot */}
+            <div className="absolute -top-1 -right-1 w-3 h-3">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-green-300 opacity-75 animate-ping" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-400 shadow-lg shadow-green-400/50" />
+            </div>
           </div>
           <div>
             <div className="flex items-center gap-3">
