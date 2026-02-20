@@ -52,12 +52,18 @@ export default function TechnicianPayroll({ user }) {
   };
 
   const getMonthYear = (monthStr) => {
-    if (!monthStr) return "N/A";
-    const [year, month] = monthStr.split("-");
-    return new Date(year, month - 1).toLocaleDateString("en-US", { 
-      month: "long", 
-      year: "numeric" 
-    });
+    if (!monthStr || typeof monthStr !== 'string') return "N/A";
+    try {
+      const parts = monthStr.split("-");
+      if (parts.length < 2) return monthStr;
+      const [year, month] = parts;
+      return new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString("en-US", { 
+        month: "long", 
+        year: "numeric" 
+      });
+    } catch (e) {
+      return monthStr || "N/A";
+    }
   };
 
   // Calculate totals from payslips
