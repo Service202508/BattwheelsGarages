@@ -1283,16 +1283,38 @@ Full Zoho Books-style settings dashboard with 8 categories:
 ### Test Results
 | Category | Pass Rate |
 |----------|-----------|
-| Backend API Tests | 100% (25/25) |
-| Calculation Tests | 100% (39/39) |
+| Backend API Tests | 100% (54/54) |
+| Calculation Tests | 100% (29/29) |
 | Cross-Portal Tests | 100% (11/11) |
 | Frontend UI | 100% |
 
-### Data Integrity
-- Fixed 7 invoices with null grand_total (set to 0)
-- All tickets have valid organization_id
-- No duplicate invoice numbers
-- No negative stock items
+### Data Integrity & Referential Completeness (Enhanced)
+**Repairs Applied:**
+- Invoices normalized: 4,236 (date→invoice_date, total→grand_total)
+- Estimates normalized: 3,451
+- Payments normalized: 2,565 (date→payment_date, payment_method→payment_mode)
+- Expenses normalized: 4,465
+- Placeholder contacts created: 91 (for orphan references)
+- All organization_id gaps filled
+
+**Zoho Books Parity Fields Added:**
+- `payment_terms`, `payment_terms_label`
+- `is_inclusive_tax`, `is_discount_before_tax`
+- `shipping_charge`, `adjustment`
+- `custom_fields`, `documents`
+
+**Quality Checks (All Pass):**
+- Duplicate invoice numbers: 0
+- Balance exceeds total: 0
+- Negative totals: 0
+- Orphan line items: 0
+- Unallocated payments: 0
+
+### New Data Integrity API
+- `GET /api/data-integrity/stats` - Quick health check
+- `POST /api/data-integrity/audit` - Full audit with recommendations
+- `POST /api/data-integrity/repair/all` - Batch repair all issues
+- `GET /api/data-integrity/check/orphans/{collection}` - Check orphan refs
 
 ### Security & Multi-Tenancy
 - JWT authentication verified
@@ -1308,5 +1330,7 @@ Full Zoho Books-style settings dashboard with 8 categories:
 | Razorpay | ⚠️ MOCKED |
 | Resend Email | ⚠️ MOCKED |
 
-### Audit Report
-Full audit report available at: `/app/ENTERPRISE_QA_AUDIT_REPORT.md`
+### Audit Reports
+- Full audit report: `/app/ENTERPRISE_QA_AUDIT_REPORT.md`
+- Data integrity service: `/app/backend/services/data_integrity_service.py`
+- Data integrity routes: `/app/backend/routes/data_integrity.py`
