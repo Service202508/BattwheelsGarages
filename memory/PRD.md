@@ -31,7 +31,35 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 
 ---
 
-## Latest Updates (Feb 19, 2026 - Session 69)
+## Latest Updates (Feb 20, 2026 - Session 70)
+
+### BUG FIX: Estimate Workflow Buttons Visibility
+**Status:** FIXED & TESTED (100% pass rate - 12/12 tests)
+**Location:** `/app/frontend/src/components/EstimateItemsPanel.jsx`
+
+**Issue:** 
+When estimate was in "Approved" status, only "Lock Estimate" button was visible. Users expected to still be able to send/resend estimates and edit items.
+
+**Solution:**
+Updated button visibility logic to allow full workflow until estimate is locked:
+
+| Status | Buttons Visible |
+|--------|----------------|
+| Draft | "Send Estimate" + "Approve Estimate" |
+| Sent | "Resend Estimate" + "Approve Estimate" |
+| Approved | "Resend Estimate" + "Lock Estimate" |
+| Locked | "Unlock Estimate" (admin only) |
+
+**Key Changes:**
+- "Send Estimate" button now available for all non-locked estimates
+- Button text changes dynamically: "Send Estimate" → "Resend Estimate" for sent/approved status
+- "Approve Estimate" button available for draft and sent status only
+- "Lock Estimate" button visible only when approved (admin/manager)
+- "Unlock Estimate" button visible only when locked (admin only)
+
+---
+
+## Previous Updates (Feb 19, 2026 - Session 69)
 
 ### NEW FEATURE: Visual Inventory Stock Indicator on Estimate Panel
 **Status:** IMPLEMENTED & TESTED (100% pass rate - 9/9 tests)
