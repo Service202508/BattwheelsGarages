@@ -212,9 +212,15 @@ const ProtectedRoute = ({ children, user, loading, allowedRoles = null }) => {
 
   // Role-based access check
   if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
-    // Redirect customer to customer portal, others to dashboard
+    // Redirect based on role
     if (currentUser.role === "customer") {
       return <Navigate to="/customer" replace />;
+    }
+    if (currentUser.role === "technician") {
+      return <Navigate to="/technician" replace />;
+    }
+    if (currentUser.role === "business_customer") {
+      return <Navigate to="/business" replace />;
     }
     return <Navigate to="/dashboard" replace />;
   }
@@ -226,6 +232,12 @@ const ProtectedRoute = ({ children, user, loading, allowedRoles = null }) => {
 const RoleBasedRedirect = ({ user }) => {
   if (user?.role === "customer") {
     return <Navigate to="/customer" replace />;
+  }
+  if (user?.role === "technician") {
+    return <Navigate to="/technician" replace />;
+  }
+  if (user?.role === "business_customer") {
+    return <Navigate to="/business" replace />;
   }
   return <Navigate to="/dashboard" replace />;
 };
