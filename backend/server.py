@@ -5336,6 +5336,15 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+try:
+    from routes.data_integrity import router as data_integrity_router
+    api_router.include_router(data_integrity_router)
+    logger.info("Data Integrity routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Data Integrity routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
