@@ -246,8 +246,10 @@ class DataIntegrityService:
         
         results["completed_at"] = datetime.now(timezone.utc).isoformat()
         
-        # Store audit results
-        await self.db.data_integrity_audits.insert_one(results)
+        # Store audit results (copy to avoid modifying return value)
+        import copy
+        audit_copy = copy.deepcopy(results)
+        await self.db.data_integrity_audits.insert_one(audit_copy)
         
         return results
     
