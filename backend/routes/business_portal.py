@@ -16,7 +16,7 @@ def get_db():
 
 router = APIRouter(prefix="/business", tags=["Business Portal"])
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "battwheels-secret-key-change-in-production")
+SECRET_KEY = os.environ.get("JWT_SECRET", "battwheels-secret")
 ALGORITHM = "HS256"
 
 
