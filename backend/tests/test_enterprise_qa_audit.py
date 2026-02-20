@@ -29,6 +29,7 @@ ADMIN_EMAIL = "admin@battwheels.in"
 ADMIN_PASSWORD = "test_pwd_placeholder"
 TECHNICIAN_EMAIL = "deepak@battwheelsgarages.in"
 TECHNICIAN_PASSWORD = "tech123"
+ORGANIZATION_ID = "org_71f0df814d6d"  # Battwheels Garages default org
 
 
 @pytest.fixture(scope="module")
