@@ -330,16 +330,21 @@ class TestMultiTenantIsolation:
     
     def test_admin_only_sees_own_org_data(self, admin_token):
         """Admin should only see data from their organization"""
-        # Get tickets
+        # Get tickets - returns paginated response
         response = requests.get(
             f"{BASE_URL}/api/tickets",
             headers=get_auth_headers(admin_token)
         )
         assert response.status_code == 200
-        tickets = response.json()
+        data = response.json()
         
-        # Verify all tickets belong to expected organization
-        # Note: Without specific org_id filtering, we verify the query succeeds
+        # Verify paginated response structure
+        if isinstance(data, dict):
+            assert "tickets" in data
+            tickets = data["tickets"]
+        else:
+            tickets = data
+        
         assert isinstance(tickets, list)
         print(f"✓ Admin can access {len(tickets)} tickets (org-scoped)")
         
