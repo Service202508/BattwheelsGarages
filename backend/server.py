@@ -5180,6 +5180,16 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Expert Queue routes (internal escalation system)
+try:
+    from routes.expert_queue import router as expert_queue_router
+    api_router.include_router(expert_queue_router)
+    logger.info("Expert Queue routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Expert Queue routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Legacy AI Assistant routes (kept for compatibility)
 try:
     from routes.ai_assistant import router as ai_assistant_router
