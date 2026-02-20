@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { API } from "@/App";
 import EFISidePanel from "./EFISidePanel";
+import EFIGuidancePanel from "./ai/EFIGuidancePanel";
 import EstimateItemsPanel from "./EstimateItemsPanel";
 
 const statusColors = {
