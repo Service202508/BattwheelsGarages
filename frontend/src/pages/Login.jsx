@@ -457,12 +457,17 @@ export default function Login({ onLogin }) {
           {/* Spacer for mobile/tablet to push logo to right */}
           <div className="flex-1" />
           
-          {/* Logo */}
-          <img 
-            src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
-            alt="Battwheels" 
-            className="h-14 sm:h-16 md:h-20 lg:h-24 w-auto drop-shadow-md"
-          />
+          {/* Logo with Emerald Glow */}
+          <div className="relative">
+            {/* Emerald glow gradient behind logo */}
+            <div className="absolute -inset-4 bg-gradient-to-br from-[#22EDA9]/20 via-[#22EDA9]/10 to-transparent rounded-3xl blur-2xl opacity-60" />
+            <div className="absolute -inset-2 bg-[#22EDA9]/10 rounded-2xl blur-xl opacity-40" />
+            <img 
+              src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
+              alt="Battwheels" 
+              className="relative h-14 sm:h-16 md:h-20 lg:h-24 w-auto drop-shadow-md"
+            />
+          </div>
         </div>
 
         <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-4 sm:py-6 lg:py-0">
