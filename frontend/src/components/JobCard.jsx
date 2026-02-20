@@ -27,9 +27,11 @@ const statusColors = {
   technician_assigned: "bg-blue-500",
   estimate_shared: "bg-purple-500",
   estimate_approved: "bg-indigo-500",
-  in_progress: "bg-orange-500",
+  work_in_progress: "bg-orange-500",
+  work_completed: "bg-teal-500",
   resolved: "bg-green-500",
   closed: "bg-gray-500",
+  in_progress: "bg-orange-500",  // Legacy alias
 };
 
 const statusLabels = {
@@ -37,9 +39,11 @@ const statusLabels = {
   technician_assigned: "Technician Assigned",
   estimate_shared: "Estimate Shared",
   estimate_approved: "Estimate Approved",
-  in_progress: "In Progress",
+  work_in_progress: "Work In Progress",
+  work_completed: "Work Completed",
   resolved: "Resolved",
   closed: "Closed",
+  in_progress: "In Progress",  // Legacy alias
 };
 
 export default function JobCard({ ticket, user, onUpdate, onClose }) {
