@@ -1268,6 +1268,31 @@ Full Zoho Books-style settings dashboard with 8 categories:
 
 ---
 
+## AI Diagnostic Assistant (Reverted & Enhanced - February 20, 2026)
+
+### Implementation
+The AI Diagnostic Assistant has been reverted to match the reference design with:
+- **Two-panel layout**: Left panel for input, right panel for AI diagnosis results
+- **Issue Categories**: Battery Issues, Motor Problems, Charging System, Electrical, Mechanical, Software Issues, Suspension, Braking System, Cooling System, AC/Heating, Other
+- **Vehicle Categories**: 2 Wheeler, 3 Wheeler, 4 Wheeler Commercial, Car
+- **Vehicle Model dropdown**: Populated based on selected category with 50+ Indian EV models
+- **DTC/Error Codes input**: Optional field for diagnostic codes
+- **Issue Description textarea**: Required field with example prompt
+
+### Files Created/Updated
+- `/app/frontend/src/components/ai/AIDiagnosticAssistant.jsx` - New component
+- `/app/frontend/src/pages/AIAssistant.jsx` - Updated to use new component
+- `/app/frontend/src/pages/technician/TechnicianAIAssistant.jsx` - Updated for consistent UI
+
+### API Endpoint
+- `POST /api/ai-assist/diagnose` - Main diagnosis endpoint
+- Uses Gemini 3 Flash via Emergent LLM Key
+
+### Integration with EFI
+- Component accepts `ticketContext` prop for pre-filling from service tickets
+- Results can be synced with EFI Guidance Panel in JobCard
+- AI diagnosis includes structured output: causes, diagnostic steps, repair procedure, parts/tools, safety precautions
+
 ## Test Reports
 - `/app/test_reports/iteration_78.json` - Enterprise QA Audit (25/25 pass) - February 20, 2026
 - `/app/test_reports/iteration_55.json` - Data Management (14/14 pass)
