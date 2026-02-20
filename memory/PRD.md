@@ -28,12 +28,68 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ### Organization Settings Import/Export: IMPLEMENTED (Session 64) ✅
 ### Organization Switcher with Create Org: IMPLEMENTED (Session 64) ✅
 ### Price Lists Module (Zoho Books CSV): ENHANCED (Session 65) ✅
+### Public Ticket Submission System: IMPLEMENTED (Session 72) ✅
 
 ---
 
-## Latest Updates (Feb 20, 2026 - Session 71)
+## Latest Updates (Feb 20, 2026 - Session 72)
 
-### NEW FEATURE: Complete Ticket Lifecycle Workflow
+### NEW FEATURE: Public Service Ticket Submission System
+**Status:** IMPLEMENTED & TESTED (100% pass rate - 21/21 backend tests + UI verified)
+**Location:** `/app/backend/routes/public_tickets.py`, `/app/backend/routes/master_data.py`, `/app/frontend/src/pages/PublicTicketForm.jsx`, `/app/frontend/src/pages/TrackTicket.jsx`
+
+**Features Implemented:**
+
+1. **Unified Vehicle Master Data:**
+   - Vehicle Categories: 5 types (2W_EV, 3W_EV, 4W_EV, COMM_EV, LEV)
+   - Vehicle Models: 21 popular Indian EV models from OEMs (Ola, Ather, TVS, Tata, MG, etc.)
+   - Issue Suggestions: 18 predefined EV issues (battery, motor, charging, etc.)
+   - Master data admin CRUD endpoints at `/api/master-data/*`
+
+2. **Customer Type Selection:**
+   - Individual: Personal vehicle owners
+   - Business/OEM/Fleet Operator: Companies, fleet operators
+
+3. **Public Ticket Form (`/submit-ticket`):**
+   - No authentication required
+   - Vehicle category/model selection from master data
+   - AI-powered issue suggestions based on vehicle type
+   - Location input for on-site service
+   - File attachments support
+
+4. **Payment Flow (Individual + On-Site):**
+   - Visit Charges: ₹299 (mandatory)
+   - Diagnostic Charges: ₹199 (optional)
+   - Razorpay integration (mock mode when keys not configured)
+   - Payment verification before ticket creation
+
+5. **Public Ticket Tracking (`/track-ticket`):**
+   - Lookup by Ticket ID or Phone/Email
+   - View ticket status and activity history
+   - Customer can approve estimates
+   - View and pay invoices
+
+**New API Endpoints:**
+- `POST /api/public/tickets/submit` - Submit public ticket
+- `POST /api/public/tickets/verify-payment` - Verify Razorpay payment
+- `POST /api/public/tickets/lookup` - Lookup tickets by ID/phone/email
+- `GET /api/public/tickets/{id}` - Get ticket details (requires token or contact verification)
+- `POST /api/public/tickets/{id}/approve-estimate` - Customer approve estimate
+- `GET /api/master-data/vehicle-categories` - List vehicle categories
+- `GET /api/master-data/vehicle-models` - List vehicle models
+- `GET /api/master-data/issue-suggestions` - Get issue suggestions
+- `POST /api/master-data/seed` - Seed master data
+
+**Internal NewTicket Form Updated:**
+- Now uses unified master data
+- Vehicle Category and Model dropdowns fetch from API
+- Issue suggestions appear when typing
+
+---
+
+## Previous Updates (Feb 20, 2026 - Session 71)
+
+### Complete Ticket Lifecycle Workflow
 **Status:** IMPLEMENTED & TESTED (100% pass rate - 10/10 backend tests + UI verified)
 **Location:** `/app/frontend/src/components/JobCard.jsx`, `/app/backend/routes/tickets.py`, `/app/backend/services/ticket_service.py`
 
