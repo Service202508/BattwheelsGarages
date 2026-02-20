@@ -97,10 +97,19 @@ import CommandPalette from "@/components/CommandPalette";
 import TechnicianLayout from "@/components/TechnicianLayout";
 import TechnicianDashboard from "@/pages/technician/TechnicianDashboard";
 import TechnicianTickets from "@/pages/technician/TechnicianTickets";
+import TechnicianAttendance from "@/pages/technician/TechnicianAttendance";
+import TechnicianLeave from "@/pages/technician/TechnicianLeave";
+import TechnicianPayroll from "@/pages/technician/TechnicianPayroll";
+import TechnicianProductivityPage from "@/pages/technician/TechnicianProductivity";
 
 // Business Customer Portal Pages
 import BusinessLayout from "@/components/BusinessLayout";
 import BusinessDashboard from "@/pages/business/BusinessDashboard";
+import BusinessFleet from "@/pages/business/BusinessFleet";
+import BusinessTickets from "@/pages/business/BusinessTickets";
+import BusinessInvoices from "@/pages/business/BusinessInvoices";
+import BusinessAMC from "@/pages/business/BusinessAMC";
+import BusinessReports from "@/pages/business/BusinessReports";
 
 // Admin Settings
 import PermissionsManager from "@/pages/settings/PermissionsManager";
