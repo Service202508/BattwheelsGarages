@@ -111,7 +111,6 @@ async def generate_guidance(
     - Sources cited
     """
     org_id = http_request.headers.get("X-Organization-ID")
-    user_id = http_request.headers.get("X-User-ID", "anonymous")
     
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
