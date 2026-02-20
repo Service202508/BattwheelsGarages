@@ -890,7 +890,7 @@ function AppRouter() {
       <Route path="/technician/ai-assist" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["technician"]}>
           <TechnicianLayout user={auth.user} onLogout={auth.logout}>
-            <AIAssistant user={auth.user} />
+            <TechnicianAIAssistant user={auth.user} />
           </TechnicianLayout>
         </ProtectedRoute>
       } />
