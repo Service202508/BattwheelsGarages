@@ -1,12 +1,10 @@
-import AIKnowledgeBrain from "@/components/ai/AIKnowledgeBrain";
+import AIDiagnosticAssistant from "@/components/ai/AIDiagnosticAssistant";
 
 export default function TechnicianAIAssistant({ user }) {
   return (
-    <div className="h-[calc(100vh-8rem)]">
-      <AIKnowledgeBrain 
-        user={user} 
-        portalType="technician"
-      />
+    <div className="p-6">
+      <AIDiagnosticAssistant user={user} />
     </div>
   );
 }
+
