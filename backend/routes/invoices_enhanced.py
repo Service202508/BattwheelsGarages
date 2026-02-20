@@ -798,6 +798,10 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
     if org_id:
         invoice_doc["organization_id"] = org_id
     
+    # P2: Validate and auto-correct calculations before save
+    invoice_doc = pre_save_validation(invoice_doc)
+    logger.info(f"Invoice {invoice_number} validated before save")
+    
     await invoices_collection.insert_one(invoice_doc)
     
     # Store line items separately for reporting
