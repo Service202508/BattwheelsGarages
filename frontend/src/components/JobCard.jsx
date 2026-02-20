@@ -130,6 +130,49 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
       console.error("Failed to fetch services:", error);
     }
   };
+  
+  const fetchActivities = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API}/tickets/${ticket.ticket_id}/activities`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setActivities(data.activities || []);
+      }
+    } catch (error) {
+      console.error("Error fetching activities:", error);
+    }
+  };
+  
+  const addActivity = async (action, description) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API}/tickets/${localTicket.ticket_id}/activities`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ action, description }),
+      });
+      
+      if (response.ok) {
+        fetchActivities();
+        toast.success("Activity logged");
+      }
+    } catch (error) {
+      console.error("Error adding activity:", error);
+    }
+  };
+  
+  const handleAddNote = () => {
+    const note = prompt("Enter activity note:");
+    if (note) {
+      addActivity("note", note);
+    }
+  };
 
   const updateTicketStatus = async (newStatus, additionalData = {}) => {
     setLoading(true);
