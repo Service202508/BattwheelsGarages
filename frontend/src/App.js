@@ -93,6 +93,18 @@ import CustomerPayments from "@/pages/customer/CustomerPayments";
 import CustomerAMC from "@/pages/customer/CustomerAMC";
 import CommandPalette from "@/components/CommandPalette";
 
+// Technician Portal Pages
+import TechnicianLayout from "@/components/TechnicianLayout";
+import TechnicianDashboard from "@/pages/technician/TechnicianDashboard";
+import TechnicianTickets from "@/pages/technician/TechnicianTickets";
+
+// Business Customer Portal Pages
+import BusinessLayout from "@/components/BusinessLayout";
+import BusinessDashboard from "@/pages/business/BusinessDashboard";
+
+// Admin Settings
+import PermissionsManager from "@/pages/settings/PermissionsManager";
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
 
