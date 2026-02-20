@@ -661,6 +661,46 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
               </ul>
             </CardContent>
           </Card>
+          
+          {/* Activity Log */}
+          {(isTechnician || isAdmin) && (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <ClipboardList className="h-5 w-5" />
+                  Activity Log
+                </CardTitle>
+                <Button variant="ghost" size="sm" onClick={() => setShowActivities(!showActivities)}>
+                  {showActivities ? "Hide" : "Show"}
+                </Button>
+              </CardHeader>
+              {showActivities && (
+                <CardContent>
+                  <ul className="space-y-3 max-h-64 overflow-y-auto">
+                    {activities.length > 0 ? activities.map((activity) => (
+                      <li key={activity.activity_id} className="border-b pb-2 last:border-0">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="text-sm font-medium capitalize">{activity.action.replace(/_/g, " ")}</p>
+                            <p className="text-sm text-muted-foreground">{activity.description}</p>
+                          </div>
+                          <div className="text-right text-xs text-muted-foreground">
+                            <p>{activity.timestamp && format(new Date(activity.timestamp), "MMM d, p")}</p>
+                            <p>by {activity.user_name}</p>
+                          </div>
+                        </div>
+                        {activity.edited_at && (
+                          <p className="text-xs text-yellow-600 mt-1">Edited by {activity.edited_by}</p>
+                        )}
+                      </li>
+                    )) : (
+                      <li className="text-muted-foreground text-center py-4">No activities logged yet</li>
+                    )}
+                  </ul>
+                </CardContent>
+              )}
+            </Card>
+          )}
         </div>
 
       {/* Action Buttons */}
