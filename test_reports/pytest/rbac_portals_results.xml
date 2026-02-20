@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="16" skipped="0" tests="29" time="12.321" timestamp="2026-02-20T09:46:10.007048+00:00" hostname="agent-env-23adce5c-6e55-483f-a3e9-6227a1f2737b"><testcase classname="backend.tests.test_rbac_portals.TestHealthAndAuth" name="test_health_check" time="0.295"><failure message="assert 404 == 200&#10; +  where 404 = &lt;Response [404]&gt;.status_code">backend/tests/test_rbac_portals.py:18: in test_health_check
+    assert res.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = &lt;Response [404]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestHealthAndAuth" name="test_admin_login" time="0.362" /><testcase classname="backend.tests.test_rbac_portals.TestHealthAndAuth" name="test_technician_login" time="0.326" /><testcase classname="backend.tests.test_rbac_portals.TestPermissionsAPI" name="test_list_modules" time="0.460" /><testcase classname="backend.tests.test_rbac_portals.TestPermissionsAPI" name="test_list_roles" time="0.469" /><testcase classname="backend.tests.test_rbac_portals.TestPermissionsAPI" name="test_get_admin_permissions" time="0.459" /><testcase classname="backend.tests.test_rbac_portals.TestPermissionsAPI" name="test_get_technician_permissions" time="0.435" /><testcase classname="backend.tests.test_rbac_portals.TestPermissionsAPI" name="test_get_business_customer_permissions" time="0.421" /><testcase classname="backend.tests.test_rbac_portals.TestPermissionsAPI" name="test_update_module_permission" time="0.763" /><testcase classname="backend.tests.test_rbac_portals.TestPermissionsAPI" name="test_check_permission" time="0.574" /><testcase classname="backend.tests.test_rbac_portals.TestPermissionsAPI" name="test_get_nonexistent_role" time="0.427" /><testcase classname="backend.tests.test_rbac_portals.TestTechnicianPortalAPI" name="test_technician_dashboard" time="0.460"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:246: in test_technician_dashboard
+    assert res.status_code == 200
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestTechnicianPortalAPI" name="test_technician_my_tickets" time="0.430"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:267: in test_technician_my_tickets
+    assert res.status_code == 200
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestTechnicianPortalAPI" name="test_technician_tickets_filter_status" time="0.436"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:283: in test_technician_tickets_filter_status
+    assert res.status_code == 200
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestTechnicianPortalAPI" name="test_technician_attendance" time="0.414"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:294: in test_technician_attendance
+    assert res.status_code == 200
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestTechnicianPortalAPI" name="test_technician_leave_requests" time="0.423"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:311: in test_technician_leave_requests
+    assert res.status_code == 200
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestTechnicianPortalAPI" name="test_technician_payroll" time="0.431"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:323: in test_technician_payroll
+    assert res.status_code == 200
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestTechnicianPortalAPI" name="test_technician_productivity" time="0.433"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:334: in test_technician_productivity
+    assert res.status_code == 200
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestTechnicianPortalAPI" name="test_technician_unauthorized_without_token" time="0.099" /><testcase classname="backend.tests.test_rbac_portals.TestTechnicianPortalAPI" name="test_admin_cannot_access_technician_portal" time="0.410"><failure message="assert 401 == 403&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:364: in test_admin_cannot_access_technician_portal
+    assert res.status_code == 403
+E   assert 401 == 403
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestBusinessPortalAPI" name="test_business_registration_endpoint_exists" time="0.123" /><testcase classname="backend.tests.test_rbac_portals.TestBusinessPortalAPI" name="test_business_dashboard_endpoint_exists" time="0.419"><failure message="assert 401 in [200, 403, 404]&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:410: in test_business_dashboard_endpoint_exists
+    assert res.status_code in [200, 403, 404]
+E   assert 401 in [200, 403, 404]
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestBusinessPortalAPI" name="test_business_fleet_endpoint_exists" time="0.446"><failure message="assert 401 in [200, 403, 404]&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:419: in test_business_fleet_endpoint_exists
+    assert res.status_code in [200, 403, 404]
+E   assert 401 in [200, 403, 404]
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestBusinessPortalAPI" name="test_business_tickets_endpoint_exists" time="0.426"><failure message="assert 401 in [200, 403, 404]&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:428: in test_business_tickets_endpoint_exists
+    assert res.status_code in [200, 403, 404]
+E   assert 401 in [200, 403, 404]
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestBusinessPortalAPI" name="test_business_invoices_endpoint_exists" time="0.435"><failure message="assert 401 in [200, 403, 404]&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:437: in test_business_invoices_endpoint_exists
+    assert res.status_code in [200, 403, 404]
+E   assert 401 in [200, 403, 404]
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestBusinessPortalAPI" name="test_business_amc_endpoint_exists" time="0.414"><failure message="assert 401 in [200, 403, 404]&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:446: in test_business_amc_endpoint_exists
+    assert res.status_code in [200, 403, 404]
+E   assert 401 in [200, 403, 404]
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestBusinessPortalAPI" name="test_business_reports_endpoint_exists" time="0.440"><failure message="assert 401 in [200, 403, 404]&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:455: in test_business_reports_endpoint_exists
+    assert res.status_code in [200, 403, 404]
+E   assert 401 in [200, 403, 404]
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestBusinessPortalAPI" name="test_business_bulk_payment_endpoint_exists" time="0.433"><failure message="assert 401 in [200, 400, 403, 404]&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_rbac_portals.py:472: in test_business_bulk_payment_endpoint_exists
+    assert res.status_code in [200, 400, 403, 404]
+E   assert 401 in [200, 400, 403, 404]
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_rbac_portals.TestSeedDefaults" name="test_seed_default_permissions" time="0.423" /></testsuite></testsuites>
