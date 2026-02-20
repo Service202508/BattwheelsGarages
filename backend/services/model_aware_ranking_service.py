@@ -148,11 +148,11 @@ class ModelAwareRankingService:
             # Build evidence string
             evidence_parts = []
             if "model_match" in factors:
-                evidence_parts.append(f"Same model ({card.get('vehicle_model')})")
+                evidence_parts.append("Same model ({})".format(card.get('vehicle_model')))
             if "dtc_match" in factors:
-                evidence_parts.append(f"DTC match")
+                evidence_parts.append("DTC match")
             if "high_success_rate" in factors:
-                evidence_parts.append(f"Success rate: {int(card.get('historical_success_rate', 0) * 100)}%")
+                evidence_parts.append("Success rate: {}%".format(int(card.get('historical_success_rate', 0) * 100)))
             
             ranked_causes.append(RankedCause(
                 cause=card.get("probable_root_cause", "Unknown cause"),
