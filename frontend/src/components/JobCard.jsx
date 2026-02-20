@@ -355,6 +355,44 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
     await updateTicketStatus("resolved", { actual_items: actualItems });
   };
 
+  const handleCloseTicket = async () => {
+    const resolution = prompt("Enter resolution summary:");
+    if (!resolution) return;
+    
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API}/tickets/${localTicket.ticket_id}/close`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ 
+          resolution: resolution,
+          resolution_outcome: "success",
+          resolution_notes: "Ticket closed after work completion"
+        }),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Failed to close ticket");
+      }
+      
+      const updatedTicket = await response.json();
+      setLocalTicket(updatedTicket);
+      setStatusHistory(updatedTicket.status_history || []);
+      if (onUpdate) onUpdate(updatedTicket);
+      toast.success("Ticket closed successfully!");
+      fetchActivities();
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleGenerateInvoice = async () => {
     setLoading(true);
     try {
