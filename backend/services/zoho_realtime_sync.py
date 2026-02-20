@@ -121,15 +121,16 @@ FIELD_MAPPINGS = {
             "date": "invoice_date",
             "due_date": "due_date",
             "line_items": "line_items",
-            "sub_total": "sub_total",
-            "total": "total",
-            "balance": "balance",
+            "sub_total": "subtotal",           # Normalized field name
+            "total": "grand_total",            # Fixed: map to grand_total
+            "balance": "balance_due",          # Fixed: map to balance_due
             "currency_code": "currency_code",
             "exchange_rate": "exchange_rate",
             "taxes": "taxes",
+            "tax_total": "total_tax",          # Added: tax total field
             "shipping_charge": "shipping_charge",
             "adjustment": "adjustment",
-            "discount": "discount",
+            "discount": "total_discount",      # Fixed: map to total_discount
             "notes": "notes",
             "terms": "terms",
         }
