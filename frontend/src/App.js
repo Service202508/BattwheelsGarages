@@ -231,6 +231,12 @@ function AppRouter() {
     <Routes>
       {/* Public Quote View - No Auth Required */}
       <Route path="/quote/:shareToken" element={<PublicQuoteView />} />
+      
+      {/* Public Ticket Submission Form - No Auth Required */}
+      <Route path="/submit-ticket" element={<PublicTicketForm />} />
+      
+      {/* Public Ticket Tracking - No Auth Required */}
+      <Route path="/track-ticket" element={<TrackTicket />} />
 
       <Route path="/login" element={
         auth.user ? <RoleBasedRedirect user={auth.user} /> : <Login onLogin={auth.login} />
