@@ -31,7 +31,15 @@ logger = logging.getLogger(__name__)
 # ==================== TICKET STATES ====================
 
 class TicketState:
-    """Ticket lifecycle states"""
+    """
+    Ticket lifecycle states
+    
+    Two workflows exist:
+    1. Basic workflow: OPEN → ASSIGNED → IN_PROGRESS → RESOLVED → CLOSED
+    2. Estimate workflow: OPEN → ASSIGNED → ESTIMATE_SHARED → ESTIMATE_APPROVED → 
+                         WORK_IN_PROGRESS → WORK_COMPLETED → INVOICED → CLOSED
+    """
+    # Basic states
     OPEN = "open"
     ASSIGNED = "assigned"
     IN_PROGRESS = "in_progress"
@@ -39,16 +47,33 @@ class TicketState:
     RESOLVED = "resolved"
     CLOSED = "closed"
     REOPENED = "reopened"
+    
+    # Extended estimate workflow states
+    TECHNICIAN_ASSIGNED = "technician_assigned"  # Same as ASSIGNED, alias
+    ESTIMATE_SHARED = "estimate_shared"
+    ESTIMATE_APPROVED = "estimate_approved"
+    WORK_IN_PROGRESS = "work_in_progress"
+    WORK_COMPLETED = "work_completed"
+    INVOICED = "invoiced"
 
-# Valid state transitions
+# Valid state transitions - comprehensive workflow including estimate states
 VALID_TRANSITIONS = {
-    TicketState.OPEN: [TicketState.ASSIGNED, TicketState.IN_PROGRESS, TicketState.CLOSED],
-    TicketState.ASSIGNED: [TicketState.IN_PROGRESS, TicketState.OPEN, TicketState.CLOSED],
-    TicketState.IN_PROGRESS: [TicketState.PENDING_PARTS, TicketState.RESOLVED, TicketState.ASSIGNED],
-    TicketState.PENDING_PARTS: [TicketState.IN_PROGRESS, TicketState.CLOSED],
-    TicketState.RESOLVED: [TicketState.CLOSED, TicketState.REOPENED],
+    # Basic workflow
+    TicketState.OPEN: [TicketState.ASSIGNED, TicketState.TECHNICIAN_ASSIGNED, TicketState.IN_PROGRESS, TicketState.CLOSED],
+    TicketState.ASSIGNED: [TicketState.IN_PROGRESS, TicketState.ESTIMATE_SHARED, TicketState.OPEN, TicketState.CLOSED],
+    TicketState.IN_PROGRESS: [TicketState.PENDING_PARTS, TicketState.RESOLVED, TicketState.ASSIGNED, TicketState.WORK_COMPLETED],
+    TicketState.PENDING_PARTS: [TicketState.IN_PROGRESS, TicketState.WORK_IN_PROGRESS, TicketState.CLOSED],
+    TicketState.RESOLVED: [TicketState.CLOSED, TicketState.REOPENED, TicketState.INVOICED],
     TicketState.CLOSED: [TicketState.REOPENED],
     TicketState.REOPENED: [TicketState.ASSIGNED, TicketState.IN_PROGRESS],
+    
+    # Extended estimate workflow
+    TicketState.TECHNICIAN_ASSIGNED: [TicketState.ESTIMATE_SHARED, TicketState.IN_PROGRESS, TicketState.OPEN],
+    TicketState.ESTIMATE_SHARED: [TicketState.ESTIMATE_APPROVED, TicketState.ASSIGNED, TicketState.CLOSED],
+    TicketState.ESTIMATE_APPROVED: [TicketState.WORK_IN_PROGRESS, TicketState.ESTIMATE_SHARED, TicketState.CLOSED],
+    TicketState.WORK_IN_PROGRESS: [TicketState.WORK_COMPLETED, TicketState.PENDING_PARTS, TicketState.ESTIMATE_APPROVED],
+    TicketState.WORK_COMPLETED: [TicketState.INVOICED, TicketState.CLOSED, TicketState.WORK_IN_PROGRESS],
+    TicketState.INVOICED: [TicketState.CLOSED, TicketState.WORK_COMPLETED],
 }
 
 
