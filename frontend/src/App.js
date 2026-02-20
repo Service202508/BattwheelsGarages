@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "@/App.css";
+import "leaflet/dist/leaflet.css";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 
