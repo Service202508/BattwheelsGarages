@@ -29,8 +29,9 @@ class TestTechnicianPortalData:
     """Validate Technician Portal data consistency"""
     
     @pytest.mark.asyncio
-    async def test_technician_sees_assigned_tickets(self, db):
+    async def test_technician_sees_assigned_tickets(self):
         """Verify technicians can see their assigned tickets"""
+        db = get_db()
         # Get a technician
         technician = await db.users.find_one({"role": "technician"})
         if not technician:
@@ -49,8 +50,9 @@ class TestTechnicianPortalData:
             assert ticket.get("organization_id") is not None
     
     @pytest.mark.asyncio
-    async def test_technician_ticket_estimates_exist(self, db):
+    async def test_technician_ticket_estimates_exist(self):
         """Verify tickets have linked estimates when expected"""
+        db = get_db()
         # Get in-progress tickets
         tickets = await db.tickets.find({
             "status": {"$in": ["estimate_shared", "estimate_approved", "work_in_progress"]}
@@ -70,8 +72,9 @@ class TestBusinessPortalData:
     """Validate Business Customer Portal data consistency"""
     
     @pytest.mark.asyncio
-    async def test_business_customer_sees_own_invoices(self, db):
+    async def test_business_customer_sees_own_invoices(self):
         """Verify business customers only see their own invoices"""
+        db = get_db()
         # Get a business customer
         business_user = await db.users.find_one({"role": "business_customer"})
         if not business_user:
@@ -89,8 +92,9 @@ class TestBusinessPortalData:
             assert inv.get("customer_id") == customer_id
     
     @pytest.mark.asyncio
-    async def test_business_invoice_totals_consistent(self, db):
+    async def test_business_invoice_totals_consistent(self):
         """Verify invoice totals are correct in business portal view"""
+        db = get_db()
         # Get invoices with line items
         invoices = await db.invoices.find({
             "grand_total": {"$gt": 0}
@@ -111,8 +115,9 @@ class TestCustomerPortalData:
     """Validate Individual Customer Portal data consistency"""
     
     @pytest.mark.asyncio
-    async def test_customer_tickets_have_valid_status(self, db):
+    async def test_customer_tickets_have_valid_status(self):
         """Verify customer tickets have valid status values"""
+        db = get_db()
         valid_statuses = [
             "open", "assigned", "in_progress", "pending_parts", 
             "resolved", "closed", "reopened",
@@ -132,8 +137,9 @@ class TestCrossModuleConsistency:
     """Validate data consistency across modules"""
     
     @pytest.mark.asyncio
-    async def test_invoice_payment_balance(self, db):
+    async def test_invoice_payment_balance(self):
         """Verify payment allocations sum to invoice.amount_paid"""
+        db = get_db()
         from collections import defaultdict
         
         # Build allocation map
@@ -155,8 +161,9 @@ class TestCrossModuleConsistency:
                     f"Invoice {invoice.get('invoice_number')}: allocation mismatch"
     
     @pytest.mark.asyncio
-    async def test_ticket_estimate_invoice_chain(self, db):
+    async def test_ticket_estimate_invoice_chain(self):
         """Verify ticket → estimate → invoice chain integrity"""
+        db = get_db()
         # Get estimates that have been converted to invoices
         estimates = await db.ticket_estimates.find({
             "converted_invoice_id": {"$exists": True, "$ne": None}
@@ -180,8 +187,9 @@ class TestCrossModuleConsistency:
                 # Note: Some estimates may be orphaned from old data
     
     @pytest.mark.asyncio
-    async def test_inventory_non_negative(self, db):
+    async def test_inventory_non_negative(self):
         """Verify no items have negative stock"""
+        db = get_db()
         negative_items = await db.items.count_documents({
             "$or": [
                 {"stock_on_hand": {"$lt": 0}},
@@ -192,8 +200,9 @@ class TestCrossModuleConsistency:
         assert negative_items == 0, f"Found {negative_items} items with negative stock"
     
     @pytest.mark.asyncio
-    async def test_organization_data_isolation(self, db):
+    async def test_organization_data_isolation(self):
         """Verify multi-tenant data isolation"""
+        db = get_db()
         # Get all organizations
         orgs = await db.organizations.find({}).to_list(100)
         
@@ -225,8 +234,9 @@ class TestDataIntegrityRules:
     """Validate business rules and data integrity"""
     
     @pytest.mark.asyncio
-    async def test_closed_tickets_immutable(self, db):
+    async def test_closed_tickets_immutable(self):
         """Verify closed tickets have required fields"""
+        db = get_db()
         closed_tickets = await db.tickets.find({
             "status": "closed"
         }).to_list(100)
@@ -237,8 +247,9 @@ class TestDataIntegrityRules:
             assert ticket.get("organization_id") is not None
     
     @pytest.mark.asyncio
-    async def test_paid_invoices_have_payments(self, db):
+    async def test_paid_invoices_have_payments(self):
         """Verify paid invoices have corresponding payments"""
+        db = get_db()
         paid_invoices = await db.invoices.find({
             "status": "paid"
         }).to_list(100)
