@@ -6,30 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { 
   ArrowLeft, Send, Car, User, AlertCircle, MapPin, 
-  Upload, X, FileText, Image, Phone, Mail, Search
+  Upload, X, FileText, Phone, Mail, Search, Bike, Truck, Bus, Loader2
 } from "lucide-react";
-import { API } from "@/App";
+import { API, getAuthHeaders } from "@/App";
 
-const vehicleTypes = [
-  { value: "two_wheeler", label: "Two Wheeler (Scooter/Bike)" },
-  { value: "three_wheeler", label: "Three Wheeler (Auto)" },
-  { value: "four_wheeler", label: "Four Wheeler (Car)" },
-  { value: "commercial", label: "Commercial Vehicle" },
-  { value: "other", label: "Other" },
-];
-
-const customerTypes = [
-  { value: "individual", label: "Individual" },
-  { value: "business", label: "Business/Corporate" },
-  { value: "fleet", label: "Fleet Owner" },
-  { value: "dealer", label: "Dealer/Reseller" },
-  { value: "rental", label: "Rental Service" },
-];
-
-const issueTypes = [
+// Fallback static data (in case API fails)
+const fallbackIssueTypes = [
   { value: "battery", label: "Battery Issues" },
   { value: "motor", label: "Motor Problems" },
   { value: "charging", label: "Charging System" },
@@ -52,12 +38,26 @@ const resolutionTypes = [
   { value: "remote", label: "Remote Diagnosis (Software/OTA)" },
 ];
 
+const customerTypes = [
+  { value: "individual", label: "Individual" },
+  { value: "business", label: "Business/OEM/Fleet Operator" },
+];
+
 const priorities = [
   { value: "low", label: "Low - Can wait a few days", color: "text-green-500" },
   { value: "medium", label: "Medium - Within 24-48 hours", color: "text-yellow-500" },
   { value: "high", label: "High - Urgent, within 24 hours", color: "text-orange-500" },
   { value: "critical", label: "Critical - Vehicle not operational", color: "text-red-500" },
 ];
+
+// Category icons mapping
+const categoryIcons = {
+  "2W_EV": Bike,
+  "3W_EV": Truck,
+  "4W_EV": Car,
+  "COMM_EV": Bus,
+  "LEV": Bike,
+};
 
 export default function NewTicket({ user }) {
   const navigate = useNavigate();
@@ -67,20 +67,29 @@ export default function NewTicket({ user }) {
   const [attachments, setAttachments] = useState([]);
   const [searchingLocation, setSearchingLocation] = useState(false);
   
+  // Master data from backend
+  const [categories, setCategories] = useState([]);
+  const [models, setModels] = useState([]);
+  const [modelsByOem, setModelsByOem] = useState({});
+  const [issueSuggestions, setIssueSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  
   const [formData, setFormData] = useState({
     // Vehicle Info
-    vehicle_type: "",
-    vehicle_model: "",
+    vehicle_category: "",
+    vehicle_model_id: "",
+    vehicle_model_name: "",
+    vehicle_oem: "",
     vehicle_number: "",
     // Customer Details
-    customer_type: "",
+    customer_type: "individual",
     customer_name: "",
     contact_number: "",
     email: "",
     // Complaint Specifics
     title: "",
-    issue_type: "",
-    resolution_type: "",
+    issue_type: "general",
+    resolution_type: "workshop",
     priority: "medium",
     description: "",
     // Location
@@ -89,15 +98,67 @@ export default function NewTicket({ user }) {
   });
 
   useEffect(() => {
+    fetchMasterData();
     fetchCustomers();
   }, []);
 
+  // Fetch vehicle models when category changes
+  useEffect(() => {
+    if (formData.vehicle_category) {
+      fetchModels(formData.vehicle_category);
+      fetchIssueSuggestions(formData.vehicle_category);
+    }
+  }, [formData.vehicle_category]);
+
+  const fetchMasterData = async () => {
+    try {
+      const res = await fetch(`${API}/master-data/vehicle-categories?active_only=true`, {
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCategories(data.categories || []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch vehicle categories:", error);
+    }
+  };
+
+  const fetchModels = async (categoryCode) => {
+    try {
+      const res = await fetch(`${API}/master-data/vehicle-models?category_code=${categoryCode}&active_only=true`, {
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setModels(data.models || []);
+        setModelsByOem(data.by_oem || {});
+      }
+    } catch (error) {
+      console.error("Failed to fetch vehicle models:", error);
+    }
+  };
+
+  const fetchIssueSuggestions = async (categoryCode, modelId = null) => {
+    try {
+      let url = `${API}/master-data/issue-suggestions?category_code=${categoryCode}`;
+      if (modelId) url += `&model_id=${modelId}`;
+      
+      const res = await fetch(url, { headers: getAuthHeaders() });
+      if (res.ok) {
+        const data = await res.json();
+        setIssueSuggestions(data.suggestions || []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch issue suggestions:", error);
+    }
+  };
+
   const fetchCustomers = async () => {
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`${API}/customers`, {
         credentials: "include",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: getAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
@@ -106,6 +167,34 @@ export default function NewTicket({ user }) {
     } catch (error) {
       console.error("Failed to fetch customers:", error);
     }
+  };
+
+  const handleModelSelect = (modelId) => {
+    const model = models.find(m => m.model_id === modelId);
+    if (model) {
+      setFormData(prev => ({
+        ...prev,
+        vehicle_model_id: modelId,
+        vehicle_model_name: model.name,
+        vehicle_oem: model.oem
+      }));
+      fetchIssueSuggestions(formData.vehicle_category, modelId);
+    }
+  };
+
+  const handleSuggestionSelect = (suggestion) => {
+    setFormData(prev => ({
+      ...prev,
+      title: suggestion.title,
+      issue_type: suggestion.issue_type || "general"
+    }));
+    setShowSuggestions(false);
+    
+    // Increment usage count for analytics
+    fetch(`${API}/master-data/issue-suggestions/${suggestion.suggestion_id}/increment-usage`, {
+      method: "POST",
+      headers: getAuthHeaders()
+    }).catch(() => {});
   };
 
   const handleFileChange = (e) => {
@@ -151,7 +240,7 @@ export default function NewTicket({ user }) {
     e.preventDefault();
     
     // Validation
-    if (!formData.vehicle_type || !formData.vehicle_number) {
+    if (!formData.vehicle_category || !formData.vehicle_number) {
       toast.error("Please fill in vehicle information");
       return;
     }
@@ -159,7 +248,7 @@ export default function NewTicket({ user }) {
       toast.error("Please fill in customer details");
       return;
     }
-    if (!formData.title || !formData.issue_type || !formData.description) {
+    if (!formData.title || !formData.description) {
       toast.error("Please fill in complaint specifics");
       return;
     }
@@ -167,22 +256,26 @@ export default function NewTicket({ user }) {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      
       // Create ticket data
       const ticketData = {
         title: formData.title,
         description: formData.description,
         category: formData.issue_type,
         priority: formData.priority,
-        // Extended fields
-        vehicle_type: formData.vehicle_type,
-        vehicle_model: formData.vehicle_model,
+        // Vehicle info - unified
+        vehicle_type: formData.vehicle_category,
+        vehicle_category: formData.vehicle_category,
+        vehicle_model: formData.vehicle_model_name || formData.vehicle_oem,
+        vehicle_model_id: formData.vehicle_model_id,
+        vehicle_oem: formData.vehicle_oem,
         vehicle_number: formData.vehicle_number,
+        // Customer info
         customer_type: formData.customer_type,
         customer_name: formData.customer_name,
         contact_number: formData.contact_number,
         customer_email: formData.email,
+        // Service details
+        issue_type: formData.issue_type,
         resolution_type: formData.resolution_type,
         incident_location: formData.incident_location,
         attachments_count: attachments.length,
@@ -192,13 +285,14 @@ export default function NewTicket({ user }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...getAuthHeaders(),
         },
         credentials: "include",
         body: JSON.stringify(ticketData),
       });
 
       if (response.ok) {
+        const result = await response.json();
         toast.success("Service ticket submitted successfully!");
         navigate("/tickets");
       } else {
@@ -246,33 +340,58 @@ export default function NewTicket({ user }) {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="vehicle_type">Vehicle Type *</Label>
+                  <Label htmlFor="vehicle_category">Vehicle Category *</Label>
                   <Select
-                    value={formData.vehicle_type}
-                    onValueChange={(value) => setFormData({ ...formData, vehicle_type: value })}
+                    value={formData.vehicle_category}
+                    onValueChange={(value) => setFormData({ 
+                      ...formData, 
+                      vehicle_category: value,
+                      vehicle_model_id: "",
+                      vehicle_model_name: "",
+                      vehicle_oem: ""
+                    })}
                   >
-                    <SelectTrigger className="bg-background/50" data-testid="vehicle-type-select">
-                      <SelectValue placeholder="Select vehicle type" />
+                    <SelectTrigger className="bg-background/50" data-testid="vehicle-category-select">
+                      <SelectValue placeholder="Select vehicle category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {vehicleTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
-                        </SelectItem>
-                      ))}
+                      {categories.map((cat) => {
+                        const Icon = categoryIcons[cat.code] || Car;
+                        return (
+                          <SelectItem key={cat.code} value={cat.code}>
+                            <div className="flex items-center gap-2">
+                              <Icon className="h-4 w-4" />
+                              {cat.name}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="vehicle_model">Vehicle Model</Label>
-                  <Input
-                    id="vehicle_model"
-                    placeholder="e.g., Honda Activa, Toyota Camry"
-                    className="bg-background/50"
-                    value={formData.vehicle_model}
-                    onChange={(e) => setFormData({ ...formData, vehicle_model: e.target.value })}
-                    data-testid="vehicle-model-input"
-                  />
+                  <Label htmlFor="vehicle_model">Vehicle Model (OEM)</Label>
+                  <Select
+                    value={formData.vehicle_model_id}
+                    onValueChange={handleModelSelect}
+                    disabled={!formData.vehicle_category}
+                  >
+                    <SelectTrigger className="bg-background/50" data-testid="vehicle-model-select">
+                      <SelectValue placeholder={formData.vehicle_category ? "Select model" : "Select category first"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(modelsByOem).map(([oem, oemModels]) => (
+                        <div key={oem}>
+                          <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted">{oem}</div>
+                          {oemModels.map((model) => (
+                            <SelectItem key={model.model_id} value={model.model_id}>
+                              {model.name} {model.range_km && `(${model.range_km} km range)`}
+                            </SelectItem>
+                          ))}
+                        </div>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="vehicle_number">Vehicle Number *</Label>
@@ -317,7 +436,7 @@ export default function NewTicket({ user }) {
                   <Label htmlFor="customer_name">Full Name *</Label>
                   <Input
                     id="customer_name"
-                    placeholder="John Doe"
+                    placeholder="Customer name"
                     className="bg-background/50"
                     value={formData.customer_name}
                     onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
@@ -330,7 +449,7 @@ export default function NewTicket({ user }) {
                   <Label htmlFor="contact_number">Contact Number *</Label>
                   <div className="flex">
                     <div className="flex items-center px-3 bg-muted border border-r-0 rounded-l-md text-sm text-muted-foreground">
-                      🇮🇳 +91
+                      +91
                     </div>
                     <Input
                       id="contact_number"
@@ -349,7 +468,7 @@ export default function NewTicket({ user }) {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="john.doe@example.com"
+                      placeholder="email@example.com"
                       className="bg-background/50 pl-10"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -366,20 +485,55 @@ export default function NewTicket({ user }) {
                 <AlertCircle className="h-5 w-5 text-primary" />
                 <span>Complaint Specifics</span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Label htmlFor="title">Issue Title *</Label>
                 <Input
                   id="title"
-                  placeholder="e.g., Engine making strange noises"
+                  placeholder="e.g., Battery not charging properly"
                   className="bg-background/50"
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, title: e.target.value });
+                    setShowSuggestions(true);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
                   data-testid="title-input"
                 />
+                {/* Issue Suggestions Dropdown */}
+                {showSuggestions && issueSuggestions.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-popover border rounded-lg shadow-lg max-h-60 overflow-auto">
+                    <div className="p-2 text-xs text-muted-foreground border-b">
+                      Common EV issues for your vehicle:
+                    </div>
+                    {issueSuggestions.slice(0, 8).map((suggestion) => (
+                      <div
+                        key={suggestion.suggestion_id || suggestion.failure_id}
+                        className="px-3 py-2 hover:bg-accent cursor-pointer"
+                        onClick={() => handleSuggestionSelect(suggestion)}
+                      >
+                        <p className="text-sm font-medium">{suggestion.title}</p>
+                        {suggestion.common_symptoms?.length > 0 && (
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {suggestion.common_symptoms.slice(0, 2).join(", ")}
+                          </p>
+                        )}
+                        {suggestion.source === "efi" && (
+                          <Badge variant="outline" className="text-xs mt-1">From EFI Database</Badge>
+                        )}
+                      </div>
+                    ))}
+                    <div 
+                      className="px-3 py-2 text-xs text-muted-foreground hover:bg-accent cursor-pointer border-t"
+                      onClick={() => setShowSuggestions(false)}
+                    >
+                      Close suggestions
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="issue_type">Issue Type *</Label>
+                  <Label htmlFor="issue_type">Issue Type</Label>
                   <Select
                     value={formData.issue_type}
                     onValueChange={(value) => setFormData({ ...formData, issue_type: value })}
@@ -388,7 +542,7 @@ export default function NewTicket({ user }) {
                       <SelectValue placeholder="Select issue type" />
                     </SelectTrigger>
                     <SelectContent>
-                      {issueTypes.map((type) => (
+                      {fallbackIssueTypes.map((type) => (
                         <SelectItem key={type.value} value={type.value}>
                           {type.label}
                         </SelectItem>
@@ -403,7 +557,7 @@ export default function NewTicket({ user }) {
                     onValueChange={(value) => setFormData({ ...formData, resolution_type: value })}
                   >
                     <SelectTrigger className="bg-background/50" data-testid="resolution-type-select">
-                      <SelectValue placeholder="Select where the service is needed" />
+                      <SelectValue placeholder="Select resolution type" />
                     </SelectTrigger>
                     <SelectContent>
                       {resolutionTypes.map((type) => (
@@ -437,7 +591,7 @@ export default function NewTicket({ user }) {
                 <Label htmlFor="description">Detailed Issue Description *</Label>
                 <Textarea
                   id="description"
-                  placeholder="Describe the issue in detail..."
+                  placeholder="Describe the issue in detail - when it started, symptoms, error codes if any..."
                   className="bg-background/50 min-h-[120px]"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -446,47 +600,48 @@ export default function NewTicket({ user }) {
               </div>
             </div>
 
-            {/* Location */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-lg font-semibold">
-                <MapPin className="h-5 w-5 text-primary" />
-                <span>Incident Location (Text)</span>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="incident_location">Start typing address or landmark...</Label>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="incident_location"
-                      placeholder="Type an address to search..."
-                      className="bg-background/50 pl-10"
-                      value={formData.incident_location}
-                      onChange={(e) => setFormData({ ...formData, incident_location: e.target.value })}
-                      data-testid="location-input"
-                    />
+            {/* Location (for on-site service) */}
+            {formData.resolution_type === "onsite" && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-lg font-semibold">
+                  <MapPin className="h-5 w-5 text-primary" />
+                  <span>Service Location</span>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="incident_location">Location Address</Label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="incident_location"
+                        placeholder="Type an address or landmark..."
+                        className="bg-background/50 pl-10"
+                        value={formData.incident_location}
+                        onChange={(e) => setFormData({ ...formData, incident_location: e.target.value })}
+                        data-testid="location-input"
+                      />
+                    </div>
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      onClick={handleLocationSearch}
+                      disabled={searchingLocation}
+                    >
+                      {searchingLocation ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm"}
+                    </Button>
                   </div>
-                  <Button 
-                    type="button" 
-                    variant="outline"
-                    onClick={handleLocationSearch}
-                    disabled={searchingLocation}
-                  >
-                    {searchingLocation ? "Searching..." : "Search / Map"}
-                  </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">Or Pick on Map</p>
-              </div>
-              
-              {/* Map Placeholder */}
-              <div className="h-48 bg-muted/50 rounded-lg border border-dashed border-white/10 flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Map integration available</p>
-                  <p className="text-xs">Click to pick location on map</p>
+                
+                {/* Map Placeholder */}
+                <div className="h-48 bg-muted/50 rounded-lg border border-dashed border-white/10 flex items-center justify-center">
+                  <div className="text-center text-muted-foreground">
+                    <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">Map integration available</p>
+                    <p className="text-xs">Enter address above</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* File Attachments */}
             <div className="space-y-4">
@@ -573,7 +728,11 @@ export default function NewTicket({ user }) {
                 disabled={loading}
                 data-testid="submit-ticket-btn"
               >
-                <Send className="h-4 w-4 mr-2" />
+                {loading ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4 mr-2" />
+                )}
                 {loading ? "Submitting..." : "Submit Ticket"}
               </Button>
             </div>
