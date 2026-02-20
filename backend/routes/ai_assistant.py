@@ -12,7 +12,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/ai", tags=["AI Assistant"])
+router = APIRouter(prefix="/ai-assist", tags=["AI Assistant"])
 
 def get_db():
     from server import db
