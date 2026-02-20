@@ -308,7 +308,7 @@ class ContinuousLearningService:
                         score += 10
                     elif days_ago < 30:
                         score += 5
-                except:
+                except Exception:
                     pass
             
             if score > best_score:
