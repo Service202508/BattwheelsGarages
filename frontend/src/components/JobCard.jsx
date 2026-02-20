@@ -668,27 +668,43 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
         {/* Approve Estimate - Now handled by EstimateItemsPanel */}
         {/* The Approve button is in EstimateItemsPanel */}
 
-        {/* Start Work - Technician, when Estimate Approved */}
-        {isTechnician && localTicket.status === "estimate_approved" && (
-          <Button onClick={handleStartWork} disabled={loading}>
+        {/* Start Work - When estimate is approved (auto-triggered but can be manual) */}
+        {(isTechnician || isAdmin) && localTicket.status === "estimate_approved" && (
+          <Button onClick={handleStartWork} disabled={loading} data-testid="start-work-btn">
             <Play className="mr-2 h-4 w-4" />
-            Start Work
+            {loading ? "Starting..." : "Start Work"}
           </Button>
         )}
 
-        {/* Mark as Resolved - Technician, when In Progress */}
-        {isTechnician && localTicket.status === "in_progress" && (
-          <Button onClick={handleMarkResolved} disabled={loading}>
-            <Flag className="mr-2 h-4 w-4" />
-            Mark as Resolved
+        {/* Complete Work - When work is in progress */}
+        {(isTechnician || isAdmin) && (localTicket.status === "work_in_progress" || localTicket.status === "in_progress") && (
+          <Button onClick={handleCompleteWork} disabled={loading} data-testid="complete-work-btn">
+            <CheckSquare className="mr-2 h-4 w-4" />
+            {loading ? "Completing..." : "Complete Work"}
           </Button>
         )}
 
-        {/* Generate Invoice - Admin/Technician, when Resolved */}
-        {!isCustomer && localTicket.status === "resolved" && (
-          <Button onClick={handleGenerateInvoice} disabled={loading}>
+        {/* Add Note - Always available for tech/admin on open tickets */}
+        {(isTechnician || isAdmin) && localTicket.status !== "closed" && (
+          <Button variant="outline" onClick={handleAddNote} data-testid="add-note-btn">
+            <ClipboardList className="mr-2 h-4 w-4" />
+            Add Note
+          </Button>
+        )}
+
+        {/* Close Ticket - Admin/Technician, when work is completed */}
+        {(isTechnician || isAdmin) && localTicket.status === "work_completed" && (
+          <Button onClick={handleCloseTicket} disabled={loading} variant="default" data-testid="close-ticket-btn">
+            <XCircle className="mr-2 h-4 w-4" />
+            Close Ticket
+          </Button>
+        )}
+
+        {/* Generate Invoice - Admin/Technician, when Resolved or Work Completed */}
+        {!isCustomer && (localTicket.status === "resolved" || localTicket.status === "work_completed") && (
+          <Button onClick={handleGenerateInvoice} disabled={loading} variant="outline">
             <FileText className="mr-2 h-4 w-4" />
-            Generate Invoice & Close
+            Generate Invoice
           </Button>
         )}
 
