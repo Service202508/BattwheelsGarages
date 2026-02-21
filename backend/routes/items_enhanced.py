@@ -12,7 +12,7 @@ Zoho Books-style comprehensive item management with:
 - Item History Tracking
 - Low stock alerts & reorder notifications
 """
-from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Form, Request
+from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Form, Request, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List, Dict, Any
@@ -26,6 +26,9 @@ import io
 import json
 import base64
 
+# Import tenant context for multi-tenant scoping
+from core.tenant.context import TenantContext, tenant_context_required, optional_tenant_context
+
 router = APIRouter(prefix="/items-enhanced", tags=["Items Enhanced"])
 
 # Database connection
@@ -34,12 +37,12 @@ def get_db():
     client = AsyncIOMotorClient(mongo_url)
     return client[os.environ['DB_NAME']]
 
-# Multi-tenant helpers
+# Multi-tenant helpers (Phase F migration - using TenantContext)
 async def get_org_id(request: Request) -> Optional[str]:
     """Get organization ID from request for multi-tenant scoping"""
     try:
-        from core.org import get_org_id_from_request
-        return await get_org_id_from_request(request)
+        ctx = await optional_tenant_context(request)
+        return ctx.org_id if ctx else None
     except Exception:
         return None
 
