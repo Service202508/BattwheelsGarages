@@ -639,16 +639,17 @@ async def list_members(
     return {"members": members, "total": len(members)}
 
 
-@router.put("/me/members/{user_id}/role")
+@router.patch("/me/members/{user_id}/role")
 async def update_member_role(
     user_id: str,
-    role: str,
+    data: dict,
     request: Request,
     ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Update a member's role (admin only)"""
+    role = data.get("role")
     # Validate role
-    valid_roles = ['admin', 'manager', 'technician', 'accountant', 'customer']
+    valid_roles = ['admin', 'manager', 'technician', 'accountant', 'customer', 'viewer']
     if role not in valid_roles:
         raise HTTPException(status_code=400, detail=f"Invalid role. Must be one of: {valid_roles}")
     
