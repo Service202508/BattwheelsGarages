@@ -1,5 +1,19 @@
 # Battwheels OS - Product Requirements Document
 
+## Data Consistency Fix (February 21, 2026)
+
+### Issue Resolved: Mobile/Desktop Data Inconsistency
+**Root Cause:** Organization ID was not being passed in API calls, causing financial endpoints to return ₹0.
+
+**Fixes Applied:**
+1. **Frontend (`Home.jsx`):** Added organization initialization before fetching dashboard data
+2. **Backend (`financial_dashboard.py`):** All 6 financial endpoints now return graceful empty responses with `org_missing: true` instead of 400 errors when org context is missing
+3. **Database:** Fixed 18 tickets with null `organization_id`
+
+**Test Results:** 100% pass rate (15/15 backend tests, all frontend widgets verified)
+
+---
+
 ## Original Problem Statement
 Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Books functionality with comprehensive quote-to-invoice workflow, EV-specific failure intelligence, and enterprise-grade inventory management.
 
