@@ -14,67 +14,48 @@
   - `org_type` field for internal vs customer orgs
   - Subscription lifecycle management
   - Usage tracking per organization
-- ✅ **NEW: Entitlement Service & Middleware (Phase 2)**
+- ✅ **Entitlement Service & Middleware (Phase 2)**
   - Runtime feature gating based on subscription plan
   - FastAPI dependencies: `require_feature()`, `require_usage_limit()`, `require_subscription()`
   - 37+ feature keys with plan-level entitlements
   - Upgrade suggestions when features unavailable
   - Usage limit tracking with remaining counts
+- ✅ **NEW: Subscription Management UI (Phase 2.5)**
+  - `/subscription` page showing plan, pricing, trial status
+  - Usage & Limits tab with progress bars for invoices, tickets, vehicles, AI calls
+  - Features tab showing 8 feature categories with enabled/disabled states
+  - Upgrade Plan dialog with plan comparison
+- ✅ **NEW: Team Management (Phase 3)**
+  - `/team` page for managing organization members
+  - Invite User dialog with name, email, role selection
+  - Team Members table with role editing
+  - Invitations tab with pending/accepted/expired status
+  - Cancel invitation functionality
+- ✅ **NEW: Organization Switcher Enhancement (Phase 4)**
+  - Quick links to Subscription, Team, Organization Settings
+  - Shows org name, plan type, and role badges
+  - Dropdown for multi-org users
 
 ### Remaining SaaS Features:
-- 🟡 **Phase 3: User Invitation System** (Email + SMS)
-- 🟡 **Phase 4: Organization Switcher Enhancement**
-- 🟡 **Phase 5: Organization Setup Wizard**
+- 🟡 **Phase 5: Organization Setup Wizard** - Post-signup multi-step configuration
+- 🟡 **Email/SMS Notifications** - Integration with Resend/Twilio for invite notifications
 
-### Phase 2 Implementation (Feb 21, 2026):
-**Files Created:**
-- `/app/backend/core/subscriptions/entitlement.py` - EntitlementService, require_feature dependency
-- `/app/backend/tests/test_entitlement_service.py` - 13 unit tests
-- `/app/backend/tests/test_subscription_entitlements_api.py` - 23 API tests (by testing agent)
+### Phase 3-4 Implementation (Feb 21, 2026):
+**Frontend Files Created:**
+- `/app/frontend/src/pages/SubscriptionManagement.jsx` - Full subscription management UI
+- `/app/frontend/src/pages/TeamManagement.jsx` - Team members and invitations UI
 
-**New API Endpoints:**
-- `GET /api/subscriptions/entitlements` - Get all feature entitlements for organization
-- `GET /api/subscriptions/entitlements/{feature}` - Check specific feature access
-- `GET /api/subscriptions/limits` - Get usage limits with current/remaining counts
-- `GET /api/subscriptions/plans/compare` - Compare all plans (public)
+**Routes Added:**
+- `/subscription` - Subscription & Billing page (admin only)
+- `/team` - Team Management page (admin/manager)
 
-**Feature Gate Dependencies:**
-```python
-# Protect routes by feature
-@router.get("/ai-guidance")
-async def get_guidance(
-    ctx: TenantContext = Depends(tenant_context_required),
-    _: None = Depends(require_feature("efi_ai_guidance"))
-):
-    ...
-
-# Check usage limits
-@router.post("/invoices")
-async def create_invoice(
-    ctx: TenantContext = Depends(tenant_context_required),
-    _: None = Depends(require_usage_limit("max_invoices_per_month"))
-):
-    ...
-```
-
-### Phase 1 Implementation (Feb 21, 2026):
-**Files Created:**
-- `/app/backend/core/subscriptions/models.py` - Plan, Subscription, UsageRecord models
-- `/app/backend/core/subscriptions/service.py` - SubscriptionService with lifecycle management
-- `/app/backend/routes/subscriptions.py` - Subscription API endpoints
-
-**Database Collections Added:**
-- `plans` - Plan definitions (4 tiers)
-- `subscriptions` - Organization subscriptions with usage tracking
-
-**Organization Model Updates:**
-- Added `org_type` (customer/internal/partner/demo)
-- Added `subscription_id` reference
+**Navigation Updated:**
+- Settings section now includes "Subscription & Billing" and "Team Management"
+- OrganizationSwitcher links updated to correct routes
 
 ### Test Reports:
+- `/app/test_reports/iteration_87.json` - Team & Subscription Management (17/18 backend, 100% frontend)
 - `/app/test_reports/iteration_86.json` - Subscription & Entitlement API tests (23/23 passed)
-- `/app/backend/tests/test_entitlement_service.py` - Unit tests (13/13 passed)
-- `/app/backend/tests/test_subscription_entitlements_api.py` - API tests
 
 ---
 
