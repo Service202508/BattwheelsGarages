@@ -5420,6 +5420,16 @@ try:
     init_tenant_ai_service(db)
     logger.info("TenantAIService initialized")
     
+    # Initialize tenant token vault (Phase F)
+    from core.tenant.token_vault import init_tenant_token_vault
+    init_tenant_token_vault(db)
+    logger.info("TenantTokenVault initialized")
+    
+    # Initialize tenant observability service (Phase G)
+    from core.tenant.observability import init_tenant_observability_service
+    init_tenant_observability_service(db)
+    logger.info("TenantObservabilityService initialized")
+    
     # Add tenant guard middleware (enforces tenant context on all requests)
     app.add_middleware(TenantGuardMiddleware)
     logger.info("TenantGuardMiddleware added - Multi-tenant isolation ACTIVE")
