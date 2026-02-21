@@ -231,3 +231,93 @@ async def google_auth(request: Request, response: Response):
     
     user_response = {k: v for k, v in user.items() if k not in ["password_hash", "_id"]}
     return {"token": token, "user": user_response}
+
+
+class SwitchOrganizationRequest(BaseModel):
+    organization_id: str
+
+
+@router.post("/switch-organization")
+async def switch_organization(request: Request, body: SwitchOrganizationRequest, response: Response):
+    """
+    Switch to a different organization.
+    Creates a new token with the selected org_id embedded.
+    """
+    # Get token from cookie or header
+    token = request.cookies.get("session_token")
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+        
+        # Verify user is a member of the requested organization
+        membership = await db.organization_users.find_one({
+            "user_id": user_id,
+            "organization_id": body.organization_id,
+            "status": "active"
+        })
+        
+        if not membership:
+            raise HTTPException(status_code=403, detail="You are not a member of this organization")
+        
+        # Get organization details
+        org = await db.organizations.find_one(
+            {"organization_id": body.organization_id, "is_active": True},
+            {"_id": 0}
+        )
+        
+        if not org:
+            raise HTTPException(status_code=404, detail="Organization not found")
+        
+        # Create new token with org_id
+        new_token = create_access_token({
+            "user_id": user_id, 
+            "role": user["role"],
+            "org_id": body.organization_id
+        })
+        
+        # Update cookie
+        response.set_cookie(
+            key="session_token",
+            value=new_token,
+            httponly=True,
+            secure=False,
+            samesite="lax",
+            max_age=ACCESS_TOKEN_EXPIRE_HOURS * 3600
+        )
+        
+        # Update last active timestamp
+        await db.organization_users.update_one(
+            {"user_id": user_id, "organization_id": body.organization_id},
+            {"$set": {"last_active_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        return {
+            "token": new_token,
+            "organization": {
+                "organization_id": org["organization_id"],
+                "name": org["name"],
+                "slug": org.get("slug"),
+                "logo_url": org.get("logo_url"),
+                "plan_type": org.get("plan_type", "free")
+            },
+            "role": membership["role"]
+        }
+        
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
