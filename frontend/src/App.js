@@ -445,21 +445,41 @@ function AppRouter() {
   if (location.hash?.includes("session_id=")) {
     return <AuthCallback onLogin={auth.login} />;
   }
+  
+  // Show loading state
+  if (auth.loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse text-primary text-xl">Loading...</div>
+      </div>
+    );
+  }
+  
+  // If user is logged in but needs to select an organization
+  if (auth.user && auth.needsOrgSelection && auth.organizations.length > 1) {
+    return <OrganizationSelection auth={auth} />;
+  }
 
   return (
-    <Routes>
-      {/* Public Quote View - No Auth Required */}
-      <Route path="/quote/:shareToken" element={<PublicQuoteView />} />
-      
-      {/* Public Ticket Submission Form - No Auth Required */}
-      <Route path="/submit-ticket" element={<PublicTicketForm />} />
-      
-      {/* Public Ticket Tracking - No Auth Required */}
-      <Route path="/track-ticket" element={<TrackTicket />} />
+    <OrganizationContext.Provider value={auth.currentOrg}>
+      <Routes>
+        {/* SaaS Landing Page - Public, shown to non-authenticated users */}
+        <Route path="/" element={
+          auth.user ? <RoleBasedRedirect user={auth.user} /> : <SaaSLanding />
+        } />
+        
+        {/* Public Quote View - No Auth Required */}
+        <Route path="/quote/:shareToken" element={<PublicQuoteView />} />
+        
+        {/* Public Ticket Submission Form - No Auth Required */}
+        <Route path="/submit-ticket" element={<PublicTicketForm />} />
+        
+        {/* Public Ticket Tracking - No Auth Required */}
+        <Route path="/track-ticket" element={<TrackTicket />} />
 
-      <Route path="/login" element={
-        auth.user ? <RoleBasedRedirect user={auth.user} /> : <Login onLogin={auth.login} />
-      } />
+        <Route path="/login" element={
+          auth.user ? <RoleBasedRedirect user={auth.user} /> : <Login onLogin={auth.login} />
+        } />
       
       {/* Zoho-style Financial Home Dashboard */}
       <Route path="/home" element={
