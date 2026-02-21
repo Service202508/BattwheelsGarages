@@ -126,6 +126,7 @@ export { getAuthHeaders, getOrganizationId, setOrganizationId, apiFetch, apiGet,
 export const useAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [orgReady, setOrgReady] = useState(false);
 
   const checkAuth = async () => {
     try {
@@ -137,14 +138,50 @@ export const useAuth = () => {
       if (response.ok) {
         const data = await response.json();
         setUser(data);
+        // Initialize organization after successful auth check
+        await initializeOrgContext();
       } else {
         setUser(null);
         localStorage.removeItem("token");
+        localStorage.removeItem("organization_id");
       }
     } catch (error) {
       setUser(null);
     } finally {
       setLoading(false);
+    }
+  };
+  
+  const initializeOrgContext = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setOrgReady(true);
+        return;
+      }
+      
+      // Check if org is already set
+      const existingOrg = localStorage.getItem("organization_id");
+      if (existingOrg) {
+        setOrgReady(true);
+        return;
+      }
+      
+      // Fetch organization
+      const response = await fetch(`${API}/org`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (response.ok) {
+        const org = await response.json();
+        if (org.organization_id) {
+          localStorage.setItem("organization_id", org.organization_id);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to init org:", e);
+    } finally {
+      setOrgReady(true);
     }
   };
 
@@ -153,14 +190,10 @@ export const useAuth = () => {
       localStorage.setItem("token", token);
     }
     setUser(userData);
+    setOrgReady(false);
     
     // Initialize organization context after login
-    try {
-      const { initializeOrganization } = await import('@/utils/api');
-      await initializeOrganization(API);
-    } catch (e) {
-      console.error("Failed to initialize organization:", e);
-    }
+    await initializeOrgContext();
   };
 
   const logout = async () => {
