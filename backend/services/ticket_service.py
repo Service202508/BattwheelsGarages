@@ -429,7 +429,8 @@ class TicketService:
         ticket_id: str, 
         data: TicketCloseData, 
         user_id: str, 
-        user_name: str
+        user_name: str,
+        organization_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Close a ticket with resolution details
@@ -446,9 +447,11 @@ class TicketService:
         Returns:
             Closed ticket document
         """
-        existing = await self.db.tickets.find_one(
-            {"ticket_id": ticket_id}, {"_id": 0}
-        )
+        query = {"ticket_id": ticket_id}
+        if organization_id:
+            query["organization_id"] = organization_id
+            
+        existing = await self.db.tickets.find_one(query, {"_id": 0})
         if not existing:
             raise ValueError(f"Ticket {ticket_id} not found")
         
