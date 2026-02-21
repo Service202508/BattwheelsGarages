@@ -392,7 +392,10 @@ class TicketService:
                 # Don't fail ticket update if estimate creation fails
                 logger.warning(f"Failed to auto-create estimate for ticket {ticket_id}: {e}")
         
-        # EMIT TICKET_UPDATED EVENT
+        # Get org_id from existing ticket for event tagging
+        ticket_org_id = existing.get("organization_id") or organization_id
+        
+        # EMIT TICKET_UPDATED EVENT (Phase D: with org_id)
         await self.dispatcher.emit(
             EventType.TICKET_UPDATED,
             {
@@ -401,10 +404,11 @@ class TicketService:
                 "updated_by": user_id
             },
             source="ticket_service",
-            user_id=user_id
+            user_id=user_id,
+            organization_id=ticket_org_id
         )
         
-        # EMIT TICKET_STATUS_CHANGED if status changed
+        # EMIT TICKET_STATUS_CHANGED if status changed (Phase D: with org_id)
         if new_status and new_status != old_status:
             await self.dispatcher.emit(
                 EventType.TICKET_STATUS_CHANGED,
@@ -416,7 +420,8 @@ class TicketService:
                 },
                 source="ticket_service",
                 user_id=user_id,
-                priority=EventPriority.NORMAL
+                priority=EventPriority.NORMAL,
+                organization_id=ticket_org_id
             )
             logger.info(f"Ticket {ticket_id} status: {old_status} -> {new_status}")
         
