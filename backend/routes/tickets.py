@@ -158,25 +158,24 @@ async def require_technician_or_admin(user: dict):
 # ==================== ROUTES ====================
 
 @router.post("")
-async def create_ticket(data: TicketCreateRequest, request: Request):
+async def create_ticket(
+    data: TicketCreateRequest, 
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
     """
     Create a new service ticket
     
     - Creates ticket with initial "open" status
     - Triggers AI matching to suggest failure cards
     - Returns created ticket
+    - Requires tenant context (X-Organization-ID header or user membership)
     """
     service = get_service()
     user = await get_current_user(request, service.db)
     
-    # Get org context for multi-tenant scoping
-    try:
-        from core.org import get_org_id_from_request
-        org_id = await get_org_id_from_request(request)
-    except Exception:
-        org_id = None
-    
-    create_data = TicketCreateData(**data.model_dump(), organization_id=org_id)
+    # Use tenant context for org_id (strict enforcement)
+    create_data = TicketCreateData(**data.model_dump(), organization_id=ctx.org_id)
     
     ticket = await service.create_ticket(
         data=create_data,
@@ -190,6 +189,7 @@ async def create_ticket(data: TicketCreateRequest, request: Request):
 @router.get("")
 async def list_tickets(
     request: Request,
+    ctx: TenantContext = Depends(tenant_context_required),
     status: Optional[str] = Query(None, description="Filter by status"),
     priority: Optional[str] = Query(None, description="Filter by priority"),
     category: Optional[str] = Query(None, description="Filter by category"),
@@ -202,17 +202,12 @@ async def list_tickets(
     - Customers see only their tickets
     - Technicians see assigned + unassigned tickets
     - Admins see all tickets
+    - Strictly scoped to user's organization
     """
     service = get_service()
     user = await get_current_user(request, service.db)
     
-    # Get org context for multi-tenant scoping
-    try:
-        from core.org import get_org_id_from_request
-        org_id = await get_org_id_from_request(request)
-    except Exception:
-        org_id = None
-    
+    # Use tenant context for org_id (strict enforcement)
     result = await service.list_tickets(
         user_id=user.get("user_id"),
         user_role=user.get("role"),
@@ -221,7 +216,7 @@ async def list_tickets(
         category=category,
         limit=limit,
         skip=skip,
-        organization_id=org_id
+        organization_id=ctx.org_id
     )
     
     return result
