@@ -150,7 +150,7 @@ const PremiumHeroSection = () => {
 
               {/* Premium CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link to="/book-service?utm_source=hero&utm_medium=cta&utm_campaign=book_service" className="flex-1 sm:flex-initial">
+                <a href="https://cloud-finance-suite.preview.emergentagent.com/submit-ticket" target="_blank" rel="noopener noreferrer" className="flex-1 sm:flex-initial">
                   <button className="relative w-full group overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 p-0.5 transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/50 hover:-translate-y-1">
                     <div className="relative bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl px-8 py-4 text-white font-bold text-lg flex items-center justify-center gap-3">
                       {/* Shine effect */}
@@ -159,7 +159,7 @@ const PremiumHeroSection = () => {
                       <span>Book EV Service Now</span>
                     </div>
                   </button>
-                </Link>
+                </a>
 
                 <Link to="/fleet-oem?utm_source=hero&utm_medium=cta&utm_campaign=fleet_enquiry" className="flex-1 sm:flex-initial">
                   <button className="relative w-full group overflow-hidden rounded-2xl bg-white border-2 border-orange-500 transition-all duration-300 hover:bg-orange-500 hover:shadow-xl hover:-translate-y-1">
