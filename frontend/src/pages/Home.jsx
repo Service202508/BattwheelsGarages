@@ -727,13 +727,15 @@ export default function Home({ user }) {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [headers, period, method, orgInitialized]);
+  }, [headers, period, method]);
   
   useEffect(() => {
-    if (orgInitialized) {
+    const initAndFetch = async () => {
+      await ensureOrgInitialized();
       fetchDashboardData();
-    }
-  }, [fetchDashboardData, orgInitialized]);
+    };
+    initAndFetch();
+  }, [fetchDashboardData]);
   
   return (
     <div className="space-y-6" data-testid="financial-home-dashboard">
