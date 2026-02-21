@@ -5359,6 +5359,7 @@ try:
     )
     from core.tenant.guard import init_tenant_guard
     from core.tenant.events import init_tenant_event_emitter
+    from core.tenant.audit import init_tenant_audit_service
     
     # Initialize tenant context manager (singleton)
     init_tenant_context_manager(db)
@@ -5371,6 +5372,10 @@ try:
     # Initialize tenant event emitter
     init_tenant_event_emitter(db)
     logger.info("TenantEventEmitter initialized")
+    
+    # Initialize tenant audit service
+    init_tenant_audit_service(db)
+    logger.info("TenantAuditService initialized")
     
     # Add tenant guard middleware (enforces tenant context on all requests)
     app.add_middleware(TenantGuardMiddleware)
