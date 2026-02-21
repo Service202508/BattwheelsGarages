@@ -3,21 +3,106 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Car, Wrench, Clock, Users, MapPin, Building2, Truck, Wifi, TrendingUp, CheckCircle2, AlertCircle } from "lucide-react";
+import { Car, Wrench, Clock, Users, MapPin, Building2, Truck, Wifi, TrendingUp, CheckCircle2, AlertCircle, Zap, Target } from "lucide-react";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { MetricCard } from "@/components/ui/stat-card";
 import { API, getAuthHeaders } from "@/App";
 
-const CHART_COLORS = {
-  primary: "hsl(186, 70%, 50%)",
-  secondary: "hsl(24, 95%, 53%)",
-  tertiary: "hsl(262, 83%, 58%)",
-  success: "hsl(142, 76%, 36%)",
-  warning: "hsl(38, 92%, 50%)",
-  onsite: "#22c55e",
-  workshop: "#3b82f6",
-  pickup: "#f59e0b",
-  remote: "#8b5cf6"
+// Clean, consistent color palette with emerald as primary brand color
+const BRAND_COLORS = {
+  emerald: {
+    primary: "#10B981",
+    light: "#34D399",
+    dark: "#059669",
+    bg: "rgba(16, 185, 129, 0.1)",
+    border: "rgba(16, 185, 129, 0.3)"
+  },
+  blue: {
+    primary: "#3B82F6",
+    light: "#60A5FA",
+    dark: "#2563EB",
+    bg: "rgba(59, 130, 246, 0.1)",
+    border: "rgba(59, 130, 246, 0.3)"
+  },
+  amber: {
+    primary: "#F59E0B",
+    light: "#FBBF24",
+    dark: "#D97706",
+    bg: "rgba(245, 158, 11, 0.1)",
+    border: "rgba(245, 158, 11, 0.3)"
+  },
+  violet: {
+    primary: "#8B5CF6",
+    light: "#A78BFA",
+    dark: "#7C3AED",
+    bg: "rgba(139, 92, 246, 0.1)",
+    border: "rgba(139, 92, 246, 0.3)"
+  },
+  slate: {
+    bg: "#F8FAFC",
+    card: "#FFFFFF",
+    border: "#E2E8F0",
+    text: "#334155",
+    muted: "#64748B"
+  }
+};
+
+// Enhanced Stat Card Component for Service Tickets
+const ServiceMetricCard = ({ title, value, subtitle, icon: Icon, color = "emerald", className = "" }) => {
+  const colorStyles = BRAND_COLORS[color] || BRAND_COLORS.emerald;
+  
+  return (
+    <Card className={`relative overflow-hidden bg-white border border-slate-200 hover:border-slate-300 hover:shadow-lg transition-all duration-300 ${className}`}>
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between">
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-slate-500">{title}</p>
+            <p className="text-3xl font-bold text-slate-800">{value}</p>
+            <p className="text-xs text-slate-400 mt-1">{subtitle}</p>
+          </div>
+          <div 
+            className="p-3 rounded-xl" 
+            style={{ backgroundColor: colorStyles.bg }}
+          >
+            <Icon className="h-5 w-5" style={{ color: colorStyles.primary }} />
+          </div>
+        </div>
+        {/* Accent line at bottom */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-1 opacity-60"
+          style={{ backgroundColor: colorStyles.primary }}
+        />
+      </CardContent>
+    </Card>
+  );
+};
+
+// KPI Card with progress
+const KPICard = ({ title, description, value, unit = "", target, icon: Icon, color = "emerald", children }) => {
+  const colorStyles = BRAND_COLORS[color] || BRAND_COLORS.emerald;
+  const percentage = target ? Math.min((parseFloat(value) / target) * 100, 100) : 0;
+  const isOnTarget = target ? parseFloat(value) >= target : true;
+  
+  return (
+    <Card className="bg-white border border-slate-200 hover:shadow-md transition-all duration-300">
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-2">
+          {Icon && (
+            <div className="p-1.5 rounded-lg" style={{ backgroundColor: colorStyles.bg }}>
+              <Icon className="h-4 w-4" style={{ color: colorStyles.primary }} />
+            </div>
+          )}
+          <div>
+            <CardTitle className="text-base font-semibold text-slate-700">{title}</CardTitle>
+            <CardDescription className="text-xs">{description}</CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-0">
+        {children}
+      </CardContent>
+    </Card>
+  );
 };
 
 export default function Dashboard({ user }) {
