@@ -77,6 +77,7 @@ class Organization(OrganizationBase):
     model_config = ConfigDict(extra="ignore")
     
     organization_id: str = Field(default_factory=lambda: f"org_{uuid.uuid4().hex[:12]}")
+    subscription_id: Optional[str] = None  # NEW: Reference to subscription
     is_active: bool = True
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
