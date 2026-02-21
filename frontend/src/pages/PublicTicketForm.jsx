@@ -8,12 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { 
   Car, User, AlertCircle, MapPin, Upload, X, FileText, 
-  Phone, Mail, Search, Zap, Building2, IndianRupee, CreditCard,
-  CheckCircle, Loader2, Bike, Truck, Bus
+  Phone, Mail, Zap, Building2, IndianRupee, CreditCard,
+  CheckCircle, Loader2, Bike, Truck, Bus, ArrowRight, Shield, Clock, Headphones
 } from "lucide-react";
 import LocationPicker from "@/components/LocationPicker";
 
@@ -23,23 +22,23 @@ const API = `${BACKEND_URL}/api`;
 // Customer types
 const customerTypes = [
   { value: "individual", label: "Individual", icon: User, description: "Personal vehicle owner" },
-  { value: "business", label: "Business/OEM/Fleet Operator", icon: Building2, description: "Company, fleet operator, or OEM" },
+  { value: "business", label: "Business/OEM/Fleet", icon: Building2, description: "Company or fleet operator" },
 ];
 
 // Resolution types
 const resolutionTypes = [
-  { value: "workshop", label: "Workshop Visit", description: "Bring your vehicle to our service center" },
-  { value: "onsite", label: "On-Site Resolution", description: "We come to your location" },
-  { value: "pickup", label: "Pickup & Drop", description: "We pick up and deliver your vehicle" },
-  { value: "remote", label: "Remote Diagnosis", description: "Software/OTA fix remotely" },
+  { value: "workshop", label: "Workshop Visit", description: "Bring to service center", icon: "🏭" },
+  { value: "onsite", label: "On-Site Service", description: "We come to you", icon: "🚐" },
+  { value: "pickup", label: "Pickup & Drop", description: "We handle transport", icon: "🚚" },
+  { value: "remote", label: "Remote Diagnosis", description: "OTA/Software fix", icon: "📡" },
 ];
 
 // Priority levels
 const priorities = [
-  { value: "low", label: "Low - Can wait a few days", color: "bg-green-500" },
-  { value: "medium", label: "Medium - Within 24-48 hours", color: "bg-yellow-500" },
-  { value: "high", label: "High - Urgent, within 24 hours", color: "bg-orange-500" },
-  { value: "critical", label: "Critical - Vehicle not operational", color: "bg-red-500" },
+  { value: "low", label: "Low", sublabel: "Can wait a few days", color: "bg-emerald-500", ring: "ring-emerald-500/30" },
+  { value: "medium", label: "Medium", sublabel: "Within 24-48 hours", color: "bg-amber-500", ring: "ring-amber-500/30" },
+  { value: "high", label: "High", sublabel: "Within 24 hours", color: "bg-orange-500", ring: "ring-orange-500/30" },
+  { value: "critical", label: "Critical", sublabel: "Not operational", color: "bg-red-500", ring: "ring-red-500/30" },
 ];
 
 // Category icons
@@ -57,7 +56,7 @@ export default function PublicTicketForm() {
   const fileInputRef = useRef(null);
   
   // Form state
-  const [step, setStep] = useState(1); // 1: Form, 2: Payment, 3: Success
+  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   
@@ -72,31 +71,25 @@ export default function PublicTicketForm() {
   
   // Form data
   const [formData, setFormData] = useState({
-    // Vehicle
     vehicle_category: "",
     vehicle_model_id: "",
     vehicle_model_name: "",
     vehicle_oem: "",
     vehicle_number: "",
-    // Customer
     customer_type: "individual",
     customer_name: "",
     contact_number: "",
     email: "",
     business_name: "",
     gst_number: "",
-    // Issue
     title: "",
     description: "",
     issue_type: "general",
     priority: "medium",
-    // Resolution
     resolution_type: "workshop",
-    // Location
     incident_location: "",
     location_lat: null,
     location_lng: null,
-    // Payment
     include_visit_fee: true,
     include_diagnostic_fee: false,
   });
@@ -109,19 +102,15 @@ export default function PublicTicketForm() {
   const [attachments, setAttachments] = useState([]);
   
   // Search states
-  const [searchingLocation, setSearchingLocation] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showAiSuggestions, setShowAiSuggestions] = useState(false);
 
-  // AI suggestion debounce
   const aiDebounceRef = useRef(null);
 
-  // Load master data on mount
   useEffect(() => {
     fetchMasterData();
   }, []);
 
-  // Load models when category changes
   useEffect(() => {
     if (formData.vehicle_category) {
       fetchModels(formData.vehicle_category);
@@ -204,7 +193,6 @@ export default function PublicTicketForm() {
     setShowAiSuggestions(false);
   };
 
-  // Fetch AI-powered suggestions
   const fetchAiSuggestions = async (userInput) => {
     if (!userInput || userInput.length < 3 || !formData.vehicle_category) return;
     
@@ -235,16 +223,13 @@ export default function PublicTicketForm() {
     }
   };
 
-  // Debounced AI suggestion handler
   const handleTitleChange = (value) => {
     setFormData(prev => ({ ...prev, title: value }));
     
-    // Clear previous timeout
     if (aiDebounceRef.current) {
       clearTimeout(aiDebounceRef.current);
     }
     
-    // Set new timeout for AI suggestions (500ms debounce)
     if (value.length >= 3) {
       aiDebounceRef.current = setTimeout(() => {
         fetchAiSuggestions(value);
@@ -279,17 +264,6 @@ export default function PublicTicketForm() {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-
-  const handleLocationSearch = async () => {
-    if (!formData.incident_location) return;
-    setSearchingLocation(true);
-    
-    // Simple geocoding simulation - in production, use a real geocoding service
-    setTimeout(() => {
-      toast.success("Location saved: " + formData.incident_location);
-      setSearchingLocation(false);
-    }, 1000);
   };
 
   const validateForm = () => {
@@ -330,7 +304,7 @@ export default function PublicTicketForm() {
 
   const calculateTotal = () => {
     if (!requiresPayment()) return 0;
-    let total = serviceCharges.visit_fee; // Always mandatory for onsite
+    let total = serviceCharges.visit_fee;
     if (formData.include_diagnostic_fee) {
       total += serviceCharges.diagnostic_fee;
     }
@@ -361,12 +335,10 @@ export default function PublicTicketForm() {
       }
       
       if (data.requires_payment) {
-        // Show payment page
         setPaymentDetails(data.payment_details);
         setTicketResult(data);
         setStep(2);
       } else {
-        // Ticket created successfully
         setTicketResult(data);
         setStep(3);
         toast.success("Service ticket submitted successfully!");
@@ -381,7 +353,6 @@ export default function PublicTicketForm() {
   const handlePayment = async () => {
     if (!paymentDetails) return;
     
-    // For mock payments (when Razorpay not configured), simulate success
     if (paymentDetails.is_mock) {
       try {
         const verifyRes = await fetch(`${API}/public/tickets/verify-payment`, {
@@ -405,12 +376,11 @@ export default function PublicTicketForm() {
       return;
     }
     
-    // Real Razorpay integration
     const options = {
       key: paymentDetails.key_id,
       amount: paymentDetails.amount_paise,
       currency: "INR",
-      name: "Battwheels Services",
+      name: "Battwheels Garages",
       description: "Service Ticket Charges",
       order_id: paymentDetails.order_id,
       handler: async function(response) {
@@ -441,10 +411,9 @@ export default function PublicTicketForm() {
         email: formData.email,
         contact: formData.contact_number
       },
-      theme: { color: "#22c55e" }
+      theme: { color: "#10b981" }
     };
     
-    // @ts-ignore
     const rzp = new window.Razorpay(options);
     rzp.open();
   };
@@ -452,53 +421,93 @@ export default function PublicTicketForm() {
   // Step 1: Form
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-8 px-4">
-        <div className="max-w-3xl mx-auto space-y-6" data-testid="public-ticket-form">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Zap className="h-10 w-10 text-green-500" />
-              <h1 className="text-3xl font-bold text-white">Battwheels Service</h1>
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+        {/* Hero Header */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/10 via-transparent to-teal-600/10" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/20 via-transparent to-transparent" />
+          
+          <div className="relative max-w-4xl mx-auto px-4 pt-8 pb-12">
+            {/* Logo */}
+            <div className="flex justify-center mb-6">
+              <img 
+                src="/battwheels_garages_logo.png" 
+                alt="Battwheels Garages" 
+                className="h-24 w-auto drop-shadow-2xl"
+              />
             </div>
-            <p className="text-slate-400">Submit your EV service request</p>
-          </div>
+            
+            {/* Headline */}
+            <div className="text-center space-y-3">
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+                EV Service Request
+              </h1>
+              <p className="text-slate-400 text-lg max-w-xl mx-auto">
+                Expert care for your electric vehicle. Submit your service request and our team will assist you promptly.
+              </p>
+            </div>
 
-          <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="text-white">New Service Ticket</CardTitle>
-              <CardDescription>Fill out the form below to request EV service</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-8">
+            {/* Trust Badges */}
+            <div className="flex flex-wrap justify-center gap-6 mt-8">
+              <div className="flex items-center gap-2 text-sm text-slate-400">
+                <Shield className="h-4 w-4 text-emerald-500" />
+                <span>Certified Technicians</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-slate-400">
+                <Clock className="h-4 w-4 text-emerald-500" />
+                <span>Quick Response</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-slate-400">
+                <Headphones className="h-4 w-4 text-emerald-500" />
+                <span>24/7 Support</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Form Container */}
+        <div className="max-w-3xl mx-auto px-4 pb-12" data-testid="public-ticket-form">
+          <Card className="border-0 bg-slate-900/80 backdrop-blur-xl shadow-2xl shadow-emerald-900/10 rounded-2xl overflow-hidden">
+            <CardContent className="p-6 md:p-8 space-y-8">
               
               {/* Customer Type Selection */}
               <div className="space-y-4">
-                <Label className="text-white text-lg font-semibold flex items-center gap-2">
-                  <User className="h-5 w-5 text-green-500" />
-                  Customer Type
-                </Label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+                  <h2 className="text-lg font-semibold text-white">Customer Type</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {customerTypes.map((type) => {
                     const Icon = type.icon;
                     const isSelected = formData.customer_type === type.value;
                     return (
-                      <div
+                      <button
                         key={type.value}
                         onClick={() => setFormData(prev => ({ ...prev, customer_type: type.value }))}
-                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        className={`relative p-4 rounded-xl border-2 transition-all duration-200 text-left group ${
                           isSelected 
-                            ? "border-green-500 bg-green-500/10" 
-                            : "border-slate-600 hover:border-slate-500"
+                            ? "border-emerald-500 bg-emerald-500/10 ring-4 ring-emerald-500/20" 
+                            : "border-slate-700/50 hover:border-slate-600 bg-slate-800/30 hover:bg-slate-800/50"
                         }`}
                         data-testid={`customer-type-${type.value}`}
                       >
                         <div className="flex items-center gap-3">
-                          <Icon className={`h-6 w-6 ${isSelected ? "text-green-500" : "text-slate-400"}`} />
+                          <div className={`p-2.5 rounded-lg transition-colors ${
+                            isSelected ? "bg-emerald-500/20" : "bg-slate-700/50 group-hover:bg-slate-700"
+                          }`}>
+                            <Icon className={`h-5 w-5 ${isSelected ? "text-emerald-400" : "text-slate-400"}`} />
+                          </div>
                           <div>
-                            <p className={`font-medium ${isSelected ? "text-green-500" : "text-white"}`}>{type.label}</p>
-                            <p className="text-sm text-slate-400">{type.description}</p>
+                            <p className={`font-medium ${isSelected ? "text-emerald-400" : "text-white"}`}>{type.label}</p>
+                            <p className="text-sm text-slate-500">{type.description}</p>
                           </div>
                         </div>
-                      </div>
+                        {isSelected && (
+                          <div className="absolute top-3 right-3">
+                            <CheckCircle className="h-5 w-5 text-emerald-500" />
+                          </div>
+                        )}
+                      </button>
                     );
                   })}
                 </div>
@@ -506,13 +515,13 @@ export default function PublicTicketForm() {
 
               {/* Vehicle Information */}
               <div className="space-y-4">
-                <Label className="text-white text-lg font-semibold flex items-center gap-2">
-                  <Car className="h-5 w-5 text-green-500" />
-                  Vehicle Information
-                </Label>
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+                  <h2 className="text-lg font-semibold text-white">Vehicle Information</h2>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Vehicle Category *</Label>
+                    <Label className="text-slate-300 text-sm">Vehicle Category <span className="text-emerald-500">*</span></Label>
                     <Select
                       value={formData.vehicle_category}
                       onValueChange={(value) => setFormData(prev => ({ 
@@ -523,16 +532,16 @@ export default function PublicTicketForm() {
                         vehicle_oem: ""
                       }))}
                     >
-                      <SelectTrigger className="bg-slate-700/50 border-slate-600" data-testid="vehicle-category-select">
-                        <SelectValue placeholder="Select vehicle category" />
+                      <SelectTrigger className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all rounded-xl" data-testid="vehicle-category-select">
+                        <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-slate-800 border-slate-700">
                         {categories.map((cat) => {
                           const Icon = categoryIcons[cat.code] || Car;
                           return (
-                            <SelectItem key={cat.code} value={cat.code}>
+                            <SelectItem key={cat.code} value={cat.code} className="focus:bg-emerald-500/20">
                               <div className="flex items-center gap-2">
-                                <Icon className="h-4 w-4" />
+                                <Icon className="h-4 w-4 text-emerald-500" />
                                 {cat.name}
                               </div>
                             </SelectItem>
@@ -542,22 +551,22 @@ export default function PublicTicketForm() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Vehicle Model (OEM)</Label>
+                    <Label className="text-slate-300 text-sm">Vehicle Model (OEM)</Label>
                     <Select
                       value={formData.vehicle_model_id}
                       onValueChange={handleModelSelect}
                       disabled={!formData.vehicle_category}
                     >
-                      <SelectTrigger className="bg-slate-700/50 border-slate-600" data-testid="vehicle-model-select">
-                        <SelectValue placeholder="Select vehicle model" />
+                      <SelectTrigger className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all rounded-xl disabled:opacity-50" data-testid="vehicle-model-select">
+                        <SelectValue placeholder="Select model" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
                         {Object.entries(modelsByOem).map(([oem, oemModels]) => (
                           <div key={oem}>
-                            <div className="px-2 py-1.5 text-xs font-semibold text-slate-400 bg-slate-800">{oem}</div>
+                            <div className="px-2 py-1.5 text-xs font-semibold text-emerald-400 bg-slate-900/50 sticky top-0">{oem}</div>
                             {oemModels.map((model) => (
-                              <SelectItem key={model.model_id} value={model.model_id}>
-                                {model.name} {model.range_km && `(${model.range_km} km)`}
+                              <SelectItem key={model.model_id} value={model.model_id} className="focus:bg-emerald-500/20">
+                                {model.name} {model.range_km && <span className="text-slate-500 ml-1">({model.range_km} km)</span>}
                               </SelectItem>
                             ))}
                           </div>
@@ -567,10 +576,10 @@ export default function PublicTicketForm() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Vehicle Number *</Label>
+                  <Label className="text-slate-300 text-sm">Vehicle Number <span className="text-emerald-500">*</span></Label>
                   <Input
                     placeholder="e.g., MH12AB1234"
-                    className="bg-slate-700/50 border-slate-600 uppercase"
+                    className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 uppercase rounded-xl transition-all"
                     value={formData.vehicle_number}
                     onChange={(e) => setFormData(prev => ({ ...prev, vehicle_number: e.target.value.toUpperCase() }))}
                     data-testid="vehicle-number-input"
@@ -580,30 +589,30 @@ export default function PublicTicketForm() {
 
               {/* Customer Details */}
               <div className="space-y-4">
-                <Label className="text-white text-lg font-semibold flex items-center gap-2">
-                  <User className="h-5 w-5 text-green-500" />
-                  Customer Details
-                </Label>
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+                  <h2 className="text-lg font-semibold text-white">Your Details</h2>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Full Name *</Label>
+                    <Label className="text-slate-300 text-sm">Full Name <span className="text-emerald-500">*</span></Label>
                     <Input
                       placeholder="Your name"
-                      className="bg-slate-700/50 border-slate-600"
+                      className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-xl transition-all"
                       value={formData.customer_name}
                       onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))}
                       data-testid="customer-name-input"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Contact Number *</Label>
+                    <Label className="text-slate-300 text-sm">Contact Number <span className="text-emerald-500">*</span></Label>
                     <div className="flex">
-                      <div className="flex items-center px-3 bg-slate-700 border border-r-0 border-slate-600 rounded-l-md text-sm text-slate-400">
+                      <div className="flex items-center px-4 bg-slate-800 border border-r-0 border-slate-700/50 rounded-l-xl text-sm text-slate-400 font-medium">
                         +91
                       </div>
                       <Input
                         placeholder="98765 43210"
-                        className="bg-slate-700/50 border-slate-600 rounded-l-none"
+                        className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-l-none rounded-r-xl transition-all"
                         value={formData.contact_number}
                         onChange={(e) => setFormData(prev => ({ ...prev, contact_number: e.target.value }))}
                         data-testid="contact-number-input"
@@ -613,13 +622,13 @@ export default function PublicTicketForm() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Email Address</Label>
+                    <Label className="text-slate-300 text-sm">Email Address</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                       <Input
                         type="email"
                         placeholder="your@email.com"
-                        className="bg-slate-700/50 border-slate-600 pl-10"
+                        className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 pl-11 rounded-xl transition-all"
                         value={formData.email}
                         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                         data-testid="email-input"
@@ -628,10 +637,10 @@ export default function PublicTicketForm() {
                   </div>
                   {formData.customer_type === "business" && (
                     <div className="space-y-2">
-                      <Label className="text-slate-300">Business Name</Label>
+                      <Label className="text-slate-300 text-sm">Business Name</Label>
                       <Input
                         placeholder="Company name"
-                        className="bg-slate-700/50 border-slate-600"
+                        className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-xl transition-all"
                         value={formData.business_name}
                         onChange={(e) => setFormData(prev => ({ ...prev, business_name: e.target.value }))}
                         data-testid="business-name-input"
@@ -641,10 +650,10 @@ export default function PublicTicketForm() {
                 </div>
                 {formData.customer_type === "business" && (
                   <div className="space-y-2">
-                    <Label className="text-slate-300">GST Number</Label>
+                    <Label className="text-slate-300 text-sm">GST Number</Label>
                     <Input
                       placeholder="22AAAAA0000A1Z5"
-                      className="bg-slate-700/50 border-slate-600 uppercase"
+                      className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 uppercase rounded-xl transition-all"
                       value={formData.gst_number}
                       onChange={(e) => setFormData(prev => ({ ...prev, gst_number: e.target.value.toUpperCase() }))}
                       data-testid="gst-number-input"
@@ -655,23 +664,23 @@ export default function PublicTicketForm() {
 
               {/* Issue Details */}
               <div className="space-y-4">
-                <Label className="text-white text-lg font-semibold flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-green-500" />
-                  Issue Details
-                </Label>
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+                  <h2 className="text-lg font-semibold text-white">Issue Details</h2>
+                </div>
                 <div className="space-y-2 relative">
                   <div className="flex items-center justify-between">
-                    <Label className="text-slate-300">Issue Title *</Label>
+                    <Label className="text-slate-300 text-sm">Issue Title <span className="text-emerald-500">*</span></Label>
                     {aiLoading && (
-                      <span className="text-xs text-green-400 flex items-center gap-1">
+                      <span className="text-xs text-emerald-400 flex items-center gap-1">
                         <Loader2 className="h-3 w-3 animate-spin" />
                         AI analyzing...
                       </span>
                     )}
                   </div>
                   <Input
-                    placeholder="Describe the issue briefly... (AI will suggest related issues)"
-                    className="bg-slate-700/50 border-slate-600"
+                    placeholder="Describe the issue briefly..."
+                    className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-xl transition-all"
                     value={formData.title}
                     onChange={(e) => handleTitleChange(e.target.value)}
                     onFocus={() => {
@@ -681,129 +690,121 @@ export default function PublicTicketForm() {
                     data-testid="issue-title-input"
                   />
                   
-                  {/* AI-Powered Suggestions Dropdown */}
+                  {/* AI-Powered Suggestions */}
                   {showAiSuggestions && aiSuggestions.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-green-500/50 rounded-lg shadow-lg max-h-60 overflow-auto">
-                      <div className="p-2 text-xs text-green-400 border-b border-slate-700 flex items-center gap-1">
-                        <Zap className="h-3 w-3" />
-                        AI-Powered Suggestions based on your description:
+                    <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-emerald-500/30 rounded-xl shadow-xl shadow-emerald-900/20 max-h-60 overflow-auto">
+                      <div className="p-3 text-xs text-emerald-400 border-b border-slate-700/50 flex items-center gap-2 bg-emerald-500/5">
+                        <Zap className="h-3.5 w-3.5" />
+                        <span className="font-medium">AI-Powered Suggestions</span>
                       </div>
                       {aiSuggestions.slice(0, 5).map((suggestion, idx) => (
                         <div
                           key={idx}
-                          className="px-3 py-2 hover:bg-green-500/10 cursor-pointer border-b border-slate-700/50 last:border-b-0"
+                          className="px-4 py-3 hover:bg-emerald-500/10 cursor-pointer border-b border-slate-700/30 last:border-b-0 transition-colors"
                           onClick={() => handleSuggestionSelect(suggestion)}
                         >
                           <div className="flex items-center justify-between">
                             <p className="text-white text-sm font-medium">{suggestion.title}</p>
                             <Badge 
-                              variant="outline" 
-                              className={`text-xs ${
-                                suggestion.severity === 'critical' ? 'border-red-500 text-red-400' :
-                                suggestion.severity === 'high' ? 'border-orange-500 text-orange-400' :
-                                suggestion.severity === 'medium' ? 'border-yellow-500 text-yellow-400' :
-                                'border-green-500 text-green-400'
+                              className={`text-xs border ${
+                                suggestion.severity === 'critical' ? 'border-red-500/50 bg-red-500/10 text-red-400' :
+                                suggestion.severity === 'high' ? 'border-orange-500/50 bg-orange-500/10 text-orange-400' :
+                                suggestion.severity === 'medium' ? 'border-amber-500/50 bg-amber-500/10 text-amber-400' :
+                                'border-emerald-500/50 bg-emerald-500/10 text-emerald-400'
                               }`}
                             >
                               {suggestion.severity}
                             </Badge>
                           </div>
                           {suggestion.description && (
-                            <p className="text-xs text-slate-400 mt-0.5">{suggestion.description}</p>
+                            <p className="text-xs text-slate-400 mt-1">{suggestion.description}</p>
                           )}
-                          <span className="text-xs text-green-500/70 mt-1 inline-block">Type: {suggestion.issue_type}</span>
                         </div>
                       ))}
-                      <div 
-                        className="px-3 py-2 text-xs text-slate-500 hover:bg-slate-700 cursor-pointer text-center"
-                        onClick={() => setShowAiSuggestions(false)}
-                      >
-                        Close AI suggestions
-                      </div>
                     </div>
                   )}
                   
-                  {/* Database Issue Suggestions Dropdown (fallback) */}
+                  {/* Database Suggestions */}
                   {!showAiSuggestions && showSuggestions && issueSuggestions.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg shadow-lg max-h-60 overflow-auto">
-                      <div className="p-2 text-xs text-slate-400 border-b border-slate-700">
-                        Common EV issues for your vehicle:
+                    <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-slate-700/50 rounded-xl shadow-xl max-h-60 overflow-auto">
+                      <div className="p-3 text-xs text-slate-400 border-b border-slate-700/50">
+                        Common EV issues:
                       </div>
                       {issueSuggestions.slice(0, 8).map((suggestion) => (
                         <div
                           key={suggestion.suggestion_id}
-                          className="px-3 py-2 hover:bg-slate-700 cursor-pointer"
+                          className="px-4 py-3 hover:bg-slate-700/50 cursor-pointer transition-colors"
                           onClick={() => handleSuggestionSelect(suggestion)}
                         >
                           <p className="text-white text-sm">{suggestion.title}</p>
-                          {suggestion.common_symptoms?.length > 0 && (
-                            <p className="text-xs text-slate-400 mt-0.5">
-                              {suggestion.common_symptoms.slice(0, 2).join(", ")}
-                            </p>
-                          )}
                         </div>
                       ))}
-                      <div 
-                        className="px-3 py-2 text-xs text-slate-500 hover:bg-slate-700 cursor-pointer"
-                        onClick={() => setShowSuggestions(false)}
-                      >
-                        Close suggestions
-                      </div>
                     </div>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Detailed Description *</Label>
+                  <Label className="text-slate-300 text-sm">Detailed Description <span className="text-emerald-500">*</span></Label>
                   <Textarea
-                    placeholder="Describe the issue in detail - when it started, symptoms, error codes if any..."
-                    className="bg-slate-700/50 border-slate-600 min-h-[100px]"
+                    placeholder="Describe the issue in detail - symptoms, when it started, any error codes..."
+                    className="min-h-[120px] bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-xl transition-all resize-none"
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     data-testid="description-input"
                   />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Priority</Label>
-                    <Select
-                      value={formData.priority}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value }))}
-                    >
-                      <SelectTrigger className="bg-slate-700/50 border-slate-600" data-testid="priority-select">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {priorities.map((p) => (
-                          <SelectItem key={p.value} value={p.value}>
-                            <div className="flex items-center gap-2">
-                              <div className={`w-2 h-2 rounded-full ${p.color}`} />
-                              {p.label}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+
+                {/* Priority Selection */}
+                <div className="space-y-3">
+                  <Label className="text-slate-300 text-sm">Priority Level</Label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {priorities.map((p) => {
+                      const isSelected = formData.priority === p.value;
+                      return (
+                        <button
+                          key={p.value}
+                          onClick={() => setFormData(prev => ({ ...prev, priority: p.value }))}
+                          className={`p-3 rounded-xl border transition-all text-center ${
+                            isSelected 
+                              ? `border-transparent ${p.color} text-white shadow-lg` 
+                              : "border-slate-700/50 bg-slate-800/30 hover:bg-slate-800/50 text-slate-300"
+                          }`}
+                          data-testid={`priority-${p.value}`}
+                        >
+                          <p className="font-medium text-sm">{p.label}</p>
+                          <p className={`text-xs mt-0.5 ${isSelected ? "text-white/80" : "text-slate-500"}`}>{p.sublabel}</p>
+                        </button>
+                      );
+                    })}
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Resolution Type *</Label>
-                    <Select
-                      value={formData.resolution_type}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, resolution_type: value }))}
-                    >
-                      <SelectTrigger className="bg-slate-700/50 border-slate-600" data-testid="resolution-type-select">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {resolutionTypes.map((r) => (
-                          <SelectItem key={r.value} value={r.value}>
+                </div>
+
+                {/* Resolution Type */}
+                <div className="space-y-3">
+                  <Label className="text-slate-300 text-sm">Service Type <span className="text-emerald-500">*</span></Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {resolutionTypes.map((r) => {
+                      const isSelected = formData.resolution_type === r.value;
+                      return (
+                        <button
+                          key={r.value}
+                          onClick={() => setFormData(prev => ({ ...prev, resolution_type: r.value }))}
+                          className={`p-4 rounded-xl border-2 transition-all text-left ${
+                            isSelected 
+                              ? "border-emerald-500 bg-emerald-500/10 ring-4 ring-emerald-500/20" 
+                              : "border-slate-700/50 bg-slate-800/30 hover:border-slate-600"
+                          }`}
+                          data-testid={`resolution-${r.value}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">{r.icon}</span>
                             <div>
-                              <p>{r.label}</p>
-                              <p className="text-xs text-slate-400">{r.description}</p>
+                              <p className={`font-medium text-sm ${isSelected ? "text-emerald-400" : "text-white"}`}>{r.label}</p>
+                              <p className="text-xs text-slate-500">{r.description}</p>
                             </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -811,10 +812,10 @@ export default function PublicTicketForm() {
               {/* Location (for onsite) */}
               {formData.resolution_type === "onsite" && (
                 <div className="space-y-4">
-                  <Label className="text-white text-lg font-semibold flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-green-500" />
-                    Service Location
-                  </Label>
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+                    <h2 className="text-lg font-semibold text-white">Service Location</h2>
+                  </div>
                   <LocationPicker
                     value={
                       formData.incident_location 
@@ -829,53 +830,51 @@ export default function PublicTicketForm() {
                         location_lng: location.lng
                       }));
                     }}
-                    placeholder="Click to select location on map"
+                    placeholder="Click to select your location"
                     buttonText="Open Map"
                   />
-                  <p className="text-xs text-slate-400">
-                    Select your exact location on the map for accurate on-site service
-                  </p>
                 </div>
               )}
 
-              {/* Payment Info (Individual + Onsite) */}
+              {/* Payment Info */}
               {requiresPayment() && (
-                <div className="space-y-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-                  <Label className="text-amber-400 text-lg font-semibold flex items-center gap-2">
-                    <IndianRupee className="h-5 w-5" />
-                    Service Charges
-                  </Label>
+                <div className="space-y-4 p-5 bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20 rounded-2xl">
+                  <div className="flex items-center gap-2">
+                    <IndianRupee className="h-5 w-5 text-amber-400" />
+                    <h3 className="font-semibold text-amber-400">Service Charges</h3>
+                  </div>
                   <p className="text-sm text-slate-400">
-                    On-site service requires advance payment of service charges.
+                    On-site service requires advance payment.
                   </p>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
                       <div className="flex items-center gap-3">
-                        <Checkbox checked disabled className="bg-green-500" />
+                        <Checkbox checked disabled className="bg-emerald-500 border-emerald-500" />
                         <div>
-                          <p className="text-white font-medium">Visit Charges</p>
-                          <p className="text-xs text-slate-400">Mandatory for on-site service</p>
+                          <p className="text-white font-medium text-sm">Visit Charges</p>
+                          <p className="text-xs text-slate-500">Mandatory</p>
                         </div>
                       </div>
-                      <p className="text-green-400 font-semibold">₹{serviceCharges.visit_fee}</p>
+                      <p className="text-emerald-400 font-semibold">₹{serviceCharges.visit_fee}</p>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
                       <div className="flex items-center gap-3">
                         <Checkbox 
                           checked={formData.include_diagnostic_fee}
                           onCheckedChange={(checked) => setFormData(prev => ({ ...prev, include_diagnostic_fee: !!checked }))}
+                          className="border-slate-600"
                           data-testid="diagnostic-fee-checkbox"
                         />
                         <div>
-                          <p className="text-white font-medium">Diagnostic Charges</p>
-                          <p className="text-xs text-slate-400">Optional - detailed diagnosis report</p>
+                          <p className="text-white font-medium text-sm">Diagnostic Report</p>
+                          <p className="text-xs text-slate-500">Optional</p>
                         </div>
                       </div>
                       <p className="text-slate-300 font-semibold">₹{serviceCharges.diagnostic_fee}</p>
                     </div>
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-700">
-                      <p className="text-white font-semibold">Total Payable</p>
-                      <p className="text-green-400 text-xl font-bold">₹{calculateTotal()}</p>
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-700/50">
+                      <p className="text-white font-semibold">Total</p>
+                      <p className="text-emerald-400 text-xl font-bold">₹{calculateTotal()}</p>
                     </div>
                   </div>
                 </div>
@@ -883,16 +882,20 @@ export default function PublicTicketForm() {
 
               {/* File Attachments */}
               <div className="space-y-4">
-                <Label className="text-white text-lg font-semibold flex items-center gap-2">
-                  <Upload className="h-5 w-5 text-green-500" />
-                  Attachments (Optional)
-                </Label>
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+                  <h2 className="text-lg font-semibold text-white">Attachments</h2>
+                  <span className="text-xs text-slate-500">(Optional)</span>
+                </div>
                 <div 
-                  className="border-2 border-dashed border-slate-600 rounded-lg p-6 text-center hover:border-green-500/50 transition-colors cursor-pointer"
+                  className="border-2 border-dashed border-slate-700/50 rounded-xl p-8 text-center hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all cursor-pointer group"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <Upload className="h-8 w-8 mx-auto mb-2 text-slate-400" />
-                  <p className="text-sm text-slate-400">Click to upload photos/documents</p>
+                  <Upload className="h-8 w-8 mx-auto mb-3 text-slate-500 group-hover:text-emerald-500 transition-colors" />
+                  <p className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
+                    Click to upload photos or documents
+                  </p>
+                  <p className="text-xs text-slate-600 mt-1">PNG, JPG, PDF up to 10MB</p>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -905,18 +908,20 @@ export default function PublicTicketForm() {
                 {attachments.length > 0 && (
                   <div className="grid grid-cols-2 gap-2">
                     {attachments.map((att) => (
-                      <div key={att.id} className="flex items-center gap-2 p-2 bg-slate-700/50 rounded">
+                      <div key={att.id} className="flex items-center gap-2 p-3 bg-slate-800/50 rounded-xl border border-slate-700/30">
                         {att.preview ? (
-                          <img src={att.preview} alt="" className="h-10 w-10 object-cover rounded" />
+                          <img src={att.preview} alt="" className="h-10 w-10 object-cover rounded-lg" />
                         ) : (
-                          <FileText className="h-10 w-10 text-slate-400" />
+                          <div className="h-10 w-10 bg-slate-700 rounded-lg flex items-center justify-center">
+                            <FileText className="h-5 w-5 text-slate-400" />
+                          </div>
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-xs text-white truncate">{att.name}</p>
-                          <p className="text-xs text-slate-400">{formatFileSize(att.size)}</p>
+                          <p className="text-xs text-slate-500">{formatFileSize(att.size)}</p>
                         </div>
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeAttachment(att.id)}>
-                          <X className="h-3 w-3" />
+                        <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-red-500/20 hover:text-red-400" onClick={() => removeAttachment(att.id)}>
+                          <X className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     ))}
@@ -925,41 +930,49 @@ export default function PublicTicketForm() {
               </div>
 
               {/* Submit Button */}
-              <div className="pt-4 border-t border-slate-700">
+              <div className="pt-4">
                 <Button
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white h-12 text-lg"
+                  className="w-full h-14 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-lg font-semibold rounded-xl shadow-lg shadow-emerald-900/30 transition-all duration-200 group"
                   data-testid="submit-ticket-btn"
                 >
                   {submitting ? (
-                    <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                    <Loader2 className="h-5 w-5 animate-spin" />
                   ) : requiresPayment() ? (
                     <>
                       <CreditCard className="h-5 w-5 mr-2" />
                       Proceed to Payment - ₹{calculateTotal()}
+                      <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </>
                   ) : (
                     <>
                       <CheckCircle className="h-5 w-5 mr-2" />
                       Submit Service Request
+                      <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </>
                   )}
                 </Button>
                 
-                {formData.customer_type === "business" && (
-                  <p className="text-center text-sm text-slate-400 mt-4">
-                    Business customers can also access the{" "}
-                    <a href="/customer-portal" className="text-green-400 hover:underline">Customer Portal</a>
-                  </p>
-                )}
+                <div className="flex items-center justify-center gap-4 mt-6 text-sm text-slate-500">
+                  <a href="/track-ticket" className="hover:text-emerald-400 transition-colors">Track Existing Ticket</a>
+                  <span>|</span>
+                  <a href="/login" className="hover:text-emerald-400 transition-colors">Customer Portal</a>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Footer */}
-          <div className="text-center text-sm text-slate-500">
-            <p>© 2026 Battwheels Services Pvt Ltd. All rights reserved.</p>
+          <div className="text-center mt-8 space-y-2">
+            <img 
+              src="/battwheels_garages_logo.png" 
+              alt="Battwheels Garages" 
+              className="h-10 w-auto mx-auto opacity-50"
+            />
+            <p className="text-sm text-slate-600">
+              © 2026 Battwheels Garages. All rights reserved.
+            </p>
           </div>
         </div>
       </div>
@@ -969,22 +982,22 @@ export default function PublicTicketForm() {
   // Step 2: Payment
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-8 px-4 flex items-center justify-center">
-        <Card className="border-slate-700 bg-slate-800/50 backdrop-blur max-w-md w-full">
-          <CardHeader className="text-center">
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-8 px-4 flex items-center justify-center">
+        <Card className="border-0 bg-slate-900/80 backdrop-blur-xl shadow-2xl shadow-emerald-900/10 rounded-2xl max-w-md w-full">
+          <CardHeader className="text-center pb-2">
             <div className="flex justify-center mb-4">
-              <div className="p-3 bg-green-500/20 rounded-full">
-                <CreditCard className="h-8 w-8 text-green-500" />
+              <div className="p-4 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-2xl">
+                <CreditCard className="h-10 w-10 text-emerald-400" />
               </div>
             </div>
-            <CardTitle className="text-white">Complete Payment</CardTitle>
-            <CardDescription>Pay service charges to confirm your booking</CardDescription>
+            <CardTitle className="text-white text-2xl">Complete Payment</CardTitle>
+            <CardDescription className="text-slate-400">Confirm your service booking</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-3 p-4 bg-slate-700/50 rounded-lg">
+          <CardContent className="space-y-6 p-6">
+            <div className="space-y-3 p-4 bg-slate-800/50 rounded-xl">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Ticket ID</span>
-                <span className="text-white font-mono">{ticketResult?.ticket_id}</span>
+                <span className="text-emerald-400 font-mono font-medium">{ticketResult?.ticket_id}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Visit Charges</span>
@@ -992,18 +1005,18 @@ export default function PublicTicketForm() {
               </div>
               {paymentDetails?.diagnostic_fee > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Diagnostic Charges</span>
+                  <span className="text-slate-400">Diagnostic</span>
                   <span className="text-white">₹{paymentDetails?.diagnostic_fee}</span>
                 </div>
               )}
-              <div className="flex justify-between pt-3 border-t border-slate-600">
+              <div className="flex justify-between pt-3 border-t border-slate-700/50">
                 <span className="text-white font-semibold">Total</span>
-                <span className="text-green-400 text-xl font-bold">₹{paymentDetails?.amount}</span>
+                <span className="text-emerald-400 text-2xl font-bold">₹{paymentDetails?.amount}</span>
               </div>
             </div>
 
             {paymentDetails?.is_mock && (
-              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
                 <p className="text-amber-400 text-sm text-center">
                   Test Mode: Payment will be simulated
                 </p>
@@ -1012,7 +1025,7 @@ export default function PublicTicketForm() {
 
             <Button
               onClick={handlePayment}
-              className="w-full bg-green-600 hover:bg-green-700 text-white h-12"
+              className="w-full h-14 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-lg font-semibold rounded-xl shadow-lg shadow-emerald-900/30"
               data-testid="pay-now-btn"
             >
               <IndianRupee className="h-5 w-5 mr-2" />
@@ -1026,50 +1039,51 @@ export default function PublicTicketForm() {
 
   // Step 3: Success
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-8 px-4 flex items-center justify-center">
-      <Card className="border-slate-700 bg-slate-800/50 backdrop-blur max-w-md w-full">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="p-3 bg-green-500/20 rounded-full">
-              <CheckCircle className="h-10 w-10 text-green-500" />
-            </div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-8 px-4 flex items-center justify-center">
+      <Card className="border-0 bg-slate-900/80 backdrop-blur-xl shadow-2xl shadow-emerald-900/10 rounded-2xl max-w-md w-full overflow-hidden">
+        {/* Success Animation Header */}
+        <div className="bg-gradient-to-br from-emerald-500/20 to-teal-500/10 p-8 text-center">
+          <div className="inline-flex p-4 bg-emerald-500/20 rounded-full mb-4 animate-pulse">
+            <CheckCircle className="h-12 w-12 text-emerald-400" />
           </div>
-          <CardTitle className="text-white text-2xl">Ticket Submitted!</CardTitle>
-          <CardDescription>Your service request has been received</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="p-4 bg-slate-700/50 rounded-lg text-center">
-            <p className="text-slate-400 text-sm">Ticket ID</p>
-            <p className="text-green-400 text-2xl font-mono font-bold">{ticketResult?.ticket_id}</p>
-          </div>
-
-          <div className="space-y-2 text-sm text-slate-400">
-            <p className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              Confirmation sent to your phone/email
-            </p>
-            <p className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              Our team will contact you shortly
-            </p>
-            <p className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              Track your ticket status anytime
-            </p>
+          <h2 className="text-2xl font-bold text-white">Request Submitted!</h2>
+          <p className="text-slate-400 mt-1">Your service ticket has been created</p>
+        </div>
+        
+        <CardContent className="space-y-6 p-6">
+          <div className="p-4 bg-slate-800/50 rounded-xl text-center">
+            <p className="text-slate-400 text-sm mb-1">Ticket ID</p>
+            <p className="text-emerald-400 text-3xl font-mono font-bold tracking-wider">{ticketResult?.ticket_id}</p>
           </div>
 
           <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-xl">
+              <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+              <p className="text-sm text-slate-300">Confirmation sent to your phone</p>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-xl">
+              <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+              <p className="text-sm text-slate-300">Our team will contact you shortly</p>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-xl">
+              <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+              <p className="text-sm text-slate-300">Track status anytime online</p>
+            </div>
+          </div>
+
+          <div className="space-y-3 pt-2">
             <Button
               onClick={() => navigate(`/track-ticket?id=${ticketResult?.ticket_id}`)}
-              className="w-full bg-green-600 hover:bg-green-700"
+              className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl"
               data-testid="track-ticket-btn"
             >
               Track Your Ticket
+              <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
             <Button
               variant="outline"
               onClick={() => { setStep(1); setFormData({ ...formData, title: "", description: "" }); }}
-              className="w-full border-slate-600"
+              className="w-full h-12 border-slate-700 hover:bg-slate-800 rounded-xl"
             >
               Submit Another Request
             </Button>
