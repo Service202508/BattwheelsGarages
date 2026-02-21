@@ -1289,61 +1289,52 @@ async def get_technicians(request: Request):
 # ==================== SUPPLIER ROUTES ====================
 
 @api_router.post("/suppliers")
-async def create_supplier(data: SupplierCreate, request: Request):
+async def create_supplier(
+    data: SupplierCreate, 
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
     await require_technician_or_admin(request)
-    # Get org context for multi-tenant scoping
-    from core.org import get_org_id_from_request
-    try:
-        org_id = await get_org_id_from_request(request)
-    except HTTPException:
-        org_id = None
     
     supplier = Supplier(**data.model_dump())
     doc = supplier.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
-    if org_id:
-        doc['organization_id'] = org_id
+    doc['organization_id'] = ctx.org_id
     await db.suppliers.insert_one(doc)
     return supplier.model_dump()
 
 @api_router.get("/suppliers")
-async def get_suppliers(request: Request):
+async def get_suppliers(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
     await require_auth(request)
-    # Get org context for multi-tenant scoping
-    from core.org import get_org_id_from_request
-    try:
-        org_id = await get_org_id_from_request(request)
-        query = {"organization_id": org_id}
-    except HTTPException:
-        query = {}
+    query = {"organization_id": ctx.org_id}
     suppliers = await db.suppliers.find(query, {"_id": 0}).to_list(1000)
     return suppliers
 
 @api_router.get("/suppliers/{supplier_id}")
-async def get_supplier(supplier_id: str, request: Request):
+async def get_supplier(
+    supplier_id: str, 
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
     await require_auth(request)
-    # Get org context for multi-tenant scoping
-    from core.org import get_org_id_from_request
-    try:
-        org_id = await get_org_id_from_request(request)
-        query = {"supplier_id": supplier_id, "organization_id": org_id}
-    except HTTPException:
-        query = {"supplier_id": supplier_id}
+    query = {"supplier_id": supplier_id, "organization_id": ctx.org_id}
     supplier = await db.suppliers.find_one(query, {"_id": 0})
     if not supplier:
         raise HTTPException(status_code=404, detail="Supplier not found")
     return supplier
 
 @api_router.put("/suppliers/{supplier_id}")
-async def update_supplier(supplier_id: str, update: SupplierUpdate, request: Request):
+async def update_supplier(
+    supplier_id: str, 
+    update: SupplierUpdate, 
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
     await require_technician_or_admin(request)
-    # Get org context for multi-tenant scoping
-    from core.org import get_org_id_from_request
-    try:
-        org_id = await get_org_id_from_request(request)
-        query = {"supplier_id": supplier_id, "organization_id": org_id}
-    except HTTPException:
-        query = {"supplier_id": supplier_id}
+    query = {"supplier_id": supplier_id, "organization_id": ctx.org_id}
     update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
     await db.suppliers.update_one(query, {"$set": update_dict})
     supplier = await db.suppliers.find_one(query, {"_id": 0})
@@ -1352,15 +1343,12 @@ async def update_supplier(supplier_id: str, update: SupplierUpdate, request: Req
 # ==================== VEHICLE ROUTES ====================
 
 @api_router.post("/vehicles")
-async def create_vehicle(vehicle_data: VehicleCreate, request: Request):
+async def create_vehicle(
+    vehicle_data: VehicleCreate, 
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
     user = await require_auth(request)
-    # Get org context for multi-tenant scoping
-    from core.org import get_org_id_from_request
-    try:
-        org_id = await get_org_id_from_request(request)
-    except HTTPException:
-        # Fallback for backward compatibility
-        org_id = None
     
     vehicle = Vehicle(
         owner_id=user.user_id,
@@ -1375,8 +1363,7 @@ async def create_vehicle(vehicle_data: VehicleCreate, request: Request):
     )
     doc = vehicle.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
-    if org_id:
-        doc['organization_id'] = org_id
+    doc['organization_id'] = ctx.org_id
     await db.vehicles.insert_one(doc)
     return vehicle.model_dump()
 
