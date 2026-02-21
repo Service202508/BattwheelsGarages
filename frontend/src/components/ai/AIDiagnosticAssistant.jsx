@@ -168,12 +168,9 @@ Please provide:
         confidence: data.confidence
       });
       toast.success("Diagnosis generated successfully");
-      } else {
-        throw new Error("Failed to get AI diagnosis");
-      }
     } catch (error) {
       console.error("AI diagnosis error:", error);
-      toast.error("Failed to get AI diagnosis. Please try again.");
+      toast.error(error.message || "Failed to get AI diagnosis. Please try again.");
     } finally {
       setLoading(false);
     }
