@@ -419,12 +419,14 @@ const BlogPost = () => {
               <p className="text-green-100 mb-6">
                 Book onsite diagnosis and repair for your electric vehicle - no towing required
               </p>
-              <Link
-                to="/book-service"
+              <a
+                href="https://cloud-finance-suite.preview.emergentagent.com/submit-ticket"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-block px-8 py-3 bg-white text-green-600 font-bold rounded-xl hover:bg-green-50 transition-colors"
               >
                 Book Service Now
-              </Link>
+              </a>
             </div>
           </div>
         </div>
