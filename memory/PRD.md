@@ -1,7 +1,7 @@
 # Battwheels OS - Product Requirements Document
 
 ## SaaS Status: MULTI-TENANT PLATFORM ACTIVE ✅
-**Last Updated:** February 21, 2026 (Session 81)
+**Last Updated:** February 21, 2026 (Session 82)
 
 ### Current Capabilities:
 - ✅ Multi-tenant data isolation (Phases A-G complete)
@@ -9,17 +9,53 @@
 - ✅ Multi-organization user support
 - ✅ Organization selection for multi-org users
 - ✅ `X-Organization-ID` header enforcement
-- ✅ **NEW: Subscription & Plan Management (Phase 1)**
+- ✅ **Subscription & Plan Management (Phase 1)**
   - Plans: Free, Starter (₹2,999/mo), Professional (₹7,999/mo), Enterprise (₹19,999/mo)
   - `org_type` field for internal vs customer orgs
   - Subscription lifecycle management
   - Usage tracking per organization
+- ✅ **NEW: Entitlement Service & Middleware (Phase 2)**
+  - Runtime feature gating based on subscription plan
+  - FastAPI dependencies: `require_feature()`, `require_usage_limit()`, `require_subscription()`
+  - 37+ feature keys with plan-level entitlements
+  - Upgrade suggestions when features unavailable
+  - Usage limit tracking with remaining counts
 
 ### Remaining SaaS Features:
-- 🟡 **Phase 2: Entitlement Service** - Runtime feature gating based on plan
-- 🟡 User Invitation System (Email + SMS)
-- 🟡 Organization Switcher Enhancement
-- 🟡 Organization Setup Wizard
+- 🟡 **Phase 3: User Invitation System** (Email + SMS)
+- 🟡 **Phase 4: Organization Switcher Enhancement**
+- 🟡 **Phase 5: Organization Setup Wizard**
+
+### Phase 2 Implementation (Feb 21, 2026):
+**Files Created:**
+- `/app/backend/core/subscriptions/entitlement.py` - EntitlementService, require_feature dependency
+- `/app/backend/tests/test_entitlement_service.py` - 13 unit tests
+- `/app/backend/tests/test_subscription_entitlements_api.py` - 23 API tests (by testing agent)
+
+**New API Endpoints:**
+- `GET /api/subscriptions/entitlements` - Get all feature entitlements for organization
+- `GET /api/subscriptions/entitlements/{feature}` - Check specific feature access
+- `GET /api/subscriptions/limits` - Get usage limits with current/remaining counts
+- `GET /api/subscriptions/plans/compare` - Compare all plans (public)
+
+**Feature Gate Dependencies:**
+```python
+# Protect routes by feature
+@router.get("/ai-guidance")
+async def get_guidance(
+    ctx: TenantContext = Depends(tenant_context_required),
+    _: None = Depends(require_feature("efi_ai_guidance"))
+):
+    ...
+
+# Check usage limits
+@router.post("/invoices")
+async def create_invoice(
+    ctx: TenantContext = Depends(tenant_context_required),
+    _: None = Depends(require_usage_limit("max_invoices_per_month"))
+):
+    ...
+```
 
 ### Phase 1 Implementation (Feb 21, 2026):
 **Files Created:**
