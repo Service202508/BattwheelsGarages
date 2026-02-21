@@ -98,10 +98,13 @@ const SaaSLanding = () => {
 
       if (response.ok) {
         toast.success('Organization created successfully!');
+        // Store auth data
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('organization_id', data.organization.organization_id);
         localStorage.setItem('organization', JSON.stringify(data.organization));
-        navigate('/admin/dashboard');
+        // Navigate to dashboard with page reload to reinitialize auth
+        window.location.href = '/dashboard';
       } else {
         toast.error(data.detail || 'Signup failed');
       }
