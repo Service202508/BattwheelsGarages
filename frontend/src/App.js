@@ -1173,9 +1173,10 @@ function AppRouter() {
         </ProtectedRoute>
       } />
       
-      <Route path="/" element={auth.user ? <RoleBasedRedirect user={auth.user} /> : <Navigate to="/login" replace />} />
-      <Route path="*" element={auth.user ? <RoleBasedRedirect user={auth.user} /> : <Navigate to="/login" replace />} />
+      {/* Catch-all: redirect to SaaS landing or dashboard */}
+      <Route path="*" element={auth.user ? <RoleBasedRedirect user={auth.user} /> : <Navigate to="/" replace />} />
     </Routes>
+    </OrganizationContext.Provider>
   );
 }
 
