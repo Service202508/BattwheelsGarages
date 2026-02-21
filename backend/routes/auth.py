@@ -186,7 +186,8 @@ async def get_current_user(request: Request):
 async def google_auth(request: Request, response: Response):
     """Handle Google OAuth callback"""
     body = await request.json()
-    google_token = body.get("token")
+    # google_token could be used for validation in the future
+    _ = body.get("token")
     user_info = body.get("user")
     
     if not user_info:
