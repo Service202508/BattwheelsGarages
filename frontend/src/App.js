@@ -805,6 +805,13 @@ function AppRouter() {
           <OrganizationSetupWizard user={auth.user} />
         </ProtectedRoute>
       } />
+      <Route path="/branding" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <BrandingSettings user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/organization-settings" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
