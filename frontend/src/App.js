@@ -84,6 +84,7 @@ import AuthCallback from "@/components/AuthCallback";
 import PublicQuoteView from "@/pages/PublicQuoteView";
 import PublicTicketForm from "@/pages/PublicTicketForm";
 import TrackTicket from "@/pages/TrackTicket";
+import SubscriptionManagement from "@/pages/SubscriptionManagement";
 
 // Customer Portal Pages
 import CustomerLayout from "@/components/CustomerLayout";
