@@ -411,7 +411,7 @@ export default function TeamManagement({ user }) {
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="font-medium flex items-center gap-2">
+                              <div className="font-medium flex items-center gap-2">
                                 {member.name}
                                 {member.role === "owner" && (
                                   <Crown className="h-4 w-4 text-amber-500" />
@@ -419,7 +419,7 @@ export default function TeamManagement({ user }) {
                                 {member.user_id === user?.user_id && (
                                   <Badge variant="outline" className="text-xs">You</Badge>
                                 )}
-                              </p>
+                              </div>
                               <p className="text-sm text-gray-500">{member.email}</p>
                             </div>
                           </div>
