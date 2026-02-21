@@ -223,21 +223,28 @@ async def list_tickets(
 
 
 @router.get("/stats")
-async def get_ticket_stats(request: Request):
-    """Get ticket statistics for dashboard"""
+async def get_ticket_stats(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Get ticket statistics for dashboard (scoped to organization)"""
     service = get_service()
     await get_current_user(request, service.db)  # Auth check
     
-    return await service.get_ticket_stats()
+    return await service.get_ticket_stats(organization_id=ctx.org_id)
 
 
 @router.get("/{ticket_id}")
-async def get_ticket(ticket_id: str, request: Request):
-    """Get a single ticket by ID"""
+async def get_ticket(
+    ticket_id: str, 
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Get a single ticket by ID (must belong to user's organization)"""
     service = get_service()
     await get_current_user(request, service.db)  # Auth check
     
-    ticket = await service.get_ticket(ticket_id)
+    ticket = await service.get_ticket(ticket_id, organization_id=ctx.org_id)
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     
@@ -245,13 +252,19 @@ async def get_ticket(ticket_id: str, request: Request):
 
 
 @router.put("/{ticket_id}")
-async def update_ticket(ticket_id: str, data: TicketUpdateRequest, request: Request):
+async def update_ticket(
+    ticket_id: str, 
+    data: TicketUpdateRequest, 
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
     """
     Update a ticket
     
     - Updates specified fields
     - Tracks status changes in history
     - Emits appropriate events
+    - Scoped to user's organization
     """
     service = get_service()
     user = await get_current_user(request, service.db)
@@ -264,7 +277,8 @@ async def update_ticket(ticket_id: str, data: TicketUpdateRequest, request: Requ
             ticket_id=ticket_id,
             data=update_data,
             user_id=user.get("user_id"),
-            user_name=user.get("name", "System")
+            user_name=user.get("name", "System"),
+            organization_id=ctx.org_id
         )
         return ticket
     except ValueError as e:
@@ -272,7 +286,12 @@ async def update_ticket(ticket_id: str, data: TicketUpdateRequest, request: Requ
 
 
 @router.post("/{ticket_id}/close")
-async def close_ticket(ticket_id: str, data: TicketCloseRequest, request: Request):
+async def close_ticket(
+    ticket_id: str, 
+    data: TicketCloseRequest, 
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
     """
     Close a ticket with resolution details
     
@@ -280,6 +299,7 @@ async def close_ticket(ticket_id: str, data: TicketCloseRequest, request: Reques
     - Requires resolution and outcome
     - Triggers confidence engine updates
     - Auto-creates draft failure card for undocumented issues
+    - Scoped to user's organization
     """
     service = get_service()
     user = await get_current_user(request, service.db)
@@ -292,7 +312,8 @@ async def close_ticket(ticket_id: str, data: TicketCloseRequest, request: Reques
             ticket_id=ticket_id,
             data=close_data,
             user_id=user.get("user_id"),
-            user_name=user.get("name", "System")
+            user_name=user.get("name", "System"),
+            organization_id=ctx.org_id
         )
         return ticket
     except ValueError as e:
