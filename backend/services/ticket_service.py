@@ -316,13 +316,14 @@ class TicketService:
         ticket_id: str, 
         data: TicketUpdateData, 
         user_id: str, 
-        user_name: str
+        user_name: str,
+        organization_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Update a ticket
         
         Steps:
-        1. Validate ticket exists
+        1. Validate ticket exists (scoped to org if provided)
         2. Validate state transition if status changing
         3. Update fields
         4. Emit appropriate events
@@ -330,10 +331,12 @@ class TicketService:
         Returns:
             Updated ticket document
         """
-        # Get existing ticket
-        existing = await self.db.tickets.find_one(
-            {"ticket_id": ticket_id}, {"_id": 0}
-        )
+        # Get existing ticket (with org scope if provided)
+        query = {"ticket_id": ticket_id}
+        if organization_id:
+            query["organization_id"] = organization_id
+        
+        existing = await self.db.tickets.find_one(query, {"_id": 0})
         if not existing:
             raise ValueError(f"Ticket {ticket_id} not found")
         
