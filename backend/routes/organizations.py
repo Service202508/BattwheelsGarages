@@ -787,6 +787,85 @@ async def get_user_organizations(request: Request):
     }
 
 
+# ==================== SETUP WIZARD ====================
+
+@router.patch("/me/settings")
+async def update_organization_settings(
+    data: dict,
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Update organization settings (used by setup wizard and settings page)"""
+    # Check if user is admin/owner
+    membership = await db.organization_users.find_one({
+        "organization_id": ctx.org_id,
+        "user_id": ctx.user_id
+    })
+    
+    if not membership or membership.get("role") not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Only admins can update settings")
+    
+    update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    
+    # Handle top-level fields
+    if "name" in data:
+        update_doc["name"] = data["name"]
+    if "industry_type" in data:
+        update_doc["industry_type"] = data["industry_type"]
+    
+    # Handle nested settings
+    if "settings" in data:
+        for key, value in data["settings"].items():
+            update_doc[f"settings.{key}"] = value
+    
+    await db.organizations.update_one(
+        {"organization_id": ctx.org_id},
+        {"$set": update_doc}
+    )
+    
+    return {"success": True, "message": "Settings updated"}
+
+
+@router.post("/me/complete-setup")
+async def complete_organization_setup(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Mark organization setup as complete"""
+    await db.organizations.update_one(
+        {"organization_id": ctx.org_id},
+        {
+            "$set": {
+                "setup_completed": True,
+                "setup_completed_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    return {"success": True, "message": "Setup completed"}
+
+
+@router.get("/me/setup-status")
+async def get_setup_status(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Check if organization has completed setup"""
+    org = await db.organizations.find_one(
+        {"organization_id": ctx.org_id},
+        {"_id": 0, "setup_completed": 1, "setup_completed_at": 1, "created_at": 1}
+    )
+    
+    if not org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+    
+    return {
+        "setup_completed": org.get("setup_completed", False),
+        "setup_completed_at": org.get("setup_completed_at"),
+        "created_at": org.get("created_at")
+    }
+
+
 # ==================== INITIALIZATION ====================
 
 def init_organizations_router(app_db):
