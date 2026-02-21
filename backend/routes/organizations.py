@@ -444,7 +444,7 @@ async def invite_user(
     # For now, return the invite link
     invite_link = f"/accept-invite?token={invite_token}"
     
-    logger.info(f"Invitation sent to {data.email} for org {ctx.org_id}")
+    logger.info(f"Invitation sent to {data.email} for org {org_name} ({ctx.org_id})")
     
     return {
         "success": True,
