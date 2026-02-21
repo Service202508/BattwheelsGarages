@@ -20,6 +20,9 @@ import csv
 import json
 from decimal import Decimal, ROUND_HALF_UP
 
+# Import tenant context for multi-tenant scoping
+from core.tenant.context import TenantContext, tenant_context_required, optional_tenant_context
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/estimates-enhanced", tags=["Estimates Enhanced"])
@@ -38,12 +41,12 @@ estimate_settings_collection = db["estimate_settings"]
 estimate_attachments_collection = db["estimate_attachments"]
 estimate_share_links_collection = db["estimate_share_links"]
 
-# Multi-tenant helpers
+# Multi-tenant helpers (Phase F migration - using TenantContext)
 async def get_org_id(request: Request) -> Optional[str]:
     """Get organization ID from request for multi-tenant scoping"""
     try:
-        from core.org import get_org_id_from_request
-        return await get_org_id_from_request(request)
+        ctx = await optional_tenant_context(request)
+        return ctx.org_id if ctx else None
     except Exception:
         return None
 
