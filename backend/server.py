@@ -5464,6 +5464,17 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Organization Management Routes (SaaS Cloud)
+try:
+    from routes.organizations import router as organizations_router, init_organizations_router
+    init_organizations_router(db)
+    api_router.include_router(organizations_router)
+    logger.info("Organizations routes loaded (SaaS Cloud)")
+except Exception as e:
+    logger.error(f"Failed to load Organizations routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
