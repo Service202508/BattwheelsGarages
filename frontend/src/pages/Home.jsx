@@ -620,6 +620,7 @@ export default function Home({ user }) {
   const [refreshing, setRefreshing] = useState(false);
   const [period, setPeriod] = useState("fiscal_year");
   const [method, setMethod] = useState("accrual");
+  const [orgInitialized, setOrgInitialized] = useState(false);
   
   const [summary, setSummary] = useState(null);
   const [cashFlow, setCashFlow] = useState(null);
@@ -629,9 +630,34 @@ export default function Home({ user }) {
   const [projects, setProjects] = useState([]);
   const [quickStats, setQuickStats] = useState(null);
   
+  // Initialize organization context before fetching data
+  useEffect(() => {
+    const initOrg = async () => {
+      const { getOrganizationId, initializeOrganization } = await import('@/utils/api');
+      
+      // Check if org ID is already set
+      let orgId = getOrganizationId();
+      
+      if (!orgId) {
+        // Fetch organization info
+        const org = await initializeOrganization(API);
+        if (org?.organization_id) {
+          orgId = org.organization_id;
+        }
+      }
+      
+      setOrgInitialized(true);
+    };
+    
+    initOrg();
+  }, []);
+  
   const headers = getAuthHeaders();
   
   const fetchDashboardData = useCallback(async (showRefreshToast = false) => {
+    // Wait for org to be initialized
+    if (!orgInitialized) return;
+    
     try {
       if (showRefreshToast) setRefreshing(true);
       
