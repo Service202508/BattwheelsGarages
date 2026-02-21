@@ -5348,6 +5348,40 @@ except Exception as e:
 # Include main router
 app.include_router(api_router)
 
+# ==================== MULTI-TENANT SYSTEM INITIALIZATION ====================
+# Phase A: Tenant Context Foundation
+# Initialize the SaaS multi-tenant isolation layer
+
+try:
+    from core.tenant import (
+        init_tenant_context_manager,
+        TenantGuardMiddleware,
+    )
+    from core.tenant.guard import init_tenant_guard
+    from core.tenant.events import init_tenant_event_emitter
+    
+    # Initialize tenant context manager (singleton)
+    init_tenant_context_manager(db)
+    logger.info("TenantContextManager initialized")
+    
+    # Initialize tenant guard (security enforcement)
+    init_tenant_guard(db)
+    logger.info("TenantGuard initialized")
+    
+    # Initialize tenant event emitter
+    init_tenant_event_emitter(db)
+    logger.info("TenantEventEmitter initialized")
+    
+    # Add tenant guard middleware (enforces tenant context on all requests)
+    app.add_middleware(TenantGuardMiddleware)
+    logger.info("TenantGuardMiddleware added - Multi-tenant isolation ACTIVE")
+    
+except Exception as e:
+    logger.error(f"Failed to initialize multi-tenant system: {e}")
+    import traceback
+    traceback.print_exc()
+
+# ==================== CORS MIDDLEWARE ====================
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
