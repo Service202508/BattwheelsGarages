@@ -11,6 +11,9 @@ import os
 import uuid
 import logging
 
+# Import tenant context for multi-tenant scoping
+from core.tenant.context import TenantContext, tenant_context_required, optional_tenant_context
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/sales-orders-enhanced", tags=["Sales Orders Enhanced"])
@@ -27,12 +30,12 @@ salesorder_items_collection = db["salesorder_line_items"]
 salesorder_history_collection = db["salesorder_history"]
 salesorder_settings_collection = db["salesorder_settings"]
 
-# Multi-tenant helpers
+# Multi-tenant helpers (Phase F migration - using TenantContext)
 async def get_org_id(request: Request) -> Optional[str]:
     """Get organization ID from request for multi-tenant scoping"""
     try:
-        from core.org import get_org_id_from_request
-        return await get_org_id_from_request(request)
+        ctx = await optional_tenant_context(request)
+        return ctx.org_id if ctx else None
     except Exception:
         return None
 
