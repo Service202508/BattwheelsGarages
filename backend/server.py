@@ -1066,13 +1066,16 @@ def hash_password(password: str) -> str:
 def verify_password(password: str, hashed: str) -> bool:
     return bcrypt.checkpw(password.encode(), hashed.encode())
 
-def create_token(user_id: str, email: str, role: str) -> str:
+def create_token(user_id: str, email: str, role: str, org_id: str = None) -> str:
+    """Create JWT token with optional organization context"""
     payload = {
         "user_id": user_id,
         "email": email,
         "role": role,
         "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS)
     }
+    if org_id:
+        payload["org_id"] = org_id
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 async def get_current_user(request: Request) -> Optional[User]:
