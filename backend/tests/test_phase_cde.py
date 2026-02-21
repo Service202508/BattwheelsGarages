@@ -117,17 +117,26 @@ class TestPhaseD_EventTagging:
 class TestPhaseE_AIIsolation:
     """Phase E: Intelligence Layer Tenant Isolation Tests"""
     
-    def test_tenant_ai_service_initialized(self):
-        """Verify TenantAIService is available"""
+    def test_vector_document_dataclass(self):
+        """Test VectorDocument data structure"""
         import sys
         sys.path.insert(0, '/app/backend')
+        from core.tenant.ai_isolation import VectorDocument
         
-        async def check():
-            from core.tenant.ai_isolation import get_tenant_ai_service
-            service = get_tenant_ai_service()
-            assert service is not None
+        doc = VectorDocument(
+            doc_id="test123",
+            organization_id="org_test",
+            collection="failure_cards",
+            content="test content",
+            embedding=[0.1, 0.2, 0.3]
+        )
         
-        asyncio.get_event_loop().run_until_complete(check())
+        assert doc.namespace == "failure_cards_org_test"
+        assert doc.organization_id == "org_test"
+        
+        doc_dict = doc.to_dict()
+        assert "organization_id" in doc_dict
+        assert doc_dict["organization_id"] == "org_test"
     
     def test_vector_storage_requires_org_id(self):
         """Vector storage should require organization_id"""
@@ -136,7 +145,6 @@ class TestPhaseE_AIIsolation:
         
         from core.tenant.ai_isolation import TenantVectorStorage
         
-        # This should raise ValueError
         async def test_missing_org():
             client = AsyncIOMotorClient('mongodb://localhost:27017')
             db = client['test_database']
