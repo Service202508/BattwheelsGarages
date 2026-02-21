@@ -78,6 +78,23 @@ class OrganizationUpdate(BaseModel):
     gstin: Optional[str] = None
 
 
+class BrandingSettings(BaseModel):
+    """Organization branding configuration"""
+    logo_url: Optional[str] = None
+    logo_dark_url: Optional[str] = None  # Logo for dark backgrounds
+    favicon_url: Optional[str] = None
+    primary_color: str = "#10b981"  # Emerald-500 (default)
+    secondary_color: str = "#059669"  # Emerald-600
+    accent_color: str = "#f59e0b"  # Amber-500
+    text_color: str = "#111827"  # Gray-900
+    background_color: str = "#ffffff"  # White
+    sidebar_color: str = "#1e293b"  # Slate-800
+    company_tagline: Optional[str] = None
+    custom_css: Optional[str] = None  # Advanced users only
+    email_footer: Optional[str] = None
+    show_powered_by: bool = True  # Show "Powered by Battwheels"
+
+
 class UserInvite(BaseModel):
     """Invite a user to organization"""
     email: EmailStr
