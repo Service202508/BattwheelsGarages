@@ -257,9 +257,11 @@ async def reactivate_subscription(
 # ==================== ADMIN ENDPOINTS ====================
 
 @router.post("/admin/initialize-plans", response_model=dict)
-async def admin_initialize_plans(request: Request):
+async def admin_initialize_plans(
+    ctx: TenantContext = Depends(tenant_context_required)
+):
     """Initialize default plans (admin only)"""
-    await require_admin(request)
+    ctx.require_permission("org:settings:update")
     
     service = get_subscription_service()
     plans = await service.initialize_default_plans()
@@ -272,9 +274,11 @@ async def admin_initialize_plans(request: Request):
 
 
 @router.post("/admin/migrate-organizations", response_model=dict)
-async def admin_migrate_organizations(request: Request):
+async def admin_migrate_organizations(
+    ctx: TenantContext = Depends(tenant_context_required)
+):
     """Migrate existing organizations to subscription model (admin only)"""
-    await require_admin(request)
+    ctx.require_permission("org:settings:update")
     
     service = get_subscription_service()
     count = await service.migrate_existing_organizations()
@@ -286,9 +290,11 @@ async def admin_migrate_organizations(request: Request):
 
 
 @router.post("/admin/process-lifecycle", response_model=dict)
-async def admin_process_lifecycle(request: Request):
+async def admin_process_lifecycle(
+    ctx: TenantContext = Depends(tenant_context_required)
+):
     """Process subscription lifecycle events (admin/cron)"""
-    await require_admin(request)
+    ctx.require_permission("org:settings:update")
     
     service = get_subscription_service()
     
