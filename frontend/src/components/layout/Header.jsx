@@ -65,7 +65,7 @@ const Header = () => {
             <Button
               variant="outline"
               className="border-[#0B8A44] text-[#0B8A44] hover:bg-green-50 hover:border-[#12B76A] transition-all duration-300"
-              onClick={() => navigate('/book-service')}
+              onClick={() => window.open('https://cloud-finance-suite.preview.emergentagent.com/submit-ticket', '_blank')}
             >
               Book Service
             </Button>
@@ -104,7 +104,7 @@ const Header = () => {
               <Button
                 className="w-full bg-gradient-to-r from-[#0B8A44] to-[#12B76A] hover:from-[#0A7A3D] hover:to-[#10A35F] text-white"
                 onClick={() => {
-                  navigate('/book-service');
+                  window.open('https://cloud-finance-suite.preview.emergentagent.com/submit-ticket', '_blank');
                   setIsOpen(false);
                 }}
               >
