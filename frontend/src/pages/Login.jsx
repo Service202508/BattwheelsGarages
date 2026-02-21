@@ -333,9 +333,25 @@ export default function Login({ onLogin }) {
       const data = await response.json();
 
       if (response.ok) {
-        onLogin(data.user, data.token);
+        // Check if login returns organizations list (multi-org support)
+        const orgs = data.organizations || [];
+        
+        // If single org returned in response, store it
+        if (data.organization) {
+          localStorage.setItem("organization_id", data.organization.organization_id);
+          localStorage.setItem("organization", JSON.stringify(data.organization));
+        }
+        
+        // Pass organizations to login handler
+        await onLogin(data.user, data.token, orgs);
+        
         toast.success("Welcome back!");
-        navigate("/dashboard", { replace: true });
+        
+        // Navigate based on orgs - if multiple, App.js will show org selection
+        if (orgs.length <= 1) {
+          navigate("/dashboard", { replace: true });
+        }
+        // If multiple orgs, let App.js handle the org selection screen
       } else {
         toast.error(data.detail || "Login failed");
       }
