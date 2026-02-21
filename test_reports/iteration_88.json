@@ -1,0 +1,114 @@
+{
+  "summary": "Phase 5 SaaS Features Testing Complete. All features verified: Setup Wizard (/setup) with 4-step flow, Email Service (MOCKED - no RESEND_API_KEY), Usage Tracker service. Backend: 14/14 tests passed. Frontend: All pages working correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Team Management",
+        "issues": ["React hydration warning: <div> cannot be nested inside <p> in Badge component inside table. Does not affect functionality but should be fixed for clean console."]
+      }
+    ]
+  },
+  "features_tested": {
+    "setup_wizard": {
+      "status": "PASS",
+      "route": "/setup",
+      "tests": [
+        "Page loads with data-testid='setup-wizard'",
+        "Step 1 (Organization Profile): Name, Industry Type, Address, City, State, Pincode, Phone, GST Number fields present",
+        "Step 2 (Business Settings): Timezone, Currency, Fiscal Year, Working Hours selectors present",
+        "Step 3 (Invite Team): Name, Email, Role inputs with Add button, Skip for now option",
+        "Step 4 (Get Started): Completion screen with feature cards and Go to Dashboard button",
+        "Navigation between steps works (Continue/Back buttons)",
+        "Toast notifications show 'Profile saved!' and 'Settings saved!' confirming API integration"
+      ]
+    },
+    "setup_wizard_apis": {
+      "status": "PASS",
+      "tests": [
+        "GET /api/organizations/me/setup-status - Returns setup_completed, setup_completed_at, created_at",
+        "PATCH /api/organizations/me/settings - Updates org profile (name, industry_type, nested settings)",
+        "PATCH /api/organizations/me/settings - Updates business settings (timezone, currency, working_hours)",
+        "POST /api/organizations/me/complete-setup - Marks setup as complete, sets setup_completed=true",
+        "Auth endpoints return 401/403 when no token provided"
+      ]
+    },
+    "email_service": {
+      "status": "PASS (MOCKED)",
+      "notes": "Email service is MOCKED - no RESEND_API_KEY configured. Invitation emails are logged only, not actually sent. EmailService code handles this gracefully and returns success."
+    },
+    "subscription_page": {
+      "status": "PASS",
+      "tests": [
+        "/subscription page loads with data-testid='subscription-management'",
+        "Shows Starter plan, Trial status, ₹2,999/month",
+        "Usage & Limits: Invoices (0/500), Service Tickets (0/500), Vehicles (0/100), AI Calls (0/100), Team Members (Limit 3), Storage (5 GB)",
+        "Features tab and Upgrade Plan button present"
+      ]
+    },
+    "team_management_page": {
+      "status": "PASS",
+      "tests": [
+        "/team page loads with data-testid='team-management'",
+        "Stats: Team Members (1), Pending Invites (2), Admins (1)",
+        "Members table shows Test Admin (owner, Active status)",
+        "Invite User button present",
+        "Invitations tab shows pending invites count"
+      ]
+    },
+    "existing_apis_still_working": {
+      "status": "PASS",
+      "tests": [
+        "GET /api/subscriptions/current - Returns subscription with plan, status, billing info",
+        "GET /api/subscriptions/limits - Returns usage limits",
+        "GET /api/subscriptions/entitlements - Returns feature flags",
+        "GET /api/organizations/me/members - Returns team members",
+        "GET /api/organizations/me/invites - Returns invitations",
+        "POST /api/organizations/me/invite - Creates invitation successfully",
+        "GET /api/organizations/me - Returns org details"
+      ]
+    }
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_setup_wizard_email_usage.py",
+    "/app/test_reports/pytest/setup_wizard_email_usage_results.xml"
+  ],
+  "action_items": [
+    "Minor: Fix React hydration warning in TeamManagement.jsx - Badge inside table cell has <div> inside <p> nesting issue"
+  ],
+  "critical_code_review_comments": [
+    "PASS: Setup Wizard UI matches design with all 4 steps implemented correctly",
+    "PASS: All setup wizard backend APIs (settings, complete-setup, setup-status) working",
+    "PASS: Email service gracefully handles missing RESEND_API_KEY with mock logging",
+    "PASS: Previous subscription/team management features continue to work",
+    "PASS: Toast notifications provide good user feedback during setup flow",
+    "Note: Email service is MOCKED - actual emails require RESEND_API_KEY to be configured"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_setup_wizard_email_usage.py"
+  ],
+  "success_rate": {
+    "backend": "100% (14/14 tests passed)",
+    "frontend": "100% (all pages and wizard flow verified)"
+  },
+  "test_credentials": {
+    "email": "test403debug@example.com",
+    "password": "testpass123"
+  },
+  "seed_data_creation": "TEST_ prefixed invitations created during tests and cleaned up",
+  "mocked_integrations": {
+    "has_mocked_apis": true,
+    "mocked_apis_list": [
+      "Email notifications via Resend (no RESEND_API_KEY configured - emails logged only)"
+    ]
+  },
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All Phase 5 SaaS features tested and working: Setup Wizard (/setup) with 4-step onboarding flow, Email Service (mocked - requires RESEND_API_KEY for actual emails), Usage Tracker service integrated. Previous features (Subscription /subscription, Team Management /team) still working. Test account: test403debug@example.com / testpass123. Minor React hydration warning in TeamManagement.jsx doesn't affect functionality.",
+  "rca_of_issue": "N/A - all tests passed"
+}
