@@ -64,6 +64,19 @@ async def list_plans():
     return result
 
 
+@router.get("/plans/compare", response_model=List[dict])
+async def compare_plans():
+    """
+    Get a comparison of all available plans with features.
+    
+    This is a public endpoint for displaying pricing pages.
+    """
+    from core.subscriptions.entitlement import get_entitlement_service
+    
+    entitlement = get_entitlement_service()
+    return await entitlement.get_plan_comparison()
+
+
 @router.get("/plans/{plan_code}", response_model=dict)
 async def get_plan(plan_code: str):
     """Get details of a specific plan"""
