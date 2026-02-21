@@ -1,7 +1,7 @@
 # Enhanced Invoices Module - Full Zoho Books Invoice Management
 # Comprehensive invoicing with payment tracking, partial payments, credits, recurring, and GST compliance
 
-from fastapi import APIRouter, HTTPException, Query, BackgroundTasks, UploadFile, File, Request
+from fastapi import APIRouter, HTTPException, Query, BackgroundTasks, UploadFile, File, Request, Depends
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
@@ -17,6 +17,9 @@ import io
 
 # Import invoice validation
 from services.invoice_validation import pre_save_validation, validate_and_correct_invoice
+
+# Import tenant context for multi-tenant scoping
+from core.tenant.context import TenantContext, tenant_context_required, optional_tenant_context
 
 logger = logging.getLogger(__name__)
 
@@ -42,12 +45,16 @@ contacts_collection = db["contacts"]
 items_collection = db["items"]
 recurring_invoices_collection = db["recurring_invoices"]
 
-# Multi-tenant helpers
+# Multi-tenant helpers (Phase F migration - using TenantContext)
 async def get_org_id(request: Request) -> Optional[str]:
-    """Get organization ID from request for multi-tenant scoping"""
+    """Get organization ID from request for multi-tenant scoping
+    
+    NOTE: This is a compatibility wrapper. New routes should use
+    tenant_context_required dependency directly.
+    """
     try:
-        from core.org import get_org_id_from_request
-        return await get_org_id_from_request(request)
+        ctx = await optional_tenant_context(request)
+        return ctx.org_id if ctx else None
     except Exception:
         return None
 
