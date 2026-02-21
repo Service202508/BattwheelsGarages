@@ -726,11 +726,13 @@ export default function Home({ user }) {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [headers, period, method]);
+  }, [headers, period, method, orgInitialized]);
   
   useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
+    if (orgInitialized) {
+      fetchDashboardData();
+    }
+  }, [fetchDashboardData, orgInitialized]);
   
   return (
     <div className="space-y-6" data-testid="financial-home-dashboard">
