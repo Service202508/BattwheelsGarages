@@ -163,10 +163,25 @@ async def get_cash_flow(request: Request, period: str = "fiscal_year"):
     Returns monthly incoming/outgoing cash
     """
     org_id = await get_org_id(request)
-    if not org_id:
-        raise HTTPException(status_code=400, detail="X-Organization-ID header required")
     
     today = datetime.now(timezone.utc)
+    
+    # Return empty cash flow if no org context
+    if not org_id:
+        return {
+            "code": 0,
+            "cash_flow": {
+                "period": period,
+                "start_date": today.isoformat(),
+                "end_date": today.isoformat(),
+                "opening_balance": 0,
+                "total_incoming": 0,
+                "total_outgoing": 0,
+                "closing_balance": 0,
+                "monthly_data": [],
+                "org_missing": True
+            }
+        }
     
     # Determine date range based on period
     if period == "fiscal_year":
