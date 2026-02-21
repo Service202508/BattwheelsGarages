@@ -979,16 +979,21 @@ class TicketService:
     
     # ==================== STATISTICS ====================
     
-    async def get_ticket_stats(self) -> Dict[str, Any]:
-        """Get ticket statistics for dashboard"""
-        pipeline = [
-            {
-                "$group": {
-                    "_id": "$status",
-                    "count": {"$sum": 1}
-                }
+    async def get_ticket_stats(self, organization_id: Optional[str] = None) -> Dict[str, Any]:
+        """Get ticket statistics for dashboard, scoped to organization"""
+        match_stage = {}
+        if organization_id:
+            match_stage = {"$match": {"organization_id": organization_id}}
+        
+        pipeline = []
+        if match_stage:
+            pipeline.append(match_stage)
+        pipeline.append({
+            "$group": {
+                "_id": "$status",
+                "count": {"$sum": 1}
             }
-        ]
+        })
         
         status_counts = {}
         async for doc in self.db.tickets.aggregate(pipeline):
