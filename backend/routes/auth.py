@@ -85,7 +85,39 @@ async def login(credentials: UserLogin, response: Response):
     })
     
     user_response = {k: v for k, v in user.items() if k != "password_hash"}
-    return {"token": token, "user": user_response}
+    
+    # Fetch user's organizations for multi-org support
+    organizations = []
+    try:
+        memberships = await db.organization_users.find(
+            {"user_id": user["user_id"], "status": "active"},
+            {"_id": 0}
+        ).to_list(20)
+        
+        for m in memberships:
+            org = await db.organizations.find_one(
+                {"organization_id": m["organization_id"], "is_active": True},
+                {"_id": 0}
+            )
+            if org:
+                organizations.append({
+                    "organization_id": org["organization_id"],
+                    "name": org["name"],
+                    "slug": org.get("slug"),
+                    "logo_url": org.get("logo_url"),
+                    "plan_type": org.get("plan_type", "free"),
+                    "role": m["role"]
+                })
+    except Exception as e:
+        # If org fetch fails, continue without orgs
+        pass
+    
+    return {
+        "token": token, 
+        "user": user_response,
+        "organizations": organizations,
+        "organization": organizations[0] if len(organizations) == 1 else None
+    }
 
 @router.post("/register")
 async def register(user_data: UserRegister):
