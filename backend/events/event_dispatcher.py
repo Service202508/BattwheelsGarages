@@ -93,7 +93,7 @@ class EventPriority(int, Enum):
 # ==================== EVENT MODEL ====================
 
 class Event:
-    """Base event class"""
+    """Base event class with tenant context support (Phase D)"""
     
     def __init__(
         self,
@@ -102,7 +102,8 @@ class Event:
         source: str = "unknown",
         priority: EventPriority = EventPriority.NORMAL,
         user_id: Optional[str] = None,
-        correlation_id: Optional[str] = None
+        correlation_id: Optional[str] = None,
+        organization_id: Optional[str] = None  # Phase D: Tenant tagging
     ):
         self.event_id = f"evt_{uuid.uuid4().hex[:12]}"
         self.event_type = event_type
@@ -110,6 +111,7 @@ class Event:
         self.source = source
         self.priority = priority
         self.user_id = user_id
+        self.organization_id = organization_id  # Phase D: Required for tenant isolation
         self.correlation_id = correlation_id or self.event_id
         self.timestamp = datetime.now(timezone.utc)
         self.processed = False
@@ -124,6 +126,7 @@ class Event:
             "source": self.source,
             "priority": self.priority.value if isinstance(self.priority, EventPriority) else self.priority,
             "user_id": self.user_id,
+            "organization_id": self.organization_id,  # Phase D: Include in serialization
             "correlation_id": self.correlation_id,
             "timestamp": self.timestamp.isoformat(),
             "processed": self.processed,
