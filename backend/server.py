@@ -48,6 +48,71 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# ==================== TENANT EXCEPTION HANDLERS ====================
+
+from core.tenant.exceptions import (
+    TenantException, 
+    TenantContextMissing, 
+    TenantAccessDenied,
+    TenantBoundaryViolation,
+    TenantDataLeakAttempt,
+    TenantQuotaExceeded,
+    TenantSuspended
+)
+from fastapi.responses import JSONResponse
+
+@app.exception_handler(TenantAccessDenied)
+async def tenant_access_denied_handler(request: Request, exc: TenantAccessDenied):
+    """Handle tenant access denied - user trying to access org they don't belong to"""
+    logger.warning(f"Tenant access denied: {exc.message}")
+    return JSONResponse(
+        status_code=403,
+        content={"detail": "Access denied to this organization", "code": "TENANT_ACCESS_DENIED"}
+    )
+
+@app.exception_handler(TenantContextMissing)
+async def tenant_context_missing_handler(request: Request, exc: TenantContextMissing):
+    """Handle missing tenant context - typically means user not properly authenticated"""
+    logger.warning(f"Tenant context missing: {exc.message}")
+    return JSONResponse(
+        status_code=400,
+        content={"detail": "Organization context required", "code": "TENANT_CONTEXT_MISSING"}
+    )
+
+@app.exception_handler(TenantBoundaryViolation)
+async def tenant_boundary_violation_handler(request: Request, exc: TenantBoundaryViolation):
+    """Handle boundary violations - potential security issue"""
+    logger.error(f"SECURITY: Tenant boundary violation: {exc.message}")
+    return JSONResponse(
+        status_code=403,
+        content={"detail": "Operation not permitted", "code": "TENANT_BOUNDARY_VIOLATION"}
+    )
+
+@app.exception_handler(TenantDataLeakAttempt)
+async def tenant_data_leak_handler(request: Request, exc: TenantDataLeakAttempt):
+    """Handle potential data leak - critical security event"""
+    logger.critical(f"SECURITY: Potential data leak attempt: {exc.message}")
+    return JSONResponse(
+        status_code=403,
+        content={"detail": "Operation blocked for security", "code": "TENANT_DATA_LEAK_BLOCKED"}
+    )
+
+@app.exception_handler(TenantQuotaExceeded)
+async def tenant_quota_exceeded_handler(request: Request, exc: TenantQuotaExceeded):
+    """Handle quota exceeded - plan limit reached"""
+    return JSONResponse(
+        status_code=429,
+        content={"detail": f"Quota exceeded: {exc.quota_type}", "code": "TENANT_QUOTA_EXCEEDED"}
+    )
+
+@app.exception_handler(TenantSuspended)
+async def tenant_suspended_handler(request: Request, exc: TenantSuspended):
+    """Handle suspended organization"""
+    return JSONResponse(
+        status_code=403,
+        content={"detail": "Organization is suspended", "code": "TENANT_SUSPENDED"}
+    )
+
 # ==================== BASE MODELS ====================
 
 class UserBase(BaseModel):
