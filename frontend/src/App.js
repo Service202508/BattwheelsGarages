@@ -352,6 +352,91 @@ const RoleBasedRedirect = ({ user }) => {
   return <Navigate to="/dashboard" replace />;
 };
 
+// Organization Selection Page for multi-org users
+const OrganizationSelection = ({ auth }) => {
+  const navigate = useNavigate();
+  
+  const handleSelectOrg = async (org) => {
+    await auth.selectOrganization(org);
+    // Redirect based on role after org selection
+    if (auth.user?.role === "customer") {
+      navigate("/customer", { replace: true });
+    } else if (auth.user?.role === "technician") {
+      navigate("/technician", { replace: true });
+    } else if (auth.user?.role === "business_customer") {
+      navigate("/business", { replace: true });
+    } else {
+      navigate("/dashboard", { replace: true });
+    }
+  };
+  
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 flex items-center justify-center p-4">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/30">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-2">Select Organization</h1>
+          <p className="text-slate-400">Choose which organization you want to access</p>
+        </div>
+        
+        <div className="space-y-3" data-testid="org-selection-list">
+          {auth.organizations.map((org) => (
+            <button
+              key={org.organization_id}
+              onClick={() => handleSelectOrg(org)}
+              className="w-full p-4 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 hover:border-emerald-500/50 rounded-xl flex items-center gap-4 transition group"
+              data-testid={`org-select-${org.organization_id}`}
+            >
+              <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-500/30 transition">
+                {org.logo_url ? (
+                  <img src={org.logo_url} alt="" className="w-8 h-8 rounded" />
+                ) : (
+                  <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                )}
+              </div>
+              <div className="flex-1 text-left">
+                <p className="font-semibold text-white group-hover:text-emerald-400 transition">{org.name}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 capitalize">{org.role}</span>
+                  <span className="text-xs text-slate-500 capitalize">{org.plan_type || 'Free'}</span>
+                </div>
+              </div>
+              <svg className="w-5 h-5 text-slate-500 group-hover:text-emerald-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          ))}
+        </div>
+        
+        <div className="mt-6 pt-6 border-t border-slate-700">
+          <a
+            href="/"
+            className="flex items-center justify-center gap-2 w-full p-3 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-xl transition"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Create New Organization
+          </a>
+        </div>
+        
+        <button
+          onClick={auth.logout}
+          className="mt-4 w-full p-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition text-sm"
+        >
+          Sign out and use a different account
+        </button>
+      </div>
+    </div>
+  );
+};
+
 function AppRouter() {
   const location = useLocation();
   const auth = useAuth();
