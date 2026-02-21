@@ -825,9 +825,12 @@ class TicketService:
     
     # ==================== TICKET QUERIES ====================
     
-    async def get_ticket(self, ticket_id: str) -> Optional[Dict[str, Any]]:
-        """Get a single ticket by ID"""
-        return await self.db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    async def get_ticket(self, ticket_id: str, organization_id: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """Get a single ticket by ID, optionally scoped to organization"""
+        query = {"ticket_id": ticket_id}
+        if organization_id:
+            query["organization_id"] = organization_id
+        return await self.db.tickets.find_one(query, {"_id": 0})
     
     async def list_tickets(
         self,
