@@ -2,7 +2,7 @@
 Battwheels OS - Authentication Routes
 """
 from fastapi import APIRouter, HTTPException, Request, Response
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime, timezone, timedelta
 import jwt
@@ -108,7 +108,7 @@ async def login(credentials: UserLogin, response: Response):
                     "plan_type": org.get("plan_type", "free"),
                     "role": m["role"]
                 })
-    except Exception as e:
+    except Exception:
         # If org fetch fails, continue without orgs
         pass
     
