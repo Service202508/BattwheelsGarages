@@ -5264,6 +5264,16 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Include Subscription routes (SaaS Plans & Billing)
+try:
+    from routes.subscriptions import router as subscriptions_router
+    api_router.include_router(subscriptions_router)
+    logger.info("Subscription routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Subscription routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include Settings routes (Zoho Books-style All Settings)
 try:
     from core.settings import init_settings_service, init_settings_routes
