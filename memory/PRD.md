@@ -71,6 +71,11 @@ async def create_invoice(
 - Added `org_type` (customer/internal/partner/demo)
 - Added `subscription_id` reference
 
+### Test Reports:
+- `/app/test_reports/iteration_86.json` - Subscription & Entitlement API tests (23/23 passed)
+- `/app/backend/tests/test_entitlement_service.py` - Unit tests (13/13 passed)
+- `/app/backend/tests/test_subscription_entitlements_api.py` - API tests
+
 ---
 
 ## SaaS Transformation Feasibility Analysis (December 2025)
