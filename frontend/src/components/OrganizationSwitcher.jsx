@@ -172,25 +172,25 @@ const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
 
           <div className="p-2 border-t border-slate-700 space-y-1">
             <a
-              href="/admin/settings/organization"
+              href="/organization-settings"
               className="flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition"
             >
               <Settings className="w-4 h-4" />
               Organization Settings
             </a>
             <a
-              href="/admin/settings/team"
+              href="/team"
               className="flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition"
             >
               <Users className="w-4 h-4" />
               Manage Team
             </a>
             <a
-              href="/"
+              href="/subscription"
               className="flex items-center gap-2 px-3 py-2 text-sm text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-lg transition"
             >
               <Plus className="w-4 h-4" />
-              Create New Organization
+              Upgrade Plan
             </a>
           </div>
         </div>
