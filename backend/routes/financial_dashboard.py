@@ -431,8 +431,18 @@ async def get_top_expenses(request: Request, period: str = "fiscal_year", limit:
     Get top expense categories for pie chart
     """
     org_id = await get_org_id(request)
+    
+    # Return empty if no org context
     if not org_id:
-        raise HTTPException(status_code=400, detail="X-Organization-ID header required")
+        return {
+            "code": 0,
+            "top_expenses": {
+                "period": period,
+                "total": 0,
+                "categories": [],
+                "org_missing": True
+            }
+        }
     
     today = datetime.now(timezone.utc)
     
