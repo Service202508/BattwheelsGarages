@@ -469,16 +469,3 @@ async def get_usage_limits(
             "storage_gb": {"limit": limits.max_storage_gb if limits.max_storage_gb != -1 else "unlimited"}
         }
     }
-
-
-@router.get("/plans/compare", response_model=List[dict])
-async def compare_plans():
-    """
-    Get a comparison of all available plans with features.
-    
-    This is a public endpoint for displaying pricing pages.
-    """
-    from core.subscriptions.entitlement import get_entitlement_service
-    
-    entitlement = get_entitlement_service()
-    return await entitlement.get_plan_comparison()
