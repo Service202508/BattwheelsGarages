@@ -81,7 +81,7 @@ const AdvancedFloatingCard = () => {
           <div className="cta-buttons">
             <button 
               className="btn-primary"
-              onClick={() => window.open('https://cloud-finance-suite.preview.emergentagent.com/submit-ticket', '_blank')}
+              onClick={() => window.open('https://battwheelsgarages.battwheels.com/submit-ticket', '_blank')}
             >
               Book EV Service Now
               <ArrowRight className="btn-icon" />

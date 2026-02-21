@@ -106,7 +106,7 @@ const About = () => {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
-                  href="https://cloud-finance-suite.preview.emergentagent.com/submit-ticket"
+                  href="https://battwheelsgarages.battwheels.com/submit-ticket"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-[#0B8A44] to-[#12B76A] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-green-500/30 hover:-translate-y-0.5 transition-all duration-300"
@@ -287,7 +287,7 @@ const About = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
-                  href="https://cloud-finance-suite.preview.emergentagent.com/submit-ticket"
+                  href="https://battwheelsgarages.battwheels.com/submit-ticket"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-orange-500/30 hover:-translate-y-0.5 transition-all duration-300"

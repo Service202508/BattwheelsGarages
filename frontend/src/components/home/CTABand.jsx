@@ -27,7 +27,7 @@ const CTABand = () => {
             <Button 
               size="lg" 
               className="bg-white text-[#0B8A44] hover:bg-gray-50 hover:shadow-lg transition-all duration-300 font-semibold"
-              onClick={() => window.open('https://cloud-finance-suite.preview.emergentagent.com/submit-ticket', '_blank')}
+              onClick={() => window.open('https://battwheelsgarages.battwheels.com/submit-ticket', '_blank')}
             >
               <Calendar className="mr-2 w-5 h-5" />
               Book EV Service

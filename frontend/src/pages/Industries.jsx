@@ -120,7 +120,7 @@ const Industries = () => {
                 size="lg"
                 variant="outline"
                 className="border-white text-white hover:bg-green-700"
-                onClick={() => window.open('https://cloud-finance-suite.preview.emergentagent.com/submit-ticket', '_blank')}
+                onClick={() => window.open('https://battwheelsgarages.battwheels.com/submit-ticket', '_blank')}
               >
                 Book Service
               </Button>
