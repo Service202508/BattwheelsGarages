@@ -119,7 +119,7 @@ const ServiceDetail = () => {
                 <Button 
                   size="lg"
                   className="bg-white text-green-600 hover:bg-gray-100"
-                  onClick={() => window.open('https://cloud-finance-suite.preview.emergentagent.com/submit-ticket', '_blank')}
+                  onClick={() => window.open('https://battwheelsgarages.battwheels.com/submit-ticket', '_blank')}
                 >
                   Book Service Now
                 </Button>

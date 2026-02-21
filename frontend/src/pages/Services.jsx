@@ -122,7 +122,7 @@ const Services = () => {
                       {/* CTA */}
                       <div className="flex items-center justify-between">
                         <a
-                          href="https://cloud-finance-suite.preview.emergentagent.com/submit-ticket"
+                          href="https://battwheelsgarages.battwheels.com/submit-ticket"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"

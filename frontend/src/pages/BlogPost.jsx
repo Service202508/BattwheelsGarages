@@ -420,7 +420,7 @@ const BlogPost = () => {
                 Book onsite diagnosis and repair for your electric vehicle - no towing required
               </p>
               <a
-                href="https://cloud-finance-suite.preview.emergentagent.com/submit-ticket"
+                href="https://battwheelsgarages.battwheels.com/submit-ticket"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block px-8 py-3 bg-white text-green-600 font-bold rounded-xl hover:bg-green-50 transition-colors"
