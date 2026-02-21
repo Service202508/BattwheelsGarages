@@ -2,46 +2,50 @@
 
 ## February 21, 2026
 
-### SaaS Multi-Tenant Architecture - Phases A-E Complete
-- **Status:** IMPLEMENTED AND TESTED (23/23 tests passed)
+### SaaS Multi-Tenant Architecture - All Phases Complete (A-G)
+- **Status:** IMPLEMENTED AND TESTED (35/35 tests passed)
 - **Test Suites:** 
   - `/app/backend/tests/test_tenant_isolation.py` (14 tests)
   - `/app/backend/tests/test_phase_cde.py` (9 tests)
+  - `/app/backend/tests/test_phase_fg.py` (12 tests)
 
 #### Phase A - Tenant Context Foundation
-- TenantContext, TenantGuard, TenantRepository created
-- TenantEventEmitter, TenantAuditService implemented
-- TenantGuardMiddleware added to FastAPI
-- Exception handlers for tenant errors (403/400/429)
+- TenantContext, TenantGuard, TenantRepository, TenantEventEmitter, TenantAuditService
+- TenantGuardMiddleware + exception handlers (403/400/429)
 
-#### Phase A+ - Route Migration
-- Tickets, vehicles, inventory, suppliers routes migrated to `tenant_context_required`
-- Service methods updated with org_id parameters
+#### Phase A+ - Route Migration (Core)
+- Tickets, vehicles, inventory, suppliers routes
 
 #### Phase B - Data Layer Hardening
-- Migration script: `/app/backend/migrations/add_org_id_to_collections.py`
 - 11,759 documents migrated across 134 collections
-- organization_id indexes added
 
-#### Phase C - RBAC Tenant Scoping (NEW)
-- `/app/backend/core/tenant/rbac.py`
-- TenantRole with permission checking (has_permission, get_allowed_modules)
-- TenantRBACService for org-scoped role management
-- System role templates: admin, manager, technician, customer
-- Custom role creation/deletion per-organization
+#### Phase C - RBAC Tenant Scoping
+- TenantRBACService with system/custom roles per-org
 
-#### Phase D - Event System Tenant Tagging (NEW)
-- Event class updated with organization_id field
-- EventDispatcher.emit() accepts organization_id parameter
-- ticket_service events include org_id tagging
-- event_log includes organization_id for filtering
+#### Phase D - Event System Tenant Tagging
+- Event class with organization_id field
 
-#### Phase E - Intelligence Layer Tenant Isolation (NEW)
-- `/app/backend/core/tenant/ai_isolation.py`
-- TenantVectorStorage: Org-namespaced vector storage
-- TenantAIService: Tenant-isolated AI/RAG operations
-- Similarity search requires organization_id (default-deny)
-- Vector namespace format: `{collection}_{organization_id}`
+#### Phase E - Intelligence Layer Tenant Isolation
+- TenantVectorStorage, TenantAIService
+
+#### Phase F - Token Vault (NEW)
+- `/app/backend/core/tenant/token_vault.py`
+- TenantTokenVault: Encrypted per-org token storage
+- PBKDF2 key derivation per organization
+- TenantZohoSyncService: Isolated Zoho sync
+
+#### Phase G - Observability & Governance (NEW)
+- `/app/backend/core/tenant/observability.py`
+- TenantObservabilityService: Activity logs, metrics, quotas
+- UsageQuota: Limit tracking with period reset
+- Data retention policy support
+
+#### Route Migration - Enhanced Modules (NEW)
+- invoices_enhanced.py migrated
+- estimates_enhanced.py migrated
+- contacts_enhanced.py migrated
+- items_enhanced.py migrated
+- sales_orders_enhanced.py migrated
 
 ---
 
