@@ -5410,6 +5410,11 @@ try:
     init_tenant_audit_service(db)
     logger.info("TenantAuditService initialized")
     
+    # Initialize tenant RBAC service (Phase C)
+    from core.tenant.rbac import init_tenant_rbac_service
+    init_tenant_rbac_service(db)
+    logger.info("TenantRBACService initialized")
+    
     # Add tenant guard middleware (enforces tenant context on all requests)
     app.add_middleware(TenantGuardMiddleware)
     logger.info("TenantGuardMiddleware added - Multi-tenant isolation ACTIVE")
