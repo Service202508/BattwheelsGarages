@@ -121,13 +121,15 @@ const Services = () => {
 
                       {/* CTA */}
                       <div className="flex items-center justify-between">
-                        <Link
-                          to={`/book-service?service=${service.slug || service.id}`}
+                        <a
+                          href="https://cloud-finance-suite.preview.emergentagent.com/submit-ticket"
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                         >
                           Book Service
                           <ArrowRight className="w-4 h-4 ml-2" />
-                        </Link>
+                        </a>
                         {service.slug && (
                           <Link
                             to={`/services/${service.slug}`}
