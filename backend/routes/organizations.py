@@ -436,13 +436,27 @@ async def invite_user(
     
     await db.organization_invites.insert_one(invite_doc)
     
-    # Get organization name for the invite link
+    # Get organization name and inviter name
     org = await db.organizations.find_one({"organization_id": ctx.org_id})
     org_name = org.get("name", "Organization") if org else "Organization"
     
-    # In production, send email here
-    # For now, return the invite link
+    inviter = await db.users.find_one({"user_id": ctx.user_id})
+    inviter_name = inviter.get("name", "Team Admin") if inviter else "Team Admin"
+    
+    # Send invitation email
     invite_link = f"/accept-invite?token={invite_token}"
+    try:
+        from services.email_service import email_service
+        await email_service.send_invitation_email(
+            to_email=data.email,
+            to_name=data.name,
+            org_name=org_name,
+            inviter_name=inviter_name,
+            role=data.role,
+            invite_link=invite_link
+        )
+    except Exception as e:
+        logger.warning(f"Failed to send invitation email: {e}")
     
     logger.info(f"Invitation sent to {data.email} for org {org_name} ({ctx.org_id})")
     
@@ -450,7 +464,7 @@ async def invite_user(
         "success": True,
         "message": f"Invitation sent to {data.email}",
         "invite_id": invite_doc["invite_id"],
-        "invite_link": invite_link,  # For development/testing
+        "invite_link": invite_link,
         "expires_at": invite_doc["expires_at"]
     }
 
