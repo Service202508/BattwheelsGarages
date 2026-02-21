@@ -310,8 +310,21 @@ async def get_income_expense(request: Request, period: str = "fiscal_year", meth
     Supports accrual and cash basis
     """
     org_id = await get_org_id(request)
+    
+    # Return empty if no org context
     if not org_id:
-        raise HTTPException(status_code=400, detail="X-Organization-ID header required")
+        return {
+            "code": 0,
+            "income_expense": {
+                "period": period,
+                "method": method,
+                "total_income": 0,
+                "total_expense": 0,
+                "net_profit": 0,
+                "monthly_data": [],
+                "org_missing": True
+            }
+        }
     
     today = datetime.now(timezone.utc)
     
