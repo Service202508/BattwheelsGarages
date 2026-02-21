@@ -210,24 +210,14 @@ export const useAuth = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("organization_id");
     setUser(null);
+    setOrgReady(false);
   };
 
   useEffect(() => {
     checkAuth();
-    // Also initialize org on page load if already logged in
-    const initOrg = async () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const { initializeOrganization } = await import('@/utils/api');
-          await initializeOrganization(API);
-        } catch (e) {}
-      }
-    };
-    initOrg();
   }, []);
 
-  return { user, loading, login, logout, checkAuth };
+  return { user, loading, login, logout, checkAuth, orgReady };
 };
 
 // Protected Route Component
