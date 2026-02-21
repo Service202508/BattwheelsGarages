@@ -285,7 +285,7 @@ class TicketService:
             {"ticket_id": ticket_id}, {"_id": 0}
         )
         
-        # EMIT TICKET_CREATED EVENT
+        # EMIT TICKET_CREATED EVENT (with organization_id for tenant filtering - Phase D)
         # This triggers: AI matching -> suggested_failure_cards population
         await self.dispatcher.emit(
             EventType.TICKET_CREATED,
@@ -302,7 +302,8 @@ class TicketService:
             },
             source="ticket_service",
             user_id=user_id,
-            priority=EventPriority.HIGH
+            priority=EventPriority.HIGH,
+            organization_id=data.organization_id  # Phase D: Tenant tagging
         )
         
         logger.info(f"Created ticket {ticket_id}, emitted TICKET_CREATED")
