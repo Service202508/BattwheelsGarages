@@ -48,14 +48,23 @@
 - ✅ Step 3: Invite Team (batch invitations)
 - ✅ Step 4: Get Started completion screen
 
-#### Phase 6: Custom Branding (NEW)
+#### Phase 6: Custom Branding
 - ✅ `/branding` page with full customization
 - ✅ **Color Presets**: 6 pre-defined themes (Emerald, Blue Ocean, Purple Royal, Rose Gold, Teal Fresh, Indigo Pro)
 - ✅ **Custom Colors**: Primary, Secondary, Accent, Text, Background, Sidebar
-- ✅ **Logo Management**: Main logo, dark mode logo, favicon
+- ✅ **Logo Upload**: Drag-and-drop file upload with validation
+  - Preferred dimensions: 240 x 240 pixels @ 72 DPI
+  - Supported formats: JPG, JPEG, PNG, GIF, BMP
+  - Maximum file size: 1MB
+  - Logos appear in: PDFs, emails, app header
+- ✅ **Logo Types**: Main logo, dark background logo, favicon
 - ✅ **Content Settings**: Company tagline, email footer, custom CSS
 - ✅ **Live Preview**: Real-time preview of branding changes
-- ✅ **API Endpoints**: GET/PUT/POST reset branding
+- ✅ **API Endpoints**: 
+  - `GET/PUT /api/organizations/me/branding`
+  - `POST /api/uploads/logo` - File upload
+  - `DELETE /api/uploads/logo/{type}` - Remove logo
+  - `GET /api/uploads/logos/{org_id}/{filename}` - Serve logo
 
 
 #### Email Service Integration
