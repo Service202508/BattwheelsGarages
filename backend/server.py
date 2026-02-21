@@ -5533,6 +5533,11 @@ try:
     init_tenant_observability_service(db)
     logger.info("TenantObservabilityService initialized")
     
+    # Initialize subscription service (SaaS Phase 1)
+    from core.subscriptions import init_subscription_service
+    init_subscription_service(db)
+    logger.info("SubscriptionService initialized")
+    
     # Add tenant guard middleware (enforces tenant context on all requests)
     app.add_middleware(TenantGuardMiddleware)
     logger.info("TenantGuardMiddleware added - Multi-tenant isolation ACTIVE")
