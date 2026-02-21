@@ -121,48 +121,47 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ### **SaaS Multi-Tenant Architecture - Phase C RBAC Tenant Scoping: IMPLEMENTED (Session 79) ✅**
 ### **SaaS Multi-Tenant Architecture - Phase D Event Tenant Tagging: IMPLEMENTED (Session 79) ✅**
 ### **SaaS Multi-Tenant Architecture - Phase E AI Tenant Isolation: IMPLEMENTED (Session 79) ✅**
+### **SaaS Multi-Tenant Architecture - Phase F Token Vault: IMPLEMENTED (Session 79) ✅**
+### **SaaS Multi-Tenant Architecture - Phase G Observability: IMPLEMENTED (Session 79) ✅**
 
 ---
 
 ## Latest Updates (Feb 21, 2026 - Session 79)
 
-### SAAS MULTI-TENANT ARCHITECTURE - PHASES A-E COMPLETE
-**Status:** IMPLEMENTED AND TESTED (23/23 tests passed)
+### SAAS MULTI-TENANT ARCHITECTURE - ALL PHASES COMPLETE (A-G)
+**Status:** IMPLEMENTED AND TESTED (35/35 tests passed)
 
-**Phase A - Tenant Context Foundation:** ✅
-- TenantContext, TenantGuard, TenantRepository, TenantEventEmitter, TenantAuditService
-- TenantGuardMiddleware + exception handlers
+**Phases A-E:** Previously documented (see CHANGELOG.md)
 
-**Phase A+ - Route Migration:** ✅
-- Migrated tickets, vehicles, inventory, suppliers routes to `tenant_context_required`
+**Phase F - Token Vault (NEW):**
+- Created `/app/backend/core/tenant/token_vault.py`
+- TenantTokenVault: Encrypted, per-org token storage
+- Per-organization key derivation (PBKDF2)
+- TenantZohoSyncService: Isolated Zoho Books sync per-org
+- Token rotation, expiration tracking
+- Secure token storage with organization isolation
 
-**Phase B - Data Layer Hardening:** ✅
-- 11,759 documents migrated with organization_id across 134 collections
+**Phase G - Observability & Governance (NEW):**
+- Created `/app/backend/core/tenant/observability.py`
+- TenantObservabilityService: Activity logging, metrics, quotas
+- Per-org activity logs with category/action tracking
+- Usage quotas with limit/used/remaining calculations
+- Data retention policy support
+- Organization stats dashboard
 
-**Phase C - RBAC Tenant Scoping:** ✅ (NEW)
-- Created `/app/backend/core/tenant/rbac.py`
-- TenantRole dataclass with permission checking
-- TenantRBACService for org-scoped roles
-- System role templates (admin, manager, technician, customer)
-- Support for custom roles per-organization
-
-**Phase D - Event System Tenant Tagging:** ✅ (NEW)
-- Updated Event class with `organization_id` field
-- EventDispatcher.emit() accepts `organization_id` parameter
-- ticket_service events now include org_id tagging
-- event_log collection includes org_id for filtering
-
-**Phase E - Intelligence Layer Tenant Isolation:** ✅ (NEW)
-- Created `/app/backend/core/tenant/ai_isolation.py`
-- TenantVectorStorage: Org-namespaced vector storage
-- TenantAIService: Tenant-isolated AI/RAG operations
-- Similarity search requires organization_id (default-deny)
-- Vector namespace: `{collection}_{organization_id}`
+**Route Migration (COMPLETE):**
+- Migrated invoices_enhanced.py
+- Migrated estimates_enhanced.py
+- Migrated contacts_enhanced.py
+- Migrated items_enhanced.py
+- Migrated sales_orders_enhanced.py
+- All routes now use `optional_tenant_context` wrapper
 
 **Test Suites:**
 - `/app/backend/tests/test_tenant_isolation.py` (14 tests)
 - `/app/backend/tests/test_phase_cde.py` (9 tests)
-- 100% pass rate (23/23 tests)
+- `/app/backend/tests/test_phase_fg.py` (12 tests)
+- 100% pass rate (35/35 tests)
 
 ---
 
