@@ -78,9 +78,26 @@ async def get_plan(plan_code: str):
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
     
+    # Handle features - could be dict or PlanFeatures object
+    if hasattr(plan.features, 'model_dump'):
+        features_dict = plan.features.model_dump()
+        features = {
+            k: {"enabled": v.get("enabled", v) if isinstance(v, dict) else v.enabled, 
+                "limit": v.get("limit") if isinstance(v, dict) else v.limit}
+            for k, v in features_dict.items()
+        }
+    else:
+        features = plan.features if isinstance(plan.features, dict) else {}
+    
+    # Handle limits
+    if hasattr(plan.limits, 'model_dump'):
+        limits = plan.limits.model_dump()
+    else:
+        limits = plan.limits if isinstance(plan.limits, dict) else {}
+    
     return {
         "plan_id": plan.plan_id,
-        "code": plan.code.value,
+        "code": plan.code.value if hasattr(plan.code, 'value') else plan.code,
         "name": plan.name,
         "description": plan.description,
         "price_monthly": plan.price_monthly,
@@ -88,11 +105,8 @@ async def get_plan(plan_code: str):
         "currency": plan.currency,
         "trial_days": plan.trial_days,
         "support_level": plan.support_level,
-        "features": {
-            k: {"enabled": v.enabled, "limit": v.limit}
-            for k, v in plan.features.model_dump().items()
-        },
-        "limits": plan.limits.model_dump()
+        "features": features,
+        "limits": limits
     }
 
 
