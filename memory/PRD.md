@@ -123,10 +123,67 @@ Build a production-grade accounting ERP system ("Battwheels OS") cloning Zoho Bo
 ### **SaaS Multi-Tenant Architecture - Phase E AI Tenant Isolation: IMPLEMENTED (Session 79) ✅**
 ### **SaaS Multi-Tenant Architecture - Phase F Token Vault: IMPLEMENTED (Session 79) ✅**
 ### **SaaS Multi-Tenant Architecture - Phase G Observability: IMPLEMENTED (Session 79) ✅**
+### **SaaS Onboarding Experience (Frontend + Backend): IMPLEMENTED (Session 80) ✅**
 
 ---
 
-## Latest Updates (Feb 21, 2026 - Session 79)
+## Latest Updates (Feb 21, 2026 - Session 80)
+
+### SAAS ONBOARDING EXPERIENCE - FULLY IMPLEMENTED
+**Status:** IMPLEMENTED AND TESTED (15/15 backend tests, 4/4 frontend tests passed)
+
+**What was implemented:**
+
+#### SaaS Landing Page (`/`)
+- New public landing page at `/app/frontend/src/pages/SaaSLanding.jsx`
+- Modern dark theme with emerald accents
+- Features section showcasing AI diagnostics, ERP suite, multi-user access
+- Pricing tiers (Starter, Professional, Enterprise)
+- "Start 14-Day Free Trial" CTA button opens signup modal
+- "Sign In" navigates to login page
+
+#### Organization Signup Flow
+- **Endpoint:** `POST /api/organizations/signup`
+- Creates organization with admin user
+- Returns JWT token with org_id embedded
+- Auto-stores organization data in localStorage
+- Redirects to dashboard after signup
+
+#### Multi-Organization Login Flow
+- **Updated:** `POST /api/auth/login` now returns `organizations[]` array
+- For single-org users: Returns `organization` object for auto-selection
+- For multi-org users: Frontend shows organization selection screen
+- **New Endpoint:** `POST /api/auth/switch-organization` for org switching
+
+#### Organization Selection UI
+- Built into `/app/frontend/src/App.js`
+- `OrganizationSelection` component shows when user has multiple orgs
+- Displays all organizations with role badges
+- Auto-selects when user has only one organization
+- Stores `organization_id` and `organization` in localStorage
+
+#### Organization Context Management
+- `useAuth()` hook extended with:
+  - `organizations` - List of user's organizations
+  - `currentOrg` - Currently selected organization
+  - `needsOrgSelection` - Boolean for showing org selection screen
+  - `selectOrganization()` - Function to set active organization
+- `OrganizationContext.Provider` wraps all routes
+- `X-Organization-ID` header automatically added to API requests
+
+**Files Modified:**
+- `/app/frontend/src/App.js` - Added org context, selection screen, routing
+- `/app/frontend/src/pages/Login.jsx` - Handle multi-org login response
+- `/app/frontend/src/pages/SaaSLanding.jsx` - Fixed navigation after signup
+- `/app/backend/routes/auth.py` - Added organizations to login, switch-organization endpoint
+
+**Test Results:**
+- `/app/test_reports/iteration_85.json` - 100% pass rate
+- All SaaS onboarding features verified
+
+---
+
+## Previous Updates (Feb 21, 2026 - Session 79)
 
 ### SAAS MULTI-TENANT ARCHITECTURE - ALL PHASES COMPLETE (A-G)
 **Status:** IMPLEMENTED AND TESTED (35/35 tests passed)
