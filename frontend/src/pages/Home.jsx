@@ -620,7 +620,6 @@ export default function Home({ user }) {
   const [refreshing, setRefreshing] = useState(false);
   const [period, setPeriod] = useState("fiscal_year");
   const [method, setMethod] = useState("accrual");
-  const [orgInitialized, setOrgInitialized] = useState(false);
   
   const [summary, setSummary] = useState(null);
   const [cashFlow, setCashFlow] = useState(null);
@@ -630,34 +629,36 @@ export default function Home({ user }) {
   const [projects, setProjects] = useState([]);
   const [quickStats, setQuickStats] = useState(null);
   
-  // Initialize organization context before fetching data
-  useEffect(() => {
-    const initOrg = async () => {
-      const { getOrganizationId, initializeOrganization } = await import('@/utils/api');
-      
-      // Check if org ID is already set
-      let orgId = getOrganizationId();
-      
-      if (!orgId) {
-        // Fetch organization info
-        const org = await initializeOrganization(API);
-        if (org?.organization_id) {
-          orgId = org.organization_id;
-        }
-      }
-      
-      setOrgInitialized(true);
-    };
-    
-    initOrg();
-  }, []);
-  
   const headers = getAuthHeaders();
   
-  const fetchDashboardData = useCallback(async (showRefreshToast = false) => {
-    // Wait for org to be initialized
-    if (!orgInitialized) return;
+  // Ensure organization is initialized before fetching
+  const ensureOrgInitialized = async () => {
+    const existingOrg = localStorage.getItem("organization_id");
+    if (existingOrg) return true;
     
+    // Try to fetch org
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return false;
+      
+      const response = await fetch(`${API}/org`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (response.ok) {
+        const org = await response.json();
+        if (org.organization_id) {
+          localStorage.setItem("organization_id", org.organization_id);
+          return true;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch org:", e);
+    }
+    return false;
+  };
+  
+  const fetchDashboardData = useCallback(async (showRefreshToast = false) => {
     try {
       if (showRefreshToast) setRefreshing(true);
       
