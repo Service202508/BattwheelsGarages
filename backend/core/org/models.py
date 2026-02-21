@@ -109,6 +109,7 @@ class OrganizationCreate(BaseModel):
 class OrganizationUpdate(BaseModel):
     """Update organization request"""
     name: Optional[str] = None
+    org_type: Optional[OrgType] = None  # NEW
     logo_url: Optional[str] = None
     website: Optional[str] = None
     email: Optional[str] = None
