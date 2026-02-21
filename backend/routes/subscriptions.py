@@ -337,3 +337,135 @@ async def admin_process_lifecycle(
         "subscriptions_renewed": renewals,
         "cancellations_processed": cancellations
     }
+
+
+
+# ==================== ENTITLEMENT ENDPOINTS ====================
+
+@router.get("/entitlements", response_model=dict)
+async def get_entitlements(
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """
+    Get all feature entitlements for the current organization.
+    
+    Returns a dictionary of feature keys with their availability status.
+    """
+    from core.subscriptions.entitlement import get_entitlement_service
+    
+    entitlement = get_entitlement_service()
+    features = await entitlement.get_available_features(ctx.org_id)
+    
+    # Get subscription for additional context
+    subscription = await entitlement.get_subscription(ctx.org_id)
+    
+    return {
+        "organization_id": ctx.org_id,
+        "plan": subscription.plan_code.value if subscription else None,
+        "status": subscription.status.value if subscription else None,
+        "features": features,
+        "is_active": subscription.is_active() if subscription else False,
+        "is_trial": subscription.is_in_trial() if subscription else False
+    }
+
+
+@router.get("/entitlements/{feature}", response_model=dict)
+async def check_feature_entitlement(
+    feature: str,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """
+    Check if a specific feature is available for the current organization.
+    
+    Returns detailed information about the feature access.
+    """
+    from core.subscriptions.entitlement import get_entitlement_service
+    
+    entitlement = get_entitlement_service()
+    
+    # Check if feature exists
+    min_plan = entitlement.get_minimum_plan_for_feature(feature)
+    if min_plan is None:
+        raise HTTPException(status_code=404, detail=f"Unknown feature: {feature}")
+    
+    # Get access status
+    enabled, limit = await entitlement.get_feature_limit(ctx.org_id, feature)
+    
+    # Get subscription for context
+    subscription = await entitlement.get_subscription(ctx.org_id)
+    
+    response = {
+        "feature": feature,
+        "enabled": enabled,
+        "limit": limit,
+        "minimum_plan_required": min_plan.value,
+        "current_plan": subscription.plan_code.value if subscription else None
+    }
+    
+    if not enabled and subscription:
+        response["upgrade_to"] = entitlement._get_upgrade_suggestion(feature, subscription.plan_code)
+    
+    return response
+
+
+@router.get("/limits", response_model=dict)
+async def get_usage_limits(
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """
+    Get usage limits and current usage for the organization.
+    """
+    service = get_subscription_service()
+    subscription = await service.get_subscription(ctx.org_id)
+    
+    if not subscription:
+        raise HTTPException(status_code=404, detail="No subscription found")
+    
+    plan = await service.get_plan(subscription.plan_code)
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    
+    usage = subscription.usage
+    limits = plan.limits
+    
+    def format_limit(current: int, limit: int) -> dict:
+        if limit == -1:
+            return {"current": current, "limit": "unlimited", "percent": 0, "remaining": "unlimited"}
+        elif limit == 0:
+            return {"current": current, "limit": 0, "percent": 100, "remaining": 0}
+        else:
+            percent = round((current / limit) * 100, 1) if limit > 0 else 0
+            return {"current": current, "limit": limit, "percent": percent, "remaining": max(0, limit - current)}
+    
+    return {
+        "organization_id": ctx.org_id,
+        "plan": subscription.plan_code.value,
+        "billing_cycle": subscription.billing_cycle.value,
+        "period": {
+            "start": subscription.current_period_start.isoformat() if subscription.current_period_start else None,
+            "end": subscription.current_period_end.isoformat() if subscription.current_period_end else None
+        },
+        "limits": {
+            "invoices": format_limit(usage.invoices_created, limits.max_invoices_per_month),
+            "tickets": format_limit(usage.tickets_created, limits.max_tickets_per_month),
+            "vehicles": format_limit(usage.vehicles_added, limits.max_vehicles),
+            "ai_calls": format_limit(usage.ai_calls_made, limits.max_ai_calls_per_month),
+            "api_calls": format_limit(usage.api_calls_made, limits.max_api_calls_per_day),
+            "users": {"limit": limits.max_users if limits.max_users != -1 else "unlimited"},
+            "technicians": {"limit": limits.max_technicians if limits.max_technicians != -1 else "unlimited"},
+            "storage_gb": {"limit": limits.max_storage_gb if limits.max_storage_gb != -1 else "unlimited"}
+        }
+    }
+
+
+@router.get("/plans/compare", response_model=List[dict])
+async def compare_plans():
+    """
+    Get a comparison of all available plans with features.
+    
+    This is a public endpoint for displaying pricing pages.
+    """
+    from core.subscriptions.entitlement import get_entitlement_service
+    
+    entitlement = get_entitlement_service()
+    return await entitlement.get_plan_comparison()
