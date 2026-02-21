@@ -57,6 +57,7 @@ class OrganizationBase(BaseModel):
     """Base organization model"""
     name: str
     slug: str
+    org_type: OrgType = OrgType.CUSTOMER  # NEW: internal vs customer
     industry_type: IndustryType = IndustryType.EV_GARAGE
     plan_type: PlanType = PlanType.STARTER
     logo_url: Optional[str] = None
