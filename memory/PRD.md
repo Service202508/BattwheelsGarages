@@ -1,7 +1,7 @@
 # Battwheels OS - Product Requirements Document
 
 ## SaaS Status: MULTI-TENANT PLATFORM ACTIVE ✅
-**Last Updated:** February 21, 2026 (Session 80)
+**Last Updated:** February 21, 2026 (Session 81)
 
 ### Current Capabilities:
 - ✅ Multi-tenant data isolation (Phases A-G complete)
@@ -9,11 +9,31 @@
 - ✅ Multi-organization user support
 - ✅ Organization selection for multi-org users
 - ✅ `X-Organization-ID` header enforcement
+- ✅ **NEW: Subscription & Plan Management (Phase 1)**
+  - Plans: Free, Starter (₹2,999/mo), Professional (₹7,999/mo), Enterprise (₹19,999/mo)
+  - `org_type` field for internal vs customer orgs
+  - Subscription lifecycle management
+  - Usage tracking per organization
 
 ### Remaining SaaS Features:
-- 🟡 User Invitation System (P0 - Next)
-- 🟡 Organization Switcher Enhancement (P1)
-- 🟡 Organization Setup Wizard (P1)
+- 🟡 **Phase 2: Entitlement Service** - Runtime feature gating based on plan
+- 🟡 User Invitation System (Email + SMS)
+- 🟡 Organization Switcher Enhancement
+- 🟡 Organization Setup Wizard
+
+### Phase 1 Implementation (Feb 21, 2026):
+**Files Created:**
+- `/app/backend/core/subscriptions/models.py` - Plan, Subscription, UsageRecord models
+- `/app/backend/core/subscriptions/service.py` - SubscriptionService with lifecycle management
+- `/app/backend/routes/subscriptions.py` - Subscription API endpoints
+
+**Database Collections Added:**
+- `plans` - Plan definitions (4 tiers)
+- `subscriptions` - Organization subscriptions with usage tracking
+
+**Organization Model Updates:**
+- Added `org_type` (customer/internal/partner/demo)
+- Added `subscription_id` reference
 
 ---
 
