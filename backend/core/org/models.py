@@ -18,6 +18,14 @@ class PlanType(str, Enum):
     ENTERPRISE = "enterprise"
 
 
+class OrgType(str, Enum):
+    """Organization type for internal vs external handling"""
+    CUSTOMER = "customer"      # External paying customers
+    INTERNAL = "internal"      # Battwheels-owned garages
+    PARTNER = "partner"        # Franchise/partner organizations
+    DEMO = "demo"              # Demo/trial organizations
+
+
 class IndustryType(str, Enum):
     EV_GARAGE = "ev_garage"
     FLEET_OPERATOR = "fleet_operator"
