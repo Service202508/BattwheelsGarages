@@ -231,6 +231,22 @@ async def signup_organization(data: OrganizationCreate):
     await db.users.insert_one(user_doc)
     await db.organization_users.insert_one(membership_doc)
     
+    # Create subscription for the organization
+    try:
+        from core.subscriptions import get_subscription_service, SubscriptionCreate, PlanCode, BillingCycle
+        sub_service = get_subscription_service()
+        
+        # Create subscription with trial
+        sub_data = SubscriptionCreate(
+            plan_code=PlanCode.STARTER,
+            billing_cycle=BillingCycle.MONTHLY,
+            start_trial=True
+        )
+        subscription = await sub_service.create_subscription(org_id, sub_data, user_id)
+        logger.info(f"Created subscription {subscription.subscription_id} for org {org_id}")
+    except Exception as e:
+        logger.warning(f"Failed to create subscription: {e}")
+    
     # Initialize RBAC roles for the organization
     try:
         from core.tenant.rbac import get_tenant_rbac_service
