@@ -126,12 +126,12 @@ Please provide:
 5. Safety precautions
 6. Estimated repair time and difficulty level`;
 
+      const headers = getAuthHeaders();
+      headers["Content-Type"] = "application/json";
+
       const res = await fetch(`${API}/ai-assist/diagnose`, {
         method: "POST",
-        headers: {
-          ...getAuthHeaders(),
-          "Content-Type": "application/json"
-        },
+        headers,
         credentials: "include",
         body: JSON.stringify({
           query: fullQuery,
@@ -149,15 +149,25 @@ Please provide:
         })
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        setDiagnosis({
-          content: data.response,
-          timestamp: new Date().toISOString(),
-          ai_enabled: data.ai_enabled,
-          confidence: data.confidence
-        });
-        toast.success("Diagnosis generated successfully");
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("AI API error:", res.status, errorText);
+        throw new Error(`API Error: ${res.status}`);
+      }
+
+      const data = await res.json();
+      
+      if (!data.response) {
+        throw new Error("Empty response from AI");
+      }
+      
+      setDiagnosis({
+        content: data.response,
+        timestamp: new Date().toISOString(),
+        ai_enabled: data.ai_enabled,
+        confidence: data.confidence
+      });
+      toast.success("Diagnosis generated successfully");
       } else {
         throw new Error("Failed to get AI diagnosis");
       }
