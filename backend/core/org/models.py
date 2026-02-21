@@ -93,6 +93,7 @@ class OrganizationCreate(BaseModel):
     """Create organization request"""
     name: str
     slug: Optional[str] = None
+    org_type: OrgType = OrgType.CUSTOMER  # NEW
     industry_type: IndustryType = IndustryType.EV_GARAGE
     plan_type: PlanType = PlanType.STARTER
     email: Optional[str] = None
