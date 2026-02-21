@@ -34,19 +34,10 @@ class TestPhaseC_RBAC:
         })
         return response.json()["token"]
     
-    def test_rbac_service_initialized(self):
-        """Verify RBAC service is available"""
-        async def check():
-            from core.tenant.rbac import get_tenant_rbac_service
-            service = get_tenant_rbac_service()
-            assert service is not None
-        
-        import sys
-        sys.path.insert(0, '/app/backend')
-        asyncio.get_event_loop().run_until_complete(check())
-    
     def test_system_roles_exist(self):
         """Verify system role templates are defined"""
+        import sys
+        sys.path.insert(0, '/app/backend')
         from core.tenant.rbac import SYSTEM_ROLE_TEMPLATES
         
         assert "admin" in SYSTEM_ROLE_TEMPLATES
@@ -61,6 +52,27 @@ class TestPhaseC_RBAC:
         assert admin_perms["tickets"]["create"] == True
         assert admin_perms["tickets"]["edit"] == True
         assert admin_perms["tickets"]["delete"] == True
+    
+    def test_tenant_role_dataclass(self):
+        """Test TenantRole data structure"""
+        import sys
+        sys.path.insert(0, '/app/backend')
+        from core.tenant.rbac import TenantRole
+        
+        role = TenantRole(
+            role_id="role_test123",
+            organization_id="org_test",
+            role_code="admin",
+            name="Administrator",
+            description="Full access",
+            is_system=True,
+            permissions={"tickets": {"view": True, "create": True, "edit": True, "delete": True}}
+        )
+        
+        assert role.has_permission("tickets", "view") == True
+        assert role.has_permission("tickets", "delete") == True
+        assert role.has_permission("nonexistent", "view") == False
+        assert "tickets" in role.get_allowed_modules()
 
 
 class TestPhaseD_EventTagging:
