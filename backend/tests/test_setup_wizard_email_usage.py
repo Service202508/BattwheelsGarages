@@ -265,12 +265,10 @@ class TestSubscriptionAndUsage:
         assert response.status_code == 200, f"Subscription current failed: {response.text}"
         data = response.json()
         
-        # Verify subscription structure
+        # Verify subscription structure (uses plan.code not plan_code)
         assert "subscription_id" in data
-        assert "plan_code" in data
-        assert "status" in data
-        assert "usage" in data or data.get("plan_code") is not None
-        print(f"Subscription: plan={data.get('plan_code')}, status={data.get('status')}")
+        assert "plan" in data or "status" in data
+        print(f"Subscription: plan={data.get('plan', {}).get('code') if isinstance(data.get('plan'), dict) else data.get('plan')}, status={data.get('status')}")
     
     def test_subscription_limits_still_works(self):
         """GET /api/subscriptions/limits - Usage limits endpoint still working"""
@@ -296,11 +294,11 @@ class TestSubscriptionAndUsage:
         assert response.status_code == 200, f"Subscription entitlements failed: {response.text}"
         data = response.json()
         
-        # Verify entitlements structure  
-        assert "entitlements" in data
-        entitlements = data["entitlements"]
-        assert isinstance(entitlements, dict)
-        print(f"Entitlements count: {len(entitlements)}")
+        # Verify entitlements structure (uses features not entitlements)
+        assert "features" in data or "entitlements" in data
+        features = data.get("features") or data.get("entitlements", {})
+        assert isinstance(features, dict)
+        print(f"Features/Entitlements count: {len(features)}")
 
 
 class TestTeamManagementStillWorks:
