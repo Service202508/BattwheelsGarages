@@ -74,6 +74,15 @@ from .rbac import (
     DEFAULT_MODULES,
 )
 
+from .ai_isolation import (
+    TenantVectorStorage,
+    TenantAIService,
+    VectorDocument,
+    SimilarityResult,
+    init_tenant_ai_service,
+    get_tenant_ai_service,
+)
+
 __all__ = [
     # Context
     "TenantContext",
@@ -105,6 +114,13 @@ __all__ = [
     "get_tenant_rbac_service",
     "SYSTEM_ROLE_TEMPLATES",
     "DEFAULT_MODULES",
+    # AI Isolation (Phase E)
+    "TenantVectorStorage",
+    "TenantAIService",
+    "VectorDocument",
+    "SimilarityResult",
+    "init_tenant_ai_service",
+    "get_tenant_ai_service",
     # Exceptions
     "TenantContextMissing",
     "TenantAccessDenied",
