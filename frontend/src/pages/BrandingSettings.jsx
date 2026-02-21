@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { API, getAuthHeaders } from "@/App";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import { 
   Palette, 
   Image, 
@@ -18,7 +19,10 @@ import {
   RefreshCw,
   Check,
   X,
-  Sparkles
+  Sparkles,
+  AlertCircle,
+  Trash2,
+  Info
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -39,6 +43,9 @@ const COLOR_PRESETS = [
   { name: "Teal Fresh", primary: "#14b8a6", secondary: "#0d9488", accent: "#a855f7" },
   { name: "Indigo Pro", primary: "#6366f1", secondary: "#4f46e5", accent: "#22c55e" }
 ];
+
+const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "bmp"];
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
 
 export default function BrandingSettings({ user }) {
   const [branding, setBranding] = useState({
@@ -61,7 +68,12 @@ export default function BrandingSettings({ user }) {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [originalBranding, setOriginalBranding] = useState(null);
-  const fileInputRef = useRef(null);
+  const [uploadProgress, setUploadProgress] = useState({});
+  const [dragOver, setDragOver] = useState({});
+  
+  const mainLogoRef = useRef(null);
+  const darkLogoRef = useRef(null);
+  const faviconRef = useRef(null);
 
   useEffect(() => {
     fetchBranding();
@@ -106,12 +118,9 @@ export default function BrandingSettings({ user }) {
       });
 
       if (response.ok) {
-        const data = await response.json();
         setOriginalBranding({ ...branding });
         setHasChanges(false);
         toast.success("Branding saved successfully!");
-        
-        // Apply branding to current page
         applyBranding(branding);
       } else {
         const error = await response.json();
@@ -166,6 +175,145 @@ export default function BrandingSettings({ user }) {
     setBranding(prev => ({ ...prev, [field]: value }));
   };
 
+  const validateFile = (file) => {
+    // Check extension
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      toast.error(`Invalid file type. Allowed: ${ALLOWED_EXTENSIONS.join(", ")}`);
+      return false;
+    }
+    
+    // Check size
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error(`File too large. Maximum size: 1MB`);
+      return false;
+    }
+    
+    return true;
+  };
+
+  const uploadLogo = async (file, logoType) => {
+    if (!validateFile(file)) return;
+    
+    setUploadProgress(prev => ({ ...prev, [logoType]: 0 }));
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    try {
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => ({
+          ...prev,
+          [logoType]: Math.min((prev[logoType] || 0) + 10, 90)
+        }));
+      }, 100);
+      
+      const response = await fetch(`${API}/uploads/logo?logo_type=${logoType}`, {
+        method: "POST",
+        headers: {
+          "Authorization": getAuthHeaders()["Authorization"],
+          "X-Organization-ID": getAuthHeaders()["X-Organization-ID"]
+        },
+        body: formData
+      });
+      
+      clearInterval(progressInterval);
+      setUploadProgress(prev => ({ ...prev, [logoType]: 100 }));
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Update branding state with new URL
+        const fieldMap = {
+          main: "logo_url",
+          dark: "logo_dark_url",
+          favicon: "favicon_url"
+        };
+        
+        setBranding(prev => ({
+          ...prev,
+          [fieldMap[logoType]]: data.file_url
+        }));
+        
+        toast.success(`${logoType === 'main' ? 'Logo' : logoType === 'dark' ? 'Dark logo' : 'Favicon'} uploaded!`);
+        
+        // Show dimensions info
+        if (data.dimensions) {
+          const { width, height } = data.dimensions;
+          if (width !== 240 || height !== 240) {
+            toast.info(`Image dimensions: ${width}x${height}px. Recommended: 240x240px`);
+          }
+        }
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || "Upload failed");
+      }
+    } catch (error) {
+      toast.error("Upload failed");
+    } finally {
+      setTimeout(() => {
+        setUploadProgress(prev => ({ ...prev, [logoType]: undefined }));
+      }, 1000);
+    }
+  };
+
+  const deleteLogo = async (logoType) => {
+    if (!confirm(`Delete ${logoType} logo?`)) return;
+    
+    try {
+      const response = await fetch(`${API}/uploads/logo/${logoType}`, {
+        method: "DELETE",
+        headers: getAuthHeaders()
+      });
+      
+      if (response.ok) {
+        const fieldMap = {
+          main: "logo_url",
+          dark: "logo_dark_url",
+          favicon: "favicon_url"
+        };
+        
+        setBranding(prev => ({
+          ...prev,
+          [fieldMap[logoType]]: ""
+        }));
+        
+        toast.success("Logo deleted");
+      }
+    } catch (error) {
+      toast.error("Failed to delete logo");
+    }
+  };
+
+  const handleDrop = useCallback((e, logoType) => {
+    e.preventDefault();
+    setDragOver(prev => ({ ...prev, [logoType]: false }));
+    
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      uploadLogo(file, logoType);
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e, logoType) => {
+    e.preventDefault();
+    setDragOver(prev => ({ ...prev, [logoType]: true }));
+  }, []);
+
+  const handleDragLeave = useCallback((e, logoType) => {
+    e.preventDefault();
+    setDragOver(prev => ({ ...prev, [logoType]: false }));
+  }, []);
+
+  const handleFileSelect = (e, logoType) => {
+    const file = e.target.files[0];
+    if (file) {
+      uploadLogo(file, logoType);
+    }
+    e.target.value = ""; // Reset input
+  };
+
   const ColorInput = ({ label, field, description }) => (
     <div className="space-y-2">
       <Label htmlFor={field}>{label}</Label>
@@ -192,6 +340,82 @@ export default function BrandingSettings({ user }) {
       {description && <p className="text-xs text-gray-500">{description}</p>}
     </div>
   );
+
+  const LogoUploader = ({ logoType, label, description, bgColor = "white", currentUrl, inputRef }) => {
+    const isUploading = uploadProgress[logoType] !== undefined;
+    const isDragging = dragOver[logoType];
+    
+    return (
+      <div className="space-y-3">
+        <Label>{label}</Label>
+        <div
+          className={`border-2 border-dashed rounded-lg p-6 text-center transition-all ${
+            isDragging ? "border-emerald-500 bg-emerald-50" : "border-gray-200"
+          }`}
+          style={{ backgroundColor: bgColor === "dark" ? "#1e293b" : "#fff" }}
+          onDrop={(e) => handleDrop(e, logoType)}
+          onDragOver={(e) => handleDragOver(e, logoType)}
+          onDragLeave={(e) => handleDragLeave(e, logoType)}
+        >
+          {isUploading ? (
+            <div className="space-y-3">
+              <RefreshCw className="h-8 w-8 mx-auto animate-spin text-emerald-500" />
+              <Progress value={uploadProgress[logoType]} className="w-32 mx-auto" />
+              <p className="text-sm text-gray-500">Uploading...</p>
+            </div>
+          ) : currentUrl ? (
+            <div className="space-y-3">
+              <img 
+                src={currentUrl.startsWith("/api") ? `${API.replace("/api", "")}${currentUrl}` : currentUrl}
+                alt={label}
+                className="max-h-20 mx-auto object-contain"
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+              <div className="flex justify-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => inputRef.current?.click()}
+                >
+                  <Upload className="h-4 w-4 mr-1" />
+                  Replace
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-red-500 hover:text-red-600"
+                  onClick={() => deleteLogo(logoType)}
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Remove
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div 
+              className="space-y-2 cursor-pointer" 
+              onClick={() => inputRef.current?.click()}
+            >
+              <Upload className={`h-10 w-10 mx-auto ${bgColor === "dark" ? "text-gray-400" : "text-gray-300"}`} />
+              <p className={`text-sm ${bgColor === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                <span className="text-emerald-500 font-medium">Click to upload</span> or drag and drop
+              </p>
+              <p className={`text-xs ${bgColor === "dark" ? "text-gray-500" : "text-gray-400"}`}>
+                {description}
+              </p>
+            </div>
+          )}
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".jpg,.jpeg,.png,.gif,.bmp"
+          className="hidden"
+          onChange={(e) => handleFileSelect(e, logoType)}
+        />
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -237,15 +461,15 @@ export default function BrandingSettings({ user }) {
         </div>
       )}
 
-      <Tabs defaultValue="colors" className="space-y-4">
+      <Tabs defaultValue="logos" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="colors">
-            <Palette className="h-4 w-4 mr-2" />
-            Colors
-          </TabsTrigger>
           <TabsTrigger value="logos">
             <Image className="h-4 w-4 mr-2" />
             Logos
+          </TabsTrigger>
+          <TabsTrigger value="colors">
+            <Palette className="h-4 w-4 mr-2" />
+            Colors
           </TabsTrigger>
           <TabsTrigger value="content">
             <Type className="h-4 w-4 mr-2" />
@@ -256,6 +480,118 @@ export default function BrandingSettings({ user }) {
             Preview
           </TabsTrigger>
         </TabsList>
+
+        {/* Logos Tab */}
+        <TabsContent value="logos" className="space-y-6">
+          {/* Requirements Info */}
+          <Card className="bg-blue-50 border-blue-200">
+            <CardContent className="pt-4">
+              <div className="flex gap-3">
+                <Info className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">Logo Requirements</p>
+                  <ul className="space-y-1 text-blue-700">
+                    <li>• Preferred dimensions: <strong>240 x 240 pixels</strong> @ 72 DPI</li>
+                    <li>• Supported formats: <strong>JPG, JPEG, PNG, GIF, BMP</strong></li>
+                    <li>• Maximum file size: <strong>1MB</strong></li>
+                    <li>• Logo will appear in PDFs, emails, and app header</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Organization Logo</CardTitle>
+              <CardDescription>Upload your company logo</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Main Logo */}
+                <LogoUploader
+                  logoType="main"
+                  label="Main Logo (Light Background)"
+                  description="For white/light backgrounds"
+                  bgColor="white"
+                  currentUrl={branding.logo_url}
+                  inputRef={mainLogoRef}
+                />
+
+                {/* Dark Logo */}
+                <LogoUploader
+                  logoType="dark"
+                  label="Logo for Dark Background"
+                  description="For dark/sidebar backgrounds"
+                  bgColor="dark"
+                  currentUrl={branding.logo_dark_url}
+                  inputRef={darkLogoRef}
+                />
+              </div>
+
+              {/* Favicon */}
+              <div className="pt-4 border-t">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <Label>Favicon (Browser Tab Icon)</Label>
+                    <div className="flex gap-4 items-start">
+                      <div 
+                        className={`w-16 h-16 border-2 border-dashed rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer transition-all ${
+                          dragOver.favicon ? "border-emerald-500 bg-emerald-50" : "border-gray-200"
+                        }`}
+                        onClick={() => faviconRef.current?.click()}
+                        onDrop={(e) => handleDrop(e, "favicon")}
+                        onDragOver={(e) => handleDragOver(e, "favicon")}
+                        onDragLeave={(e) => handleDragLeave(e, "favicon")}
+                      >
+                        {uploadProgress.favicon !== undefined ? (
+                          <RefreshCw className="h-5 w-5 animate-spin text-emerald-500" />
+                        ) : branding.favicon_url ? (
+                          <img 
+                            src={branding.favicon_url.startsWith("/api") ? `${API.replace("/api", "")}${branding.favicon_url}` : branding.favicon_url}
+                            alt="Favicon" 
+                            className="w-10 h-10 object-contain"
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                          />
+                        ) : (
+                          <Image className="h-6 w-6 text-gray-300" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-600 mb-2">
+                          Small icon shown in browser tabs. Recommended: 32x32 or 64x64 pixels.
+                        </p>
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" onClick={() => faviconRef.current?.click()}>
+                            <Upload className="h-4 w-4 mr-1" />
+                            Upload
+                          </Button>
+                          {branding.favicon_url && (
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="text-red-500"
+                              onClick={() => deleteLogo("favicon")}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <input
+                      ref={faviconRef}
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.gif,.bmp,.ico"
+                      className="hidden"
+                      onChange={(e) => handleFileSelect(e, "favicon")}
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* Colors Tab */}
         <TabsContent value="colors" className="space-y-6">
@@ -323,109 +659,6 @@ export default function BrandingSettings({ user }) {
                   field="sidebar_color" 
                   description="Navigation sidebar background"
                 />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Logos Tab */}
-        <TabsContent value="logos" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Logo Images</CardTitle>
-              <CardDescription>Upload your organization's logos</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Main Logo */}
-                <div className="space-y-3">
-                  <Label>Main Logo (Light Background)</Label>
-                  <div className="border-2 border-dashed rounded-lg p-6 text-center bg-white">
-                    {branding.logo_url ? (
-                      <div className="space-y-3">
-                        <img 
-                          src={branding.logo_url} 
-                          alt="Logo" 
-                          className="max-h-16 mx-auto object-contain"
-                        />
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => setBranding(prev => ({ ...prev, logo_url: "" }))}
-                        >
-                          <X className="h-4 w-4 mr-1" />
-                          Remove
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <Upload className="h-8 w-8 mx-auto text-gray-400" />
-                        <p className="text-sm text-gray-500">Paste image URL below</p>
-                      </div>
-                    )}
-                  </div>
-                  <Input
-                    placeholder="https://example.com/logo.png"
-                    value={branding.logo_url || ""}
-                    onChange={(e) => setBranding(prev => ({ ...prev, logo_url: e.target.value }))}
-                  />
-                </div>
-
-                {/* Dark Logo */}
-                <div className="space-y-3">
-                  <Label>Logo for Dark Background</Label>
-                  <div className="border-2 border-dashed rounded-lg p-6 text-center bg-gray-900">
-                    {branding.logo_dark_url ? (
-                      <div className="space-y-3">
-                        <img 
-                          src={branding.logo_dark_url} 
-                          alt="Logo Dark" 
-                          className="max-h-16 mx-auto object-contain"
-                        />
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="text-white hover:text-gray-200"
-                          onClick={() => setBranding(prev => ({ ...prev, logo_dark_url: "" }))}
-                        >
-                          <X className="h-4 w-4 mr-1" />
-                          Remove
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <Upload className="h-8 w-8 mx-auto text-gray-500" />
-                        <p className="text-sm text-gray-400">Paste image URL below</p>
-                      </div>
-                    )}
-                  </div>
-                  <Input
-                    placeholder="https://example.com/logo-white.png"
-                    value={branding.logo_dark_url || ""}
-                    onChange={(e) => setBranding(prev => ({ ...prev, logo_dark_url: e.target.value }))}
-                  />
-                </div>
-              </div>
-
-              {/* Favicon */}
-              <div className="space-y-3">
-                <Label>Favicon</Label>
-                <div className="flex gap-4 items-center">
-                  <div className="w-12 h-12 border rounded-lg flex items-center justify-center bg-gray-50">
-                    {branding.favicon_url ? (
-                      <img src={branding.favicon_url} alt="Favicon" className="w-8 h-8 object-contain" />
-                    ) : (
-                      <Image className="h-5 w-5 text-gray-400" />
-                    )}
-                  </div>
-                  <Input
-                    placeholder="https://example.com/favicon.ico"
-                    value={branding.favicon_url || ""}
-                    onChange={(e) => setBranding(prev => ({ ...prev, favicon_url: e.target.value }))}
-                    className="flex-1"
-                  />
-                </div>
-                <p className="text-xs text-gray-500">Recommended: 32x32 or 64x64 pixels, .ico or .png format</p>
               </div>
             </CardContent>
           </Card>
@@ -515,7 +748,19 @@ export default function BrandingSettings({ user }) {
                   style={{ backgroundColor: branding.sidebar_color }}
                 >
                   {branding.logo_dark_url ? (
-                    <img src={branding.logo_dark_url} alt="Logo" className="h-8 object-contain" />
+                    <img 
+                      src={branding.logo_dark_url.startsWith("/api") ? `${API.replace("/api", "")}${branding.logo_dark_url}` : branding.logo_dark_url}
+                      alt="Logo" 
+                      className="h-8 object-contain"
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  ) : branding.logo_url ? (
+                    <img 
+                      src={branding.logo_url.startsWith("/api") ? `${API.replace("/api", "")}${branding.logo_url}` : branding.logo_url}
+                      alt="Logo" 
+                      className="h-8 object-contain"
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
                   ) : (
                     <div className="h-8 w-24 bg-gray-700 rounded flex items-center justify-center text-gray-400 text-xs">
                       Logo
