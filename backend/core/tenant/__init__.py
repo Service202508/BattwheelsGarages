@@ -140,6 +140,21 @@ __all__ = [
     "SimilarityResult",
     "init_tenant_ai_service",
     "get_tenant_ai_service",
+    # Token Vault (Phase F)
+    "TenantTokenVault",
+    "TenantZohoSyncService",
+    "TokenEntry",
+    "init_tenant_token_vault",
+    "get_tenant_token_vault",
+    "get_tenant_zoho_sync",
+    # Observability (Phase G)
+    "TenantObservabilityService",
+    "TenantActivityLog",
+    "TenantMetrics",
+    "UsageQuota",
+    "ActivityCategory",
+    "init_tenant_observability_service",
+    "get_tenant_observability_service",
     # Exceptions
     "TenantContextMissing",
     "TenantAccessDenied",
