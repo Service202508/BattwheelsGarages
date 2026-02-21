@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext, useContext } from "react";
 import "@/App.css";
 import "leaflet/dist/leaflet.css";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 // Pages
 import Login from "@/pages/Login";
+import SaaSLanding from "@/pages/SaaSLanding";
 import Dashboard from "@/pages/Dashboard";
 import Tickets from "@/pages/Tickets";
 import NewTicket from "@/pages/NewTicket";
@@ -122,19 +123,33 @@ export const API = `${BACKEND_URL}/api`;
 // Re-export API utilities for convenience
 export { getAuthHeaders, getOrganizationId, setOrganizationId, apiFetch, apiGet, apiPost, apiPut, apiPatch, apiDelete } from '@/utils/api';
 
+// Organization Context for global access
+const OrganizationContext = createContext(null);
+export const useOrganization = () => useContext(OrganizationContext);
+
 // Auth Context
 export const useAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [orgReady, setOrgReady] = useState(false);
+  const [organizations, setOrganizations] = useState([]);
+  const [currentOrg, setCurrentOrg] = useState(null);
+  const [needsOrgSelection, setNeedsOrgSelection] = useState(false);
 
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem("token");
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      
       const response = await fetch(`${API}/auth/me`, {
         credentials: "include",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: { Authorization: `Bearer ${token}` },
       });
+      
       if (response.ok) {
         const data = await response.json();
         setUser(data);
@@ -144,6 +159,7 @@ export const useAuth = () => {
         setUser(null);
         localStorage.removeItem("token");
         localStorage.removeItem("organization_id");
+        localStorage.removeItem("organization");
       }
     } catch (error) {
       setUser(null);
@@ -160,22 +176,48 @@ export const useAuth = () => {
         return;
       }
       
-      // Check if org is already set
-      const existingOrg = localStorage.getItem("organization_id");
-      if (existingOrg) {
-        setOrgReady(true);
-        return;
+      // Check if org is already set in localStorage
+      const existingOrgId = localStorage.getItem("organization_id");
+      const existingOrg = localStorage.getItem("organization");
+      
+      if (existingOrgId && existingOrg) {
+        try {
+          setCurrentOrg(JSON.parse(existingOrg));
+          setOrgReady(true);
+          return;
+        } catch (e) {
+          // Invalid JSON, fetch fresh
+        }
       }
       
-      // Fetch organization
-      const response = await fetch(`${API}/org`, {
+      // Fetch user's organizations
+      const response = await fetch(`${API}/organizations/my-organizations`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
       if (response.ok) {
-        const org = await response.json();
-        if (org.organization_id) {
-          localStorage.setItem("organization_id", org.organization_id);
+        const data = await response.json();
+        const orgs = data.organizations || [];
+        setOrganizations(orgs);
+        
+        if (orgs.length === 0) {
+          // No organizations - user needs to create or join one
+          setNeedsOrgSelection(true);
+        } else if (orgs.length === 1) {
+          // Single organization - auto-select
+          await selectOrganization(orgs[0]);
+        } else {
+          // Multiple organizations - user needs to pick
+          // Check if default org exists
+          if (existingOrgId) {
+            const org = orgs.find(o => o.organization_id === existingOrgId);
+            if (org) {
+              await selectOrganization(org);
+              return;
+            }
+          }
+          // Need selection
+          setNeedsOrgSelection(true);
         }
       }
     } catch (e) {
@@ -185,15 +227,34 @@ export const useAuth = () => {
     }
   };
 
-  const login = async (userData, token) => {
+  const selectOrganization = async (org) => {
+    localStorage.setItem("organization_id", org.organization_id);
+    localStorage.setItem("organization", JSON.stringify(org));
+    setCurrentOrg(org);
+    setNeedsOrgSelection(false);
+    setOrgReady(true);
+  };
+
+  const login = async (userData, token, orgs = null) => {
     if (token) {
       localStorage.setItem("token", token);
     }
     setUser(userData);
-    setOrgReady(false);
     
-    // Initialize organization context after login
-    await initializeOrgContext();
+    // If organizations are provided from login response
+    if (orgs && orgs.length > 0) {
+      setOrganizations(orgs);
+      if (orgs.length === 1) {
+        await selectOrganization(orgs[0]);
+      } else {
+        setNeedsOrgSelection(true);
+        setOrgReady(true);
+      }
+    } else {
+      // Initialize organization context after login
+      setOrgReady(false);
+      await initializeOrgContext();
+    }
   };
 
   const logout = async () => {
@@ -209,7 +270,11 @@ export const useAuth = () => {
     }
     localStorage.removeItem("token");
     localStorage.removeItem("organization_id");
+    localStorage.removeItem("organization");
     setUser(null);
+    setCurrentOrg(null);
+    setOrganizations([]);
+    setNeedsOrgSelection(false);
     setOrgReady(false);
   };
 
@@ -217,7 +282,18 @@ export const useAuth = () => {
     checkAuth();
   }, []);
 
-  return { user, loading, login, logout, checkAuth, orgReady };
+  return { 
+    user, 
+    loading, 
+    login, 
+    logout, 
+    checkAuth, 
+    orgReady,
+    organizations,
+    currentOrg,
+    needsOrgSelection,
+    selectOrganization
+  };
 };
 
 // Protected Route Component
