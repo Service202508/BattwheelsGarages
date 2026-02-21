@@ -1274,7 +1274,9 @@ async def switch_organization(request: Request):
         raise HTTPException(status_code=400, detail="organization_id is required")
     
     # Get current user
-    user = await get_current_user_from_request(request)
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
     
     # Verify user is a member of the target org
     membership = await db.organization_users.find_one({
