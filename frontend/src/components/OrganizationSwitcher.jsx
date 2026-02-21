@@ -1,407 +1,202 @@
-import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Building2, 
-  ChevronDown, 
-  Check, 
-  Plus, 
-  Settings,
-  Loader2 
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { API } from "@/App";
+import React, { useState, useEffect, useRef } from 'react';
+import { Building2, ChevronDown, Check, Plus, Settings, Users } from 'lucide-react';
+import { toast } from 'sonner';
 
-// Role badge colors
-const roleBadgeColors = {
-  owner: "bg-purple-500/20 text-purple-400",
-  admin: "bg-blue-500/20 text-blue-400",
-  manager: "bg-green-500/20 text-green-400",
-  dispatcher: "bg-yellow-500/20 text-yellow-400",
-  technician: "bg-orange-500/20 text-orange-400",
-  accountant: "bg-cyan-500/20 text-cyan-400",
-  viewer: "bg-gray-500/20 text-gray-400",
-};
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-const industryTypes = [
-  { value: "ev_garage", label: "EV Garage" },
-  { value: "fleet_operator", label: "Fleet Operator" },
-  { value: "oem_service", label: "OEM Service Center" },
-  { value: "multi_brand", label: "Multi-Brand Service" },
-  { value: "franchise", label: "Franchise" },
-];
-
-export default function OrganizationSwitcher({ compact = false }) {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [switching, setSwitching] = useState(false);
-  const [currentOrg, setCurrentOrg] = useState(null);
+const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [organizations, setOrganizations] = useState([]);
-  const [open, setOpen] = useState(false);
-  
-  // Create org dialog state
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [creating, setCreating] = useState(false);
-  const [newOrgForm, setNewOrgForm] = useState({
-    name: "",
-    industry_type: "ev_garage",
-    email: "",
-    phone: "",
-  });
-
-  const getAuthHeaders = useCallback(() => {
-    const token = localStorage.getItem("token");
-    return {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-  }, []);
-
-  // Create new organization
-  const createOrganization = async () => {
-    if (!newOrgForm.name.trim()) {
-      toast.error("Organization name is required");
-      return;
-    }
-    
-    setCreating(true);
-    try {
-      const res = await fetch(`${API}/org`, {
-        method: "POST",
-        headers: getAuthHeaders(),
-        body: JSON.stringify(newOrgForm),
-      });
-      
-      if (res.ok) {
-        const data = await res.json();
-        toast.success(`Created organization: ${data.name}`);
-        setCreateDialogOpen(false);
-        setNewOrgForm({ name: "", industry_type: "ev_garage", email: "", phone: "" });
-        // Refresh and switch to new org
-        await fetchOrganizations();
-        if (data.organization_id) {
-          await switchOrganization(data.organization_id);
-        }
-      } else {
-        const error = await res.json();
-        toast.error(error.detail || "Failed to create organization");
-      }
-    } catch (error) {
-      toast.error("Failed to create organization");
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  // Fetch organizations
-  const fetchOrganizations = useCallback(async () => {
-    try {
-      const [currentRes, listRes] = await Promise.all([
-        fetch(`${API}/org`, { headers: getAuthHeaders() }),
-        fetch(`${API}/org/list`, { headers: getAuthHeaders() }),
-      ]);
-
-      if (currentRes.ok) {
-        const currentData = await currentRes.json();
-        setCurrentOrg(currentData);
-      }
-
-      if (listRes.ok) {
-        const listData = await listRes.json();
-        setOrganizations(listData.organizations || []);
-      }
-    } catch (error) {
-      console.error("Failed to fetch organizations:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [getAuthHeaders]);
+  const [isLoading, setIsLoading] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     fetchOrganizations();
-  }, [fetchOrganizations]);
+  }, []);
 
-  // Switch organization
-  const switchOrganization = async (orgId) => {
-    if (currentOrg?.organization_id === orgId) {
-      setOpen(false);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const fetchOrganizations = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/organizations/my-organizations`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setOrganizations(data.organizations || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch organizations:', error);
+    }
+  };
+
+  const handleSwitch = async (org) => {
+    if (org.organization_id === currentOrg?.organization_id) {
+      setIsOpen(false);
       return;
     }
 
-    setSwitching(true);
+    setIsLoading(true);
     try {
-      const res = await fetch(`${API}/org/switch/${orgId}`, {
-        method: "POST",
-        headers: getAuthHeaders(),
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/auth/switch-organization`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ organization_id: org.organization_id })
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        toast.success(`Switched to ${data.organization_name}`);
-        
-        // Refresh page to reload all data with new org context
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('organization', JSON.stringify(data.organization));
+        toast.success(`Switched to ${org.name}`);
+        setIsOpen(false);
+        if (onSwitch) {
+          onSwitch(data.organization);
+        }
+        // Reload to apply new context
         window.location.reload();
       } else {
-        toast.error("Failed to switch organization");
+        toast.error('Failed to switch organization');
       }
     } catch (error) {
-      toast.error("Failed to switch organization");
+      toast.error('Network error');
     } finally {
-      setSwitching(false);
-      setOpen(false);
+      setIsLoading(false);
     }
   };
 
-  // Get initials for avatar
-  const getInitials = (name) => {
-    if (!name) return "?";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
+  const getRoleColor = (role) => {
+    switch (role) {
+      case 'owner': return 'bg-purple-500/20 text-purple-400';
+      case 'admin': return 'bg-blue-500/20 text-blue-400';
+      case 'manager': return 'bg-emerald-500/20 text-emerald-400';
+      default: return 'bg-slate-500/20 text-slate-400';
+    }
   };
 
-  // Get current user's role in current org
-  const getCurrentRole = () => {
-    const org = organizations.find(o => o.organization_id === currentOrg?.organization_id);
-    return org?.role || "viewer";
-  };
-
-  if (loading) {
-    return (
-      <Button variant="ghost" size="sm" disabled className="gap-2">
-        <Loader2 className="h-4 w-4 animate-spin" />
-        {!compact && <span className="text-sm">Loading...</span>}
-      </Button>
-    );
-  }
-
-  // If only one organization, show simple display
   if (organizations.length <= 1) {
+    // Single org - just show the name
     return (
-      <div className="flex items-center gap-2 px-2">
-        <Avatar className="h-6 w-6">
-          <AvatarImage src={currentOrg?.logo_url} />
-          <AvatarFallback className="text-xs bg-primary/20">
-            {getInitials(currentOrg?.name)}
-          </AvatarFallback>
-        </Avatar>
-        {!compact && (
-          <div className="flex flex-col">
-            <span className="text-sm font-medium truncate max-w-[120px]">
-              {currentOrg?.name}
-            </span>
-            <span className="text-xs text-muted-foreground capitalize">
-              {getCurrentRole()}
-            </span>
-          </div>
-        )}
+      <div className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-slate-700">
+        <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+          <Building2 className="w-4 h-4 text-emerald-400" />
+        </div>
+        <div className="hidden sm:block">
+          <p className="text-sm font-medium text-white truncate max-w-[150px]">
+            {currentOrg?.name || 'Organization'}
+          </p>
+          <p className="text-xs text-slate-400 capitalize">
+            {currentOrg?.plan_type || 'Free'}
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="gap-2 hover:bg-primary/10 transition-colors"
-          data-testid="org-switcher-trigger"
-        >
-          <Avatar className="h-6 w-6">
-            <AvatarImage src={currentOrg?.logo_url} />
-            <AvatarFallback className="text-xs bg-primary/20">
-              {getInitials(currentOrg?.name)}
-            </AvatarFallback>
-          </Avatar>
-          {!compact && (
-            <>
-              <div className="flex flex-col items-start">
-                <span className="text-sm font-medium truncate max-w-[120px]">
-                  {currentOrg?.name}
-                </span>
-                <span className="text-xs text-muted-foreground capitalize">
-                  {getCurrentRole()}
-                </span>
-              </div>
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            </>
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg border border-slate-700 transition"
+        data-testid="org-switcher-btn"
+      >
+        <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+          {currentOrg?.logo_url ? (
+            <img src={currentOrg.logo_url} alt="" className="w-6 h-6 rounded" />
+          ) : (
+            <Building2 className="w-4 h-4 text-emerald-400" />
           )}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[280px]">
-        <DropdownMenuLabel className="flex items-center gap-2">
-          <Building2 className="h-4 w-4" />
-          Switch Organization
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        
-        {/* Organization List */}
-        <div className="max-h-[300px] overflow-y-auto">
-          {organizations.map((org) => (
-            <DropdownMenuItem
-              key={org.organization_id}
-              onClick={() => switchOrganization(org.organization_id)}
-              disabled={switching}
-              className="flex items-center gap-3 py-2 cursor-pointer"
-              data-testid={`org-option-${org.organization_id}`}
-            >
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="text-xs bg-primary/20">
-                  {getInitials(org.name)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col flex-1 min-w-0">
-                <span className="text-sm font-medium truncate">{org.name}</span>
-                <div className="flex items-center gap-2">
-                  <Badge className={`${roleBadgeColors[org.role]} text-[10px] px-1.5 py-0`}>
-                    {org.role}
-                  </Badge>
-                  <span className="text-[10px] text-muted-foreground">
-                    {org.slug}
-                  </span>
-                </div>
-              </div>
-              {currentOrg?.organization_id === org.organization_id && (
-                <Check className="h-4 w-4 text-primary flex-shrink-0" />
-              )}
-            </DropdownMenuItem>
-          ))}
         </div>
+        <div className="hidden sm:block text-left">
+          <p className="text-sm font-medium text-white truncate max-w-[150px]">
+            {currentOrg?.name || 'Select Organization'}
+          </p>
+          <p className="text-xs text-slate-400 capitalize">
+            {currentOrg?.plan_type || 'Free'}
+          </p>
+        </div>
+        <ChevronDown className={`w-4 h-4 text-slate-400 transition ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
 
-        <DropdownMenuSeparator />
-        
-        {/* Actions */}
-        <DropdownMenuItem
-          onClick={() => {
-            setOpen(false);
-            navigate("/organization-settings");
-          }}
-          className="gap-2"
-        >
-          <Settings className="h-4 w-4" />
-          Organization Settings
-        </DropdownMenuItem>
-        
-        {/* Only show create option for admins/owners */}
-        {["owner", "admin"].includes(getCurrentRole()) && (
-          <DropdownMenuItem
-            onClick={() => {
-              setOpen(false);
-              setCreateDialogOpen(true);
-            }}
-            className="gap-2"
-            data-testid="create-org-btn"
-          >
-            <Plus className="h-4 w-4" />
-            Create Organization
-          </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-      
-      {/* Create Organization Dialog */}
-      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5" />
-              Create New Organization
-            </DialogTitle>
-            <DialogDescription>
-              Create a new organization to manage a separate business entity or branch.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="org-name">Organization Name *</Label>
-              <Input
-                id="org-name"
-                placeholder="e.g., EV Service Center - Delhi"
-                value={newOrgForm.name}
-                onChange={(e) => setNewOrgForm({ ...newOrgForm, name: e.target.value })}
-                data-testid="new-org-name-input"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="industry-type">Industry Type</Label>
-              <Select
-                value={newOrgForm.industry_type}
-                onValueChange={(v) => setNewOrgForm({ ...newOrgForm, industry_type: v })}
-              >
-                <SelectTrigger data-testid="new-org-industry-select">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {industryTypes.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="org-email">Email</Label>
-              <Input
-                id="org-email"
-                type="email"
-                placeholder="contact@organization.com"
-                value={newOrgForm.email}
-                onChange={(e) => setNewOrgForm({ ...newOrgForm, email: e.target.value })}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="org-phone">Phone</Label>
-              <Input
-                id="org-phone"
-                placeholder="+91 98765 43210"
-                value={newOrgForm.phone}
-                onChange={(e) => setNewOrgForm({ ...newOrgForm, phone: e.target.value })}
-              />
-            </div>
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-2 w-72 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden">
+          <div className="p-2 border-b border-slate-700">
+            <p className="text-xs font-medium text-slate-400 px-2 py-1">YOUR ORGANIZATIONS</p>
           </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={createOrganization} disabled={creating} data-testid="create-org-submit">
-              {creating ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
-                </>
-              ) : (
-                <>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Organization
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </DropdownMenu>
+
+          <div className="max-h-64 overflow-y-auto py-1">
+            {organizations.map((org) => (
+              <button
+                key={org.organization_id}
+                onClick={() => handleSwitch(org)}
+                disabled={isLoading}
+                className={`w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-700/50 transition ${
+                  org.organization_id === currentOrg?.organization_id ? 'bg-slate-700/30' : ''
+                }`}
+              >
+                <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  {org.logo_url ? (
+                    <img src={org.logo_url} alt="" className="w-8 h-8 rounded" />
+                  ) : (
+                    <Building2 className="w-5 h-5 text-emerald-400" />
+                  )}
+                </div>
+                <div className="flex-1 text-left min-w-0">
+                  <p className="text-sm font-medium text-white truncate">{org.name}</p>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${getRoleColor(org.role)}`}>
+                      {org.role}
+                    </span>
+                    <span className="text-xs text-slate-500 capitalize">{org.plan_type}</span>
+                  </div>
+                </div>
+                {org.organization_id === currentOrg?.organization_id && (
+                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div className="p-2 border-t border-slate-700 space-y-1">
+            <a
+              href="/admin/settings/organization"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition"
+            >
+              <Settings className="w-4 h-4" />
+              Organization Settings
+            </a>
+            <a
+              href="/admin/settings/team"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition"
+            >
+              <Users className="w-4 h-4" />
+              Manage Team
+            </a>
+            <a
+              href="/"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-lg transition"
+            >
+              <Plus className="w-4 h-4" />
+              Create New Organization
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
   );
-}
+};
+
+export default OrganizationSwitcher;
