@@ -1200,6 +1200,12 @@ async def register(user_data: UserCreate):
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
+    """
+    Login endpoint with multi-organization support.
+    
+    Returns user's organizations for org switcher functionality.
+    If user belongs to multiple orgs, they can switch after login.
+    """
     user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -1208,7 +1214,35 @@ async def login(credentials: UserLogin):
     if not user.get("is_active", True):
         raise HTTPException(status_code=401, detail="Account is deactivated")
     
-    token = create_token(user["user_id"], user["email"], user["role"])
+    # Get user's organizations
+    memberships = await db.organization_users.find(
+        {"user_id": user["user_id"], "status": "active"},
+        {"_id": 0}
+    ).to_list(20)
+    
+    organizations = []
+    default_org_id = None
+    
+    for m in memberships:
+        org = await db.organizations.find_one(
+            {"organization_id": m["organization_id"], "is_active": True},
+            {"_id": 0, "organization_id": 1, "name": 1, "slug": 1, "logo_url": 1, "plan_type": 1}
+        )
+        if org:
+            organizations.append({
+                "organization_id": org["organization_id"],
+                "name": org["name"],
+                "slug": org.get("slug"),
+                "logo_url": org.get("logo_url"),
+                "plan_type": org.get("plan_type", "free"),
+                "role": m["role"]
+            })
+            if default_org_id is None:
+                default_org_id = org["organization_id"]
+    
+    # Create token with default org
+    token = create_token(user["user_id"], user["email"], user["role"], org_id=default_org_id)
+    
     return {
         "token": token,
         "user": {
@@ -1218,7 +1252,56 @@ async def login(credentials: UserLogin):
             "role": user["role"],
             "designation": user.get("designation"),
             "picture": user.get("picture")
-        }
+        },
+        "organizations": organizations,
+        "current_organization": default_org_id
+    }
+
+@api_router.post("/auth/switch-organization")
+async def switch_organization(request: Request):
+    """
+    Switch to a different organization.
+    
+    Returns a new token with the selected organization context.
+    """
+    body = await request.json()
+    target_org_id = body.get("organization_id")
+    
+    if not target_org_id:
+        raise HTTPException(status_code=400, detail="organization_id is required")
+    
+    # Get current user
+    user = await get_current_user_from_request(request)
+    
+    # Verify user is a member of the target org
+    membership = await db.organization_users.find_one({
+        "user_id": user["user_id"],
+        "organization_id": target_org_id,
+        "status": "active"
+    })
+    
+    if not membership:
+        raise HTTPException(status_code=403, detail="You are not a member of this organization")
+    
+    # Create new token with target org
+    token = create_token(user["user_id"], user["email"], membership["role"], org_id=target_org_id)
+    
+    # Get org details
+    org = await db.organizations.find_one(
+        {"organization_id": target_org_id},
+        {"_id": 0, "organization_id": 1, "name": 1, "slug": 1, "logo_url": 1, "plan_type": 1}
+    )
+    
+    # Update last active
+    await db.organization_users.update_one(
+        {"organization_id": target_org_id, "user_id": user["user_id"]},
+        {"$set": {"last_active_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {
+        "token": token,
+        "organization": org,
+        "role": membership["role"]
     }
 
 @api_router.post("/auth/session")
