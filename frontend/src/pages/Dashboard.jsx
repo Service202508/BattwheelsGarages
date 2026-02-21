@@ -176,81 +176,98 @@ export default function Dashboard({ user }) {
   ].filter(d => d.value > 0);
 
   return (
-    <div className="space-y-6 animate-fadeIn" data-testid="dashboard-page">
+    <div className="space-y-6" data-testid="dashboard-page">
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">A high-level overview of your garage's operations.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
+          <p className="text-sm text-slate-500 mt-0.5">A high-level overview of your garage's operations.</p>
+        </div>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full">
+          <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-xs font-medium text-emerald-700">Live</span>
+        </div>
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="workshop" className="w-full">
-        <TabsList className="bg-card/50 border border-white/10">
-          <TabsTrigger value="workshop" data-testid="workshop-tab">Workshop Overview</TabsTrigger>
-          <TabsTrigger value="service-tickets" data-testid="service-tickets-tab">Service Tickets</TabsTrigger>
-          <TabsTrigger value="receivables" data-testid="receivables-tab">Receivables Overview</TabsTrigger>
+      <Tabs defaultValue="service-tickets" className="w-full">
+        <TabsList className="bg-slate-100 border border-slate-200 p-1 rounded-xl">
+          <TabsTrigger 
+            value="workshop" 
+            className="data-[state=active]:bg-white data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm rounded-lg px-4 py-2 text-sm font-medium"
+            data-testid="workshop-tab"
+          >
+            Workshop Overview
+          </TabsTrigger>
+          <TabsTrigger 
+            value="service-tickets" 
+            className="data-[state=active]:bg-white data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm rounded-lg px-4 py-2 text-sm font-medium"
+            data-testid="service-tickets-tab"
+          >
+            Service Tickets
+          </TabsTrigger>
+          <TabsTrigger 
+            value="receivables" 
+            className="data-[state=active]:bg-white data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm rounded-lg px-4 py-2 text-sm font-medium"
+            data-testid="receivables-tab"
+          >
+            Receivables Overview
+          </TabsTrigger>
         </TabsList>
 
         {/* ==================== WORKSHOP OVERVIEW TAB ==================== */}
         <TabsContent value="workshop" className="mt-6">
           {/* Metric Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-            <MetricCard
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <ServiceMetricCard
               title="Vehicles in Workshop"
               value={stats?.vehicles_in_workshop || 0}
               subtitle="Currently being serviced"
               icon={Wrench}
-              iconClassName="bg-primary/10"
-              data-testid="vehicles-in-workshop-card"
+              color="emerald"
             />
-
-            <MetricCard
+            <ServiceMetricCard
               title="Open Repair Orders"
               value={stats?.open_repair_orders || 0}
               subtitle="Active service tickets"
               icon={Car}
-              iconClassName="bg-chart-2/10"
-              data-testid="open-orders-card"
+              color="blue"
             />
-
-            <MetricCard
+            <ServiceMetricCard
               title="Avg. Repair Time"
-              value={<>{stats?.avg_repair_time || 0} <span className="text-base sm:text-lg font-normal">Hours</span></>}
+              value={<>{stats?.avg_repair_time || 0}<span className="text-lg font-normal text-slate-400 ml-1">hrs</span></>}
               subtitle="For all closed tickets"
               icon={Clock}
-              iconClassName="bg-chart-3/10"
-              data-testid="repair-time-card"
+              color="amber"
             />
-
-            <MetricCard
+            <ServiceMetricCard
               title="Available Technicians"
               value={stats?.available_technicians || 0}
               subtitle="Ready for assignment"
               icon={Users}
-              iconClassName="bg-chart-4/10"
-              data-testid="technicians-card"
+              color="violet"
             />
           </div>
 
           {/* Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Vehicle Status Distribution */}
-            <Card className="chart-container" data-testid="vehicle-status-chart">
-              <CardHeader>
-                <CardTitle className="text-xl">Vehicle Status Distribution</CardTitle>
-                <CardDescription>Live breakdown of vehicle statuses in the workshop.</CardDescription>
+            <Card className="bg-white border border-slate-200" data-testid="vehicle-status-chart">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold text-slate-700">Vehicle Status Distribution</CardTitle>
+                <CardDescription className="text-xs">Live breakdown of vehicle statuses</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[280px] flex items-center justify-center">
+                <div className="h-[240px] flex items-center justify-center">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
                         data={vehicleStatusData}
                         cx="50%"
                         cy="50%"
-                        innerRadius={70}
-                        outerRadius={100}
-                        paddingAngle={3}
+                        innerRadius={55}
+                        outerRadius={80}
+                        paddingAngle={4}
                         dataKey="value"
                       >
                         {vehicleStatusData.map((entry, index) => (
@@ -259,20 +276,20 @@ export default function Dashboard({ user }) {
                       </Pie>
                       <Tooltip 
                         contentStyle={{ 
-                          backgroundColor: 'hsl(217 33% 17%)', 
-                          border: '1px solid rgba(255,255,255,0.1)',
+                          backgroundColor: '#fff', 
+                          border: '1px solid #e2e8f0',
                           borderRadius: '8px',
-                          color: 'white'
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                         }}
                       />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="flex justify-center gap-6 mt-4">
+                <div className="flex justify-center gap-4 mt-2">
                   {vehicleStatusData.map((entry, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="h-3 w-3 rounded-full" style={{ backgroundColor: entry.fill }} />
-                      <span className="text-sm text-muted-foreground">{entry.name}</span>
+                    <div key={index} className="flex items-center gap-1.5">
+                      <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.fill }} />
+                      <span className="text-xs text-slate-500">{entry.name}: {entry.value}</span>
                     </div>
                   ))}
                 </div>
@@ -280,40 +297,40 @@ export default function Dashboard({ user }) {
             </Card>
 
             {/* Repair Time Trend */}
-            <Card className="chart-container" data-testid="repair-trend-chart">
-              <CardHeader>
-                <CardTitle className="text-xl">Repair Time Trend</CardTitle>
-                <CardDescription>Monthly average time (in hours) per repair order.</CardDescription>
+            <Card className="bg-white border border-slate-200" data-testid="repair-trend-chart">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold text-slate-700">Repair Time Trend</CardTitle>
+                <CardDescription className="text-xs">Monthly average time per repair order</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[300px]">
+                <div className="h-[260px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={repairTrendData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                    <BarChart data={repairTrendData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
                       <XAxis 
                         dataKey="month" 
                         axisLine={false} 
                         tickLine={false}
-                        tick={{ fill: 'hsl(215 20% 65%)', fontSize: 12 }}
+                        tick={{ fill: '#64748b', fontSize: 11 }}
                       />
                       <YAxis 
                         axisLine={false} 
                         tickLine={false}
-                        tick={{ fill: 'hsl(215 20% 65%)', fontSize: 12 }}
+                        tick={{ fill: '#64748b', fontSize: 11 }}
                         tickFormatter={(value) => `${value}h`}
                       />
                       <Tooltip 
                         contentStyle={{ 
-                          backgroundColor: 'hsl(217 33% 17%)', 
-                          border: '1px solid rgba(255,255,255,0.1)',
+                          backgroundColor: '#fff', 
+                          border: '1px solid #e2e8f0',
                           borderRadius: '8px',
-                          color: 'white'
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                         }}
                         formatter={(value) => [`${value} hours`, 'Avg Time']}
                       />
                       <Bar 
                         dataKey="avgTime" 
-                        fill={CHART_COLORS.primary} 
-                        radius={[4, 4, 0, 0]}
+                        fill={BRAND_COLORS.emerald.primary} 
+                        radius={[6, 6, 0, 0]}
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -325,179 +342,141 @@ export default function Dashboard({ user }) {
 
         {/* ==================== SERVICE TICKETS TAB ==================== */}
         <TabsContent value="service-tickets" className="mt-6">
-          {/* Service Ticket Metric Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-            {/* Total Open Tickets */}
-            <Card className="bg-gradient-to-br from-slate-800/80 to-slate-900 border-slate-700" data-testid="total-open-tickets-card">
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-slate-400 mb-1">Total Open Tickets</p>
-                    <p className="text-4xl font-bold text-white">{serviceTicketStats.total_open}</p>
-                    <p className="text-xs text-slate-500 mt-2">Active service requests</p>
-                  </div>
-                  <div className="p-3 bg-blue-500/10 rounded-lg">
-                    <AlertCircle className="h-6 w-6 text-blue-400" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Onsite Resolution */}
-            <Card className="bg-gradient-to-br from-emerald-900/30 to-slate-900 border-emerald-700/50" data-testid="onsite-tickets-card">
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-emerald-400 mb-1">Onsite Resolution</p>
-                    <p className="text-4xl font-bold text-white">{serviceTicketStats.onsite_resolution}</p>
-                    <p className="text-xs text-slate-500 mt-2">At customer location</p>
-                  </div>
-                  <div className="p-3 bg-emerald-500/10 rounded-lg">
-                    <MapPin className="h-6 w-6 text-emerald-400" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Workshop Visit */}
-            <Card className="bg-gradient-to-br from-blue-900/30 to-slate-900 border-blue-700/50" data-testid="workshop-tickets-card">
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-blue-400 mb-1">Workshop Visit</p>
-                    <p className="text-4xl font-bold text-white">{serviceTicketStats.workshop_visit}</p>
-                    <p className="text-xs text-slate-500 mt-2">At service center</p>
-                  </div>
-                  <div className="p-3 bg-blue-500/10 rounded-lg">
-                    <Building2 className="h-6 w-6 text-blue-400" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Avg Resolution Time */}
-            <Card className="bg-gradient-to-br from-amber-900/30 to-slate-900 border-amber-700/50" data-testid="avg-resolution-card">
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-amber-400 mb-1">Avg. Resolution Time</p>
-                    <p className="text-4xl font-bold text-white">
-                      {serviceTicketStats.avg_resolution_time_hours}
-                      <span className="text-lg font-normal text-slate-400 ml-1">hrs</span>
-                    </p>
-                    <p className="text-xs text-slate-500 mt-2">All closed tickets</p>
-                  </div>
-                  <div className="p-3 bg-amber-500/10 rounded-lg">
-                    <Clock className="h-6 w-6 text-amber-400" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Service Ticket Metric Cards - Clean Light Design */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <ServiceMetricCard
+              title="Total Open Tickets"
+              value={serviceTicketStats.total_open}
+              subtitle="Active service requests"
+              icon={AlertCircle}
+              color="blue"
+            />
+            <ServiceMetricCard
+              title="Onsite Resolution"
+              value={serviceTicketStats.onsite_resolution}
+              subtitle="At customer location"
+              icon={MapPin}
+              color="emerald"
+            />
+            <ServiceMetricCard
+              title="Workshop Visit"
+              value={serviceTicketStats.workshop_visit}
+              subtitle="At service center"
+              icon={Building2}
+              color="blue"
+            />
+            <ServiceMetricCard
+              title="Avg. Resolution Time"
+              value={<>{serviceTicketStats.avg_resolution_time_hours}<span className="text-lg font-normal text-slate-400 ml-1">hrs</span></>}
+              subtitle="All closed tickets"
+              icon={Clock}
+              color="amber"
+            />
           </div>
 
           {/* Second Row - KPIs */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
             {/* Onsite Resolution Rate */}
-            <Card className="bg-slate-800/50 border-slate-700" data-testid="onsite-rate-card">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-emerald-400" />
-                  Onsite Resolution Rate
-                </CardTitle>
-                <CardDescription>Last 30 days performance</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-5xl font-bold text-white">
-                      {serviceTicketStats.onsite_resolution_percentage}%
-                    </span>
-                    <Badge 
-                      variant="outline" 
-                      className={`${serviceTicketStats.onsite_resolution_percentage >= 50 ? 'border-emerald-500 text-emerald-400' : 'border-amber-500 text-amber-400'}`}
-                    >
-                      {serviceTicketStats.onsite_resolution_percentage >= 50 ? 'Good' : 'Improving'}
-                    </Badge>
-                  </div>
-                  <Progress 
-                    value={serviceTicketStats.onsite_resolution_percentage} 
-                    className="h-2 bg-slate-700"
-                  />
-                  <p className="text-sm text-slate-400">
-                    {serviceTicketStats.total_onsite_resolved_30d} of {serviceTicketStats.total_resolved_30d} tickets resolved onsite
-                  </p>
+            <KPICard
+              title="Onsite Resolution Rate"
+              description="Last 30 days performance"
+              icon={TrendingUp}
+              color="emerald"
+            >
+              <div className="space-y-3">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-4xl font-bold text-slate-800">
+                    {serviceTicketStats.onsite_resolution_percentage}%
+                  </span>
+                  <Badge 
+                    className={`${serviceTicketStats.onsite_resolution_percentage >= 40 
+                      ? 'bg-emerald-100 text-emerald-700 border-emerald-200' 
+                      : 'bg-amber-100 text-amber-700 border-amber-200'} border text-xs font-medium`}
+                  >
+                    {serviceTicketStats.onsite_resolution_percentage >= 40 ? 'On Target' : 'Improving'}
+                  </Badge>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${serviceTicketStats.onsite_resolution_percentage}%`,
+                      backgroundColor: BRAND_COLORS.emerald.primary
+                    }}
+                  />
+                </div>
+                <p className="text-xs text-slate-500">
+                  {serviceTicketStats.total_onsite_resolved_30d} of {serviceTicketStats.total_resolved_30d} tickets resolved onsite
+                </p>
+              </div>
+            </KPICard>
 
             {/* Pickup & Remote */}
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Other Resolution Types</CardTitle>
-                <CardDescription>Pickup & Remote support tickets</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-amber-500/10 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <Truck className="h-5 w-5 text-amber-400" />
-                      <span className="text-white">Pickup Service</span>
+            <KPICard
+              title="Other Resolution Types"
+              description="Pickup & Remote support tickets"
+              color="amber"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-100 rounded-xl">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 bg-amber-100 rounded-lg">
+                      <Truck className="h-4 w-4 text-amber-600" />
                     </div>
-                    <span className="text-2xl font-bold text-amber-400">{serviceTicketStats.pickup}</span>
+                    <span className="text-sm font-medium text-slate-700">Pickup Service</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-violet-500/10 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <Wifi className="h-5 w-5 text-violet-400" />
-                      <span className="text-white">Remote Support</span>
-                    </div>
-                    <span className="text-2xl font-bold text-violet-400">{serviceTicketStats.remote}</span>
-                  </div>
+                  <span className="text-xl font-bold text-amber-600">{serviceTicketStats.pickup}</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex items-center justify-between p-3 bg-violet-50 border border-violet-100 rounded-xl">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 bg-violet-100 rounded-lg">
+                      <Wifi className="h-4 w-4 text-violet-600" />
+                    </div>
+                    <span className="text-sm font-medium text-slate-700">Remote Support</span>
+                  </div>
+                  <span className="text-xl font-bold text-violet-600">{serviceTicketStats.remote}</span>
+                </div>
+              </div>
+            </KPICard>
 
             {/* Resolution Summary */}
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-400" />
-                  30-Day Summary
-                </CardTitle>
-                <CardDescription>Tickets resolved in last month</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="text-center py-4">
-                    <p className="text-5xl font-bold text-white">{serviceTicketStats.total_resolved_30d}</p>
-                    <p className="text-sm text-slate-400 mt-1">Total Resolved</p>
+            <KPICard
+              title="30-Day Summary"
+              description="Tickets resolved in last month"
+              icon={CheckCircle2}
+              color="emerald"
+            >
+              <div className="space-y-3">
+                <div className="text-center py-2">
+                  <p className="text-4xl font-bold text-slate-800">{serviceTicketStats.total_resolved_30d}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Total Resolved</p>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="text-center p-2.5 bg-emerald-50 border border-emerald-100 rounded-xl">
+                    <p className="text-lg font-bold text-emerald-600">{serviceTicketStats.total_onsite_resolved_30d}</p>
+                    <p className="text-xs text-slate-500">Onsite</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="text-center p-2 bg-emerald-500/10 rounded-lg">
-                      <p className="text-xl font-bold text-emerald-400">{serviceTicketStats.total_onsite_resolved_30d}</p>
-                      <p className="text-xs text-slate-400">Onsite</p>
-                    </div>
-                    <div className="text-center p-2 bg-blue-500/10 rounded-lg">
-                      <p className="text-xl font-bold text-blue-400">
-                        {serviceTicketStats.total_resolved_30d - serviceTicketStats.total_onsite_resolved_30d}
-                      </p>
-                      <p className="text-xs text-slate-400">Workshop/Other</p>
-                    </div>
+                  <div className="text-center p-2.5 bg-blue-50 border border-blue-100 rounded-xl">
+                    <p className="text-lg font-bold text-blue-600">
+                      {serviceTicketStats.total_resolved_30d - serviceTicketStats.total_onsite_resolved_30d}
+                    </p>
+                    <p className="text-xs text-slate-500">Workshop/Other</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </KPICard>
           </div>
 
           {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Ticket Distribution Pie Chart */}
-            <Card className="chart-container" data-testid="ticket-distribution-chart">
-              <CardHeader>
-                <CardTitle className="text-xl">Open Tickets by Type</CardTitle>
-                <CardDescription>Distribution of active service tickets by resolution type.</CardDescription>
+            <Card className="bg-white border border-slate-200" data-testid="ticket-distribution-chart">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold text-slate-700">Open Tickets by Type</CardTitle>
+                <CardDescription className="text-xs">Distribution of active service tickets</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[280px] flex items-center justify-center">
+                <div className="h-[240px] flex items-center justify-center">
                   {ticketDistributionData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -505,12 +484,10 @@ export default function Dashboard({ user }) {
                           data={ticketDistributionData}
                           cx="50%"
                           cy="50%"
-                          innerRadius={60}
-                          outerRadius={95}
+                          innerRadius={50}
+                          outerRadius={80}
                           paddingAngle={4}
                           dataKey="value"
-                          label={({ name, value }) => `${name}: ${value}`}
-                          labelLine={false}
                         >
                           {ticketDistributionData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -518,83 +495,102 @@ export default function Dashboard({ user }) {
                         </Pie>
                         <Tooltip 
                           contentStyle={{ 
-                            backgroundColor: 'hsl(217 33% 17%)', 
-                            border: '1px solid rgba(255,255,255,0.1)',
+                            backgroundColor: '#fff', 
+                            border: '1px solid #e2e8f0',
                             borderRadius: '8px',
-                            color: 'white'
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                           }}
-                        />
-                        <Legend 
-                          verticalAlign="bottom"
-                          formatter={(value) => <span style={{ color: 'hsl(215 20% 75%)' }}>{value}</span>}
                         />
                       </PieChart>
                     </ResponsiveContainer>
                   ) : (
-                    <p className="text-slate-400">No open tickets</p>
+                    <div className="text-center">
+                      <CheckCircle2 className="h-10 w-10 text-emerald-400 mx-auto mb-2" />
+                      <p className="text-sm text-slate-500">No open tickets</p>
+                    </div>
                   )}
+                </div>
+                <div className="flex flex-wrap justify-center gap-3 mt-2">
+                  {ticketDistributionData.map((entry, index) => (
+                    <div key={index} className="flex items-center gap-1.5">
+                      <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.fill }} />
+                      <span className="text-xs text-slate-500">{entry.name}: {entry.value}</span>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Quick Stats Summary */}
-            <Card className="chart-container">
-              <CardHeader>
-                <CardTitle className="text-xl">Resolution Efficiency</CardTitle>
-                <CardDescription>Key performance indicators for service tickets.</CardDescription>
+            {/* Resolution Efficiency */}
+            <Card className="bg-white border border-slate-200">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold text-slate-700">Resolution Efficiency</CardTitle>
+                <CardDescription className="text-xs">Key performance indicators</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {/* Onsite vs Workshop Comparison */}
                   <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm text-slate-400">Onsite vs Workshop (Open)</span>
-                      <span className="text-sm text-slate-400">
+                    <div className="flex justify-between mb-1.5">
+                      <span className="text-xs text-slate-500">Onsite vs Workshop (Open)</span>
+                      <span className="text-xs font-medium text-slate-600">
                         {serviceTicketStats.onsite_resolution} : {serviceTicketStats.workshop_visit}
                       </span>
                     </div>
-                    <div className="flex h-4 rounded-full overflow-hidden bg-slate-700">
+                    <div className="flex h-3 rounded-full overflow-hidden bg-slate-100">
                       <div 
-                        className="bg-emerald-500 transition-all duration-500"
+                        className="transition-all duration-500 rounded-l-full"
                         style={{ 
                           width: `${serviceTicketStats.total_open > 0 
                             ? (serviceTicketStats.onsite_resolution / serviceTicketStats.total_open) * 100 
-                            : 0}%` 
+                            : 0}%`,
+                          backgroundColor: BRAND_COLORS.emerald.primary
                         }}
                       />
                       <div 
-                        className="bg-blue-500 transition-all duration-500"
+                        className="transition-all duration-500"
                         style={{ 
                           width: `${serviceTicketStats.total_open > 0 
                             ? (serviceTicketStats.workshop_visit / serviceTicketStats.total_open) * 100 
-                            : 0}%` 
+                            : 0}%`,
+                          backgroundColor: BRAND_COLORS.blue.primary
                         }}
                       />
+                    </div>
+                    <div className="flex justify-between mt-1">
+                      <span className="text-[10px] text-emerald-600 font-medium">Onsite</span>
+                      <span className="text-[10px] text-blue-600 font-medium">Workshop</span>
                     </div>
                   </div>
 
                   {/* Performance Metrics */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 bg-slate-700/50 rounded-lg">
-                      <p className="text-xs text-slate-400 mb-1">Target Resolution</p>
-                      <p className="text-2xl font-bold text-white">8 hrs</p>
-                      <p className="text-xs text-emerald-400 mt-1">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <Target className="h-3 w-3 text-slate-400" />
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wide">Target Resolution</p>
+                      </div>
+                      <p className="text-xl font-bold text-slate-700">8 hrs</p>
+                      <p className={`text-[10px] mt-0.5 font-medium ${serviceTicketStats.avg_resolution_time_hours <= 8 ? 'text-emerald-600' : 'text-amber-600'}`}>
                         {serviceTicketStats.avg_resolution_time_hours <= 8 ? '✓ On Target' : '⚠ Above Target'}
                       </p>
                     </div>
-                    <div className="p-4 bg-slate-700/50 rounded-lg">
-                      <p className="text-xs text-slate-400 mb-1">Onsite Target</p>
-                      <p className="text-2xl font-bold text-white">40%</p>
-                      <p className="text-xs text-emerald-400 mt-1">
+                    <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <Target className="h-3 w-3 text-slate-400" />
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wide">Onsite Target</p>
+                      </div>
+                      <p className="text-xl font-bold text-slate-700">40%</p>
+                      <p className={`text-[10px] mt-0.5 font-medium ${serviceTicketStats.onsite_resolution_percentage >= 40 ? 'text-emerald-600' : 'text-amber-600'}`}>
                         {serviceTicketStats.onsite_resolution_percentage >= 40 ? '✓ On Target' : '⚠ Below Target'}
                       </p>
                     </div>
                   </div>
 
                   {/* Real-time Sync Indicator */}
-                  <div className="flex items-center justify-center gap-2 pt-4 border-t border-slate-700">
-                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs text-slate-400">Real-time sync enabled (30s refresh)</span>
+                  <div className="flex items-center justify-center gap-2 pt-3 border-t border-slate-100">
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[10px] text-slate-400">Real-time sync enabled (30s refresh)</span>
                   </div>
                 </div>
               </CardContent>
@@ -604,34 +600,34 @@ export default function Dashboard({ user }) {
 
         {/* ==================== RECEIVABLES TAB ==================== */}
         <TabsContent value="receivables" className="mt-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-            <MetricCard
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <ServiceMetricCard
               title="Total Revenue"
               value={<>₹{(stats?.total_revenue || 0).toLocaleString('en-IN')}</>}
               subtitle="All time"
               icon={TrendingUp}
-              iconClassName="bg-emerald-500/10"
+              color="emerald"
             />
-            <MetricCard
+            <ServiceMetricCard
               title="Pending Invoices"
               value={<>₹{(stats?.pending_invoices || 0).toLocaleString('en-IN')}</>}
               subtitle="Outstanding amount"
               icon={AlertCircle}
-              iconClassName="bg-amber-500/10"
+              color="amber"
             />
-            <MetricCard
+            <ServiceMetricCard
               title="Inventory Value"
               value={<>₹{(stats?.inventory_value || 0).toLocaleString('en-IN')}</>}
               subtitle="Current stock"
               icon={Building2}
-              iconClassName="bg-blue-500/10"
+              color="blue"
             />
-            <MetricCard
+            <ServiceMetricCard
               title="Pending POs"
               value={stats?.pending_purchase_orders || 0}
               subtitle="Open orders"
               icon={Truck}
-              iconClassName="bg-violet-500/10"
+              color="violet"
             />
           </div>
         </TabsContent>
