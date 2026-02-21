@@ -8,8 +8,10 @@ Routes are thin:
 - Return response
 
 All events are emitted from the service layer, not routes.
+
+Multi-Tenant: Uses TenantContext for strict org_id enforcement.
 """
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, HTTPException, Request, Query, Depends
 from typing import Optional, List
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field
@@ -23,6 +25,7 @@ from services.ticket_service import (
     get_ticket_service,
     init_ticket_service
 )
+from core.tenant.context import TenantContext, tenant_context_required, optional_tenant_context
 
 logger = logging.getLogger(__name__)
 
