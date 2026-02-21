@@ -28,10 +28,28 @@ async def list_plans():
     service = get_subscription_service()
     plans = await service.list_plans()
     
-    return [
-        {
+    result = []
+    for plan in plans:
+        # Handle features - could be dict or PlanFeatures object
+        if hasattr(plan.features, 'model_dump'):
+            features_dict = plan.features.model_dump()
+            features = {
+                k: {"enabled": v.get("enabled", v) if isinstance(v, dict) else v.enabled, 
+                    "limit": v.get("limit") if isinstance(v, dict) else v.limit}
+                for k, v in features_dict.items()
+            }
+        else:
+            features = plan.features if isinstance(plan.features, dict) else {}
+        
+        # Handle limits
+        if hasattr(plan.limits, 'model_dump'):
+            limits = plan.limits.model_dump()
+        else:
+            limits = plan.limits if isinstance(plan.limits, dict) else {}
+        
+        result.append({
             "plan_id": plan.plan_id,
-            "code": plan.code.value,
+            "code": plan.code.value if hasattr(plan.code, 'value') else plan.code,
             "name": plan.name,
             "description": plan.description,
             "price_monthly": plan.price_monthly,
@@ -39,14 +57,11 @@ async def list_plans():
             "currency": plan.currency,
             "trial_days": plan.trial_days,
             "support_level": plan.support_level,
-            "features": {
-                k: {"enabled": v.enabled, "limit": v.limit}
-                for k, v in plan.features.model_dump().items()
-            },
-            "limits": plan.limits.model_dump()
-        }
-        for plan in plans
-    ]
+            "features": features,
+            "limits": limits
+        })
+    
+    return result
 
 
 @router.get("/plans/{plan_code}", response_model=dict)
