@@ -136,11 +136,11 @@ export default function Dashboard({ user }) {
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-8 bg-card/50 rounded w-48" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="space-y-6 p-1">
+        <div className="h-8 bg-slate-100 rounded-lg w-48 animate-pulse" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-32 bg-card/50 rounded-xl" />
+            <div key={i} className="h-28 bg-slate-100 rounded-xl animate-pulse" />
           ))}
         </div>
       </div>
@@ -160,19 +160,19 @@ export default function Dashboard({ user }) {
   };
 
   const vehicleStatusData = stats ? [
-    { name: "Active", value: stats.vehicle_status_distribution.active || 0, fill: CHART_COLORS.primary },
-    { name: "In Workshop", value: stats.vehicle_status_distribution.in_workshop || 0, fill: CHART_COLORS.secondary },
-    { name: "Serviced", value: stats.vehicle_status_distribution.serviced || 0, fill: CHART_COLORS.tertiary },
+    { name: "Active", value: stats.vehicle_status_distribution.active || 0, fill: BRAND_COLORS.emerald.primary },
+    { name: "In Workshop", value: stats.vehicle_status_distribution.in_workshop || 0, fill: BRAND_COLORS.blue.primary },
+    { name: "Serviced", value: stats.vehicle_status_distribution.serviced || 0, fill: BRAND_COLORS.violet.primary },
   ] : [];
 
   const repairTrendData = stats?.monthly_repair_trends || [];
 
   // Service ticket distribution for pie chart
   const ticketDistributionData = [
-    { name: "Onsite", value: serviceTicketStats.onsite_resolution, fill: CHART_COLORS.onsite },
-    { name: "Workshop", value: serviceTicketStats.workshop_visit, fill: CHART_COLORS.workshop },
-    { name: "Pickup", value: serviceTicketStats.pickup, fill: CHART_COLORS.pickup },
-    { name: "Remote", value: serviceTicketStats.remote, fill: CHART_COLORS.remote },
+    { name: "Onsite", value: serviceTicketStats.onsite_resolution, fill: BRAND_COLORS.emerald.primary },
+    { name: "Workshop", value: serviceTicketStats.workshop_visit, fill: BRAND_COLORS.blue.primary },
+    { name: "Pickup", value: serviceTicketStats.pickup, fill: BRAND_COLORS.amber.primary },
+    { name: "Remote", value: serviceTicketStats.remote, fill: BRAND_COLORS.violet.primary },
   ].filter(d => d.value > 0);
 
   return (
