@@ -5012,6 +5012,15 @@ try:
 except Exception as e:
     logger.warning(f"Could not load Notifications router: {e}")
 
+# Include File Upload routes
+try:
+    from routes.uploads import router as uploads_router, init_upload_routes
+    init_upload_routes(db)
+    api_router.include_router(uploads_router)
+    logger.info("File Upload router included")
+except Exception as e:
+    logger.warning(f"Could not load File Upload router: {e}")
+
 # Include Export routes (E-Invoice & Tally)
 try:
     from routes.export import router as export_router
