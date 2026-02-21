@@ -30,8 +30,31 @@ async def get_financial_summary(request: Request):
     Similar to Zoho Books home page metrics
     """
     org_id = await get_org_id(request)
+    
+    # Return empty summary if no org context (graceful degradation)
     if not org_id:
-        raise HTTPException(status_code=400, detail="X-Organization-ID header required")
+        return {
+            "code": 0,
+            "summary": {
+                "receivables": {
+                    "total": 0,
+                    "current": 0,
+                    "overdue": 0,
+                    "invoice_count": 0,
+                    "paid_count": 0,
+                    "overdue_count": 0
+                },
+                "payables": {
+                    "total": 0,
+                    "current": 0,
+                    "overdue": 0,
+                    "bill_count": 0,
+                    "paid_count": 0
+                },
+                "as_of": datetime.now(timezone.utc).isoformat(),
+                "org_missing": True
+            }
+        }
     
     today = datetime.now(timezone.utc)
     
