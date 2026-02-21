@@ -883,6 +883,136 @@ async def get_setup_status(
     }
 
 
+# ==================== BRANDING ====================
+
+DEFAULT_BRANDING = {
+    "logo_url": None,
+    "logo_dark_url": None,
+    "favicon_url": None,
+    "primary_color": "#10b981",
+    "secondary_color": "#059669",
+    "accent_color": "#f59e0b",
+    "text_color": "#111827",
+    "background_color": "#ffffff",
+    "sidebar_color": "#1e293b",
+    "company_tagline": None,
+    "custom_css": None,
+    "email_footer": None,
+    "show_powered_by": True
+}
+
+
+@router.get("/me/branding")
+async def get_branding(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Get organization branding settings"""
+    org = await db.organizations.find_one(
+        {"organization_id": ctx.org_id},
+        {"_id": 0, "name": 1, "branding": 1, "logo_url": 1}
+    )
+    
+    if not org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+    
+    # Merge with defaults
+    branding = {**DEFAULT_BRANDING, **(org.get("branding", {}))}
+    
+    # Legacy logo_url support
+    if not branding["logo_url"] and org.get("logo_url"):
+        branding["logo_url"] = org["logo_url"]
+    
+    return {
+        "organization_name": org.get("name"),
+        "branding": branding
+    }
+
+
+@router.put("/me/branding")
+async def update_branding(
+    data: BrandingSettings,
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Update organization branding settings (admin only)"""
+    # Check admin permission
+    membership = await db.organization_users.find_one({
+        "organization_id": ctx.org_id,
+        "user_id": ctx.user_id
+    })
+    
+    if not membership or membership.get("role") not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Only admins can update branding")
+    
+    # Validate colors (basic hex validation)
+    import re
+    hex_pattern = re.compile(r'^#[0-9A-Fa-f]{6}$')
+    
+    for field in ["primary_color", "secondary_color", "accent_color", "text_color", "background_color", "sidebar_color"]:
+        value = getattr(data, field, None)
+        if value and not hex_pattern.match(value):
+            raise HTTPException(status_code=400, detail=f"Invalid hex color for {field}: {value}")
+    
+    # Sanitize custom CSS (basic XSS prevention)
+    if data.custom_css:
+        # Remove script tags and javascript: urls
+        data.custom_css = re.sub(r'<script[^>]*>.*?</script>', '', data.custom_css, flags=re.IGNORECASE | re.DOTALL)
+        data.custom_css = re.sub(r'javascript:', '', data.custom_css, flags=re.IGNORECASE)
+    
+    branding_dict = data.model_dump(exclude_none=False)
+    
+    await db.organizations.update_one(
+        {"organization_id": ctx.org_id},
+        {
+            "$set": {
+                "branding": branding_dict,
+                "logo_url": data.logo_url,  # Keep legacy field in sync
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    logger.info(f"Branding updated for org {ctx.org_id}")
+    
+    return {
+        "success": True,
+        "message": "Branding updated successfully",
+        "branding": branding_dict
+    }
+
+
+@router.post("/me/branding/reset")
+async def reset_branding(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Reset branding to defaults (admin only)"""
+    membership = await db.organization_users.find_one({
+        "organization_id": ctx.org_id,
+        "user_id": ctx.user_id
+    })
+    
+    if not membership or membership.get("role") not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Only admins can reset branding")
+    
+    await db.organizations.update_one(
+        {"organization_id": ctx.org_id},
+        {
+            "$set": {
+                "branding": DEFAULT_BRANDING,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    return {
+        "success": True,
+        "message": "Branding reset to defaults",
+        "branding": DEFAULT_BRANDING
+    }
+
+
 # ==================== INITIALIZATION ====================
 
 def init_organizations_router(app_db):
