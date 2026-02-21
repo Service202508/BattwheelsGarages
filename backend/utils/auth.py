@@ -8,11 +8,19 @@ import hashlib
 from datetime import datetime, timezone, timedelta
 from fastapi import HTTPException, Request
 from typing import Optional
+from motor.motor_asyncio import AsyncIOMotorClient
 
 # Configuration
 SECRET_KEY = os.environ.get("SECRET_KEY", "battwheels-secret-key-change-in-production")
+JWT_SECRET = os.environ.get("JWT_SECRET", "battwheels-secret-key")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
+
+# Get database connection
+MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+DB_NAME = os.environ.get("DB_NAME", "test_database")
+_client = AsyncIOMotorClient(MONGO_URL)
+_db = _client[DB_NAME]
 
 def hash_password(password: str) -> str:
     """Hash password using SHA256"""
@@ -32,12 +40,56 @@ def create_access_token(data: dict) -> str:
 def decode_token(token: str) -> dict:
     """Decode and validate JWT token"""
     try:
+        # Try with SECRET_KEY first
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except jwt.InvalidTokenError:
+        pass
+    
+    try:
+        # Try with JWT_SECRET (used in server.py)
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
+
+async def get_current_user_from_request(request: Request) -> dict:
+    """
+    Extract and validate current user from request.
+    Uses module-level database connection.
+    """
+    # Get token from cookie or header
+    token = request.cookies.get("session_token")
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    payload = decode_token(token)
+    user_id = payload.get("user_id")
+    
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid token payload")
+    
+    user = await _db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    if not user.get("is_active", True):
+        raise HTTPException(status_code=401, detail="Account deactivated")
+    
+    # Include org_id from token if present
+    if "org_id" in payload:
+        user["org_id"] = payload["org_id"]
+    
+    return user
+
 
 async def get_current_user(request: Request, db) -> dict:
     """Extract and validate current user from request"""
