@@ -105,13 +105,15 @@ const About = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link 
-                  to="/book-service"
+                <a 
+                  href="https://cloud-finance-suite.preview.emergentagent.com/submit-ticket"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-[#0B8A44] to-[#12B76A] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-green-500/30 hover:-translate-y-0.5 transition-all duration-300"
                 >
                   <Zap className="w-5 h-5" />
                   Book EV Service
-                </Link>
+                </a>
                 <Link 
                   to="/contact"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-[#0B8A44] text-[#0B8A44] font-semibold rounded-xl hover:bg-[#0B8A44] hover:text-white transition-all duration-300"
