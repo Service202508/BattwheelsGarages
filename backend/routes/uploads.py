@@ -48,7 +48,7 @@ async def upload_logo(
     result = await file_upload_service.upload_logo(file, ctx.org_id, logo_type)
     
     # Update organization branding in database
-    if db:
+    if db is not None:
         field_map = {
             "main": "branding.logo_url",
             "dark": "branding.logo_dark_url",
