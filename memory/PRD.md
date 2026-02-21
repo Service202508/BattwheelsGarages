@@ -1,5 +1,37 @@
 # Battwheels OS - Product Requirements Document
 
+## Critical Mobile Bug Fixes (February 21, 2026)
+
+### Issue 1: Financial Data Showing ₹0.00 on Mobile
+**Status:** ✅ FIXED
+
+**Root Cause:** Organization ID was not being initialized before API calls on mobile devices. The `orgReady` state was not being properly awaited.
+
+**Fix Applied:**
+- Added `orgReady` state to App.js auth context
+- Added `initializeOrgContext()` function called after successful auth check
+- Added `ensureOrgInitialized()` in Home.jsx before fetching dashboard data
+
+**Verified Results:**
+- Total Receivables: ₹33,08,484.00 ✅
+- Total Payables: ₹3,23,990.00 ✅
+
+### Issue 2: AI Diagnosis "Failed to get AI diagnosis" Error
+**Status:** ✅ FIXED
+
+**Root Cause:** Silently failing API calls without proper error handling.
+
+**Fix Applied:**
+- Improved error handling in AIDiagnosticAssistant.jsx
+- Added proper response validation
+- Added console.error logging for debugging
+
+**Verified Results:**
+- AI Diagnosis returns with 85% confidence ✅
+- Response content properly displayed ✅
+
+---
+
 ## Data Consistency Fix (February 21, 2026)
 
 ### Issue Resolved: Mobile/Desktop Data Inconsistency
