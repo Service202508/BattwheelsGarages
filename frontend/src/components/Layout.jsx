@@ -200,6 +200,7 @@ const navItems = [
     defaultOpen: false,
     items: [
       { name: "Subscription & Billing", path: "/subscription", icon: CreditCard, adminOnly: true },
+      { name: "Team Management", path: "/team", icon: Users, adminOnly: true },
       { name: "All Settings", path: "/all-settings", icon: Settings, adminOnly: true },
       { name: "Organization", path: "/organization-settings", icon: Building2, adminOnly: true },
       { name: "Data Management", path: "/data-management", icon: Database, adminOnly: true },
