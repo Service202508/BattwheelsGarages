@@ -9,6 +9,7 @@ This module provides:
 - TenantGuard: Hard enforcement of tenant boundaries
 - TenantRepository: Base class for tenant-aware data access
 - TenantEventEmitter: Tenant-tagged event emission
+- TenantRBACService: Organization-scoped role-based access control
 
 Architecture:
     Request → TenantGuard → TenantContext → Services → TenantRepository → MongoDB
@@ -18,8 +19,9 @@ Key Guarantees:
 - Mandatory org_id on all tenant data
 - Audit logging of all access attempts
 - Default-deny on missing context
+- Per-organization role permissions
 
-Version: 1.0.0
+Version: 1.1.0 (Phase C - RBAC Tenant Scoping)
 Author: Battwheels Cloud Architecture Team
 """
 
@@ -63,6 +65,15 @@ from .exceptions import (
     TenantDataLeakAttempt,
 )
 
+from .rbac import (
+    TenantRole,
+    TenantRBACService,
+    init_tenant_rbac_service,
+    get_tenant_rbac_service,
+    SYSTEM_ROLE_TEMPLATES,
+    DEFAULT_MODULES,
+)
+
 __all__ = [
     # Context
     "TenantContext",
@@ -87,6 +98,13 @@ __all__ = [
     "TenantAuditLog",
     "TenantAuditService",
     "audit_tenant_action",
+    # RBAC (Phase C)
+    "TenantRole",
+    "TenantRBACService",
+    "init_tenant_rbac_service",
+    "get_tenant_rbac_service",
+    "SYSTEM_ROLE_TEMPLATES",
+    "DEFAULT_MODULES",
     # Exceptions
     "TenantContextMissing",
     "TenantAccessDenied",
