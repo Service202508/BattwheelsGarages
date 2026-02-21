@@ -289,6 +289,7 @@ class EventDispatcher:
         priority: EventPriority = EventPriority.NORMAL,
         user_id: Optional[str] = None,
         correlation_id: Optional[str] = None,
+        organization_id: Optional[str] = None,  # Phase D: Tenant tagging
         wait: bool = False
     ) -> Event:
         """
@@ -301,6 +302,7 @@ class EventDispatcher:
             priority: Processing priority
             user_id: User who triggered the event
             correlation_id: ID to trace related events
+            organization_id: Organization ID for tenant isolation (Phase D)
             wait: If True, wait for all handlers to complete
         
         Returns:
@@ -312,15 +314,20 @@ class EventDispatcher:
             source=source,
             priority=priority,
             user_id=user_id,
-            correlation_id=correlation_id
+            correlation_id=correlation_id,
+            organization_id=organization_id  # Phase D: Pass to event
         )
         
         self._stats["events_emitted"] += 1
         
-        # Log event to database
+        # Log event to database (with organization_id for tenant filtering)
         if self.db is not None:
             try:
-                await self.db.event_log.insert_one(event.to_dict())
+                event_doc = event.to_dict()
+                # Ensure organization_id is always present in event_log
+                if organization_id:
+                    event_doc["organization_id"] = organization_id
+                await self.db.event_log.insert_one(event_doc)
             except Exception as e:
                 logger.error(f"Failed to log event: {e}")
         
@@ -332,7 +339,7 @@ class EventDispatcher:
             logger.debug(f"No handlers registered for event: {key}")
             return event
         
-        logger.info(f"Emitting {key} to {len(handlers)} handlers")
+        logger.info(f"Emitting {key} to {len(handlers)} handlers (org: {organization_id})")
         
         if wait:
             # Synchronous processing - wait for all handlers
