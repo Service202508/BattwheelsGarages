@@ -79,7 +79,7 @@ async def delete_logo(
         raise HTTPException(status_code=400, detail="Invalid logo_type")
     
     # Get current logo URL from database
-    if db:
+    if db is not None:
         org = await db.organizations.find_one(
             {"organization_id": ctx.org_id},
             {"branding": 1, "logo_url": 1}
