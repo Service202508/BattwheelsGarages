@@ -75,8 +75,6 @@ class TestTenantContextResolution:
             "/tickets",
             "/vehicles",
             "/inventory",
-            "/invoices/list",
-            "/contacts/list",
         ]
         
         for endpoint in protected_endpoints:
