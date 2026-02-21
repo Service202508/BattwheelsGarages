@@ -505,8 +505,26 @@ async def get_bank_accounts(request: Request):
     Get bank and credit card account summaries
     """
     org_id = await get_org_id(request)
+    
+    # Return placeholder if no org context
     if not org_id:
-        raise HTTPException(status_code=400, detail="X-Organization-ID header required")
+        return {
+            "code": 0,
+            "bank_accounts": {
+                "accounts": [{
+                    "account_id": "default",
+                    "account_name": "Primary Bank Account",
+                    "account_type": "bank",
+                    "balance": 0,
+                    "currency": "INR",
+                    "uncategorized_count": 0,
+                    "last_sync": None
+                }],
+                "total_balance": 0,
+                "total_uncategorized": 0,
+                "org_missing": True
+            }
+        }
     
     # Get bank accounts from Zoho sync
     accounts = []
