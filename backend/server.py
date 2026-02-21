@@ -1246,6 +1246,9 @@ async def login(credentials: UserLogin):
     # Create token with default org
     token = create_token(user["user_id"], user["email"], user["role"], org_id=default_org_id)
     
+    # Return single org object if user has exactly one organization (for auto-selection)
+    single_org = organizations[0] if len(organizations) == 1 else None
+    
     return {
         "token": token,
         "user": {
@@ -1257,6 +1260,7 @@ async def login(credentials: UserLogin):
             "picture": user.get("picture")
         },
         "organizations": organizations,
+        "organization": single_org,  # Include full org object for single org users
         "current_organization": default_org_id
     }
 
