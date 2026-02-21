@@ -576,8 +576,15 @@ async def get_projects_watchlist(request: Request, limit: int = 5):
     Get active projects/work orders for watchlist
     """
     org_id = await get_org_id(request)
+    
+    # Return empty if no org context
     if not org_id:
-        raise HTTPException(status_code=400, detail="X-Organization-ID header required")
+        return {
+            "code": 0,
+            "projects": [],
+            "total_count": 0,
+            "org_missing": True
+        }
     
     projects = []
     
@@ -620,8 +627,21 @@ async def get_quick_stats(request: Request):
     Get quick statistics for dashboard header
     """
     org_id = await get_org_id(request)
+    
+    # Return empty if no org context
     if not org_id:
-        raise HTTPException(status_code=400, detail="X-Organization-ID header required")
+        return {
+            "code": 0,
+            "quick_stats": {
+                "invoices_this_month": 0,
+                "estimates_this_month": 0,
+                "active_customers": 0,
+                "active_vendors": 0,
+                "total_items": 0,
+                "month": datetime.now(timezone.utc).strftime("%B %Y"),
+                "org_missing": True
+            }
+        }
     
     today = datetime.now(timezone.utc)
     month_start = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
