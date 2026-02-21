@@ -18,6 +18,20 @@ from .service import (
     get_subscription_service
 )
 
+from .entitlement import (
+    EntitlementService,
+    init_entitlement_service,
+    get_entitlement_service,
+    require_feature,
+    require_usage_limit,
+    require_subscription,
+    feature_gate,
+    FeatureNotAvailable,
+    UsageLimitExceeded,
+    SubscriptionRequired,
+    SubscriptionExpired
+)
+
 __all__ = [
     # Models
     "Plan", "PlanCode", "PlanFeatures", "PlanLimits", "FeatureLimit",
@@ -25,8 +39,21 @@ __all__ = [
     "SubscriptionStatus", "BillingCycle", "UsageRecord", "OrgType",
     "DEFAULT_PLANS", "get_default_plan",
     
-    # Service
+    # Subscription Service
     "SubscriptionService",
     "init_subscription_service",
-    "get_subscription_service"
+    "get_subscription_service",
+    
+    # Entitlement Service
+    "EntitlementService",
+    "init_entitlement_service",
+    "get_entitlement_service",
+    "require_feature",
+    "require_usage_limit",
+    "require_subscription",
+    "feature_gate",
+    "FeatureNotAvailable",
+    "UsageLimitExceeded",
+    "SubscriptionRequired",
+    "SubscriptionExpired"
 ]
