@@ -857,7 +857,7 @@ export default function AMCManagement({ user }) {
               Cancel
             </Button>
             <Button 
-              className="bg-emerald-600 hover:bg-emerald-700"
+              className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold"
               onClick={handleCreateSubscription}
             >
               Create Subscription
