@@ -1424,12 +1424,43 @@ export default function ItemsEnhanced() {
       </Tabs>
 
       {/* Create Item Dialog - Full Zoho Books Compatible */}
-      <Dialog open={showItemDialog} onOpenChange={setShowItemDialog}>
+      <Dialog 
+        open={showItemDialog} 
+        onOpenChange={(open) => {
+          if (!open && !editItem && itemPersistence.isDirty) {
+            itemPersistence.setShowCloseConfirm(true);
+          } else {
+            if (!open && !editItem) itemPersistence.clearSavedData();
+            setShowItemDialog(open);
+          }
+        }}
+      >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create New Item</DialogTitle>
-            <DialogDescription>Add a new product or service - Zoho Books compatible</DialogDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle>Create New Item</DialogTitle>
+                <DialogDescription>Add a new product or service - Zoho Books compatible</DialogDescription>
+              </div>
+              {!editItem && (
+                <AutoSaveIndicator 
+                  lastSaved={itemPersistence.lastSaved} 
+                  isSaving={itemPersistence.isSaving} 
+                  isDirty={itemPersistence.isDirty} 
+                />
+              )}
+            </div>
           </DialogHeader>
+          
+          {!editItem && (
+            <DraftRecoveryBanner
+              show={itemPersistence.showRecoveryBanner}
+              savedAt={itemPersistence.savedDraftInfo?.timestamp}
+              onRestore={itemPersistence.handleRestoreDraft}
+              onDiscard={itemPersistence.handleDiscardDraft}
+            />
+          )}
+          
           <Tabs defaultValue="basic" className="w-full">
             <TabsList className="grid w-full grid-cols-5 mb-4">
               <TabsTrigger value="basic" className="text-xs">Basic</TabsTrigger>
