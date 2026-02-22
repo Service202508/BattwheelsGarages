@@ -175,7 +175,7 @@ export default function CustomerVehicles({ user }) {
                     </Button>
                   </Link>
                   <Link to="/customer/book-appointment" className="flex-1">
-                    <Button className="w-full bg-emerald-600 hover:bg-emerald-700" size="sm">
+                    <Button className="w-full bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" size="sm">
                       Book Service
                     </Button>
                   </Link>
