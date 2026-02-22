@@ -1467,10 +1467,27 @@ export default function EstimatesEnhanced() {
         <TabsContent value="create" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Create New Estimate</CardTitle>
-              <CardDescription>Fill in the details and add line items</CardDescription>
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle>Create New Estimate</CardTitle>
+                  <CardDescription>Fill in the details and add line items</CardDescription>
+                </div>
+                <AutoSaveIndicator 
+                  lastSaved={newEstimatePersistence.lastSaved} 
+                  isSaving={newEstimatePersistence.isSaving} 
+                  isDirty={newEstimatePersistence.isDirty} 
+                />
+              </div>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Draft Recovery Banner */}
+              <DraftRecoveryBanner
+                show={newEstimatePersistence.showRecoveryBanner}
+                savedAt={newEstimatePersistence.savedDraftInfo?.timestamp}
+                onRestore={newEstimatePersistence.handleRestoreDraft}
+                onDiscard={newEstimatePersistence.handleDiscardDraft}
+              />
+              
               {/* Customer Selection */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
