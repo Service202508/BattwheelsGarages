@@ -39,6 +39,11 @@ export default function ZohoSync() {
   const [syncingModule, setSyncingModule] = useState(null);
   const [fullSyncInProgress, setFullSyncInProgress] = useState(false);
   const [moduleResults, setModuleResults] = useState({});
+  
+  // Disconnect & Purge states
+  const [showDisconnectDialog, setShowDisconnectDialog] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(false);
+  const [purgeStats, setPurgeStats] = useState(null);
 
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}` };
