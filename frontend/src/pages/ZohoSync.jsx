@@ -5,11 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { 
   RefreshCw, Loader2, CheckCircle2, XCircle, Clock, 
   Users, Package, FileText, Receipt, CreditCard, Wallet,
-  CloudDownload, History, Zap, AlertCircle, Building2
+  CloudDownload, History, Zap, AlertCircle, Building2,
+  Power, Trash2, AlertTriangle
 } from "lucide-react";
 import { API } from "@/App";
 
