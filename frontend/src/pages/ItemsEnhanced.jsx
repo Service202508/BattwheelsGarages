@@ -23,6 +23,8 @@ import {
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
+import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const itemTypeColors = {
   inventory: "bg-blue-100 text-blue-700",
