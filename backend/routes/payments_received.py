@@ -13,6 +13,9 @@ import csv
 import io
 import os
 
+# Import double-entry posting hooks
+from services.posting_hooks import post_payment_received_journal_entry
+
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
 DB_NAME = os.environ.get("DB_NAME", "battwheels")
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
