@@ -323,7 +323,7 @@ export default function CustomerAMC({ user }) {
                 <Button variant="outline" className="flex-1" onClick={() => setSelectedPlan(null)}>
                   Cancel
                 </Button>
-                <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700">
+                <Button className="flex-1 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
                   <Phone className="h-4 w-4 mr-2" />
                   Request Callback
                 </Button>
