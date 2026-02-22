@@ -401,7 +401,7 @@ export default function AMCManagement({ user }) {
             <CardContent>
               {filteredSubscriptions.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  <Shield className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                  <Shield className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
                   <p>No AMCs found.</p>
                 </div>
               ) : (
@@ -474,7 +474,7 @@ export default function AMCManagement({ user }) {
           {/* Category and Billing Selectors */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex bg-gray-100 rounded-lg p-1">
+              <div className="flex bg-[rgba(255,255,255,0.05)] rounded-lg p-1">
                 {["2W", "3W", "4W"].map((cat) => (
                   <button
                     key={cat}
@@ -493,7 +493,7 @@ export default function AMCManagement({ user }) {
                 ))}
               </div>
               
-              <div className="flex bg-gray-100 rounded-lg p-1">
+              <div className="flex bg-[rgba(255,255,255,0.05)] rounded-lg p-1">
                 <button
                   onClick={() => setBillingFrequency("monthly")}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
@@ -528,7 +528,7 @@ export default function AMCManagement({ user }) {
           {currentPlans.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
-                <Shield className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                <Shield className="h-16 w-16 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
                 <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Plans Found</h3>
                 <p className="text-gray-600 mb-4">
                   Import official Battwheels plans to get started.
@@ -664,7 +664,7 @@ export default function AMCManagement({ user }) {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xl font-bold">Need a Custom Enterprise Plan?</h3>
-                  <p className="text-gray-300 mt-1">
+                  <p className="text-[rgba(244,246,240,0.20)] mt-1">
                     For large fleets (50+ vehicles), custom SLAs, dedicated onsite teams, or OEM partnerships.
                   </p>
                 </div>

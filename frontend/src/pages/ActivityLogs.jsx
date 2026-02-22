@@ -78,7 +78,7 @@ export default function ActivityLogs() {
   const getEntityTypeBadge = (type) => {
     const config = ENTITY_TYPES[type?.toLowerCase()] || { 
       label: type, 
-      color: "bg-gray-100 text-[#F4F6F0]" 
+      color: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]" 
     };
     return <Badge className={config.color}>{config.label}</Badge>;
   };

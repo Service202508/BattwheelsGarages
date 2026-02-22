@@ -606,7 +606,7 @@ export default function InvoiceSettings() {
               <CardContent>
                 {recurringInvoices.length === 0 ? (
                   <div className="text-center py-8">
-                    <Repeat className="h-12 w-12 mx-auto text-gray-300 mb-2" />
+                    <Repeat className="h-12 w-12 mx-auto text-[rgba(244,246,240,0.20)] mb-2" />
                     <p className="text-[rgba(244,246,240,0.45)]">No recurring invoices yet</p>
                     <p className="text-sm text-[rgba(244,246,240,0.25)]">Create one to automate billing</p>
                   </div>

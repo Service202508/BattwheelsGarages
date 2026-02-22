@@ -453,7 +453,7 @@ function UsersPanel({ onRefresh }) {
       dispatcher: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
       technician: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
       accountant: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400",
-      viewer: "bg-gray-100 text-[#F4F6F0] dark:bg-gray-900/30 dark:text-gray-400"
+      viewer: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0] dark:bg-gray-900/30 dark:text-gray-400"
     };
     return colors[role] || colors.viewer;
   };
@@ -1326,7 +1326,7 @@ function WorkflowRulesBuilderPanel({ settings, onRefresh }) {
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-4">
-                <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${rule.is_active ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"}`}>
+                <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${rule.is_active ? "bg-green-100 text-green-600" : "bg-[rgba(255,255,255,0.05)] text-gray-400"}`}>
                   <Zap className="h-5 w-5" />
                 </div>
                 <div>

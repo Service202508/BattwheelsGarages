@@ -25,7 +25,7 @@ const statusColors = {
   damaged: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
   reserved: "bg-purple-100 text-[#8B5CF6]",
   active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  depleted: "bg-gray-100 text-gray-600",
+  depleted: "bg-[rgba(255,255,255,0.05)] text-gray-600",
   expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"
 };
 

@@ -201,7 +201,7 @@ export default function ZohoSync() {
       completed: { class: "bg-green-100 text-green-800", icon: CheckCircle2 },
       failed: { class: "bg-red-100 text-red-800", icon: XCircle }
     };
-    const config = styles[status] || { class: "bg-gray-100", icon: Clock };
+    const config = styles[status] || { class: "bg-[rgba(255,255,255,0.05)]", icon: Clock };
     const Icon = config.icon;
     return (
       <Badge className={`${config.class} flex items-center gap-1`}>
@@ -312,7 +312,7 @@ export default function ZohoSync() {
                   <div className="flex items-center gap-3 mb-3">
                     <div className={`p-2 rounded-lg ${
                       result?.status === "success" ? "bg-green-100" :
-                      result?.status === "error" ? "bg-red-100" : "bg-gray-100"
+                      result?.status === "error" ? "bg-red-100" : "bg-[rgba(255,255,255,0.05)]"
                     }`}>
                       <Icon className={`h-5 w-5 ${
                         result?.status === "success" ? "text-green-600" :

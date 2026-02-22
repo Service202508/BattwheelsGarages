@@ -801,7 +801,7 @@ export default function PaymentsReceived() {
                       {customers.map(c => (
                         <div
                           key={c.contact_id}
-                          className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                          className="px-3 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
                           onClick={() => selectCustomer(c)}
                         >
                           <p className="font-medium">{c.name}</p>

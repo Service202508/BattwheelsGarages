@@ -22,7 +22,7 @@ import PageHeader from "@/components/PageHeader";
 const statusColors = {
   active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   fully_depreciated: "bg-blue-100 text-[#3B9EFF]",
-  disposed: "bg-gray-100 text-gray-600",
+  disposed: "bg-[rgba(255,255,255,0.05)] text-gray-600",
   written_off: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"
 };
 
@@ -521,7 +521,7 @@ export default function FixedAssets() {
                         <tr key={asset.asset_id} className="border-b hover:bg-gray-50 cursor-pointer" onClick={() => openDetail(asset)}>
                           <td className="p-4">
                             <div className="flex items-center gap-3">
-                              <div className="p-2 bg-gray-100 rounded">
+                              <div className="p-2 bg-[rgba(255,255,255,0.05)] rounded">
                                 <Icon className="h-4 w-4 text-gray-600" />
                               </div>
                               <div>

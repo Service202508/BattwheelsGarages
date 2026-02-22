@@ -972,7 +972,7 @@ export default function ItemsEnhanced() {
           ) : items.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center text-gray-500">
-                <Package className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <Package className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
                 <p>No items found</p>
                 <Button onClick={() => setShowItemDialog(true)} className="mt-4">Create your first item</Button>
               </CardContent>
@@ -1010,7 +1010,7 @@ export default function ItemsEnhanced() {
                           {item.image_url ? (
                             <img src={item.image_url} alt="" className="w-10 h-10 rounded object-cover" />
                           ) : (
-                            <div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded bg-[rgba(255,255,255,0.05)] flex items-center justify-center">
                               <Package className="h-5 w-5 text-gray-400" />
                             </div>
                           )}
@@ -1037,7 +1037,7 @@ export default function ItemsEnhanced() {
                         ) : '-'}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <Badge className={item.is_active !== false ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : "bg-gray-100 text-gray-500"}>
+                        <Badge className={item.is_active !== false ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : "bg-[rgba(255,255,255,0.05)] text-gray-500"}>
                           {item.is_active !== false ? "Active" : "Inactive"}
                         </Badge>
                       </td>
@@ -1089,7 +1089,7 @@ export default function ItemsEnhanced() {
             </Button>
           </div>
           {groups.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500"><FolderTree className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No item groups yet</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-gray-500"><FolderTree className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No item groups yet</p></CardContent></Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {groups.map(group => (
@@ -1121,7 +1121,7 @@ export default function ItemsEnhanced() {
             </Button>
           </div>
           {warehouses.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500"><Warehouse className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No warehouses yet</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-gray-500"><Warehouse className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No warehouses yet</p></CardContent></Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {warehouses.map(wh => (
@@ -1135,11 +1135,11 @@ export default function ItemsEnhanced() {
                   <CardContent>
                     <p className="text-sm text-gray-600 mb-3">{wh.location || "No location set"}</p>
                     <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="bg-gray-100 rounded p-2 text-center">
+                      <div className="bg-[rgba(255,255,255,0.05)] rounded p-2 text-center">
                         <p className="text-gray-500 text-xs">Items</p>
                         <p className="font-bold">{wh.total_items || 0}</p>
                       </div>
-                      <div className="bg-gray-100 rounded p-2 text-center">
+                      <div className="bg-[rgba(255,255,255,0.05)] rounded p-2 text-center">
                         <p className="text-gray-500 text-xs">Stock</p>
                         <p className="font-bold">{wh.total_stock || 0}</p>
                       </div>
@@ -1167,7 +1167,7 @@ export default function ItemsEnhanced() {
             </div>
           </div>
           {priceLists.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500"><Tags className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No price lists yet</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-gray-500"><Tags className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No price lists yet</p></CardContent></Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {priceLists.map(pl => (
@@ -1199,15 +1199,15 @@ export default function ItemsEnhanced() {
                   <CardContent>
                     <p className="text-sm text-gray-600 mb-3">{pl.description || "No description"}</p>
                     <div className="grid grid-cols-3 gap-2 text-sm">
-                      <div className="bg-gray-100 rounded p-2 text-center">
+                      <div className="bg-[rgba(255,255,255,0.05)] rounded p-2 text-center">
                         <p className="text-gray-500 text-xs">Discount</p>
                         <p className="font-bold">{pl.discount_percentage || 0}%</p>
                       </div>
-                      <div className="bg-gray-100 rounded p-2 text-center">
+                      <div className="bg-[rgba(255,255,255,0.05)] rounded p-2 text-center">
                         <p className="text-gray-500 text-xs">Markup</p>
                         <p className="font-bold">{pl.markup_percentage || 0}%</p>
                       </div>
-                      <div className="bg-gray-100 rounded p-2 text-center">
+                      <div className="bg-[rgba(255,255,255,0.05)] rounded p-2 text-center">
                         <p className="text-gray-500 text-xs">Items</p>
                         <p className="font-bold">{pl.item_count || 0}</p>
                       </div>
@@ -1227,7 +1227,7 @@ export default function ItemsEnhanced() {
             </Button>
           </div>
           {adjustments.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500"><ArrowUpDown className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No inventory adjustments yet</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-gray-500"><ArrowUpDown className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No inventory adjustments yet</p></CardContent></Card>
           ) : (
             <div className="border rounded-lg overflow-hidden bg-[#111820]">
               <table className="w-full text-sm">
@@ -1401,7 +1401,7 @@ export default function ItemsEnhanced() {
                         entry.action === "created" ? "bg-green-100 text-green-600" :
                         entry.action === "updated" ? "bg-blue-100 text-[#3B9EFF]" :
                         entry.action === "stock_adjusted" ? "bg-orange-100 text-[#FF8C00]" :
-                        "bg-gray-100 text-gray-600"
+                        "bg-[rgba(255,255,255,0.05)] text-gray-600"
                       }`}>
                         {entry.action === "created" && <Plus className="h-4 w-4" />}
                         {entry.action === "updated" && <Edit className="h-4 w-4" />}
@@ -1833,7 +1833,7 @@ export default function ItemsEnhanced() {
                   <div><Label>Reorder Level</Label><Input type="number" value={editItem.reorder_level || 0} onChange={(e) => setEditItem({ ...editItem, reorder_level: parseInt(e.target.value) || 0 })} /></div>
                   <div>
                     <Label>Current Stock (read-only)</Label>
-                    <Input type="number" value={editItem.total_stock ?? editItem.stock_on_hand ?? 0} disabled className="bg-gray-100" />
+                    <Input type="number" value={editItem.total_stock ?? editItem.stock_on_hand ?? 0} disabled className="bg-[rgba(255,255,255,0.05)]" />
                     <p className="text-xs text-gray-500 mt-1">Use Adjustments tab to modify stock</p>
                   </div>
                 </div>

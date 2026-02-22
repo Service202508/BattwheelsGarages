@@ -82,7 +82,7 @@ export default function CustomerInvoices({ user }) {
       {invoices.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <FileText className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+            <FileText className="h-16 w-16 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
             <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Invoices Yet</h3>
             <p className="text-gray-600">Your invoices will appear here after services are completed</p>
           </CardContent>

@@ -390,7 +390,7 @@ export default function Banking() {
               >
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gray-100 rounded-lg">
+                    <div className="p-2 bg-[rgba(255,255,255,0.05)] rounded-lg">
                       <Icon className="h-5 w-5 text-gray-600" />
                     </div>
                     <div className="flex-1">

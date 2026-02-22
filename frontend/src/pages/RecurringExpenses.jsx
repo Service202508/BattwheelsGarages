@@ -218,9 +218,9 @@ export default function RecurringExpenses() {
     const styles = {
       active: "bg-green-100 text-green-800",
       stopped: "bg-red-100 text-red-800",
-      expired: "bg-gray-100 text-[#F4F6F0]"
+      expired: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]"
     };
-    return <Badge className={styles[status] || "bg-gray-100"}>{status}</Badge>;
+    return <Badge className={styles[status] || "bg-[rgba(255,255,255,0.05)]"}>{status}</Badge>;
   };
 
   const frequencyLabels = {

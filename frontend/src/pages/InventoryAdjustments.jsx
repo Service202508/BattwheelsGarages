@@ -615,7 +615,7 @@ export default function InventoryAdjustments() {
             <p className="text-center py-12 text-gray-500">Loading...</p>
           ) : adjustments.length === 0 ? (
             <div className="text-center py-12" data-testid="empty-state">
-              <Package className="h-12 w-12 mx-auto text-gray-300 mb-3" />
+              <Package className="h-12 w-12 mx-auto text-[rgba(244,246,240,0.20)] mb-3" />
               <p className="text-gray-500 font-medium">No inventory adjustments found</p>
               <p className="text-sm text-gray-400 mb-4">Create an adjustment to correct stock levels or values</p>
               <Button onClick={() => { resetForm(); setShowCreateDialog(true); }}>

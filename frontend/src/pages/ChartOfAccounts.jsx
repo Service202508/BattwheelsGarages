@@ -154,7 +154,7 @@ export default function ChartOfAccounts() {
                     <CardContent>
                       <div className="space-y-2">
                         {accs.map(account => (
-                          <div key={account.account_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                          <div key={account.account_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-[rgba(255,255,255,0.05)] transition-colors">
                             <div className="flex items-center gap-3">
                               {account.account_code && <span className="text-xs font-mono bg-gray-200 px-2 py-1 rounded">{account.account_code}</span>}
                               <div>

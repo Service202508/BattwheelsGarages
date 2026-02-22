@@ -354,7 +354,7 @@ export default function PublicTicketForm() {
                     data-testid={`customer-type-${type.value}`}
                   >
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
-                      isSelected ? "bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/30" : "bg-gray-100"
+                      isSelected ? "bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/30" : "bg-[rgba(255,255,255,0.05)]"
                     }`}>
                       <Icon className={`w-6 h-6 ${isSelected ? "text-white" : "text-gray-500"}`} strokeWidth={2} />
                     </div>
@@ -487,7 +487,7 @@ export default function PublicTicketForm() {
                         {aiSuggestions.slice(0, 4).map((s, i) => (
                           <button key={i} onClick={() => handleSuggestionSelect(s)} className="w-full px-4 py-3 text-left hover:bg-[rgba(200,255,0,0.08)] transition-colors border-b border-gray-100 last:border-b-0 flex items-center justify-between group">
                             <span className="text-sm text-gray-700 font-medium">{s.title}</span>
-                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#C8FF00] text-500 transition-colors" />
+                            <ChevronRight className="w-4 h-4 text-[rgba(244,246,240,0.20)] group-hover:text-[#C8FF00] text-500 transition-colors" />
                           </button>
                         ))}
                       </div>
@@ -531,7 +531,7 @@ export default function PublicTicketForm() {
                   <motion.button key={r.value} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setFormData(prev => ({ ...prev, resolution_type: r.value }))}
                     className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${isSelected ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-500/10" : "border-gray-200 bg-[#111820] hover:border-gray-300"}`}
                     data-testid={`resolution-${r.value}`}>
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 ${isSelected ? "bg-gradient-to-br from-emerald-500 to-teal-500" : "bg-gray-100"}`}>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 ${isSelected ? "bg-gradient-to-br from-emerald-500 to-teal-500" : "bg-[rgba(255,255,255,0.05)]"}`}>
                       <Icon className={`w-5 h-5 ${isSelected ? "text-white" : "text-gray-500"}`} strokeWidth={2} />
                     </div>
                     <p className={`font-semibold text-sm ${isSelected ? "text-[#C8FF00] text-700" : "text-[#F4F6F0]"}`}>{r.label}</p>
@@ -584,7 +584,7 @@ export default function PublicTicketForm() {
             <SectionHeader icon={Camera} title="Attach Photos" subtitle="Optional - helps diagnose faster" />
             <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} onClick={() => fileInputRef.current?.click()}
               className="w-full p-8 border-2 border-dashed border-gray-200 rounded-xl hover:border-emerald-400 hover:bg-[rgba(200,255,0,0.08)]/50 transition-all duration-200 group">
-              <div className="w-14 h-14 mx-auto mb-3 rounded-xl bg-gray-100 group-hover:bg-[rgba(200,255,0,0.10)] flex items-center justify-center transition-colors">
+              <div className="w-14 h-14 mx-auto mb-3 rounded-xl bg-[rgba(255,255,255,0.05)] group-hover:bg-[rgba(200,255,0,0.10)] flex items-center justify-center transition-colors">
                 <Upload className="w-7 h-7 text-gray-400 group-hover:text-[#C8FF00] text-500" />
               </div>
               <p className="text-sm font-medium text-gray-600 group-hover:text-[#C8FF00] text-700">Tap to upload photos</p>
@@ -594,7 +594,7 @@ export default function PublicTicketForm() {
             {attachments.length > 0 && (
               <div className="grid grid-cols-3 gap-3 mt-4">
                 {attachments.map((att) => (
-                  <div key={att.id} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200 shadow-sm">
+                  <div key={att.id} className="relative aspect-square rounded-xl overflow-hidden bg-[rgba(255,255,255,0.05)] border border-gray-200 shadow-sm">
                     {att.preview ? <img src={att.preview} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><FileText className="w-6 h-6 text-gray-400" /></div>}
                     <button onClick={() => removeAttachment(att.id)} className="absolute top-2 right-2 p-1.5 bg-[#111820]/90 hover:bg-[rgba(255,59,47,0.08)]0 hover:text-white rounded-full shadow-md transition-colors">
                       <X className="w-3 h-3" />
@@ -621,7 +621,7 @@ export default function PublicTicketForm() {
           {/* Links */}
           <div className="flex items-center justify-center gap-6 text-sm text-gray-500 pt-2">
             <a href="/track-ticket" className="hover:text-[#C8FF00] text-600 transition-colors flex items-center gap-1 font-medium">Track Ticket <ChevronRight className="w-4 h-4" /></a>
-            <span className="text-gray-300">|</span>
+            <span className="text-[rgba(244,246,240,0.20)]">|</span>
             <a href="/login" className="hover:text-[#C8FF00] text-600 transition-colors flex items-center gap-1 font-medium">Customer Portal <ChevronRight className="w-4 h-4" /></a>
           </div>
 

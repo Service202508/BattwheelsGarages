@@ -102,7 +102,7 @@ export default function CustomerPayments({ user }) {
       {paymentsData.payments.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <CreditCard className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+            <CreditCard className="h-16 w-16 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
             <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Pending Payments</h3>
             <p className="text-gray-600">All your invoices are paid. Great job! 🎉</p>
           </CardContent>

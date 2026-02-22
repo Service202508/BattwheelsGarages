@@ -382,7 +382,7 @@ export default function CustomerPortal() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm text-gray-300 mb-2 block">Portal Access Token</label>
+              <label className="text-sm text-[rgba(244,246,240,0.20)] mb-2 block">Portal Access Token</label>
               <Input
                 value={portalToken}
                 onChange={(e) => setPortalToken(e.target.value)}
@@ -508,7 +508,7 @@ export default function CustomerPortal() {
                         {dashboard.recent_invoices.map(inv => (
                           <div 
                             key={inv.invoice_id} 
-                            className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
+                            className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
                             onClick={() => fetchInvoiceDetail(inv.invoice_id)}
                           >
                             <div>
@@ -518,7 +518,7 @@ export default function CustomerPortal() {
                             <div className="text-right flex items-center gap-3">
                               <div>
                                 <p className="font-medium">{formatCurrency(inv.grand_total)}</p>
-                                <Badge className={statusColors[inv.status] || "bg-gray-100"}>{inv.status}</Badge>
+                                <Badge className={statusColors[inv.status] || "bg-[rgba(255,255,255,0.05)]"}>{inv.status}</Badge>
                               </div>
                               <ChevronRight className="h-5 w-5 text-gray-400" />
                             </div>
@@ -720,7 +720,7 @@ export default function CustomerPortal() {
               <CardContent className="p-0">
                 {tickets.length === 0 ? (
                   <div className="p-8 text-center text-gray-500">
-                    <Ticket className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                    <Ticket className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
                     <p>No support requests found</p>
                     <Button variant="outline" className="mt-4" onClick={() => setShowCreateTicket(true)}>
                       Submit Your First Request

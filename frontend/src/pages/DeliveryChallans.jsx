@@ -237,7 +237,7 @@ export default function DeliveryChallans() {
         challans.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center text-gray-500">
-              <Truck className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <Truck className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
               <p>No delivery challans found</p>
               <p className="text-sm mt-1">Create your first delivery challan to track goods dispatched</p>
             </CardContent>

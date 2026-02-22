@@ -331,7 +331,7 @@ export default function Items() {
         <TabsContent value={activeTab} className="mt-6">
           {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
             filteredItems.length === 0 ? (
-              <Card><CardContent className="py-12 text-center text-gray-500"><Package className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No items found</p></CardContent></Card>
+              <Card><CardContent className="py-12 text-center text-gray-500"><Package className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No items found</p></CardContent></Card>
             ) : (
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">

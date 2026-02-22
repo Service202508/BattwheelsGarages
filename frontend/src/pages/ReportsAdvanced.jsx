@@ -25,7 +25,7 @@ const BarChartSimple = ({ data, labels, colors, height = 200, horizontal = false
         {labels.map((label, idx) => (
           <div key={idx} className="flex items-center gap-3">
             <span className="text-xs w-24 truncate text-gray-600">{label}</span>
-            <div className="flex-1 bg-gray-100 rounded-full h-6 overflow-hidden">
+            <div className="flex-1 bg-[rgba(255,255,255,0.05)] rounded-full h-6 overflow-hidden">
               <div 
                 className="h-full rounded-full flex items-center justify-end pr-2"
                 style={{ 
@@ -497,7 +497,7 @@ export default function ReportsAdvanced() {
                     {agingData.data?.map((bucket, idx) => (
                       <div key={idx} className="flex items-center gap-3">
                         <span className="text-sm w-20 text-gray-600">{bucket.label}</span>
-                        <div className="flex-1 bg-gray-100 rounded-full h-8 overflow-hidden">
+                        <div className="flex-1 bg-[rgba(255,255,255,0.05)] rounded-full h-8 overflow-hidden">
                           <div 
                             className="h-full rounded-full flex items-center justify-end pr-3"
                             style={{ 

@@ -365,7 +365,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                           className="hidden items-center justify-center p-4 text-xs text-gray-500"
                           onClick={() => window.open(currentStep.reference_image, '_blank')}
                         >
-                          <Image className="h-8 w-8 text-gray-300 mr-2" />
+                          <Image className="h-8 w-8 text-[rgba(244,246,240,0.20)] mr-2" />
                           Click to view reference image
                         </div>
                       </div>

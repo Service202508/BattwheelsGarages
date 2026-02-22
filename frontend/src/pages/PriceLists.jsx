@@ -22,7 +22,7 @@ import { API } from "@/App";
 
 const statusColors = {
   active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  inactive: "bg-gray-100 text-gray-600",
+  inactive: "bg-[rgba(255,255,255,0.05)] text-gray-600",
   deleted: "bg-red-100 text-red-600"
 };
 
@@ -381,7 +381,7 @@ export default function PriceLists() {
       ) : priceLists.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-gray-500">
-            <List className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <List className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
             <p>No price lists found</p>
             <p className="text-sm mt-1">Create a price list to set custom pricing for different customers</p>
           </CardContent>
@@ -473,7 +473,7 @@ export default function PriceLists() {
                               <td className="px-4 py-2 text-center">
                                 {(item.is_combo_product || item.synced_is_combo) ? 
                                   <CheckCircle className="h-4 w-4 text-green-500 mx-auto" /> : 
-                                  <span className="text-gray-300">-</span>
+                                  <span className="text-[rgba(244,246,240,0.20)]">-</span>
                                 }
                               </td>
                               <td className="px-4 py-2 text-right text-gray-500">

@@ -160,7 +160,7 @@ export default function OpeningBalances() {
       vendor: "bg-orange-100 text-orange-800",
       account: "bg-purple-100 text-purple-800"
     };
-    return <Badge className={styles[type] || "bg-gray-100"}>{type}</Badge>;
+    return <Badge className={styles[type] || "bg-[rgba(255,255,255,0.05)]"}>{type}</Badge>;
   };
 
   // Calculate totals
