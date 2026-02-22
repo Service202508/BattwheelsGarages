@@ -158,6 +158,32 @@ export default function ZohoSync() {
     }
   };
 
+  const handleDisconnectAndPurge = async () => {
+    setDisconnecting(true);
+    try {
+      const res = await fetch(`${API}/zoho-sync/disconnect-and-purge`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ confirm: true })
+      });
+      const data = await res.json();
+      
+      if (data.code === 0) {
+        setPurgeStats(data.purge_stats);
+        toast.success("Zoho Books disconnected and data purged successfully!");
+        setConnectionStatus({ status: "disconnected", message: "Zoho Books integration disabled" });
+        fetchSyncHistory();
+      } else {
+        toast.error(data.message || "Failed to disconnect");
+      }
+    } catch (error) {
+      toast.error("Error disconnecting from Zoho Books");
+    } finally {
+      setDisconnecting(false);
+      setShowDisconnectDialog(false);
+    }
+  };
+
   const formatTimestamp = (timestamp) => {
     if (!timestamp) return "-";
     return new Date(timestamp).toLocaleString('en-IN', {
