@@ -2584,8 +2584,8 @@ export default function EstimatesEnhanced() {
           if (!open) editEstimatePersistence.clearSavedData();
         }
       }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto [&_.overflow-visible]:overflow-visible">
-          <DialogHeader>
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col [&_.overflow-visible]:overflow-visible">
+          <DialogHeader className="flex-shrink-0">
             <div className="flex justify-between items-start">
               <div>
                 <DialogTitle className="flex items-center gap-2"><Edit className="h-5 w-5" /> Edit Estimate</DialogTitle>
@@ -2600,7 +2600,7 @@ export default function EstimatesEnhanced() {
           </DialogHeader>
           
           {editEstimate && (
-            <div className="space-y-4 py-4">
+            <div className="space-y-4 py-4 flex-1 overflow-y-auto min-h-0">
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <Label>Reference Number</Label>
