@@ -497,18 +497,7 @@ export default function InvoicesEnhanced() {
   };
 
   const resetForm = () => {
-    setNewInvoice({
-      customer_id: "",
-      invoice_date: new Date().toISOString().split("T")[0],
-      payment_terms: 30,
-      line_items: [{ name: "", description: "", quantity: 1, rate: 0, tax_rate: 18 }],
-      discount_type: "percentage",
-      discount_value: 0,
-      shipping_charge: 0,
-      customer_notes: "",
-      terms_conditions: "",
-      send_email: false
-    });
+    setNewInvoice(initialInvoiceData);
   };
 
   // ========================= EDIT INVOICE =========================
