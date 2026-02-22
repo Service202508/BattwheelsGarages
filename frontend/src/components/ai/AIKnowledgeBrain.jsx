@@ -653,7 +653,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
           <Button
             onClick={() => sendMessage()}
             disabled={loading || !input.trim()}
-            className="h-12 w-12 rounded-xl bg-emerald-600 hover:bg-[rgba(200,255,0,0.08)]0 border-0"
+            className="h-12 w-12 rounded-xl bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] border-0"
             data-testid="ai-send-btn"
           >
             {loading ? (
