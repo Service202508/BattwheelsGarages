@@ -273,7 +273,7 @@ export default function BusinessTickets({ user }) {
               {filteredTickets.map((ticket) => (
                 <Card 
                   key={ticket.ticket_id} 
-                  className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 hover:border-indigo-200 hover:shadow-md transition-all cursor-pointer"
+                  className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer"
                   onClick={() => navigate(`/business/tickets/${ticket.ticket_id}`)}
                   data-testid={`ticket-card-${ticket.ticket_id}`}
                 >
