@@ -480,6 +480,28 @@ async def record_payment(payment: PaymentRecordCreate, background_tasks: Backgro
     # Add history
     await add_payment_history(payment_id, "created", f"Payment {payment_number} recorded for ₹{payment.amount:,.2f}")
     
+    # Post journal entry for double-entry bookkeeping
+    # Get org_id from one of the invoices
+    org_id = None
+    if payment.allocations:
+        first_invoice = await invoices_collection.find_one({"invoice_id": payment.allocations[0].invoice_id})
+        if first_invoice:
+            org_id = first_invoice.get("organization_id")
+    
+    if org_id:
+        try:
+            await post_payment_received_journal_entry(
+                organization_id=org_id,
+                payment={
+                    **payment_doc,
+                    "customer_name": customer.get("name", ""),
+                    "invoice_number": first_invoice.get("invoice_number", "") if payment.allocations else ""
+                }
+            )
+        except Exception as e:
+            import logging
+            logging.warning(f"Failed to post journal entry for payment {payment_number}: {e}")
+    
     # Send thank you email (mocked)
     if payment.send_thank_you:
         background_tasks.add_task(
