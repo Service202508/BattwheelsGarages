@@ -1,29 +1,108 @@
 """
 Razorpay Payment Routes
-Handles payment orders, payment links, and webhooks for invoice payments
+Handles payment orders, payment links, and webhooks for invoice payments.
+Enhanced with:
+- Multi-tenant organization-specific credentials
+- Journal entry posting on payment capture
+- Better error handling
 """
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, Field
+from typing import Optional, List, Dict
 from datetime import datetime, timezone, timedelta
 import uuid
 import os
 import json
+import logging
+import razorpay
+
+logger = logging.getLogger(__name__)
 
 def get_db():
     from server import db
     return db
-from services.razorpay_service import (
-    is_razorpay_configured,
-    create_razorpay_order,
-    create_payment_link,
-    fetch_payment,
-    verify_payment_signature,
-    verify_webhook_signature,
-    refund_payment
-)
+
+# Import double-entry posting hooks
+from services.posting_hooks import post_payment_received_journal_entry
 
 router = APIRouter(prefix="/payments", tags=["Payments"])
+
+# Global fallback Razorpay keys
+RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', '')
+RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', '')
+RAZORPAY_WEBHOOK_SECRET = os.environ.get('RAZORPAY_WEBHOOK_SECRET', '')
+
+
+# ==================== MULTI-TENANT HELPERS ====================
+
+async def get_org_razorpay_config(org_id: str) -> Dict:
+    """Get Razorpay configuration for an organization"""
+    db = get_db()
+    org = await db.organizations.find_one(
+        {"organization_id": org_id},
+        {"razorpay_config": 1, "_id": 0}
+    )
+    
+    if org and org.get("razorpay_config"):
+        return org["razorpay_config"]
+    
+    # Return global fallback
+    return {
+        "key_id": RAZORPAY_KEY_ID,
+        "key_secret": RAZORPAY_KEY_SECRET,
+        "webhook_secret": RAZORPAY_WEBHOOK_SECRET,
+        "test_mode": True
+    }
+
+
+def get_razorpay_client(config: Dict = None):
+    """Create Razorpay client from config or global keys"""
+    if config:
+        key_id = config.get("key_id", "")
+        key_secret = config.get("key_secret", "")
+    else:
+        key_id = RAZORPAY_KEY_ID
+        key_secret = RAZORPAY_KEY_SECRET
+    
+    if not key_id or not key_secret:
+        return None
+    
+    return razorpay.Client(auth=(key_id, key_secret))
+
+
+def is_razorpay_configured(config: Dict = None) -> bool:
+    """Check if Razorpay is configured"""
+    if config:
+        return bool(config.get("key_id") and config.get("key_secret"))
+    return bool(RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)
+
+
+async def get_org_id_from_request(request: Request) -> str:
+    """Extract organization ID from request"""
+    org_id = request.headers.get("X-Organization-ID")
+    if not org_id:
+        db = get_db()
+        session_token = request.cookies.get("session_token")
+        if session_token:
+            session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+            if session:
+                membership = await db.organization_users.find_one(
+                    {"user_id": session["user_id"], "status": "active"},
+                    {"organization_id": 1}
+                )
+                if membership:
+                    org_id = membership["organization_id"]
+    return org_id or ""
+
+
+# ==================== REQUEST/RESPONSE MODELS ====================
+
+class RazorpayConfigUpdate(BaseModel):
+    """Razorpay configuration for an organization"""
+    key_id: str = Field(..., min_length=10, description="Razorpay Key ID")
+    key_secret: str = Field(..., min_length=10, description="Razorpay Key Secret")
+    webhook_secret: str = Field(default="", description="Webhook secret")
+    test_mode: bool = Field(default=True, description="Test mode flag")
 
 
 class CreateOrderRequest(BaseModel):
@@ -44,15 +123,60 @@ class RefundRequest(BaseModel):
     reason: Optional[str] = ""
 
 
+# ==================== CONFIGURATION ENDPOINTS ====================
+
 @router.get("/config")
-async def get_payment_config():
+async def get_payment_config(request: Request):
     """Get Razorpay configuration status"""
+    org_id = await get_org_id_from_request(request)
+    
+    if org_id:
+        config = await get_org_razorpay_config(org_id)
+        key_id = config.get("key_id", "")
+        configured = is_razorpay_configured(config)
+    else:
+        key_id = RAZORPAY_KEY_ID
+        configured = is_razorpay_configured()
+    
     return {
         "code": 0,
-        "configured": is_razorpay_configured(),
-        "key_id": os.environ.get('RAZORPAY_KEY_ID', '')[:10] + '...' if is_razorpay_configured() else None,
-        "message": "Razorpay is configured" if is_razorpay_configured() else "Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to backend/.env"
+        "configured": configured,
+        "key_id_masked": f"{key_id[:8]}...{key_id[-4:]}" if len(key_id) > 12 else key_id[:4] + "***" if key_id else None,
+        "has_webhook_secret": bool(config.get("webhook_secret") if org_id else RAZORPAY_WEBHOOK_SECRET),
+        "test_mode": config.get("test_mode", True) if org_id else True,
+        "message": "Razorpay is configured" if configured else "Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to backend/.env or configure in settings"
     }
+
+
+@router.post("/config")
+async def save_payment_config(config: RazorpayConfigUpdate, request: Request):
+    """Save organization-specific Razorpay configuration"""
+    org_id = await get_org_id_from_request(request)
+    if not org_id:
+        raise HTTPException(status_code=400, detail="Organization ID required")
+    
+    # Validate credentials
+    try:
+        test_client = razorpay.Client(auth=(config.key_id, config.key_secret))
+        test_client.order.all({"count": 1})
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid Razorpay credentials: {str(e)}")
+    
+    db = get_db()
+    config_data = {
+        "key_id": config.key_id,
+        "key_secret": config.key_secret,
+        "webhook_secret": config.webhook_secret,
+        "test_mode": config.test_mode,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.organizations.update_one(
+        {"organization_id": org_id},
+        {"$set": {"razorpay_config": config_data}}
+    )
+    
+    return {"code": 0, "message": "Razorpay configuration saved", "test_mode": config.test_mode}
 
 
 @router.post("/create-order")
