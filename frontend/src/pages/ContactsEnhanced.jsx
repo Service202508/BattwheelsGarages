@@ -413,7 +413,7 @@ export default function ContactsEnhanced() {
         description="Customers, Vendors, Persons & Addresses"
         icon={Users}
         actions={
-          <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
+          <Button onClick={fetchData} variant="outline" className="gap-2 bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]" data-testid="refresh-btn">
             <RefreshCw className="h-4 w-4" /> Refresh
           </Button>
         }
