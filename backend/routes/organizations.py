@@ -663,7 +663,7 @@ async def list_members(
                 "picture": user.get("picture"),
                 "role": m["role"],
                 "status": m["status"],
-                "joined_at": m["joined_at"],
+                "joined_at": m.get("joined_at", m.get("created_at", "")),
                 "last_active_at": m.get("last_active_at")
             })
     
