@@ -370,7 +370,7 @@ export default function BusinessInvoices({ user }) {
           </DialogHeader>
           
           <div className="py-4">
-            <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-100">
+            <div className="p-4 rounded bg-indigo-50 border border-indigo-100">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-indigo-700">Total Amount</span>
                 <span className="text-2xl font-bold text-indigo-700">{formatCurrency(getSelectedTotal())}</span>
