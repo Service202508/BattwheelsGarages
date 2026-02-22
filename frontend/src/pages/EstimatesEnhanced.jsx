@@ -156,6 +156,42 @@ export default function EstimatesEnhanced() {
   const [sendEmail, setSendEmail] = useState("");
   const [sendMessage, setSendMessage] = useState("");
 
+  // Initial form data for comparison
+  const initialEstimateData = {
+    customer_id: "", reference_number: "", date: new Date().toISOString().split('T')[0],
+    expiry_date: "", subject: "", salesperson_name: "", terms_and_conditions: "", notes: "",
+    discount_type: "none", discount_value: 0, shipping_charge: 0, adjustment: 0,
+    adjustment_description: "", line_items: []
+  };
+
+  // Auto-save for New Estimate form
+  const newEstimatePersistence = useFormPersistence(
+    'estimate_new',
+    newEstimate,
+    initialEstimateData,
+    {
+      enabled: activeTab === "create",
+      isDialogOpen: activeTab === "create",
+      setFormData: setNewEstimate,
+      debounceMs: 2000,
+      entityName: 'Estimate'
+    }
+  );
+
+  // Auto-save for Edit Estimate dialog
+  const editEstimatePersistence = useFormPersistence(
+    editEstimate?.estimate_id ? `estimate_edit_${editEstimate.estimate_id}` : 'estimate_edit_temp',
+    editEstimate,
+    editEstimate,
+    {
+      enabled: showEditDialog && !!editEstimate,
+      isDialogOpen: showEditDialog,
+      setFormData: setEditEstimate,
+      debounceMs: 2000,
+      entityName: 'Estimate'
+    }
+  );
+
   const token = localStorage.getItem("token");
   const organizationId = localStorage.getItem("organization_id");
   const headers = { 
