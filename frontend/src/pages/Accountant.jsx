@@ -915,7 +915,7 @@ export default function Accountant() {
                         <p className="text-xl font-bold text-red-800">{formatCurrency(cashFlow?.cash_outflows)}</p>
                       </CardContent>
                     </Card>
-                    <Card className={`${cashFlow?.net_cash_flow >= 0 ? 'bg-[rgba(200,255,0,0.08)] border-emerald-200' : 'bg-[rgba(255,140,0,0.08)] border-orange-200'}`}>
+                    <Card className={`${cashFlow?.net_cash_flow >= 0 ? 'bg-[rgba(200,255,0,0.08)] border-[rgba(200,255,0,0.20)]' : 'bg-[rgba(255,140,0,0.08)] border-orange-200'}`}>
                       <CardContent className="p-4 text-center">
                         <IndianRupee className={`h-6 w-6 mx-auto mb-2 ${cashFlow?.net_cash_flow >= 0 ? 'text-[#C8FF00] text-600' : 'text-[#FF8C00]'}`} />
                         <p className={`text-xs ${cashFlow?.net_cash_flow >= 0 ? 'text-[#C8FF00] text-700' : 'text-[#FF8C00]'}`}>Net Cash Flow</p>

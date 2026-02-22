@@ -307,7 +307,7 @@ export default function CompositeItems() {
               <p className="text-2xl font-bold text-[#8B5CF6]">{summary.assemblies}</p>
             </CardContent>
           </Card>
-          <Card className="bg-[rgba(200,255,0,0.08)] border-emerald-200">
+          <Card className="bg-[rgba(200,255,0,0.08)] border-[rgba(200,255,0,0.20)]">
             <CardContent className="p-4">
               <p className="text-sm text-[#C8FF00] text-600">Bundles</p>
               <p className="text-2xl font-bold text-[#C8FF00] text-700">{summary.bundles}</p>

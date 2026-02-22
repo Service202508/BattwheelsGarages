@@ -362,7 +362,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
 
   // Source citation component
   const SourceCitation = ({ source, index }) => (
-    <div className="flex items-start gap-2 p-2 bg-slate-800/50 rounded-lg border border-[rgba(255,255,255,0.07)] border-700/50 hover:border-emerald-500/30 transition-colors">
+    <div className="flex items-start gap-2 p-2 bg-slate-800/50 rounded-lg border border-[rgba(255,255,255,0.07)] border-700/50 hover:border-[rgba(200,255,0,0.50)]/30 transition-colors">
       <div className="flex-shrink-0 w-6 h-6 rounded bg-[rgba(200,255,0,0.08)]0/20 flex items-center justify-center">
         <span className="text-xs text-[#C8FF00] text-400 font-medium">{index + 1}</span>
       </div>
@@ -385,7 +385,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
           <div className="flex items-center gap-4">
             <div className="relative">
               <div className="absolute inset-0 bg-[rgba(200,255,0,0.08)]0/20 rounded-xl blur-xl" />
-              <div className="relative p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-xl border border-emerald-500/20">
+              <div className="relative p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-xl border border-[rgba(200,255,0,0.50)]/20">
                 <Sparkles className="h-6 w-6 text-[#C8FF00] text-400" />
               </div>
             </div>
@@ -405,7 +405,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
               <RotateCcw className="h-4 w-4 mr-1.5" />
               Clear
             </Button>
-            <Badge className="bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border border-emerald-500/30 px-3 py-1">
+            <Badge className="bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border border-[rgba(200,255,0,0.50)]/30 px-3 py-1">
               <Zap className="h-3 w-3 mr-1.5" />
               AI Enabled
             </Badge>
@@ -425,7 +425,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
               key={idx}
               onClick={() => sendMessage(question)}
               disabled={loading}
-              className="px-3 py-1.5 text-xs bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 rounded-full text-slate-300 hover:bg-slate-700 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 flex items-center gap-1"
+              className="px-3 py-1.5 text-xs bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 rounded-full text-slate-300 hover:bg-slate-700 hover:text-white hover:border-[rgba(200,255,0,0.50)]/30 transition-all disabled:opacity-50 flex items-center gap-1"
             >
               {question}
               <ChevronRight className="h-3 w-3 opacity-50" />
@@ -447,7 +447,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                 {/* Avatar */}
                 <div className={`flex-shrink-0 ${message.role === "user" ? "order-1" : ""}`}>
                   {message.role === "assistant" ? (
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-[rgba(200,255,0,0.50)]/30 flex items-center justify-center">
                       <Bot className="h-5 w-5 text-[#C8FF00] text-400" />
                     </div>
                   ) : (
@@ -519,7 +519,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                       <span className="text-xs">
                         {message.confidence && (
                           <Badge variant="outline" className={`text-xs mr-2 ${
-                            message.confidence === 'high' ? 'border-emerald-500/50 text-[#C8FF00] text-400' :
+                            message.confidence === 'high' ? 'border-[rgba(200,255,0,0.50)]/50 text-[#C8FF00] text-400' :
                             message.confidence === 'medium' ? 'border-amber-500/50 text-amber-400' :
                             'border-[rgba(255,255,255,0.07)] border-500/50 text-slate-400'
                           }`}>
@@ -570,7 +570,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
             {/* Loading State */}
             {loading && (
               <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-[rgba(200,255,0,0.50)]/30 flex items-center justify-center">
                   <Bot className="h-5 w-5 text-[#C8FF00] text-400" />
                 </div>
                 <div className="bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 rounded-2xl rounded-bl-md px-5 py-4">
@@ -599,7 +599,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                   <FileText className="h-4 w-4 text-[#C8FF00] text-400" />
                   <span className="text-sm font-medium text-white">Sources Used</span>
                 </div>
-                <Badge variant="outline" className="text-xs border-emerald-500/30 text-[#C8FF00] text-400">
+                <Badge variant="outline" className="text-xs border-[rgba(200,255,0,0.50)]/30 text-[#C8FF00] text-400">
                   {currentSources.length}
                 </Badge>
               </div>
@@ -644,7 +644,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
-              className="bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700/50 text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20 h-12"
+              className="bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700/50 text-white placeholder:text-slate-500 focus:border-[rgba(200,255,0,0.50)]/50 focus:ring-emerald-500/20 h-12"
               disabled={loading}
               data-testid="ai-query-input"
             />

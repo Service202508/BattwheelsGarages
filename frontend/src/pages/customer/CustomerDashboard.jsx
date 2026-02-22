@@ -253,7 +253,7 @@ export default function CustomerDashboard({ user }) {
 
         {/* AMC Promo Card */}
         {(dashboard?.active_amc_plans || 0) === 0 && (
-          <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200">
+          <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 border-[rgba(200,255,0,0.20)]">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-xl bg-[#111820] shadow-sm">

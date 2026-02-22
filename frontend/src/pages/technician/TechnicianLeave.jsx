@@ -19,7 +19,7 @@ import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
   pending: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  approved: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-emerald-500/30",
+  approved: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-[rgba(200,255,0,0.50)]/30",
   rejected: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400 border-red-500/30",
 };
 

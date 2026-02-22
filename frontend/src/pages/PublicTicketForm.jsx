@@ -36,7 +36,7 @@ const resolutionTypes = [
 
 // Priority levels
 const priorities = [
-  { value: "low", label: "Low", desc: "Can wait", bgColor: "bg-[rgba(200,255,0,0.08)]", textColor: "text-[#C8FF00] text-700", borderColor: "border-emerald-200", activeBg: "bg-[rgba(200,255,0,0.08)]0" },
+  { value: "low", label: "Low", desc: "Can wait", bgColor: "bg-[rgba(200,255,0,0.08)]", textColor: "text-[#C8FF00] text-700", borderColor: "border-[rgba(200,255,0,0.20)]", activeBg: "bg-[rgba(200,255,0,0.08)]0" },
   { value: "medium", label: "Medium", desc: "24-48h", bgColor: "bg-amber-50", textColor: "text-amber-700", borderColor: "border-amber-200", activeBg: "bg-amber-500" },
   { value: "high", label: "High", desc: "Urgent", bgColor: "bg-[rgba(255,140,0,0.08)]", textColor: "text-[#FF8C00]", borderColor: "border-orange-200", activeBg: "bg-[rgba(255,140,0,0.08)]0" },
   { value: "critical", label: "Critical", desc: "Immobile", bgColor: "bg-[rgba(255,59,47,0.08)]", textColor: "text-red-700", borderColor: "border-red-200", activeBg: "bg-[rgba(255,59,47,0.08)]0" },
@@ -266,7 +266,7 @@ export default function PublicTicketForm() {
 
   const StyledInput = ({ className = "", ...props }) => (
     <Input
-      className={`h-12 bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded-xl text-[#F4F6F0] text-base placeholder:text-gray-400 transition-all duration-200 ${className}`}
+      className={`h-12 bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded-xl text-[#F4F6F0] text-base placeholder:text-gray-400 transition-all duration-200 ${className}`}
       {...props}
     />
   );
@@ -294,7 +294,7 @@ export default function PublicTicketForm() {
         <header className="sticky top-0 z-50 bg-[#111820]/80 backdrop-blur-xl border-b border-gray-100 shadow-sm">
           <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
             <img src="/battwheels_garages_logo.png" alt="Battwheels Garages" className="h-10 invert" />
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[rgba(200,255,0,0.08)] border border-emerald-200 rounded-full">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.20)] rounded-full">
               <div className="w-2 h-2 bg-[rgba(200,255,0,0.08)]0 rounded-full animate-pulse" />
               <span className="text-xs font-semibold text-[#C8FF00] text-700">EFI Active</span>
             </div>
@@ -348,7 +348,7 @@ export default function PublicTicketForm() {
                     onClick={() => setFormData(prev => ({ ...prev, customer_type: type.value }))}
                     className={`relative p-5 rounded-xl border-2 transition-all duration-200 text-left ${
                       isSelected 
-                        ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-500/10" 
+                        ? "border-[rgba(200,255,0,0.50)] bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-500/10" 
                         : "border-gray-200 bg-[#111820] hover:border-gray-300 hover:shadow-md"
                     }`}
                     data-testid={`customer-type-${type.value}`}
@@ -379,7 +379,7 @@ export default function PublicTicketForm() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Category <span className="text-[#C8FF00] text-500">*</span></Label>
                   <Select value={formData.vehicle_category} onValueChange={(v) => setFormData(prev => ({ ...prev, vehicle_category: v, vehicle_model_id: "", vehicle_model_name: "", vehicle_oem: "" }))}>
-                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 rounded-xl text-[#F4F6F0]" data-testid="vehicle-category-select">
+                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] rounded-xl text-[#F4F6F0]" data-testid="vehicle-category-select">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#111820] border-gray-200 rounded-xl shadow-xl">
@@ -402,7 +402,7 @@ export default function PublicTicketForm() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Model (OEM)</Label>
                   <Select value={formData.vehicle_model_id} onValueChange={handleModelSelect} disabled={!formData.vehicle_category}>
-                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 rounded-xl text-[#F4F6F0] disabled:opacity-50" data-testid="vehicle-model-select">
+                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] rounded-xl text-[#F4F6F0] disabled:opacity-50" data-testid="vehicle-model-select">
                       <SelectValue placeholder="Select model" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#111820] border-gray-200 rounded-xl shadow-xl max-h-60">
@@ -437,7 +437,7 @@ export default function PublicTicketForm() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Phone Number <span className="text-[#C8FF00] text-500">*</span></Label>
                   <div className="flex">
-                    <div className="flex items-center px-4 bg-[rgba(200,255,0,0.08)] border-2 border-r-0 border-emerald-200 rounded-l-xl text-sm font-semibold text-[#C8FF00] text-700">+91</div>
+                    <div className="flex items-center px-4 bg-[rgba(200,255,0,0.08)] border-2 border-r-0 border-[rgba(200,255,0,0.20)] rounded-l-xl text-sm font-semibold text-[#C8FF00] text-700">+91</div>
                     <StyledInput type="tel" placeholder="9876543210" value={formData.contact_number} onChange={(e) => setFormData(prev => ({ ...prev, contact_number: e.target.value }))} className="rounded-l-none" data-testid="contact-number-input" />
                   </div>
                 </div>
@@ -477,7 +477,7 @@ export default function PublicTicketForm() {
                 
                 <AnimatePresence>
                   {showAiSuggestions && aiSuggestions.length > 0 && (
-                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute z-50 w-full mt-2 bg-[#111820] border-2 border-emerald-200 rounded-xl shadow-2xl shadow-emerald-500/10 overflow-hidden">
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute z-50 w-full mt-2 bg-[#111820] border-2 border-[rgba(200,255,0,0.20)] rounded-xl shadow-2xl shadow-emerald-500/10 overflow-hidden">
                       <div className="px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center gap-2">
                         <Brain className="w-4 h-4 text-white" />
                         <span className="text-sm font-semibold text-white">AI Suggestions</span>
@@ -498,7 +498,7 @@ export default function PublicTicketForm() {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">Detailed Description <span className="text-[#C8FF00] text-500">*</span></Label>
-                <Textarea placeholder="Describe symptoms, when it started, error codes..." value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} className="min-h-[120px] bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded-xl text-[#F4F6F0] placeholder:text-gray-400 resize-none" data-testid="description-input" />
+                <Textarea placeholder="Describe symptoms, when it started, error codes..." value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} className="min-h-[120px] bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded-xl text-[#F4F6F0] placeholder:text-gray-400 resize-none" data-testid="description-input" />
               </div>
 
               {/* Priority */}
@@ -529,7 +529,7 @@ export default function PublicTicketForm() {
                 const isSelected = formData.resolution_type === r.value;
                 return (
                   <motion.button key={r.value} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setFormData(prev => ({ ...prev, resolution_type: r.value }))}
-                    className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${isSelected ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-500/10" : "border-gray-200 bg-[#111820] hover:border-gray-300"}`}
+                    className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${isSelected ? "border-[rgba(200,255,0,0.50)] bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-500/10" : "border-gray-200 bg-[#111820] hover:border-gray-300"}`}
                     data-testid={`resolution-${r.value}`}>
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 ${isSelected ? "bg-gradient-to-br from-emerald-500 to-teal-500" : "bg-[rgba(255,255,255,0.05)]"}`}>
                       <Icon className={`w-5 h-5 ${isSelected ? "text-white" : "text-gray-500"}`} strokeWidth={2} />
@@ -559,7 +559,7 @@ export default function PublicTicketForm() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-4 bg-[#111820] rounded-xl border border-gray-100 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <Checkbox checked disabled className="bg-[rgba(200,255,0,0.08)]0 border-emerald-500" />
+                    <Checkbox checked disabled className="bg-[rgba(200,255,0,0.08)]0 border-[rgba(200,255,0,0.50)]" />
                     <div><p className="text-sm font-medium text-[#F4F6F0]">Visit Charges</p><p className="text-xs text-gray-500">Mandatory</p></div>
                   </div>
                   <span className="text-lg font-bold text-[#C8FF00] text-600">₹{serviceCharges.visit_fee}</span>

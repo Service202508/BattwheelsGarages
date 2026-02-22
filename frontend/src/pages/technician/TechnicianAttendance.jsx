@@ -13,7 +13,7 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  present: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-emerald-500/30",
+  present: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-[rgba(200,255,0,0.50)]/30",
   absent: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400 border-red-500/30",
   late: "bg-amber-500/20 text-amber-400 border-amber-500/30",
   half_day: "bg-blue-500/20 text-blue-400 border-blue-500/30",
