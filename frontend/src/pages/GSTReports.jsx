@@ -507,43 +507,43 @@ export default function GSTReports() {
               ) : gstr3bData && (
                 <div className="space-y-6">
                   {/* Net Tax Payable Highlight */}
-                  <Card className="bg-[#C8FF00]/10 border-[#C8FF00]">
+                  <Card className="bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.25)]">
                     <CardContent className="py-6">
                       <div className="text-center">
-                        <p className="text-sm text-gray-600 mb-1">Net Tax Payable</p>
-                        <p className="text-4xl font-bold text-[#F4F6F0]">{formatCurrency(gstr3bData.summary?.net_tax_payable)}</p>
+                        <p className="text-sm text-[rgba(244,246,240,0.45)] mb-1">Net Tax Payable</p>
+                        <p className="text-4xl font-bold text-[#C8FF00]">{formatCurrency(gstr3bData.summary?.net_tax_payable)}</p>
                       </div>
                     </CardContent>
                   </Card>
 
                   {/* Section 3.1 - Outward Supplies */}
-                  <Card>
-                    <CardHeader className="py-3 bg-gray-50">
-                      <CardTitle className="text-base">3.1 Outward Supplies (Sales)</CardTitle>
+                  <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                    <CardHeader className="py-3 bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                      <CardTitle className="text-base text-[#F4F6F0]">3.1 Outward Supplies (Sales)</CardTitle>
                     </CardHeader>
                     <CardContent className="pt-4">
                       <Table>
                         <TableHeader>
-                          <TableRow>
-                            <TableHead>Description</TableHead>
-                            <TableHead className="text-right">Taxable Value</TableHead>
-                            <TableHead className="text-right">CGST</TableHead>
-                            <TableHead className="text-right">SGST</TableHead>
-                            <TableHead className="text-right">IGST</TableHead>
+                          <TableRow className="border-b border-[rgba(255,255,255,0.07)]">
+                            <TableHead className="text-[rgba(244,246,240,0.45)]">Description</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.45)]">Taxable Value</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.45)]">CGST</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.45)]">SGST</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.45)]">IGST</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          <TableRow>
-                            <TableCell>Outward taxable supplies</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr3bData.section_3_1?.taxable_value)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr3bData.section_3_1?.cgst)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr3bData.section_3_1?.sgst)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr3bData.section_3_1?.igst)}</TableCell>
+                          <TableRow className="border-b border-[rgba(255,255,255,0.07)]">
+                            <TableCell className="text-[#F4F6F0]">Outward taxable supplies</TableCell>
+                            <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(gstr3bData.section_3_1?.taxable_value)}</TableCell>
+                            <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(gstr3bData.section_3_1?.cgst)}</TableCell>
+                            <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(gstr3bData.section_3_1?.sgst)}</TableCell>
+                            <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(gstr3bData.section_3_1?.igst)}</TableCell>
                           </TableRow>
-                          <TableRow className="bg-gray-50 font-semibold">
-                            <TableCell>Total Output Tax</TableCell>
+                          <TableRow className="bg-[rgba(255,255,255,0.03)] font-semibold border-b border-[rgba(255,255,255,0.07)]">
+                            <TableCell className="text-[#F4F6F0]">Total Output Tax</TableCell>
                             <TableCell></TableCell>
-                            <TableCell colSpan={3} className="text-right">
+                            <TableCell colSpan={3} className="text-right text-[#F4F6F0]">
                               {formatCurrency(gstr3bData.section_3_1?.total_tax)}
                             </TableCell>
                           </TableRow>
@@ -553,28 +553,28 @@ export default function GSTReports() {
                   </Card>
 
                   {/* Section 4 - ITC */}
-                  <Card>
-                    <CardHeader className="py-3 bg-[rgba(34,197,94,0.08)]">
-                      <CardTitle className="text-base text-green-800">4. Eligible ITC (Input Tax Credit)</CardTitle>
+                  <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                    <CardHeader className="py-3 bg-[rgba(34,197,94,0.08)] border-b border-[rgba(255,255,255,0.07)]">
+                      <CardTitle className="text-base text-[#22C55E]">4. Eligible ITC (Input Tax Credit)</CardTitle>
                     </CardHeader>
                     <CardContent className="pt-4">
                       <Table>
                         <TableHeader>
-                          <TableRow>
-                            <TableHead>Description</TableHead>
-                            <TableHead className="text-right">CGST</TableHead>
-                            <TableHead className="text-right">SGST</TableHead>
-                            <TableHead className="text-right">IGST</TableHead>
-                            <TableHead className="text-right">Total</TableHead>
+                          <TableRow className="border-b border-[rgba(255,255,255,0.07)]">
+                            <TableHead className="text-[rgba(244,246,240,0.45)]">Description</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.45)]">CGST</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.45)]">SGST</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.45)]">IGST</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.45)]">Total</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          <TableRow>
-                            <TableCell>Input Tax Credit (from purchases)</TableCell>
-                            <TableCell className="text-right text-green-700">{formatCurrency(gstr3bData.section_4?.cgst)}</TableCell>
-                            <TableCell className="text-right text-green-700">{formatCurrency(gstr3bData.section_4?.sgst)}</TableCell>
-                            <TableCell className="text-right text-green-700">{formatCurrency(gstr3bData.section_4?.igst)}</TableCell>
-                            <TableCell className="text-right font-semibold text-green-700">{formatCurrency(gstr3bData.section_4?.total_itc)}</TableCell>
+                          <TableRow className="border-b border-[rgba(255,255,255,0.07)]">
+                            <TableCell className="text-[#F4F6F0]">Input Tax Credit (from purchases)</TableCell>
+                            <TableCell className="text-right text-[#22C55E]">{formatCurrency(gstr3bData.section_4?.cgst)}</TableCell>
+                            <TableCell className="text-right text-[#22C55E]">{formatCurrency(gstr3bData.section_4?.sgst)}</TableCell>
+                            <TableCell className="text-right text-[#22C55E]">{formatCurrency(gstr3bData.section_4?.igst)}</TableCell>
+                            <TableCell className="text-right font-semibold text-[#22C55E]">{formatCurrency(gstr3bData.section_4?.total_itc)}</TableCell>
                           </TableRow>
                         </TableBody>
                       </Table>
@@ -582,44 +582,44 @@ export default function GSTReports() {
                   </Card>
 
                   {/* Section 6 - Payment */}
-                  <Card>
-                    <CardHeader className="py-3 bg-[rgba(255,140,0,0.08)]">
-                      <CardTitle className="text-base text-orange-800">6.1 Payment of Tax</CardTitle>
+                  <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                    <CardHeader className="py-3 bg-[rgba(255,140,0,0.08)] border-b border-[rgba(255,255,255,0.07)]">
+                      <CardTitle className="text-base text-[#FF8C00]">6.1 Payment of Tax</CardTitle>
                     </CardHeader>
                     <CardContent className="pt-4">
                       <Table>
                         <TableHeader>
-                          <TableRow>
-                            <TableHead>Tax Type</TableHead>
-                            <TableHead className="text-right">Output Tax</TableHead>
-                            <TableHead className="text-right">ITC Used</TableHead>
-                            <TableHead className="text-right">Net Payable</TableHead>
+                          <TableRow className="border-b border-[rgba(255,255,255,0.07)]">
+                            <TableHead className="text-[rgba(244,246,240,0.45)]">Tax Type</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.45)]">Output Tax</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.45)]">ITC Used</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.45)]">Net Payable</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          <TableRow>
-                            <TableCell>CGST</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr3bData.section_3_1?.cgst)}</TableCell>
-                            <TableCell className="text-right text-green-600">{formatCurrency(gstr3bData.section_4?.cgst)}</TableCell>
-                            <TableCell className="text-right font-medium">{formatCurrency(gstr3bData.section_6?.net_cgst)}</TableCell>
+                          <TableRow className="border-b border-[rgba(255,255,255,0.07)]">
+                            <TableCell className="text-[#F4F6F0]">CGST</TableCell>
+                            <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(gstr3bData.section_3_1?.cgst)}</TableCell>
+                            <TableCell className="text-right text-[#22C55E]">{formatCurrency(gstr3bData.section_4?.cgst)}</TableCell>
+                            <TableCell className="text-right font-medium text-[#F4F6F0]">{formatCurrency(gstr3bData.section_6?.net_cgst)}</TableCell>
                           </TableRow>
-                          <TableRow>
-                            <TableCell>SGST</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr3bData.section_3_1?.sgst)}</TableCell>
-                            <TableCell className="text-right text-green-600">{formatCurrency(gstr3bData.section_4?.sgst)}</TableCell>
-                            <TableCell className="text-right font-medium">{formatCurrency(gstr3bData.section_6?.net_sgst)}</TableCell>
+                          <TableRow className="border-b border-[rgba(255,255,255,0.07)]">
+                            <TableCell className="text-[#F4F6F0]">SGST</TableCell>
+                            <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(gstr3bData.section_3_1?.sgst)}</TableCell>
+                            <TableCell className="text-right text-[#22C55E]">{formatCurrency(gstr3bData.section_4?.sgst)}</TableCell>
+                            <TableCell className="text-right font-medium text-[#F4F6F0]">{formatCurrency(gstr3bData.section_6?.net_sgst)}</TableCell>
                           </TableRow>
-                          <TableRow>
-                            <TableCell>IGST</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr3bData.section_3_1?.igst)}</TableCell>
-                            <TableCell className="text-right text-green-600">{formatCurrency(gstr3bData.section_4?.igst)}</TableCell>
-                            <TableCell className="text-right font-medium">{formatCurrency(gstr3bData.section_6?.net_igst)}</TableCell>
+                          <TableRow className="border-b border-[rgba(255,255,255,0.07)]">
+                            <TableCell className="text-[#F4F6F0]">IGST</TableCell>
+                            <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(gstr3bData.section_3_1?.igst)}</TableCell>
+                            <TableCell className="text-right text-[#22C55E]">{formatCurrency(gstr3bData.section_4?.igst)}</TableCell>
+                            <TableCell className="text-right font-medium text-[#F4F6F0]">{formatCurrency(gstr3bData.section_6?.net_igst)}</TableCell>
                           </TableRow>
-                          <TableRow className="bg-[#C8FF00] font-bold">
-                            <TableCell>TOTAL</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr3bData.section_3_1?.total_tax)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr3bData.section_4?.total_itc)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr3bData.section_6?.total_liability)}</TableCell>
+                          <TableRow className="bg-[rgba(200,255,0,0.10)] font-bold">
+                            <TableCell className="text-[#C8FF00]">TOTAL</TableCell>
+                            <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(gstr3bData.section_3_1?.total_tax)}</TableCell>
+                            <TableCell className="text-right text-[#22C55E]">{formatCurrency(gstr3bData.section_4?.total_itc)}</TableCell>
+                            <TableCell className="text-right text-[#C8FF00]">{formatCurrency(gstr3bData.section_6?.total_liability)}</TableCell>
                           </TableRow>
                         </TableBody>
                       </Table>
@@ -666,36 +666,36 @@ export default function GSTReports() {
                   <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
                 </div>
               ) : hsnSummary && (
-                <div className="border rounded-lg overflow-hidden">
+                <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-gray-50">
-                        <TableHead>HSN/SAC</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead className="text-center">UQC</TableHead>
-                        <TableHead className="text-right">Qty</TableHead>
-                        <TableHead className="text-right">Taxable Value</TableHead>
-                        <TableHead className="text-right">CGST</TableHead>
-                        <TableHead className="text-right">SGST</TableHead>
+                      <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                        <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">HSN/SAC</TableHead>
+                        <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Description</TableHead>
+                        <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">UQC</TableHead>
+                        <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Qty</TableHead>
+                        <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Taxable Value</TableHead>
+                        <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">CGST</TableHead>
+                        <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">SGST</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {hsnSummary.hsn_summary?.map((item, idx) => (
-                        <TableRow key={idx}>
-                          <TableCell className="font-mono font-medium">{item.hsn_code}</TableCell>
-                          <TableCell>{item.description?.slice(0, 30)}</TableCell>
-                          <TableCell className="text-center">{item.uqc}</TableCell>
-                          <TableCell className="text-right">{item.quantity}</TableCell>
-                          <TableCell className="text-right">{formatCurrency(item.taxable_value)}</TableCell>
-                          <TableCell className="text-right">{formatCurrency(item.cgst)}</TableCell>
-                          <TableCell className="text-right">{formatCurrency(item.sgst)}</TableCell>
+                        <TableRow key={idx} className="border-b border-[rgba(255,255,255,0.07)]">
+                          <TableCell className="font-mono font-medium text-[#C8FF00] tracking-wider">{item.hsn_code}</TableCell>
+                          <TableCell className="text-[#F4F6F0]">{item.description?.slice(0, 30)}</TableCell>
+                          <TableCell className="text-center text-[#F4F6F0]">{item.uqc}</TableCell>
+                          <TableCell className="text-right text-[#F4F6F0]">{item.quantity}</TableCell>
+                          <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(item.taxable_value)}</TableCell>
+                          <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(item.cgst)}</TableCell>
+                          <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(item.sgst)}</TableCell>
                         </TableRow>
                       ))}
-                      <TableRow className="bg-[#C8FF00]/20 font-bold">
-                        <TableCell colSpan={4}>TOTAL</TableCell>
-                        <TableCell className="text-right">{formatCurrency(hsnSummary.total?.taxable_value)}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(hsnSummary.total?.cgst)}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(hsnSummary.total?.sgst)}</TableCell>
+                      <TableRow className="bg-[rgba(200,255,0,0.10)] font-bold">
+                        <TableCell colSpan={4} className="text-[#C8FF00]">TOTAL</TableCell>
+                        <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(hsnSummary.total?.taxable_value)}</TableCell>
+                        <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(hsnSummary.total?.cgst)}</TableCell>
+                        <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(hsnSummary.total?.sgst)}</TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
