@@ -909,36 +909,36 @@ export default function ContactsEnhanced() {
                   {/* Addresses */}
                   <div>
                     <div className="flex justify-between items-center mb-3">
-                      <h4 className="font-medium flex items-center gap-2"><MapPin className="h-4 w-4" /> Addresses ({selectedContact.addresses?.length || 0})</h4>
-                      <Button size="sm" variant="outline" onClick={() => setShowAddressDialog(true)}><Home className="h-4 w-4 mr-1" /> Add</Button>
+                      <h4 className="font-semibold flex items-center gap-2 text-[#F4F6F0]"><MapPin className="h-4 w-4 text-[rgba(244,246,240,0.45)]" /> Addresses ({selectedContact.addresses?.length || 0})</h4>
+                      <Button size="sm" variant="outline" onClick={() => setShowAddressDialog(true)} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"><Home className="h-4 w-4 mr-1" /> Add</Button>
                     </div>
                     {selectedContact.addresses?.length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {selectedContact.addresses.map(addr => (
-                          <Card key={addr.address_id} className={addr.is_default ? "border-green-300 bg-green-50" : ""}>
+                          <Card key={addr.address_id} className={`bg-[#141E27] border ${addr.is_default ? "border-[rgba(34,197,94,0.30)]" : "border-[rgba(255,255,255,0.07)]"}`}>
                             <CardContent className="pt-4">
                               <div className="flex justify-between">
                                 <div>
-                                  <p className="font-medium flex items-center gap-2">
-                                    {addr.address_type === "billing" ? <Home className="h-4 w-4" /> : <Truck className="h-4 w-4" />}
+                                  <p className="font-semibold flex items-center gap-2 text-[#F4F6F0]">
+                                    {addr.address_type === "billing" ? <Home className="h-4 w-4 text-[rgba(244,246,240,0.45)]" /> : <Truck className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />}
                                     {addr.address_type === "billing" ? "Billing" : "Shipping"}
-                                    {addr.is_default && <Badge className="ml-2 text-xs bg-green-100 text-green-700">Default</Badge>}
+                                    {addr.is_default && <Badge className="ml-2 text-xs bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.25)]">Default</Badge>}
                                   </p>
-                                  {addr.attention && <p className="text-sm">{addr.attention}</p>}
-                                  <p className="text-sm text-gray-600">{[addr.street, addr.street2].filter(Boolean).join(", ")}</p>
-                                  <p className="text-sm text-gray-600">{[addr.city, addr.state, addr.zip_code].filter(Boolean).join(", ")}</p>
-                                  <p className="text-sm text-gray-500">{addr.country}</p>
+                                  {addr.attention && <p className="text-sm text-[#F4F6F0]">{addr.attention}</p>}
+                                  <p className="text-sm text-[rgba(244,246,240,0.45)]">{[addr.street, addr.street2].filter(Boolean).join(", ")}</p>
+                                  <p className="text-sm text-[rgba(244,246,240,0.45)]">{[addr.city, addr.state, addr.zip_code].filter(Boolean).join(", ")}</p>
+                                  <p className="text-sm text-[rgba(244,246,240,0.35)]">{addr.country}</p>
                                 </div>
-                                <Button size="icon" variant="ghost" onClick={() => handleDeleteAddress(addr.address_id)}><Trash2 className="h-4 w-4 text-red-400" /></Button>
+                                <Button size="icon" variant="ghost" onClick={() => handleDeleteAddress(addr.address_id)} className="text-[#FF3B2F] hover:bg-[rgba(255,59,47,0.1)]"><Trash2 className="h-4 w-4" /></Button>
                               </div>
                             </CardContent>
                           </Card>
                         ))}
                       </div>
-                    ) : <p className="text-sm text-gray-500">No addresses added</p>}
+                    ) : <p className="text-sm text-[rgba(244,246,240,0.35)]">No addresses added</p>}
                   </div>
 
-                  <Separator />
+                  <Separator className="bg-[rgba(255,255,255,0.07)]" />
 
                   {/* Actions */}
                   <div className="flex flex-wrap gap-2">
