@@ -404,23 +404,23 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <div className="min-h-screen flex bg-[#080C0F]">
       {/* Left Panel - Premium Hero */}
       <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden">
         {/* Animated gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-[#22EDA9]/5" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#080C0F] via-[#0D1317] to-[#111820]" />
         
         {/* Subtle grid pattern */}
-        <div className="absolute inset-0 opacity-40" style={{
-          backgroundImage: `linear-gradient(to right, #e5e7eb 1px, transparent 1px),
-                           linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)`,
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                           linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)`,
           backgroundSize: '40px 40px'
         }} />
         
         {/* Decorative circles */}
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#22EDA9]/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#22EDA9]/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#22EDA9]/5 to-transparent rounded-full blur-3xl" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[rgba(200,255,0,0.08)] rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[rgba(200,255,0,0.04)] rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[rgba(200,255,0,0.05)] to-transparent rounded-full blur-3xl" />
 
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-center items-center w-full px-16">
@@ -429,18 +429,18 @@ export default function Login({ onLogin }) {
             <AnimatedVehicleIcons />
 
             {/* Main Heading with gradient */}
-            <h1 className="text-4xl xl:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+            <h1 className="text-4xl xl:text-5xl font-bold text-[#F4F6F0] mb-4 leading-tight">
               EV Failure
-              <span className="block bg-gradient-to-r from-[#22EDA9] to-[#1DD69A] bg-clip-text text-transparent">
+              <span className="block text-[#C8FF00]">
                 Intelligence
               </span>
             </h1>
             
-            <p className="text-lg xl:text-xl text-[#22EDA9] font-semibold mb-6 tracking-wide">
+            <p className="text-lg xl:text-xl text-[#C8FF00] font-semibold mb-6 tracking-wide">
               Your Onsite EV Resolution Partner
             </p>
             
-            <p className="text-gray-500 text-base leading-relaxed mb-10 max-w-md mx-auto">
+            <p className="text-[rgba(244,246,240,0.5)] text-base leading-relaxed mb-10 max-w-md mx-auto">
               AI-powered diagnostics for Electric 2W, 3W & 4W Vehicles—turning every breakdown into structured, reusable enterprise intelligence.
             </p>
 
@@ -448,9 +448,9 @@ export default function Login({ onLogin }) {
             <div className="flex flex-wrap justify-center items-center gap-6">
               <div className="flex items-center gap-2">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-[#22EDA9]/40 rounded-full blur-md animate-pulse" />
-                  <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] flex items-center justify-center shadow-lg shadow-[#22EDA9]/30">
-                    <Zap className="w-4 h-4 text-gray-900" />
+                  <div className="absolute inset-0 bg-[rgba(200,255,0,0.4)] rounded-full blur-md animate-pulse" />
+                  <div className="relative w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center shadow-lg shadow-[rgba(200,255,0,0.3)]">
+                    <Zap className="w-4 h-4 text-[#080C0F]" />
                   </div>
                 </div>
                 <span className="text-sm font-semibold text-gray-700">Diagnose faster.</span>
