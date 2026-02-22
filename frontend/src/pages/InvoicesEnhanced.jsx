@@ -224,6 +224,7 @@ export default function InvoicesEnhanced() {
       const res = await fetch(`${API}/invoices-enhanced/`, { method: "POST", headers, body: JSON.stringify(payload) });
       if (res.ok) {
         toast.success("Invoice created successfully");
+        invoicePersistence.onSuccessfulSave();
         setShowCreateDialog(false);
         resetForm();
         fetchData();
