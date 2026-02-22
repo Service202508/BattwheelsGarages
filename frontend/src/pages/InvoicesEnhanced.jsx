@@ -1161,11 +1161,35 @@ export default function InvoicesEnhanced() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                if (invoicePersistence.isDirty) {
+                  invoicePersistence.setShowCloseConfirm(true);
+                } else {
+                  setShowCreateDialog(false);
+                }
+              }}
+            >
+              Cancel
+            </Button>
             <Button onClick={handleCreateInvoice} className="bg-[#22EDA9] text-black" data-testid="create-invoice-submit">Create Invoice</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Invoice Unsaved Changes Dialog */}
+      <FormCloseConfirmDialog
+        open={invoicePersistence.showCloseConfirm}
+        onClose={() => invoicePersistence.setShowCloseConfirm(false)}
+        onSave={handleCreateInvoice}
+        onDiscard={() => {
+          invoicePersistence.clearSavedData();
+          resetForm();
+          setShowCreateDialog(false);
+        }}
+        entityName="Invoice"
+      />
 
       {/* Invoice Detail Dialog */}
       <Dialog open={showDetailDialog} onOpenChange={(open) => { setShowDetailDialog(open); if (!open) setSelectedInvoice(null); }}>
