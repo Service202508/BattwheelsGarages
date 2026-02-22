@@ -116,7 +116,7 @@ export default function ItemsEnhanced() {
   const [selectedPriceList, setSelectedPriceList] = useState(null);
 
   // Form states - Full Zoho Books compatible fields
-  const [newItem, setNewItem] = useState({
+  const initialItemData = {
     // Basic Info
     name: "", sku: "", description: "", item_type: "inventory", product_type: "goods",
     group_id: "", group_name: "",
@@ -166,7 +166,24 @@ export default function ItemsEnhanced() {
     
     // Custom Fields
     custom_fields: {}
-  });
+  };
+  
+  const [newItem, setNewItem] = useState(initialItemData);
+  
+  // Auto-save for Item form
+  const itemPersistence = useFormPersistence(
+    'item_new',
+    newItem,
+    initialItemData,
+    {
+      enabled: showItemDialog && !editItem,
+      isDialogOpen: showItemDialog,
+      setFormData: setNewItem,
+      debounceMs: 2000,
+      entityName: 'Item'
+    }
+  );
+  
   const [newGroup, setNewGroup] = useState({ name: "", description: "", parent_group_id: "" });
   const [newWarehouse, setNewWarehouse] = useState({ name: "", location: "", is_primary: false });
   const [newPriceList, setNewPriceList] = useState({ 
