@@ -106,8 +106,9 @@ export default function Banking() {
       });
       if (res.ok) {
         toast.success("Account created");
+        accountPersistence.onSuccessfulSave();
         setShowAccountDialog(false);
-        setNewAccount({ account_name: "", account_type: "bank", account_number: "", bank_name: "", opening_balance: 0 });
+        setNewAccount(initialAccountData);
         fetchData();
       }
     } catch { toast.error("Error creating account"); }
@@ -125,8 +126,9 @@ export default function Banking() {
       });
       if (res.ok) {
         toast.success("Transaction recorded");
+        txnPersistence.onSuccessfulSave();
         setShowTxnDialog(false);
-        setNewTxn({ account_id: "", amount: 0, transaction_type: "deposit", reference_number: "", description: "", payee: "" });
+        setNewTxn(initialTxnData);
         fetchData();
       }
     } catch { toast.error("Error recording transaction"); }
