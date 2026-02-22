@@ -318,7 +318,7 @@ export default function TechnicianProductivity({ user }) {
                 {leaderboard.slice(0, 5).map((tech, index) => (
                   <div key={tech.technician_id} className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
-                      index === 0 ? 'bg-[rgba(234,179,8,0.08)]0' :
+                      index === 0 ? 'bg-[rgba(234,179,8,0.10)]' :
                       index === 1 ? 'bg-gray-400' :
                       index === 2 ? 'bg-amber-600' :
                       'bg-gray-300'

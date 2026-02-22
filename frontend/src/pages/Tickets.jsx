@@ -16,12 +16,12 @@ import { API, getAuthHeaders } from "@/App";
 import JobCard from "@/components/JobCard";
 
 const statusColors = {
-  open: "bg-[rgba(234,179,8,0.08)]0",
+  open: "bg-[rgba(234,179,8,0.10)]",
   technician_assigned: "bg-blue-500",
-  estimate_shared: "bg-[rgba(139,92,246,0.08)]0",
+  estimate_shared: "bg-[rgba(139,92,246,0.10)]",
   estimate_approved: "bg-indigo-500",
-  in_progress: "bg-[rgba(255,140,0,0.08)]0",
-  resolved: "bg-[rgba(34,197,94,0.08)]0",
+  in_progress: "bg-[rgba(255,140,0,0.10)]",
+  resolved: "bg-[rgba(34,197,94,0.10)]",
   closed: "bg-gray-500",
 };
 
