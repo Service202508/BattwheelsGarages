@@ -185,7 +185,7 @@ export default function TeamManagement({ user }) {
     const colors = {
       owner: "bg-amber-100 text-amber-700",
       admin: "bg-purple-100 text-purple-700",
-      manager: "bg-blue-100 text-blue-700",
+      manager: "bg-blue-100 text-[#3B9EFF]",
       technician: "bg-green-100 text-green-700",
       accountant: "bg-teal-100 text-teal-700",
       viewer: "bg-gray-100 text-gray-700"
@@ -324,7 +324,7 @@ export default function TeamManagement({ user }) {
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-blue-100 rounded-lg">
-                <Users className="h-6 w-6 text-blue-600" />
+                <Users className="h-6 w-6 text-[#3B9EFF]" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Team Members</p>

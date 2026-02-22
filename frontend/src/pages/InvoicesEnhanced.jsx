@@ -914,7 +914,7 @@ export default function InvoicesEnhanced() {
                 <tbody className="divide-[rgba(255,255,255,0.04)]">
                   {invoices.map(inv => (
                     <tr key={inv.invoice_id} className="hover:bg-[#111820] cursor-pointer" onClick={() => fetchInvoiceDetail(inv.invoice_id)} data-testid={`invoice-row-${inv.invoice_id}`}>
-                      <td className="px-4 py-3 font-medium text-blue-600">{inv.invoice_number}</td>
+                      <td className="px-4 py-3 font-medium text-[#3B9EFF]">{inv.invoice_number}</td>
                       <td className="px-4 py-3">
                         <div>
                           <p className="font-medium">{inv.customer_name}</p>
@@ -1320,18 +1320,18 @@ export default function InvoicesEnhanced() {
                   <>
                     <Separator />
                     <div>
-                      <h4 className="font-medium mb-3 flex items-center gap-2 text-orange-600"><Wallet className="h-4 w-4" /> Available Credits ({formatCurrency(selectedInvoice.total_available_credits)})</h4>
+                      <h4 className="font-medium mb-3 flex items-center gap-2 text-[#FF8C00]"><Wallet className="h-4 w-4" /> Available Credits ({formatCurrency(selectedInvoice.total_available_credits)})</h4>
                       <div className="space-y-2">
                         {selectedInvoice.available_credits.map(credit => (
                           <div key={credit.credit_id} className="flex justify-between items-center bg-[rgba(255,140,0,0.08)] p-3 rounded-lg">
                             <div>
-                              <p className="font-medium text-orange-700">{formatCurrency(credit.amount)}</p>
+                              <p className="font-medium text-[#FF8C00]">{formatCurrency(credit.amount)}</p>
                               <p className="text-xs text-[rgba(244,246,240,0.45)]">{credit.source_number} • {credit.source_type}</p>
                             </div>
                             <Button 
                               size="sm" 
                               variant="outline"
-                              className="text-orange-600 border-orange-300 hover:bg-orange-100"
+                              className="text-[#FF8C00] border-orange-300 hover:bg-orange-100"
                               onClick={() => handleApplyCredit(credit.credit_id, Math.min(credit.amount, selectedInvoice.balance_due))}
                             >
                               Apply
@@ -1350,7 +1350,7 @@ export default function InvoicesEnhanced() {
                     <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium flex items-center gap-2"><CreditCard className="h-4 w-4 text-blue-600" /> Online Payment</h4>
+                          <h4 className="font-medium flex items-center gap-2"><CreditCard className="h-4 w-4 text-[#3B9EFF]" /> Online Payment</h4>
                           <p className="text-sm text-[rgba(244,246,240,0.45)] mt-1">Pay securely via Stripe (Card, UPI)</p>
                         </div>
                         <Button 
@@ -1363,9 +1363,9 @@ export default function InvoicesEnhanced() {
                       </div>
                       {selectedInvoice.payment_link && (
                         <div className="mt-3 flex items-center gap-2 text-sm">
-                          <Badge variant="outline" className="text-blue-600">Payment Link Active</Badge>
+                          <Badge variant="outline" className="text-[#3B9EFF]">Payment Link Active</Badge>
                           <button 
-                            className="text-blue-600 hover:underline"
+                            className="text-[#3B9EFF] hover:underline"
                             onClick={() => navigator.clipboard.writeText(selectedInvoice.payment_link).then(() => toast.success("Link copied!"))}
                           >
                             Copy Link
@@ -1767,7 +1767,7 @@ export default function InvoicesEnhanced() {
                 <p className="text-sm text-[rgba(244,246,240,0.45)]">Click to upload or drag & drop</p>
                 <p className="text-xs text-[rgba(244,246,240,0.25)]">PDF, DOC, XLS, Images (max 10MB)</p>
               </label>
-              {uploadingAttachment && <p className="text-sm text-blue-600 mt-2">Uploading...</p>}
+              {uploadingAttachment && <p className="text-sm text-[#3B9EFF] mt-2">Uploading...</p>}
             </div>
             
             {/* Attachments List */}
@@ -1776,7 +1776,7 @@ export default function InvoicesEnhanced() {
                 {attachments.map(att => (
                   <div key={att.attachment_id} className="flex items-center justify-between p-3 bg-[#111820] rounded-lg">
                     <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-blue-600" />
+                      <FileText className="h-4 w-4 text-[#3B9EFF]" />
                       <div>
                         <p className="text-sm font-medium">{att.filename}</p>
                         <p className="text-xs text-[rgba(244,246,240,0.45)]">{(att.size_bytes / 1024).toFixed(1)} KB</p>

@@ -257,7 +257,7 @@ export default function CompositeItems() {
 
   const typeLabels = { kit: "Kit", assembly: "Assembly", bundle: "Bundle" };
   const typeColors = {
-    kit: "bg-blue-100 text-blue-700",
+    kit: "bg-blue-100 text-[#3B9EFF]",
     assembly: "bg-purple-100 text-purple-700",
     bundle: "bg-green-100 text-green-700"
   };
@@ -297,8 +297,8 @@ export default function CompositeItems() {
           </Card>
           <Card className="bg-blue-50 border-blue-200">
             <CardContent className="p-4">
-              <p className="text-sm text-blue-600">Kits</p>
-              <p className="text-2xl font-bold text-blue-700">{summary.kits}</p>
+              <p className="text-sm text-[#3B9EFF]">Kits</p>
+              <p className="text-2xl font-bold text-[#3B9EFF]">{summary.kits}</p>
             </CardContent>
           </Card>
           <Card className="bg-[rgba(139,92,246,0.08)] border-purple-200">
@@ -315,8 +315,8 @@ export default function CompositeItems() {
           </Card>
           <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
             <CardContent className="p-4">
-              <p className="text-sm text-orange-600">Inventory Value</p>
-              <p className="text-xl font-bold text-orange-700" data-testid="inventory-value">{formatCurrency(summary.inventory_value)}</p>
+              <p className="text-sm text-[#FF8C00]">Inventory Value</p>
+              <p className="text-xl font-bold text-[#FF8C00]" data-testid="inventory-value">{formatCurrency(summary.inventory_value)}</p>
             </CardContent>
           </Card>
         </div>
@@ -661,16 +661,16 @@ export default function CompositeItems() {
                     <p className="font-bold">{formatCurrency(selectedItem.current_component_cost || selectedItem.component_cost)}</p>
                   </div>
                   <div className="p-3 bg-blue-50 rounded-lg text-center">
-                    <p className="text-xs text-blue-600">Selling Price</p>
-                    <p className="font-bold text-blue-700">{formatCurrency(selectedItem.selling_price)}</p>
+                    <p className="text-xs text-[#3B9EFF]">Selling Price</p>
+                    <p className="font-bold text-[#3B9EFF]">{formatCurrency(selectedItem.selling_price)}</p>
                   </div>
                   <div className="p-3 bg-[rgba(34,197,94,0.08)] rounded-lg text-center">
                     <p className="text-xs text-green-600">Stock On Hand</p>
                     <p className="font-bold text-green-700">{selectedItem.stock_on_hand || 0}</p>
                   </div>
                   <div className="p-3 bg-[rgba(255,140,0,0.08)] rounded-lg text-center">
-                    <p className="text-xs text-orange-600">Total Builds</p>
-                    <p className="font-bold text-orange-700">{selectedItem.total_builds || 0}</p>
+                    <p className="text-xs text-[#FF8C00]">Total Builds</p>
+                    <p className="font-bold text-[#FF8C00]">{selectedItem.total_builds || 0}</p>
                   </div>
                 </div>
 

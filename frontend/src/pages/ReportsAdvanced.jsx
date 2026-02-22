@@ -451,7 +451,7 @@ export default function ReportsAdvanced() {
                     {monthlyRevenue.data?.map((item, idx) => (
                       <div key={idx} className="bg-gray-50 p-4 rounded-lg text-center">
                         <p className="text-xs text-gray-500">{item.month_name}</p>
-                        <p className="text-lg font-bold text-blue-600 mt-1">{formatCurrencyK(item.invoiced)}</p>
+                        <p className="text-lg font-bold text-[#3B9EFF] mt-1">{formatCurrencyK(item.invoiced)}</p>
                         <p className="text-xs text-green-600">{formatCurrencyK(item.collected)} collected</p>
                         <p className="text-xs text-gray-400 mt-1">{item.invoice_count} invoices</p>
                       </div>
@@ -515,7 +515,7 @@ export default function ReportsAdvanced() {
                   </div>
                   <div className="mt-4 pt-4 border-t text-center">
                     <p className="text-sm text-gray-500">Total Outstanding</p>
-                    <p className="text-2xl font-bold text-orange-600">{formatCurrency(agingData.total_outstanding)}</p>
+                    <p className="text-2xl font-bold text-[#FF8C00]">{formatCurrency(agingData.total_outstanding)}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -575,7 +575,7 @@ export default function ReportsAdvanced() {
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg text-center">
-                      <p className="text-3xl font-bold text-blue-600">{dashboardSummary.customers?.active || 0}</p>
+                      <p className="text-3xl font-bold text-[#3B9EFF]">{dashboardSummary.customers?.active || 0}</p>
                       <p className="text-sm text-gray-600">Active Customers</p>
                     </div>
                     <div className="bg-[rgba(234,179,8,0.08)] p-4 rounded-lg text-center">

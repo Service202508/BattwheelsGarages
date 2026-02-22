@@ -74,7 +74,7 @@ const StockIndicator = ({ stockInfo, qty }) => {
       return {
         icon: AlertTriangle,
         label: `Only ${available_stock} available`,
-        className: "text-orange-600 bg-[rgba(255,140,0,0.08)]",
+        className: "text-[#FF8C00] bg-[rgba(255,140,0,0.08)]",
         iconClass: "text-orange-500",
       };
     }
@@ -720,7 +720,7 @@ export default function EstimateItemsPanel({
             <div className="text-sm">
               <strong>Estimate Locked</strong>
               <span className="ml-2">{estimate.lock_reason}</span>
-              <span className="text-xs ml-2 text-orange-600">
+              <span className="text-xs ml-2 text-[#FF8C00]">
                 by {estimate.locked_by_name} on {new Date(estimate.locked_at).toLocaleDateString()}
               </span>
             </div>
@@ -861,7 +861,7 @@ export default function EstimateItemsPanel({
                           selectedPartStock.available_stock <= 0 
                             ? "bg-[rgba(255,59,47,0.08)] text-red-700"
                             : newItem.qty > selectedPartStock.available_stock
-                              ? "bg-[rgba(255,140,0,0.08)] text-orange-700"
+                              ? "bg-[rgba(255,140,0,0.08)] text-[#FF8C00]"
                               : selectedPartStock.available_stock <= selectedPartStock.reorder_level
                                 ? "bg-[rgba(234,179,8,0.08)] text-yellow-700"
                                 : "bg-[rgba(34,197,94,0.08)] text-green-700"

@@ -61,11 +61,11 @@ export default function CustomerPayments({ user }) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className={`p-4 rounded-2xl ${paymentsData.total_due > 0 ? 'bg-orange-100' : 'bg-green-100'}`}>
-                <CreditCard className={`h-8 w-8 ${paymentsData.total_due > 0 ? 'text-orange-600' : 'text-green-600'}`} />
+                <CreditCard className={`h-8 w-8 ${paymentsData.total_due > 0 ? 'text-[#FF8C00]' : 'text-green-600'}`} />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Total Outstanding</p>
-                <p className={`text-3xl font-bold ${paymentsData.total_due > 0 ? 'text-orange-600' : 'text-green-600'}`}>
+                <p className={`text-3xl font-bold ${paymentsData.total_due > 0 ? 'text-[#FF8C00]' : 'text-green-600'}`}>
                   ₹{paymentsData.total_due.toLocaleString()}
                 </p>
               </div>
@@ -84,7 +84,7 @@ export default function CustomerPayments({ user }) {
         <Card className="bg-blue-50 border-blue-200">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <Banknote className="h-5 w-5 text-blue-600 mt-0.5" />
+              <Banknote className="h-5 w-5 text-[#3B9EFF] mt-0.5" />
               <div>
                 <h4 className="font-medium text-blue-900">Payment Options</h4>
                 <ul className="text-sm text-blue-800 mt-1 space-y-1">
@@ -129,7 +129,7 @@ export default function CustomerPayments({ user }) {
                       <div className="flex items-center gap-2 mb-2">
                         <FileText className="h-4 w-4 text-gray-400" />
                         <span className="font-mono font-medium">{payment.invoice_number}</span>
-                        <Badge variant="outline" className={overdue ? "border-red-200 text-red-600" : "border-orange-200 text-orange-600"}>
+                        <Badge variant="outline" className={overdue ? "border-red-200 text-red-600" : "border-orange-200 text-[#FF8C00]"}>
                           {payment.status}
                         </Badge>
                       </div>
@@ -156,7 +156,7 @@ export default function CustomerPayments({ user }) {
 
                     <div className="text-right">
                       <p className="text-sm text-gray-500">Balance Due</p>
-                      <p className={`text-2xl font-bold ${overdue ? 'text-red-600' : 'text-orange-600'}`}>
+                      <p className={`text-2xl font-bold ${overdue ? 'text-red-600' : 'text-[#FF8C00]'}`}>
                         ₹{payment.balance_due.toLocaleString()}
                       </p>
                       {payment.amount_paid > 0 && (

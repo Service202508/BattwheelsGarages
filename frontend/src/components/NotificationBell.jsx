@@ -24,8 +24,8 @@ const notificationIcons = {
 
 const priorityColors = {
   low: "bg-gray-100 text-gray-700",
-  normal: "bg-blue-100 text-blue-700",
-  high: "bg-orange-100 text-orange-700",
+  normal: "bg-blue-100 text-[#3B9EFF]",
+  high: "bg-orange-100 text-[#FF8C00]",
   urgent: "bg-red-100 text-red-700",
 };
 

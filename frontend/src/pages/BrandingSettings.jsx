@@ -490,7 +490,7 @@ export default function BrandingSettings({ user }) {
                 <Info className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-800">
                   <p className="font-medium mb-1">Logo Requirements</p>
-                  <ul className="space-y-1 text-blue-700">
+                  <ul className="space-y-1 text-[#3B9EFF]">
                     <li>• Preferred dimensions: <strong>240 x 240 pixels</strong> @ 72 DPI</li>
                     <li>• Supported formats: <strong>JPG, JPEG, PNG, GIF, BMP</strong></li>
                     <li>• Maximum file size: <strong>1MB</strong></li>

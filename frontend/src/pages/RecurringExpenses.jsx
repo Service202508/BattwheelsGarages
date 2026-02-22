@@ -442,7 +442,7 @@ export default function RecurringExpenses() {
                       <div className="flex justify-end gap-1">
                         {exp.status === "active" ? (
                           <Button variant="ghost" size="sm" onClick={() => handleStop(exp.recurring_expense_id)} title="Stop">
-                            <Pause className="h-4 w-4 text-orange-600" />
+                            <Pause className="h-4 w-4 text-[#FF8C00]" />
                           </Button>
                         ) : (
                           <Button variant="ghost" size="sm" onClick={() => handleResume(exp.recurring_expense_id)} title="Resume">

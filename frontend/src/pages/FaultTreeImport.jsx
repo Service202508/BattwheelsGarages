@@ -296,7 +296,7 @@ const FaultTreeImport = () => {
                         <div className="text-sm">
                           <span className="text-green-600">{job.imported_count} created</span>
                           {job.updated_count > 0 && (
-                            <span className="text-blue-600 ml-2">{job.updated_count} updated</span>
+                            <span className="text-[#3B9EFF] ml-2">{job.updated_count} updated</span>
                           )}
                           {job.skipped_count > 0 && (
                             <span className="text-gray-500 ml-2">{job.skipped_count} skipped</span>

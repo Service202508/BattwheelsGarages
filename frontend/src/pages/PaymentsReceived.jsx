@@ -615,7 +615,7 @@ export default function PaymentsReceived() {
                           <td className="px-4 py-3 text-sm">{payment.payment_date}</td>
                           <td className="px-4 py-3">
                             <button
-                              className="text-blue-600 hover:underline font-medium"
+                              className="text-[#3B9EFF] hover:underline font-medium"
                               onClick={() => viewPayment(payment.payment_id)}
                             >
                               {payment.payment_number}

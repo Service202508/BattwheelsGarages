@@ -277,10 +277,10 @@ export default function OpeningBalances() {
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <IndianRupee className="h-5 w-5 text-blue-600" />
+                <IndianRupee className="h-5 w-5 text-[#3B9EFF]" />
               </div>
               <div>
-                <p className="text-xs text-blue-600">Total Entries</p>
+                <p className="text-xs text-[#3B9EFF]">Total Entries</p>
                 <p className="text-xl font-bold text-blue-800">{balances.length}</p>
               </div>
             </div>

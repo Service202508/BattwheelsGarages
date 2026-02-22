@@ -358,7 +358,7 @@ export default function GSTReports() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <Card className="bg-blue-50 border-blue-200">
                       <CardContent className="p-4">
-                        <p className="text-xs text-blue-700 font-medium">Total Invoices</p>
+                        <p className="text-xs text-[#3B9EFF] font-medium">Total Invoices</p>
                         <p className="text-2xl font-bold text-blue-800">{gstr1Data.grand_total?.total_invoices || 0}</p>
                       </CardContent>
                     </Card>
@@ -370,7 +370,7 @@ export default function GSTReports() {
                     </Card>
                     <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
                       <CardContent className="p-4">
-                        <p className="text-xs text-orange-700 font-medium">CGST + SGST</p>
+                        <p className="text-xs text-[#FF8C00] font-medium">CGST + SGST</p>
                         <p className="text-xl font-bold text-orange-800">{formatCurrency((gstr1Data.grand_total?.cgst || 0) + (gstr1Data.grand_total?.sgst || 0))}</p>
                       </CardContent>
                     </Card>

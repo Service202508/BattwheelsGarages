@@ -275,7 +275,7 @@ export default function Customers() {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className="text-xs text-gray-400">Outstanding</p>
-                      <p className={`font-semibold ${customer.outstanding_balance > 0 ? 'text-orange-600' : 'text-green-600'}`}>
+                      <p className={`font-semibold ${customer.outstanding_balance > 0 ? 'text-[#FF8C00]' : 'text-green-600'}`}>
                         ₹{(customer.outstanding_balance || 0).toLocaleString('en-IN')}
                       </p>
                     </div>
@@ -326,7 +326,7 @@ export default function Customers() {
                             </div>
                             <div>
                               <p className="text-gray-400">Outstanding Balance</p>
-                              <p className={`font-semibold text-lg ${customer.outstanding_balance > 0 ? 'text-orange-600' : 'text-green-600'}`}>
+                              <p className={`font-semibold text-lg ${customer.outstanding_balance > 0 ? 'text-[#FF8C00]' : 'text-green-600'}`}>
                                 ₹{(customer.outstanding_balance || 0).toLocaleString('en-IN')}
                               </p>
                             </div>

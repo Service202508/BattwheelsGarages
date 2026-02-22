@@ -526,8 +526,8 @@ export default function InventoryAdjustments() {
           </Card>
           <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
             <CardContent className="p-3">
-              <p className="text-xs text-orange-600">Total Decreases</p>
-              <p className="text-lg font-bold text-orange-700">{summary.total_decreases}</p>
+              <p className="text-xs text-[#FF8C00]">Total Decreases</p>
+              <p className="text-lg font-bold text-[#FF8C00]">{summary.total_decreases}</p>
             </CardContent>
           </Card>
         </div>
@@ -644,7 +644,7 @@ export default function InventoryAdjustments() {
                       <tr key={adj.adjustment_id} className="hover:bg-gray-50" data-testid={`row-${adj.adjustment_id}`}>
                         <td className="px-4 py-3 text-gray-600">{adj.date}</td>
                         <td className="px-4 py-3">
-                          <button className="text-blue-600 hover:underline font-medium" onClick={() => viewDetail(adj.adjustment_id)} data-testid={`ref-link-${adj.adjustment_id}`}>
+                          <button className="text-[#3B9EFF] hover:underline font-medium" onClick={() => viewDetail(adj.adjustment_id)} data-testid={`ref-link-${adj.adjustment_id}`}>
                             {adj.reference_number}
                           </button>
                         </td>
@@ -1051,7 +1051,7 @@ export default function InventoryAdjustments() {
                       <div><span className="text-gray-500">Created At:</span> <span className="ml-2">{selectedAdj.created_at?.split("T")[0]}</span></div>
                       {selectedAdj.converted_at && <div><span className="text-gray-500">Converted:</span> <span className="ml-2">{selectedAdj.converted_at?.split("T")[0]}</span></div>}
                       {selectedAdj.voided_at && <div><span className="text-gray-500">Voided:</span> <span className="ml-2">{selectedAdj.voided_at?.split("T")[0]}</span></div>}
-                      {selectedAdj.ticket_id && <div><span className="text-gray-500">Linked Ticket:</span> <span className="ml-2 text-blue-600">{selectedAdj.ticket_id}</span></div>}
+                      {selectedAdj.ticket_id && <div><span className="text-gray-500">Linked Ticket:</span> <span className="ml-2 text-[#3B9EFF]">{selectedAdj.ticket_id}</span></div>}
                     </div>
                   </div>
                   {selectedAdj.description && (
@@ -1267,7 +1267,7 @@ export default function InventoryAdjustments() {
               <div className="grid grid-cols-3 gap-3">
                 <Card><CardContent className="p-3 text-center"><p className="text-xs text-gray-500">Adjustments</p><p className="text-lg font-bold">{abcDrillDown.total_adjustments}</p></CardContent></Card>
                 <Card className="bg-[rgba(34,197,94,0.08)]"><CardContent className="p-3 text-center"><p className="text-xs text-green-600">Qty Change</p><p className="text-lg font-bold text-green-700">{abcDrillDown.total_qty_change}</p></CardContent></Card>
-                <Card className="bg-blue-50"><CardContent className="p-3 text-center"><p className="text-xs text-blue-600">Value Change</p><p className="text-lg font-bold text-blue-700">{fmt(abcDrillDown.total_value_change)}</p></CardContent></Card>
+                <Card className="bg-blue-50"><CardContent className="p-3 text-center"><p className="text-xs text-[#3B9EFF]">Value Change</p><p className="text-lg font-bold text-[#3B9EFF]">{fmt(abcDrillDown.total_value_change)}</p></CardContent></Card>
               </div>
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
@@ -1286,7 +1286,7 @@ export default function InventoryAdjustments() {
                       <tr key={i} className="hover:bg-gray-50">
                         <td className="px-3 py-2">{a.date}</td>
                         <td className="px-3 py-2">
-                          <button className="text-blue-600 hover:underline" onClick={() => { setShowAbcDialog(false); viewDetail(a.adjustment_id); }}>
+                          <button className="text-[#3B9EFF] hover:underline" onClick={() => { setShowAbcDialog(false); viewDetail(a.adjustment_id); }}>
                             {a.reference_number}
                           </button>
                         </td>
@@ -1333,7 +1333,7 @@ export default function InventoryAdjustments() {
                     {(abcReport.items || []).map((item, i) => (
                       <tr key={i} className="hover:bg-gray-50 cursor-pointer" onClick={() => loadAbcDrillDown(item._id)}>
                         <td className="px-3 py-2">
-                          <span className="text-blue-600 hover:underline">{item.item_name || item._id}</span>
+                          <span className="text-[#3B9EFF] hover:underline">{item.item_name || item._id}</span>
                         </td>
                         <td className="px-3 py-2 text-center">{item.adjustment_count}</td>
                         <td className="px-3 py-2 text-right">{item.total_qty_adjusted}</td>

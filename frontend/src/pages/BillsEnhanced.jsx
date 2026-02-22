@@ -24,7 +24,7 @@ import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "
 
 const statusColors = {
   draft: "bg-gray-100 text-gray-700",
-  open: "bg-blue-100 text-blue-700",
+  open: "bg-blue-100 text-[#3B9EFF]",
   partially_paid: "bg-yellow-100 text-yellow-700",
   paid: "bg-green-100 text-green-700",
   overdue: "bg-red-100 text-red-700",
@@ -33,7 +33,7 @@ const statusColors = {
 
 const poStatusColors = {
   draft: "bg-gray-100 text-gray-700",
-  issued: "bg-blue-100 text-blue-700",
+  issued: "bg-blue-100 text-[#3B9EFF]",
   received: "bg-green-100 text-green-700",
   billed: "bg-purple-100 text-purple-700",
   void: "bg-gray-200 text-gray-500"
@@ -494,7 +494,7 @@ export default function BillsEnhanced() {
                         <div className="text-right">
                           <p className="font-bold text-lg">₹{(bill.grand_total || 0).toLocaleString('en-IN')}</p>
                           {bill.balance_due > 0 && (
-                            <p className="text-xs text-orange-600">Due: ₹{bill.balance_due.toLocaleString('en-IN')}</p>
+                            <p className="text-xs text-[#FF8C00]">Due: ₹{bill.balance_due.toLocaleString('en-IN')}</p>
                           )}
                         </div>
                         {bill.status !== "paid" && bill.status !== "void" && bill.status !== "draft" && (
@@ -957,7 +957,7 @@ export default function BillsEnhanced() {
                     <p className="text-sm text-gray-500">Amount</p>
                     <p className="text-2xl font-bold">₹{(billDetail.grand_total || 0).toLocaleString('en-IN')}</p>
                     {billDetail.balance_due > 0 && (
-                      <p className="text-sm text-orange-600">Balance Due: ₹{billDetail.balance_due.toLocaleString('en-IN')}</p>
+                      <p className="text-sm text-[#FF8C00]">Balance Due: ₹{billDetail.balance_due.toLocaleString('en-IN')}</p>
                     )}
                   </div>
                 </div>
@@ -1012,7 +1012,7 @@ export default function BillsEnhanced() {
                     {billDetail.tds_amount > 0 && <div className="flex justify-between text-red-600"><span>TDS ({billDetail.tds_rate}%):</span><span>-₹{billDetail.tds_amount.toLocaleString('en-IN')}</span></div>}
                     <div className="flex justify-between font-bold text-lg border-t pt-1"><span>Total:</span><span>₹{(billDetail.grand_total || 0).toLocaleString('en-IN')}</span></div>
                     {billDetail.amount_paid > 0 && <div className="flex justify-between text-green-600"><span>Paid:</span><span>₹{billDetail.amount_paid.toLocaleString('en-IN')}</span></div>}
-                    {billDetail.balance_due > 0 && <div className="flex justify-between text-orange-600 font-medium"><span>Balance Due:</span><span>₹{billDetail.balance_due.toLocaleString('en-IN')}</span></div>}
+                    {billDetail.balance_due > 0 && <div className="flex justify-between text-[#FF8C00] font-medium"><span>Balance Due:</span><span>₹{billDetail.balance_due.toLocaleString('en-IN')}</span></div>}
                   </div>
                 </div>
 

@@ -207,7 +207,7 @@ export default function Taxes() {
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-bold">{tax.tax_percentage}%</p>
-                        {tax.is_default && <Badge className="bg-blue-100 text-blue-700">Default</Badge>}
+                        {tax.is_default && <Badge className="bg-blue-100 text-[#3B9EFF]">Default</Badge>}
                       </div>
                     </div>
                     {tax.description && <p className="text-sm text-gray-500 mt-3">{tax.description}</p>}
@@ -228,7 +228,7 @@ export default function Taxes() {
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-100 rounded-lg">
-                          <Layers className="h-5 w-5 text-blue-600" />
+                          <Layers className="h-5 w-5 text-[#3B9EFF]" />
                         </div>
                         <div>
                           <h3 className="font-semibold">{group.group_name}</h3>

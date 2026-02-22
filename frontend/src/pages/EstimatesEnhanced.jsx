@@ -1412,8 +1412,8 @@ export default function EstimatesEnhanced() {
                               variant="outline" 
                               className={
                                 est.status === 'approved' ? 'bg-green-100 text-[#22C55E]' :
-                                est.status === 'sent' ? 'bg-blue-100 text-blue-700' :
-                                est.locked_at ? 'bg-orange-100 text-orange-700' :
+                                est.status === 'sent' ? 'bg-blue-100 text-[#3B9EFF]' :
+                                est.locked_at ? 'bg-orange-100 text-[#FF8C00]' :
                                 'bg-gray-100 text-[#F4F6F0]'
                               }
                             >
@@ -1567,7 +1567,7 @@ export default function EstimatesEnhanced() {
               <div>
                 <div className="flex justify-between items-center mb-3">
                   <h4 className="font-medium">Item Table</h4>
-                  <Button variant="outline" size="sm" className="text-blue-600" onClick={() => setShowBulkActionDialog(true)}>
+                  <Button variant="outline" size="sm" className="text-[#3B9EFF]" onClick={() => setShowBulkActionDialog(true)}>
                     <Settings className="h-4 w-4 mr-1" /> Bulk Actions
                   </Button>
                 </div>
@@ -1679,7 +1679,7 @@ export default function EstimatesEnhanced() {
                                   ))}
                                 {/* Add New Item Option */}
                                 <div 
-                                  className="px-3 py-2 hover:bg-[rgba(59,158,255,0.08)] cursor-pointer border-t flex items-center gap-2 text-blue-600"
+                                  className="px-3 py-2 hover:bg-[rgba(59,158,255,0.08)] cursor-pointer border-t flex items-center gap-2 text-[#3B9EFF]"
                                   onClick={() => {
                                     setQuickAddItem({...quickAddItem, name: newLineItem.name});
                                     setShowAddItemDialog(true);
@@ -1847,17 +1847,17 @@ export default function EstimatesEnhanced() {
                 {selectedEstimate.is_ticket_estimate && selectedEstimate.ticket_id && (
                   <div className="bg-[rgba(59,158,255,0.08)] border border-blue-200 rounded-lg px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Ticket className="h-5 w-5 text-blue-600" />
+                      <Ticket className="h-5 w-5 text-[#3B9EFF]" />
                       <div>
-                        <p className="text-sm font-medium text-blue-700">Linked Service Ticket</p>
-                        <p className="text-xs text-blue-600">{selectedEstimate.ticket_id}</p>
+                        <p className="text-sm font-medium text-[#3B9EFF]">Linked Service Ticket</p>
+                        <p className="text-xs text-[#3B9EFF]">{selectedEstimate.ticket_id}</p>
                       </div>
                     </div>
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => window.open(`/tickets?id=${selectedEstimate.ticket_id}`, '_blank')}
-                      className="text-blue-700 border-blue-300 hover:bg-blue-100"
+                      className="text-[#3B9EFF] border-blue-300 hover:bg-blue-100"
                     >
                       <Wrench className="h-4 w-4 mr-1" />
                       Open Job Card
@@ -2410,7 +2410,7 @@ export default function EstimatesEnhanced() {
               </Select>
             </div>
             {bulkAction === "void" && (
-              <div className="bg-[rgba(255,140,0,0.08)] p-3 rounded-lg text-sm text-orange-700">
+              <div className="bg-[rgba(255,140,0,0.08)] p-3 rounded-lg text-sm text-[#FF8C00]">
                 <AlertTriangle className="h-4 w-4 inline mr-2" />
                 Voiding estimates is irreversible. Converted estimates cannot be voided.
               </div>

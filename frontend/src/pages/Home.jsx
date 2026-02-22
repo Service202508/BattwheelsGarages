@@ -516,7 +516,7 @@ const ProjectsWidget = ({ projects, loading }) => {
                   </Badge>
                 </div>
                 {project.unbilled_amount > 0 && (
-                  <p className="text-xs text-orange-600 mt-1">
+                  <p className="text-xs text-[#FF8C00] mt-1">
                     Unbilled: {formatCurrency(project.unbilled_amount)}
                   </p>
                 )}
@@ -565,7 +565,7 @@ const BankAccountsWidget = ({ data, loading }) => {
               <span className="text-sm">{totalUncategorized} Uncategorized Transactions</span>
             </div>
             <Link to="/banking">
-              <Button variant="link" size="sm" className="text-orange-600">
+              <Button variant="link" size="sm" className="text-[#FF8C00]">
                 Categorize now <ArrowRight className="ml-1 h-3 w-3" />
               </Button>
             </Link>

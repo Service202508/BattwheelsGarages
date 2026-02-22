@@ -19,7 +19,7 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  sent: "bg-blue-100 text-blue-700",
+  sent: "bg-blue-100 text-[#3B9EFF]",
   viewed: "bg-purple-100 text-purple-700",
   partially_paid: "bg-yellow-100 text-yellow-700",
   paid: "bg-green-100 text-green-700",
@@ -27,7 +27,7 @@ const statusColors = {
   accepted: "bg-green-100 text-green-700",
   declined: "bg-red-100 text-red-700",
   // Ticket statuses
-  open: "bg-blue-100 text-blue-700",
+  open: "bg-blue-100 text-[#3B9EFF]",
   in_progress: "bg-yellow-100 text-yellow-700",
   resolved: "bg-green-100 text-green-700",
   closed: "bg-gray-100 text-gray-700",
@@ -455,7 +455,7 @@ export default function CustomerPortal() {
                         <Receipt className="h-8 w-8 text-blue-500" />
                         <div>
                           <p className="text-xs text-gray-500">Total Invoiced</p>
-                          <p className="text-xl font-bold text-blue-700">{formatCurrency(dashboard.summary.total_invoiced)}</p>
+                          <p className="text-xl font-bold text-[#3B9EFF]">{formatCurrency(dashboard.summary.total_invoiced)}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -477,7 +477,7 @@ export default function CustomerPortal() {
                         <DollarSign className="h-8 w-8 text-orange-500" />
                         <div>
                           <p className="text-xs text-gray-500">Outstanding</p>
-                          <p className="text-xl font-bold text-orange-700">{formatCurrency(dashboard.summary.total_outstanding)}</p>
+                          <p className="text-xl font-bold text-[#FF8C00]">{formatCurrency(dashboard.summary.total_outstanding)}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -568,7 +568,7 @@ export default function CustomerPortal() {
                         onClick={() => fetchInvoiceDetail(inv.invoice_id)}
                       >
                         <div>
-                          <p className="font-medium text-blue-600">{inv.invoice_number}</p>
+                          <p className="font-medium text-[#3B9EFF]">{inv.invoice_number}</p>
                           <p className="text-sm text-gray-500">Date: {formatDate(inv.invoice_date)} | Due: {formatDate(inv.due_date)}</p>
                         </div>
                         <div className="text-right flex items-center gap-3">
@@ -604,7 +604,7 @@ export default function CustomerPortal() {
                         onClick={() => fetchEstimateDetail(est.estimate_id)}
                       >
                         <div>
-                          <p className="font-medium text-blue-600">{est.estimate_number}</p>
+                          <p className="font-medium text-[#3B9EFF]">{est.estimate_number}</p>
                           <p className="text-sm text-gray-500">Date: {formatDate(est.estimate_date)} | Expires: {formatDate(est.expiry_date)}</p>
                         </div>
                         <div className="text-right flex items-center gap-3">

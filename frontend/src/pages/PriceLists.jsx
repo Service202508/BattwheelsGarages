@@ -406,7 +406,7 @@ export default function PriceLists() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="capitalize">{pl.price_type || 'sales'}</Badge>
-                    {pl.is_default && <Badge className="bg-blue-100 text-blue-700">Default</Badge>}
+                    {pl.is_default && <Badge className="bg-blue-100 text-[#3B9EFF]">Default</Badge>}
                     <Badge variant="outline">{pl.item_count || pl.items?.length || 0} items</Badge>
                     
                     {/* Actions */}
@@ -484,7 +484,7 @@ export default function PriceLists() {
                               </td>
                               <td className="px-4 py-2 text-right">
                                 {item.discount > 0 ? (
-                                  <Badge variant="outline" className="bg-[rgba(255,140,0,0.08)] text-orange-700">
+                                  <Badge variant="outline" className="bg-[rgba(255,140,0,0.08)] text-[#FF8C00]">
                                     {item.discount}%
                                   </Badge>
                                 ) : '-'}

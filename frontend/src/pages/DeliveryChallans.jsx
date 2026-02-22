@@ -13,7 +13,7 @@ import { API } from "@/App";
 const statusColors = {
   draft: "bg-gray-100 text-gray-700",
   delivered: "bg-green-100 text-green-700",
-  invoiced: "bg-blue-100 text-blue-700"
+  invoiced: "bg-blue-100 text-[#3B9EFF]"
 };
 
 const challanTypes = {

@@ -56,7 +56,7 @@ export default function CustomerDashboard({ user }) {
   const getStatusColor = (status) => {
     const colors = {
       open: "bg-yellow-100 text-yellow-700",
-      in_progress: "bg-blue-100 text-blue-700",
+      in_progress: "bg-blue-100 text-[#3B9EFF]",
       resolved: "bg-green-100 text-green-700",
       closed: "bg-gray-100 text-gray-700"
     };
@@ -119,7 +119,7 @@ export default function CustomerDashboard({ user }) {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{dashboard?.active_tickets || 0}</p>
-            <Link to="/customer/service-history?status=in_progress" className="text-sm text-blue-600 hover:underline flex items-center mt-1">
+            <Link to="/customer/service-history?status=in_progress" className="text-sm text-[#3B9EFF] hover:underline flex items-center mt-1">
               Track now <ArrowRight className="h-3 w-3 ml-1" />
             </Link>
           </CardContent>
@@ -146,7 +146,7 @@ export default function CustomerDashboard({ user }) {
           <CardContent>
             <p className="text-3xl font-bold">₹{(dashboard?.pending_amount || 0).toLocaleString()}</p>
             {dashboard?.pending_amount > 0 && (
-              <Link to="/customer/payments" className="text-sm text-orange-600 hover:underline flex items-center mt-1">
+              <Link to="/customer/payments" className="text-sm text-[#FF8C00] hover:underline flex items-center mt-1">
                 Pay now <ArrowRight className="h-3 w-3 ml-1" />
               </Link>
             )}
@@ -199,7 +199,7 @@ export default function CustomerDashboard({ user }) {
                     }`}>
                       {service.status === 'resolved' || service.status === 'closed' 
                         ? <CheckCircle className="h-5 w-5 text-green-600" />
-                        : <Clock className="h-5 w-5 text-blue-600" />
+                        : <Clock className="h-5 w-5 text-[#3B9EFF]" />
                       }
                     </div>
                     <div>

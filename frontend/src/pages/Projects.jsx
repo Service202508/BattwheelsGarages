@@ -15,7 +15,7 @@ import { API } from "@/App";
 const statusColors = {
   active: "bg-green-100 text-green-700",
   on_hold: "bg-yellow-100 text-yellow-700",
-  completed: "bg-blue-100 text-blue-700",
+  completed: "bg-blue-100 text-[#3B9EFF]",
   cancelled: "bg-red-100 text-red-700"
 };
 
@@ -253,7 +253,7 @@ export default function Projects() {
                     {project.budget_hours > 0 && <Progress value={Math.min(progress, 100)} className="h-2" />}
                     <div className="flex justify-between text-sm">
                       <span>Unbilled Hours</span>
-                      <span className="font-medium text-orange-600">{project.unbilled_hours?.toFixed(1)} hrs</span>
+                      <span className="font-medium text-[#FF8C00]">{project.unbilled_hours?.toFixed(1)} hrs</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Total Cost</span>

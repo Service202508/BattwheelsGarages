@@ -38,7 +38,7 @@ const resolutionTypes = [
 const priorities = [
   { value: "low", label: "Low", desc: "Can wait", bgColor: "bg-[rgba(200,255,0,0.08)]", textColor: "text-[#C8FF00] text-700", borderColor: "border-emerald-200", activeBg: "bg-[rgba(200,255,0,0.08)]0" },
   { value: "medium", label: "Medium", desc: "24-48h", bgColor: "bg-amber-50", textColor: "text-amber-700", borderColor: "border-amber-200", activeBg: "bg-amber-500" },
-  { value: "high", label: "High", desc: "Urgent", bgColor: "bg-[rgba(255,140,0,0.08)]", textColor: "text-orange-700", borderColor: "border-orange-200", activeBg: "bg-[rgba(255,140,0,0.08)]0" },
+  { value: "high", label: "High", desc: "Urgent", bgColor: "bg-[rgba(255,140,0,0.08)]", textColor: "text-[#FF8C00]", borderColor: "border-orange-200", activeBg: "bg-[rgba(255,140,0,0.08)]0" },
   { value: "critical", label: "Critical", desc: "Immobile", bgColor: "bg-[rgba(255,59,47,0.08)]", textColor: "text-red-700", borderColor: "border-red-200", activeBg: "bg-[rgba(255,59,47,0.08)]0" },
 ];
 

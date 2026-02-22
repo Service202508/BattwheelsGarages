@@ -32,7 +32,7 @@ const ENTITY_TYPES = {
 // Action types with icons and colors
 const ACTION_TYPES = {
   created: { label: "Created", color: "bg-green-100 text-green-700", icon: Plus },
-  updated: { label: "Updated", color: "bg-blue-100 text-blue-700", icon: Edit },
+  updated: { label: "Updated", color: "bg-blue-100 text-[#3B9EFF]", icon: Edit },
   deleted: { label: "Deleted", color: "bg-red-100 text-red-700", icon: Trash2 },
   viewed: { label: "Viewed", color: "bg-gray-100 text-gray-700", icon: Eye },
   sent: { label: "Sent", color: "bg-purple-100 text-purple-700", icon: FileText },
@@ -153,10 +153,10 @@ export default function ActivityLogs() {
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <Activity className="h-5 w-5 text-blue-600" />
+                <Activity className="h-5 w-5 text-[#3B9EFF]" />
               </div>
               <div>
-                <p className="text-xs text-blue-600">Total Activities</p>
+                <p className="text-xs text-[#3B9EFF]">Total Activities</p>
                 <p className="text-xl font-bold text-blue-800">{pageContext.total}</p>
               </div>
             </div>

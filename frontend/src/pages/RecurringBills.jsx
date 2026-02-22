@@ -374,7 +374,7 @@ export default function RecurringBills() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <RefreshCw className="h-5 w-5 text-blue-600" />
+                <RefreshCw className="h-5 w-5 text-[#3B9EFF]" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Total Profiles</p>

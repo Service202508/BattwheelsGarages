@@ -39,7 +39,7 @@ export default function CustomerVehicles({ user }) {
     if (!status) return "";
     const colors = {
       active: "bg-green-100 text-green-700 border-green-200",
-      expiring: "bg-orange-100 text-orange-700 border-orange-200",
+      expiring: "bg-orange-100 text-[#FF8C00] border-orange-200",
       expired: "bg-red-100 text-red-700 border-red-200"
     };
     return colors[status] || "bg-gray-100 text-gray-700";
@@ -150,7 +150,7 @@ export default function CustomerVehicles({ user }) {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Shield className={`h-4 w-4 ${
-                          vehicle.amc_plan.status === 'expiring' ? 'text-orange-600' : 'text-[#C8FF00] text-600'
+                          vehicle.amc_plan.status === 'expiring' ? 'text-[#FF8C00]' : 'text-[#C8FF00] text-600'
                         }`} />
                         <span className="font-medium text-sm">{vehicle.amc_plan.plan_name}</span>
                       </div>
@@ -159,7 +159,7 @@ export default function CustomerVehicles({ user }) {
                       </span>
                     </div>
                     {vehicle.amc_plan.status === 'expiring' && (
-                      <p className="text-xs text-orange-600 mt-1 flex items-center gap-1">
+                      <p className="text-xs text-[#FF8C00] mt-1 flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" />
                         Expiring soon - Renew now for uninterrupted coverage
                       </p>

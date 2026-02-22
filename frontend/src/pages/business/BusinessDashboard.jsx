@@ -13,7 +13,7 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  open: "bg-blue-100 text-blue-700",
+  open: "bg-blue-100 text-[#3B9EFF]",
   in_progress: "bg-amber-100 text-amber-700",
   work_in_progress: "bg-amber-100 text-amber-700",
   completed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
@@ -236,14 +236,14 @@ export default function BusinessDashboard({ user }) {
         <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-slate-900 flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
+              <TrendingUp className="h-5 w-5 text-[#3B9EFF]" />
               This Month
             </CardTitle>
             <CardDescription>Tickets resolved</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center py-4">
-              <p className="text-5xl font-bold text-blue-600">
+              <p className="text-5xl font-bold text-[#3B9EFF]">
                 {dashboard?.tickets?.resolved_this_month || 0}
               </p>
               <p className="text-slate-500 mt-1">tickets resolved</p>

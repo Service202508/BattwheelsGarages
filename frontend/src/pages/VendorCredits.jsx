@@ -11,7 +11,7 @@ import { Plus, Building2, Calendar, FileText, ArrowRight, Trash2 } from "lucide-
 import { API } from "@/App";
 
 const statusColors = {
-  open: "bg-blue-100 text-blue-700",
+  open: "bg-blue-100 text-[#3B9EFF]",
   closed: "bg-green-100 text-green-700"
 };
 
@@ -193,7 +193,7 @@ export default function VendorCredits() {
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <p className="font-bold text-lg">₹{vc.total?.toLocaleString('en-IN')}</p>
-                      {vc.credits_remaining > 0 && <p className="text-xs text-blue-600">Available: ₹{vc.credits_remaining?.toLocaleString('en-IN')}</p>}
+                      {vc.credits_remaining > 0 && <p className="text-xs text-[#3B9EFF]">Available: ₹{vc.credits_remaining?.toLocaleString('en-IN')}</p>}
                     </div>
                     {vc.credits_remaining > 0 && (
                       <Button size="sm" className="bg-[#22EDA9] text-black" onClick={() => { setSelectedVC(vc); setApplyAmount(vc.credits_remaining); setShowApplyDialog(true); }}>
