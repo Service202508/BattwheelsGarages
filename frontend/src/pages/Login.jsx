@@ -568,9 +568,9 @@ export default function Login({ onLogin }) {
                         value="register" 
                         data-testid="register-tab" 
                         className="rounded font-semibold text-sm transition-all duration-300
-                          data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#22EDA9] data-[state=active]:to-[#1DD69A]
-                          data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-[#22EDA9]/30
-                          data-[state=inactive]:text-gray-500 data-[state=inactive]:hover:text-gray-700
+                          data-[state=active]:bg-[#C8FF00]
+                          data-[state=active]:text-[#080C0F] data-[state=active]:shadow-lg data-[state=active]:shadow-[rgba(200,255,0,0.3)]
+                          data-[state=inactive]:text-[rgba(244,246,240,0.5)] data-[state=inactive]:hover:text-[#F4F6F0]
                           h-10"
                       >
                         Register
@@ -580,7 +580,7 @@ export default function Login({ onLogin }) {
                     <TabsContent value="login" className="mt-0">
                       <form onSubmit={handleLogin} className="space-y-4">
                         <div className="space-y-1.5">
-                          <Label htmlFor="login-email" className="text-gray-700 text-sm font-semibold ml-1">Email</Label>
+                          <Label htmlFor="login-email" className="text-[rgba(244,246,240,0.7)] text-sm font-semibold ml-1">Email</Label>
                           <PremiumInput
                             icon={Mail}
                             type="email"
@@ -594,7 +594,7 @@ export default function Login({ onLogin }) {
                         </div>
                         
                         <div className="space-y-1.5">
-                          <Label htmlFor="login-password" className="text-gray-700 text-sm font-semibold ml-1">Password</Label>
+                          <Label htmlFor="login-password" className="text-[rgba(244,246,240,0.7)] text-sm font-semibold ml-1">Password</Label>
                           <PremiumInput
                             icon={Lock}
                             type="password"
