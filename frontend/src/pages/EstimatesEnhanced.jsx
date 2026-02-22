@@ -817,16 +817,43 @@ export default function EstimatesEnhanced() {
   // Line items
   const addLineItem = () => {
     if (!newLineItem.name) return toast.error("Item name is required");
+    
+    const qty = newLineItem.quantity || 1;
+    const rate = newLineItem.rate || 0;
+    const grossAmount = qty * rate;
+    
+    // Calculate discount based on type
+    let discountAmount = 0;
+    if (newLineItem.discount_type === 'amount') {
+      discountAmount = newLineItem.discount_value || 0;
+    } else {
+      discountAmount = (grossAmount * (newLineItem.discount_percent || 0)) / 100;
+    }
+    
+    const taxableAmount = grossAmount - discountAmount;
+    const taxAmount = taxableAmount * ((newLineItem.tax_percentage || 0) / 100);
+    const total = taxableAmount + taxAmount;
+    
     const item = {
       ...newLineItem,
-      gross_amount: newLineItem.quantity * newLineItem.rate,
-      discount: (newLineItem.quantity * newLineItem.rate * newLineItem.discount_percent) / 100,
-      taxable_amount: newLineItem.quantity * newLineItem.rate * (1 - newLineItem.discount_percent / 100),
-      tax_amount: newLineItem.quantity * newLineItem.rate * (1 - newLineItem.discount_percent / 100) * (newLineItem.tax_percentage / 100),
-      total: newLineItem.quantity * newLineItem.rate * (1 - newLineItem.discount_percent / 100) * (1 + newLineItem.tax_percentage / 100)
+      quantity: qty,
+      rate: rate,
+      gross_amount: grossAmount,
+      discount: discountAmount,
+      discount_type: newLineItem.discount_type || 'percent',
+      discount_percent: newLineItem.discount_percent || 0,
+      discount_value: newLineItem.discount_value || 0,
+      taxable_amount: taxableAmount,
+      tax_amount: taxAmount,
+      total: total
     };
+    
     setNewEstimate(prev => ({ ...prev, line_items: [...prev.line_items, item] }));
-    setNewLineItem({ item_id: "", name: "", description: "", quantity: 1, unit: "pcs", rate: 0, discount_percent: 0, tax_percentage: 18, hsn_code: "" });
+    setNewLineItem({ 
+      item_id: "", name: "", description: "", quantity: 1, unit: "pcs", rate: 0, 
+      discount_type: "percent", discount_percent: 0, discount_value: 0, 
+      tax_percentage: 18, hsn_code: "" 
+    });
   };
 
   const removeLineItem = (index) => {
