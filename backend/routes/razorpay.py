@@ -180,40 +180,65 @@ async def save_payment_config(config: RazorpayConfigUpdate, request: Request):
 
 
 @router.post("/create-order")
-async def create_payment_order(request: CreateOrderRequest):
+async def create_payment_order(req: CreateOrderRequest, request: Request):
     """Create a Razorpay order for an invoice"""
     db = get_db()
+    org_id = await get_org_id_from_request(request)
     
-    invoice = await db.invoices.find_one({"invoice_id": request.invoice_id}, {"_id": 0})
+    # Get org-specific config
+    config = await get_org_razorpay_config(org_id) if org_id else None
+    rp_client = get_razorpay_client(config)
+    
+    if not rp_client:
+        raise HTTPException(status_code=400, detail="Razorpay not configured. Please add credentials in settings.")
+    
+    # Try enhanced invoices first, then regular invoices
+    invoice = await db.invoices_enhanced.find_one({"invoice_id": req.invoice_id}, {"_id": 0})
+    if not invoice:
+        invoice = await db.invoices.find_one({"invoice_id": req.invoice_id}, {"_id": 0})
+    
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
     if invoice.get("status") in ["void", "paid"]:
         raise HTTPException(status_code=400, detail=f"Cannot create payment for {invoice['status']} invoice")
     
-    amount = request.amount or invoice.get("balance", 0)
+    # Calculate amount due
+    total = float(invoice.get("grand_total", invoice.get("total", invoice.get("balance", 0))))
+    paid = float(invoice.get("amount_paid", 0))
+    balance = total - paid
+    
+    amount = req.amount or balance
     if amount <= 0:
         raise HTTPException(status_code=400, detail="Invalid amount")
     
-    if amount > invoice.get("balance", 0):
+    if amount > balance:
         raise HTTPException(status_code=400, detail="Amount exceeds invoice balance")
     
     # Create Razorpay order
-    order = await create_razorpay_order(
-        amount_inr=amount,
-        receipt=invoice.get("invoice_number", request.invoice_id),
-        notes={
-            "invoice_id": request.invoice_id,
-            "invoice_number": invoice.get("invoice_number"),
-            "customer_id": invoice.get("customer_id"),
-            "customer_name": invoice.get("customer_name")
-        }
-    )
+    try:
+        order = rp_client.order.create({
+            "amount": int(amount * 100),  # Convert to paise
+            "currency": "INR",
+            "receipt": invoice.get("invoice_number", req.invoice_id),
+            "payment_capture": 1,
+            "notes": {
+                "invoice_id": req.invoice_id,
+                "invoice_number": invoice.get("invoice_number"),
+                "customer_id": invoice.get("customer_id"),
+                "customer_name": invoice.get("customer_name"),
+                "organization_id": org_id
+            }
+        })
+    except razorpay.errors.BadRequestError as e:
+        logger.error(f"Razorpay order creation failed: {e}")
+        raise HTTPException(status_code=400, detail=f"Failed to create order: {str(e)}")
     
     # Store order in database
     order_record = {
         "order_id": order["id"],
-        "invoice_id": request.invoice_id,
+        "invoice_id": req.invoice_id,
+        "organization_id": org_id,
         "customer_id": invoice.get("customer_id"),
         "amount": amount,
         "amount_paise": int(amount * 100),
@@ -225,6 +250,13 @@ async def create_payment_order(request: CreateOrderRequest):
     
     await db.payment_orders.insert_one(order_record)
     
+    # Update invoice with order reference
+    collection = db.invoices_enhanced if await db.invoices_enhanced.find_one({"invoice_id": req.invoice_id}) else db.invoices
+    await collection.update_one(
+        {"invoice_id": req.invoice_id},
+        {"$set": {"razorpay_order_id": order["id"]}}
+    )
+    
     return {
         "code": 0,
         "order": {
@@ -235,12 +267,14 @@ async def create_payment_order(request: CreateOrderRequest):
             "status": order.get("status")
         },
         "invoice": {
-            "invoice_id": request.invoice_id,
+            "invoice_id": req.invoice_id,
             "invoice_number": invoice.get("invoice_number"),
-            "balance": invoice.get("balance")
+            "balance": balance
         },
-        "key_id": os.environ.get('RAZORPAY_KEY_ID', ''),
-        "is_mock": order.get("_mock", False)
+        "key_id": config.get("key_id", RAZORPAY_KEY_ID) if config else RAZORPAY_KEY_ID,
+        "customer_name": invoice.get("customer_name"),
+        "customer_email": invoice.get("customer_email"),
+        "customer_phone": invoice.get("customer_phone", "")
     }
 
 
