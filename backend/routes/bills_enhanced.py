@@ -851,6 +851,22 @@ async def record_bill_payment(bill_id: str, payment: PaymentCreate):
     await add_bill_history(bill_id, "payment_made", f"Payment of ₹{payment.amount:,.2f} made via {payment.payment_mode}")
     await update_vendor_balance(bill["vendor_id"])
     
+    # Post journal entry for double-entry bookkeeping
+    org_id = bill.get("organization_id", "")
+    if org_id:
+        try:
+            await post_bill_payment_journal_entry(
+                org_id,
+                {
+                    **payment_doc,
+                    "vendor_name": bill.get("vendor_name", ""),
+                    "bill_number": bill.get("bill_number", "")
+                }
+            )
+            logger.info(f"Posted journal entry for bill payment {payment_id}")
+        except Exception as e:
+            logger.warning(f"Failed to post journal entry for bill payment: {e}")
+    
     payment_doc.pop("_id", None)
     return {"code": 0, "message": "Payment recorded", "payment": payment_doc, "new_balance": max(0, new_balance), "new_status": new_status}
 
