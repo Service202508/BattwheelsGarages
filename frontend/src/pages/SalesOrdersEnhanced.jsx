@@ -891,13 +891,13 @@ export default function SalesOrdersEnhanced() {
                 <div className="flex flex-wrap gap-2">
                   {selectedOrder.status === "draft" && (
                     <>
-                      <Button onClick={() => handleConfirm(selectedOrder.salesorder_id)} className="bg-[rgba(59,158,255,0.08)]0 hover:bg-blue-600"><CheckCircle className="h-4 w-4 mr-1" /> Confirm Order</Button>
+                      <Button onClick={() => handleConfirm(selectedOrder.salesorder_id)} className="bg-[#3B9EFF] hover:bg-blue-600 text-[#080C0F]"><CheckCircle className="h-4 w-4 mr-1" /> Confirm Order</Button>
                       <Button variant="destructive" size="sm" onClick={() => handleDeleteOrder(selectedOrder.salesorder_id)}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
                     </>
                   )}
                   {["confirmed", "open", "partially_fulfilled"].includes(selectedOrder.status) && (
                     <>
-                      <Button onClick={() => setShowFulfillDialog(true)} className="bg-[rgba(34,197,94,0.08)]0 hover:bg-green-600"><Package className="h-4 w-4 mr-1" /> Create Fulfillment</Button>
+                      <Button onClick={() => setShowFulfillDialog(true)} className="bg-[#22C55E] hover:bg-green-600 text-[#080C0F]"><Package className="h-4 w-4 mr-1" /> Create Fulfillment</Button>
                       <Button variant="outline" onClick={() => handleConvertToInvoice(selectedOrder.salesorder_id)}><Receipt className="h-4 w-4 mr-1" /> Convert to Invoice</Button>
                     </>
                   )}
