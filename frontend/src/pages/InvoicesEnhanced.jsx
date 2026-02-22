@@ -925,7 +925,7 @@ export default function InvoicesEnhanced() {
                       <td className="px-4 py-3 text-sm">{formatDate(inv.due_date)}</td>
                       <td className="px-4 py-3 text-right font-medium">{formatCurrency(inv.grand_total)}</td>
                       <td className="px-4 py-3 text-right">
-                        <span className={inv.balance_due > 0 ? "text-red-600 font-medium" : "text-green-600"}>
+                        <span className={inv.balance_due > 0 ? "text-[#FF3B2F] font-medium" : "text-[#22C55E]"}>
                           {formatCurrency(inv.balance_due)}
                         </span>
                       </td>
@@ -955,11 +955,11 @@ export default function InvoicesEnhanced() {
                       <div>
                         <p className="font-bold text-lg">{inv.invoice_number}</p>
                         <p className="text-[rgba(244,246,240,0.45)]">{inv.customer_name}</p>
-                        <p className="text-sm text-red-600">Due: {formatDate(inv.due_date)}</p>
+                        <p className="text-sm text-[#FF3B2F]">Due: {formatDate(inv.due_date)}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl font-bold text-red-600">{formatCurrency(inv.balance_due)}</p>
-                        <Badge className="bg-red-100 text-red-700">Overdue</Badge>
+                        <p className="text-2xl font-bold text-[#FF3B2F]">{formatCurrency(inv.balance_due)}</p>
+                        <Badge className="bg-red-100 text-[#FF3B2F]">Overdue</Badge>
                       </div>
                     </div>
                   </CardContent>
@@ -1150,7 +1150,7 @@ export default function InvoicesEnhanced() {
                   <Input type="number" className="w-24" value={newInvoice.shipping_charge} onChange={(e) => setNewInvoice({ ...newInvoice, shipping_charge: parseFloat(e.target.value) || 0 })} />
                 </div>
                 <Separator />
-                <div className="flex justify-between text-lg font-bold"><span>Total:</span><span className="text-green-600">{formatCurrency(calculateTotal())}</span></div>
+                <div className="flex justify-between text-lg font-bold"><span>Total:</span><span className="text-[#22C55E]">{formatCurrency(calculateTotal())}</span></div>
               </div>
             </div>
 
@@ -1208,7 +1208,7 @@ export default function InvoicesEnhanced() {
                   <div className="text-right">
                     <p className="text-2xl font-bold">{formatCurrency(selectedInvoice.grand_total)}</p>
                     {selectedInvoice.balance_due > 0 && (
-                      <p className="text-sm text-red-600">Balance: {formatCurrency(selectedInvoice.balance_due)}</p>
+                      <p className="text-sm text-[#FF3B2F]">Balance: {formatCurrency(selectedInvoice.balance_due)}</p>
                     )}
                   </div>
                 </div>
@@ -1263,13 +1263,13 @@ export default function InvoicesEnhanced() {
                 {/* Totals */}
                 <div className="bg-[#111820] p-4 rounded-lg w-64 ml-auto space-y-1 text-sm">
                   <div className="flex justify-between"><span>Sub Total:</span><span>{formatCurrency(selectedInvoice.sub_total)}</span></div>
-                  {selectedInvoice.total_discount > 0 && <div className="flex justify-between text-red-600"><span>Discount:</span><span>-{formatCurrency(selectedInvoice.total_discount)}</span></div>}
+                  {selectedInvoice.total_discount > 0 && <div className="flex justify-between text-[#FF3B2F]"><span>Discount:</span><span>-{formatCurrency(selectedInvoice.total_discount)}</span></div>}
                   <div className="flex justify-between"><span>Tax:</span><span>{formatCurrency(selectedInvoice.tax_total)}</span></div>
                   {selectedInvoice.shipping_charge > 0 && <div className="flex justify-between"><span>Shipping:</span><span>{formatCurrency(selectedInvoice.shipping_charge)}</span></div>}
                   <Separator />
                   <div className="flex justify-between font-bold text-base"><span>Total:</span><span>{formatCurrency(selectedInvoice.grand_total)}</span></div>
-                  {selectedInvoice.amount_paid > 0 && <div className="flex justify-between text-green-600"><span>Paid:</span><span>-{formatCurrency(selectedInvoice.amount_paid)}</span></div>}
-                  <div className="flex justify-between font-bold text-lg"><span>Balance:</span><span className={selectedInvoice.balance_due > 0 ? "text-red-600" : "text-green-600"}>{formatCurrency(selectedInvoice.balance_due)}</span></div>
+                  {selectedInvoice.amount_paid > 0 && <div className="flex justify-between text-[#22C55E]"><span>Paid:</span><span>-{formatCurrency(selectedInvoice.amount_paid)}</span></div>}
+                  <div className="flex justify-between font-bold text-lg"><span>Balance:</span><span className={selectedInvoice.balance_due > 0 ? "text-[#FF3B2F]" : "text-[#22C55E]"}>{formatCurrency(selectedInvoice.balance_due)}</span></div>
                 </div>
 
                 {/* Payments */}
@@ -1307,7 +1307,7 @@ export default function InvoicesEnhanced() {
                               <p className="font-medium">{formatCurrency(payment.amount_applied)}</p>
                               <p className="text-xs text-[rgba(244,246,240,0.45)]">{payment.payment_number} • {formatDate(payment.payment_date)} • {payment.payment_mode}</p>
                             </div>
-                            <Badge variant="outline" className="text-green-600">Applied</Badge>
+                            <Badge variant="outline" className="text-[#22C55E]">Applied</Badge>
                           </div>
                         ))}
                       </div>
@@ -1731,7 +1731,7 @@ export default function InvoicesEnhanced() {
             ) : (
               <div className="space-y-4">
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <p className="text-sm text-green-700 mb-2">Share link created successfully!</p>
+                  <p className="text-sm text-[#22C55E] mb-2">Share link created successfully!</p>
                   <div className="flex items-center gap-2">
                     <Input value={shareLink.full_url} readOnly className="text-xs" />
                     <Button size="sm" onClick={copyShareLink}><Link className="h-4 w-4" /></Button>
@@ -1897,7 +1897,7 @@ export default function InvoicesEnhanced() {
             <div className="bg-[#111820] p-3 rounded-lg">
               <div className="flex justify-between">
                 <span>Balance Due:</span>
-                <span className="font-bold text-red-600">{formatCurrency(selectedInvoice?.balance_due)}</span>
+                <span className="font-bold text-[#FF3B2F]">{formatCurrency(selectedInvoice?.balance_due)}</span>
               </div>
             </div>
             

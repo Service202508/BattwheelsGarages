@@ -1410,7 +1410,7 @@ export default function EstimatesEnhanced() {
                             <Badge 
                               variant="outline" 
                               className={
-                                est.status === 'approved' ? 'bg-green-100 text-green-700' :
+                                est.status === 'approved' ? 'bg-green-100 text-[#22C55E]' :
                                 est.status === 'sent' ? 'bg-blue-100 text-blue-700' :
                                 est.locked_at ? 'bg-orange-100 text-orange-700' :
                                 'bg-gray-100 text-[#F4F6F0]'
@@ -1531,7 +1531,7 @@ export default function EstimatesEnhanced() {
                       {selectedContact.gstin && <p>GSTIN: {selectedContact.gstin}</p>}
                       {customerPricing?.sales_price_list && (
                         <div className="mt-1 flex items-center gap-1">
-                          <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                          <Badge variant="outline" className="text-xs bg-green-50 text-[#22C55E] border-green-200">
                             <IndianRupee className="h-3 w-3 mr-1" />
                             {customerPricing.sales_price_list.name}
                             {customerPricing.sales_price_list.discount_percentage > 0 && ` (-${customerPricing.sales_price_list.discount_percentage}%)`}
@@ -1598,7 +1598,7 @@ export default function EstimatesEnhanced() {
                             {item.description && <div className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</div>}
                             {item.hsn_code && <div className="text-xs text-[rgba(244,246,240,0.25)]">HSN: {item.hsn_code}</div>}
                             {item.price_list_applied && (
-                              <span className="text-[10px] text-green-600 bg-green-50 px-1 rounded">
+                              <span className="text-[10px] text-[#22C55E] bg-green-50 px-1 rounded">
                                 {item.price_list_applied}
                               </span>
                             )}
@@ -1669,7 +1669,7 @@ export default function EstimatesEnhanced() {
                                         <div className="text-right">
                                           <div className={`text-sm font-medium ${(item.stock_on_hand || 0) < 0 ? 'text-red-500' : 'text-[rgba(244,246,240,0.45)]'}`}>
                                             {item.stock_on_hand !== undefined && (
-                                              <>Stock on Hand<br/><span className={`font-bold ${(item.stock_on_hand || 0) < 0 ? 'text-red-500' : 'text-green-600'}`}>{item.stock_on_hand} {item.unit || 'pcs'}</span></>
+                                              <>Stock on Hand<br/><span className={`font-bold ${(item.stock_on_hand || 0) < 0 ? 'text-red-500' : 'text-[#22C55E]'}`}>{item.stock_on_hand} {item.unit || 'pcs'}</span></>
                                             )}
                                           </div>
                                         </div>
@@ -1895,8 +1895,8 @@ export default function EstimatesEnhanced() {
                 {/* Price List Info */}
                 {selectedEstimate.price_list_name && (
                   <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-sm flex items-center gap-2">
-                    <IndianRupee className="h-4 w-4 text-green-600" />
-                    <span className="text-green-700">
+                    <IndianRupee className="h-4 w-4 text-[#22C55E]" />
+                    <span className="text-[#22C55E]">
                       Price List Applied: <strong>{selectedEstimate.price_list_name}</strong>
                     </span>
                   </div>
@@ -1927,7 +1927,7 @@ export default function EstimatesEnhanced() {
                                 <p className="font-medium">{item.name}</p>
                                 {item.description && <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</p>}
                                 {item.price_list_applied && (
-                                  <span className="text-[10px] text-green-600 bg-green-50 px-1 rounded">
+                                  <span className="text-[10px] text-[#22C55E] bg-green-50 px-1 rounded">
                                     {item.price_list_applied}
                                   </span>
                                 )}
@@ -1954,7 +1954,7 @@ export default function EstimatesEnhanced() {
                 <div className="flex justify-end">
                   <div className="w-64 space-y-1 text-sm">
                     <div className="flex justify-between"><span>Subtotal:</span><span>₹{selectedEstimate.subtotal?.toLocaleString('en-IN')}</span></div>
-                    {selectedEstimate.total_discount > 0 && <div className="flex justify-between text-red-600"><span>Discount:</span><span>-₹{selectedEstimate.total_discount?.toLocaleString('en-IN')}</span></div>}
+                    {selectedEstimate.total_discount > 0 && <div className="flex justify-between text-[#FF3B2F]"><span>Discount:</span><span>-₹{selectedEstimate.total_discount?.toLocaleString('en-IN')}</span></div>}
                     <div className="flex justify-between"><span>Tax ({selectedEstimate.gst_type?.toUpperCase()}):</span><span>₹{selectedEstimate.total_tax?.toLocaleString('en-IN')}</span></div>
                     {selectedEstimate.shipping_charge > 0 && <div className="flex justify-between"><span>Shipping:</span><span>₹{selectedEstimate.shipping_charge?.toLocaleString('en-IN')}</span></div>}
                     {selectedEstimate.adjustment !== 0 && <div className="flex justify-between"><span>Adjustment:</span><span>₹{selectedEstimate.adjustment?.toLocaleString('en-IN')}</span></div>}
@@ -2145,7 +2145,7 @@ export default function EstimatesEnhanced() {
             ) : (
               <div className="space-y-4">
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <p className="text-sm text-green-700 font-medium mb-2">Share link created successfully!</p>
+                  <p className="text-sm text-[#22C55E] font-medium mb-2">Share link created successfully!</p>
                   <div className="flex items-center gap-2">
                     <Input 
                       value={shareLink.full_url} 
@@ -2226,7 +2226,7 @@ export default function EstimatesEnhanced() {
                       <Button 
                         size="sm" 
                         variant="ghost" 
-                        className="text-red-500 hover:text-red-600"
+                        className="text-red-500 hover:text-[#FF3B2F]"
                         onClick={() => handleDeleteAttachment(att.attachment_id)}
                       >
                         <X className="h-4 w-4" />
@@ -2415,7 +2415,7 @@ export default function EstimatesEnhanced() {
               </div>
             )}
             {bulkAction === "delete" && (
-              <div className="bg-red-50 p-3 rounded-lg text-sm text-red-700">
+              <div className="bg-red-50 p-3 rounded-lg text-sm text-[#FF3B2F]">
                 <AlertTriangle className="h-4 w-4 inline mr-2" />
                 Only draft estimates will be deleted. This action is irreversible.
               </div>
@@ -2458,7 +2458,7 @@ export default function EstimatesEnhanced() {
                     <Button 
                       size="sm" 
                       variant="ghost" 
-                      className="text-red-500 hover:text-red-600"
+                      className="text-red-500 hover:text-[#FF3B2F]"
                       onClick={() => handleDeleteCustomField(field.field_name)}
                     >
                       <Trash2 className="h-4 w-4" />
