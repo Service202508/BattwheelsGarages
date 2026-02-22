@@ -14,6 +14,12 @@ def generate_invoice_html(invoice: dict, org_settings: dict = None) -> str:
     company_phone = org.get('phone', '')
     company_email = org.get('email', '')
     company_gstin = org.get('gstin', '')
+    logo_url = org.get('logo_url', '')
+    
+    # Logo HTML - only include if logo_url is provided
+    logo_html = ""
+    if logo_url:
+        logo_html = f'<img src="{logo_url}" alt="{company_name}" style="max-height: 60px; max-width: 200px; object-fit: contain;" />'
     
     # Build line items HTML
     items_html = ""
@@ -69,12 +75,16 @@ def generate_invoice_html(invoice: dict, org_settings: dict = None) -> str:
             .header {{
                 display: flex;
                 justify-content: space-between;
-                border-bottom: 3px solid #22EDA9;
+                align-items: flex-start;
+                border-bottom: 3px solid #C8FF00;
                 padding-bottom: 15px;
                 margin-bottom: 20px;
             }}
             .company-info {{
                 flex: 1;
+            }}
+            .company-logo {{
+                margin-bottom: 10px;
             }}
             .company-name {{
                 font-size: 24pt;
@@ -91,9 +101,10 @@ def generate_invoice_html(invoice: dict, org_settings: dict = None) -> str:
             }}
             .invoice-title h1 {{
                 font-size: 28pt;
-                color: #22EDA9;
+                color: #C8FF00;
                 margin: 0;
                 letter-spacing: 2px;
+                text-shadow: 0 0 1px rgba(0,0,0,0.3);
             }}
             .invoice-number {{
                 font-size: 12pt;
@@ -144,14 +155,13 @@ def generate_invoice_html(invoice: dict, org_settings: dict = None) -> str:
                 margin-bottom: 20px;
             }}
             .items-table th {{
-                background: #f8f9fa;
+                background: #111820;
+                color: #C8FF00;
                 padding: 12px 8px;
                 text-align: left;
                 font-size: 9pt;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
-                color: #555;
-                border-bottom: 2px solid #22EDA9;
             }}
             .items-table td {{
                 padding: 10px 8px;
@@ -190,8 +200,8 @@ def generate_invoice_html(invoice: dict, org_settings: dict = None) -> str:
                 color: #333;
             }}
             .totals-table .balance-row {{
-                background: #22EDA9;
-                color: #000;
+                background: #C8FF00;
+                color: #080C0F;
             }}
             .totals-table .balance-row td {{
                 font-weight: bold;
@@ -215,10 +225,13 @@ def generate_invoice_html(invoice: dict, org_settings: dict = None) -> str:
             .footer {{
                 margin-top: 40px;
                 padding-top: 15px;
-                border-top: 1px solid #eee;
+                border-top: 2px solid #C8FF00;
                 text-align: center;
                 font-size: 8pt;
-                color: #999;
+                color: #666;
+            }}
+            .footer strong {{
+                color: #C8FF00;
             }}
             .status-badge {{
                 display: inline-block;
@@ -238,6 +251,7 @@ def generate_invoice_html(invoice: dict, org_settings: dict = None) -> str:
     <body>
         <div class="header">
             <div class="company-info">
+                {f'<div class="company-logo">{logo_html}</div>' if logo_html else ''}
                 <div class="company-name">{company_name}</div>
                 <div class="company-details">
                     {company_address}<br>
@@ -339,7 +353,7 @@ def generate_invoice_html(invoice: dict, org_settings: dict = None) -> str:
         ''' if invoice.get('terms') else ''}
         
         <div class="footer">
-            Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')} | {company_name}
+            Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')} | <strong>{company_name}</strong> | Powered by Battwheels OS
         </div>
     </body>
     </html>
