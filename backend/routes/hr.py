@@ -52,6 +52,27 @@ class EmployeeCreateRequest(BaseModel):
     pan_number: Optional[str] = None
     aadhaar_number: Optional[str] = None
     reporting_manager: Optional[str] = None
+    password: Optional[str] = None  # Password for creating user account
+    system_role: str = "technician"  # Role for the user
+    # Additional fields from frontend
+    personal_email: Optional[str] = None
+    current_address: Optional[str] = None
+    permanent_address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    pincode: Optional[str] = None
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
+    emergency_contact_relation: Optional[str] = None
+    employee_code: Optional[str] = None
+    work_location: Optional[str] = None
+    shift: Optional[str] = None
+    probation_period_months: Optional[int] = None
+    pf_number: Optional[str] = None
+    uan: Optional[str] = None
+    esi_number: Optional[str] = None
+    pf_enrolled: Optional[bool] = False
+    esi_enrolled: Optional[bool] = False
 
 
 class EmployeeUpdateRequest(BaseModel):
