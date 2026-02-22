@@ -303,7 +303,7 @@ export default function AMCManagement({ user }) {
             <Download className="h-4 w-4 mr-2" />
             Import Official Plans
           </Button>
-          <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => setShowAddSubscription(true)}>
+          <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" onClick={() => setShowAddSubscription(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Add AMC
           </Button>
