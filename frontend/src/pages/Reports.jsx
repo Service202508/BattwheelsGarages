@@ -548,13 +548,13 @@ export default function Reports() {
                                 {inv.days_overdue} days
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-right font-medium">{formatCurrency(inv.balance)}</TableCell>
+                            <TableCell className="text-right font-medium text-[#F4F6F0]">{formatCurrency(inv.balance)}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
                     {arAging.invoices?.length > 20 && (
-                      <div className="p-3 bg-gray-50 text-center text-sm text-gray-500">
+                      <div className="p-3 bg-[#111820] text-center text-sm text-[rgba(244,246,240,0.45)] border-t border-[rgba(255,255,255,0.07)]">
                         Showing 20 of {arAging.invoices.length} invoices. Export to see all.
                       </div>
                     )}
@@ -586,62 +586,62 @@ export default function Reports() {
                 <div className="space-y-6">
                   {/* Aging Buckets */}
                   <div className="grid grid-cols-5 gap-3">
-                    <Card className="border-l-4 border-l-green-500">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#22C55E]">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-gray-500">Current</p>
-                        <p className="text-lg font-bold text-green-700">{formatCurrency(apAging.aging_data?.current)}</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">Current</p>
+                        <p className="text-lg font-bold text-[#22C55E]">{formatCurrency(apAging.aging_data?.current)}</p>
                       </CardContent>
                     </Card>
-                    <Card className="border-l-4 border-l-yellow-400">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#EAB308]">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-gray-500">1-30 Days</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">1-30 Days</p>
                         <p className="text-lg font-bold text-[#EAB308]">{formatCurrency(apAging.aging_data?.["1_30"])}</p>
                       </CardContent>
                     </Card>
-                    <Card className="border-l-4 border-l-orange-400">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#FF8C00]">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-gray-500">31-60 Days</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">31-60 Days</p>
                         <p className="text-lg font-bold text-[#FF8C00]">{formatCurrency(apAging.aging_data?.["31_60"])}</p>
                       </CardContent>
                     </Card>
-                    <Card className="border-l-4 border-l-orange-600">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-orange-600">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-gray-500">61-90 Days</p>
-                        <p className="text-lg font-bold text-orange-800">{formatCurrency(apAging.aging_data?.["61_90"])}</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">61-90 Days</p>
+                        <p className="text-lg font-bold text-orange-600">{formatCurrency(apAging.aging_data?.["61_90"])}</p>
                       </CardContent>
                     </Card>
-                    <Card className="border-l-4 border-l-red-500">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#FF3B2F]">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-gray-500">90+ Days</p>
-                        <p className="text-lg font-bold text-red-700">{formatCurrency(apAging.aging_data?.over_90)}</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">90+ Days</p>
+                        <p className="text-lg font-bold text-[#FF3B2F]">{formatCurrency(apAging.aging_data?.over_90)}</p>
                       </CardContent>
                     </Card>
                   </div>
 
                   {/* Total */}
-                  <div className="bg-[rgba(255,59,47,0.08)] p-4 rounded-lg flex justify-between items-center">
-                    <span className="font-semibold text-gray-700">Total Accounts Payable</span>
-                    <span className="text-2xl font-bold text-red-700">{formatCurrency(apAging.total_ap)}</span>
+                  <div className="bg-[rgba(255,59,47,0.10)] p-4 rounded border border-[rgba(255,59,47,0.25)] flex justify-between items-center">
+                    <span className="font-semibold text-[#F4F6F0]">Total Accounts Payable</span>
+                    <span className="text-2xl font-bold text-[#FF3B2F]">{formatCurrency(apAging.total_ap)}</span>
                   </div>
 
                   {/* Bill Details Table */}
-                  <div className="border rounded-lg overflow-hidden">
+                  <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-gray-50">
-                          <TableHead>Bill #</TableHead>
-                          <TableHead>Vendor</TableHead>
-                          <TableHead>Due Date</TableHead>
-                          <TableHead className="text-center">Days Overdue</TableHead>
-                          <TableHead className="text-right">Balance</TableHead>
+                        <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Bill #</TableHead>
+                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Vendor</TableHead>
+                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Due Date</TableHead>
+                          <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Days Overdue</TableHead>
+                          <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Balance</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {apAging.bills?.slice(0, 20).map((bill, idx) => (
-                          <TableRow key={idx}>
-                            <TableCell className="font-medium">{bill.bill_number}</TableCell>
-                            <TableCell>{bill.vendor_name}</TableCell>
-                            <TableCell>{bill.due_date}</TableCell>
+                          <TableRow key={idx} className="border-b border-[rgba(255,255,255,0.07)]">
+                            <TableCell className="font-medium text-[#F4F6F0]">{bill.bill_number}</TableCell>
+                            <TableCell className="text-[#F4F6F0]">{bill.vendor_name}</TableCell>
+                            <TableCell className="text-[#F4F6F0]">{bill.due_date}</TableCell>
                             <TableCell className="text-center">
                               <Badge variant={
                                 bill.days_overdue <= 0 ? "success" :
@@ -651,13 +651,13 @@ export default function Reports() {
                                 {bill.days_overdue} days
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-right font-medium">{formatCurrency(bill.balance)}</TableCell>
+                            <TableCell className="text-right font-medium text-[#F4F6F0]">{formatCurrency(bill.balance)}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
                     {apAging.bills?.length > 20 && (
-                      <div className="p-3 bg-gray-50 text-center text-sm text-gray-500">
+                      <div className="p-3 bg-[#111820] text-center text-sm text-[rgba(244,246,240,0.45)] border-t border-[rgba(255,255,255,0.07)]">
                         Showing 20 of {apAging.bills.length} bills. Export to see all.
                       </div>
                     )}
