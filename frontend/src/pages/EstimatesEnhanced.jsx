@@ -26,14 +26,14 @@ import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
-  draft: "bg-gray-100 text-gray-700",
-  sent: "bg-blue-100 text-blue-700",
-  customer_viewed: "bg-cyan-100 text-cyan-700",
-  accepted: "bg-green-100 text-green-700",
-  declined: "bg-red-100 text-red-700",
-  expired: "bg-orange-100 text-orange-700",
-  converted: "bg-purple-100 text-purple-700",
-  void: "bg-gray-200 text-gray-500"
+  draft: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
+  sent: "bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]",
+  customer_viewed: "bg-[rgba(26,255,228,0.10)] text-[#1AFFE4] border border-[rgba(26,255,228,0.25)]",
+  accepted: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
+  declined: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
+  expired: "bg-[rgba(255,140,0,0.10)] text-[#FF8C00] border border-[rgba(255,140,0,0.25)]",
+  converted: "bg-[rgba(139,92,246,0.10)] text-[#8B5CF6] border border-[rgba(139,92,246,0.25)]",
+  void: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.25)] border border-[rgba(255,255,255,0.08)]"
 };
 
 const statusLabels = {
