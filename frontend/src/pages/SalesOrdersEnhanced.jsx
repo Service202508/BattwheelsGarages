@@ -13,12 +13,14 @@ import { toast } from "sonner";
 import { 
   Plus, ShoppingCart, Search, Trash2, RefreshCw, Send, CheckCircle, XCircle, 
   Eye, Copy, ArrowRightLeft, Package, Truck, Calendar, User, 
-  TrendingUp, ChevronRight, Receipt, Box, IndianRupee, Clock
+  TrendingUp, ChevronRight, Receipt, Box, IndianRupee, Clock, Save
 } from "lucide-react";
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
 import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
+import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
   draft: "bg-gray-100 text-gray-700",
