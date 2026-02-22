@@ -2537,64 +2537,190 @@ export default function EstimatesEnhanced() {
                 </div>
               </div>
               
-              {/* Line Items */}
+              {/* Line Items - Enhanced with Search */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <Label>Line Items</Label>
-                  <Button size="sm" variant="outline" onClick={addEditLineItem}><Plus className="h-4 w-4 mr-1" /> Add Item</Button>
+                  <Label className="flex items-center gap-2">
+                    <Package className="h-4 w-4" /> Item Table
+                  </Label>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => setShowAddItemDialog(true)}>
+                      <Plus className="h-4 w-4 mr-1" /> New Item
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={addEditLineItem}>
+                      <Plus className="h-4 w-4 mr-1" /> Add Row
+                    </Button>
+                  </div>
                 </div>
-                <div className="border rounded-lg overflow-hidden">
+                <div className="border rounded-lg overflow-visible">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 border-b">
                       <tr>
-                        <th className="px-3 py-2 text-left">Item</th>
-                        <th className="px-3 py-2 text-right w-20">Qty</th>
-                        <th className="px-3 py-2 text-right w-28">Rate</th>
-                        <th className="px-3 py-2 text-right w-20">Tax %</th>
+                        <th className="px-3 py-2 text-left font-medium w-[250px]">ITEM DETAILS</th>
+                        <th className="px-3 py-2 text-center font-medium w-20">QTY</th>
+                        <th className="px-3 py-2 text-center font-medium w-24">
+                          <div className="flex items-center justify-center gap-1">RATE <IndianRupee className="h-3 w-3" /></div>
+                        </th>
+                        <th className="px-3 py-2 text-center font-medium w-28">DISCOUNT</th>
+                        <th className="px-3 py-2 text-center font-medium w-24">TAX</th>
+                        <th className="px-3 py-2 text-right font-medium w-24">AMOUNT</th>
                         <th className="px-3 py-2 w-10"></th>
                       </tr>
                     </thead>
                     <tbody>
-                      {editEstimate.line_items.map((item, idx) => (
-                        <tr key={idx} className="border-t">
-                          <td className="px-3 py-2">
-                            <Input 
-                              value={item.name} 
-                              onChange={(e) => updateEditLineItem(idx, "name", e.target.value)}
-                              placeholder="Item name"
-                            />
-                          </td>
-                          <td className="px-3 py-2">
-                            <Input 
-                              type="number" 
-                              value={item.quantity} 
-                              onChange={(e) => updateEditLineItem(idx, "quantity", parseFloat(e.target.value) || 1)}
-                            />
-                          </td>
-                          <td className="px-3 py-2">
-                            <Input 
-                              type="number" 
-                              value={item.rate} 
-                              onChange={(e) => updateEditLineItem(idx, "rate", parseFloat(e.target.value) || 0)}
-                            />
-                          </td>
-                          <td className="px-3 py-2">
-                            <Select value={String(item.tax_percentage || 18)} onValueChange={(v) => updateEditLineItem(idx, "tax_percentage", parseFloat(v))}>
-                              <SelectTrigger><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="0">0%</SelectItem>
-                                <SelectItem value="5">5%</SelectItem>
-                                <SelectItem value="12">12%</SelectItem>
-                                <SelectItem value="18">18%</SelectItem>
-                                <SelectItem value="28">28%</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </td>
-                          <td className="px-3 py-2 text-center">
-                            <Button size="icon" variant="ghost" onClick={() => removeEditLineItem(idx)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                      {editEstimate.line_items.map((item, idx) => {
+                        const qty = item.quantity || 1;
+                        const rate = item.rate || 0;
+                        const grossAmount = qty * rate;
+                        let discountAmount = 0;
+                        if (item.discount_type === 'amount') {
+                          discountAmount = item.discount_value || 0;
+                        } else {
+                          discountAmount = (grossAmount * (item.discount_percent || 0)) / 100;
+                        }
+                        const taxableAmount = grossAmount - discountAmount;
+                        const taxAmount = taxableAmount * ((item.tax_percentage || 0) / 100);
+                        const total = taxableAmount + taxAmount;
+                        
+                        return (
+                          <tr key={idx} className="border-t hover:bg-gray-50">
+                            <td className="px-3 py-2">
+                              <div className="relative">
+                                <div className="flex items-center gap-1">
+                                  <Package className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                  <Input 
+                                    value={editActiveItemIndex === idx ? editItemSearch : item.name}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      setEditActiveItemIndex(idx);
+                                      setEditItemSearch(value);
+                                      updateEditLineItem(idx, "name", value);
+                                      updateEditLineItem(idx, "item_id", "");
+                                      // Filter items
+                                      if (value.length >= 1) {
+                                        const filtered = items.filter(i => 
+                                          i.name?.toLowerCase().includes(value.toLowerCase()) || 
+                                          i.sku?.toLowerCase().includes(value.toLowerCase())
+                                        );
+                                        setEditSearchResults(filtered);
+                                      } else {
+                                        setEditSearchResults([]);
+                                      }
+                                    }}
+                                    onFocus={() => {
+                                      setEditActiveItemIndex(idx);
+                                      setEditItemSearch(item.name || "");
+                                    }}
+                                    placeholder="Type or search item..."
+                                    className="border-0 bg-transparent focus:ring-1 h-8 text-sm"
+                                    data-testid={`edit-item-search-${idx}`}
+                                  />
+                                </div>
+                                {/* Search Results Dropdown */}
+                                {editActiveItemIndex === idx && editItemSearch.length >= 1 && !item.item_id && editSearchResults.length > 0 && (
+                                  <div className="absolute z-50 left-0 right-0 mt-1 bg-white border rounded-lg shadow-xl max-h-48 overflow-y-auto">
+                                    {editSearchResults.slice(0, 8).map(searchItem => (
+                                      <div 
+                                        key={searchItem.item_id}
+                                        className="px-3 py-2 hover:bg-blue-50 cursor-pointer flex justify-between items-center"
+                                        onClick={() => selectEditItem(searchItem, idx)}
+                                      >
+                                        <div>
+                                          <p className="font-medium text-sm">{searchItem.name}</p>
+                                          <p className="text-xs text-gray-500">SKU: {searchItem.sku || 'N/A'}</p>
+                                        </div>
+                                        <span className="text-sm font-mono text-gray-600">₹{(searchItem.rate || searchItem.sales_rate || 0).toLocaleString()}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                {/* Show SKU if item is selected */}
+                                {item.item_id && (
+                                  <p className="text-xs text-gray-400 mt-0.5 ml-5">SKU: {item.sku || item.item_id?.slice(0, 8)}</p>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-3 py-2">
+                              <Input 
+                                type="number" 
+                                value={item.quantity} 
+                                onChange={(e) => updateEditLineItem(idx, "quantity", parseFloat(e.target.value) || 1)}
+                                className="h-8 text-center"
+                                min="1"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <Input 
+                                type="number" 
+                                value={item.rate} 
+                                onChange={(e) => updateEditLineItem(idx, "rate", parseFloat(e.target.value) || 0)}
+                                className="h-8 text-center"
+                                min="0"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <div className="flex items-center gap-1">
+                                <Select 
+                                  value={item.discount_type || "percent"} 
+                                  onValueChange={(v) => updateEditLineItem(idx, "discount_type", v)}
+                                >
+                                  <SelectTrigger className="w-12 h-8 px-1">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="percent"><Percent className="h-3 w-3" /></SelectItem>
+                                    <SelectItem value="amount"><IndianRupee className="h-3 w-3" /></SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Input 
+                                  type="number"
+                                  className="w-16 h-8 text-center"
+                                  value={item.discount_type === 'amount' ? (item.discount_value || 0) : (item.discount_percent || 0)}
+                                  onChange={(e) => {
+                                    const val = parseFloat(e.target.value) || 0;
+                                    if (item.discount_type === 'amount') {
+                                      updateEditLineItem(idx, "discount_value", val);
+                                    } else {
+                                      updateEditLineItem(idx, "discount_percent", val);
+                                    }
+                                  }}
+                                  min="0"
+                                />
+                              </div>
+                            </td>
+                            <td className="px-3 py-2">
+                              <Select 
+                                value={String(item.tax_percentage || 18)} 
+                                onValueChange={(v) => updateEditLineItem(idx, "tax_percentage", parseFloat(v))}
+                              >
+                                <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="0">0%</SelectItem>
+                                  <SelectItem value="5">5%</SelectItem>
+                                  <SelectItem value="12">12%</SelectItem>
+                                  <SelectItem value="18">18%</SelectItem>
+                                  <SelectItem value="28">28%</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </td>
+                            <td className="px-3 py-2 text-right font-mono font-medium">
+                              ₹{total.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            </td>
+                            <td className="px-3 py-2 text-center">
+                              <Button size="icon" variant="ghost" onClick={() => removeEditLineItem(idx)} className="h-7 w-7">
+                                <Trash2 className="h-4 w-4 text-red-500" />
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {editEstimate.line_items.length === 0 && (
+                        <tr>
+                          <td colSpan={7} className="px-3 py-8 text-center text-gray-400">
+                            No items added. Click "+ Add Row" to start.
                           </td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
                 </div>
