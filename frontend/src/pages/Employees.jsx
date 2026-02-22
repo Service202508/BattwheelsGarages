@@ -1334,6 +1334,21 @@ export default function Employees({ user }) {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Employee Close Confirmation */}
+      <FormCloseConfirmDialog
+        open={employeePersistence.showCloseConfirm}
+        onClose={() => employeePersistence.setShowCloseConfirm(false)}
+        onSave={async () => {
+          await handleSubmit();
+        }}
+        onDiscard={() => {
+          employeePersistence.clearSavedData();
+          setDialogOpen(false);
+        }}
+        isSaving={saving}
+        entityName="Employee"
+      />
     </div>
   );
 }
