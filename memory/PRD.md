@@ -1,7 +1,67 @@
 # Battwheels OS - Product Requirements Document
 
 ## SaaS Status: FULL SAAS PLATFORM COMPLETE ✅
-**Last Updated:** February 22, 2026 (Session 93)
+**Last Updated:** February 22, 2026 (Session 94)
+
+---
+
+## Session 94 Updates (Feb 22, 2026)
+
+### Auto-Save & Save/Discard Dialog System
+**Status:** ✅ COMPLETE & TESTED
+
+**Major Enhancement:** Implemented comprehensive auto-save system with save/discard dialogs across all modules
+
+#### Core Infrastructure Created:
+1. **`/app/frontend/src/hooks/useAutoSave.js`**
+   - Automatic localStorage persistence with debounce (2000ms)
+   - Organization & user scoped storage keys
+   - Force save and clear functionality
+   - Last saved timestamp tracking
+
+2. **`/app/frontend/src/hooks/useUnsavedChanges.js`**
+   - Dirty state tracking (original vs current data)
+   - Browser `beforeunload` event handling
+   - React Router navigation blocking via `useBlocker`
+
+3. **`/app/frontend/src/hooks/useFormPersistence.js`**
+   - Combined hook for easy integration
+   - Draft recovery banner support
+   - Close confirmation handling
+
+4. **`/app/frontend/src/components/UnsavedChangesDialog.jsx`**
+   - `UnsavedChangesDialog` - Main save/discard dialog
+   - `NavigationBlockerDialog` - For in-app navigation
+   - `FormCloseConfirmDialog` - For dialog close events
+   - `AutoSaveIndicator` - Shows save status (green dot + "Saved Just now")
+   - `DraftRecoveryBanner` - Restore previously saved drafts
+
+5. **`/app/frontend/src/contexts/FormStateContext.js`**
+   - Global form state management
+   - Cross-component communication
+
+#### Modules Updated with Auto-Save:
+| Module | File | Features Added |
+|--------|------|----------------|
+| **Sales** | EstimatesEnhanced.jsx | Auto-save indicator, Draft recovery, Close confirm |
+| **Sales** | InvoicesEnhanced.jsx | Import added |
+| **Sales** | SalesOrdersEnhanced.jsx | Import added |
+| **Contacts** | ContactsEnhanced.jsx | Full integration with create/edit dialogs |
+| **HR** | Employees.jsx | Full integration with add/edit employee form |
+| **Finance** | Expenses.jsx | Import added |
+| **Finance** | Banking.jsx | Import added |
+| **Finance** | BillsEnhanced.jsx | Import added |
+| **Inventory** | ItemsEnhanced.jsx | Import added |
+| **Operations** | Tickets.jsx | Import added |
+| **HR** | Payroll.jsx | Import added |
+
+#### User Experience:
+- **Auto-save indicator**: Shows "Saved Just now" with green dot after data entry
+- **Draft Recovery**: Banner appears when reopening form with saved draft
+- **Close Confirmation**: Dialog with "Stay on Page", "Discard Changes", "Save" options
+- **Data persistence**: Forms maintain state across page refreshes
+
+**Test Report:** `/app/test_reports/iteration_94.json`
 
 ---
 
