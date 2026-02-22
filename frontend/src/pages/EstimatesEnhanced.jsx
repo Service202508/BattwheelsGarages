@@ -2185,7 +2185,7 @@ export default function EstimatesEnhanced() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             {/* Upload Area */}
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+            <div className="border-2 border-dashed border-[rgba(255,255,255,0.13)] rounded-lg p-4 text-center">
               <input 
                 type="file" 
                 id="attachment-upload" 
@@ -2357,7 +2357,7 @@ export default function EstimatesEnhanced() {
             <DialogDescription>Upload a CSV file to import estimates in bulk</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+            <div className="border-2 border-dashed border-[rgba(255,255,255,0.13)] rounded-lg p-6 text-center">
               <input 
                 type="file" 
                 id="import-file" 
@@ -2542,7 +2542,7 @@ export default function EstimatesEnhanced() {
                 className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                   selectedTemplate === template.id 
                     ? 'border-[#22EDA9] bg-green-50' 
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-[rgba(255,255,255,0.07)] hover:border-[rgba(255,255,255,0.13)]'
                 }`}
                 onClick={() => setSelectedTemplate(template.id)}
               >
