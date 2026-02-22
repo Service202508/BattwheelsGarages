@@ -15,9 +15,11 @@ import { format } from "date-fns";
 import { 
   Plus, Search, Loader2, Users, UserPlus, Edit, Trash2, Eye,
   Building2, Briefcase, CreditCard, Shield, Phone, Mail, MapPin,
-  Calendar, IndianRupee, BadgeCheck, AlertCircle
+  Calendar, IndianRupee, BadgeCheck, AlertCircle, Save
 } from "lucide-react";
 import { API } from "@/App";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
+import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
   active: "bg-green-500/20 text-green-400",
