@@ -42,12 +42,28 @@ export default function LeaveManagement({ user }) {
   const [pendingApprovals, setPendingApprovals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isApplyOpen, setIsApplyOpen] = useState(false);
-  const [formData, setFormData] = useState({
+  
+  const initialFormData = {
     leave_type: "CL",
     start_date: "",
     end_date: "",
     reason: ""
-  });
+  };
+  const [formData, setFormData] = useState(initialFormData);
+
+  // Auto-save for Apply Leave form
+  const leavePersistence = useFormPersistence(
+    'leave_apply_new',
+    formData,
+    initialFormData,
+    {
+      enabled: isApplyOpen,
+      isDialogOpen: isApplyOpen,
+      setFormData: setFormData,
+      debounceMs: 2000,
+      entityName: 'Leave Request'
+    }
+  );
 
   const fetchLeaveTypes = useCallback(async () => {
     try {
