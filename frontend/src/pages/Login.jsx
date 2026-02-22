@@ -266,16 +266,16 @@ const PremiumInput = ({ icon: Icon, type, id, placeholder, value, onChange, requ
 const PremiumButton = ({ children, onClick, type, disabled, variant = "primary", className = "", dataTestId }) => {
   const [isPressed, setIsPressed] = useState(false);
   
-  const baseStyles = "relative w-full h-14 font-bold rounded-2xl transition-all duration-300 overflow-hidden";
+  const baseStyles = "relative w-full h-14 font-bold rounded-lg transition-all duration-300 overflow-hidden";
   
   const variants = {
-    primary: `bg-gradient-to-r from-[#22EDA9] to-[#1DD69A] text-gray-900 
-      shadow-lg shadow-[#22EDA9]/30 
-      hover:shadow-xl hover:shadow-[#22EDA9]/40 hover:-translate-y-0.5
+    primary: `bg-[#C8FF00] text-[#080C0F] 
+      shadow-lg shadow-[rgba(200,255,0,0.3)] 
+      hover:shadow-xl hover:shadow-[rgba(200,255,0,0.4)] hover:-translate-y-0.5 hover:bg-[#d4ff1a]
       active:translate-y-0 active:shadow-md
       disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0`,
-    outline: `bg-white border-2 border-gray-200 text-gray-700 
-      shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5
+    outline: `bg-[#111820] border-2 border-[rgba(255,255,255,0.15)] text-[rgba(244,246,240,0.7)] 
+      shadow-sm hover:shadow-md hover:border-[rgba(200,255,0,0.3)] hover:text-[#F4F6F0] hover:-translate-y-0.5
       active:translate-y-0`
   };
   
@@ -298,6 +298,10 @@ const PremiumButton = ({ children, onClick, type, disabled, variant = "primary",
       {/* Content */}
       <span className="relative flex items-center justify-center gap-2">
         {children}
+      </span>
+    </button>
+  );
+};
       </span>
     </button>
   );
