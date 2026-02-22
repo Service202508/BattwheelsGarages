@@ -375,8 +375,8 @@ export default function TechnicianProductivity({ user }) {
                 <span className="font-bold text-[#EAB308]">{kpis?.pending_tickets || 0}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Overdue (>48hrs)</span>
-                <span className="font-bold text-red-600">{kpis?.overdue_tickets || 0}</span>
+                <span className="text-[rgba(244,246,240,0.45)]">Overdue (&gt;48hrs)</span>
+                <span className="font-bold text-[#FF3B2F]">{kpis?.overdue_tickets || 0}</span>
               </div>
             </CardContent>
           </Card>
