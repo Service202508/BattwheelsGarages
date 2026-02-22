@@ -199,7 +199,7 @@ export default function CustomerAMC({ user }) {
         {availablePlans.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center">
-              <Shield className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+              <Shield className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
               <p className="text-gray-600">No plans available at the moment</p>
             </CardContent>
           </Card>

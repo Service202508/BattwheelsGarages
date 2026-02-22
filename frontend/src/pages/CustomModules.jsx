@@ -471,7 +471,7 @@ export default function CustomModules() {
                 </div>
               ) : (
                 <div className="p-6 text-center text-gray-500">
-                  <Database className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                  <Database className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
                   <p>No custom modules yet</p>
                   <p className="text-sm">Create your first module to get started</p>
                 </div>
@@ -605,7 +605,7 @@ export default function CustomModules() {
                   </div>
                 ) : (
                   <div className="text-center py-12 text-gray-500">
-                    <FileText className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                    <FileText className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
                     <p>No records yet</p>
                     <p className="text-sm">Click "Add Record" to create the first one</p>
                   </div>
@@ -615,7 +615,7 @@ export default function CustomModules() {
           ) : (
             <Card>
               <CardContent className="py-12 text-center text-gray-500">
-                <Settings className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                <Settings className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
                 <p className="text-lg font-medium">Select a Module</p>
                 <p className="text-sm">Choose a custom module from the list to view its records</p>
               </CardContent>

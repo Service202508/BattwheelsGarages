@@ -499,7 +499,7 @@ export default function SubscriptionManagement() {
                               {isEnabled ? (
                                 <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
                               ) : (
-                                <X className="h-4 w-4 text-gray-300 flex-shrink-0" />
+                                <X className="h-4 w-4 text-[rgba(244,246,240,0.20)] flex-shrink-0" />
                               )}
                               <span className="text-sm truncate">{featureName}</span>
                             </div>

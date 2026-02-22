@@ -207,7 +207,7 @@ export default function BusinessReports({ user }) {
                       </div>
                       <div className="flex items-center gap-2">
                         <div 
-                          className="h-2 rounded-full bg-slate-100"
+                          className="h-2 rounded-full bg-[rgba(255,255,255,0.05)]"
                           style={{ width: "100px" }}
                         >
                           <div 
@@ -247,7 +247,7 @@ export default function BusinessReports({ user }) {
                       </div>
                       <div className="flex items-center gap-2">
                         <div 
-                          className="h-2 rounded-full bg-slate-100"
+                          className="h-2 rounded-full bg-[rgba(255,255,255,0.05)]"
                           style={{ width: "100px" }}
                         >
                           <div 

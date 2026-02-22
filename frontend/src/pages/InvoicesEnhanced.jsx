@@ -891,7 +891,7 @@ export default function InvoicesEnhanced() {
           ) : invoices.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
-                <Receipt className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <Receipt className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
                 <p>No invoices found</p>
                 <Button onClick={() => setShowCreateDialog(true)} className="mt-4 bg-[#22EDA9] text-black">Create First Invoice</Button>
               </CardContent>
@@ -930,7 +930,7 @@ export default function InvoicesEnhanced() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <Badge className={statusColors[inv.status] || "bg-gray-100"}>{statusLabels[inv.status] || inv.status}</Badge>
+                        <Badge className={statusColors[inv.status] || "bg-[rgba(255,255,255,0.05)]"}>{statusLabels[inv.status] || inv.status}</Badge>
                       </td>
                       <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <Button size="icon" variant="ghost" onClick={() => fetchInvoiceDetail(inv.invoice_id)}><Eye className="h-4 w-4" /></Button>
@@ -971,7 +971,7 @@ export default function InvoicesEnhanced() {
 
         <TabsContent value="drafts">
           {invoices.filter(i => i.status === "draft").length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No draft invoices</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><FileText className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No draft invoices</p></CardContent></Card>
           ) : (
             <div className="grid gap-4">
               {invoices.filter(i => i.status === "draft").map(inv => (
@@ -985,7 +985,7 @@ export default function InvoicesEnhanced() {
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-bold">{formatCurrency(inv.grand_total)}</p>
-                        <Badge className="bg-gray-100 text-[#F4F6F0]">Draft</Badge>
+                        <Badge className="bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]">Draft</Badge>
                       </div>
                     </div>
                   </CardContent>

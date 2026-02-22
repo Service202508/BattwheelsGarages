@@ -354,7 +354,7 @@ export default function CompositeItems() {
             <p className="text-center py-12 text-gray-500">Loading composite items...</p>
           ) : filteredItems.length === 0 ? (
             <div className="text-center py-12" data-testid="empty-state">
-              <Layers className="h-12 w-12 mx-auto text-gray-300 mb-3" />
+              <Layers className="h-12 w-12 mx-auto text-[rgba(244,246,240,0.20)] mb-3" />
               <p className="text-gray-500 font-medium">No composite items yet</p>
               <p className="text-sm text-gray-400 mb-4">Create kits, assemblies, or bundles from your inventory items</p>
               <Button onClick={() => setShowCreateDialog(true)}>

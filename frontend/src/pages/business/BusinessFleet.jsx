@@ -17,7 +17,7 @@ import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
   active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
-  inactive: "bg-slate-100 text-slate-600",
+  inactive: "bg-[rgba(255,255,255,0.05)] text-slate-600",
   in_service: "bg-amber-100 text-amber-700",
 };
 

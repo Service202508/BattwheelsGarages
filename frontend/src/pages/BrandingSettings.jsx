@@ -396,8 +396,8 @@ export default function BrandingSettings({ user }) {
               className="space-y-2 cursor-pointer" 
               onClick={() => inputRef.current?.click()}
             >
-              <Upload className={`h-10 w-10 mx-auto ${bgColor === "dark" ? "text-gray-400" : "text-gray-300"}`} />
-              <p className={`text-sm ${bgColor === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+              <Upload className={`h-10 w-10 mx-auto ${bgColor === "dark" ? "text-gray-400" : "text-[rgba(244,246,240,0.20)]"}`} />
+              <p className={`text-sm ${bgColor === "dark" ? "text-[rgba(244,246,240,0.20)]" : "text-gray-600"}`}>
                 <span className="text-[#C8FF00] text-500 font-medium">Click to upload</span> or drag and drop
               </p>
               <p className={`text-xs ${bgColor === "dark" ? "text-gray-500" : "text-gray-400"}`}>
@@ -554,7 +554,7 @@ export default function BrandingSettings({ user }) {
                             onError={(e) => { e.target.style.display = 'none'; }}
                           />
                         ) : (
-                          <Image className="h-6 w-6 text-gray-300" />
+                          <Image className="h-6 w-6 text-[rgba(244,246,240,0.20)]" />
                         )}
                       </div>
                       <div className="flex-1">

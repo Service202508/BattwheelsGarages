@@ -142,7 +142,7 @@ export default function BusinessLayout({ children, user, onLogout }) {
                     >
                       <div className={`
                         p-2 rounded-lg transition-colors
-                        ${active ? 'bg-indigo-100' : 'bg-slate-100 group-hover:bg-slate-200'}
+                        ${active ? 'bg-indigo-100' : 'bg-[rgba(255,255,255,0.05)] group-hover:bg-slate-200'}
                       `}>
                         <Icon className={`h-5 w-5 ${active ? 'text-indigo-600' : 'text-slate-500'}`} />
                       </div>

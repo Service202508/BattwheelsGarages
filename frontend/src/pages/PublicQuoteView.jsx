@@ -404,7 +404,7 @@ export default function PublicQuoteView() {
                     {attachments.map((att) => (
                       <div 
                         key={att.attachment_id} 
-                        className="flex items-center justify-between bg-gray-50 rounded-lg p-3 cursor-pointer hover:bg-gray-100"
+                        className="flex items-center justify-between bg-gray-50 rounded-lg p-3 cursor-pointer hover:bg-[rgba(255,255,255,0.05)]"
                         onClick={() => handleDownloadAttachment(att.attachment_id, att.filename)}
                       >
                         <div className="flex items-center gap-2">

@@ -244,7 +244,7 @@ export default function TechnicianProductivity({ user }) {
             <CardContent>
               {technicians.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  <Users className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                  <Users className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
                   <p>No technician data available</p>
                 </div>
               ) : (

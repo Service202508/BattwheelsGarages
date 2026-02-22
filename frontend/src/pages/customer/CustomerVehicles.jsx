@@ -67,7 +67,7 @@ export default function CustomerVehicles({ user }) {
       {vehicles.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <Car className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+            <Car className="h-16 w-16 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
             <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Vehicles Registered</h3>
             <p className="text-gray-600 mb-4">
               Your registered vehicles will appear here. Contact support to add your vehicle.
@@ -90,7 +90,7 @@ export default function CustomerVehicles({ user }) {
                     </div>
                     <div>
                       <p className="font-bold text-lg">{vehicle.registration_number}</p>
-                      <p className="text-gray-300 text-sm">{vehicle.make} {vehicle.model}</p>
+                      <p className="text-[rgba(244,246,240,0.20)] text-sm">{vehicle.make} {vehicle.model}</p>
                     </div>
                   </div>
                   {vehicle.amc_plan && (

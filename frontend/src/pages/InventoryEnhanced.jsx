@@ -396,7 +396,7 @@ export default function InventoryEnhanced() {
                 ) : (
                   <div className="space-y-2">
                     {shipments.filter(s => s.status !== 'delivered').slice(0, 5).map(s => (
-                      <div key={s.shipment_id} className="flex justify-between items-center p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100" onClick={() => viewDetail('shipment', s.shipment_id)}>
+                      <div key={s.shipment_id} className="flex justify-between items-center p-2 bg-gray-50 rounded cursor-pointer hover:bg-[rgba(255,255,255,0.05)]" onClick={() => viewDetail('shipment', s.shipment_id)}>
                         <div>
                           <p className="font-medium">{s.package_number}</p>
                           <p className="text-xs text-gray-500">{s.customer_name}</p>

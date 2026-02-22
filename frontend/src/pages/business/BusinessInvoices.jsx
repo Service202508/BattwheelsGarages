@@ -19,7 +19,7 @@ const statusColors = {
   unpaid: "bg-amber-100 text-amber-700 border-amber-200",
   overdue: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)] border-red-200",
   partial: "bg-blue-100 text-[#3B9EFF] border-blue-200",
-  draft: "bg-slate-100 text-slate-600 border-[rgba(255,255,255,0.07)] border-200",
+  draft: "bg-[rgba(255,255,255,0.05)] text-slate-600 border-[rgba(255,255,255,0.07)] border-200",
 };
 
 export default function BusinessInvoices({ user }) {
@@ -241,7 +241,7 @@ export default function BusinessInvoices({ user }) {
       {/* Tabs & Filters */}
       <Tabs value={statusFilter} onValueChange={setStatusFilter}>
         <div className="flex items-center justify-between">
-          <TabsList className="bg-slate-100">
+          <TabsList className="bg-[rgba(255,255,255,0.05)]">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="unpaid">Unpaid</TabsTrigger>
             <TabsTrigger value="paid">Paid</TabsTrigger>

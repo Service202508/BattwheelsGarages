@@ -28,7 +28,7 @@ const statusColors = {
   partially_paid: "bg-yellow-100 text-[#EAB308]",
   paid: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   overdue: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-  void: "bg-gray-200 text-gray-500"
+  void: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.25)] border border-[rgba(255,255,255,0.08)]"
 };
 
 const poStatusColors = {
@@ -36,7 +36,7 @@ const poStatusColors = {
   issued: "bg-blue-100 text-[#3B9EFF]",
   received: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   billed: "bg-purple-100 text-[#8B5CF6]",
-  void: "bg-gray-200 text-gray-500"
+  void: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.25)] border border-[rgba(255,255,255,0.08)]"
 };
 
 export default function BillsEnhanced() {
@@ -695,7 +695,7 @@ export default function BillsEnhanced() {
                 {newBill.line_items.length > 0 && (
                   <div className="border rounded overflow-hidden bg-[#111820]">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-100">
+                      <thead className="bg-[rgba(255,255,255,0.05)]">
                         <tr>
                           <th className="px-3 py-2 text-left">Item</th>
                           <th className="px-3 py-2 text-right">Qty</th>
@@ -841,7 +841,7 @@ export default function BillsEnhanced() {
                 {newPO.line_items.length > 0 && (
                   <div className="border rounded overflow-hidden bg-[#111820]">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-100">
+                      <thead className="bg-[rgba(255,255,255,0.05)]">
                         <tr>
                           <th className="px-3 py-2 text-left">Item</th>
                           <th className="px-3 py-2 text-right">Qty</th>

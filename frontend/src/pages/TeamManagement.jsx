@@ -96,7 +96,7 @@ export default function TeamManagement({ user }) {
           toast.info(
             <div className="space-y-2">
               <p>Invite link (dev mode):</p>
-              <code className="text-xs bg-gray-100 p-1 rounded block truncate">
+              <code className="text-xs bg-[rgba(255,255,255,0.05)] p-1 rounded block truncate">
                 {window.location.origin}{data.invite_link}
               </code>
             </div>,
@@ -385,7 +385,7 @@ export default function TeamManagement({ user }) {
             <CardContent>
               {members.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <Users className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
                   <p>No team members yet</p>
                   <p className="text-sm">Invite your first team member to get started</p>
                 </div>
@@ -491,7 +491,7 @@ export default function TeamManagement({ user }) {
             <CardContent>
               {invites.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  <Mail className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <Mail className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
                   <p>No invitations sent yet</p>
                   <p className="text-sm">Invite team members using the button above</p>
                 </div>

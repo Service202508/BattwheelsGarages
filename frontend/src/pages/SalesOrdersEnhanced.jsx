@@ -23,7 +23,7 @@ import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
-  draft: "bg-gray-100 text-[#F4F6F0]",
+  draft: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]",
   confirmed: "bg-blue-100 text-[#3B9EFF]",
   open: "bg-green-100 text-[#22C55E]",
   partially_fulfilled: "bg-yellow-100 text-[#EAB308]",
@@ -444,13 +444,13 @@ export default function SalesOrdersEnhanced() {
                 <p className="text-xl font-bold text-[#FF3B2F]">{fulfillmentSummary.unfulfilled}</p>
                 <p className="text-[rgba(244,246,240,0.25)]">₹{(fulfillmentSummary.unfulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-gray-300" />
+              <ChevronRight className="h-4 w-4 text-[rgba(244,246,240,0.20)]" />
               <div className="text-center">
                 <p className="text-[rgba(244,246,240,0.45)]">Partially Fulfilled</p>
                 <p className="text-xl font-bold text-[#EAB308]">{fulfillmentSummary.partially_fulfilled}</p>
                 <p className="text-[rgba(244,246,240,0.25)]">₹{(fulfillmentSummary.partially_fulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-gray-300" />
+              <ChevronRight className="h-4 w-4 text-[rgba(244,246,240,0.20)]" />
               <div className="text-center">
                 <p className="text-[rgba(244,246,240,0.45)]">Fulfilled</p>
                 <p className="text-xl font-bold text-[#22C55E]">{fulfillmentSummary.fulfilled}</p>
@@ -507,7 +507,7 @@ export default function SalesOrdersEnhanced() {
           </div>
 
           {loading ? <div className="text-center py-8">Loading...</div> : orders.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><ShoppingCart className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No sales orders found</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><ShoppingCart className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No sales orders found</p></CardContent></Card>
           ) : (
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full text-sm">
@@ -589,7 +589,7 @@ export default function SalesOrdersEnhanced() {
                         {contacts.map((c, idx) => (
                           <div 
                             key={`contact-${c.contact_id}-${idx}`} 
-                            className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                            className="px-3 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
                             onClick={() => {
                               setSelectedContact(c);
                               setNewOrder(prev => ({ ...prev, customer_id: c.contact_id }));

@@ -1414,7 +1414,7 @@ export default function EstimatesEnhanced() {
                                 est.status === 'approved' ? 'bg-green-100 text-[#22C55E]' :
                                 est.status === 'sent' ? 'bg-blue-100 text-[#3B9EFF]' :
                                 est.locked_at ? 'bg-orange-100 text-[#FF8C00]' :
-                                'bg-gray-100 text-[#F4F6F0]'
+                                'bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]'
                               }
                             >
                               {est.locked_at ? 'Locked' : est.status}
@@ -1508,7 +1508,7 @@ export default function EstimatesEnhanced() {
                         {contacts.map(c => (
                           <div 
                             key={c.contact_id} 
-                            className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                            className="px-3 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
                             onClick={() => {
                               setSelectedContact(c);
                               setNewEstimate(prev => ({ ...prev, customer_id: c.contact_id }));

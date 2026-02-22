@@ -25,7 +25,7 @@ const statusColors = {
   estimate_sent: "bg-[rgba(26,255,228,0.10)] text-[#1AFFE4] border border-[rgba(26,255,228,0.25)] border-cyan-200",
   estimate_approved: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700 border-emerald-200",
   work_completed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] border-green-200",
-  closed: "bg-slate-100 text-slate-600 border-[rgba(255,255,255,0.07)] border-200",
+  closed: "bg-[rgba(255,255,255,0.05)] text-slate-600 border-[rgba(255,255,255,0.07)] border-200",
   resolved: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] border-green-200",
 };
 
@@ -229,7 +229,7 @@ export default function BusinessTickets({ user }) {
       {/* Tabs & Filters */}
       <Tabs value={statusFilter} onValueChange={setStatusFilter}>
         <div className="flex items-center justify-between">
-          <TabsList className="bg-slate-100">
+          <TabsList className="bg-[rgba(255,255,255,0.05)]">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="active">Active</TabsTrigger>
             <TabsTrigger value="completed">Completed</TabsTrigger>

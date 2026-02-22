@@ -138,7 +138,7 @@ export default function CustomerServiceHistory({ user }) {
       {filteredServices.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <ClipboardList className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+            <ClipboardList className="h-16 w-16 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
             <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Services Found</h3>
             <p className="text-gray-600">
               {searchTerm || statusFilter !== "all" 

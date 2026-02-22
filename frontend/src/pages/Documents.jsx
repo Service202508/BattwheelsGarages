@@ -51,7 +51,7 @@ const TYPE_COLORS = {
   photo: "bg-purple-100 text-purple-800",
   contract: "bg-orange-100 text-orange-800",
   report: "bg-yellow-100 text-yellow-800",
-  other: "bg-gray-100 text-[#F4F6F0]"
+  other: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]"
 };
 
 // Document Card Component

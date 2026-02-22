@@ -169,7 +169,7 @@ const EmptyState = React.forwardRef(({
 }, ref) => {
   const variantStyles = {
     default: {
-      iconBg: "bg-gray-100",
+      iconBg: "bg-[rgba(255,255,255,0.05)]",
       iconColor: "text-gray-400"
     },
     success: {

@@ -329,7 +329,7 @@ export default function StockTransfers() {
                 {/* Visual Arrow */}
                 {newTransfer.source_warehouse_id && newTransfer.destination_warehouse_id && (
                   <div className="flex items-center justify-center gap-4 py-2">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-[rgba(255,255,255,0.05)] rounded-lg">
                       <Warehouse className="h-4 w-4 text-gray-600" />
                       <span className="text-sm font-medium">
                         {warehouses.find(w => w.warehouse_id === newTransfer.source_warehouse_id)?.name}
@@ -445,7 +445,7 @@ export default function StockTransfers() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gray-100 rounded-lg">
+                <div className="p-2 bg-[rgba(255,255,255,0.05)] rounded-lg">
                   <Package className="h-5 w-5 text-gray-600" />
                 </div>
                 <div>
@@ -527,7 +527,7 @@ export default function StockTransfers() {
             </div>
           ) : filteredTransfers.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
-              <ArrowLeftRight className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <ArrowLeftRight className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
               <p>No transfers found</p>
               <p className="text-sm">Create a new transfer to move stock between warehouses</p>
             </div>

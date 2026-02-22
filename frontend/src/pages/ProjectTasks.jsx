@@ -373,7 +373,7 @@ export default function ProjectTasks() {
                       {task.is_billable ? (
                         <Badge className="bg-green-100 text-green-800">Yes</Badge>
                       ) : (
-                        <Badge className="bg-gray-100 text-gray-600">No</Badge>
+                        <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-600">No</Badge>
                       )}
                     </TableCell>
                     <TableCell className="text-right">

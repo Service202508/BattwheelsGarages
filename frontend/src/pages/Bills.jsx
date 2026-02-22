@@ -19,7 +19,7 @@ const statusColors = {
   partially_paid: "bg-yellow-100 text-[#EAB308]",
   paid: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   overdue: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-  void: "bg-gray-200 text-gray-500"
+  void: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.25)] border border-[rgba(255,255,255,0.08)]"
 };
 
 export default function Bills() {

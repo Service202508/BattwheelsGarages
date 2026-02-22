@@ -279,7 +279,7 @@ export default function PermissionsManager() {
                     `}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${roleColors[role.role] || 'bg-slate-100'}`}>
+                      <div className={`p-2 rounded-lg ${roleColors[role.role] || 'bg-[rgba(255,255,255,0.05)]'}`}>
                         {role.is_system ? <Lock className="h-4 w-4" /> : <Shield className="h-4 w-4" />}
                       </div>
                       <div>

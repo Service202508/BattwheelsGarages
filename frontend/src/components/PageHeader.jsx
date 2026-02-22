@@ -127,7 +127,7 @@ export function PageHeaderWithStats({
             >
               <div className="flex items-center gap-3">
                 {stat.icon && (
-                  <div className={`p-2 rounded-lg ${stat.iconBg || 'bg-gray-100'}`}>
+                  <div className={`p-2 rounded-lg ${stat.iconBg || 'bg-[rgba(255,255,255,0.05)]'}`}>
                     <stat.icon className={`h-5 w-5 ${stat.iconColor || 'text-gray-600'}`} />
                   </div>
                 )}
@@ -163,7 +163,7 @@ export function EmptyState({
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4">
       {Icon && (
-        <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+        <div className="w-16 h-16 rounded-2xl bg-[rgba(255,255,255,0.05)] flex items-center justify-center mb-4">
           <Icon className="h-8 w-8 text-gray-400" strokeWidth={1.5} />
         </div>
       )}
