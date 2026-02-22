@@ -36,19 +36,35 @@ export default function PurchaseOrders() {
   const [statusFilter, setStatusFilter] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
-  const [newPO, setNewPO] = useState({
+  const initialPOData = {
     vendor_id: "",
     vendor_name: "",
     line_items: [],
     source_of_supply: "DL",
     destination_of_supply: "DL",
     notes: ""
-  });
+  };
+
+  const [newPO, setNewPO] = useState(initialPOData);
 
   const [newLineItem, setNewLineItem] = useState({
     item_id: "", item_name: "", item_type: "goods",
     quantity: 1, rate: 0, tax_rate: 18
   });
+
+  // Auto-save for Purchase Order form
+  const poPersistence = useFormPersistence(
+    'purchase_order_new',
+    newPO,
+    initialPOData,
+    {
+      enabled: showCreateDialog,
+      isDialogOpen: showCreateDialog,
+      setFormData: setNewPO,
+      debounceMs: 2000,
+      entityName: 'Purchase Order'
+    }
+  );
 
   useEffect(() => { fetchData(); }, [statusFilter]);
 
