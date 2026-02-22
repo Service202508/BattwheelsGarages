@@ -193,6 +193,7 @@ export default function SalesOrdersEnhanced() {
       const data = await res.json();
       if (res.ok) {
         toast.success(`Sales Order ${data.salesorder.salesorder_number} created`);
+        orderPersistence.onSuccessfulSave();
         resetForm();
         setActiveTab("orders");
         fetchData();
