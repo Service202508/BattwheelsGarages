@@ -691,7 +691,7 @@ export default function ContactsEnhanced() {
           {loading ? (
             <TableSkeleton columns={7} rows={6} />
           ) : contacts.length === 0 ? (
-            <Card>
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
               <EmptyState 
                 icon={Users}
                 title="No contacts found"
@@ -702,52 +702,54 @@ export default function ContactsEnhanced() {
               />
             </Card>
           ) : (
-            <ResponsiveTable>
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left font-medium text-xs uppercase text-gray-500">Contact</th>
-                  <th className="px-4 py-3 text-left font-medium text-xs uppercase text-gray-500">Type</th>
-                  <th className="px-4 py-3 text-left font-medium text-xs uppercase text-gray-500">Email / Phone</th>
-                  <th className="px-4 py-3 text-left font-medium text-xs uppercase text-gray-500">GSTIN</th>
-                  <th className="px-4 py-3 text-right font-medium text-xs uppercase text-gray-500">Balance</th>
-                  <th className="px-4 py-3 text-center font-medium text-xs uppercase text-gray-500">Status</th>
-                  <th className="px-4 py-3 text-right font-medium text-xs uppercase text-gray-500">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {contacts.map(contact => (
-                  <tr key={contact.contact_id} className="hover:bg-gray-50 cursor-pointer" onClick={() => fetchContactDetail(contact.contact_id)} data-testid={`contact-row-${contact.contact_id}`}>
-                    <td className="px-4 py-3">
-                      <div>
-                        <p className="font-medium">{contact.name}</p>
-                        {contact.company_name && <p className="text-xs text-gray-500">{contact.company_name}</p>}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge className={contactTypeColors[contact.contact_type]}>{contactTypeLabels[contact.contact_type]}</Badge>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="text-gray-600">
-                        {contact.email && <p className="text-xs">{contact.email}</p>}
-                        {contact.phone && <p className="text-xs">{contact.phone}</p>}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-gray-600 font-mono text-xs">{contact.gstin || '-'}</td>
-                    <td className="px-4 py-3 text-right">
-                      {contact.balance?.receivable > 0 && <p className="text-green-600 text-xs">+₹{contact.balance.receivable.toLocaleString('en-IN')}</p>}
-                      {contact.balance?.payable > 0 && <p className="text-red-600 text-xs">-₹{contact.balance.payable.toLocaleString('en-IN')}</p>}
-                      {!contact.balance?.receivable && !contact.balance?.payable && <span className="text-gray-400">-</span>}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      {contact.is_active ? <CheckCircle className="h-4 w-4 text-green-500 inline" /> : <XCircle className="h-4 w-4 text-red-400 inline" />}
-                    </td>
-                    <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                      <Button size="icon" variant="ghost" onClick={() => fetchContactDetail(contact.contact_id)}><Eye className="h-4 w-4" /></Button>
-                    </td>
+            <div className="bg-[#0D1317] border border-[rgba(255,255,255,0.07)] rounded">
+              <ResponsiveTable>
+                <thead className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-mono font-medium text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Contact</th>
+                    <th className="px-4 py-3 text-left font-mono font-medium text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Type</th>
+                    <th className="px-4 py-3 text-left font-mono font-medium text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Email / Phone</th>
+                    <th className="px-4 py-3 text-left font-mono font-medium text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">GSTIN</th>
+                    <th className="px-4 py-3 text-right font-mono font-medium text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Balance</th>
+                    <th className="px-4 py-3 text-center font-mono font-medium text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Status</th>
+                    <th className="px-4 py-3 text-right font-mono font-medium text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </ResponsiveTable>
+                </thead>
+                <tbody>
+                  {contacts.map(contact => (
+                    <tr key={contact.contact_id} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[rgba(200,255,0,0.03)] cursor-pointer transition-colors duration-150" onClick={() => fetchContactDetail(contact.contact_id)} data-testid={`contact-row-${contact.contact_id}`}>
+                      <td className="px-4 py-3">
+                        <div>
+                          <p className="font-semibold text-[#F4F6F0]">{contact.name}</p>
+                          {contact.company_name && <p className="text-[11px] text-[rgba(244,246,240,0.35)]">{contact.company_name}</p>}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge className={contactTypeColors[contact.contact_type]}>{contactTypeLabels[contact.contact_type]}</Badge>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="text-[rgba(244,246,240,0.45)]">
+                          {contact.email && <p className="text-xs">{contact.email}</p>}
+                          {contact.phone && <p className="text-xs">{contact.phone}</p>}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-[#C8FF00] font-mono text-xs tracking-[0.04em]">{contact.gstin || <span className="text-[rgba(244,246,240,0.20)]">-</span>}</td>
+                      <td className="px-4 py-3 text-right">
+                        {contact.balance?.receivable > 0 && <p className="text-[#22C55E] text-xs font-semibold">+₹{contact.balance.receivable.toLocaleString('en-IN')}</p>}
+                        {contact.balance?.payable > 0 && <p className="text-[#FF3B2F] text-xs font-semibold">-₹{contact.balance.payable.toLocaleString('en-IN')}</p>}
+                        {!contact.balance?.receivable && !contact.balance?.payable && <span className="text-[rgba(244,246,240,0.20)]">-</span>}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        {contact.is_active ? <CheckCircle className="h-4 w-4 text-[#22C55E] inline" /> : <XCircle className="h-4 w-4 text-[#FF3B2F] inline" />}
+                      </td>
+                      <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                        <Button size="icon" variant="ghost" onClick={() => fetchContactDetail(contact.contact_id)} className="text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"><Eye className="h-4 w-4" /></Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </ResponsiveTable>
+            </div>
           )}
         </TabsContent>
 
