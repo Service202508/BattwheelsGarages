@@ -237,7 +237,17 @@ export default function Banking() {
             </DialogContent>
           </Dialog>
 
-          <Dialog open={showTxnDialog} onOpenChange={setShowTxnDialog}>
+          <Dialog 
+            open={showTxnDialog} 
+            onOpenChange={(open) => {
+              if (!open && txnPersistence.isDirty) {
+                txnPersistence.setShowCloseConfirm(true);
+              } else {
+                if (!open) txnPersistence.clearSavedData();
+                setShowTxnDialog(open);
+              }
+            }}
+          >
             <DialogTrigger asChild>
               <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="add-txn-btn">
                 <Plus className="h-4 w-4 mr-2" /> Add Transaction
@@ -245,8 +255,23 @@ export default function Banking() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Record Transaction</DialogTitle>
+                <div className="flex items-center justify-between">
+                  <DialogTitle>Record Transaction</DialogTitle>
+                  <AutoSaveIndicator 
+                    lastSaved={txnPersistence.lastSaved} 
+                    isSaving={txnPersistence.isSaving} 
+                    isDirty={txnPersistence.isDirty} 
+                  />
+                </div>
               </DialogHeader>
+              
+              <DraftRecoveryBanner
+                show={txnPersistence.showRecoveryBanner}
+                savedAt={txnPersistence.savedDraftInfo?.timestamp}
+                onRestore={txnPersistence.handleRestoreDraft}
+                onDiscard={txnPersistence.handleDiscardDraft}
+              />
+              
               <div className="space-y-4 py-4">
                 <div>
                   <Label>Account *</Label>
@@ -285,13 +310,49 @@ export default function Banking() {
                 </div>
               </div>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setShowTxnDialog(false)}>Cancel</Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    if (txnPersistence.isDirty) {
+                      txnPersistence.setShowCloseConfirm(true);
+                    } else {
+                      setShowTxnDialog(false);
+                    }
+                  }}
+                >
+                  Cancel
+                </Button>
                 <Button onClick={handleCreateTransaction} className="bg-[#22EDA9] text-black">Record Transaction</Button>
               </div>
             </DialogContent>
           </Dialog>
         </div>
       </div>
+      
+      {/* Unsaved Changes Confirmation Dialogs */}
+      <FormCloseConfirmDialog
+        open={accountPersistence.showCloseConfirm}
+        onClose={() => accountPersistence.setShowCloseConfirm(false)}
+        onSave={handleCreateAccount}
+        onDiscard={() => {
+          accountPersistence.clearSavedData();
+          setNewAccount(initialAccountData);
+          setShowAccountDialog(false);
+        }}
+        entityName="Bank Account"
+      />
+      
+      <FormCloseConfirmDialog
+        open={txnPersistence.showCloseConfirm}
+        onClose={() => txnPersistence.setShowCloseConfirm(false)}
+        onSave={handleCreateTransaction}
+        onDiscard={() => {
+          txnPersistence.clearSavedData();
+          setNewTxn(initialTxnData);
+          setShowTxnDialog(false);
+        }}
+        entityName="Transaction"
+      />
 
       {/* Summary Card */}
       <Card>
