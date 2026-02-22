@@ -110,7 +110,7 @@ export default function TechnicianProductivity({ user }) {
         {data.map((item, index) => (
           <div key={index} className="flex-1 flex flex-col items-center">
             <div 
-              className="w-full bg-[rgba(200,255,0,0.08)]0 rounded-t transition-all duration-300 hover:bg-emerald-600"
+              className="w-full bg-[#C8FF00] rounded-t transition-all duration-300 hover:bg-[#d4ff1a]"
               style={{ height: `${(item.value / max) * 100}%`, minHeight: item.value > 0 ? '4px' : '0' }}
             />
             <span className="text-xs text-gray-500 mt-1 truncate w-full text-center">{item.label}</span>
