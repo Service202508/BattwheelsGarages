@@ -2519,7 +2519,7 @@ export default function EstimatesEnhanced() {
 
       {/* Edit Estimate Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-visible">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto [&_.overflow-visible]:overflow-visible">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2"><Edit className="h-5 w-5" /> Edit Estimate</DialogTitle>
             <DialogDescription>Modify estimate details (only available for draft estimates)</DialogDescription>
