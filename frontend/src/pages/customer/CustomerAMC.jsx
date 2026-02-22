@@ -261,8 +261,8 @@ export default function CustomerAMC({ user }) {
                   <Button 
                     className={`w-full ${
                       plan.tier === 'premium' 
-                        ? 'bg-purple-600 hover:bg-purple-700' 
-                        : 'bg-emerald-600 hover:bg-emerald-700'
+                        ? 'bg-[#8B5CF6] hover:bg-[#7c3aed] text-white font-bold' 
+                        : 'bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold'
                     }`}
                     onClick={() => setSelectedPlan(plan)}
                   >
