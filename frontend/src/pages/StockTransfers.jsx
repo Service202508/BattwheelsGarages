@@ -18,7 +18,7 @@ import { API } from "@/App";
 
 const statusConfig = {
   draft: { label: "Draft", color: "bg-gray-100 text-gray-700", icon: Clock },
-  pending: { label: "Pending", color: "bg-yellow-100 text-yellow-700", icon: Clock },
+  pending: { label: "Pending", color: "bg-yellow-100 text-[#EAB308]", icon: Clock },
   in_transit: { label: "In Transit", color: "bg-blue-100 text-[#3B9EFF]", icon: Truck },
   received: { label: "Received", color: "bg-green-100 text-green-700", icon: CheckCircle2 },
   void: { label: "Void", color: "bg-red-100 text-red-700", icon: XCircle },
@@ -459,7 +459,7 @@ export default function StockTransfers() {
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-yellow-100 rounded-lg">
-                  <Clock className="h-5 w-5 text-yellow-600" />
+                  <Clock className="h-5 w-5 text-[#EAB308]" />
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Pending</p>

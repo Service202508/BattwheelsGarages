@@ -20,7 +20,7 @@ const statusColors = {
   accepted: "bg-green-100 text-green-700",
   declined: "bg-red-100 text-red-700",
   expired: "bg-orange-100 text-[#FF8C00]",
-  invoiced: "bg-purple-100 text-purple-700"
+  invoiced: "bg-purple-100 text-[#8B5CF6]"
 };
 
 export default function Quotes() {

@@ -21,9 +21,9 @@ import { API } from "@/App";
 const statusColors = {
   available: "bg-green-100 text-green-700",
   sold: "bg-blue-100 text-[#3B9EFF]",
-  returned: "bg-yellow-100 text-yellow-700",
+  returned: "bg-yellow-100 text-[#EAB308]",
   damaged: "bg-red-100 text-red-700",
-  reserved: "bg-purple-100 text-purple-700",
+  reserved: "bg-purple-100 text-[#8B5CF6]",
   active: "bg-green-100 text-green-700",
   depleted: "bg-gray-100 text-gray-600",
   expired: "bg-red-100 text-red-700"
@@ -271,7 +271,7 @@ export default function SerialBatchTracking() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">Batch Numbers</p>
-                <p className="text-2xl font-bold text-purple-700">{batchSummary?.total_batches || 0}</p>
+                <p className="text-2xl font-bold text-[#8B5CF6]">{batchSummary?.total_batches || 0}</p>
                 <p className="text-xs text-green-600">{batchSummary?.active_batches || 0} active</p>
               </div>
               <Package className="h-10 w-10 text-purple-300" />
@@ -548,7 +548,7 @@ export default function SerialBatchTracking() {
                             </Badge>
                           )}
                           {item.enable_batch_tracking && (
-                            <Badge variant="outline" className="border-purple-300 text-purple-700">
+                            <Badge variant="outline" className="border-purple-300 text-[#8B5CF6]">
                               <Package className="h-3 w-3 mr-1" /> Batch ({item.batch_count || 0})
                             </Badge>
                           )}

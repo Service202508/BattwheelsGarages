@@ -18,7 +18,7 @@ const itemTypeColors = {
   service: "bg-green-100 text-green-700",
   inventory: "bg-blue-100 text-[#3B9EFF]",
   sales: "bg-green-100 text-green-700",
-  sales_and_purchases: "bg-purple-100 text-purple-700"
+  sales_and_purchases: "bg-purple-100 text-[#8B5CF6]"
 };
 
 export default function Items() {

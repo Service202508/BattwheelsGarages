@@ -19,7 +19,7 @@ import { API } from "@/App";
 const confidenceBadge = (level, score) => {
   const styles = {
     high: "bg-[rgba(34,197,94,0.08)]0/15 text-green-600 border-green-500/30",
-    medium: "bg-[rgba(234,179,8,0.08)]0/15 text-yellow-600 border-yellow-500/30",
+    medium: "bg-[rgba(234,179,8,0.08)]0/15 text-[#EAB308] border-yellow-500/30",
     low: "bg-[rgba(255,140,0,0.08)]0/15 text-[#FF8C00] border-orange-500/30"
   };
   return (
@@ -335,7 +335,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                   )}
 
                   {currentStep.safety_notes && (
-                    <div className="flex items-start gap-2 p-2 bg-[rgba(234,179,8,0.08)] dark:bg-yellow-900/20 rounded text-xs text-yellow-700 dark:text-yellow-400 mb-2">
+                    <div className="flex items-start gap-2 p-2 bg-[rgba(234,179,8,0.08)] dark:bg-yellow-900/20 rounded text-xs text-[#EAB308] dark:text-yellow-400 mb-2">
                       <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
                       <span>{currentStep.safety_notes}</span>
                     </div>

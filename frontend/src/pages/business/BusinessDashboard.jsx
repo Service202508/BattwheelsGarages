@@ -17,7 +17,7 @@ const statusColors = {
   in_progress: "bg-amber-100 text-amber-700",
   work_in_progress: "bg-amber-100 text-amber-700",
   completed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
-  pending: "bg-purple-100 text-purple-700",
+  pending: "bg-purple-100 text-[#8B5CF6]",
 };
 
 export default function BusinessDashboard({ user }) {

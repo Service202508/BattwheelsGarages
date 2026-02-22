@@ -84,12 +84,12 @@ export default function TechnicianProductivity({ user }) {
   const getPerformanceColor = (value, metric) => {
     if (metric === "resolution_time") {
       if (value <= 4) return "text-green-600";
-      if (value <= 8) return "text-yellow-600";
+      if (value <= 8) return "text-[#EAB308]";
       return "text-red-600";
     }
     if (metric === "tickets") {
       if (value >= 10) return "text-green-600";
-      if (value >= 5) return "text-yellow-600";
+      if (value >= 5) return "text-[#EAB308]";
       return "text-red-600";
     }
     return "text-gray-600";
@@ -98,7 +98,7 @@ export default function TechnicianProductivity({ user }) {
   const getPerformanceBadge = (tickets, avgTime) => {
     if (tickets >= 10 && avgTime <= 4) return { label: "Excellent", color: "bg-green-100 text-green-700" };
     if (tickets >= 5 && avgTime <= 8) return { label: "Good", color: "bg-blue-100 text-[#3B9EFF]" };
-    if (tickets >= 3) return { label: "Average", color: "bg-yellow-100 text-yellow-700" };
+    if (tickets >= 3) return { label: "Average", color: "bg-yellow-100 text-[#EAB308]" };
     return { label: "Needs Improvement", color: "bg-red-100 text-red-700" };
   };
 
@@ -372,7 +372,7 @@ export default function TechnicianProductivity({ user }) {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Pending Assignment</span>
-                <span className="font-bold text-yellow-600">{kpis?.pending_tickets || 0}</span>
+                <span className="font-bold text-[#EAB308]">{kpis?.pending_tickets || 0}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Overdue (>48hrs)</span>

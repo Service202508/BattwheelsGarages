@@ -33,7 +33,7 @@ const categoryIcons = {
 
 const roleColors = {
   admin: "bg-red-100 text-red-700 border-red-200",
-  manager: "bg-purple-100 text-purple-700 border-purple-200",
+  manager: "bg-purple-100 text-[#8B5CF6] border-purple-200",
   technician: "bg-green-100 text-green-700 border-green-200",
   customer: "bg-blue-100 text-[#3B9EFF] border-blue-200",
   business_customer: "bg-indigo-100 text-indigo-700 border-indigo-200",

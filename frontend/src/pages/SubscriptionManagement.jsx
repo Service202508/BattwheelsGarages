@@ -66,7 +66,7 @@ export default function SubscriptionManagement() {
     const colors = {
       free: "bg-gray-100 text-gray-700",
       starter: "bg-blue-100 text-[#3B9EFF]",
-      professional: "bg-purple-100 text-purple-700",
+      professional: "bg-purple-100 text-[#8B5CF6]",
       enterprise: "bg-amber-100 text-amber-700"
     };
     return colors[planCode] || "bg-gray-100 text-gray-700";

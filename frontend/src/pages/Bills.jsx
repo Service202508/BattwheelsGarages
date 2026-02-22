@@ -16,7 +16,7 @@ import { API } from "@/App";
 
 const statusColors = {
   open: "bg-blue-100 text-[#3B9EFF]",
-  partially_paid: "bg-yellow-100 text-yellow-700",
+  partially_paid: "bg-yellow-100 text-[#EAB308]",
   paid: "bg-green-100 text-green-700",
   overdue: "bg-red-100 text-red-700",
   void: "bg-gray-200 text-gray-500"

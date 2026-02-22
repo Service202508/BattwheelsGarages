@@ -258,7 +258,7 @@ export default function CompositeItems() {
   const typeLabels = { kit: "Kit", assembly: "Assembly", bundle: "Bundle" };
   const typeColors = {
     kit: "bg-blue-100 text-[#3B9EFF]",
-    assembly: "bg-purple-100 text-purple-700",
+    assembly: "bg-purple-100 text-[#8B5CF6]",
     bundle: "bg-green-100 text-green-700"
   };
 
@@ -304,7 +304,7 @@ export default function CompositeItems() {
           <Card className="bg-[rgba(139,92,246,0.08)] border-purple-200">
             <CardContent className="p-4">
               <p className="text-sm text-purple-600">Assemblies</p>
-              <p className="text-2xl font-bold text-purple-700">{summary.assemblies}</p>
+              <p className="text-2xl font-bold text-[#8B5CF6]">{summary.assemblies}</p>
             </CardContent>
           </Card>
           <Card className="bg-[rgba(200,255,0,0.08)] border-emerald-200">

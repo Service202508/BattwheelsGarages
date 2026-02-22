@@ -496,8 +496,8 @@ export default function InventoryAdjustments() {
           </Card>
           <Card className="bg-[rgba(234,179,8,0.08)] border-yellow-200">
             <CardContent className="p-3">
-              <p className="text-xs text-yellow-600">Draft</p>
-              <p className="text-xl font-bold text-yellow-700">{summary.draft}</p>
+              <p className="text-xs text-[#EAB308]">Draft</p>
+              <p className="text-xl font-bold text-[#EAB308]">{summary.draft}</p>
             </CardContent>
           </Card>
           <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
@@ -1206,8 +1206,8 @@ export default function InventoryAdjustments() {
 
                 {importPreview.items_not_found?.length > 0 && (
                   <div className="p-3 bg-[rgba(234,179,8,0.08)] rounded-lg text-sm">
-                    <p className="font-medium text-yellow-700 flex items-center gap-1"><AlertTriangle className="h-4 w-4" /> Unmatched items:</p>
-                    <p className="text-yellow-600 mt-1">{importPreview.items_not_found.slice(0, 10).join(", ")}</p>
+                    <p className="font-medium text-[#EAB308] flex items-center gap-1"><AlertTriangle className="h-4 w-4" /> Unmatched items:</p>
+                    <p className="text-[#EAB308] mt-1">{importPreview.items_not_found.slice(0, 10).join(", ")}</p>
                   </div>
                 )}
 
@@ -1340,7 +1340,7 @@ export default function InventoryAdjustments() {
                         <td className="px-3 py-2 text-right">{item.value_percentage}%</td>
                         <td className="px-3 py-2 text-right">{item.cumulative_percentage}%</td>
                         <td className="px-3 py-2 text-center">
-                          <Badge className={item.classification === "A" ? "bg-green-100 text-green-700" : item.classification === "B" ? "bg-yellow-100 text-yellow-700" : "bg-gray-100 text-gray-700"}>
+                          <Badge className={item.classification === "A" ? "bg-green-100 text-green-700" : item.classification === "B" ? "bg-yellow-100 text-[#EAB308]" : "bg-gray-100 text-gray-700"}>
                             {item.classification}
                           </Badge>
                         </td>

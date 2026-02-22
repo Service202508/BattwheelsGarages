@@ -14,7 +14,7 @@ import { API } from "@/App";
 
 const statusColors = {
   active: "bg-green-100 text-green-700",
-  on_hold: "bg-yellow-100 text-yellow-700",
+  on_hold: "bg-yellow-100 text-[#EAB308]",
   completed: "bg-blue-100 text-[#3B9EFF]",
   cancelled: "bg-red-100 text-red-700"
 };

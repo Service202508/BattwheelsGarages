@@ -505,7 +505,7 @@ export default function InvoiceSettings() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-yellow-600" /> Due Soon
+                <Clock className="h-5 w-5 text-[#EAB308]" /> Due Soon
               </CardTitle>
               <CardDescription>Invoices due within 7 days</CardDescription>
             </CardHeader>
@@ -533,7 +533,7 @@ export default function InvoiceSettings() {
                           <td className="px-4 py-3 text-right font-medium">{formatCurrency(inv.balance_due)}</td>
                           <td className="px-4 py-3 text-center">{inv.due_date}</td>
                           <td className="px-4 py-3 text-center">
-                            <Badge variant="outline" className="bg-[rgba(234,179,8,0.08)] text-yellow-700">{inv.days_until_due} days</Badge>
+                            <Badge variant="outline" className="bg-[rgba(234,179,8,0.08)] text-[#EAB308]">{inv.days_until_due} days</Badge>
                           </td>
                           <td className="px-4 py-3 text-right">
                             <Button size="sm" variant="outline" onClick={() => sendReminder(inv.invoice_id)}>

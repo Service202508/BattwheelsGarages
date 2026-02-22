@@ -19,8 +19,8 @@ import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
   open: "bg-blue-100 text-[#3B9EFF] border-blue-200",
-  assigned: "bg-purple-100 text-purple-700 border-purple-200",
-  technician_assigned: "bg-purple-100 text-purple-700 border-purple-200",
+  assigned: "bg-purple-100 text-[#8B5CF6] border-purple-200",
+  technician_assigned: "bg-purple-100 text-[#8B5CF6] border-purple-200",
   work_in_progress: "bg-amber-100 text-amber-700 border-amber-200",
   estimate_sent: "bg-cyan-100 text-cyan-700 border-cyan-200",
   estimate_approved: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700 border-emerald-200",
@@ -31,7 +31,7 @@ const statusColors = {
 
 const priorityColors = {
   low: "bg-[rgba(34,197,94,0.08)] text-green-600",
-  medium: "bg-[rgba(234,179,8,0.08)] text-yellow-600",
+  medium: "bg-[rgba(234,179,8,0.08)] text-[#EAB308]",
   high: "bg-[rgba(255,140,0,0.08)] text-[#FF8C00]",
   critical: "bg-[rgba(255,59,47,0.08)] text-red-600",
 };

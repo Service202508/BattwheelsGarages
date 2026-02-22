@@ -30,7 +30,7 @@ const itemTypeColors = {
   inventory: "bg-blue-100 text-[#3B9EFF]",
   non_inventory: "bg-gray-100 text-gray-700",
   service: "bg-green-100 text-green-700",
-  sales: "bg-purple-100 text-purple-700",
+  sales: "bg-purple-100 text-[#8B5CF6]",
   sales_and_purchases: "bg-orange-100 text-[#FF8C00]"
 };
 
@@ -1356,7 +1356,7 @@ export default function ItemsEnhanced() {
                       </div>
                       <div className="bg-[rgba(139,92,246,0.08)] rounded p-2">
                         <p className="text-gray-500 text-xs">Method</p>
-                        <p className="font-bold text-purple-700">{valuationReport.valuation_method || 'FIFO'}</p>
+                        <p className="font-bold text-[#8B5CF6]">{valuationReport.valuation_method || 'FIFO'}</p>
                       </div>
                     </div>
                     <div className="border-t pt-2">

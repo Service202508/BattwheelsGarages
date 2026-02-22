@@ -369,7 +369,7 @@ const FaultTreeImport = () => {
                 <div className="text-sm text-gray-500">Valid</div>
               </div>
               <div className="bg-[rgba(234,179,8,0.08)] p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-yellow-600">{preview.warning_rows}</div>
+                <div className="text-2xl font-bold text-[#EAB308]">{preview.warning_rows}</div>
                 <div className="text-sm text-gray-500">Warnings</div>
               </div>
               <div className="bg-[rgba(255,59,47,0.08)] p-4 rounded-lg text-center">
