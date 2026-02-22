@@ -1882,8 +1882,9 @@ async def add_line_item(estimate_id: str, item: LineItemCreate):
     if not estimate:
         raise HTTPException(status_code=404, detail="Estimate not found")
     
-    if estimate.get("status") not in ["draft"]:
-        raise HTTPException(status_code=400, detail="Cannot modify non-draft estimates")
+    # Allow modifications for all statuses except converted and void
+    if estimate.get("status") in ["converted", "void"]:
+        raise HTTPException(status_code=400, detail="Cannot modify converted or void estimates")
     
     gst_type = estimate.get("gst_type", "igst")
     customer_id = estimate.get("customer_id")
