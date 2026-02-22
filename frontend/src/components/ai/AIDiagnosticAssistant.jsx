@@ -199,14 +199,14 @@ Please provide:
     return content.split('\n').map((line, i) => {
       if (line.startsWith('### ')) {
         return (
-          <h3 key={i} className="text-sm font-semibold text-emerald-500 mt-4 mb-2">
+          <h3 key={i} className="text-sm font-semibold text-[#C8FF00] mt-4 mb-2">
             {line.substring(4)}
           </h3>
         );
       }
       if (line.startsWith('## ')) {
         return (
-          <h2 key={i} className="text-base font-bold text-gray-800 dark:text-white mt-5 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <h2 key={i} className="text-base font-bold text-[#F4F6F0] mt-5 mb-2 pb-2 border-b border-[rgba(255,255,255,0.07)]">
             {line.substring(3)}
           </h2>
         );
@@ -214,23 +214,23 @@ Please provide:
       if (line.includes('**')) {
         const parts = line.split(/\*\*(.*?)\*\*/g);
         return (
-          <p key={i} className="mb-1.5 text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+          <p key={i} className="mb-1.5 text-[rgba(244,246,240,0.7)] text-sm leading-relaxed">
             {parts.map((part, j) => 
-              j % 2 === 1 ? <strong key={j} className="text-emerald-600 dark:text-emerald-400 font-medium">{part}</strong> : part
+              j % 2 === 1 ? <strong key={j} className="text-[#C8FF00] font-medium">{part}</strong> : part
             )}
           </p>
         );
       }
       if (line.startsWith('- ') || line.startsWith('• ')) {
         return (
-          <li key={i} className="ml-4 mb-1.5 list-disc text-gray-600 dark:text-gray-300 text-sm">
+          <li key={i} className="ml-4 mb-1.5 list-disc text-[rgba(244,246,240,0.7)] text-sm">
             {line.substring(2)}
           </li>
         );
       }
       if (/^\d+\.\s/.test(line)) {
         return (
-          <li key={i} className="ml-4 mb-2 list-decimal text-gray-600 dark:text-gray-300 text-sm">
+          <li key={i} className="ml-4 mb-2 list-decimal text-[rgba(244,246,240,0.7)] text-sm">
             {line.substring(line.indexOf('.') + 2)}
           </li>
         );
@@ -238,7 +238,7 @@ Please provide:
       if (line.trim() === '') {
         return <div key={i} className="h-2" />;
       }
-      return <p key={i} className="mb-1.5 text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{line}</p>;
+      return <p key={i} className="mb-1.5 text-[rgba(244,246,240,0.7)] text-sm leading-relaxed">{line}</p>;
     });
   };
 
