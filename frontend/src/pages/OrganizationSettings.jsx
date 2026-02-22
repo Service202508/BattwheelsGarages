@@ -339,6 +339,76 @@ export default function OrganizationSettings({ user }) {
     }
   };
 
+  // Save Razorpay configuration
+  const saveRazorpayConfig = async () => {
+    if (!razorpayConfig.key_id || !razorpayConfig.key_secret) {
+      toast.error("Please enter both Key ID and Key Secret");
+      return;
+    }
+    
+    if (razorpayConfig.key_id.length < 10 || razorpayConfig.key_secret.length < 10) {
+      toast.error("Invalid API credentials. Please check your Razorpay dashboard.");
+      return;
+    }
+    
+    setSavingRazorpay(true);
+    try {
+      const res = await fetch(`${API}/payments/config`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(razorpayConfig),
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        toast.success("Razorpay configuration saved successfully!");
+        setRazorpayConfigured(true);
+        // Clear sensitive data from state after save
+        setRazorpayConfig(prev => ({
+          ...prev,
+          key_secret: "",
+          webhook_secret: ""
+        }));
+      } else {
+        const error = await res.json();
+        toast.error(error.detail || "Failed to save Razorpay configuration");
+      }
+    } catch (error) {
+      toast.error("Failed to save Razorpay configuration");
+    } finally {
+      setSavingRazorpay(false);
+    }
+  };
+  
+  // Remove Razorpay configuration
+  const removeRazorpayConfig = async () => {
+    if (!confirm("Are you sure you want to remove Razorpay configuration? This will disable online payments.")) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`${API}/payments/config`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      
+      if (res.ok) {
+        toast.success("Razorpay configuration removed");
+        setRazorpayConfigured(false);
+        setRazorpayConfig({
+          key_id: "",
+          key_secret: "",
+          webhook_secret: "",
+          test_mode: true
+        });
+      } else {
+        toast.error("Failed to remove Razorpay configuration");
+      }
+    } catch (error) {
+      toast.error("Failed to remove Razorpay configuration");
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
