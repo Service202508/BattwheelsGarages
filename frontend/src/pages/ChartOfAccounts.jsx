@@ -12,8 +12,8 @@ import { Plus, Layers, TrendingUp, TrendingDown, Wallet, DollarSign, PiggyBank }
 import { API } from "@/App";
 
 const accountTypeColors = {
-  asset: "bg-green-100 text-green-700",
-  liability: "bg-red-100 text-red-700",
+  asset: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
+  liability: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
   equity: "bg-blue-100 text-[#3B9EFF]",
   income: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
   expense: "bg-orange-100 text-[#FF8C00]"

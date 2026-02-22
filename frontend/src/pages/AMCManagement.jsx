@@ -230,9 +230,9 @@ export default function AMCManagement({ user }) {
 
   const getStatusBadge = (status) => {
     const configs = {
-      active: { color: "bg-green-100 text-green-700", label: "Active" },
+      active: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", label: "Active" },
       expiring: { color: "bg-orange-100 text-[#FF8C00]", label: "Expiring" },
-      expired: { color: "bg-red-100 text-red-700", label: "Expired" },
+      expired: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", label: "Expired" },
       cancelled: { color: "bg-gray-100 text-gray-700", label: "Cancelled" }
     };
     const config = configs[status] || configs.active;

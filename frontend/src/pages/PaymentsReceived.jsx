@@ -424,7 +424,7 @@ export default function PaymentsReceived() {
     if (payment.is_retainer) {
       return <Badge className="bg-purple-100 text-[#8B5CF6]">Retainer</Badge>;
     }
-    return <Badge className="bg-green-100 text-green-700">Recorded</Badge>;
+    return <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">Recorded</Badge>;
   };
 
   // Payment mode icon
@@ -763,7 +763,7 @@ export default function PaymentsReceived() {
                             ₹{credit.amount?.toLocaleString('en-IN')}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <Badge className="bg-green-100 text-green-700">Available</Badge>
+                            <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">Available</Badge>
                           </td>
                         </tr>
                       ))

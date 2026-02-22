@@ -26,7 +26,7 @@ const priorityColors = {
   low: "bg-gray-100 text-gray-700",
   normal: "bg-blue-100 text-[#3B9EFF]",
   high: "bg-orange-100 text-[#FF8C00]",
-  urgent: "bg-red-100 text-red-700",
+  urgent: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
 };
 
 export default function NotificationBell({ user }) {

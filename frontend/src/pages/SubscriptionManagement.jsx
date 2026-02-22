@@ -75,10 +75,10 @@ export default function SubscriptionManagement() {
   const getStatusBadge = (status) => {
     const badges = {
       trialing: { color: "bg-blue-100 text-[#3B9EFF]", icon: Clock, label: "Trial" },
-      active: { color: "bg-green-100 text-green-700", icon: Check, label: "Active" },
-      past_due: { color: "bg-red-100 text-red-700", icon: AlertTriangle, label: "Past Due" },
+      active: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: Check, label: "Active" },
+      past_due: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: AlertTriangle, label: "Past Due" },
       canceled: { color: "bg-gray-100 text-gray-700", icon: X, label: "Canceled" },
-      suspended: { color: "bg-red-100 text-red-700", icon: AlertTriangle, label: "Suspended" }
+      suspended: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: AlertTriangle, label: "Suspended" }
     };
     return badges[status] || badges.active;
   };

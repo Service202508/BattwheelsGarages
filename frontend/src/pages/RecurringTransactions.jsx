@@ -13,9 +13,9 @@ import { Plus, Repeat, Calendar, User, Play, Pause, FileText, Trash2 } from "luc
 import { API } from "@/App";
 
 const statusColors = {
-  active: "bg-green-100 text-green-700",
+  active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   stopped: "bg-gray-200 text-gray-600",
-  expired: "bg-red-100 text-red-700"
+  expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"
 };
 
 export default function RecurringTransactions() {

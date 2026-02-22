@@ -12,7 +12,7 @@ import { API } from "@/App";
 
 const statusColors = {
   draft: "bg-gray-100 text-gray-700",
-  delivered: "bg-green-100 text-green-700",
+  delivered: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   invoiced: "bg-blue-100 text-[#3B9EFF]"
 };
 

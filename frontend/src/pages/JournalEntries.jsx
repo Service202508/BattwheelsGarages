@@ -151,7 +151,7 @@ export default function JournalEntries() {
                         <td className="px-3 py-2 text-right">₹{totalDebit.toLocaleString('en-IN')}</td>
                         <td className="px-3 py-2 text-right">₹{totalCredit.toLocaleString('en-IN')}</td>
                         <td className="px-3 py-2">
-                          {isBalanced ? <Badge className="bg-green-100 text-green-700">Balanced</Badge> : <Badge className="bg-red-100 text-red-700">Unbalanced</Badge>}
+                          {isBalanced ? <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">Balanced</Badge> : <Badge className="bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]">Unbalanced</Badge>}
                         </td>
                       </tr>
                     </tfoot>

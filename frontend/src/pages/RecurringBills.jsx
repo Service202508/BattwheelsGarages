@@ -15,7 +15,7 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  active: "bg-green-100 text-green-700",
+  active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   stopped: "bg-yellow-100 text-[#EAB308]",
   expired: "bg-gray-100 text-gray-600"
 };

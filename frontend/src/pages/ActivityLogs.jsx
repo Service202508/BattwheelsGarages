@@ -31,14 +31,14 @@ const ENTITY_TYPES = {
 
 // Action types with icons and colors
 const ACTION_TYPES = {
-  created: { label: "Created", color: "bg-green-100 text-green-700", icon: Plus },
+  created: { label: "Created", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: Plus },
   updated: { label: "Updated", color: "bg-blue-100 text-[#3B9EFF]", icon: Edit },
-  deleted: { label: "Deleted", color: "bg-red-100 text-red-700", icon: Trash2 },
+  deleted: { label: "Deleted", color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: Trash2 },
   viewed: { label: "Viewed", color: "bg-gray-100 text-gray-700", icon: Eye },
   sent: { label: "Sent", color: "bg-purple-100 text-[#8B5CF6]", icon: FileText },
   paid: { label: "Paid", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700", icon: FileText },
-  approved: { label: "Approved", color: "bg-green-100 text-green-700", icon: FileText },
-  voided: { label: "Voided", color: "bg-red-100 text-red-700", icon: FileText }
+  approved: { label: "Approved", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: FileText },
+  voided: { label: "Voided", color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: FileText }
 };
 
 export default function ActivityLogs() {

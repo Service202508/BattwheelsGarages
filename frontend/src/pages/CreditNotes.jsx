@@ -15,7 +15,7 @@ import { API } from "@/App";
 
 const statusColors = {
   open: "bg-blue-100 text-[#3B9EFF]",
-  closed: "bg-green-100 text-green-700"
+  closed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]"
 };
 
 export default function CreditNotes() {

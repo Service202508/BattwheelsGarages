@@ -13,10 +13,10 @@ import { Plus, FolderKanban, Clock, User, Calendar, Play, Pause, CheckCircle } f
 import { API } from "@/App";
 
 const statusColors = {
-  active: "bg-green-100 text-green-700",
+  active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   on_hold: "bg-yellow-100 text-[#EAB308]",
   completed: "bg-blue-100 text-[#3B9EFF]",
-  cancelled: "bg-red-100 text-red-700"
+  cancelled: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"
 };
 
 export default function Projects() {

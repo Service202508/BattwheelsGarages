@@ -26,15 +26,15 @@ const statusColors = {
   draft: "bg-gray-100 text-gray-700",
   open: "bg-blue-100 text-[#3B9EFF]",
   partially_paid: "bg-yellow-100 text-[#EAB308]",
-  paid: "bg-green-100 text-green-700",
-  overdue: "bg-red-100 text-red-700",
+  paid: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
+  overdue: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
   void: "bg-gray-200 text-gray-500"
 };
 
 const poStatusColors = {
   draft: "bg-gray-100 text-gray-700",
   issued: "bg-blue-100 text-[#3B9EFF]",
-  received: "bg-green-100 text-green-700",
+  received: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   billed: "bg-purple-100 text-[#8B5CF6]",
   void: "bg-gray-200 text-gray-500"
 };
@@ -593,7 +593,7 @@ export default function BillsEnhanced() {
                         <div>
                           <div className="flex items-center gap-3 mb-1">
                             <h3 className="font-semibold">{bill.bill_number}</h3>
-                            <Badge className="bg-red-100 text-red-700">Overdue</Badge>
+                            <Badge className="bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]">Overdue</Badge>
                           </div>
                           <div className="flex gap-4 text-sm text-gray-500">
                             <span><Building2 className="h-3.5 w-3.5 inline mr-1" />{bill.vendor_name}</span>
