@@ -122,8 +122,9 @@ export default function PurchaseOrders() {
       });
       if (res.ok) {
         toast.success("Purchase Order created");
+        poPersistence.onSuccessfulSave(); // Clear auto-saved draft
         setShowCreateDialog(false);
-        setNewPO({ vendor_id: "", vendor_name: "", line_items: [], source_of_supply: "DL", destination_of_supply: "DL", notes: "" });
+        setNewPO(initialPOData);
         fetchData();
       }
     } catch { toast.error("Error creating PO"); }
