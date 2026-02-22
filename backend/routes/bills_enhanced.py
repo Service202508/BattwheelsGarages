@@ -730,6 +730,15 @@ async def open_bill(bill_id: str):
     await add_bill_history(bill_id, "opened", "Bill marked as open")
     await update_vendor_balance(bill["vendor_id"])
     
+    # Post journal entry for double-entry bookkeeping
+    org_id = bill.get("organization_id", "")
+    if org_id:
+        try:
+            await post_bill_journal_entry(org_id, bill)
+            logger.info(f"Posted journal entry for bill {bill.get('bill_number')}")
+        except Exception as e:
+            logger.warning(f"Failed to post journal entry for bill {bill.get('bill_number')}: {e}")
+    
     return {"code": 0, "message": "Bill opened"}
 
 @router.post("/{bill_id}/void")
