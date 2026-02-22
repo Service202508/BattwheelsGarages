@@ -454,10 +454,10 @@ export default function Layout({ children, user, onLogout }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-[#0D1317] flex">
       {/* Desktop Sidebar */}
       <aside 
-        className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-white border-r border-gray-100 transition-all duration-300 z-50 shadow-sm ${
+        className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-[#080C0F] border-r border-[rgba(255,255,255,0.07)] transition-all duration-300 z-50 ${
           collapsed ? "w-[72px]" : "w-72"
         }`}
         data-testid="desktop-sidebar"
@@ -472,7 +472,7 @@ export default function Layout({ children, user, onLogout }) {
 
       {/* Mobile Sidebar */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetContent side="left" className="p-0 w-80">
+        <SheetContent side="left" className="p-0 w-80 bg-[#080C0F] border-r border-[rgba(255,255,255,0.07)]">
           <SidebarContent 
             user={user} 
             onLogout={onLogout}
@@ -488,7 +488,7 @@ export default function Layout({ children, user, onLogout }) {
         }`}
       >
         {/* Top Header Bar */}
-        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <header className="sticky top-0 z-40 bg-[#080C0F]/90 backdrop-blur-md border-b border-[rgba(255,255,255,0.07)]">
           <div className="flex items-center justify-between px-4 lg:px-8 h-16">
             {/* Left side - Mobile menu button */}
             <div className="lg:hidden">
@@ -496,10 +496,10 @@ export default function Layout({ children, user, onLogout }) {
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setMobileOpen(true)}
-                className="h-10 w-10 bg-gray-100 hover:bg-gray-200 rounded-xl"
+                className="h-10 w-10 bg-[#111820] hover:bg-[rgba(200,255,0,0.08)] border border-[rgba(255,255,255,0.07)] rounded"
                 data-testid="mobile-menu-btn"
               >
-                <Menu className="h-5 w-5 text-gray-700" />
+                <Menu className="h-5 w-5 text-[rgba(244,246,240,0.7)]" />
               </Button>
             </div>
             
@@ -514,14 +514,14 @@ export default function Layout({ children, user, onLogout }) {
             {/* Right side - Actions */}
             <div className="flex items-center gap-3">
               <NotificationBell />
-              <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-gray-200">
+              <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-[rgba(255,255,255,0.07)]">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={user?.picture} />
-                  <AvatarFallback className="bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] text-gray-900 text-xs font-semibold">
+                  <AvatarFallback className="bg-[rgba(200,255,0,0.12)] border border-[rgba(200,255,0,0.2)] text-[#C8FF00] text-xs font-bold">
                     {user?.name?.charAt(0) || "U"}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-medium text-gray-700">{user?.name?.split(' ')[0]}</span>
+                <span className="text-sm font-medium text-[#F4F6F0]">{user?.name?.split(' ')[0]}</span>
               </div>
             </div>
           </div>
