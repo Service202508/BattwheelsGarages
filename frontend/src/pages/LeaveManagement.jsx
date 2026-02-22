@@ -16,6 +16,8 @@ import {
   AlertCircle, Umbrella, Stethoscope, Palmtree, Ban
 } from "lucide-react";
 import { API } from "@/App";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
+import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const LEAVE_ICONS = {
   CL: Umbrella,
