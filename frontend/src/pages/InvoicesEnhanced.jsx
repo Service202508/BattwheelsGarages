@@ -1455,33 +1455,117 @@ export default function InvoicesEnhanced() {
                   </>
                 )}
 
-                {/* Online Payment Option */}
+                {/* Online Payment Option - Razorpay */}
                 {selectedInvoice.balance_due > 0 && selectedInvoice.status !== "draft" && (
                   <>
                     <Separator />
-                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
-                      <div className="flex items-center justify-between">
+                    <div className="p-4 bg-[rgba(200,255,0,0.05)] rounded-lg border border-[rgba(200,255,0,0.15)]">
+                      <div className="flex items-center justify-between mb-3">
                         <div>
-                          <h4 className="font-medium flex items-center gap-2"><CreditCard className="h-4 w-4 text-[#3B9EFF]" /> Online Payment</h4>
-                          <p className="text-sm text-[rgba(244,246,240,0.45)] mt-1">Pay securely via Stripe (Card, UPI)</p>
+                          <h4 className="font-medium flex items-center gap-2">
+                            <CreditCard className="h-4 w-4 text-[#C8FF00]" /> 
+                            Collect Payment Online
+                          </h4>
+                          <p className="text-sm text-[rgba(244,246,240,0.45)] mt-1">
+                            Accept UPI, Cards, Net Banking, Wallets via Razorpay
+                          </p>
                         </div>
-                        <Button 
-                          onClick={() => handleCreatePaymentLink(selectedInvoice.invoice_id)}
-                          className="bg-blue-600 hover:bg-blue-700"
-                          data-testid="pay-online-btn"
-                        >
-                          <ExternalLink className="h-4 w-4 mr-2" /> Pay Online
-                        </Button>
                       </div>
-                      {selectedInvoice.payment_link && (
-                        <div className="mt-3 flex items-center gap-2 text-sm">
-                          <Badge variant="outline" className="text-[#3B9EFF]">Payment Link Active</Badge>
-                          <button 
-                            className="text-[#3B9EFF] hover:underline"
-                            onClick={() => navigator.clipboard.writeText(selectedInvoice.payment_link).then(() => toast.success("Link copied!"))}
+                      
+                      {/* Payment Status Display */}
+                      {selectedInvoice.razorpay_payment_id && (
+                        <div className="mb-3 p-3 bg-[rgba(34,197,94,0.10)] rounded-lg border border-green-500/20">
+                          <div className="flex items-center gap-2 text-green-400 text-sm">
+                            <CheckCircle className="h-4 w-4" />
+                            <span className="font-medium">Payment Received</span>
+                          </div>
+                          <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-[rgba(244,246,240,0.65)]">
+                            <div>
+                              <span className="text-[rgba(244,246,240,0.45)]">Transaction ID:</span>
+                              <br />
+                              <code className="text-[#C8FF00]">{selectedInvoice.razorpay_payment_id}</code>
+                            </div>
+                            {selectedInvoice.razorpay_payment_method && (
+                              <div>
+                                <span className="text-[rgba(244,246,240,0.45)]">Method:</span>
+                                <br />
+                                <span className="capitalize">{selectedInvoice.razorpay_payment_method}</span>
+                              </div>
+                            )}
+                            {selectedInvoice.razorpay_payment_date && (
+                              <div>
+                                <span className="text-[rgba(244,246,240,0.45)]">Date:</span>
+                                <br />
+                                {formatDate(selectedInvoice.razorpay_payment_date)}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Payment Link Status */}
+                      {(selectedInvoice.payment_link_url || selectedInvoice.has_payment_link) && (
+                        <div className="mb-3 p-3 bg-[rgba(59,158,255,0.08)] rounded-lg border border-blue-500/20">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-sm">
+                              <Badge variant="outline" className="text-[#3B9EFF] border-blue-500/30">
+                                Payment Link Active
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="text-[#3B9EFF] hover:text-blue-300"
+                                onClick={() => navigator.clipboard.writeText(selectedInvoice.payment_link_url).then(() => toast.success("Link copied!"))}
+                              >
+                                <Copy className="h-4 w-4 mr-1" /> Copy
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="text-[#3B9EFF] hover:text-blue-300"
+                                onClick={() => window.open(selectedInvoice.payment_link_url, "_blank")}
+                              >
+                                <ExternalLink className="h-4 w-4 mr-1" /> Open
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Action Buttons */}
+                      {razorpayConfigured ? (
+                        <div className="flex flex-wrap gap-2">
+                          <Button 
+                            onClick={() => handleRazorpayCheckout(selectedInvoice)}
+                            className="bg-[#C8FF00] hover:bg-[#a8d900] text-[#080C0F]"
+                            disabled={razorpayLoading}
+                            data-testid="pay-now-btn"
                           >
-                            Copy Link
-                          </button>
+                            {razorpayLoading ? (
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            ) : (
+                              <CreditCard className="h-4 w-4 mr-2" />
+                            )}
+                            Pay Now
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            onClick={() => handleCreatePaymentLink(selectedInvoice.invoice_id)}
+                            disabled={razorpayLoading}
+                            data-testid="create-payment-link-btn"
+                          >
+                            <Link2 className="h-4 w-4 mr-2" />
+                            Create Payment Link
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="p-3 bg-[rgba(234,179,8,0.08)] rounded-lg border border-yellow-500/20">
+                          <p className="text-sm text-yellow-400 flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4" />
+                            Razorpay not configured. Go to Organization Settings → Finance to connect.
+                          </p>
                         </div>
                       )}
                     </div>
