@@ -1,0 +1,316 @@
+"""
+Double-Entry Posting Hooks
+==========================
+Utility functions to auto-post journal entries when transactions occur.
+Call these from invoice, payment, bill, expense, and payroll modules.
+"""
+
+import logging
+from typing import Optional, Tuple, Dict, Any
+
+logger = logging.getLogger(__name__)
+
+# Import will be lazy to avoid circular imports
+_service = None
+
+
+def _get_service():
+    """Lazy import of double entry service"""
+    global _service
+    if _service is None:
+        try:
+            from services.double_entry_service import get_double_entry_service
+            _service = get_double_entry_service()
+        except Exception as e:
+            logger.warning(f"Double entry service not available: {e}")
+            return None
+    return _service
+
+
+async def post_invoice_journal_entry(
+    organization_id: str,
+    invoice: Dict,
+    created_by: str = ""
+) -> Tuple[bool, str, Optional[Dict]]:
+    """
+    Post journal entry when invoice is finalized (sent/approved).
+    
+    DEBIT:  Accounts Receivable
+    CREDIT: Sales Revenue
+    CREDIT: GST Payable (CGST/SGST/IGST)
+    """
+    service = _get_service()
+    if not service:
+        logger.warning("Cannot post invoice - double entry service not initialized")
+        return False, "Double entry service not available", None
+    
+    try:
+        success, msg, entry = await service.post_sales_invoice(
+            organization_id=organization_id,
+            invoice=invoice,
+            created_by=created_by
+        )
+        
+        if success:
+            logger.info(f"Posted journal entry for invoice {invoice.get('invoice_number', invoice.get('invoice_id', ''))}")
+        else:
+            logger.error(f"Failed to post journal entry for invoice: {msg}")
+        
+        return success, msg, entry
+    except Exception as e:
+        logger.error(f"Exception posting invoice journal entry: {e}")
+        return False, str(e), None
+
+
+async def post_payment_received_journal_entry(
+    organization_id: str,
+    payment: Dict,
+    created_by: str = ""
+) -> Tuple[bool, str, Optional[Dict]]:
+    """
+    Post journal entry when payment is received.
+    
+    DEBIT:  Bank / Cash
+    CREDIT: Accounts Receivable
+    """
+    service = _get_service()
+    if not service:
+        logger.warning("Cannot post payment - double entry service not initialized")
+        return False, "Double entry service not available", None
+    
+    try:
+        success, msg, entry = await service.post_payment_received(
+            organization_id=organization_id,
+            payment=payment,
+            created_by=created_by
+        )
+        
+        if success:
+            logger.info(f"Posted journal entry for payment {payment.get('payment_number', payment.get('payment_id', ''))}")
+        else:
+            logger.error(f"Failed to post journal entry for payment: {msg}")
+        
+        return success, msg, entry
+    except Exception as e:
+        logger.error(f"Exception posting payment journal entry: {e}")
+        return False, str(e), None
+
+
+async def post_bill_journal_entry(
+    organization_id: str,
+    bill: Dict,
+    created_by: str = ""
+) -> Tuple[bool, str, Optional[Dict]]:
+    """
+    Post journal entry when bill is recorded.
+    
+    DEBIT:  Expense / COGS account
+    DEBIT:  GST Input Credit
+    CREDIT: Accounts Payable
+    """
+    service = _get_service()
+    if not service:
+        logger.warning("Cannot post bill - double entry service not initialized")
+        return False, "Double entry service not available", None
+    
+    try:
+        success, msg, entry = await service.post_purchase_bill(
+            organization_id=organization_id,
+            bill=bill,
+            created_by=created_by
+        )
+        
+        if success:
+            logger.info(f"Posted journal entry for bill {bill.get('bill_number', bill.get('bill_id', ''))}")
+        else:
+            logger.error(f"Failed to post journal entry for bill: {msg}")
+        
+        return success, msg, entry
+    except Exception as e:
+        logger.error(f"Exception posting bill journal entry: {e}")
+        return False, str(e), None
+
+
+async def post_bill_payment_journal_entry(
+    organization_id: str,
+    payment: Dict,
+    created_by: str = ""
+) -> Tuple[bool, str, Optional[Dict]]:
+    """
+    Post journal entry when bill payment is made.
+    
+    DEBIT:  Accounts Payable
+    CREDIT: Bank / Cash
+    """
+    service = _get_service()
+    if not service:
+        logger.warning("Cannot post bill payment - double entry service not initialized")
+        return False, "Double entry service not available", None
+    
+    try:
+        success, msg, entry = await service.post_bill_payment(
+            organization_id=organization_id,
+            payment=payment,
+            created_by=created_by
+        )
+        
+        if success:
+            logger.info(f"Posted journal entry for bill payment {payment.get('payment_id', '')}")
+        else:
+            logger.error(f"Failed to post journal entry for bill payment: {msg}")
+        
+        return success, msg, entry
+    except Exception as e:
+        logger.error(f"Exception posting bill payment journal entry: {e}")
+        return False, str(e), None
+
+
+async def post_expense_journal_entry(
+    organization_id: str,
+    expense: Dict,
+    created_by: str = ""
+) -> Tuple[bool, str, Optional[Dict]]:
+    """
+    Post journal entry when expense is recorded.
+    
+    DEBIT:  Expense account
+    CREDIT: Bank / Cash / Accounts Payable
+    """
+    service = _get_service()
+    if not service:
+        logger.warning("Cannot post expense - double entry service not initialized")
+        return False, "Double entry service not available", None
+    
+    try:
+        success, msg, entry = await service.post_expense(
+            organization_id=organization_id,
+            expense=expense,
+            created_by=created_by
+        )
+        
+        if success:
+            logger.info(f"Posted journal entry for expense {expense.get('expense_id', '')}")
+        else:
+            logger.error(f"Failed to post journal entry for expense: {msg}")
+        
+        return success, msg, entry
+    except Exception as e:
+        logger.error(f"Exception posting expense journal entry: {e}")
+        return False, str(e), None
+
+
+async def post_payroll_journal_entry(
+    organization_id: str,
+    payroll: Dict,
+    created_by: str = ""
+) -> Tuple[bool, str, Optional[Dict]]:
+    """
+    Post journal entry when payroll is processed.
+    
+    DEBIT:  Salary Expense
+    CREDIT: Salary Payable
+    CREDIT: TDS Payable
+    CREDIT: PF Payable
+    CREDIT: ESI Payable
+    """
+    service = _get_service()
+    if not service:
+        logger.warning("Cannot post payroll - double entry service not initialized")
+        return False, "Double entry service not available", None
+    
+    try:
+        success, msg, entry = await service.post_payroll(
+            organization_id=organization_id,
+            payroll=payroll,
+            created_by=created_by
+        )
+        
+        if success:
+            logger.info(f"Posted journal entry for payroll {payroll.get('payroll_id', '')}")
+        else:
+            logger.error(f"Failed to post journal entry for payroll: {msg}")
+        
+        return success, msg, entry
+    except Exception as e:
+        logger.error(f"Exception posting payroll journal entry: {e}")
+        return False, str(e), None
+
+
+async def reverse_transaction_journal_entry(
+    organization_id: str,
+    original_entry_id: str,
+    reversal_date: str,
+    reason: str = "",
+    created_by: str = ""
+) -> Tuple[bool, str, Optional[Dict]]:
+    """
+    Create a reversal entry for any transaction.
+    Used when voiding invoices, refunding payments, etc.
+    """
+    service = _get_service()
+    if not service:
+        logger.warning("Cannot reverse entry - double entry service not initialized")
+        return False, "Double entry service not available", None
+    
+    try:
+        success, msg, entry = await service.reverse_journal_entry(
+            organization_id=organization_id,
+            entry_id=original_entry_id,
+            reversal_date=reversal_date,
+            created_by=created_by,
+            reason=reason
+        )
+        
+        if success:
+            logger.info(f"Created reversal for entry {original_entry_id}")
+        else:
+            logger.error(f"Failed to create reversal: {msg}")
+        
+        return success, msg, entry
+    except Exception as e:
+        logger.error(f"Exception creating reversal: {e}")
+        return False, str(e), None
+
+
+# ==================== BATCH POSTING ====================
+
+async def post_all_unposted_invoices(organization_id: str) -> Dict:
+    """Post journal entries for all invoices that don't have entries yet"""
+    service = _get_service()
+    if not service:
+        return {"success": False, "message": "Service not available"}
+    
+    # Get invoices without journal entries
+    from motor.motor_asyncio import AsyncIOMotorClient
+    import os
+    
+    client = AsyncIOMotorClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))
+    db = client[os.environ.get("DB_NAME", "battwheels")]
+    
+    # Get posted invoice IDs
+    posted_ids = await service.journal_entries.distinct("source_document_id", {
+        "organization_id": organization_id,
+        "source_document_type": "invoice"
+    })
+    
+    # Get invoices not yet posted
+    invoices = await db.invoices_enhanced.find({
+        "organization_id": organization_id,
+        "status": {"$nin": ["draft", "void"]},
+        "invoice_id": {"$nin": posted_ids}
+    }, {"_id": 0}).to_list(1000)
+    
+    results = {"posted": 0, "failed": 0, "errors": []}
+    
+    for invoice in invoices:
+        success, msg, _ = await post_invoice_journal_entry(
+            organization_id=organization_id,
+            invoice=invoice
+        )
+        if success:
+            results["posted"] += 1
+        else:
+            results["failed"] += 1
+            results["errors"].append(f"Invoice {invoice.get('invoice_number', '')}: {msg}")
+    
+    return results
