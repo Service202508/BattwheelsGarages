@@ -1571,6 +1571,7 @@ export default function EstimatesEnhanced() {
                                 <div 
                                   className="px-3 py-2 hover:bg-blue-50 cursor-pointer border-t flex items-center gap-2 text-blue-600"
                                   onClick={() => {
+                                    setQuickAddItem({...quickAddItem, name: newLineItem.name});
                                     setShowAddItemDialog(true);
                                   }}
                                 >
