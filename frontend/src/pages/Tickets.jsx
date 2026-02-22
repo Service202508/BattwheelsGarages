@@ -10,10 +10,12 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { 
   Plus, Search, Download, Loader2, ChevronLeft, ChevronRight,
-  Ticket, UserCheck, Clock, CheckCircle, AlertTriangle
+  Ticket, UserCheck, Clock, CheckCircle, AlertTriangle, Save
 } from "lucide-react";
 import { API, getAuthHeaders } from "@/App";
 import JobCard from "@/components/JobCard";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
+import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
   open: "bg-yellow-500",
