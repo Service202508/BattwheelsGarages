@@ -165,7 +165,7 @@ export default function Reports() {
         {isPeriodReport ? (
           <>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">From</span>
+              <span className="text-sm text-[rgba(244,246,240,0.45)]">From</span>
               <Input 
                 type="date" 
                 value={dateRange.start_date} 
@@ -175,7 +175,7 @@ export default function Reports() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">To</span>
+              <span className="text-sm text-[rgba(244,246,240,0.45)]">To</span>
               <Input 
                 type="date" 
                 value={dateRange.end_date} 
@@ -187,7 +187,7 @@ export default function Reports() {
           </>
         ) : (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">As of</span>
+            <span className="text-sm text-[rgba(244,246,240,0.45)]">As of</span>
             <Input 
               type="date" 
               value={asOfDate} 
@@ -231,7 +231,7 @@ export default function Reports() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Financial Reports</h1>
-          <p className="text-gray-500 text-sm mt-1">Comprehensive business analytics & exports</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Comprehensive business analytics & exports</p>
         </div>
       </div>
 
