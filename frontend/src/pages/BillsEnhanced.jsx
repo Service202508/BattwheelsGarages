@@ -614,11 +614,36 @@ export default function BillsEnhanced() {
       </Tabs>
 
       {/* Create Bill Dialog */}
-      <Dialog open={showCreateBill} onOpenChange={setShowCreateBill}>
+      <Dialog 
+        open={showCreateBill} 
+        onOpenChange={(open) => {
+          if (!open && billPersistence.isDirty) {
+            billPersistence.setShowCloseConfirm(true);
+          } else {
+            if (!open) billPersistence.clearSavedData();
+            setShowCreateBill(open);
+          }
+        }}
+      >
         <DialogContent className="max-w-4xl max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle>Create New Bill</DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Create New Bill</DialogTitle>
+              <AutoSaveIndicator 
+                lastSaved={billPersistence.lastSaved} 
+                isSaving={billPersistence.isSaving} 
+                isDirty={billPersistence.isDirty} 
+              />
+            </div>
           </DialogHeader>
+          
+          <DraftRecoveryBanner
+            show={billPersistence.showRecoveryBanner}
+            savedAt={billPersistence.savedDraftInfo?.timestamp}
+            onRestore={billPersistence.handleRestoreDraft}
+            onDiscard={billPersistence.handleDiscardDraft}
+          />
+          
           <ScrollArea className="max-h-[calc(90vh-120px)]">
             <div className="space-y-4 p-1">
               <div className="grid grid-cols-2 gap-4">
