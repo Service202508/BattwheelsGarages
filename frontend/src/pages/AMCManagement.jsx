@@ -732,7 +732,7 @@ export default function AMCManagement({ user }) {
             <Button variant="outline" onClick={() => setShowSeedDialog(false)}>
               Cancel
             </Button>
-            <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={handleSeedOfficialPlans}>
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" onClick={handleSeedOfficialPlans}>
               <Download className="h-4 w-4 mr-2" />
               Import Plans
             </Button>
