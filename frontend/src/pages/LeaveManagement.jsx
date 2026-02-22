@@ -164,8 +164,9 @@ export default function LeaveManagement({ user }) {
 
       if (response.ok) {
         toast.success("Leave request submitted!");
+        leavePersistence.onSuccessfulSave();
         setIsApplyOpen(false);
-        setFormData({ leave_type: "CL", start_date: "", end_date: "", reason: "" });
+        setFormData(initialFormData);
         fetchMyRequests();
         fetchLeaveBalance();
       } else {
