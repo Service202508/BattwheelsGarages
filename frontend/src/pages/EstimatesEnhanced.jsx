@@ -134,6 +134,12 @@ export default function EstimatesEnhanced() {
   const [items, setItems] = useState([]);
   const location = useLocation();
 
+  // Quick Add Item state
+  const [quickAddItem, setQuickAddItem] = useState({
+    name: "", sku: "", rate: 0, description: "", unit: "pcs", 
+    tax_percentage: 18, hsn_code: "", item_type: "product"
+  });
+
   // Form states
   const [newEstimate, setNewEstimate] = useState({
     customer_id: "", reference_number: "", date: new Date().toISOString().split('T')[0],
