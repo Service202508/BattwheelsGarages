@@ -143,7 +143,7 @@ export default function EstimatesEnhanced() {
   });
   const [newLineItem, setNewLineItem] = useState({
     item_id: "", name: "", description: "", quantity: 1, unit: "pcs", rate: 0,
-    discount_percent: 0, tax_percentage: 18, hsn_code: ""
+    discount_type: "percent", discount_percent: 0, discount_value: 0, tax_percentage: 18, hsn_code: ""
   });
   const [sendEmail, setSendEmail] = useState("");
   const [sendMessage, setSendMessage] = useState("");
