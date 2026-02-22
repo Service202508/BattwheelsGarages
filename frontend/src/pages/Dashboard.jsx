@@ -259,7 +259,7 @@ export default function Dashboard({ user }) {
               </CardHeader>
               <CardContent>
                 <div className="h-[240px] flex items-center justify-center">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <PieChart>
                       <Pie
                         data={vehicleStatusData}
