@@ -1134,6 +1134,26 @@ export default function ContactsEnhanced() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Contact Close Confirmation */}
+      <FormCloseConfirmDialog
+        open={contactPersistence.showCloseConfirm}
+        onClose={() => contactPersistence.setShowCloseConfirm(false)}
+        onSave={async () => {
+          if (editMode && selectedContact) {
+            await handleUpdateContact();
+          } else {
+            await handleCreateContact();
+          }
+        }}
+        onDiscard={() => {
+          contactPersistence.clearSavedData();
+          setShowContactDialog(false);
+          resetContactForm();
+        }}
+        isSaving={false}
+        entityName="Contact"
+      />
     </div>
   );
 }
