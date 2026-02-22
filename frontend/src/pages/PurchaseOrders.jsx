@@ -269,13 +269,37 @@ export default function PurchaseOrders() {
                   )}
                 </div>
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-                  <Button onClick={handleCreatePO} className="bg-[#22EDA9] text-black">Create PO</Button>
+                  <Button variant="outline" onClick={() => {
+                    if (poPersistence.isDirty) {
+                      poPersistence.setShowCloseConfirm(true);
+                    } else {
+                      setShowCreateDialog(false);
+                    }
+                  }}>Cancel</Button>
+                  <Button onClick={handleCreatePO} className="bg-[#22EDA9] text-black">
+                    <Save className="h-4 w-4 mr-2" /> Create PO
+                  </Button>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
         }
+      />
+
+      {/* Purchase Order Close Confirmation */}
+      <FormCloseConfirmDialog
+        open={poPersistence.showCloseConfirm}
+        onClose={() => poPersistence.setShowCloseConfirm(false)}
+        onSave={async () => {
+          await handleCreatePO();
+        }}
+        onDiscard={() => {
+          poPersistence.clearSavedData();
+          setShowCreateDialog(false);
+          setNewPO(initialPOData);
+        }}
+        isSaving={false}
+        entityName="Purchase Order"
       />
 
       {/* Summary Cards */}
