@@ -689,45 +689,45 @@ export default function Reports() {
                 <div className="space-y-6">
                   {/* Summary */}
                   <div className="grid grid-cols-2 gap-4">
-                    <Card className="bg-blue-50 border-blue-200">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
                       <CardContent className="p-4">
                         <p className="text-xs text-[#3B9EFF] font-medium">Total Invoices</p>
-                        <p className="text-2xl font-bold text-blue-800">{salesByCustomer.total_invoices || 0}</p>
+                        <p className="text-2xl font-bold text-[#3B9EFF]">{salesByCustomer.total_invoices || 0}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
                       <CardContent className="p-4">
-                        <p className="text-xs text-green-700 font-medium">Total Sales</p>
-                        <p className="text-2xl font-bold text-green-800">{formatCurrency(salesByCustomer.total_sales)}</p>
+                        <p className="text-xs text-[#22C55E] font-medium">Total Sales</p>
+                        <p className="text-2xl font-bold text-[#22C55E]">{formatCurrency(salesByCustomer.total_sales)}</p>
                       </CardContent>
                     </Card>
                   </div>
 
                   {/* Customer Table */}
-                  <div className="border rounded-lg overflow-hidden">
+                  <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-gray-50">
-                          <TableHead className="w-12">#</TableHead>
-                          <TableHead>Customer Name</TableHead>
-                          <TableHead className="text-center">Invoices</TableHead>
-                          <TableHead className="text-right">Total Sales</TableHead>
+                        <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                          <TableHead className="w-12 text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">#</TableHead>
+                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Customer Name</TableHead>
+                          <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Invoices</TableHead>
+                          <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Total Sales</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {salesByCustomer.sales_data?.map((item, idx) => (
-                          <TableRow key={idx}>
-                            <TableCell className="text-gray-500">{idx + 1}</TableCell>
-                            <TableCell className="font-medium">{item.customer_name}</TableCell>
-                            <TableCell className="text-center">{item.invoice_count}</TableCell>
-                            <TableCell className="text-right font-medium">{formatCurrency(item.total_sales)}</TableCell>
+                          <TableRow key={idx} className="border-b border-[rgba(255,255,255,0.07)]">
+                            <TableCell className="text-[rgba(244,246,240,0.45)]">{idx + 1}</TableCell>
+                            <TableCell className="font-medium text-[#F4F6F0]">{item.customer_name}</TableCell>
+                            <TableCell className="text-center text-[#F4F6F0]">{item.invoice_count}</TableCell>
+                            <TableCell className="text-right font-medium text-[#F4F6F0]">{formatCurrency(item.total_sales)}</TableCell>
                           </TableRow>
                         ))}
-                        <TableRow className="bg-[#C8FF00]/20 font-bold">
+                        <TableRow className="bg-[rgba(200,255,0,0.10)] font-bold">
                           <TableCell></TableCell>
-                          <TableCell>TOTAL</TableCell>
-                          <TableCell className="text-center">{salesByCustomer.total_invoices}</TableCell>
-                          <TableCell className="text-right">{formatCurrency(salesByCustomer.total_sales)}</TableCell>
+                          <TableCell className="text-[#C8FF00]">TOTAL</TableCell>
+                          <TableCell className="text-center text-[#F4F6F0]">{salesByCustomer.total_invoices}</TableCell>
+                          <TableCell className="text-right text-[#C8FF00]">{formatCurrency(salesByCustomer.total_sales)}</TableCell>
                         </TableRow>
                       </TableBody>
                     </Table>
