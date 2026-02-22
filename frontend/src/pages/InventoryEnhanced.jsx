@@ -448,7 +448,7 @@ export default function InventoryEnhanced() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {warehouses.map(wh => (
-                <Card key={wh.warehouse_id} className={`cursor-pointer hover:shadow-md transition-shadow ${wh.is_primary ? 'border-[#C8FF00] border-2' : ''}`} onClick={() => viewDetail('warehouse', wh.warehouse_id)}>
+                <Card key={wh.warehouse_id} className={`cursor-pointer border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors ${wh.is_primary ? 'border-[#C8FF00] border-2' : ''}`} onClick={() => viewDetail('warehouse', wh.warehouse_id)}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
                       <div>
@@ -472,7 +472,7 @@ export default function InventoryEnhanced() {
           ) : (
             <div className="space-y-3">
               {variants.map(v => (
-                <Card key={v.variant_id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => viewDetail('variant', v.variant_id)}>
+                <Card key={v.variant_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewDetail('variant', v.variant_id)}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <div>
@@ -498,7 +498,7 @@ export default function InventoryEnhanced() {
           ) : (
             <div className="space-y-3">
               {bundles.map(b => (
-                <Card key={b.bundle_id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => viewDetail('bundle', b.bundle_id)}>
+                <Card key={b.bundle_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewDetail('bundle', b.bundle_id)}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <div>
@@ -528,7 +528,7 @@ export default function InventoryEnhanced() {
           ) : (
             <div className="space-y-3">
               {serialBatches.map(sb => (
-                <Card key={sb.serial_batch_id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => viewDetail('serial', sb.serial_batch_id)}>
+                <Card key={sb.serial_batch_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewDetail('serial', sb.serial_batch_id)}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-3">
@@ -554,7 +554,7 @@ export default function InventoryEnhanced() {
           ) : (
             <div className="space-y-3">
               {shipments.map(s => (
-                <Card key={s.shipment_id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => viewDetail('shipment', s.shipment_id)}>
+                <Card key={s.shipment_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewDetail('shipment', s.shipment_id)}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <div>
@@ -592,7 +592,7 @@ export default function InventoryEnhanced() {
           ) : (
             <div className="space-y-3">
               {returns.map(r => (
-                <Card key={r.return_id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => viewDetail('return', r.return_id)}>
+                <Card key={r.return_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewDetail('return', r.return_id)}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <div>
