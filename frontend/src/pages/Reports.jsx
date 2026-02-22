@@ -280,28 +280,28 @@ export default function Reports() {
                 <div className="space-y-6">
                   {/* Summary Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
                       <CardContent className="p-4">
-                        <p className="text-xs text-green-700 font-medium">Total Income</p>
-                        <p className="text-xl font-bold text-green-800">{formatCurrency(profitLoss.total_income)}</p>
+                        <p className="text-xs text-[#22C55E] font-medium">Total Income</p>
+                        <p className="text-xl font-bold text-[#22C55E]">{formatCurrency(profitLoss.total_income)}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
                       <CardContent className="p-4">
                         <p className="text-xs text-[#FF8C00] font-medium">Cost of Goods</p>
-                        <p className="text-xl font-bold text-orange-800">{formatCurrency(profitLoss.total_cogs)}</p>
+                        <p className="text-xl font-bold text-[#FF8C00]">{formatCurrency(profitLoss.total_cogs)}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-blue-50 border-blue-200">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
                       <CardContent className="p-4">
                         <p className="text-xs text-[#3B9EFF] font-medium">Gross Profit</p>
-                        <p className="text-xl font-bold text-blue-800">{formatCurrency(profitLoss.gross_profit)}</p>
+                        <p className="text-xl font-bold text-[#3B9EFF]">{formatCurrency(profitLoss.gross_profit)}</p>
                       </CardContent>
                     </Card>
-                    <Card className={`${profitLoss.net_profit >= 0 ? 'bg-[rgba(200,255,0,0.08)] border-[rgba(200,255,0,0.20)]' : 'bg-[rgba(255,59,47,0.08)] border-red-200'}`}>
+                    <Card className={`bg-[#111820] border ${profitLoss.net_profit >= 0 ? 'border-[rgba(200,255,0,0.25)]' : 'border-[rgba(255,59,47,0.25)]'}`}>
                       <CardContent className="p-4">
-                        <p className={`text-xs font-medium ${profitLoss.net_profit >= 0 ? 'text-[#C8FF00] text-700' : 'text-red-700'}`}>Net Profit</p>
-                        <p className={`text-xl font-bold ${profitLoss.net_profit >= 0 ? 'text-[#C8FF00] text-800' : 'text-red-800'}`}>
+                        <p className={`text-xs font-medium ${profitLoss.net_profit >= 0 ? 'text-[#C8FF00]' : 'text-[#FF3B2F]'}`}>Net Profit</p>
+                        <p className={`text-xl font-bold ${profitLoss.net_profit >= 0 ? 'text-[#C8FF00]' : 'text-[#FF3B2F]'}`}>
                           {formatCurrency(profitLoss.net_profit)}
                         </p>
                       </CardContent>
@@ -311,56 +311,56 @@ export default function Reports() {
                   {/* Detailed Breakdown */}
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-gray-50">
-                        <TableHead className="font-semibold">Account</TableHead>
-                        <TableHead className="text-right font-semibold">Amount</TableHead>
+                      <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                        <TableHead className="font-semibold text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Account</TableHead>
+                        <TableHead className="text-right font-semibold text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Amount</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow className="bg-[rgba(34,197,94,0.08)]/50">
-                        <TableCell className="font-semibold text-green-800">INCOME</TableCell>
+                      <TableRow className="bg-[rgba(34,197,94,0.08)] border-b border-[rgba(255,255,255,0.07)]">
+                        <TableCell className="font-semibold text-[#22C55E]">INCOME</TableCell>
                         <TableCell></TableCell>
                       </TableRow>
-                      <TableRow>
-                        <TableCell className="pl-8">Operating Income (Sales)</TableCell>
-                        <TableCell className="text-right">{formatCurrency(profitLoss.total_income)}</TableCell>
+                      <TableRow className="border-b border-[rgba(255,255,255,0.07)]">
+                        <TableCell className="pl-8 text-[#F4F6F0]">Operating Income (Sales)</TableCell>
+                        <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(profitLoss.total_income)}</TableCell>
                       </TableRow>
-                      <TableRow className="bg-gray-50">
-                        <TableCell className="font-semibold">Total Income</TableCell>
-                        <TableCell className="text-right font-semibold">{formatCurrency(profitLoss.total_income)}</TableCell>
+                      <TableRow className="bg-[rgba(255,255,255,0.03)] border-b border-[rgba(255,255,255,0.07)]">
+                        <TableCell className="font-semibold text-[#F4F6F0]">Total Income</TableCell>
+                        <TableCell className="text-right font-semibold text-[#22C55E]">{formatCurrency(profitLoss.total_income)}</TableCell>
                       </TableRow>
                       
-                      <TableRow className="bg-[rgba(255,140,0,0.08)]/50">
-                        <TableCell className="font-semibold text-orange-800">COST OF GOODS SOLD</TableCell>
+                      <TableRow className="bg-[rgba(255,140,0,0.08)] border-b border-[rgba(255,255,255,0.07)]">
+                        <TableCell className="font-semibold text-[#FF8C00]">COST OF GOODS SOLD</TableCell>
                         <TableCell></TableCell>
                       </TableRow>
-                      <TableRow>
-                        <TableCell className="pl-8">Direct Costs (Purchases/Bills)</TableCell>
-                        <TableCell className="text-right">{formatCurrency(profitLoss.total_cogs)}</TableCell>
+                      <TableRow className="border-b border-[rgba(255,255,255,0.07)]">
+                        <TableCell className="pl-8 text-[#F4F6F0]">Direct Costs (Purchases/Bills)</TableCell>
+                        <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(profitLoss.total_cogs)}</TableCell>
                       </TableRow>
-                      <TableRow className="bg-blue-50">
-                        <TableCell className="font-semibold text-blue-800">Gross Profit</TableCell>
-                        <TableCell className="text-right font-semibold text-blue-800">{formatCurrency(profitLoss.gross_profit)}</TableCell>
+                      <TableRow className="bg-[rgba(59,158,255,0.08)] border-b border-[rgba(255,255,255,0.07)]">
+                        <TableCell className="font-semibold text-[#3B9EFF]">Gross Profit</TableCell>
+                        <TableCell className="text-right font-semibold text-[#3B9EFF]">{formatCurrency(profitLoss.gross_profit)}</TableCell>
                       </TableRow>
                       
-                      <TableRow className="bg-[rgba(255,59,47,0.08)]/50">
-                        <TableCell className="font-semibold text-red-800">OPERATING EXPENSES</TableCell>
+                      <TableRow className="bg-[rgba(255,59,47,0.08)] border-b border-[rgba(255,255,255,0.07)]">
+                        <TableCell className="font-semibold text-[#FF3B2F]">OPERATING EXPENSES</TableCell>
                         <TableCell></TableCell>
                       </TableRow>
                       {profitLoss.expenses_breakdown && Object.entries(profitLoss.expenses_breakdown).map(([cat, amt]) => (
-                        <TableRow key={cat}>
-                          <TableCell className="pl-8">{cat}</TableCell>
-                          <TableCell className="text-right">{formatCurrency(amt)}</TableCell>
+                        <TableRow key={cat} className="border-b border-[rgba(255,255,255,0.07)]">
+                          <TableCell className="pl-8 text-[#F4F6F0]">{cat}</TableCell>
+                          <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(amt)}</TableCell>
                         </TableRow>
                       ))}
-                      <TableRow className="bg-gray-50">
-                        <TableCell className="font-semibold">Total Expenses</TableCell>
-                        <TableCell className="text-right font-semibold">{formatCurrency(profitLoss.total_expenses)}</TableCell>
+                      <TableRow className="bg-[rgba(255,255,255,0.03)] border-b border-[rgba(255,255,255,0.07)]">
+                        <TableCell className="font-semibold text-[#F4F6F0]">Total Expenses</TableCell>
+                        <TableCell className="text-right font-semibold text-[#FF3B2F]">{formatCurrency(profitLoss.total_expenses)}</TableCell>
                       </TableRow>
                       
-                      <TableRow className="bg-[#C8FF00]/20">
-                        <TableCell className="font-bold text-lg">NET PROFIT</TableCell>
-                        <TableCell className={`text-right font-bold text-lg ${profitLoss.net_profit >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+                      <TableRow className="bg-[rgba(200,255,0,0.10)]">
+                        <TableCell className="font-bold text-lg text-[#C8FF00]">NET PROFIT</TableCell>
+                        <TableCell className={`text-right font-bold text-lg ${profitLoss.net_profit >= 0 ? 'text-[#22C55E]' : 'text-[#FF3B2F]'}`}>
                           {formatCurrency(profitLoss.net_profit)}
                         </TableCell>
                       </TableRow>
@@ -368,9 +368,9 @@ export default function Reports() {
                   </Table>
 
                   {/* Margins */}
-                  <div className="flex gap-4 text-sm text-gray-600">
-                    <span>Gross Margin: <strong>{profitLoss.margins?.gross_margin_percent || 0}%</strong></span>
-                    <span>Net Margin: <strong>{profitLoss.margins?.net_margin_percent || 0}%</strong></span>
+                  <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
+                    <span>Gross Margin: <strong className="text-[#F4F6F0]">{profitLoss.margins?.gross_margin_percent || 0}%</strong></span>
+                    <span>Net Margin: <strong className="text-[#F4F6F0]">{profitLoss.margins?.net_margin_percent || 0}%</strong></span>
                   </div>
                 </div>
               )}
