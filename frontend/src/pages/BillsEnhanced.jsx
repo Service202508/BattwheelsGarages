@@ -62,7 +62,7 @@ export default function BillsEnhanced() {
   const [poDetail, setPoDetail] = useState(null);
 
   // Form state
-  const [newBill, setNewBill] = useState({
+  const initialBillData = {
     vendor_id: "",
     bill_number: "",
     reference_number: "",
@@ -74,9 +74,9 @@ export default function BillsEnhanced() {
     tds_applicable: false,
     tds_rate: 0,
     vendor_notes: ""
-  });
+  };
 
-  const [newPO, setNewPO] = useState({
+  const initialPOData = {
     vendor_id: "",
     reference_number: "",
     order_date: new Date().toISOString().split('T')[0],
@@ -88,7 +88,10 @@ export default function BillsEnhanced() {
     shipping_charge: 0,
     vendor_notes: "",
     terms_conditions: ""
-  });
+  };
+
+  const [newBill, setNewBill] = useState(initialBillData);
+  const [newPO, setNewPO] = useState(initialPOData);
 
   const [newLineItem, setNewLineItem] = useState({
     name: "", description: "", hsn_sac_code: "", quantity: 1, unit: "pcs", rate: 0, tax_rate: 18
@@ -97,6 +100,34 @@ export default function BillsEnhanced() {
   const [payment, setPayment] = useState({
     amount: 0, payment_mode: "bank_transfer", reference_number: "", payment_date: new Date().toISOString().split('T')[0], notes: ""
   });
+
+  // Auto-save for Bill form
+  const billPersistence = useFormPersistence(
+    'bill_new',
+    newBill,
+    initialBillData,
+    {
+      enabled: showCreateBill,
+      isDialogOpen: showCreateBill,
+      setFormData: setNewBill,
+      debounceMs: 2000,
+      entityName: 'Bill'
+    }
+  );
+
+  // Auto-save for Purchase Order form
+  const poPersistence = useFormPersistence(
+    'bill_po_new',
+    newPO,
+    initialPOData,
+    {
+      enabled: showCreatePO,
+      isDialogOpen: showCreatePO,
+      setFormData: setNewPO,
+      debounceMs: 2000,
+      entityName: 'Purchase Order'
+    }
+  );
 
   const token = localStorage.getItem("token");
   const headers = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
