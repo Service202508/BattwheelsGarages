@@ -346,15 +346,15 @@ export default function PublicTicketForm() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setFormData(prev => ({ ...prev, customer_type: type.value }))}
-                    className={`relative p-5 rounded-xl border-2 transition-all duration-200 text-left ${
+                    className={`relative p-5 rounded border-2 transition-all duration-200 text-left ${
                       isSelected 
-                        ? "border-[rgba(200,255,0,0.50)] bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-500/10" 
-                        : "border-gray-200 bg-[#111820] hover:border-gray-300 hover:shadow-md"
+                        ? "border-[rgba(200,255,0,0.50)] bg-gradient-to-br from-emerald-50 to-teal-50" 
+                        : "border-gray-200 bg-[#111820] hover:border-gray-300"
                     }`}
                     data-testid={`customer-type-${type.value}`}
                   >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
-                      isSelected ? "bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/30" : "bg-[rgba(255,255,255,0.05)]"
+                    <div className={`w-12 h-12 rounded flex items-center justify-center mb-3 ${
+                      isSelected ? "bg-gradient-to-br from-emerald-500 to-teal-500" : "bg-[rgba(255,255,255,0.05)]"
                     }`}>
                       <Icon className={`w-6 h-6 ${isSelected ? "text-white" : "text-gray-500"}`} strokeWidth={2} />
                     </div>
@@ -379,10 +379,10 @@ export default function PublicTicketForm() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Category <span className="text-[#C8FF00] text-500">*</span></Label>
                   <Select value={formData.vehicle_category} onValueChange={(v) => setFormData(prev => ({ ...prev, vehicle_category: v, vehicle_model_id: "", vehicle_model_name: "", vehicle_oem: "" }))}>
-                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] rounded-xl text-[#F4F6F0]" data-testid="vehicle-category-select">
+                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] rounded text-[#F4F6F0]" data-testid="vehicle-category-select">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#111820] border-gray-200 rounded-xl shadow-xl">
+                    <SelectContent className="bg-[#111820] border-gray-200 rounded border border-[rgba(255,255,255,0.13)]">
                       {categories.map((cat) => {
                         const Icon = categoryIcons[cat.code] || Car;
                         return (
@@ -402,10 +402,10 @@ export default function PublicTicketForm() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Model (OEM)</Label>
                   <Select value={formData.vehicle_model_id} onValueChange={handleModelSelect} disabled={!formData.vehicle_category}>
-                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] rounded-xl text-[#F4F6F0] disabled:opacity-50" data-testid="vehicle-model-select">
+                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] rounded text-[#F4F6F0] disabled:opacity-50" data-testid="vehicle-model-select">
                       <SelectValue placeholder="Select model" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#111820] border-gray-200 rounded-xl shadow-xl max-h-60">
+                    <SelectContent className="bg-[#111820] border-gray-200 rounded border border-[rgba(255,255,255,0.13)] max-h-60">
                       {Object.entries(modelsByOem).map(([oem, oemModels]) => (
                         <div key={oem}>
                           <div className="px-3 py-2 text-xs font-bold text-[#C8FF00] text-600 bg-[rgba(200,255,0,0.08)] sticky top-0">{oem}</div>
