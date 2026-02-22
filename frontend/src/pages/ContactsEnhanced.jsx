@@ -506,16 +506,16 @@ export default function ContactsEnhanced() {
               }
             }}>
               <DialogTrigger asChild>
-                <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-contact-btn">
+                <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold rounded-[3px] gap-2 hover:shadow-[0_0_20px_rgba(200,255,0,0.3)]" data-testid="new-contact-btn">
                   <Plus className="h-4 w-4" /> New Contact
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-[#111820] border-[rgba(255,255,255,0.13)]">
                 <DialogHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <DialogTitle>Create Contact</DialogTitle>
-                      <DialogDescription>Add a new customer, vendor, or both</DialogDescription>
+                      <DialogTitle className="text-[#F4F6F0] font-bold">Create Contact</DialogTitle>
+                      <DialogDescription className="text-[rgba(244,246,240,0.45)]">Add a new customer, vendor, or both</DialogDescription>
                     </div>
                     <AutoSaveIndicator 
                       lastSaved={contactPersistence.lastSaved} 
