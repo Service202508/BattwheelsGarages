@@ -1,7 +1,25 @@
 # Battwheels OS - Product Requirements Document
 
 ## SaaS Status: FULL SAAS PLATFORM COMPLETE ✅
-**Last Updated:** February 22, 2026 (Session 94)
+**Last Updated:** February 22, 2026 (Session 95)
+
+---
+
+## Session 95 Updates (Feb 22, 2026)
+
+### Auto-Save & Save/Discard Dialog - Final Module Integration
+**Status:** ✅ COMPLETE & TESTED (100% pass rate)
+
+**Enhancement:** Completed auto-save rollout to remaining HR modules (Attendance, Leave Management) and verified Purchase Orders
+
+#### Newly Integrated Modules:
+| Module | File | Features Added |
+|--------|------|----------------|
+| **Purchase** | PurchaseOrders.jsx | Auto-save indicator, Draft recovery, Close confirm |
+| **HR** | Attendance.jsx | Auto-save on Clock Out dialog (break duration, remarks) |
+| **HR** | LeaveManagement.jsx | Auto-save on Apply Leave dialog (leave type, dates, reason) |
+
+**Test Report:** `/app/test_reports/iteration_95.json`
 
 ---
 
