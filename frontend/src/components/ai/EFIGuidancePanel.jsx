@@ -175,8 +175,8 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
                   size="sm"
                   variant={answers[q.id] === opt ? "default" : "outline"}
                   className={answers[q.id] === opt 
-                    ? "bg-emerald-600 text-white" 
-                    : "border-[rgba(255,255,255,0.07)] border-600 text-slate-300 hover:bg-slate-700"}
+                    ? "bg-[#C8FF00] text-[#080C0F] font-bold" 
+                    : "border-[rgba(255,255,255,0.07)] text-[rgba(244,246,240,0.70)] hover:bg-[rgba(200,255,0,0.08)]"}
                   onClick={() => handleChange(q.id, opt)}
                 >
                   {opt}
@@ -193,8 +193,8 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
                   size="sm"
                   variant={(answers[q.id] || []).includes(opt) ? "default" : "outline"}
                   className={(answers[q.id] || []).includes(opt)
-                    ? "bg-emerald-600 text-white"
-                    : "border-[rgba(255,255,255,0.07)] border-600 text-slate-300 hover:bg-slate-700"}
+                    ? "bg-[#C8FF00] text-[#080C0F] font-bold"
+                    : "border-[rgba(255,255,255,0.07)] text-[rgba(244,246,240,0.70)] hover:bg-[rgba(200,255,0,0.08)]"}
                   onClick={() => handleMultiSelect(q.id, opt)}
                 >
                   {opt}
