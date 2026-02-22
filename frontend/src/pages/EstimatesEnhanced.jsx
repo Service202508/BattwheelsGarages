@@ -2575,11 +2575,27 @@ export default function EstimatesEnhanced() {
       </Dialog>
 
       {/* Edit Estimate Dialog */}
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+      <Dialog open={showEditDialog} onOpenChange={(open) => {
+        if (!open && editEstimatePersistence.isDirty) {
+          editEstimatePersistence.setShowCloseConfirm(true);
+        } else {
+          setShowEditDialog(open);
+          if (!open) editEstimatePersistence.clearSavedData();
+        }
+      }}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto [&_.overflow-visible]:overflow-visible">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><Edit className="h-5 w-5" /> Edit Estimate</DialogTitle>
-            <DialogDescription>Modify estimate details (available until converted to invoice)</DialogDescription>
+            <div className="flex justify-between items-start">
+              <div>
+                <DialogTitle className="flex items-center gap-2"><Edit className="h-5 w-5" /> Edit Estimate</DialogTitle>
+                <DialogDescription>Modify estimate details (available until converted to invoice)</DialogDescription>
+              </div>
+              <AutoSaveIndicator 
+                lastSaved={editEstimatePersistence.lastSaved} 
+                isSaving={editEstimatePersistence.isSaving} 
+                isDirty={editEstimatePersistence.isDirty} 
+              />
+            </div>
           </DialogHeader>
           
           {editEstimate && (
