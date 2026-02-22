@@ -320,32 +320,32 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-[#080C0F]">
       {/* Header with Logo */}
-      <div className="p-4 border-b border-gray-100">
+      <div className="p-4 border-b border-[rgba(255,255,255,0.07)]">
         <div className="flex items-center justify-between">
           {!collapsed ? (
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] flex items-center justify-center shadow-lg shadow-[#22EDA9]/30">
-                <Zap className="h-5 w-5 text-gray-900" strokeWidth={2} />
+              <div className="w-9 h-9 rounded bg-[#C8FF00] flex items-center justify-center">
+                <Zap className="h-5 w-5 text-[#080C0F]" strokeWidth={2} />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-gray-900 tracking-tight" data-testid="sidebar-title">
+                <h1 className="text-lg font-extrabold text-[#F4F6F0] tracking-tight" data-testid="sidebar-title">
                   Battwheels OS
                 </h1>
-                <p className="text-[10px] text-gray-400 font-medium tracking-wider uppercase">EV Intelligence</p>
+                <p className="text-[9px] text-[rgba(244,246,240,0.35)] font-medium tracking-[0.2em] uppercase font-mono">EV Intelligence</p>
               </div>
             </div>
           ) : (
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] flex items-center justify-center shadow-lg shadow-[#22EDA9]/30 mx-auto">
-              <Zap className="h-5 w-5 text-gray-900" strokeWidth={2} />
+            <div className="w-9 h-9 rounded bg-[#C8FF00] flex items-center justify-center mx-auto">
+              <Zap className="h-5 w-5 text-[#080C0F]" strokeWidth={2} />
             </div>
           )}
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={() => setCollapsed?.(!collapsed)}
-            className="text-gray-400 hover:text-gray-900 hover:bg-gray-100 hidden lg:flex h-8 w-8"
+            className="text-[rgba(244,246,240,0.35)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)] hidden lg:flex h-8 w-8"
             data-testid="collapse-sidebar-btn"
           >
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
@@ -355,7 +355,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
               variant="ghost" 
               size="icon" 
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-900 lg:hidden h-8 w-8"
+              className="text-[rgba(244,246,240,0.35)] hover:text-[#F4F6F0] lg:hidden h-8 w-8"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -365,18 +365,18 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
 
       {/* Quick Search (Desktop only, expanded) */}
       {!collapsed && (
-        <div className="px-4 py-3 border-b border-gray-100">
+        <div className="px-4 py-3 border-b border-[rgba(255,255,255,0.07)]">
           <button 
             onClick={() => {
               // Dispatch keyboard event to open command palette
               document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
             }}
-            className="w-full flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl text-gray-400 text-sm cursor-pointer hover:bg-gray-100 transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-2 bg-[#111820] border border-[rgba(255,255,255,0.07)] rounded text-[rgba(244,246,240,0.25)] text-sm cursor-pointer hover:border-[rgba(200,255,0,0.2)] transition-colors"
             data-testid="quick-search-btn"
           >
             <Search className="h-4 w-4" />
             <span>Quick search...</span>
-            <kbd className="ml-auto text-[10px] bg-white px-1.5 py-0.5 rounded border border-gray-200 font-mono">⌘K</kbd>
+            <kbd className="ml-auto text-[10px] bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.3)] px-1.5 py-0.5 rounded border border-[rgba(255,255,255,0.07)] font-mono">⌘K</kbd>
           </button>
         </div>
       )}
@@ -399,25 +399,25 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
       </ScrollArea>
 
       {/* User Profile */}
-      <div className="border-t border-gray-100 p-4">
+      <div className="border-t border-[rgba(255,255,255,0.07)] p-4 bg-[#080C0F]">
         {!collapsed ? (
-          <div className="flex items-center gap-3 p-2 rounded-xl bg-gray-50 mb-3">
-            <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm">
+          <div className="flex items-center gap-3 p-2 rounded bg-[#080C0F] mb-3">
+            <Avatar className="h-10 w-10 ring-1 ring-[rgba(200,255,0,0.2)]">
               <AvatarImage src={user?.picture} />
-              <AvatarFallback className="bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] text-gray-900 font-semibold text-sm">
+              <AvatarFallback className="bg-[rgba(200,255,0,0.12)] border border-[rgba(200,255,0,0.2)] text-[#C8FF00] font-bold text-sm">
                 {user?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate text-gray-900">{user?.name || "User"}</p>
-              <p className="text-xs text-gray-500 truncate">{user?.role || "Member"}</p>
+              <p className="text-[13px] font-semibold truncate text-[#F4F6F0]">{user?.name || "User"}</p>
+              <p className="text-[11px] text-[rgba(244,246,240,0.35)] truncate">{user?.role || "Member"}</p>
             </div>
           </div>
         ) : (
           <div className="flex justify-center mb-3">
-            <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm">
+            <Avatar className="h-10 w-10 ring-1 ring-[rgba(200,255,0,0.2)]">
               <AvatarImage src={user?.picture} />
-              <AvatarFallback className="bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] text-gray-900 font-semibold text-sm">
+              <AvatarFallback className="bg-[rgba(200,255,0,0.12)] border border-[rgba(200,255,0,0.2)] text-[#C8FF00] font-bold text-sm">
                 {user?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
@@ -428,7 +428,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
           <Link 
             to="/settings" 
             onClick={onClose}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-all ${collapsed ? "justify-center w-full" : "flex-1"}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded text-[rgba(244,246,240,0.35)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)] transition-all ${collapsed ? "justify-center w-full" : "flex-1"}`}
             data-testid="nav-settings"
           >
             <Settings className="h-4 w-4" strokeWidth={1.5} />
@@ -437,7 +437,7 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
           <Button 
             variant="ghost" 
             onClick={() => { onLogout(); onClose?.(); }}
-            className={`text-gray-500 hover:text-red-600 hover:bg-red-50 ${collapsed ? "w-full justify-center" : ""}`}
+            className={`text-[rgba(244,246,240,0.35)] hover:text-[#FF3B2F] hover:bg-[rgba(255,59,47,0.08)] ${collapsed ? "w-full justify-center" : ""}`}
             data-testid="logout-btn"
           >
             <LogOut className="h-4 w-4" strokeWidth={1.5} />
