@@ -1989,13 +1989,13 @@ export default function EstimatesEnhanced() {
                   {(selectedEstimate.status === "sent" || selectedEstimate.status === "customer_viewed") && (
                     <>
                       <Button variant="outline" onClick={() => { setSendEmail(selectedEstimate.customer_email || ""); setShowSendDialog(true); }}><Send className="h-4 w-4 mr-1" /> Resend</Button>
-                      <Button onClick={() => handleMarkAccepted(selectedEstimate.estimate_id)} className="bg-[rgba(34,197,94,0.08)]0 hover:bg-green-600"><CheckCircle className="h-4 w-4 mr-1" /> Mark Accepted</Button>
+                      <Button onClick={() => handleMarkAccepted(selectedEstimate.estimate_id)} className="bg-[#22C55E] hover:bg-green-600 text-[#080C0F]"><CheckCircle className="h-4 w-4 mr-1" /> Mark Accepted</Button>
                       <Button variant="outline" onClick={() => handleMarkDeclined(selectedEstimate.estimate_id)}><XCircle className="h-4 w-4 mr-1" /> Mark Declined</Button>
                     </>
                   )}
                   {selectedEstimate.status === "accepted" && (
                     <>
-                      <Button onClick={() => handleConvertToInvoice(selectedEstimate.estimate_id)} className="bg-[rgba(139,92,246,0.08)]0 hover:bg-purple-600"><ArrowRightLeft className="h-4 w-4 mr-1" /> Convert to Invoice</Button>
+                      <Button onClick={() => handleConvertToInvoice(selectedEstimate.estimate_id)} className="bg-[#8B5CF6] hover:bg-purple-600 text-white"><ArrowRightLeft className="h-4 w-4 mr-1" /> Convert to Invoice</Button>
                       <Button variant="outline" onClick={() => handleConvertToSO(selectedEstimate.estimate_id)}><ArrowRightLeft className="h-4 w-4 mr-1" /> Convert to Sales Order</Button>
                     </>
                   )}
