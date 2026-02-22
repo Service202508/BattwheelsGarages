@@ -151,25 +151,25 @@ const AutoScrollFeatureCards = () => {
             <div
               key={feature.title}
               onClick={() => setActiveIndex(index)}
-              className={`flex-shrink-0 w-[260px] p-4 rounded-2xl cursor-pointer transition-all duration-500 snap-start ${
+              className={`flex-shrink-0 w-[260px] p-4 rounded-lg cursor-pointer transition-all duration-500 snap-start ${
                 isActive 
-                  ? 'bg-gradient-to-br from-[#22EDA9]/10 to-[#22EDA9]/5 border-2 border-[#22EDA9]/30 shadow-lg shadow-[#22EDA9]/10 scale-105' 
-                  : 'bg-white/50 border border-gray-100 hover:border-[#22EDA9]/20 hover:bg-[#22EDA9]/5'
+                  ? 'bg-[rgba(200,255,0,0.08)] border-2 border-[rgba(200,255,0,0.25)] shadow-lg shadow-[rgba(200,255,0,0.1)] scale-105' 
+                  : 'bg-[#111820]/50 border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.15)] hover:bg-[rgba(200,255,0,0.04)]'
               }`}
             >
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-all duration-500 ${
+              <div className={`w-10 h-10 rounded flex items-center justify-center mb-3 transition-all duration-500 ${
                 isActive 
-                  ? 'bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] shadow-lg shadow-[#22EDA9]/30' 
-                  : 'bg-gray-100'
+                  ? 'bg-[#C8FF00] shadow-lg shadow-[rgba(200,255,0,0.3)]' 
+                  : 'bg-[#111820]'
               }`}>
-                <Icon className={`w-5 h-5 transition-colors duration-500 ${isActive ? 'text-gray-900' : 'text-gray-500'}`} />
+                <Icon className={`w-5 h-5 transition-colors duration-500 ${isActive ? 'text-[#080C0F]' : 'text-[rgba(244,246,240,0.5)]'}`} />
               </div>
               <h3 className={`font-semibold text-sm mb-1.5 transition-colors duration-500 ${
-                isActive ? 'text-[#22EDA9]' : 'text-gray-700'
+                isActive ? 'text-[#C8FF00]' : 'text-[rgba(244,246,240,0.7)]'
               }`}>
                 {feature.title}
               </h3>
-              <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">
+              <p className="text-xs text-[rgba(244,246,240,0.4)] leading-relaxed line-clamp-2">
                 {feature.description}
               </p>
             </div>
@@ -185,8 +185,8 @@ const AutoScrollFeatureCards = () => {
             onClick={() => setActiveIndex(index)}
             className={`h-1.5 rounded-full transition-all duration-300 ${
               index === activeIndex 
-                ? 'w-6 bg-[#22EDA9]' 
-                : 'w-1.5 bg-gray-300 hover:bg-gray-400'
+                ? 'w-6 bg-[#C8FF00]' 
+                : 'w-1.5 bg-[rgba(255,255,255,0.2)] hover:bg-[rgba(255,255,255,0.3)]'
             }`}
           />
         ))}
