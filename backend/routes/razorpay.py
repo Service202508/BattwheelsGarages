@@ -382,25 +382,38 @@ async def create_invoice_payment_link(invoice_id: str, request: Request, expire_
 
 
 @router.post("/verify")
-async def verify_payment(request: PaymentVerifyRequest):
-    """Verify payment and update invoice"""
+async def verify_payment(req: PaymentVerifyRequest, request: Request):
+    """Verify payment signature and update invoice"""
     db = get_db()
+    org_id = await get_org_id_from_request(request)
+    
+    # Get org-specific config
+    config = await get_org_razorpay_config(org_id) if org_id else None
+    rp_client = get_razorpay_client(config)
+    
+    if not rp_client:
+        raise HTTPException(status_code=400, detail="Razorpay not configured")
     
     # Verify signature
-    is_valid = await verify_payment_signature(
-        request.razorpay_order_id,
-        request.razorpay_payment_id,
-        request.razorpay_signature
-    )
-    
-    if not is_valid:
+    try:
+        rp_client.utility.verify_payment_signature({
+            'razorpay_order_id': req.razorpay_order_id,
+            'razorpay_payment_id': req.razorpay_payment_id,
+            'razorpay_signature': req.razorpay_signature
+        })
+    except razorpay.errors.SignatureVerificationError:
         raise HTTPException(status_code=400, detail="Invalid payment signature")
     
     # Fetch payment details
-    payment = await fetch_payment(request.razorpay_payment_id)
+    payment = rp_client.payment.fetch(req.razorpay_payment_id)
     
     # Get invoice
-    invoice = await db.invoices.find_one({"invoice_id": request.invoice_id}, {"_id": 0})
+    invoice = await db.invoices_enhanced.find_one({"invoice_id": req.invoice_id}, {"_id": 0})
+    collection = db.invoices_enhanced
+    if not invoice:
+        invoice = await db.invoices.find_one({"invoice_id": req.invoice_id}, {"_id": 0})
+        collection = db.invoices
+    
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
@@ -410,9 +423,10 @@ async def verify_payment(request: PaymentVerifyRequest):
     payment_id = f"RPAY-{uuid.uuid4().hex[:12].upper()}"
     payment_record = {
         "payment_id": payment_id,
-        "razorpay_payment_id": request.razorpay_payment_id,
-        "razorpay_order_id": request.razorpay_order_id,
-        "invoice_id": request.invoice_id,
+        "razorpay_payment_id": req.razorpay_payment_id,
+        "razorpay_order_id": req.razorpay_order_id,
+        "invoice_id": req.invoice_id,
+        "organization_id": org_id,
         "customer_id": invoice.get("customer_id"),
         "customer_name": invoice.get("customer_name"),
         "amount": amount_paid,
@@ -426,27 +440,50 @@ async def verify_payment(request: PaymentVerifyRequest):
     await db.customerpayments.insert_one(payment_record)
     
     # Update invoice
-    new_balance = invoice.get("balance", 0) - amount_paid
-    new_status = "paid" if new_balance <= 0 else "partial"
+    total = float(invoice.get("grand_total", invoice.get("total", 0)))
+    current_paid = float(invoice.get("amount_paid", 0))
+    new_paid = current_paid + amount_paid
+    new_balance = max(0, total - new_paid)
+    new_status = "paid" if new_balance <= 0 else "partially_paid"
     
-    await db.invoices.update_one(
-        {"invoice_id": request.invoice_id},
+    await collection.update_one(
+        {"invoice_id": req.invoice_id},
         {
             "$set": {
-                "balance": max(0, new_balance),
+                "amount_paid": new_paid,
+                "balance_due": new_balance,
                 "status": new_status,
+                "razorpay_payment_id": req.razorpay_payment_id,
                 "last_modified_time": datetime.now(timezone.utc).isoformat()
             },
             "$push": {
                 "payments": {
                     "payment_id": payment_id,
-                    "razorpay_payment_id": request.razorpay_payment_id,
+                    "razorpay_payment_id": req.razorpay_payment_id,
                     "amount": amount_paid,
                     "date": payment_record["date"]
                 }
             }
         }
     )
+    
+    # Post journal entry
+    if org_id:
+        try:
+            await post_payment_received_journal_entry(
+                organization_id=org_id,
+                payment={
+                    "payment_id": payment_id,
+                    "amount": amount_paid,
+                    "payment_mode": payment.get("method", "razorpay"),
+                    "payment_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                    "customer_name": invoice.get("customer_name", ""),
+                    "invoice_number": invoice.get("invoice_number", ""),
+                    "reference_number": req.razorpay_payment_id
+                }
+            )
+        except Exception as e:
+            logger.error(f"Failed to post journal entry: {e}")
     
     # Update customer outstanding
     await db.contacts.update_one(
@@ -456,8 +493,8 @@ async def verify_payment(request: PaymentVerifyRequest):
     
     # Update order status
     await db.payment_orders.update_one(
-        {"order_id": request.razorpay_order_id},
-        {"$set": {"status": "paid", "payment_id": request.razorpay_payment_id}}
+        {"order_id": req.razorpay_order_id},
+        {"$set": {"status": "paid", "payment_id": req.razorpay_payment_id}}
     )
     
     return {
@@ -466,10 +503,10 @@ async def verify_payment(request: PaymentVerifyRequest):
         "payment": {
             "payment_id": payment_id,
             "amount": amount_paid,
-            "invoice_id": request.invoice_id
+            "invoice_id": req.invoice_id
         },
         "invoice": {
-            "new_balance": max(0, new_balance),
+            "new_balance": new_balance,
             "status": new_status
         }
     }
