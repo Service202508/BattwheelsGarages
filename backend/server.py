@@ -5499,6 +5499,17 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Journal Entries / Double-Entry Bookkeeping Routes
+try:
+    from routes.journal_entries import router as journal_entries_router, init_router as init_journal_entries_router
+    init_journal_entries_router(db)
+    api_router.include_router(journal_entries_router)
+    logger.info("Journal Entries / Double-Entry Bookkeeping routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Journal Entries routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Organization Management Routes (SaaS Cloud)
 try:
     from routes.organizations import router as organizations_router, init_organizations_router
