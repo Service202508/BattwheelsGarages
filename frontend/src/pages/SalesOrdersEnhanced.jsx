@@ -356,12 +356,7 @@ export default function SalesOrdersEnhanced() {
   };
 
   const resetForm = () => {
-    setNewOrder({
-      customer_id: "", reference_number: "", date: new Date().toISOString().split('T')[0],
-      expected_shipment_date: "", salesperson_name: "", terms_and_conditions: "", notes: "",
-      discount_type: "none", discount_value: 0, shipping_charge: 0, adjustment: 0,
-      delivery_method: "", line_items: []
-    });
+    setNewOrder(initialOrderData);
     setSelectedContact(null);
     setContactSearch("");
   };
