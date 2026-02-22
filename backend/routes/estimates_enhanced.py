@@ -1938,8 +1938,9 @@ async def update_line_item(estimate_id: str, line_item_id: str, item: LineItemUp
     if not estimate:
         raise HTTPException(status_code=404, detail="Estimate not found")
     
-    if estimate.get("status") not in ["draft"]:
-        raise HTTPException(status_code=400, detail="Cannot modify non-draft estimates")
+    # Allow modifications for all statuses except converted and void
+    if estimate.get("status") in ["converted", "void"]:
+        raise HTTPException(status_code=400, detail="Cannot modify converted or void estimates")
     
     existing = await estimate_items_collection.find_one({"line_item_id": line_item_id, "estimate_id": estimate_id})
     if not existing:
