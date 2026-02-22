@@ -154,7 +154,17 @@ export default function Banking() {
           <p className="text-gray-500 text-sm mt-1">Bank accounts & transactions</p>
         </div>
         <div className="flex gap-2">
-          <Dialog open={showAccountDialog} onOpenChange={setShowAccountDialog}>
+          <Dialog 
+            open={showAccountDialog} 
+            onOpenChange={(open) => {
+              if (!open && accountPersistence.isDirty) {
+                accountPersistence.setShowCloseConfirm(true);
+              } else {
+                if (!open) accountPersistence.clearSavedData();
+                setShowAccountDialog(open);
+              }
+            }}
+          >
             <DialogTrigger asChild>
               <Button variant="outline" data-testid="add-account-btn">
                 <Building className="h-4 w-4 mr-2" /> Add Account
@@ -162,8 +172,23 @@ export default function Banking() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add Bank Account</DialogTitle>
+                <div className="flex items-center justify-between">
+                  <DialogTitle>Add Bank Account</DialogTitle>
+                  <AutoSaveIndicator 
+                    lastSaved={accountPersistence.lastSaved} 
+                    isSaving={accountPersistence.isSaving} 
+                    isDirty={accountPersistence.isDirty} 
+                  />
+                </div>
               </DialogHeader>
+              
+              <DraftRecoveryBanner
+                show={accountPersistence.showRecoveryBanner}
+                savedAt={accountPersistence.savedDraftInfo?.timestamp}
+                onRestore={accountPersistence.handleRestoreDraft}
+                onDiscard={accountPersistence.handleDiscardDraft}
+              />
+              
               <div className="space-y-4 py-4">
                 <div>
                   <Label>Account Name *</Label>
@@ -195,7 +220,18 @@ export default function Banking() {
                 </div>
               </div>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setShowAccountDialog(false)}>Cancel</Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    if (accountPersistence.isDirty) {
+                      accountPersistence.setShowCloseConfirm(true);
+                    } else {
+                      setShowAccountDialog(false);
+                    }
+                  }}
+                >
+                  Cancel
+                </Button>
                 <Button onClick={handleCreateAccount} className="bg-[#22EDA9] text-black">Add Account</Button>
               </div>
             </DialogContent>
