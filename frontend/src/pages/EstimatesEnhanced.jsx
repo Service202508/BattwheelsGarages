@@ -374,6 +374,7 @@ export default function EstimatesEnhanced() {
       if (res.ok) {
         toast.success(`Estimate ${data.estimate.estimate_number} created`);
         setShowCreateDialog(false);
+        newEstimatePersistence.onSuccessfulSave(); // Clear auto-saved draft
         resetForm();
         fetchData();
       } else {
