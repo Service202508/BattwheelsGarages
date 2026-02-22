@@ -66,7 +66,9 @@ const ServiceMetricCard = ({ title, value, subtitle, icon: Icon, color = "emeral
   const isZero = value === 0 || value === "0";
   
   return (
-    <Card className={`relative overflow-hidden bg-[#111820] border border-[rgba(255,255,255,0.07)] rounded hover:border-[rgba(200,255,0,0.2)] transition-all duration-300 ${className}`}>
+    <Card className={`group relative overflow-hidden bg-[#111820] border border-[rgba(255,255,255,0.07)] rounded hover:border-[rgba(200,255,0,0.20)] hover:bg-[#141E27] transition-[background,border-color] duration-200 ease-out ${className}`}>
+      {/* Top reveal line - scales from left on hover */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#C8FF00] to-[#1AFFE4] scale-x-0 origin-left transition-transform duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-x-100" />
       <CardContent className="p-5">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
@@ -78,8 +80,6 @@ const ServiceMetricCard = ({ title, value, subtitle, icon: Icon, color = "emeral
             <Icon className="h-5 w-5 text-[#C8FF00]" />
           </div>
         </div>
-        {/* Accent line at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#C8FF00] to-[#1AFFE4] opacity-60" />
       </CardContent>
     </Card>
   );
