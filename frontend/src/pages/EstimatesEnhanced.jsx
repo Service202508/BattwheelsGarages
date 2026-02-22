@@ -585,13 +585,21 @@ export default function EstimatesEnhanced() {
 
   // ========================= EDIT ESTIMATE =========================
   const handleOpenEdit = (estimate) => {
+    // Normalize line items to include discount_type if not present
+    const normalizedLineItems = (estimate.line_items || []).map(item => ({
+      ...item,
+      discount_type: item.discount_type || "percent",
+      discount_percent: item.discount_percent || 0,
+      discount_value: item.discount_value || 0
+    }));
+    
     setEditEstimate({
       estimate_id: estimate.estimate_id,
       reference_number: estimate.reference_number || "",
       estimate_date: estimate.estimate_date || "",
       expiry_date: estimate.expiry_date || "",
       payment_terms: estimate.payment_terms || 30,
-      line_items: estimate.line_items || [],
+      line_items: normalizedLineItems,
       discount_type: estimate.discount_type || "percentage",
       discount_value: estimate.discount_value || 0,
       shipping_charge: estimate.shipping_charge || 0,
@@ -599,6 +607,10 @@ export default function EstimatesEnhanced() {
       terms_conditions: estimate.terms_conditions || "",
       adjustment: estimate.adjustment || 0
     });
+    // Reset edit search state
+    setEditItemSearch("");
+    setEditSearchResults([]);
+    setEditActiveItemIndex(null);
     setShowEditDialog(true);
   };
 
