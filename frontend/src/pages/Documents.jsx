@@ -89,7 +89,7 @@ const DocumentCard = ({ doc, selected, onSelect, onDelete, viewMode }) => {
   
   return (
     <Card 
-      className={`cursor-pointer hover:shadow-md transition-all ${selected ? 'ring-2 ring-primary' : ''}`}
+      className={`cursor-pointer transition-colors ${selected ? 'ring-2 ring-primary' : ''}`}
       onClick={() => onSelect(doc.document_id)}
     >
       <CardContent className="p-4">
@@ -126,7 +126,7 @@ const DocumentCard = ({ doc, selected, onSelect, onDelete, viewMode }) => {
 // Folder Item Component
 const FolderItem = ({ folder, onClick }) => (
   <Card 
-    className="cursor-pointer hover:shadow-md transition-all"
+    className="cursor-pointer hover:border-[rgba(200,255,0,0.2)] transition-colors"
     onClick={() => onClick(folder.folder_id)}
   >
     <CardContent className="p-4">

@@ -296,7 +296,7 @@ export default function Inventory() {
           ) : (
             <div className="grid gap-3">
               {services.map((service) => (
-                <Card key={service.item_id} className="hover:shadow-md transition-shadow">
+                <Card key={service.item_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
@@ -349,7 +349,7 @@ export default function Inventory() {
               {parts.map((part) => {
                 const isLowStock = (part.stock_quantity || 0) <= (part.reorder_level || 5);
                 return (
-                  <Card key={part.item_id} className={`hover:shadow-md transition-shadow ${isLowStock ? 'border-orange-200 bg-[rgba(255,140,0,0.08)]/50' : ''}`}>
+                  <Card key={part.item_id} className={`border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors ${isLowStock ? 'border-orange-200 bg-[rgba(255,140,0,0.08)]/50' : ''}`}>
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">

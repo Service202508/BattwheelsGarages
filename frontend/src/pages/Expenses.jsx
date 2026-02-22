@@ -327,7 +327,7 @@ export default function Expenses() {
         expenses.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No expenses found</CardContent></Card> :
         <div className="space-y-3">
           {expenses.map(exp => (
-            <Card key={exp.expense_id} className="hover:shadow-md transition-shadow">
+            <Card key={exp.expense_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
