@@ -101,7 +101,7 @@ export default function InvoicesEnhanced() {
   const [sendMessage, setSendMessage] = useState("");
   
   // Form state
-  const [newInvoice, setNewInvoice] = useState({
+  const initialInvoiceData = {
     customer_id: searchParams.get("customer_id") || "",
     invoice_date: new Date().toISOString().split("T")[0],
     payment_terms: 30,
@@ -112,7 +112,23 @@ export default function InvoicesEnhanced() {
     customer_notes: "",
     terms_conditions: "",
     send_email: false
-  });
+  };
+  
+  const [newInvoice, setNewInvoice] = useState(initialInvoiceData);
+  
+  // Auto-save for Invoice form
+  const invoicePersistence = useFormPersistence(
+    'invoice_new',
+    newInvoice,
+    initialInvoiceData,
+    {
+      enabled: showCreateDialog,
+      isDialogOpen: showCreateDialog,
+      setFormData: setNewInvoice,
+      debounceMs: 2000,
+      entityName: 'Invoice'
+    }
+  );
   
   // Edit form state
   const [editInvoice, setEditInvoice] = useState(null);
