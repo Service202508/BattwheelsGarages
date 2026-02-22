@@ -23,20 +23,20 @@ import { API } from "@/App";
 
 // Role badge colors
 const roleBadgeColors = {
-  owner: "bg-[rgba(139,92,246,0.08)]0/20 text-purple-400 border-purple-500/30",
+  owner: "bg-[rgba(139,92,246,0.20)] text-purple-400 border-purple-500/30",
   admin: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  manager: "bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30",
-  dispatcher: "bg-[rgba(234,179,8,0.08)]0/20 text-yellow-400 border-yellow-500/30",
-  technician: "bg-[rgba(255,140,0,0.08)]0/20 text-orange-400 border-orange-500/30",
+  manager: "bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30",
+  dispatcher: "bg-[rgba(234,179,8,0.20)] text-yellow-400 border-yellow-500/30",
+  technician: "bg-[rgba(255,140,0,0.20)] text-orange-400 border-orange-500/30",
   accountant: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
   viewer: "bg-gray-500/20 text-gray-400 border-gray-500/30",
 };
 
 // Status badge colors
 const statusBadgeColors = {
-  active: "bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30",
-  invited: "bg-[rgba(234,179,8,0.08)]0/20 text-yellow-400 border-yellow-500/30",
-  suspended: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400 border-red-500/30",
+  active: "bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30",
+  invited: "bg-[rgba(234,179,8,0.20)] text-yellow-400 border-yellow-500/30",
+  suspended: "bg-[rgba(255,59,47,0.20)] text-red-400 border-red-500/30",
   deactivated: "bg-gray-500/20 text-gray-400 border-gray-500/30",
 };
 
@@ -393,7 +393,7 @@ export default function OrganizationSettings({ user }) {
             <Badge variant="outline" className="bg-primary/10">
               {organization?.plan_type?.toUpperCase()}
             </Badge>
-            <Badge variant="outline" className={organization?.is_active ? "bg-[rgba(34,197,94,0.08)]0/10 text-green-400" : "bg-[rgba(255,59,47,0.08)]0/10 text-red-400"}>
+            <Badge variant="outline" className={organization?.is_active ? "bg-[rgba(34,197,94,0.10)] text-green-400" : "bg-[rgba(255,59,47,0.10)] text-red-400"}>
               {organization?.is_active ? "Active" : "Inactive"}
             </Badge>
           </div>
