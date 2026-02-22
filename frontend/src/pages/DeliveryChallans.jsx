@@ -11,7 +11,7 @@ import { Plus, Truck, Calendar, User, FileText, ArrowRight, CheckCircle, Trash2 
 import { API } from "@/App";
 
 const statusColors = {
-  draft: "bg-gray-100 text-gray-700",
+  draft: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
   delivered: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   invoiced: "bg-blue-100 text-[#3B9EFF]"
 };

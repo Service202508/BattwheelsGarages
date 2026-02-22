@@ -58,9 +58,9 @@ export default function CustomerDashboard({ user }) {
       open: "bg-yellow-100 text-[#EAB308]",
       in_progress: "bg-blue-100 text-[#3B9EFF]",
       resolved: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-      closed: "bg-gray-100 text-gray-700"
+      closed: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"
     };
-    return colors[status] || "bg-gray-100 text-gray-700";
+    return colors[status] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]";
   };
 
   if (loading) {
