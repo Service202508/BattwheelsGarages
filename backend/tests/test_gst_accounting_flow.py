@@ -146,7 +146,7 @@ class TestGSTAccountingFlow:
             print(f"PASS: Customer contact created: {TestGSTAccountingFlow.created_contact_id}")
         else:
             # Try to get existing contact for testing
-            list_resp = requests.get(f"{BASE_URL}/api/contacts-enhanced", headers=self.headers)
+            list_resp = requests.get(f"{BASE_URL}/api/contacts-enhanced/", headers=self.headers)
             if list_resp.status_code == 200:
                 contacts = list_resp.json().get("contacts", [])
                 if contacts:
