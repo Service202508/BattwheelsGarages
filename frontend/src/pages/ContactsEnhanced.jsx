@@ -943,18 +943,18 @@ export default function ContactsEnhanced() {
                   {/* Actions */}
                   <div className="flex flex-wrap gap-2">
                     {selectedContact.is_active ? (
-                      <Button variant="outline" size="sm" onClick={() => handleToggleActive(selectedContact.contact_id, false)}><XCircle className="h-4 w-4 mr-1" /> Deactivate</Button>
+                      <Button variant="outline" size="sm" onClick={() => handleToggleActive(selectedContact.contact_id, false)} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"><XCircle className="h-4 w-4 mr-1" /> Deactivate</Button>
                     ) : (
-                      <Button variant="outline" size="sm" onClick={() => handleToggleActive(selectedContact.contact_id, true)}><CheckCircle className="h-4 w-4 mr-1" /> Activate</Button>
+                      <Button variant="outline" size="sm" onClick={() => handleToggleActive(selectedContact.contact_id, true)} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"><CheckCircle className="h-4 w-4 mr-1" /> Activate</Button>
                     )}
                     {selectedContact.email && (
                       <>
                         {selectedContact.portal_enabled ? (
-                          <Button variant="outline" size="sm" onClick={() => handleDisablePortal(selectedContact.contact_id)}><Key className="h-4 w-4 mr-1" /> Disable Portal</Button>
+                          <Button variant="outline" size="sm" onClick={() => handleDisablePortal(selectedContact.contact_id)} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"><Key className="h-4 w-4 mr-1" /> Disable Portal</Button>
                         ) : (
-                          <Button variant="outline" size="sm" onClick={() => handleEnablePortal(selectedContact.contact_id)}><Key className="h-4 w-4 mr-1" /> Enable Portal</Button>
+                          <Button variant="outline" size="sm" onClick={() => handleEnablePortal(selectedContact.contact_id)} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"><Key className="h-4 w-4 mr-1" /> Enable Portal</Button>
                         )}
-                        <Button variant="outline" size="sm" onClick={() => handleEmailStatement(selectedContact.contact_id)}><Send className="h-4 w-4 mr-1" /> Email Statement</Button>
+                        <Button variant="outline" size="sm" onClick={() => handleEmailStatement(selectedContact.contact_id)} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"><Send className="h-4 w-4 mr-1" /> Email Statement</Button>
                         <Button 
                           variant="outline" 
                           size="sm" 
@@ -962,14 +962,14 @@ export default function ContactsEnhanced() {
                             setShowDetailDialog(false);
                             navigate(`/estimates?customer_id=${selectedContact.contact_id}&customer_name=${encodeURIComponent(selectedContact.name)}`);
                           }}
-                          className="bg-blue-50 hover:bg-blue-100 border-blue-200"
+                          className="bg-[rgba(59,158,255,0.08)] hover:bg-[rgba(59,158,255,0.15)] border-[rgba(59,158,255,0.25)] text-[#3B9EFF]"
                           data-testid="quick-quote-btn"
                         >
                           <FileText className="h-4 w-4 mr-1" /> Quick Quote
                         </Button>
                       </>
                     )}
-                    <Button variant="destructive" size="sm" onClick={() => handleDeleteContact(selectedContact.contact_id)}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
+                    <Button size="sm" onClick={() => handleDeleteContact(selectedContact.contact_id)} className="bg-[rgba(255,59,47,0.10)] hover:bg-[rgba(255,59,47,0.20)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
                   </div>
 
                   {/* Transaction History */}
