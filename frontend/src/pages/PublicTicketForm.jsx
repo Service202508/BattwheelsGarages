@@ -557,14 +557,14 @@ export default function PublicTicketForm() {
             <SectionCard className="border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50">
               <SectionHeader icon={IndianRupee} title="Service Charges" subtitle="Doorstep service requires advance payment" />
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-4 bg-[#111820] rounded-xl border border-gray-100 shadow-sm">
+                <div className="flex items-center justify-between p-4 bg-[#111820] rounded border border-[rgba(255,255,255,0.07)]">
                   <div className="flex items-center gap-3">
                     <Checkbox checked disabled className="bg-[rgba(200,255,0,0.08)]0 border-[rgba(200,255,0,0.50)]" />
                     <div><p className="text-sm font-medium text-[#F4F6F0]">Visit Charges</p><p className="text-xs text-gray-500">Mandatory</p></div>
                   </div>
                   <span className="text-lg font-bold text-[#C8FF00] text-600">₹{serviceCharges.visit_fee}</span>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-[#111820] rounded-xl border border-gray-100 shadow-sm">
+                <div className="flex items-center justify-between p-4 bg-[#111820] rounded border border-[rgba(255,255,255,0.07)]">
                   <div className="flex items-center gap-3">
                     <Checkbox checked={formData.include_diagnostic_fee} onCheckedChange={(c) => setFormData(prev => ({ ...prev, include_diagnostic_fee: !!c }))} className="border-gray-300" data-testid="diagnostic-fee-checkbox" />
                     <div><p className="text-sm font-medium text-[#F4F6F0]">Diagnostic Report</p><p className="text-xs text-gray-500">Optional</p></div>
@@ -583,8 +583,8 @@ export default function PublicTicketForm() {
           <SectionCard>
             <SectionHeader icon={Camera} title="Attach Photos" subtitle="Optional - helps diagnose faster" />
             <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} onClick={() => fileInputRef.current?.click()}
-              className="w-full p-8 border-2 border-dashed border-gray-200 rounded-xl hover:border-emerald-400 hover:bg-[rgba(200,255,0,0.08)]/50 transition-all duration-200 group">
-              <div className="w-14 h-14 mx-auto mb-3 rounded-xl bg-[rgba(255,255,255,0.05)] group-hover:bg-[rgba(200,255,0,0.10)] flex items-center justify-center transition-colors">
+              className="w-full p-8 border-2 border-dashed border-gray-200 rounded hover:border-emerald-400 hover:bg-[rgba(200,255,0,0.08)]/50 transition-all duration-200 group">
+              <div className="w-14 h-14 mx-auto mb-3 rounded bg-[rgba(255,255,255,0.05)] group-hover:bg-[rgba(200,255,0,0.10)] flex items-center justify-center transition-colors">
                 <Upload className="w-7 h-7 text-gray-400 group-hover:text-[#C8FF00] text-500" />
               </div>
               <p className="text-sm font-medium text-gray-600 group-hover:text-[#C8FF00] text-700">Tap to upload photos</p>
@@ -594,9 +594,9 @@ export default function PublicTicketForm() {
             {attachments.length > 0 && (
               <div className="grid grid-cols-3 gap-3 mt-4">
                 {attachments.map((att) => (
-                  <div key={att.id} className="relative aspect-square rounded-xl overflow-hidden bg-[rgba(255,255,255,0.05)] border border-gray-200 shadow-sm">
+                  <div key={att.id} className="relative aspect-square rounded overflow-hidden bg-[rgba(255,255,255,0.05)] border border-gray-200">
                     {att.preview ? <img src={att.preview} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><FileText className="w-6 h-6 text-gray-400" /></div>}
-                    <button onClick={() => removeAttachment(att.id)} className="absolute top-2 right-2 p-1.5 bg-[#111820]/90 hover:bg-[rgba(255,59,47,0.08)]0 hover:text-white rounded-full shadow-md transition-colors">
+                    <button onClick={() => removeAttachment(att.id)} className="absolute top-2 right-2 p-1.5 bg-[#111820]/90 hover:bg-[rgba(255,59,47,0.08)]0 hover:text-white rounded-full transition-colors">
                       <X className="w-3 h-3" />
                     </button>
                   </div>
@@ -608,7 +608,7 @@ export default function PublicTicketForm() {
           {/* Submit */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="sticky bottom-4 pt-4">
             <Button onClick={handleSubmit} disabled={submitting}
-              className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white text-lg font-bold rounded-xl shadow-xl shadow-emerald-500/30 hover:shadow-emerald-500/40 transition-all duration-200"
+              className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white text-lg font-bold rounded hover:shadow-[0_0_20px_rgba(16,185,129,0.30)] transition-all duration-200"
               data-testid="submit-ticket-btn">
               {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : requiresPayment() ? (
                 <><CreditCard className="w-5 h-5 mr-2" />Proceed to Pay ₹{calculateTotal()}<ArrowRight className="w-5 h-5 ml-2" /></>
