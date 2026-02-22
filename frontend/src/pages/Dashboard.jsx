@@ -483,10 +483,10 @@ export default function Dashboard({ user }) {
           {/* Charts Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Ticket Distribution Pie Chart */}
-            <Card className="bg-white border border-slate-200" data-testid="ticket-distribution-chart">
+            <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]" data-testid="ticket-distribution-chart">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold text-slate-700">Open Tickets by Type</CardTitle>
-                <CardDescription className="text-xs">Distribution of active service tickets</CardDescription>
+                <CardTitle className="text-base font-semibold text-[#F4F6F0]">Open Tickets by Type</CardTitle>
+                <CardDescription className="text-xs text-[rgba(244,246,240,0.45)]">Distribution of active service tickets</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer isVisible={activeTab === "service-tickets"} height="240px">
@@ -509,18 +509,18 @@ export default function Dashboard({ user }) {
                           </Pie>
                           <Tooltip 
                             contentStyle={{ 
-                              backgroundColor: '#fff', 
-                              border: '1px solid #e2e8f0',
-                              borderRadius: '8px',
-                              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                              backgroundColor: '#111820', 
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              borderRadius: '4px',
+                              color: '#F4F6F0'
                             }}
                           />
                         </PieChart>
                       </ResponsiveContainer>
                     ) : (
                       <div className="text-center">
-                        <CheckCircle2 className="h-10 w-10 text-emerald-400 mx-auto mb-2" />
-                        <p className="text-sm text-slate-500">No open tickets</p>
+                        <CheckCircle2 className="h-10 w-10 text-[#C8FF00] mx-auto mb-2" />
+                        <p className="text-sm text-[rgba(244,246,240,0.45)]">No open tickets</p>
                       </div>
                     )}
                   </div>
@@ -529,7 +529,7 @@ export default function Dashboard({ user }) {
                   {ticketDistributionData.map((entry, index) => (
                     <div key={index} className="flex items-center gap-1.5">
                       <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.fill }} />
-                      <span className="text-xs text-slate-500">{entry.name}: {entry.value}</span>
+                      <span className="text-xs text-[rgba(244,246,240,0.45)]">{entry.name}: {entry.value}</span>
                     </div>
                   ))}
                 </div>
@@ -537,22 +537,22 @@ export default function Dashboard({ user }) {
             </Card>
 
             {/* Resolution Efficiency */}
-            <Card className="bg-white border border-slate-200">
+            <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold text-slate-700">Resolution Efficiency</CardTitle>
-                <CardDescription className="text-xs">Key performance indicators</CardDescription>
+                <CardTitle className="text-base font-semibold text-[#F4F6F0]">Resolution Efficiency</CardTitle>
+                <CardDescription className="text-xs text-[rgba(244,246,240,0.45)]">Key performance indicators</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {/* Onsite vs Workshop Comparison */}
                   <div>
                     <div className="flex justify-between mb-1.5">
-                      <span className="text-xs text-slate-500">Onsite vs Workshop (Open)</span>
-                      <span className="text-xs font-medium text-slate-600">
+                      <span className="text-xs text-[rgba(244,246,240,0.45)]">Onsite vs Workshop (Open)</span>
+                      <span className="text-xs font-medium text-[#F4F6F0]">
                         {serviceTicketStats.onsite_resolution} : {serviceTicketStats.workshop_visit}
                       </span>
                     </div>
-                    <div className="flex h-3 rounded-full overflow-hidden bg-slate-100">
+                    <div className="flex h-3 rounded-full overflow-hidden bg-[rgba(255,255,255,0.05)]">
                       <div 
                         className="transition-all duration-500 rounded-l-full"
                         style={{ 
@@ -573,39 +573,39 @@ export default function Dashboard({ user }) {
                       />
                     </div>
                     <div className="flex justify-between mt-1">
-                      <span className="text-[10px] text-emerald-600 font-medium">Onsite</span>
-                      <span className="text-[10px] text-blue-600 font-medium">Workshop</span>
+                      <span className="text-[10px] text-[#C8FF00] font-medium">Onsite</span>
+                      <span className="text-[10px] text-[#3B9EFF] font-medium">Workshop</span>
                     </div>
                   </div>
 
                   {/* Performance Metrics */}
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                    <div className="p-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.07)] rounded-lg">
                       <div className="flex items-center gap-1.5 mb-1">
-                        <Target className="h-3 w-3 text-slate-400" />
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wide">Target Resolution</p>
+                        <Target className="h-3 w-3 text-[rgba(244,246,240,0.35)]" />
+                        <p className="text-[10px] text-[rgba(244,246,240,0.45)] uppercase tracking-wide font-mono">Target Resolution</p>
                       </div>
-                      <p className="text-xl font-bold text-slate-700">8 hrs</p>
-                      <p className={`text-[10px] mt-0.5 font-medium ${serviceTicketStats.avg_resolution_time_hours <= 8 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                      <p className="text-xl font-bold text-[#F4F6F0]">8 hrs</p>
+                      <p className={`text-[10px] mt-0.5 font-medium ${serviceTicketStats.avg_resolution_time_hours <= 8 ? 'text-[#C8FF00]' : 'text-[#EAB308]'}`}>
                         {serviceTicketStats.avg_resolution_time_hours <= 8 ? '✓ On Target' : '⚠ Above Target'}
                       </p>
                     </div>
-                    <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                    <div className="p-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.07)] rounded-lg">
                       <div className="flex items-center gap-1.5 mb-1">
-                        <Target className="h-3 w-3 text-slate-400" />
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wide">Onsite Target</p>
+                        <Target className="h-3 w-3 text-[rgba(244,246,240,0.35)]" />
+                        <p className="text-[10px] text-[rgba(244,246,240,0.45)] uppercase tracking-wide font-mono">Onsite Target</p>
                       </div>
-                      <p className="text-xl font-bold text-slate-700">40%</p>
-                      <p className={`text-[10px] mt-0.5 font-medium ${serviceTicketStats.onsite_resolution_percentage >= 40 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                      <p className="text-xl font-bold text-[#F4F6F0]">40%</p>
+                      <p className={`text-[10px] mt-0.5 font-medium ${serviceTicketStats.onsite_resolution_percentage >= 40 ? 'text-[#C8FF00]' : 'text-[#EAB308]'}`}>
                         {serviceTicketStats.onsite_resolution_percentage >= 40 ? '✓ On Target' : '⚠ Below Target'}
                       </p>
                     </div>
                   </div>
 
                   {/* Real-time Sync Indicator */}
-                  <div className="flex items-center justify-center gap-2 pt-3 border-t border-slate-100">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] text-slate-400">Real-time sync enabled (30s refresh)</span>
+                  <div className="flex items-center justify-center gap-2 pt-3 border-t border-[rgba(255,255,255,0.07)]">
+                    <div className="h-1.5 w-1.5 rounded-full bg-[#C8FF00] animate-pulse" />
+                    <span className="text-[10px] text-[rgba(244,246,240,0.35)]">Real-time sync enabled (30s refresh)</span>
                   </div>
                 </div>
               </CardContent>
