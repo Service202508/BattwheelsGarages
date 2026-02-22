@@ -210,7 +210,7 @@ export default function PublicQuoteView() {
         <Card className="w-full max-w-md text-center">
           <CardContent className="pt-6">
             <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">Unable to Load Estimate</h2>
+            <h2 className="text-xl font-semibold text-[#F4F6F0] mb-2">Unable to Load Estimate</h2>
             <p className="text-gray-600">{error}</p>
           </CardContent>
         </Card>
@@ -237,7 +237,7 @@ export default function PublicQuoteView() {
         </div>
 
         {/* Status Bar */}
-        <div className="bg-white border-x border-b p-4 flex items-center justify-between flex-wrap gap-4">
+        <div className="bg-[#111820] border-x border-b p-4 flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <Badge className={`${statusColors[estimate?.status]} px-3 py-1 text-sm`}>
               {statusLabels[estimate?.status]}

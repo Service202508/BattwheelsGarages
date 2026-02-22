@@ -58,7 +58,7 @@ export default function CustomerVehicles({ user }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Vehicles</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">My Vehicles</h1>
           <p className="text-gray-600">Manage your registered EVs and view service details</p>
         </div>
       </div>
@@ -68,7 +68,7 @@ export default function CustomerVehicles({ user }) {
         <Card>
           <CardContent className="py-12 text-center">
             <Car className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Vehicles Registered</h3>
+            <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Vehicles Registered</h3>
             <p className="text-gray-600 mb-4">
               Your registered vehicles will appear here. Contact support to add your vehicle.
             </p>
@@ -85,7 +85,7 @@ export default function CustomerVehicles({ user }) {
               <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-4 text-white">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-white/10">
+                    <div className="p-2 rounded-lg bg-[#111820]/10">
                       <Car className="h-6 w-6" />
                     </div>
                     <div>
@@ -106,11 +106,11 @@ export default function CustomerVehicles({ user }) {
                 {/* Vehicle Stats */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-3 rounded-lg bg-gray-50">
-                    <p className="text-2xl font-bold text-gray-900">{vehicle.total_services || 0}</p>
+                    <p className="text-2xl font-bold text-[#F4F6F0]">{vehicle.total_services || 0}</p>
                     <p className="text-xs text-gray-600">Total Services</p>
                   </div>
                   <div className="text-center p-3 rounded-lg bg-gray-50">
-                    <p className="text-2xl font-bold text-gray-900">₹{(vehicle.total_service_cost || 0).toLocaleString()}</p>
+                    <p className="text-2xl font-bold text-[#F4F6F0]">₹{(vehicle.total_service_cost || 0).toLocaleString()}</p>
                     <p className="text-xs text-gray-600">Total Spent</p>
                   </div>
                 </div>

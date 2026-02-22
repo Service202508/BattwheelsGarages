@@ -362,7 +362,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
 
   // Source citation component
   const SourceCitation = ({ source, index }) => (
-    <div className="flex items-start gap-2 p-2 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-emerald-500/30 transition-colors">
+    <div className="flex items-start gap-2 p-2 bg-slate-800/50 rounded-lg border border-[rgba(255,255,255,0.07)] border-700/50 hover:border-emerald-500/30 transition-colors">
       <div className="flex-shrink-0 w-6 h-6 rounded bg-emerald-500/20 flex items-center justify-center">
         <span className="text-xs text-emerald-400 font-medium">{index + 1}</span>
       </div>
@@ -380,7 +380,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
   return (
     <div className="h-full flex flex-col bg-slate-900 rounded-xl overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-slate-800/50 bg-gradient-to-r from-slate-900 to-slate-800">
+      <div className="px-6 py-4 border-b border-[rgba(255,255,255,0.07)] border-800/50 bg-gradient-to-r from-slate-900 to-slate-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -414,7 +414,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
       </div>
 
       {/* Quick Questions Section */}
-      <div className="px-6 py-3 border-b border-slate-800/50 bg-slate-900/50">
+      <div className="px-6 py-3 border-b border-[rgba(255,255,255,0.07)] border-800/50 bg-slate-900/50">
         <div className="flex items-center gap-2 mb-2">
           <Lightbulb className="h-4 w-4 text-amber-400" />
           <span className="text-sm font-medium text-slate-300">Quick Questions:</span>
@@ -425,7 +425,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
               key={idx}
               onClick={() => sendMessage(question)}
               disabled={loading}
-              className="px-3 py-1.5 text-xs bg-slate-800/80 border border-slate-700/50 rounded-full text-slate-300 hover:bg-slate-700 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 flex items-center gap-1"
+              className="px-3 py-1.5 text-xs bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 rounded-full text-slate-300 hover:bg-slate-700 hover:text-white hover:border-emerald-500/30 transition-all disabled:opacity-50 flex items-center gap-1"
             >
               {question}
               <ChevronRight className="h-3 w-3 opacity-50" />
@@ -451,7 +451,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                       <Bot className="h-5 w-5 text-emerald-400" />
                     </div>
                   ) : (
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 border border-slate-600 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 border border-[rgba(255,255,255,0.07)] border-600 flex items-center justify-center">
                       <User className="h-5 w-5 text-slate-300" />
                     </div>
                   )}
@@ -465,7 +465,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                         ? "bg-emerald-600 text-white rounded-br-md"
                         : message.error
                         ? "bg-red-500/10 border border-red-500/30 text-slate-200 rounded-bl-md"
-                        : "bg-slate-800/80 border border-slate-700/50 text-slate-200 rounded-bl-md"
+                        : "bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 text-slate-200 rounded-bl-md"
                     }`}
                   >
                     {message.isWelcome ? (
@@ -521,7 +521,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                           <Badge variant="outline" className={`text-xs mr-2 ${
                             message.confidence === 'high' ? 'border-emerald-500/50 text-emerald-400' :
                             message.confidence === 'medium' ? 'border-amber-500/50 text-amber-400' :
-                            'border-slate-500/50 text-slate-400'
+                            'border-[rgba(255,255,255,0.07)] border-500/50 text-slate-400'
                           }`}>
                             {message.confidence} confidence
                           </Badge>
@@ -573,7 +573,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
                   <Bot className="h-5 w-5 text-emerald-400" />
                 </div>
-                <div className="bg-slate-800/80 border border-slate-700/50 rounded-2xl rounded-bl-md px-5 py-4">
+                <div className="bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 rounded-2xl rounded-bl-md px-5 py-4">
                   <div className="flex items-center gap-3">
                     <div className="flex gap-1.5">
                       <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -592,8 +592,8 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
 
         {/* Sources Panel */}
         {currentSources.length > 0 && (
-          <div className="w-80 border-l border-slate-800/50 bg-slate-900/50 flex flex-col">
-            <div className="px-4 py-3 border-b border-slate-800/50">
+          <div className="w-80 border-l border-[rgba(255,255,255,0.07)] border-800/50 bg-slate-900/50 flex flex-col">
+            <div className="px-4 py-3 border-b border-[rgba(255,255,255,0.07)] border-800/50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-emerald-400" />
@@ -616,13 +616,13 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
       </div>
 
       {/* Input Area */}
-      <div className="px-6 py-4 border-t border-slate-800/50 bg-slate-900">
+      <div className="px-6 py-4 border-t border-[rgba(255,255,255,0.07)] border-800/50 bg-slate-900">
         <div className="flex gap-3 items-end max-w-4xl">
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-48 bg-slate-800/50 border-slate-700/50 text-white">
+            <SelectTrigger className="w-48 bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700/50 text-white">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700">
+            <SelectContent className="bg-slate-800 border-[rgba(255,255,255,0.07)] border-700">
               {CATEGORIES.map(cat => {
                 const Icon = cat.icon;
                 return (
@@ -644,7 +644,7 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
-              className="bg-slate-800/50 border-slate-700/50 text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20 h-12"
+              className="bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700/50 text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20 h-12"
               disabled={loading}
               data-testid="ai-query-input"
             />

@@ -193,7 +193,7 @@ export default function RecurringBills() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Recurring Bills</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Recurring Bills</h1>
           <p className="text-gray-500">Automate your vendor payments</p>
         </div>
         <div className="flex gap-2">

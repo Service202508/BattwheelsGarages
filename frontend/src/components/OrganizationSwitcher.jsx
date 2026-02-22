@@ -90,7 +90,7 @@ const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
   if (organizations.length <= 1) {
     // Single org - just show the name
     return (
-      <div className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-slate-700">
+      <div className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-[rgba(255,255,255,0.07)] border-700">
         <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
           <Building2 className="w-4 h-4 text-emerald-400" />
         </div>
@@ -110,7 +110,7 @@ const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg border border-slate-700 transition"
+        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg border border-[rgba(255,255,255,0.07)] border-700 transition"
         data-testid="org-switcher-btn"
       >
         <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
@@ -132,8 +132,8 @@ const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-72 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden">
-          <div className="p-2 border-b border-slate-700">
+        <div className="absolute top-full left-0 mt-2 w-72 bg-slate-800 border border-[rgba(255,255,255,0.07)] border-700 rounded-xl shadow-xl z-50 overflow-hidden">
+          <div className="p-2 border-b border-[rgba(255,255,255,0.07)] border-700">
             <p className="text-xs font-medium text-slate-400 px-2 py-1">YOUR ORGANIZATIONS</p>
           </div>
 
@@ -170,7 +170,7 @@ const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
             ))}
           </div>
 
-          <div className="p-2 border-t border-slate-700 space-y-1">
+          <div className="p-2 border-t border-[rgba(255,255,255,0.07)] border-700 space-y-1">
             <a
               href="/organization-settings"
               className="flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition"

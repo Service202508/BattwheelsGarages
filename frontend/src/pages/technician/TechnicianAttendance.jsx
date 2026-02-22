@@ -177,12 +177,12 @@ export default function TechnicianAttendance({ user }) {
                         {todayStatus.today || 'Present'}
                       </Badge>
                       <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-slate-700">
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
                           <Clock className="h-4 w-4 text-green-400" />
                           <span className="text-slate-300">In: {todayStatus.check_in}</span>
                         </div>
                         {todayStatus.check_out && (
-                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-slate-700">
+                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
                             <Clock className="h-4 w-4 text-red-400" />
                             <span className="text-slate-300">Out: {todayStatus.check_out}</span>
                           </div>
@@ -205,7 +205,7 @@ export default function TechnicianAttendance({ user }) {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-4 gap-4">
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -219,7 +219,7 @@ export default function TechnicianAttendance({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -233,7 +233,7 @@ export default function TechnicianAttendance({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -247,7 +247,7 @@ export default function TechnicianAttendance({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -283,7 +283,7 @@ export default function TechnicianAttendance({ user }) {
           <Loader2 className="h-8 w-8 animate-spin text-green-500" />
         </div>
       ) : (
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-0">
             <div className="divide-y divide-slate-800">
               {attendanceData.records.length === 0 ? (
@@ -353,7 +353,7 @@ export default function TechnicianAttendance({ user }) {
 
       {/* Check In/Out Dialog */}
       <Dialog open={showCheckDialog} onOpenChange={setShowCheckDialog}>
-        <DialogContent className="bg-slate-900 border-slate-800">
+        <DialogContent className="bg-slate-900 border-[rgba(255,255,255,0.07)] border-800">
           <DialogHeader>
             <DialogTitle className="text-white">
               {checkType === 'in' ? 'Check In' : 'Check Out'} Confirmation
@@ -377,7 +377,7 @@ export default function TechnicianAttendance({ user }) {
             </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCheckDialog(false)} className="border-slate-700">
+            <Button variant="outline" onClick={() => setShowCheckDialog(false)} className="border-[rgba(255,255,255,0.07)] border-700">
               Cancel
             </Button>
             <Button 

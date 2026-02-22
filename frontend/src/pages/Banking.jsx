@@ -150,7 +150,7 @@ export default function Banking() {
     <div className="space-y-6" data-testid="banking-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Banking</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Banking</h1>
           <p className="text-gray-500 text-sm mt-1">Bank accounts & transactions</p>
         </div>
         <div className="flex gap-2">
@@ -360,7 +360,7 @@ export default function Banking() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500">Total Balance</p>
-              <p className="text-3xl font-bold text-gray-900">₹{totalBalance.toLocaleString('en-IN')}</p>
+              <p className="text-3xl font-bold text-[#F4F6F0]">₹{totalBalance.toLocaleString('en-IN')}</p>
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-500">{accounts.length} Accounts</p>
@@ -372,7 +372,7 @@ export default function Banking() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Accounts List */}
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-gray-900">Accounts</h2>
+          <h2 className="text-lg font-semibold text-[#F4F6F0]">Accounts</h2>
           <Button 
             variant={selectedAccount === null ? "default" : "outline"} 
             className={`w-full justify-start ${selectedAccount === null ? "bg-[#22EDA9] text-black" : ""}`}
@@ -409,7 +409,7 @@ export default function Banking() {
 
         {/* Transactions */}
         <div className="lg:col-span-2 space-y-3">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-[#F4F6F0]">
             Transactions {selectedAccount && `- ${selectedAccount.account_name}`}
           </h2>
           {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :

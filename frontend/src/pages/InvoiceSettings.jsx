@@ -710,7 +710,7 @@ export default function InvoiceSettings() {
                 </h4>
                 <p className="text-sm text-blue-700">
                   Email reminders will be sent via <strong>Resend</strong>. 
-                  To activate, add <code className="bg-white px-1 rounded">RESEND_API_KEY</code> to your environment.
+                  To activate, add <code className="bg-[#111820] px-1 rounded">RESEND_API_KEY</code> to your environment.
                 </p>
               </div>
 

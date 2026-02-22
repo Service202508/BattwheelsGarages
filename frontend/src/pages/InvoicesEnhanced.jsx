@@ -897,7 +897,7 @@ export default function InvoicesEnhanced() {
               </CardContent>
             </Card>
           ) : (
-            <div className="bg-white rounded-lg border overflow-hidden">
+            <div className="bg-[#111820] rounded-lg border overflow-hidden">
               <table className="w-full">
                 <thead className="bg-[#111820] text-xs text-[rgba(244,246,240,0.45)] uppercase">
                   <tr>

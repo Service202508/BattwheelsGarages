@@ -66,7 +66,7 @@ export default function TechnicianProductivity({ user }) {
           <h1 className="text-2xl font-bold text-white">My Performance</h1>
           <p className="text-slate-400">Track your productivity metrics</p>
         </div>
-        <Button variant="outline" onClick={fetchProductivity} className="border-slate-700">
+        <Button variant="outline" onClick={fetchProductivity} className="border-[rgba(255,255,255,0.07)] border-700">
           <TrendingUp className="h-4 w-4 mr-2" />
           Refresh
         </Button>
@@ -100,7 +100,7 @@ export default function TechnicianProductivity({ user }) {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-4 gap-4">
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-green-500/10">
@@ -113,7 +113,7 @@ export default function TechnicianProductivity({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-blue-500/10">
@@ -138,7 +138,7 @@ export default function TechnicianProductivity({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-purple-500/10">
@@ -152,7 +152,7 @@ export default function TechnicianProductivity({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-amber-500/10">
@@ -170,7 +170,7 @@ export default function TechnicianProductivity({ user }) {
       {/* Charts Row */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Weekly Trend */}
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-green-400" />
@@ -204,7 +204,7 @@ export default function TechnicianProductivity({ user }) {
         </Card>
 
         {/* Priority Breakdown */}
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Ticket className="h-5 w-5 text-purple-400" />
@@ -240,7 +240,7 @@ export default function TechnicianProductivity({ user }) {
             </div>
             
             {/* Total */}
-            <div className="mt-6 pt-4 border-t border-slate-800">
+            <div className="mt-6 pt-4 border-t border-[rgba(255,255,255,0.07)] border-800">
               <div className="flex justify-between">
                 <span className="text-slate-400">Total Resolved</span>
                 <span className="text-xl font-bold text-green-400">
@@ -253,7 +253,7 @@ export default function TechnicianProductivity({ user }) {
       </div>
 
       {/* Performance Tips */}
-      <Card className="bg-slate-900/50 border-slate-800">
+      <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <Zap className="h-5 w-5 text-amber-400" />
@@ -262,7 +262,7 @@ export default function TechnicianProductivity({ user }) {
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700">
+            <div className="p-4 rounded-xl bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
               <div className="p-2 rounded-lg bg-green-500/10 w-fit mb-3">
                 <CheckCircle className="h-5 w-5 text-green-400" />
               </div>
@@ -270,7 +270,7 @@ export default function TechnicianProductivity({ user }) {
               <p className="text-sm text-slate-400">Aim to resolve at least 5 tickets daily to maintain your ranking.</p>
             </div>
             
-            <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700">
+            <div className="p-4 rounded-xl bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
               <div className="p-2 rounded-lg bg-amber-500/10 w-fit mb-3">
                 <Clock className="h-5 w-5 text-amber-400" />
               </div>
@@ -278,7 +278,7 @@ export default function TechnicianProductivity({ user }) {
               <p className="text-sm text-slate-400">Start work on assigned tickets within 1 hour for better metrics.</p>
             </div>
             
-            <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700">
+            <div className="p-4 rounded-xl bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
               <div className="p-2 rounded-lg bg-purple-500/10 w-fit mb-3">
                 <Target className="h-5 w-5 text-purple-400" />
               </div>

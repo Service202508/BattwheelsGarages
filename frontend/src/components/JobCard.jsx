@@ -798,9 +798,9 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
 
       {/* EFI Side Panel - Only for technicians and admins */}
       {(isTechnician || isAdmin) && efiPanelOpen && (
-        <div className="w-[420px] border-l border-slate-700 bg-slate-900/95 flex flex-col overflow-hidden">
+        <div className="w-[420px] border-l border-[rgba(255,255,255,0.07)] border-700 bg-slate-900/95 flex flex-col overflow-hidden">
           {/* Panel Header with Mode Toggle */}
-          <div className="p-3 border-b border-slate-700 flex items-center justify-between bg-slate-800/50">
+          <div className="p-3 border-b border-[rgba(255,255,255,0.07)] border-700 flex items-center justify-between bg-slate-800/50">
             <div className="flex items-center gap-2">
               <Brain className="h-5 w-5 text-emerald-400" />
               <span className="font-semibold text-white">EFI Assistant</span>

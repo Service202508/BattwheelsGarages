@@ -283,7 +283,7 @@ export default function Accountant() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Accountant</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Accountant</h1>
           <p className="text-gray-500 text-sm mt-1">Complete accounting module with reconciliation & reports</p>
         </div>
       </div>
@@ -369,7 +369,7 @@ export default function Accountant() {
           {/* Bank Accounts and Transactions */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="space-y-3">
-              <h3 className="font-semibold text-gray-900">Bank Accounts</h3>
+              <h3 className="font-semibold text-[#F4F6F0]">Bank Accounts</h3>
               {bankAccounts.map(acc => (
                 <Card 
                   key={acc.bank_account_id}
@@ -395,7 +395,7 @@ export default function Accountant() {
             </div>
 
             <div className="lg:col-span-2 space-y-3">
-              <h3 className="font-semibold text-gray-900">
+              <h3 className="font-semibold text-[#F4F6F0]">
                 Recent Transactions {selectedAccount && `- ${selectedAccount.account_name}`}
               </h3>
               <Card>

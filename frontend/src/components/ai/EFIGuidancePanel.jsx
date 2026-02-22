@@ -40,7 +40,7 @@ const GaugeChart = ({ value, max = 100, title, unit = "%", color, zones }) => {
     <div className="flex flex-col items-center p-3 bg-slate-800/50 rounded-lg">
       <span className="text-xs text-slate-400 mb-2">{title}</span>
       <div className="relative w-20 h-10 overflow-hidden">
-        <div className="absolute w-20 h-20 rounded-full border-4 border-slate-700" 
+        <div className="absolute w-20 h-20 rounded-full border-4 border-[rgba(255,255,255,0.07)] border-700" 
              style={{ borderTopColor: 'transparent', borderLeftColor: 'transparent', transform: 'rotate(225deg)' }}>
         </div>
         <div 
@@ -176,7 +176,7 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
                   variant={answers[q.id] === opt ? "default" : "outline"}
                   className={answers[q.id] === opt 
                     ? "bg-emerald-600 text-white" 
-                    : "border-slate-600 text-slate-300 hover:bg-slate-700"}
+                    : "border-[rgba(255,255,255,0.07)] border-600 text-slate-300 hover:bg-slate-700"}
                   onClick={() => handleChange(q.id, opt)}
                 >
                   {opt}
@@ -194,7 +194,7 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
                   variant={(answers[q.id] || []).includes(opt) ? "default" : "outline"}
                   className={(answers[q.id] || []).includes(opt)
                     ? "bg-emerald-600 text-white"
-                    : "border-slate-600 text-slate-300 hover:bg-slate-700"}
+                    : "border-[rgba(255,255,255,0.07)] border-600 text-slate-300 hover:bg-slate-700"}
                   onClick={() => handleMultiSelect(q.id, opt)}
                 >
                   {opt}
@@ -207,7 +207,7 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
             <input
               type="text"
               placeholder={q.placeholder}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded text-white text-sm"
+              className="w-full px-3 py-2 bg-slate-800 border border-[rgba(255,255,255,0.07)] border-700 rounded text-white text-sm"
               value={answers[q.id] || ""}
               onChange={(e) => handleChange(q.id, e.target.value)}
             />
@@ -219,7 +219,7 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
               min={q.min}
               max={q.max}
               placeholder="Enter value"
-              className="w-24 px-3 py-2 bg-slate-800 border border-slate-700 rounded text-white text-sm"
+              className="w-24 px-3 py-2 bg-slate-800 border border-[rgba(255,255,255,0.07)] border-700 rounded text-white text-sm"
               value={answers[q.id] || ""}
               onChange={(e) => handleChange(q.id, parseFloat(e.target.value))}
             />
@@ -249,7 +249,7 @@ const DiagnosticStep = ({ step, index, onMarkDone, isDone }) => (
       className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
         isDone 
           ? 'bg-emerald-500 border-emerald-500 text-white' 
-          : 'border-slate-600 hover:border-emerald-400'
+          : 'border-[rgba(255,255,255,0.07)] border-600 hover:border-emerald-400'
       }`}
     >
       {isDone && <CheckCircle2 className="h-4 w-4" />}
@@ -480,7 +480,7 @@ export default function EFIGuidancePanel({
   
   if (guidance?.enabled === false) {
     return (
-      <Card className="bg-slate-900/50 border-slate-700">
+      <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-700">
         <CardContent className="p-6 text-center text-slate-400">
           <Shield className="h-10 w-10 mx-auto mb-3 text-slate-500" />
           <p>EFI Guidance Layer is not enabled for your organization.</p>
@@ -490,9 +490,9 @@ export default function EFIGuidancePanel({
   }
   
   return (
-    <Card className="bg-slate-900 border-slate-700 overflow-hidden" data-testid="efi-guidance-panel">
+    <Card className="bg-slate-900 border-[rgba(255,255,255,0.07)] border-700 overflow-hidden" data-testid="efi-guidance-panel">
       {/* Header */}
-      <CardHeader className="bg-gradient-to-r from-emerald-900/50 to-slate-900 border-b border-slate-700 pb-4">
+      <CardHeader className="bg-gradient-to-r from-emerald-900/50 to-slate-900 border-b border-[rgba(255,255,255,0.07)] border-700 pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
@@ -564,12 +564,12 @@ export default function EFIGuidancePanel({
               {guidance.confidence} confidence
             </Badge>
             {guidance.sources_count > 0 && (
-              <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
+              <Badge variant="outline" className="text-xs border-[rgba(255,255,255,0.07)] border-600 text-slate-400">
                 {guidance.sources_count} sources
               </Badge>
             )}
             {guidance.generation_time_ms && (
-              <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
+              <Badge variant="outline" className="text-xs border-[rgba(255,255,255,0.07)] border-600 text-slate-400">
                 {guidance.generation_time_ms}ms
               </Badge>
             )}
@@ -614,7 +614,7 @@ export default function EFIGuidancePanel({
           </div>
         ) : (
           <Tabs defaultValue="steps" className="w-full">
-            <TabsList className="w-full bg-slate-800/50 border-b border-slate-700 rounded-none p-0">
+            <TabsList className="w-full bg-slate-800/50 border-b border-[rgba(255,255,255,0.07)] border-700 rounded-none p-0">
               <TabsTrigger value="steps" className="flex-1 py-3 data-[state=active]:bg-slate-700">
                 <ClipboardList className="h-4 w-4 mr-2" />
                 Steps
@@ -718,7 +718,7 @@ export default function EFIGuidancePanel({
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {guidance.sources.map((source, i) => (
-                      <Badge key={i} variant="outline" className="text-xs border-slate-600 text-slate-300">
+                      <Badge key={i} variant="outline" className="text-xs border-[rgba(255,255,255,0.07)] border-600 text-slate-300">
                         {source.source_id || source.title || `Source ${i+1}`}
                       </Badge>
                     ))}
@@ -857,7 +857,7 @@ export default function EFIGuidancePanel({
         
         {/* Footer Actions */}
         {guidance && !guidance.needs_ask_back && (
-          <div className="p-4 border-t border-slate-700 flex items-center justify-between">
+          <div className="p-4 border-t border-[rgba(255,255,255,0.07)] border-700 flex items-center justify-between">
             {/* Feedback */}
             {!feedbackGiven ? (
               <div className="flex items-center gap-2">

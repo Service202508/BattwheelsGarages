@@ -99,7 +99,7 @@ export default function CustomerServiceHistory({ user }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Service History</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Service History</h1>
           <p className="text-gray-600">Track all your vehicle services and repairs</p>
         </div>
       </div>
@@ -139,7 +139,7 @@ export default function CustomerServiceHistory({ user }) {
         <Card>
           <CardContent className="py-12 text-center">
             <ClipboardList className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Services Found</h3>
+            <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Services Found</h3>
             <p className="text-gray-600">
               {searchTerm || statusFilter !== "all" 
                 ? "Try adjusting your filters"
@@ -168,7 +168,7 @@ export default function CustomerServiceHistory({ user }) {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold text-gray-900 truncate">{service.title}</h3>
+                          <h3 className="font-semibold text-[#F4F6F0] truncate">{service.title}</h3>
                           <Badge className={statusConfig.color}>{statusConfig.label}</Badge>
                         </div>
                         <p className="text-sm text-gray-600 line-clamp-2 mb-2">{service.description}</p>
@@ -192,7 +192,7 @@ export default function CustomerServiceHistory({ user }) {
                     </div>
                     <div className="text-right flex-shrink-0">
                       {service.total_cost > 0 && (
-                        <p className="font-semibold text-gray-900">₹{service.total_cost.toLocaleString()}</p>
+                        <p className="font-semibold text-[#F4F6F0]">₹{service.total_cost.toLocaleString()}</p>
                       )}
                       <ChevronRight className="h-5 w-5 text-gray-400 mt-2 ml-auto" />
                     </div>
@@ -241,7 +241,7 @@ export default function CustomerServiceHistory({ user }) {
 
                 {/* Issue */}
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Issue Reported</h4>
+                  <h4 className="font-semibold text-[#F4F6F0] mb-2">Issue Reported</h4>
                   <p className="text-gray-600">{selectedService.title}</p>
                   {selectedService.description && (
                     <p className="text-gray-500 text-sm mt-1">{selectedService.description}</p>
@@ -251,7 +251,7 @@ export default function CustomerServiceHistory({ user }) {
                 {/* Status Timeline */}
                 {selectedService.status_history && selectedService.status_history.length > 0 && (
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Service Timeline</h4>
+                    <h4 className="font-semibold text-[#F4F6F0] mb-3">Service Timeline</h4>
                     <div className="space-y-3">
                       {selectedService.status_history.map((item, index) => (
                         <div key={index} className="flex items-start gap-3">
@@ -262,7 +262,7 @@ export default function CustomerServiceHistory({ user }) {
                             )}
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">
+                            <p className="font-medium text-[#F4F6F0]">
                               {getStatusConfig(item.status).label}
                             </p>
                             <p className="text-sm text-gray-500">
@@ -281,7 +281,7 @@ export default function CustomerServiceHistory({ user }) {
                   <div className="bg-gray-50 rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Total Cost</span>
-                      <span className="text-xl font-bold text-gray-900">
+                      <span className="text-xl font-bold text-[#F4F6F0]">
                         ₹{selectedService.total_cost.toLocaleString()}
                       </span>
                     </div>

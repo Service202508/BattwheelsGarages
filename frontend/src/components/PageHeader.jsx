@@ -40,7 +40,7 @@ export default function PageHeader({
       {showBack && (
         <button
           onClick={handleBack}
-          className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 mb-3 transition-colors group"
+          className="flex items-center gap-1 text-sm text-gray-500 hover:text-[#F4F6F0] mb-3 transition-colors group"
         >
           <ChevronLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
           <span>Back</span>
@@ -61,7 +61,7 @@ export default function PageHeader({
           {/* Text Content */}
           <div>
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">
+              <h1 className="text-2xl lg:text-3xl font-bold text-[#F4F6F0] tracking-tight">
                 {title}
               </h1>
               {badges && (
@@ -123,7 +123,7 @@ export function PageHeaderWithStats({
           {stats.map((stat, index) => (
             <div 
               key={index}
-              className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-[#111820] rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex items-center gap-3">
                 {stat.icon && (
@@ -135,7 +135,7 @@ export function PageHeaderWithStats({
                   <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">
                     {stat.label}
                   </p>
-                  <p className="text-xl font-bold text-gray-900">
+                  <p className="text-xl font-bold text-[#F4F6F0]">
                     {stat.value}
                   </p>
                 </div>
@@ -167,14 +167,14 @@ export function EmptyState({
           <Icon className="h-8 w-8 text-gray-400" strokeWidth={1.5} />
         </div>
       )}
-      <h3 className="text-lg font-semibold text-gray-900 mb-1">
+      <h3 className="text-lg font-semibold text-[#F4F6F0] mb-1">
         {title || "No data found"}
       </h3>
       <p className="text-gray-500 text-center max-w-sm mb-6">
         {description || "Get started by creating your first item."}
       </p>
       {actionLabel && onAction && (
-        <Button onClick={onAction} className="bg-[#22EDA9] text-gray-900 hover:bg-[#1DD69A] font-semibold">
+        <Button onClick={onAction} className="bg-[#22EDA9] text-[#F4F6F0] hover:bg-[#1DD69A] font-semibold">
           {ActionIcon && <ActionIcon className="h-4 w-4 mr-2" />}
           {actionLabel}
         </Button>
@@ -191,7 +191,7 @@ export function SectionHeader({ title, description, actions }) {
   return (
     <div className="flex items-center justify-between mb-4">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+        <h2 className="text-lg font-semibold text-[#F4F6F0]">{title}</h2>
         {description && (
           <p className="text-sm text-gray-500">{description}</p>
         )}

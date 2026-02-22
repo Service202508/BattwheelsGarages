@@ -430,7 +430,7 @@ export default function BrandingSettings({ user }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Brand Settings</h1>
+          <h1 className="text-2xl font-semibold text-[#F4F6F0]">Brand Settings</h1>
           <p className="text-gray-500 mt-1">Customize your organization's appearance</p>
         </div>
         <div className="flex gap-2">

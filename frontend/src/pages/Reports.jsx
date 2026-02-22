@@ -230,7 +230,7 @@ export default function Reports() {
     <div className="space-y-6" data-testid="reports-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Financial Reports</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Financial Reports</h1>
           <p className="text-gray-500 text-sm mt-1">Comprehensive business analytics & exports</p>
         </div>
       </div>
@@ -518,7 +518,7 @@ export default function Reports() {
                   {/* Total */}
                   <div className="bg-[#22EDA9]/10 p-4 rounded-lg flex justify-between items-center">
                     <span className="font-semibold text-gray-700">Total Accounts Receivable</span>
-                    <span className="text-2xl font-bold text-gray-900">{formatCurrency(arAging.total_ar)}</span>
+                    <span className="text-2xl font-bold text-[#F4F6F0]">{formatCurrency(arAging.total_ar)}</span>
                   </div>
 
                   {/* Invoice Details Table */}

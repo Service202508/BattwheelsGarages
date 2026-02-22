@@ -19,7 +19,7 @@ const statusColors = {
   unpaid: "bg-amber-100 text-amber-700 border-amber-200",
   overdue: "bg-red-100 text-red-700 border-red-200",
   partial: "bg-blue-100 text-blue-700 border-blue-200",
-  draft: "bg-slate-100 text-slate-600 border-slate-200",
+  draft: "bg-slate-100 text-slate-600 border-[rgba(255,255,255,0.07)] border-200",
 };
 
 export default function BusinessInvoices({ user }) {
@@ -193,7 +193,7 @@ export default function BusinessInvoices({ user }) {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -207,7 +207,7 @@ export default function BusinessInvoices({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -221,7 +221,7 @@ export default function BusinessInvoices({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -274,7 +274,7 @@ export default function BusinessInvoices({ user }) {
               <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
             </div>
           ) : filteredInvoices.length === 0 ? (
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
               <CardContent className="py-12 text-center">
                 <FileText className="h-16 w-16 mx-auto text-slate-300 mb-4" />
                 <h3 className="text-lg font-medium text-slate-900 mb-2">No invoices found</h3>
@@ -284,7 +284,7 @@ export default function BusinessInvoices({ user }) {
               </CardContent>
             </Card>
           ) : (
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
               <Table>
                 <TableHeader>
                   <TableRow>

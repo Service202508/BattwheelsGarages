@@ -106,7 +106,7 @@ export default function BusinessAMC({ user }) {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -120,7 +120,7 @@ export default function BusinessAMC({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -134,7 +134,7 @@ export default function BusinessAMC({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -155,7 +155,7 @@ export default function BusinessAMC({ user }) {
           <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
         </div>
       ) : contracts.length === 0 ? (
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="py-12 text-center">
             <Shield className="h-16 w-16 mx-auto text-slate-300 mb-4" />
             <h3 className="text-lg font-medium text-slate-900 mb-2">No AMC Contracts</h3>
@@ -177,7 +177,7 @@ export default function BusinessAMC({ user }) {
             return (
               <Card 
                 key={contract.amc_id || contract.contract_id} 
-                className="bg-white border-slate-200 hover:shadow-md transition-shadow cursor-pointer"
+                className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => { setSelectedContract(contract); setShowDetailDialog(true); }}
                 data-testid={`amc-card-${contract.amc_id || contract.contract_id}`}
               >
@@ -222,7 +222,7 @@ export default function BusinessAMC({ user }) {
                   
                   {/* Services Used */}
                   {contract.services_used !== undefined && (
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <div className="flex items-center justify-between pt-3 border-t border-[rgba(255,255,255,0.07)] border-100">
                       <span className="text-sm text-slate-500">Services Used</span>
                       <span className="font-medium text-slate-900">
                         {contract.services_used} / {contract.max_services || "Unlimited"}
@@ -250,7 +250,7 @@ export default function BusinessAMC({ user }) {
           <h2 className="text-xl font-bold text-slate-900 mb-4">Available AMC Plans</h2>
           <div className="grid md:grid-cols-3 gap-4">
             {plans.map((plan) => (
-              <Card key={plan.plan_id} className="bg-white border-slate-200 hover:border-indigo-200 transition-colors">
+              <Card key={plan.plan_id} className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 hover:border-indigo-200 transition-colors">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 rounded-lg bg-indigo-50">
@@ -273,7 +273,7 @@ export default function BusinessAMC({ user }) {
                     ))}
                   </ul>
                   
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                  <div className="flex items-center justify-between pt-4 border-t border-[rgba(255,255,255,0.07)] border-100">
                     <span className="text-2xl font-bold text-indigo-600">
                       {formatCurrency(plan.price)}
                     </span>

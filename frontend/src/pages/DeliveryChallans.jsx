@@ -119,7 +119,7 @@ export default function DeliveryChallans() {
     <div className="space-y-6" data-testid="delivery-challans-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Delivery Challans</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Delivery Challans</h1>
           <p className="text-gray-500 text-sm mt-1">Track goods dispatched to customers</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>

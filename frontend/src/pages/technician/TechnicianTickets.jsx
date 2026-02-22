@@ -25,7 +25,7 @@ const statusColors = {
   estimate_sent: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
   estimate_approved: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
   work_completed: "bg-green-500/20 text-green-400 border-green-500/30",
-  closed: "bg-slate-500/20 text-slate-400 border-slate-500/30",
+  closed: "bg-slate-500/20 text-slate-400 border-[rgba(255,255,255,0.07)] border-500/30",
   resolved: "bg-green-500/20 text-green-400 border-green-500/30",
 };
 
@@ -184,14 +184,14 @@ export default function TechnicianTickets({ user }) {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
           <Input
             placeholder="Search tickets..."
-            className="pl-10 bg-slate-900/50 border-slate-700"
+            className="pl-10 bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-700"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-40 bg-slate-900/50 border-slate-700">
+          <SelectTrigger className="w-40 bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-700">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -205,7 +205,7 @@ export default function TechnicianTickets({ user }) {
         </Select>
         
         <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-          <SelectTrigger className="w-40 bg-slate-900/50 border-slate-700">
+          <SelectTrigger className="w-40 bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-700">
             <SelectValue placeholder="Priority" />
           </SelectTrigger>
           <SelectContent>
@@ -217,7 +217,7 @@ export default function TechnicianTickets({ user }) {
           </SelectContent>
         </Select>
         
-        <Button variant="outline" onClick={fetchTickets} className="border-slate-700">
+        <Button variant="outline" onClick={fetchTickets} className="border-[rgba(255,255,255,0.07)] border-700">
           <Filter className="h-4 w-4 mr-2" />
           Refresh
         </Button>
@@ -229,7 +229,7 @@ export default function TechnicianTickets({ user }) {
           <Loader2 className="h-8 w-8 animate-spin text-green-500" />
         </div>
       ) : filteredTickets.length === 0 ? (
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="py-12 text-center">
             <Ticket className="h-16 w-16 mx-auto text-slate-600 mb-4" />
             <h3 className="text-lg font-medium text-white mb-2">No tickets found</h3>
@@ -243,7 +243,7 @@ export default function TechnicianTickets({ user }) {
           {filteredTickets.map((ticket) => (
             <Card 
               key={ticket.ticket_id} 
-              className="bg-slate-900/50 border-slate-800 hover:border-green-500/30 transition-all"
+              className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-green-500/30 transition-all"
             >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-4">
@@ -286,7 +286,7 @@ export default function TechnicianTickets({ user }) {
                     {(ticket.resolution_type || ticket.incident_location) && (
                       <div className="flex items-center gap-4 mt-3 text-sm">
                         {ticket.resolution_type && (
-                          <Badge variant="outline" className="border-slate-700 text-slate-400">
+                          <Badge variant="outline" className="border-[rgba(255,255,255,0.07)] border-700 text-slate-400">
                             {ticket.resolution_type.replace(/_/g, ' ')}
                           </Badge>
                         )}
@@ -313,7 +313,7 @@ export default function TechnicianTickets({ user }) {
                   {/* Actions */}
                   <div className="flex flex-col gap-2">
                     <Link to={`/technician/tickets/${ticket.ticket_id}`}>
-                      <Button variant="outline" size="sm" className="w-full border-slate-700">
+                      <Button variant="outline" size="sm" className="w-full border-[rgba(255,255,255,0.07)] border-700">
                         View Details
                         <ArrowRight className="h-4 w-4 ml-2" />
                       </Button>
@@ -350,7 +350,7 @@ export default function TechnicianTickets({ user }) {
 
       {/* Start Work Dialog */}
       <Dialog open={showStartWorkDialog} onOpenChange={setShowStartWorkDialog}>
-        <DialogContent className="bg-slate-900 border-slate-800">
+        <DialogContent className="bg-slate-900 border-[rgba(255,255,255,0.07)] border-800">
           <DialogHeader>
             <DialogTitle className="text-white">Start Work</DialogTitle>
             <DialogDescription>
@@ -358,7 +358,7 @@ export default function TechnicianTickets({ user }) {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700">
+            <div className="p-4 rounded-lg bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
               <div className="flex items-center gap-3 text-sm">
                 <Car className="h-5 w-5 text-green-400" />
                 <div>
@@ -372,7 +372,7 @@ export default function TechnicianTickets({ user }) {
             </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowStartWorkDialog(false)} className="border-slate-700">
+            <Button variant="outline" onClick={() => setShowStartWorkDialog(false)} className="border-[rgba(255,255,255,0.07)] border-700">
               Cancel
             </Button>
             <Button 
@@ -389,7 +389,7 @@ export default function TechnicianTickets({ user }) {
 
       {/* Complete Work Dialog */}
       <Dialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
-        <DialogContent className="bg-slate-900 border-slate-800 max-w-md">
+        <DialogContent className="bg-slate-900 border-[rgba(255,255,255,0.07)] border-800 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white">Complete Work</DialogTitle>
             <DialogDescription>
@@ -401,7 +401,7 @@ export default function TechnicianTickets({ user }) {
               <Label className="text-slate-300">Work Summary *</Label>
               <Textarea
                 placeholder="Describe the work performed..."
-                className="bg-slate-800/50 border-slate-700 min-h-[100px]"
+                className="bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700 min-h-[100px]"
                 value={completeForm.work_summary}
                 onChange={(e) => setCompleteForm(prev => ({ ...prev, work_summary: e.target.value }))}
               />
@@ -413,7 +413,7 @@ export default function TechnicianTickets({ user }) {
                 step="0.5"
                 min="0.5"
                 placeholder="e.g., 2.5"
-                className="bg-slate-800/50 border-slate-700"
+                className="bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700"
                 value={completeForm.labor_hours}
                 onChange={(e) => setCompleteForm(prev => ({ ...prev, labor_hours: e.target.value }))}
               />
@@ -422,14 +422,14 @@ export default function TechnicianTickets({ user }) {
               <Label className="text-slate-300">Additional Notes</Label>
               <Textarea
                 placeholder="Any additional notes..."
-                className="bg-slate-800/50 border-slate-700"
+                className="bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700"
                 value={completeForm.notes}
                 onChange={(e) => setCompleteForm(prev => ({ ...prev, notes: e.target.value }))}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCompleteDialog(false)} className="border-slate-700">
+            <Button variant="outline" onClick={() => setShowCompleteDialog(false)} className="border-[rgba(255,255,255,0.07)] border-700">
               Cancel
             </Button>
             <Button 

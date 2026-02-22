@@ -714,7 +714,7 @@ export default function InventoryEnhanced() {
               {newBundle.components.length > 0 && (
                 <div className="space-y-2">
                   {newBundle.components.map((c, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-2 bg-white rounded border">
+                    <div key={idx} className="flex justify-between items-center p-2 bg-[#111820] rounded border">
                       <span>{c.item_name || c.item_id}</span>
                       <div className="flex items-center gap-2">
                         <span className="text-gray-500">x{c.quantity}</span>

@@ -78,7 +78,7 @@ export default function ActivityLogs() {
   const getEntityTypeBadge = (type) => {
     const config = ENTITY_TYPES[type?.toLowerCase()] || { 
       label: type, 
-      color: "bg-gray-100 text-gray-800" 
+      color: "bg-gray-100 text-[#F4F6F0]" 
     };
     return <Badge className={config.color}>{config.label}</Badge>;
   };
@@ -126,7 +126,7 @@ export default function ActivityLogs() {
     <div className="space-y-6" data-testid="activity-logs-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Activity Logs</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Activity Logs</h1>
           <p className="text-gray-500 text-sm mt-1">Audit trail of all system activities</p>
         </div>
         <div className="flex items-center gap-3">

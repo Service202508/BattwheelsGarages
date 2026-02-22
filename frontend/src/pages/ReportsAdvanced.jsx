@@ -87,7 +87,7 @@ const DonutChart = ({ data, labels, colors, size = 180 }) => {
           position: 'relative'
         }}
       >
-        <div className="absolute bg-white rounded-full flex items-center justify-center" style={{ width: size * 0.6, height: size * 0.6 }}>
+        <div className="absolute bg-[#111820] rounded-full flex items-center justify-center" style={{ width: size * 0.6, height: size * 0.6 }}>
           <span className="text-lg font-bold">{data.reduce((a,b) => a+b, 0)}</span>
         </div>
       </div>
