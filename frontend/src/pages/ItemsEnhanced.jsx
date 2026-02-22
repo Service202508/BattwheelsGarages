@@ -1125,7 +1125,7 @@ export default function ItemsEnhanced() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {warehouses.map(wh => (
-                <Card key={wh.warehouse_id} className={wh.is_primary ? "border-green-300 bg-green-50" : ""}>
+                <Card key={wh.warehouse_id} className={wh.is_primary ? "border-green-300 bg-[rgba(34,197,94,0.08)]" : ""}>
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
                       <CardTitle className="text-lg">{wh.name}</CardTitle>
@@ -1278,7 +1278,7 @@ export default function ItemsEnhanced() {
                 {salesReport ? (
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="bg-green-50 rounded p-2">
+                      <div className="bg-[rgba(34,197,94,0.08)] rounded p-2">
                         <p className="text-gray-500 text-xs">Total Revenue</p>
                         <p className="font-bold text-green-700">₹{(salesReport.summary?.total_revenue || 0).toLocaleString('en-IN')}</p>
                       </div>
@@ -1314,7 +1314,7 @@ export default function ItemsEnhanced() {
                 {purchasesReport ? (
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="bg-orange-50 rounded p-2">
+                      <div className="bg-[rgba(255,140,0,0.08)] rounded p-2">
                         <p className="text-gray-500 text-xs">Total Cost</p>
                         <p className="font-bold text-orange-700">₹{(purchasesReport.summary?.total_cost || 0).toLocaleString('en-IN')}</p>
                       </div>
@@ -2095,7 +2095,7 @@ export default function ItemsEnhanced() {
             </div>
             
             {barcodeResult && (
-              <div className="border rounded-lg p-4 bg-green-50">
+              <div className="border rounded-lg p-4 bg-[rgba(34,197,94,0.08)]">
                 <div className="flex items-start gap-3">
                   <div className="w-12 h-12 rounded bg-[#111820] flex items-center justify-center">
                     <Package className="h-6 w-6 text-gray-400" />
@@ -2552,7 +2552,7 @@ export default function ItemsEnhanced() {
               </div>
             )}
             {barcodeResult && (
-              <div className="border rounded-lg p-3 bg-green-50">
+              <div className="border rounded-lg p-3 bg-[rgba(34,197,94,0.08)]">
                 <p className="font-medium">{barcodeResult.name}</p>
                 <p className="text-sm text-gray-600">₹{(barcodeResult.sales_rate || 0).toLocaleString('en-IN')} • Stock: {barcodeResult.stock_on_hand || 0}</p>
               </div>
@@ -2566,7 +2566,7 @@ export default function ItemsEnhanced() {
 
       {/* Low Stock Alert Section */}
       {lowStockItems.length > 0 && (
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-red-200 bg-[rgba(255,59,47,0.08)]">
           <CardHeader>
             <CardTitle className="text-red-700 flex items-center gap-2">
               <AlertTriangle className="h-5 w-5" /> Low Stock Alerts ({lowStockItems.length} items)

@@ -238,8 +238,8 @@ export default function CustomerInvoices({ user }) {
                 {/* Payment Status */}
                 <div className={`p-4 rounded-lg ${
                   selectedInvoice.payment_status === 'paid' 
-                    ? 'bg-green-50 border border-green-200' 
-                    : 'bg-orange-50 border border-orange-200'
+                    ? 'bg-[rgba(34,197,94,0.08)] border border-green-200' 
+                    : 'bg-[rgba(255,140,0,0.08)] border border-orange-200'
                 }`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">

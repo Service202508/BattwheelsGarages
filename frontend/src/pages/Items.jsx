@@ -207,7 +207,7 @@ export default function Items() {
                   <div className="space-y-3">
                     {importResult.summary && (
                       <div className="grid grid-cols-3 gap-3">
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                        <div className="bg-[rgba(34,197,94,0.08)] border border-green-200 rounded-lg p-3 text-center">
                           <CheckCircle className="h-5 w-5 text-green-600 mx-auto mb-1" />
                           <p className="text-lg font-bold text-green-700">{importResult.summary.created}</p>
                           <p className="text-xs text-green-600">Created</p>
@@ -217,7 +217,7 @@ export default function Items() {
                           <p className="text-lg font-bold text-blue-700">{importResult.summary.updated}</p>
                           <p className="text-xs text-blue-600">Updated</p>
                         </div>
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+                        <div className="bg-[rgba(255,59,47,0.08)] border border-red-200 rounded-lg p-3 text-center">
                           <XCircle className="h-5 w-5 text-red-600 mx-auto mb-1" />
                           <p className="text-lg font-bold text-red-700">{importResult.summary.errors}</p>
                           <p className="text-xs text-red-600">Errors</p>
@@ -225,7 +225,7 @@ export default function Items() {
                       </div>
                     )}
                     {importResult.errors?.length > 0 && (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-3 max-h-40 overflow-y-auto">
+                      <div className="bg-[rgba(255,59,47,0.08)] border border-red-200 rounded-lg p-3 max-h-40 overflow-y-auto">
                         <p className="text-sm font-medium text-red-700 mb-2">Errors:</p>
                         {importResult.errors.map((err, idx) => (
                           <p key={idx} className="text-xs text-red-600">Row {err.row}: {err.error}</p>

@@ -138,7 +138,7 @@ export default function CustomerDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className={`hover:shadow-md transition-shadow ${dashboard?.pending_amount > 0 ? 'border-orange-200 bg-orange-50' : ''}`}>
+        <Card className={`hover:shadow-md transition-shadow ${dashboard?.pending_amount > 0 ? 'border-orange-200 bg-[rgba(255,140,0,0.08)]' : ''}`}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">Pending Amount</CardTitle>
             <CreditCard className={`h-5 w-5 ${dashboard?.pending_amount > 0 ? 'text-orange-500' : 'text-gray-400'}`} />

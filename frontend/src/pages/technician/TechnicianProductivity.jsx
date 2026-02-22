@@ -38,10 +38,10 @@ export default function TechnicianProductivity({ user }) {
   };
 
   const priorityColors = {
-    low: { bg: "bg-green-500/10", text: "text-green-400", bar: "bg-green-500" },
+    low: { bg: "bg-[rgba(34,197,94,0.08)]0/10", text: "text-green-400", bar: "bg-[rgba(34,197,94,0.08)]0" },
     medium: { bg: "bg-amber-500/10", text: "text-amber-400", bar: "bg-amber-500" },
-    high: { bg: "bg-orange-500/10", text: "text-orange-400", bar: "bg-orange-500" },
-    critical: { bg: "bg-red-500/10", text: "text-red-400", bar: "bg-red-500" },
+    high: { bg: "bg-[rgba(255,140,0,0.08)]0/10", text: "text-orange-400", bar: "bg-[rgba(255,140,0,0.08)]0" },
+    critical: { bg: "bg-[rgba(255,59,47,0.08)]0/10", text: "text-red-400", bar: "bg-[rgba(255,59,47,0.08)]0" },
   };
 
   if (loading) {
@@ -103,10 +103,10 @@ export default function TechnicianProductivity({ user }) {
         <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-green-500/10">
+              <div className="p-2 rounded-lg bg-[rgba(34,197,94,0.08)]0/10">
                 <CheckCircle className="h-5 w-5 text-green-400" />
               </div>
-              <Badge className="bg-green-500/20 text-green-400 border-green-500/30">This Month</Badge>
+              <Badge className="bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30">This Month</Badge>
             </div>
             <p className="text-3xl font-bold text-white">{thisMonth.tickets_resolved || 0}</p>
             <p className="text-xs text-slate-500 mt-1">Tickets Resolved</p>
@@ -263,7 +263,7 @@ export default function TechnicianProductivity({ user }) {
         <CardContent>
           <div className="grid md:grid-cols-3 gap-4">
             <div className="p-4 rounded-xl bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
-              <div className="p-2 rounded-lg bg-green-500/10 w-fit mb-3">
+              <div className="p-2 rounded-lg bg-[rgba(34,197,94,0.08)]0/10 w-fit mb-3">
                 <CheckCircle className="h-5 w-5 text-green-400" />
               </div>
               <h4 className="text-white font-medium mb-1">Stay Consistent</h4>

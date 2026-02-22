@@ -38,8 +38,8 @@ const resolutionTypes = [
 const priorities = [
   { value: "low", label: "Low", desc: "Can wait", bgColor: "bg-emerald-50", textColor: "text-emerald-700", borderColor: "border-emerald-200", activeBg: "bg-emerald-500" },
   { value: "medium", label: "Medium", desc: "24-48h", bgColor: "bg-amber-50", textColor: "text-amber-700", borderColor: "border-amber-200", activeBg: "bg-amber-500" },
-  { value: "high", label: "High", desc: "Urgent", bgColor: "bg-orange-50", textColor: "text-orange-700", borderColor: "border-orange-200", activeBg: "bg-orange-500" },
-  { value: "critical", label: "Critical", desc: "Immobile", bgColor: "bg-red-50", textColor: "text-red-700", borderColor: "border-red-200", activeBg: "bg-red-500" },
+  { value: "high", label: "High", desc: "Urgent", bgColor: "bg-[rgba(255,140,0,0.08)]", textColor: "text-orange-700", borderColor: "border-orange-200", activeBg: "bg-[rgba(255,140,0,0.08)]0" },
+  { value: "critical", label: "Critical", desc: "Immobile", bgColor: "bg-[rgba(255,59,47,0.08)]", textColor: "text-red-700", borderColor: "border-red-200", activeBg: "bg-[rgba(255,59,47,0.08)]0" },
 ];
 
 // Category icons
@@ -596,7 +596,7 @@ export default function PublicTicketForm() {
                 {attachments.map((att) => (
                   <div key={att.id} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200 shadow-sm">
                     {att.preview ? <img src={att.preview} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><FileText className="w-6 h-6 text-gray-400" /></div>}
-                    <button onClick={() => removeAttachment(att.id)} className="absolute top-2 right-2 p-1.5 bg-[#111820]/90 hover:bg-red-500 hover:text-white rounded-full shadow-md transition-colors">
+                    <button onClick={() => removeAttachment(att.id)} className="absolute top-2 right-2 p-1.5 bg-[#111820]/90 hover:bg-[rgba(255,59,47,0.08)]0 hover:text-white rounded-full shadow-md transition-colors">
                       <X className="w-3 h-3" />
                     </button>
                   </div>

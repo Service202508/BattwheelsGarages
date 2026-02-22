@@ -172,7 +172,7 @@ export default function BusinessDashboard({ user }) {
                 </p>
                 <p className="text-xs text-slate-400 mt-1">to be paid</p>
               </div>
-              <div className="p-3 rounded-xl bg-red-50">
+              <div className="p-3 rounded-xl bg-[rgba(255,59,47,0.08)]">
                 <CreditCard className="h-6 w-6 text-red-600" />
               </div>
             </div>

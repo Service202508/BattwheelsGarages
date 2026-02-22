@@ -897,7 +897,7 @@ export default function SalesOrdersEnhanced() {
                   )}
                   {["confirmed", "open", "partially_fulfilled"].includes(selectedOrder.status) && (
                     <>
-                      <Button onClick={() => setShowFulfillDialog(true)} className="bg-green-500 hover:bg-green-600"><Package className="h-4 w-4 mr-1" /> Create Fulfillment</Button>
+                      <Button onClick={() => setShowFulfillDialog(true)} className="bg-[rgba(34,197,94,0.08)]0 hover:bg-green-600"><Package className="h-4 w-4 mr-1" /> Create Fulfillment</Button>
                       <Button variant="outline" onClick={() => handleConvertToInvoice(selectedOrder.salesorder_id)}><Receipt className="h-4 w-4 mr-1" /> Convert to Invoice</Button>
                     </>
                   )}

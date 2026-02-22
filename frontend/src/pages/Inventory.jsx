@@ -349,7 +349,7 @@ export default function Inventory() {
               {parts.map((part) => {
                 const isLowStock = (part.stock_quantity || 0) <= (part.reorder_level || 5);
                 return (
-                  <Card key={part.item_id} className={`hover:shadow-md transition-shadow ${isLowStock ? 'border-orange-200 bg-orange-50/50' : ''}`}>
+                  <Card key={part.item_id} className={`hover:shadow-md transition-shadow ${isLowStock ? 'border-orange-200 bg-[rgba(255,140,0,0.08)]/50' : ''}`}>
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">

@@ -949,7 +949,7 @@ export default function InvoicesEnhanced() {
           ) : (
             <div className="grid gap-4">
               {invoices.filter(i => i.status === "overdue").map(inv => (
-                <Card key={inv.invoice_id} className="border-red-200 bg-red-50 cursor-pointer hover:shadow-md" onClick={() => fetchInvoiceDetail(inv.invoice_id)}>
+                <Card key={inv.invoice_id} className="border-red-200 bg-[rgba(255,59,47,0.08)] cursor-pointer hover:shadow-md" onClick={() => fetchInvoiceDetail(inv.invoice_id)}>
                   <CardContent className="pt-4">
                     <div className="flex justify-between items-start">
                       <div>
@@ -1280,7 +1280,7 @@ export default function InvoicesEnhanced() {
                       <h4 className="font-medium mb-3 flex items-center gap-2"><DollarSign className="h-4 w-4" /> Payments Received</h4>
                       <div className="space-y-2">
                         {selectedInvoice.payments.map(payment => (
-                          <div key={payment.payment_id} className="flex justify-between items-center bg-green-50 p-3 rounded-lg">
+                          <div key={payment.payment_id} className="flex justify-between items-center bg-[rgba(34,197,94,0.08)] p-3 rounded-lg">
                             <div>
                               <p className="font-medium">{formatCurrency(payment.amount)}</p>
                               <p className="text-xs text-[rgba(244,246,240,0.45)]">{formatDate(payment.payment_date)} • {payment.payment_mode}</p>
@@ -1302,7 +1302,7 @@ export default function InvoicesEnhanced() {
                       <h4 className="font-medium mb-3 flex items-center gap-2"><CreditCard className="h-4 w-4" /> Payments (New System)</h4>
                       <div className="space-y-2">
                         {selectedInvoice.payments_received.map(payment => (
-                          <div key={payment.payment_id} className="flex justify-between items-center bg-green-50 p-3 rounded-lg">
+                          <div key={payment.payment_id} className="flex justify-between items-center bg-[rgba(34,197,94,0.08)] p-3 rounded-lg">
                             <div>
                               <p className="font-medium">{formatCurrency(payment.amount_applied)}</p>
                               <p className="text-xs text-[rgba(244,246,240,0.45)]">{payment.payment_number} • {formatDate(payment.payment_date)} • {payment.payment_mode}</p>
@@ -1323,7 +1323,7 @@ export default function InvoicesEnhanced() {
                       <h4 className="font-medium mb-3 flex items-center gap-2 text-orange-600"><Wallet className="h-4 w-4" /> Available Credits ({formatCurrency(selectedInvoice.total_available_credits)})</h4>
                       <div className="space-y-2">
                         {selectedInvoice.available_credits.map(credit => (
-                          <div key={credit.credit_id} className="flex justify-between items-center bg-orange-50 p-3 rounded-lg">
+                          <div key={credit.credit_id} className="flex justify-between items-center bg-[rgba(255,140,0,0.08)] p-3 rounded-lg">
                             <div>
                               <p className="font-medium text-orange-700">{formatCurrency(credit.amount)}</p>
                               <p className="text-xs text-[rgba(244,246,240,0.45)]">{credit.source_number} • {credit.source_type}</p>
@@ -1435,7 +1435,7 @@ export default function InvoicesEnhanced() {
                   {selectedInvoice.status !== "draft" && selectedInvoice.balance_due > 0 && (
                     <Button 
                       size="sm" 
-                      className="bg-green-500 hover:bg-green-600 text-white" 
+                      className="bg-[rgba(34,197,94,0.08)]0 hover:bg-green-600 text-white" 
                       onClick={() => { setNewPayment({ ...newPayment, amount: selectedInvoice.balance_due }); setShowPaymentDialog(true); }}
                       data-testid="record-payment-btn"
                     >
@@ -1730,7 +1730,7 @@ export default function InvoicesEnhanced() {
               </>
             ) : (
               <div className="space-y-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="bg-[rgba(34,197,94,0.08)] border border-green-200 rounded-lg p-4">
                   <p className="text-sm text-[#22C55E] mb-2">Share link created successfully!</p>
                   <div className="flex items-center gap-2">
                     <Input value={shareLink.full_url} readOnly className="text-xs" />
@@ -1945,7 +1945,7 @@ export default function InvoicesEnhanced() {
           
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPaymentDialog(false)}>Cancel</Button>
-            <Button onClick={handleRecordPayment} className="bg-green-500 hover:bg-green-600 text-white" data-testid="submit-payment-btn">Record Payment</Button>
+            <Button onClick={handleRecordPayment} className="bg-[rgba(34,197,94,0.08)]0 hover:bg-green-600 text-white" data-testid="submit-payment-btn">Record Payment</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

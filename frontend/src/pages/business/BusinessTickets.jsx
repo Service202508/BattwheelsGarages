@@ -30,10 +30,10 @@ const statusColors = {
 };
 
 const priorityColors = {
-  low: "bg-green-50 text-green-600",
-  medium: "bg-yellow-50 text-yellow-600",
-  high: "bg-orange-50 text-orange-600",
-  critical: "bg-red-50 text-red-600",
+  low: "bg-[rgba(34,197,94,0.08)] text-green-600",
+  medium: "bg-[rgba(234,179,8,0.08)] text-yellow-600",
+  high: "bg-[rgba(255,140,0,0.08)] text-orange-600",
+  critical: "bg-[rgba(255,59,47,0.08)] text-red-600",
 };
 
 export default function BusinessTickets({ user }) {

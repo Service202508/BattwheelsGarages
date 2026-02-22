@@ -494,19 +494,19 @@ export default function InventoryAdjustments() {
               <p className="text-xl font-bold">{summary.total}</p>
             </CardContent>
           </Card>
-          <Card className="bg-yellow-50 border-yellow-200">
+          <Card className="bg-[rgba(234,179,8,0.08)] border-yellow-200">
             <CardContent className="p-3">
               <p className="text-xs text-yellow-600">Draft</p>
               <p className="text-xl font-bold text-yellow-700">{summary.draft}</p>
             </CardContent>
           </Card>
-          <Card className="bg-green-50 border-green-200">
+          <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
             <CardContent className="p-3">
               <p className="text-xs text-green-600">Adjusted</p>
               <p className="text-xl font-bold text-green-700">{summary.adjusted}</p>
             </CardContent>
           </Card>
-          <Card className="bg-red-50 border-red-200">
+          <Card className="bg-[rgba(255,59,47,0.08)] border-red-200">
             <CardContent className="p-3">
               <p className="text-xs text-red-600">Voided</p>
               <p className="text-xl font-bold text-red-700">{summary.voided}</p>
@@ -524,7 +524,7 @@ export default function InventoryAdjustments() {
               <p className="text-lg font-bold text-emerald-700">{summary.total_increases}</p>
             </CardContent>
           </Card>
-          <Card className="bg-orange-50 border-orange-200">
+          <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
             <CardContent className="p-3">
               <p className="text-xs text-orange-600">Total Decreases</p>
               <p className="text-lg font-bold text-orange-700">{summary.total_decreases}</p>
@@ -1186,13 +1186,13 @@ export default function InventoryAdjustments() {
                       <p className="text-lg font-bold">{importPreview.row_count}</p>
                     </CardContent>
                   </Card>
-                  <Card className="bg-green-50">
+                  <Card className="bg-[rgba(34,197,94,0.08)]">
                     <CardContent className="p-3 text-center">
                       <p className="text-xs text-green-600">Items Matched</p>
                       <p className="text-lg font-bold text-green-700">{importPreview.items_found}</p>
                     </CardContent>
                   </Card>
-                  <Card className={importPreview.items_not_found?.length > 0 ? "bg-red-50" : ""}>
+                  <Card className={importPreview.items_not_found?.length > 0 ? "bg-[rgba(255,59,47,0.08)]" : ""}>
                     <CardContent className="p-3 text-center">
                       <p className="text-xs text-gray-500">Unmatched Items</p>
                       <p className="text-lg font-bold">{importPreview.items_not_found?.length || 0}</p>
@@ -1205,7 +1205,7 @@ export default function InventoryAdjustments() {
                 </div>
 
                 {importPreview.items_not_found?.length > 0 && (
-                  <div className="p-3 bg-yellow-50 rounded-lg text-sm">
+                  <div className="p-3 bg-[rgba(234,179,8,0.08)] rounded-lg text-sm">
                     <p className="font-medium text-yellow-700 flex items-center gap-1"><AlertTriangle className="h-4 w-4" /> Unmatched items:</p>
                     <p className="text-yellow-600 mt-1">{importPreview.items_not_found.slice(0, 10).join(", ")}</p>
                   </div>
@@ -1266,7 +1266,7 @@ export default function InventoryAdjustments() {
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <Card><CardContent className="p-3 text-center"><p className="text-xs text-gray-500">Adjustments</p><p className="text-lg font-bold">{abcDrillDown.total_adjustments}</p></CardContent></Card>
-                <Card className="bg-green-50"><CardContent className="p-3 text-center"><p className="text-xs text-green-600">Qty Change</p><p className="text-lg font-bold text-green-700">{abcDrillDown.total_qty_change}</p></CardContent></Card>
+                <Card className="bg-[rgba(34,197,94,0.08)]"><CardContent className="p-3 text-center"><p className="text-xs text-green-600">Qty Change</p><p className="text-lg font-bold text-green-700">{abcDrillDown.total_qty_change}</p></CardContent></Card>
                 <Card className="bg-blue-50"><CardContent className="p-3 text-center"><p className="text-xs text-blue-600">Value Change</p><p className="text-lg font-bold text-blue-700">{fmt(abcDrillDown.total_value_change)}</p></CardContent></Card>
               </div>
               <div className="border rounded-lg overflow-hidden">
@@ -1308,7 +1308,7 @@ export default function InventoryAdjustments() {
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
                 {["A", "B", "C"].map(cls => (
-                  <Card key={cls} className={cls === "A" ? "bg-green-50 border-green-200" : cls === "B" ? "bg-yellow-50 border-yellow-200" : "bg-gray-50"}>
+                  <Card key={cls} className={cls === "A" ? "bg-[rgba(34,197,94,0.08)] border-green-200" : cls === "B" ? "bg-[rgba(234,179,8,0.08)] border-yellow-200" : "bg-gray-50"}>
                     <CardContent className="p-3 text-center">
                       <p className="text-sm font-semibold">Class {cls}</p>
                       <p className="text-2xl font-bold">{abcReport.class_counts?.[cls] || 0}</p>

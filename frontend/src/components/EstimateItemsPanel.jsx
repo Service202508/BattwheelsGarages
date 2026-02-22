@@ -66,7 +66,7 @@ const StockIndicator = ({ stockInfo, qty }) => {
       return {
         icon: XCircle,
         label: "Out of Stock",
-        className: "text-red-600 bg-red-50",
+        className: "text-red-600 bg-[rgba(255,59,47,0.08)]",
         iconClass: "text-red-500",
       };
     }
@@ -74,7 +74,7 @@ const StockIndicator = ({ stockInfo, qty }) => {
       return {
         icon: AlertTriangle,
         label: `Only ${available_stock} available`,
-        className: "text-orange-600 bg-orange-50",
+        className: "text-orange-600 bg-[rgba(255,140,0,0.08)]",
         iconClass: "text-orange-500",
       };
     }
@@ -82,14 +82,14 @@ const StockIndicator = ({ stockInfo, qty }) => {
       return {
         icon: AlertTriangle,
         label: `Low: ${available_stock} left`,
-        className: "text-yellow-600 bg-yellow-50",
+        className: "text-yellow-600 bg-[rgba(234,179,8,0.08)]",
         iconClass: "text-yellow-500",
       };
     }
     return {
       icon: CheckCircle2,
       label: `${available_stock} in stock`,
-      className: "text-green-600 bg-green-50",
+      className: "text-green-600 bg-[rgba(34,197,94,0.08)]",
       iconClass: "text-green-500",
     };
   };
@@ -715,7 +715,7 @@ export default function EstimateItemsPanel({
         
         {/* Lock Banner */}
         {estimate.locked_at && (
-          <div className="mt-2 p-3 bg-orange-50 border border-orange-200 rounded-lg flex items-center gap-2 text-orange-800">
+          <div className="mt-2 p-3 bg-[rgba(255,140,0,0.08)] border border-orange-200 rounded-lg flex items-center gap-2 text-orange-800">
             <Lock className="h-4 w-4" />
             <div className="text-sm">
               <strong>Estimate Locked</strong>
@@ -826,10 +826,10 @@ export default function EstimateItemsPanel({
                                           {/* Stock indicator */}
                                           <div className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${
                                             isOutOfStock 
-                                              ? "bg-red-50 text-red-600" 
+                                              ? "bg-[rgba(255,59,47,0.08)] text-red-600" 
                                               : isLowStock 
-                                                ? "bg-yellow-50 text-yellow-600" 
-                                                : "bg-green-50 text-green-600"
+                                                ? "bg-[rgba(234,179,8,0.08)] text-yellow-600" 
+                                                : "bg-[rgba(34,197,94,0.08)] text-green-600"
                                           }`}>
                                             {isOutOfStock ? (
                                               <XCircle className="h-3 w-3" />
@@ -859,12 +859,12 @@ export default function EstimateItemsPanel({
                       {selectedPartStock && newItem.item_id && (
                         <div className={`flex items-center gap-2 p-2 rounded-md text-sm ${
                           selectedPartStock.available_stock <= 0 
-                            ? "bg-red-50 text-red-700"
+                            ? "bg-[rgba(255,59,47,0.08)] text-red-700"
                             : newItem.qty > selectedPartStock.available_stock
-                              ? "bg-orange-50 text-orange-700"
+                              ? "bg-[rgba(255,140,0,0.08)] text-orange-700"
                               : selectedPartStock.available_stock <= selectedPartStock.reorder_level
-                                ? "bg-yellow-50 text-yellow-700"
-                                : "bg-green-50 text-green-700"
+                                ? "bg-[rgba(234,179,8,0.08)] text-yellow-700"
+                                : "bg-[rgba(34,197,94,0.08)] text-green-700"
                         }`}>
                           {selectedPartStock.available_stock <= 0 ? (
                             <>

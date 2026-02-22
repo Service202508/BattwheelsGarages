@@ -99,8 +99,8 @@ export default function Payroll({ user }) {
 
   const getProductivityBadge = (pct) => {
     if (pct >= 100) return <Badge className="badge-success">{pct}%</Badge>;
-    if (pct >= 80) return <Badge className="bg-yellow-500">{pct}%</Badge>;
-    return <Badge className="bg-red-500">{pct}%</Badge>;
+    if (pct >= 80) return <Badge className="bg-[rgba(234,179,8,0.08)]0">{pct}%</Badge>;
+    return <Badge className="bg-[rgba(255,59,47,0.08)]0">{pct}%</Badge>;
   };
 
   const totalNetSalary = payrollRecords.reduce((sum, r) => sum + r.net_salary, 0);
@@ -283,7 +283,7 @@ export default function Payroll({ user }) {
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       <span>{["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][record.month]} {record.year}</span>
-                      <Badge className={record.status === "paid" ? "badge-success" : "bg-yellow-500"}>
+                      <Badge className={record.status === "paid" ? "badge-success" : "bg-[rgba(234,179,8,0.08)]0"}>
                         {record.status}
                       </Badge>
                     </CardTitle>
@@ -348,7 +348,7 @@ export default function Payroll({ user }) {
                     </div>
 
                     {record.late_arrivals > 0 && (
-                      <div className="flex items-center gap-2 p-2 bg-yellow-500/10 text-yellow-500 rounded text-sm">
+                      <div className="flex items-center gap-2 p-2 bg-[rgba(234,179,8,0.08)]0/10 text-yellow-500 rounded text-sm">
                         <AlertTriangle className="h-4 w-4" />
                         <span>{record.late_arrivals} late arrival(s) - ₹{record.deduction_breakdown?.late_penalty || 0} penalty</span>
                       </div>

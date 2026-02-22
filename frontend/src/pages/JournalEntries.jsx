@@ -145,7 +145,7 @@ export default function JournalEntries() {
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className={`font-semibold ${isBalanced ? 'bg-green-50' : 'bg-red-50'}`}>
+                    <tfoot className={`font-semibold ${isBalanced ? 'bg-[rgba(34,197,94,0.08)]' : 'bg-[rgba(255,59,47,0.08)]'}`}>
                       <tr>
                         <td className="px-3 py-2 text-right">Total:</td>
                         <td className="px-3 py-2 text-right">₹{totalDebit.toLocaleString('en-IN')}</td>

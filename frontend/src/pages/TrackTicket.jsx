@@ -25,17 +25,17 @@ const statusConfig = {
   assigned: { label: "Technician Assigned", color: "bg-purple-500", icon: User },
   technician_assigned: { label: "Technician Assigned", color: "bg-purple-500", icon: User },
   estimate_sent: { label: "Estimate Shared", color: "bg-cyan-500", icon: FileText },
-  estimate_approved: { label: "Estimate Approved", color: "bg-green-500", icon: CheckCircle },
-  work_in_progress: { label: "Work In Progress", color: "bg-orange-500", icon: Loader2 },
+  estimate_approved: { label: "Estimate Approved", color: "bg-[rgba(34,197,94,0.08)]0", icon: CheckCircle },
+  work_in_progress: { label: "Work In Progress", color: "bg-[rgba(255,140,0,0.08)]0", icon: Loader2 },
   work_completed: { label: "Work Completed", color: "bg-emerald-500", icon: CheckCircle },
   closed: { label: "Closed", color: "bg-slate-500", icon: CheckCircle },
 };
 
 const priorityColors = {
-  low: "bg-green-500/20 text-green-400",
-  medium: "bg-yellow-500/20 text-yellow-400",
-  high: "bg-orange-500/20 text-orange-400",
-  critical: "bg-red-500/20 text-red-400",
+  low: "bg-[rgba(34,197,94,0.08)]0/20 text-green-400",
+  medium: "bg-[rgba(234,179,8,0.08)]0/20 text-yellow-400",
+  high: "bg-[rgba(255,140,0,0.08)]0/20 text-orange-400",
+  critical: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400",
 };
 
 export default function TrackTicket() {
@@ -211,7 +211,7 @@ export default function TrackTicket() {
     <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
-          <div className="p-3 bg-green-500/20 rounded-full">
+          <div className="p-3 bg-[rgba(34,197,94,0.08)]0/20 rounded-full">
             <Search className="h-8 w-8 text-green-500" />
           </div>
         </div>
@@ -402,7 +402,7 @@ export default function TrackTicket() {
                   Service Estimate
                 </CardTitle>
                 <Badge className={
-                  estimate.status === "approved" ? "bg-green-500" :
+                  estimate.status === "approved" ? "bg-[rgba(34,197,94,0.08)]0" :
                   estimate.status === "sent" ? "bg-blue-500" :
                   estimate.status === "locked" ? "bg-slate-500" :
                   "bg-amber-500"
@@ -470,7 +470,7 @@ export default function TrackTicket() {
                   Invoice
                 </CardTitle>
                 <Badge className={
-                  invoice.status === "paid" ? "bg-green-500" :
+                  invoice.status === "paid" ? "bg-[rgba(34,197,94,0.08)]0" :
                   invoice.status === "partial" ? "bg-amber-500" :
                   "bg-blue-500"
                 }>
@@ -517,7 +517,7 @@ export default function TrackTicket() {
                 {activities.map((activity, idx) => (
                   <div key={idx} className="flex gap-3">
                     <div className="flex flex-col items-center">
-                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                      <div className="w-2 h-2 rounded-full bg-[rgba(34,197,94,0.08)]0" />
                       {idx < activities.length - 1 && <div className="w-0.5 h-full bg-slate-700 mt-1" />}
                     </div>
                     <div className="flex-1 pb-4">
@@ -552,7 +552,7 @@ export default function TrackTicket() {
                     </div>
                     <div className="text-right">
                       <p className="text-green-400 font-medium">{formatCurrency(payment.amount)}</p>
-                      <Badge className="bg-green-500/20 text-green-400 text-xs">{payment.status}</Badge>
+                      <Badge className="bg-[rgba(34,197,94,0.08)]0/20 text-green-400 text-xs">{payment.status}</Badge>
                     </div>
                   </div>
                 ))}

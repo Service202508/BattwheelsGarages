@@ -16,17 +16,17 @@ import { API, getAuthHeaders } from "@/App";
 const statusColors = {
   open: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   assigned: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  work_in_progress: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+  work_in_progress: "bg-[rgba(255,140,0,0.08)]0/20 text-orange-400 border-orange-500/30",
   estimate_sent: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
-  work_completed: "bg-green-500/20 text-green-400 border-green-500/30",
+  work_completed: "bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30",
   closed: "bg-slate-500/20 text-slate-400 border-[rgba(255,255,255,0.07)] border-500/30",
 };
 
 const priorityColors = {
-  low: "bg-green-500/10 text-green-400",
-  medium: "bg-yellow-500/10 text-yellow-400",
-  high: "bg-orange-500/10 text-orange-400",
-  critical: "bg-red-500/10 text-red-400",
+  low: "bg-[rgba(34,197,94,0.08)]0/10 text-green-400",
+  medium: "bg-[rgba(234,179,8,0.08)]0/10 text-yellow-400",
+  high: "bg-[rgba(255,140,0,0.08)]0/10 text-orange-400",
+  critical: "bg-[rgba(255,59,47,0.08)]0/10 text-red-400",
 };
 
 export default function TechnicianDashboard({ user }) {
@@ -115,7 +115,7 @@ export default function TechnicianDashboard({ user }) {
     <div className="space-y-6 animate-fadeIn" data-testid="technician-dashboard">
       {/* Welcome Header */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-500/20 via-emerald-500/10 to-slate-900 border border-green-500/20 p-6">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[rgba(34,197,94,0.08)]0/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="relative">
           <div className="flex items-center justify-between">
             <div>
@@ -140,7 +140,7 @@ export default function TechnicianDashboard({ user }) {
                 <Button 
                   onClick={() => { setCheckType('out'); setShowCheckDialog(true); }}
                   variant="outline"
-                  className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                  className="border-red-500/30 text-red-400 hover:bg-[rgba(255,59,47,0.08)]0/10"
                 >
                   <Square className="h-4 w-4 mr-2" />
                   Check Out
@@ -190,7 +190,7 @@ export default function TechnicianDashboard({ user }) {
                 <p className="text-xs text-slate-500 uppercase tracking-wider">In Progress</p>
                 <p className="text-2xl font-bold text-white mt-1">{dashboard?.tickets?.in_progress || 0}</p>
               </div>
-              <div className="p-2.5 rounded-xl bg-orange-500/10">
+              <div className="p-2.5 rounded-xl bg-[rgba(255,140,0,0.08)]0/10">
                 <Timer className="h-5 w-5 text-orange-400" />
               </div>
             </div>
@@ -218,7 +218,7 @@ export default function TechnicianDashboard({ user }) {
                 <p className="text-xs text-slate-500 uppercase tracking-wider">Completed Today</p>
                 <p className="text-2xl font-bold text-white mt-1">{dashboard?.tickets?.completed_today || 0}</p>
               </div>
-              <div className="p-2.5 rounded-xl bg-green-500/10">
+              <div className="p-2.5 rounded-xl bg-[rgba(34,197,94,0.08)]0/10">
                 <CheckCircle className="h-5 w-5 text-green-400" />
               </div>
             </div>
@@ -377,7 +377,7 @@ export default function TechnicianDashboard({ user }) {
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 text-center">
-            <div className={`inline-flex p-4 rounded-full ${checkType === 'in' ? 'bg-green-500/20' : 'bg-red-500/20'} mb-4`}>
+            <div className={`inline-flex p-4 rounded-full ${checkType === 'in' ? 'bg-[rgba(34,197,94,0.08)]0/20' : 'bg-[rgba(255,59,47,0.08)]0/20'} mb-4`}>
               {checkType === 'in' ? (
                 <Play className="h-8 w-8 text-green-400" />
               ) : (

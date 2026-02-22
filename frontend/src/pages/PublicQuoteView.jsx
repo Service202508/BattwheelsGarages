@@ -444,7 +444,7 @@ export default function PublicQuoteView() {
                       <Button 
                         variant="outline"
                         onClick={() => setShowDeclineDialog(true)}
-                        className="text-red-600 border-red-300 hover:bg-red-50 gap-2"
+                        className="text-red-600 border-red-300 hover:bg-[rgba(255,59,47,0.08)] gap-2"
                         data-testid="public-decline-btn"
                       >
                         <XCircle className="h-4 w-4" /> Decline
@@ -457,7 +457,7 @@ export default function PublicQuoteView() {
 
             {/* Already Accepted/Declined Message */}
             {estimate?.status === "accepted" && (
-              <div className="bg-green-50 rounded-lg p-4 text-center">
+              <div className="bg-[rgba(34,197,94,0.08)] rounded-lg p-4 text-center">
                 <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
                 <p className="text-green-800 font-medium">This estimate has been accepted</p>
                 {estimate?.accepted_date && (
@@ -466,7 +466,7 @@ export default function PublicQuoteView() {
               </div>
             )}
             {estimate?.status === "declined" && (
-              <div className="bg-red-50 rounded-lg p-4 text-center">
+              <div className="bg-[rgba(255,59,47,0.08)] rounded-lg p-4 text-center">
                 <XCircle className="h-8 w-8 text-red-600 mx-auto mb-2" />
                 <p className="text-red-800 font-medium">This estimate has been declined</p>
                 {estimate?.decline_reason && (

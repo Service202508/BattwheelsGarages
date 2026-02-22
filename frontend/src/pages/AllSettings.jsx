@@ -47,7 +47,7 @@ const colorClasses = {
   "#3B82F6": "bg-blue-500/10 text-blue-500 border-blue-500/20",
   "#F59E0B": "bg-amber-500/10 text-amber-500 border-amber-500/20",
   "#8B5CF6": "bg-violet-500/10 text-violet-500 border-violet-500/20",
-  "#EF4444": "bg-red-500/10 text-red-500 border-red-500/20",
+  "#EF4444": "bg-[rgba(255,59,47,0.08)]0/10 text-red-500 border-red-500/20",
   "#06B6D4": "bg-cyan-500/10 text-cyan-500 border-cyan-500/20",
   "#EC4899": "bg-pink-500/10 text-pink-500 border-pink-500/20",
   "#6366F1": "bg-indigo-500/10 text-indigo-500 border-indigo-500/20"

@@ -343,7 +343,7 @@ How can I help you today?`,
                     message.role === "user"
                       ? "bg-gradient-to-br from-emerald-600 to-emerald-700 text-white rounded-br-md"
                       : message.error
-                      ? "bg-red-500/10 border border-red-500/30 text-slate-200 rounded-bl-md"
+                      ? "bg-[rgba(255,59,47,0.08)]0/10 border border-red-500/30 text-slate-200 rounded-bl-md"
                       : "bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 text-slate-200 rounded-bl-md"
                   }`}
                 >

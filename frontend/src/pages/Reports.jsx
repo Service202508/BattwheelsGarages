@@ -280,13 +280,13 @@ export default function Reports() {
                 <div className="space-y-6">
                   {/* Summary Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Card className="bg-green-50 border-green-200">
+                    <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
                       <CardContent className="p-4">
                         <p className="text-xs text-green-700 font-medium">Total Income</p>
                         <p className="text-xl font-bold text-green-800">{formatCurrency(profitLoss.total_income)}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-orange-50 border-orange-200">
+                    <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
                       <CardContent className="p-4">
                         <p className="text-xs text-orange-700 font-medium">Cost of Goods</p>
                         <p className="text-xl font-bold text-orange-800">{formatCurrency(profitLoss.total_cogs)}</p>
@@ -298,7 +298,7 @@ export default function Reports() {
                         <p className="text-xl font-bold text-blue-800">{formatCurrency(profitLoss.gross_profit)}</p>
                       </CardContent>
                     </Card>
-                    <Card className={`${profitLoss.net_profit >= 0 ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
+                    <Card className={`${profitLoss.net_profit >= 0 ? 'bg-emerald-50 border-emerald-200' : 'bg-[rgba(255,59,47,0.08)] border-red-200'}`}>
                       <CardContent className="p-4">
                         <p className={`text-xs font-medium ${profitLoss.net_profit >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>Net Profit</p>
                         <p className={`text-xl font-bold ${profitLoss.net_profit >= 0 ? 'text-emerald-800' : 'text-red-800'}`}>
@@ -317,7 +317,7 @@ export default function Reports() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow className="bg-green-50/50">
+                      <TableRow className="bg-[rgba(34,197,94,0.08)]/50">
                         <TableCell className="font-semibold text-green-800">INCOME</TableCell>
                         <TableCell></TableCell>
                       </TableRow>
@@ -330,7 +330,7 @@ export default function Reports() {
                         <TableCell className="text-right font-semibold">{formatCurrency(profitLoss.total_income)}</TableCell>
                       </TableRow>
                       
-                      <TableRow className="bg-orange-50/50">
+                      <TableRow className="bg-[rgba(255,140,0,0.08)]/50">
                         <TableCell className="font-semibold text-orange-800">COST OF GOODS SOLD</TableCell>
                         <TableCell></TableCell>
                       </TableRow>
@@ -343,7 +343,7 @@ export default function Reports() {
                         <TableCell className="text-right font-semibold text-blue-800">{formatCurrency(profitLoss.gross_profit)}</TableCell>
                       </TableRow>
                       
-                      <TableRow className="bg-red-50/50">
+                      <TableRow className="bg-[rgba(255,59,47,0.08)]/50">
                         <TableCell className="font-semibold text-red-800">OPERATING EXPENSES</TableCell>
                         <TableCell></TableCell>
                       </TableRow>
@@ -399,7 +399,7 @@ export default function Reports() {
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Assets */}
                   <Card className="border-green-200">
-                    <CardHeader className="bg-green-50 py-3">
+                    <CardHeader className="bg-[rgba(34,197,94,0.08)] py-3">
                       <CardTitle className="text-lg text-green-800">Assets</CardTitle>
                     </CardHeader>
                     <CardContent className="pt-4 space-y-3">
@@ -425,7 +425,7 @@ export default function Reports() {
                   {/* Liabilities & Equity */}
                   <div className="space-y-4">
                     <Card className="border-red-200">
-                      <CardHeader className="bg-red-50 py-3">
+                      <CardHeader className="bg-[rgba(255,59,47,0.08)] py-3">
                         <CardTitle className="text-lg text-red-800">Liabilities</CardTitle>
                       </CardHeader>
                       <CardContent className="pt-4 space-y-3">
@@ -619,7 +619,7 @@ export default function Reports() {
                   </div>
 
                   {/* Total */}
-                  <div className="bg-red-50 p-4 rounded-lg flex justify-between items-center">
+                  <div className="bg-[rgba(255,59,47,0.08)] p-4 rounded-lg flex justify-between items-center">
                     <span className="font-semibold text-gray-700">Total Accounts Payable</span>
                     <span className="text-2xl font-bold text-red-700">{formatCurrency(apAging.total_ap)}</span>
                   </div>
@@ -695,7 +695,7 @@ export default function Reports() {
                         <p className="text-2xl font-bold text-blue-800">{salesByCustomer.total_invoices || 0}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-green-50 border-green-200">
+                    <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
                       <CardContent className="p-4">
                         <p className="text-xs text-green-700 font-medium">Total Sales</p>
                         <p className="text-2xl font-bold text-green-800">{formatCurrency(salesByCustomer.total_sales)}</p>

@@ -56,7 +56,7 @@ export default function CustomerPayments({ user }) {
       </div>
 
       {/* Summary Card */}
-      <Card className={paymentsData.total_due > 0 ? "border-orange-200 bg-orange-50" : "bg-green-50 border-green-200"}>
+      <Card className={paymentsData.total_due > 0 ? "border-orange-200 bg-[rgba(255,140,0,0.08)]" : "bg-[rgba(34,197,94,0.08)] border-green-200"}>
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -118,7 +118,7 @@ export default function CustomerPayments({ user }) {
                 className={`overflow-hidden ${overdue ? 'border-red-200' : 'border-orange-200'}`}
               >
                 {overdue && (
-                  <div className="bg-red-500 text-white text-xs font-medium px-4 py-1">
+                  <div className="bg-[rgba(255,59,47,0.08)]0 text-white text-xs font-medium px-4 py-1">
                     <AlertCircle className="h-3 w-3 inline mr-1" />
                     OVERDUE
                   </div>
