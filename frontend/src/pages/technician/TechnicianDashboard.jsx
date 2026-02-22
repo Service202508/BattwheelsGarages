@@ -19,7 +19,7 @@ const statusColors = {
   work_in_progress: "bg-orange-500/20 text-orange-400 border-orange-500/30",
   estimate_sent: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
   work_completed: "bg-green-500/20 text-green-400 border-green-500/30",
-  closed: "bg-slate-500/20 text-slate-400 border-slate-500/30",
+  closed: "bg-slate-500/20 text-slate-400 border-[rgba(255,255,255,0.07)] border-500/30",
 };
 
 const priorityColors = {
@@ -152,12 +152,12 @@ export default function TechnicianDashboard({ user }) {
           {/* Attendance Status */}
           {attendance.check_in && (
             <div className="mt-4 flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-slate-700">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
                 <Clock className="h-4 w-4 text-green-400" />
                 <span className="text-slate-300">In: {attendance.check_in}</span>
               </div>
               {attendance.check_out && (
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-slate-700">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
                   <Clock className="h-4 w-4 text-red-400" />
                   <span className="text-slate-300">Out: {attendance.check_out}</span>
                 </div>
@@ -169,7 +169,7 @@ export default function TechnicianDashboard({ user }) {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card className="bg-slate-900/50 border-slate-800 hover:border-blue-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-blue-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -183,7 +183,7 @@ export default function TechnicianDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800 hover:border-orange-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-orange-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -197,7 +197,7 @@ export default function TechnicianDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800 hover:border-cyan-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-cyan-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -211,7 +211,7 @@ export default function TechnicianDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800 hover:border-green-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-green-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -225,7 +225,7 @@ export default function TechnicianDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800 hover:border-purple-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-purple-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -244,7 +244,7 @@ export default function TechnicianDashboard({ user }) {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* My Active Tickets */}
         <div className="lg:col-span-2">
-          <Card className="bg-slate-900/50 border-slate-800">
+          <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <div>
                 <CardTitle className="text-white">My Active Tickets</CardTitle>
@@ -268,7 +268,7 @@ export default function TechnicianDashboard({ user }) {
                     <Link 
                       key={ticket.ticket_id} 
                       to={`/technician/tickets/${ticket.ticket_id}`}
-                      className="block p-4 rounded-xl border border-slate-800 hover:border-green-500/30 hover:bg-slate-800/50 transition-all"
+                      className="block p-4 rounded-xl border border-[rgba(255,255,255,0.07)] border-800 hover:border-green-500/30 hover:bg-slate-800/50 transition-all"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
@@ -300,7 +300,7 @@ export default function TechnicianDashboard({ user }) {
         {/* Right Column */}
         <div className="space-y-6">
           {/* Performance Card */}
-          <Card className="bg-slate-900/50 border-slate-800">
+          <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
             <CardHeader className="pb-2">
               <CardTitle className="text-white flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-green-400" />
@@ -320,7 +320,7 @@ export default function TechnicianDashboard({ user }) {
                 <p className="text-xs text-slate-500">Target: Under 8 hours</p>
               </div>
               
-              <div className="pt-4 border-t border-slate-800">
+              <div className="pt-4 border-t border-[rgba(255,255,255,0.07)] border-800">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400 text-sm">This Month</span>
                   <span className="text-2xl font-bold text-green-400">{dashboard?.tickets?.completed_month || 0}</span>
@@ -329,7 +329,7 @@ export default function TechnicianDashboard({ user }) {
               </div>
               
               <Link to="/technician/productivity">
-                <Button variant="outline" className="w-full border-slate-700 text-slate-300 hover:bg-slate-800">
+                <Button variant="outline" className="w-full border-[rgba(255,255,255,0.07)] border-700 text-slate-300 hover:bg-slate-800">
                   View Detailed Stats
                 </Button>
               </Link>
@@ -337,13 +337,13 @@ export default function TechnicianDashboard({ user }) {
           </Card>
 
           {/* Quick Actions */}
-          <Card className="bg-slate-900/50 border-slate-800">
+          <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
             <CardHeader className="pb-2">
               <CardTitle className="text-white">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <Link to="/technician/leave">
-                <Button variant="outline" className="w-full justify-start border-slate-700 text-slate-300 hover:bg-slate-800">
+                <Button variant="outline" className="w-full justify-start border-[rgba(255,255,255,0.07)] border-700 text-slate-300 hover:bg-slate-800">
                   <Calendar className="h-4 w-4 mr-2 text-purple-400" />
                   Apply for Leave
                   {dashboard?.pending_leave_requests > 0 && (
@@ -352,13 +352,13 @@ export default function TechnicianDashboard({ user }) {
                 </Button>
               </Link>
               <Link to="/technician/ai-assist">
-                <Button variant="outline" className="w-full justify-start border-slate-700 text-slate-300 hover:bg-slate-800">
+                <Button variant="outline" className="w-full justify-start border-[rgba(255,255,255,0.07)] border-700 text-slate-300 hover:bg-slate-800">
                   <Zap className="h-4 w-4 mr-2 text-yellow-400" />
                   AI Diagnosis Help
                 </Button>
               </Link>
               <Link to="/technician/attendance">
-                <Button variant="outline" className="w-full justify-start border-slate-700 text-slate-300 hover:bg-slate-800">
+                <Button variant="outline" className="w-full justify-start border-[rgba(255,255,255,0.07)] border-700 text-slate-300 hover:bg-slate-800">
                   <Clock className="h-4 w-4 mr-2 text-blue-400" />
                   View Attendance
                 </Button>
@@ -370,7 +370,7 @@ export default function TechnicianDashboard({ user }) {
 
       {/* Check In/Out Dialog */}
       <Dialog open={showCheckDialog} onOpenChange={setShowCheckDialog}>
-        <DialogContent className="bg-slate-900 border-slate-800">
+        <DialogContent className="bg-slate-900 border-[rgba(255,255,255,0.07)] border-800">
           <DialogHeader>
             <DialogTitle className="text-white">
               {checkType === 'in' ? 'Check In' : 'Check Out'} Confirmation
@@ -394,7 +394,7 @@ export default function TechnicianDashboard({ user }) {
             </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCheckDialog(false)} className="border-slate-700">
+            <Button variant="outline" onClick={() => setShowCheckDialog(false)} className="border-[rgba(255,255,255,0.07)] border-700">
               Cancel
             </Button>
             <Button 

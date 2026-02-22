@@ -315,7 +315,7 @@ export default function CustomModules() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Custom Modules</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Custom Modules</h1>
           <p className="text-gray-500">Create and manage your own data modules</p>
         </div>
         <Dialog open={showCreateModuleDialog} onOpenChange={setShowCreateModuleDialog}>

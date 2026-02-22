@@ -83,13 +83,13 @@ export default function CustomerDashboard({ user }) {
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <Link to="/customer/book-appointment">
-            <Button className="bg-white text-emerald-700 hover:bg-emerald-50">
+            <Button className="bg-[#111820] text-emerald-700 hover:bg-emerald-50">
               <Clock className="h-4 w-4 mr-2" />
               Book Service
             </Button>
           </Link>
           <Link to="/customer/request-callback">
-            <Button variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button variant="outline" className="border-white text-white hover:bg-[#111820]/10">
               <Phone className="h-4 w-4 mr-2" />
               Request Callback
             </Button>
@@ -189,7 +189,7 @@ export default function CustomerDashboard({ user }) {
               {recentServices.map((service) => (
                 <div 
                   key={service.ticket_id}
-                  className="flex items-center justify-between p-4 rounded-lg border bg-white hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-between p-4 rounded-lg border bg-[#111820] hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <div className={`p-2 rounded-lg ${
@@ -203,7 +203,7 @@ export default function CustomerDashboard({ user }) {
                       }
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{service.title}</p>
+                      <p className="font-medium text-[#F4F6F0]">{service.title}</p>
                       <div className="flex items-center gap-2 text-sm text-gray-500">
                         <span>{service.vehicle_number}</span>
                         <span>•</span>
@@ -234,11 +234,11 @@ export default function CustomerDashboard({ user }) {
         <Card className="bg-gradient-to-br from-gray-50 to-gray-100">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl bg-white shadow-sm">
+              <div className="p-3 rounded-xl bg-[#111820] shadow-sm">
                 <Phone className="h-6 w-6 text-emerald-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Need Help?</h3>
+                <h3 className="font-semibold text-[#F4F6F0]">Need Help?</h3>
                 <p className="text-sm text-gray-600 mt-1">
                   Our support team is available 24/7 to assist you with any queries.
                 </p>
@@ -256,11 +256,11 @@ export default function CustomerDashboard({ user }) {
           <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
-                <div className="p-3 rounded-xl bg-white shadow-sm">
+                <div className="p-3 rounded-xl bg-[#111820] shadow-sm">
                   <Shield className="h-6 w-6 text-emerald-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Get AMC Protection</h3>
+                  <h3 className="font-semibold text-[#F4F6F0]">Get AMC Protection</h3>
                   <p className="text-sm text-gray-600 mt-1">
                     Protect your EV with our Annual Maintenance Contract. Get priority service, discounts, and peace of mind.
                   </p>

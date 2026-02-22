@@ -218,7 +218,7 @@ export default function RecurringExpenses() {
     const styles = {
       active: "bg-green-100 text-green-800",
       stopped: "bg-red-100 text-red-800",
-      expired: "bg-gray-100 text-gray-800"
+      expired: "bg-gray-100 text-[#F4F6F0]"
     };
     return <Badge className={styles[status] || "bg-gray-100"}>{status}</Badge>;
   };
@@ -234,7 +234,7 @@ export default function RecurringExpenses() {
     <div className="space-y-6" data-testid="recurring-expenses-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Recurring Expenses</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Recurring Expenses</h1>
           <p className="text-gray-500 text-sm mt-1">Manage automated expense schedules</p>
         </div>
         <div className="flex items-center gap-3">

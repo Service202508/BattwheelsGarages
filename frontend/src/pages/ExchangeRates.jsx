@@ -127,7 +127,7 @@ export default function ExchangeRates() {
     <div className="space-y-6" data-testid="exchange-rates-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Exchange Rates</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Exchange Rates</h1>
           <p className="text-gray-500 text-sm mt-1">Manage currency exchange rates for multi-currency transactions</p>
         </div>
         <div className="flex items-center gap-3">

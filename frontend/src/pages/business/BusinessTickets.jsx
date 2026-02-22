@@ -25,7 +25,7 @@ const statusColors = {
   estimate_sent: "bg-cyan-100 text-cyan-700 border-cyan-200",
   estimate_approved: "bg-emerald-100 text-emerald-700 border-emerald-200",
   work_completed: "bg-green-100 text-green-700 border-green-200",
-  closed: "bg-slate-100 text-slate-600 border-slate-200",
+  closed: "bg-slate-100 text-slate-600 border-[rgba(255,255,255,0.07)] border-200",
   resolved: "bg-green-100 text-green-700 border-green-200",
 };
 
@@ -183,7 +183,7 @@ export default function BusinessTickets({ user }) {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -197,7 +197,7 @@ export default function BusinessTickets({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -211,7 +211,7 @@ export default function BusinessTickets({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -259,7 +259,7 @@ export default function BusinessTickets({ user }) {
               <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
             </div>
           ) : filteredTickets.length === 0 ? (
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
               <CardContent className="py-12 text-center">
                 <Ticket className="h-16 w-16 mx-auto text-slate-300 mb-4" />
                 <h3 className="text-lg font-medium text-slate-900 mb-2">No tickets found</h3>
@@ -273,7 +273,7 @@ export default function BusinessTickets({ user }) {
               {filteredTickets.map((ticket) => (
                 <Card 
                   key={ticket.ticket_id} 
-                  className="bg-white border-slate-200 hover:border-indigo-200 hover:shadow-md transition-all cursor-pointer"
+                  className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 hover:border-indigo-200 hover:shadow-md transition-all cursor-pointer"
                   onClick={() => navigate(`/business/tickets/${ticket.ticket_id}`)}
                   data-testid={`ticket-card-${ticket.ticket_id}`}
                 >

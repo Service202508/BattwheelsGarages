@@ -229,7 +229,7 @@ const SaaSLanding = () => {
       <section className="py-24 px-6 md:px-12 bg-[#0D1317] border-y border-white/[0.07]">
         <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-16 font-mono">
           01 · The Real Problem
-          <span className="flex-1 max-w-20 h-px bg-white/10" />
+          <span className="flex-1 max-w-20 h-px bg-[#111820]/10" />
         </p>
 
         <div className="grid lg:grid-cols-2 gap-0 max-w-6xl">
@@ -271,7 +271,7 @@ const SaaSLanding = () => {
         <div className="relative z-10 max-w-6xl">
           <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-16 font-mono">
             02 · EV Failure Intelligence
-            <span className="flex-1 max-w-20 h-px bg-white/10" />
+            <span className="flex-1 max-w-20 h-px bg-[#111820]/10" />
           </p>
 
           <h2 className="text-[clamp(36px,4vw,64px)] font-serif leading-tight mb-6 tracking-tight max-w-3xl">
@@ -317,12 +317,12 @@ const SaaSLanding = () => {
       <section id="segments" className="py-24 px-6 md:px-12 bg-[#0D1317] border-y border-white/[0.07]">
         <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-16 font-mono">
           03 · Built For Every Stakeholder
-          <span className="flex-1 max-w-20 h-px bg-white/10" />
+          <span className="flex-1 max-w-20 h-px bg-[#111820]/10" />
         </p>
 
         <div className="grid lg:grid-cols-3 border border-white/[0.07] max-w-6xl">
           {segments.map((seg, idx) => (
-            <div key={idx} className={`relative p-10 ${idx < 2 ? 'lg:border-r border-white/[0.07]' : ''} group hover:bg-white/[0.02] transition overflow-hidden`}>
+            <div key={idx} className={`relative p-10 ${idx < 2 ? 'lg:border-r border-white/[0.07]' : ''} group hover:bg-[#111820]/[0.02] transition overflow-hidden`}>
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C8FF00] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
               <div className="text-[10px] tracking-[0.2em] uppercase text-[#C8FF00] mb-6 font-mono">{seg.label}</div>
               <h3 className="text-[28px] font-serif mb-5 leading-tight">{seg.title}</h3>
@@ -344,7 +344,7 @@ const SaaSLanding = () => {
       <section id="platform" className="py-24 px-6 md:px-12">
         <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-16 font-mono">
           04 · Complete EV-Specific ERP
-          <span className="flex-1 max-w-20 h-px bg-white/10" />
+          <span className="flex-1 max-w-20 h-px bg-[#111820]/10" />
         </p>
 
         <div className="grid lg:grid-cols-3 gap-20 max-w-6xl items-start">
@@ -364,7 +364,7 @@ const SaaSLanding = () => {
             </button>
           </div>
 
-          <div className="lg:col-span-2 grid grid-cols-2 gap-px bg-white/[0.07] border border-white/[0.07]">
+          <div className="lg:col-span-2 grid grid-cols-2 gap-px bg-[#111820]/[0.07] border border-white/[0.07]">
             {erpModules.map((mod, idx) => (
               <div key={idx} className={`bg-[#0D1317] p-7 hover:bg-[#111820] transition ${mod.highlighted ? 'border-t-2 border-t-[#C8FF00]' : ''}`}>
                 <div className="text-[9px] tracking-[0.2em] uppercase text-[#C8FF00] mb-3.5 font-mono">{mod.label}</div>
@@ -387,7 +387,7 @@ const SaaSLanding = () => {
       <section className="py-24 px-6 md:px-12 bg-[#0D1317] border-y border-white/[0.07]">
         <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-16 font-mono">
           05 · Compounding Intelligence
-          <span className="flex-1 max-w-20 h-px bg-white/10" />
+          <span className="flex-1 max-w-20 h-px bg-[#111820]/10" />
         </p>
 
         <div className="grid lg:grid-cols-2 gap-20 max-w-6xl items-center">
@@ -423,7 +423,7 @@ const SaaSLanding = () => {
       <section className="py-24 px-6 md:px-12">
         <p className="flex items-center gap-4 text-[10px] tracking-[0.25em] uppercase text-white/45 mb-16 font-mono">
           06 · Enterprise-Grade Architecture
-          <span className="flex-1 max-w-20 h-px bg-white/10" />
+          <span className="flex-1 max-w-20 h-px bg-[#111820]/10" />
         </p>
 
         <div className="max-w-6xl">

@@ -295,7 +295,7 @@ export default function AMCManagement({ user }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Annual Maintenance Contracts (AMC)</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Annual Maintenance Contracts (AMC)</h1>
           <p className="text-gray-600">Manage subscription plans from battwheelsgarages.in</p>
         </div>
         <div className="flex gap-2">
@@ -481,8 +481,8 @@ export default function AMCManagement({ user }) {
                     onClick={() => setVehicleCategory(cat)}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                       vehicleCategory === cat 
-                        ? "bg-white text-gray-900 shadow-sm" 
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-[#111820] text-[#F4F6F0] shadow-sm" 
+                        : "text-gray-600 hover:text-[#F4F6F0]"
                     }`}
                   >
                     {cat === "2W" && <Bike className="h-4 w-4 inline mr-1" />}
@@ -498,8 +498,8 @@ export default function AMCManagement({ user }) {
                   onClick={() => setBillingFrequency("monthly")}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     billingFrequency === "monthly" 
-                      ? "bg-white text-gray-900 shadow-sm" 
-                      : "text-gray-600 hover:text-gray-900"
+                      ? "bg-[#111820] text-[#F4F6F0] shadow-sm" 
+                      : "text-gray-600 hover:text-[#F4F6F0]"
                   }`}
                 >
                   Monthly
@@ -509,7 +509,7 @@ export default function AMCManagement({ user }) {
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     billingFrequency === "annual" 
                       ? "bg-emerald-600 text-white shadow-sm" 
-                      : "text-gray-600 hover:text-gray-900"
+                      : "text-gray-600 hover:text-[#F4F6F0]"
                   }`}
                 >
                   <Sparkles className="h-3 w-3 inline mr-1" />
@@ -529,7 +529,7 @@ export default function AMCManagement({ user }) {
             <Card>
               <CardContent className="py-12 text-center">
                 <Shield className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Plans Found</h3>
+                <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Plans Found</h3>
                 <p className="text-gray-600 mb-4">
                   Import official Battwheels plans to get started.
                 </p>
@@ -668,7 +668,7 @@ export default function AMCManagement({ user }) {
                     For large fleets (50+ vehicles), custom SLAs, dedicated onsite teams, or OEM partnerships.
                   </p>
                 </div>
-                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-gray-900">
+                <Button variant="outline" className="border-white text-white hover:bg-[#111820] hover:text-[#F4F6F0]">
                   <Phone className="h-4 w-4 mr-2" />
                   Contact Sales Team
                 </Button>

@@ -204,7 +204,7 @@ export default function Invoices() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Invoices</h1>
           <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Manage your sales invoices</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -297,7 +297,7 @@ export default function Invoices() {
                   <div className="mt-4 grid grid-cols-4 gap-4">
                     <div>
                       <Label>Item</Label>
-                      <Input value={newLineItem.item_name} readOnly className="bg-white" />
+                      <Input value={newLineItem.item_name} readOnly className="bg-[#111820]" />
                     </div>
                     <div>
                       <Label>Qty</Label>
@@ -397,7 +397,7 @@ export default function Invoices() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Revenue</p>
-                  <p className="text-2xl font-bold text-gray-900">₹{analytics.revenue.total.toLocaleString('en-IN')}</p>
+                  <p className="text-2xl font-bold text-[#F4F6F0]">₹{analytics.revenue.total.toLocaleString('en-IN')}</p>
                 </div>
                 <IndianRupee className="h-8 w-8 text-[#22EDA9]" />
               </div>
@@ -430,7 +430,7 @@ export default function Invoices() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Invoices</p>
-                  <p className="text-2xl font-bold text-gray-900">{analytics.invoices.total}</p>
+                  <p className="text-2xl font-bold text-[#F4F6F0]">{analytics.invoices.total}</p>
                 </div>
                 <FileText className="h-8 w-8 text-blue-500" />
               </div>
@@ -479,7 +479,7 @@ export default function Invoices() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-gray-900">{invoice.invoice_number}</h3>
+                      <h3 className="font-semibold text-[#F4F6F0]">{invoice.invoice_number}</h3>
                       <Badge className={statusColors[invoice.status]}>
                         {invoice.status.replace('_', ' ')}
                       </Badge>

@@ -132,7 +132,7 @@ export default function Quotes() {
     <div className="space-y-6" data-testid="quotes-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quotes / Estimates</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Quotes / Estimates</h1>
           <p className="text-gray-500 text-sm mt-1">{quotes.length} quotes</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -198,7 +198,7 @@ export default function Quotes() {
                 </Tabs>
                 {newLineItem.item_name && (
                   <div className="mt-3 grid grid-cols-4 gap-3">
-                    <Input value={newLineItem.item_name} readOnly className="bg-white" />
+                    <Input value={newLineItem.item_name} readOnly className="bg-[#111820]" />
                     <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" />
                     <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
                     <Button onClick={handleAddLineItem} className="bg-[#22EDA9] text-black">Add</Button>

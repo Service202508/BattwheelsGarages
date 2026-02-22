@@ -239,7 +239,7 @@ export default function PublicTicketForm() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6 ${gradient ? 'bg-gradient-to-br from-white to-emerald-50/30' : ''} ${className}`}
+      className={`bg-[#111820] rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6 ${gradient ? 'bg-gradient-to-br from-white to-emerald-50/30' : ''} ${className}`}
     >
       {children}
     </motion.div>
@@ -252,7 +252,7 @@ export default function PublicTicketForm() {
       </div>
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <h3 className="text-lg font-semibold text-[#F4F6F0]">{title}</h3>
           {badge && (
             <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-sm">
               {badge}
@@ -266,7 +266,7 @@ export default function PublicTicketForm() {
 
   const StyledInput = ({ className = "", ...props }) => (
     <Input
-      className={`h-12 bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 rounded-xl text-gray-900 text-base placeholder:text-gray-400 transition-all duration-200 ${className}`}
+      className={`h-12 bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded-xl text-[#F4F6F0] text-base placeholder:text-gray-400 transition-all duration-200 ${className}`}
       {...props}
     />
   );
@@ -291,7 +291,7 @@ export default function PublicTicketForm() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30">
         {/* Header */}
-        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-sm">
+        <header className="sticky top-0 z-50 bg-[#111820]/80 backdrop-blur-xl border-b border-gray-100 shadow-sm">
           <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
             <img src="/battwheels_garages_logo.png" alt="Battwheels Garages" className="h-10 invert" />
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full">
@@ -321,7 +321,7 @@ export default function PublicTicketForm() {
                 { icon: Clock, label: "Quick Response", color: "blue" },
                 { icon: Headphones, label: "24/7 Support", color: "purple" }
               ].map((b, i) => (
-                <div key={i} className={`flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100`}>
+                <div key={i} className={`flex items-center gap-2 px-4 py-2 bg-[#111820] rounded-full shadow-sm border border-gray-100`}>
                   <b.icon className={`w-4 h-4 text-${b.color}-500`} strokeWidth={2} />
                   <span className="text-xs font-medium text-gray-700">{b.label}</span>
                 </div>
@@ -349,7 +349,7 @@ export default function PublicTicketForm() {
                     className={`relative p-5 rounded-xl border-2 transition-all duration-200 text-left ${
                       isSelected 
                         ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-500/10" 
-                        : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-md"
+                        : "border-gray-200 bg-[#111820] hover:border-gray-300 hover:shadow-md"
                     }`}
                     data-testid={`customer-type-${type.value}`}
                   >
@@ -358,7 +358,7 @@ export default function PublicTicketForm() {
                     }`}>
                       <Icon className={`w-6 h-6 ${isSelected ? "text-white" : "text-gray-500"}`} strokeWidth={2} />
                     </div>
-                    <p className={`font-semibold ${isSelected ? "text-emerald-700" : "text-gray-900"}`}>{type.label}</p>
+                    <p className={`font-semibold ${isSelected ? "text-emerald-700" : "text-[#F4F6F0]"}`}>{type.label}</p>
                     <p className="text-xs text-gray-500 mt-1">{type.desc}</p>
                     {isSelected && (
                       <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-3 right-3">
@@ -379,10 +379,10 @@ export default function PublicTicketForm() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Category <span className="text-emerald-500">*</span></Label>
                   <Select value={formData.vehicle_category} onValueChange={(v) => setFormData(prev => ({ ...prev, vehicle_category: v, vehicle_model_id: "", vehicle_model_name: "", vehicle_oem: "" }))}>
-                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 rounded-xl text-gray-900" data-testid="vehicle-category-select">
+                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 rounded-xl text-[#F4F6F0]" data-testid="vehicle-category-select">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white border-gray-200 rounded-xl shadow-xl">
+                    <SelectContent className="bg-[#111820] border-gray-200 rounded-xl shadow-xl">
                       {categories.map((cat) => {
                         const Icon = categoryIcons[cat.code] || Car;
                         return (
@@ -402,10 +402,10 @@ export default function PublicTicketForm() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Model (OEM)</Label>
                   <Select value={formData.vehicle_model_id} onValueChange={handleModelSelect} disabled={!formData.vehicle_category}>
-                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 rounded-xl text-gray-900 disabled:opacity-50" data-testid="vehicle-model-select">
+                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 rounded-xl text-[#F4F6F0] disabled:opacity-50" data-testid="vehicle-model-select">
                       <SelectValue placeholder="Select model" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white border-gray-200 rounded-xl shadow-xl max-h-60">
+                    <SelectContent className="bg-[#111820] border-gray-200 rounded-xl shadow-xl max-h-60">
                       {Object.entries(modelsByOem).map(([oem, oemModels]) => (
                         <div key={oem}>
                           <div className="px-3 py-2 text-xs font-bold text-emerald-600 bg-emerald-50 sticky top-0">{oem}</div>
@@ -477,7 +477,7 @@ export default function PublicTicketForm() {
                 
                 <AnimatePresence>
                   {showAiSuggestions && aiSuggestions.length > 0 && (
-                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute z-50 w-full mt-2 bg-white border-2 border-emerald-200 rounded-xl shadow-2xl shadow-emerald-500/10 overflow-hidden">
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute z-50 w-full mt-2 bg-[#111820] border-2 border-emerald-200 rounded-xl shadow-2xl shadow-emerald-500/10 overflow-hidden">
                       <div className="px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center gap-2">
                         <Brain className="w-4 h-4 text-white" />
                         <span className="text-sm font-semibold text-white">AI Suggestions</span>
@@ -498,7 +498,7 @@ export default function PublicTicketForm() {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">Detailed Description <span className="text-emerald-500">*</span></Label>
-                <Textarea placeholder="Describe symptoms, when it started, error codes..." value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} className="min-h-[120px] bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 rounded-xl text-gray-900 placeholder:text-gray-400 resize-none" data-testid="description-input" />
+                <Textarea placeholder="Describe symptoms, when it started, error codes..." value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} className="min-h-[120px] bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded-xl text-[#F4F6F0] placeholder:text-gray-400 resize-none" data-testid="description-input" />
               </div>
 
               {/* Priority */}
@@ -529,12 +529,12 @@ export default function PublicTicketForm() {
                 const isSelected = formData.resolution_type === r.value;
                 return (
                   <motion.button key={r.value} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setFormData(prev => ({ ...prev, resolution_type: r.value }))}
-                    className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${isSelected ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-500/10" : "border-gray-200 bg-white hover:border-gray-300"}`}
+                    className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${isSelected ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-500/10" : "border-gray-200 bg-[#111820] hover:border-gray-300"}`}
                     data-testid={`resolution-${r.value}`}>
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 ${isSelected ? "bg-gradient-to-br from-emerald-500 to-teal-500" : "bg-gray-100"}`}>
                       <Icon className={`w-5 h-5 ${isSelected ? "text-white" : "text-gray-500"}`} strokeWidth={2} />
                     </div>
-                    <p className={`font-semibold text-sm ${isSelected ? "text-emerald-700" : "text-gray-900"}`}>{r.label}</p>
+                    <p className={`font-semibold text-sm ${isSelected ? "text-emerald-700" : "text-[#F4F6F0]"}`}>{r.label}</p>
                     <p className="text-xs text-gray-500 mt-1">{r.desc}</p>
                   </motion.button>
                 );
@@ -557,22 +557,22 @@ export default function PublicTicketForm() {
             <SectionCard className="border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50">
               <SectionHeader icon={IndianRupee} title="Service Charges" subtitle="Doorstep service requires advance payment" />
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                <div className="flex items-center justify-between p-4 bg-[#111820] rounded-xl border border-gray-100 shadow-sm">
                   <div className="flex items-center gap-3">
                     <Checkbox checked disabled className="bg-emerald-500 border-emerald-500" />
-                    <div><p className="text-sm font-medium text-gray-900">Visit Charges</p><p className="text-xs text-gray-500">Mandatory</p></div>
+                    <div><p className="text-sm font-medium text-[#F4F6F0]">Visit Charges</p><p className="text-xs text-gray-500">Mandatory</p></div>
                   </div>
                   <span className="text-lg font-bold text-emerald-600">₹{serviceCharges.visit_fee}</span>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                <div className="flex items-center justify-between p-4 bg-[#111820] rounded-xl border border-gray-100 shadow-sm">
                   <div className="flex items-center gap-3">
                     <Checkbox checked={formData.include_diagnostic_fee} onCheckedChange={(c) => setFormData(prev => ({ ...prev, include_diagnostic_fee: !!c }))} className="border-gray-300" data-testid="diagnostic-fee-checkbox" />
-                    <div><p className="text-sm font-medium text-gray-900">Diagnostic Report</p><p className="text-xs text-gray-500">Optional</p></div>
+                    <div><p className="text-sm font-medium text-[#F4F6F0]">Diagnostic Report</p><p className="text-xs text-gray-500">Optional</p></div>
                   </div>
                   <span className="text-lg font-semibold text-gray-600">₹{serviceCharges.diagnostic_fee}</span>
                 </div>
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                  <span className="font-semibold text-gray-900">Total Amount</span>
+                  <span className="font-semibold text-[#F4F6F0]">Total Amount</span>
                   <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">₹{calculateTotal()}</span>
                 </div>
               </div>
@@ -596,7 +596,7 @@ export default function PublicTicketForm() {
                 {attachments.map((att) => (
                   <div key={att.id} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200 shadow-sm">
                     {att.preview ? <img src={att.preview} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><FileText className="w-6 h-6 text-gray-400" /></div>}
-                    <button onClick={() => removeAttachment(att.id)} className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-red-500 hover:text-white rounded-full shadow-md transition-colors">
+                    <button onClick={() => removeAttachment(att.id)} className="absolute top-2 right-2 p-1.5 bg-[#111820]/90 hover:bg-red-500 hover:text-white rounded-full shadow-md transition-colors">
                       <X className="w-3 h-3" />
                     </button>
                   </div>
@@ -635,27 +635,27 @@ export default function PublicTicketForm() {
   if (step === 2) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 flex flex-col">
-        <header className="bg-white/80 backdrop-blur-xl border-b border-gray-100">
+        <header className="bg-[#111820]/80 backdrop-blur-xl border-b border-gray-100">
           <div className="max-w-md mx-auto px-4 py-4 flex justify-center">
             <img src="/battwheels_garages_logo.png" alt="Battwheels Garages" className="h-10 invert" />
           </div>
         </header>
 
         <div className="flex-1 flex items-center justify-center p-4">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-[#111820] rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
             <div className="p-8 text-center bg-gradient-to-br from-emerald-50 to-teal-50">
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-500/30">
                 <CreditCard className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Complete Payment</h2>
+              <h2 className="text-2xl font-bold text-[#F4F6F0]">Complete Payment</h2>
               <p className="text-gray-500 mt-1">Confirm your service booking</p>
             </div>
             <div className="p-6 space-y-4">
               <div className="p-4 bg-gray-50 rounded-xl space-y-3">
                 <div className="flex justify-between text-sm"><span className="text-gray-500">Ticket ID</span><span className="text-emerald-600 font-mono font-bold">{ticketResult?.ticket_id}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-gray-500">Visit Charges</span><span className="text-gray-900 font-medium">₹{paymentDetails?.visit_fee}</span></div>
-                {paymentDetails?.diagnostic_fee > 0 && <div className="flex justify-between text-sm"><span className="text-gray-500">Diagnostic</span><span className="text-gray-900 font-medium">₹{paymentDetails?.diagnostic_fee}</span></div>}
-                <div className="flex justify-between pt-3 border-t border-gray-200"><span className="font-semibold text-gray-900">Total</span><span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">₹{paymentDetails?.amount}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-500">Visit Charges</span><span className="text-[#F4F6F0] font-medium">₹{paymentDetails?.visit_fee}</span></div>
+                {paymentDetails?.diagnostic_fee > 0 && <div className="flex justify-between text-sm"><span className="text-gray-500">Diagnostic</span><span className="text-[#F4F6F0] font-medium">₹{paymentDetails?.diagnostic_fee}</span></div>}
+                <div className="flex justify-between pt-3 border-t border-gray-200"><span className="font-semibold text-[#F4F6F0]">Total</span><span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">₹{paymentDetails?.amount}</span></div>
               </div>
               {paymentDetails?.is_mock && <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl"><p className="text-sm text-amber-700 text-center font-medium">Test Mode - Payment will be simulated</p></div>}
               <Button onClick={handlePayment} className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-lg rounded-xl shadow-xl shadow-emerald-500/30" data-testid="pay-now-btn">
@@ -672,17 +672,17 @@ export default function PublicTicketForm() {
   // =============== STEP 3: SUCCESS ===============
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 flex flex-col">
-      <header className="bg-white/80 backdrop-blur-xl border-b border-gray-100">
+      <header className="bg-[#111820]/80 backdrop-blur-xl border-b border-gray-100">
         <div className="max-w-md mx-auto px-4 py-4 flex justify-center">
           <img src="/battwheels_garages_logo.png" alt="Battwheels Garages" className="h-10 invert" />
         </div>
       </header>
 
       <div className="flex-1 flex items-center justify-center p-4">
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-[#111820] rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           <div className="relative p-8 text-center bg-gradient-to-br from-emerald-500 to-teal-500">
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }} className="relative w-20 h-20 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-2xl">
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }} className="relative w-20 h-20 mx-auto mb-4 bg-[#111820] rounded-full flex items-center justify-center shadow-2xl">
               <CheckCircle className="w-10 h-10 text-emerald-500" fill="#d1fae5" />
             </motion.div>
             <h2 className="text-2xl font-bold text-white mb-1">Request Submitted!</h2>
@@ -692,7 +692,7 @@ export default function PublicTicketForm() {
           <div className="p-6 space-y-5">
             <div className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl text-center border border-emerald-100">
               <p className="text-xs text-emerald-600 uppercase tracking-wider font-semibold mb-1">Ticket ID</p>
-              <p className="text-3xl font-mono font-bold text-gray-900 tracking-wider">{ticketResult?.ticket_id}</p>
+              <p className="text-3xl font-mono font-bold text-[#F4F6F0] tracking-wider">{ticketResult?.ticket_id}</p>
             </div>
 
             <div className="space-y-3">

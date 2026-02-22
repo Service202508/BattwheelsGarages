@@ -108,7 +108,7 @@ export default function RecurringTransactions() {
     <div className="space-y-6" data-testid="recurring-transactions-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Recurring Transactions</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Recurring Transactions</h1>
           <p className="text-gray-500 text-sm mt-1">Auto-generate invoices on schedule</p>
         </div>
         <div className="flex gap-2">

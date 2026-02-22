@@ -141,7 +141,7 @@ export default function TechnicianLeave({ user }) {
 
       {/* Leave Balance */}
       <div className="grid grid-cols-4 gap-4">
-        <Card className="bg-slate-900/50 border-slate-800 hover:border-amber-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-amber-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-amber-500/10">
@@ -160,7 +160,7 @@ export default function TechnicianLeave({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-slate-800 hover:border-rose-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-rose-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-rose-500/10">
@@ -179,7 +179,7 @@ export default function TechnicianLeave({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-slate-800 hover:border-blue-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-blue-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-blue-500/10">
@@ -198,7 +198,7 @@ export default function TechnicianLeave({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-slate-800 hover:border-purple-500/30 transition-colors">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-purple-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-purple-500/10">
@@ -215,7 +215,7 @@ export default function TechnicianLeave({ user }) {
       </div>
 
       {/* Leave Requests */}
-      <Card className="bg-slate-900/50 border-slate-800">
+      <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
         <CardHeader>
           <CardTitle className="text-white">Leave Requests</CardTitle>
           <CardDescription>Your leave request history</CardDescription>
@@ -279,7 +279,7 @@ export default function TechnicianLeave({ user }) {
 
       {/* Request Leave Dialog */}
       <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
-        <DialogContent className="bg-slate-900 border-slate-800">
+        <DialogContent className="bg-slate-900 border-[rgba(255,255,255,0.07)] border-800">
           <DialogHeader>
             <DialogTitle className="text-white">Request Leave</DialogTitle>
             <DialogDescription>Submit a new leave request</DialogDescription>
@@ -292,7 +292,7 @@ export default function TechnicianLeave({ user }) {
                 value={formData.leave_type}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, leave_type: value }))}
               >
-                <SelectTrigger className="bg-slate-800/50 border-slate-700">
+                <SelectTrigger className="bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -309,7 +309,7 @@ export default function TechnicianLeave({ user }) {
                 <Label className="text-slate-300">Start Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start border-slate-700 bg-slate-800/50">
+                    <Button variant="outline" className="w-full justify-start border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50">
                       <CalendarIcon className="h-4 w-4 mr-2" />
                       {startDate ? format(startDate, "MMM dd, yyyy") : "Select date"}
                     </Button>
@@ -329,7 +329,7 @@ export default function TechnicianLeave({ user }) {
                 <Label className="text-slate-300">End Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start border-slate-700 bg-slate-800/50">
+                    <Button variant="outline" className="w-full justify-start border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50">
                       <CalendarIcon className="h-4 w-4 mr-2" />
                       {endDate ? format(endDate, "MMM dd, yyyy") : "Select date"}
                     </Button>
@@ -351,7 +351,7 @@ export default function TechnicianLeave({ user }) {
               <Label className="text-slate-300">Reason</Label>
               <Textarea
                 placeholder="Reason for leave..."
-                className="bg-slate-800/50 border-slate-700 min-h-[100px]"
+                className="bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700 min-h-[100px]"
                 value={formData.reason}
                 onChange={(e) => setFormData(prev => ({ ...prev, reason: e.target.value }))}
               />
@@ -359,7 +359,7 @@ export default function TechnicianLeave({ user }) {
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowRequestDialog(false)} className="border-slate-700">
+            <Button variant="outline" onClick={() => setShowRequestDialog(false)} className="border-[rgba(255,255,255,0.07)] border-700">
               Cancel
             </Button>
             <Button 

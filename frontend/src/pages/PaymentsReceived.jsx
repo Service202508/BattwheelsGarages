@@ -797,7 +797,7 @@ export default function PaymentsReceived() {
                     data-testid="payment-customer-search"
                   />
                   {customers.length > 0 && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    <div className="absolute z-10 w-full mt-1 bg-[#111820] border rounded-lg shadow-lg max-h-48 overflow-y-auto">
                       {customers.map(c => (
                         <div
                           key={c.contact_id}

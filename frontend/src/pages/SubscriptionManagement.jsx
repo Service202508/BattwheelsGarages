@@ -126,7 +126,7 @@ export default function SubscriptionManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Subscription & Billing</h1>
+          <h1 className="text-2xl font-semibold text-[#F4F6F0]">Subscription & Billing</h1>
           <p className="text-gray-500 mt-1">Manage your subscription plan and usage</p>
         </div>
         <Button onClick={fetchSubscriptionData} variant="outline" size="sm">
@@ -163,7 +163,7 @@ export default function SubscriptionManagement() {
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-[#F4F6F0]">
                   ₹{subscription.plan?.price_monthly?.toLocaleString() || 0}
                   <span className="text-sm font-normal text-gray-500">/month</span>
                 </div>

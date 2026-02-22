@@ -198,7 +198,7 @@ const FaultTreeImport = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">EFI Master Fault Tree Import</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">EFI Master Fault Tree Import</h1>
           <p className="text-gray-500">Import EV failure intelligence from Excel files</p>
         </div>
         <div className="flex gap-2">
@@ -361,7 +361,7 @@ const FaultTreeImport = () => {
             {/* Stats */}
             <div className="grid grid-cols-4 gap-4">
               <div className="bg-gray-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-gray-900">{preview.total_rows}</div>
+                <div className="text-2xl font-bold text-[#F4F6F0]">{preview.total_rows}</div>
                 <div className="text-sm text-gray-500">Total Rows</div>
               </div>
               <div className="bg-green-50 p-4 rounded-lg text-center">

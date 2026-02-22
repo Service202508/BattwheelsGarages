@@ -208,7 +208,7 @@ export default function TrackTicket() {
 
   // Lookup Form
   const LookupForm = () => (
-    <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
+    <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-green-500/20 rounded-full">
@@ -232,7 +232,7 @@ export default function TrackTicket() {
           </Label>
           <Input
             placeholder={lookupMethod === "ticket_id" ? "e.g., tkt_abc123def456" : "e.g., 9876543210 or email@example.com"}
-            className="bg-slate-700/50 border-slate-600"
+            className="bg-slate-700/50 border-[rgba(255,255,255,0.07)] border-600"
             value={lookupValue}
             onChange={(e) => setLookupValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleLookup()}
@@ -265,7 +265,7 @@ export default function TrackTicket() {
 
   // Ticket List
   const TicketList = () => (
-    <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
+    <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-white">Your Tickets</CardTitle>
@@ -334,7 +334,7 @@ export default function TrackTicket() {
     return (
       <div className="space-y-6">
         {/* Header Card */}
-        <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
+        <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <Button variant="ghost" onClick={() => { setSelectedTicket(null); setTicketDetails(null); }}>
@@ -360,7 +360,7 @@ export default function TrackTicket() {
               </div>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t border-slate-700">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t border-[rgba(255,255,255,0.07)] border-700">
               <div>
                 <p className="text-slate-400 text-xs">Vehicle</p>
                 <p className="text-white font-medium">{ticket.vehicle_number}</p>
@@ -394,7 +394,7 @@ export default function TrackTicket() {
 
         {/* Estimate Card */}
         {estimate && (
-          <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
+          <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-white flex items-center gap-2">
@@ -430,7 +430,7 @@ export default function TrackTicket() {
               )}
               
               {/* Totals */}
-              <div className="pt-3 border-t border-slate-700 space-y-2">
+              <div className="pt-3 border-t border-[rgba(255,255,255,0.07)] border-700 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-400">Subtotal</span>
                   <span className="text-white">{formatCurrency(estimate.subtotal)}</span>
@@ -462,7 +462,7 @@ export default function TrackTicket() {
 
         {/* Invoice Card */}
         {invoice && (
-          <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
+          <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-white flex items-center gap-2">
@@ -505,7 +505,7 @@ export default function TrackTicket() {
 
         {/* Activity Timeline */}
         {activities.length > 0 && (
-          <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
+          <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <History className="h-5 w-5 text-green-500" />
@@ -535,7 +535,7 @@ export default function TrackTicket() {
 
         {/* Payments */}
         {payments.length > 0 && (
-          <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
+          <Card className="border-[rgba(255,255,255,0.07)] border-700 bg-slate-800/50 backdrop-blur">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <IndianRupee className="h-5 w-5 text-green-500" />
@@ -586,7 +586,7 @@ export default function TrackTicket() {
 
         {/* Approve Dialog */}
         <Dialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
-          <DialogContent className="bg-slate-800 border-slate-700">
+          <DialogContent className="bg-slate-800 border-[rgba(255,255,255,0.07)] border-700">
             <DialogHeader>
               <DialogTitle className="text-white">Approve Service Estimate</DialogTitle>
               <DialogDescription>

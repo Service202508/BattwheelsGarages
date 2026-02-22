@@ -131,7 +131,7 @@ export default function NotificationBell({ user }) {
               variant="ghost" 
               size="sm" 
               onClick={markAllRead}
-              className="text-xs text-gray-500 hover:text-gray-900"
+              className="text-xs text-gray-500 hover:text-[#F4F6F0]"
             >
               <CheckCheck className="h-4 w-4 mr-1" />
               Mark all read

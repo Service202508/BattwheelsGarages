@@ -86,14 +86,14 @@ export default function CustomerAMC({ user }) {
     <div className="space-y-6" data-testid="customer-amc">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">AMC Plans</h1>
+        <h1 className="text-2xl font-bold text-[#F4F6F0]">AMC Plans</h1>
         <p className="text-gray-600">Manage your Annual Maintenance Contracts</p>
       </div>
 
       {/* Active Subscriptions */}
       {subscriptions.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">Your Subscriptions</h2>
+          <h2 className="text-lg font-semibold text-[#F4F6F0]">Your Subscriptions</h2>
           
           {subscriptions.map((sub) => {
             const statusConfig = getStatusConfig(sub.status);
@@ -192,7 +192,7 @@ export default function CustomerAMC({ user }) {
 
       {/* Available Plans */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-lg font-semibold text-[#F4F6F0]">
           {subscriptions.length > 0 ? "Upgrade or Add Another Plan" : "Available AMC Plans"}
         </h2>
         
@@ -227,7 +227,7 @@ export default function CustomerAMC({ user }) {
 
                 <CardContent className="p-6">
                   <div className="text-center mb-6">
-                    <p className="text-4xl font-bold text-gray-900">
+                    <p className="text-4xl font-bold text-[#F4F6F0]">
                       ₹{plan.price.toLocaleString()}
                     </p>
                     <p className="text-gray-500">for {plan.duration_months} months</p>

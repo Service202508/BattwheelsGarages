@@ -215,7 +215,7 @@ export default function ZohoSync() {
     <div className="space-y-6" data-testid="zoho-sync-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Zoho Books Sync</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Zoho Books Sync</h1>
           <p className="text-gray-500 text-sm mt-1">Sync data from your Zoho Books account</p>
         </div>
         <div className="flex items-center gap-3">

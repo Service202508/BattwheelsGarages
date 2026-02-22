@@ -44,7 +44,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
-      <header className="lg:hidden sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      <header className="lg:hidden sticky top-0 z-50 bg-[#111820] border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -62,7 +62,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
       <div className="flex">
         {/* Sidebar */}
         <aside className={`
-          fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-white border-r border-gray-200
+          fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-[#111820] border-r border-gray-200
           transform transition-transform duration-200 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
@@ -73,7 +73,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
                 <Car className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="font-bold text-lg text-gray-900">Battwheels OS</h1>
+                <h1 className="font-bold text-lg text-[#F4F6F0]">Battwheels OS</h1>
                 <p className="text-xs text-gray-500">Customer Portal</p>
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
                         transition-colors duration-150
                         ${isActive 
                           ? 'bg-emerald-50 text-emerald-700' 
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-[#F4F6F0]'
                         }
                       `}
                     >
@@ -115,7 +115,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
                 <Link
                   to="/customer/request-callback"
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-[#F4F6F0]"
                 >
                   <Phone className="h-5 w-5 text-gray-400" />
                   Request Callback
@@ -123,7 +123,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
                 <Link
                   to="/customer/book-appointment"
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-[#F4F6F0]"
                 >
                   <Calendar className="h-5 w-5 text-gray-400" />
                   Book Appointment
@@ -141,7 +141,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
+                  <p className="text-sm font-medium text-[#F4F6F0] truncate">{user?.name}</p>
                   <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                 </div>
               </div>

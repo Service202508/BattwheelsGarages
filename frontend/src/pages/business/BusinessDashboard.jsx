@@ -117,7 +117,7 @@ export default function BusinessDashboard({ user }) {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -132,7 +132,7 @@ export default function BusinessDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -147,7 +147,7 @@ export default function BusinessDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -162,7 +162,7 @@ export default function BusinessDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -182,7 +182,7 @@ export default function BusinessDashboard({ user }) {
 
       {/* Resolution TAT & AMC */}
       <div className="grid lg:grid-cols-3 gap-6">
-        <Card className="bg-white border-slate-200 shadow-sm">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-slate-900 flex items-center gap-2">
               <Clock className="h-5 w-5 text-indigo-600" />
@@ -210,7 +210,7 @@ export default function BusinessDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-slate-200 shadow-sm">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-slate-900 flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-600" />
@@ -233,7 +233,7 @@ export default function BusinessDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-slate-200 shadow-sm">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-slate-900 flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-blue-600" />
@@ -260,7 +260,7 @@ export default function BusinessDashboard({ user }) {
       {/* Recent Tickets & Pending Invoices */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Tickets */}
-        <Card className="bg-white border-slate-200 shadow-sm">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
               <CardTitle className="text-slate-900">Active Service Tickets</CardTitle>
@@ -284,7 +284,7 @@ export default function BusinessDashboard({ user }) {
                   <Link 
                     key={ticket.ticket_id}
                     to={`/business/tickets/${ticket.ticket_id}`}
-                    className="block p-4 rounded-xl border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all"
+                    className="block p-4 rounded-xl border border-[rgba(255,255,255,0.07)] border-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -307,7 +307,7 @@ export default function BusinessDashboard({ user }) {
         </Card>
 
         {/* Pending Invoices */}
-        <Card className="bg-white border-slate-200 shadow-sm">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
               <CardTitle className="text-slate-900">Pending Invoices</CardTitle>
@@ -330,7 +330,7 @@ export default function BusinessDashboard({ user }) {
                 {pendingInvoices.map((invoice) => (
                   <div 
                     key={invoice.invoice_id}
-                    className="p-4 rounded-xl border border-slate-200 hover:border-indigo-200 transition-all"
+                    className="p-4 rounded-xl border border-[rgba(255,255,255,0.07)] border-200 hover:border-indigo-200 transition-all"
                   >
                     <div className="flex items-center justify-between">
                       <div>

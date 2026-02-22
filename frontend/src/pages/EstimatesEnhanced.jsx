@@ -1504,7 +1504,7 @@ export default function EstimatesEnhanced() {
                       data-testid="customer-search"
                     />
                     {contacts.length > 0 && (
-                      <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      <div className="absolute z-10 w-full mt-1 bg-[#111820] border rounded-lg shadow-lg max-h-48 overflow-y-auto">
                         {contacts.map(c => (
                           <div 
                             key={c.contact_id} 
@@ -1649,7 +1649,7 @@ export default function EstimatesEnhanced() {
                             </div>
                             {/* Item Search Dropdown */}
                             {newLineItem.name && newLineItem.name.length >= 1 && !newLineItem.item_id && (
-                              <div className="absolute z-50 left-0 right-0 mt-1 bg-white border rounded-lg shadow-xl max-h-64 overflow-y-auto">
+                              <div className="absolute z-50 left-0 right-0 mt-1 bg-[#111820] border rounded-lg shadow-xl max-h-64 overflow-y-auto">
                                 {items
                                   .filter(item => item.name?.toLowerCase().includes(newLineItem.name.toLowerCase()) || item.sku?.toLowerCase().includes(newLineItem.name.toLowerCase()))
                                   .slice(0, 10)
@@ -1661,7 +1661,7 @@ export default function EstimatesEnhanced() {
                                     >
                                       <div className="flex justify-between">
                                         <div>
-                                          <div className="font-medium text-gray-900">{item.name}</div>
+                                          <div className="font-medium text-[#F4F6F0]">{item.name}</div>
                                           <div className="text-xs text-[rgba(244,246,240,0.45)]">
                                             {item.sku && <span>SKU: {item.sku}</span>}
                                             {item.rate && <span className="ml-2">Rate: ₹{item.rate?.toLocaleString('en-IN')}</span>}
@@ -2710,7 +2710,7 @@ export default function EstimatesEnhanced() {
                                 </div>
                                 {/* Search Results Dropdown */}
                                 {editActiveItemIndex === idx && editItemSearch.length >= 1 && !item.item_id && editSearchResults.length > 0 && (
-                                  <div className="absolute z-50 left-0 right-0 mt-1 bg-white border rounded-lg shadow-xl max-h-48 overflow-y-auto">
+                                  <div className="absolute z-50 left-0 right-0 mt-1 bg-[#111820] border rounded-lg shadow-xl max-h-48 overflow-y-auto">
                                     {editSearchResults.slice(0, 8).map(searchItem => (
                                       <div 
                                         key={searchItem.item_id}

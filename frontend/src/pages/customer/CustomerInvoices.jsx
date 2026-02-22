@@ -74,7 +74,7 @@ export default function CustomerInvoices({ user }) {
     <div className="space-y-6" data-testid="customer-invoices">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
+        <h1 className="text-2xl font-bold text-[#F4F6F0]">Invoices</h1>
         <p className="text-gray-600">View and download your service invoices</p>
       </div>
 
@@ -83,7 +83,7 @@ export default function CustomerInvoices({ user }) {
         <Card>
           <CardContent className="py-12 text-center">
             <FileText className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Invoices Yet</h3>
+            <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Invoices Yet</h3>
             <p className="text-gray-600">Your invoices will appear here after services are completed</p>
           </CardContent>
         </Card>
@@ -160,7 +160,7 @@ export default function CustomerInvoices({ user }) {
                 {/* Invoice Header */}
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-bold text-xl text-gray-900">Battwheels OS</h3>
+                    <h3 className="font-bold text-xl text-[#F4F6F0]">Battwheels OS</h3>
                     <p className="text-sm text-gray-600">EV Service & Repair Center</p>
                   </div>
                   <div className="text-right">

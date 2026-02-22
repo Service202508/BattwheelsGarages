@@ -693,7 +693,7 @@ export default function BillsEnhanced() {
                 </div>
 
                 {newBill.line_items.length > 0 && (
-                  <div className="border rounded overflow-hidden bg-white">
+                  <div className="border rounded overflow-hidden bg-[#111820]">
                     <table className="w-full text-sm">
                       <thead className="bg-gray-100">
                         <tr>
@@ -839,7 +839,7 @@ export default function BillsEnhanced() {
                 </div>
 
                 {newPO.line_items.length > 0 && (
-                  <div className="border rounded overflow-hidden bg-white">
+                  <div className="border rounded overflow-hidden bg-[#111820]">
                     <table className="w-full text-sm">
                       <thead className="bg-gray-100">
                         <tr>
@@ -1027,7 +1027,7 @@ export default function BillsEnhanced() {
                             <p className="font-medium">₹{pmt.amount.toLocaleString('en-IN')}</p>
                             <p className="text-xs text-gray-500">{pmt.payment_mode} - {pmt.payment_date}</p>
                           </div>
-                          {pmt.reference_number && <span className="text-xs bg-white px-2 py-1 rounded">{pmt.reference_number}</span>}
+                          {pmt.reference_number && <span className="text-xs bg-[#111820] px-2 py-1 rounded">{pmt.reference_number}</span>}
                         </div>
                       ))}
                     </div>

@@ -51,7 +51,7 @@ export default function CustomerPayments({ user }) {
     <div className="space-y-6" data-testid="customer-payments">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Payments Due</h1>
+        <h1 className="text-2xl font-bold text-[#F4F6F0]">Payments Due</h1>
         <p className="text-gray-600">View and manage your outstanding payments</p>
       </div>
 
@@ -103,7 +103,7 @@ export default function CustomerPayments({ user }) {
         <Card>
           <CardContent className="py-12 text-center">
             <CreditCard className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Pending Payments</h3>
+            <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Pending Payments</h3>
             <p className="text-gray-600">All your invoices are paid. Great job! 🎉</p>
           </CardContent>
         </Card>

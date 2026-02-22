@@ -127,7 +127,7 @@ export default function BusinessReports({ user }) {
         <>
           {/* Summary Stats */}
           <div className="grid grid-cols-4 gap-4">
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -141,7 +141,7 @@ export default function BusinessReports({ user }) {
               </CardContent>
             </Card>
             
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -155,7 +155,7 @@ export default function BusinessReports({ user }) {
               </CardContent>
             </Card>
             
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -169,7 +169,7 @@ export default function BusinessReports({ user }) {
               </CardContent>
             </Card>
             
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -187,7 +187,7 @@ export default function BusinessReports({ user }) {
           {/* Charts Row */}
           <div className="grid lg:grid-cols-2 gap-6">
             {/* Tickets by Status */}
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <PieChart className="h-5 w-5 text-indigo-600" />
@@ -227,7 +227,7 @@ export default function BusinessReports({ user }) {
             </Card>
 
             {/* Tickets by Priority */}
-            <Card className="bg-white border-slate-200">
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-amber-600" />
@@ -268,7 +268,7 @@ export default function BusinessReports({ user }) {
           </div>
 
           {/* Vehicle Breakdown */}
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Car className="h-5 w-5 text-indigo-600" />

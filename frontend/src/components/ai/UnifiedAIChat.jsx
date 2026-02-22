@@ -251,9 +251,9 @@ How can I help you today?`,
   };
 
   return (
-    <div className="h-[calc(100vh-180px)] flex flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 rounded-xl overflow-hidden border border-slate-800/50">
+    <div className="h-[calc(100vh-180px)] flex flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 rounded-xl overflow-hidden border border-[rgba(255,255,255,0.07)] border-800/50">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-slate-800/50 bg-slate-900/80 backdrop-blur-sm">
+      <div className="px-6 py-4 border-b border-[rgba(255,255,255,0.07)] border-800/50 bg-slate-900/80 backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -301,7 +301,7 @@ How can I help you today?`,
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                   isSelected 
                     ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" 
-                    : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-800 hover:text-white"
+                    : "bg-slate-800/50 text-slate-400 border border-[rgba(255,255,255,0.07)] border-700/50 hover:bg-slate-800 hover:text-white"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -330,7 +330,7 @@ How can I help you today?`,
                     </div>
                   </div>
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 border border-slate-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 border border-[rgba(255,255,255,0.07)] border-600 flex items-center justify-center">
                     <User className="h-5 w-5 text-slate-300" />
                   </div>
                 )}
@@ -344,7 +344,7 @@ How can I help you today?`,
                       ? "bg-gradient-to-br from-emerald-600 to-emerald-700 text-white rounded-br-md"
                       : message.error
                       ? "bg-red-500/10 border border-red-500/30 text-slate-200 rounded-bl-md"
-                      : "bg-slate-800/80 border border-slate-700/50 text-slate-200 rounded-bl-md"
+                      : "bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 text-slate-200 rounded-bl-md"
                   }`}
                 >
                   <div className="text-sm leading-relaxed">
@@ -387,7 +387,7 @@ How can I help you today?`,
                   <Bot className="h-5 w-5 text-emerald-400" />
                 </div>
               </div>
-              <div className="bg-slate-800/80 border border-slate-700/50 rounded-2xl rounded-bl-md px-5 py-4">
+              <div className="bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 rounded-2xl rounded-bl-md px-5 py-4">
                 <div className="flex items-center gap-3">
                   <div className="flex gap-1">
                     <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -406,7 +406,7 @@ How can I help you today?`,
 
       {/* Quick Prompts */}
       {messages.length <= 1 && (
-        <div className="px-6 py-3 border-t border-slate-800/50 bg-slate-900/50">
+        <div className="px-6 py-3 border-t border-[rgba(255,255,255,0.07)] border-800/50 bg-slate-900/50">
           <div className="flex items-center gap-2 mb-2">
             <Lightbulb className="h-4 w-4 text-amber-400" />
             <span className="text-xs text-slate-400 font-medium">Quick questions</span>
@@ -416,7 +416,7 @@ How can I help you today?`,
               <button
                 key={idx}
                 onClick={() => sendMessage(prompt)}
-                className="px-3 py-1.5 text-xs bg-slate-800/50 border border-slate-700/50 rounded-full text-slate-300 hover:bg-slate-700 hover:text-white hover:border-slate-600 transition-all flex items-center gap-1"
+                className="px-3 py-1.5 text-xs bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700/50 rounded-full text-slate-300 hover:bg-slate-700 hover:text-white hover:border-[rgba(255,255,255,0.07)] border-600 transition-all flex items-center gap-1"
               >
                 {prompt}
                 <ChevronRight className="h-3 w-3 opacity-50" />
@@ -427,7 +427,7 @@ How can I help you today?`,
       )}
 
       {/* Input Area */}
-      <div className="px-6 py-4 border-t border-slate-800/50 bg-slate-900/80 backdrop-blur-sm">
+      <div className="px-6 py-4 border-t border-[rgba(255,255,255,0.07)] border-800/50 bg-slate-900/80 backdrop-blur-sm">
         <div className="flex gap-3 items-end max-w-4xl mx-auto">
           <div className="flex-1 relative">
             <Input
@@ -436,7 +436,7 @@ How can I help you today?`,
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
-              className="pr-20 py-6 bg-slate-800/50 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20"
+              className="pr-20 py-6 bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700/50 rounded-xl text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20"
               disabled={loading}
               data-testid="ai-chat-input"
             />

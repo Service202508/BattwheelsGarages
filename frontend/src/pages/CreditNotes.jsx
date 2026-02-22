@@ -124,7 +124,7 @@ export default function CreditNotes() {
     <div className="space-y-6" data-testid="credit-notes-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Credit Notes</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Credit Notes</h1>
           <p className="text-gray-500 text-sm mt-1">Customer refunds & adjustments</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>

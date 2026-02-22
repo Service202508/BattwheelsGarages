@@ -238,7 +238,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Battwheels OS</h1>
+          <h1 className="text-3xl font-bold text-[#F4F6F0] mb-2">Welcome to Battwheels OS</h1>
           <p className="text-gray-600">Let's set up your organization in just a few steps</p>
         </div>
 
@@ -577,7 +577,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                 <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Sparkles className="h-10 w-10 text-emerald-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">You're All Set! 🎉</h2>
+                <h2 className="text-2xl font-bold text-[#F4F6F0] mb-2">You're All Set! 🎉</h2>
                 <p className="text-gray-600 mb-8 max-w-md mx-auto">
                   Your organization is ready to go. Start managing your EV workshop with AI-powered diagnostics, 
                   invoicing, inventory, and more.

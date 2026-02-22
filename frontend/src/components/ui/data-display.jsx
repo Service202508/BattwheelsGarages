@@ -17,7 +17,7 @@ const ResponsiveTable = React.forwardRef(({
     <div 
       ref={ref}
       className={cn(
-        "bg-white rounded-lg border overflow-hidden",
+        "bg-[#111820] rounded-lg border overflow-hidden",
         className
       )}
       {...props}
@@ -48,7 +48,7 @@ const TableSkeleton = React.forwardRef(({
   ...props 
 }, ref) => {
   return (
-    <div ref={ref} className={cn("bg-white rounded-lg border overflow-hidden", className)} {...props}>
+    <div ref={ref} className={cn("bg-[#111820] rounded-lg border overflow-hidden", className)} {...props}>
       {/* Header */}
       <div className="bg-gray-50 border-b px-4 py-3">
         <div className="flex gap-4">
@@ -199,7 +199,7 @@ const EmptyState = React.forwardRef(({
           <Icon className={cn("h-7 w-7 sm:h-8 sm:w-8", styles.iconColor)} strokeWidth={1.5} />
         </div>
       )}
-      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1 text-center">
+      <h3 className="text-base sm:text-lg font-semibold text-[#F4F6F0] mb-1 text-center">
         {title}
       </h3>
       <p className="text-sm text-gray-500 text-center max-w-sm mb-6">
@@ -208,7 +208,7 @@ const EmptyState = React.forwardRef(({
       {actionLabel && onAction && (
         <Button 
           onClick={onAction} 
-          className="bg-[#22EDA9] text-gray-900 hover:bg-[#1DD69A] font-semibold"
+          className="bg-[#22EDA9] text-[#F4F6F0] hover:bg-[#1DD69A] font-semibold"
         >
           {ActionIcon && <ActionIcon className="h-4 w-4 mr-2" />}
           {actionLabel}

@@ -216,7 +216,7 @@ export default function GSTReports() {
     <div className="space-y-6" data-testid="gst-reports-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">GST Reports</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">GST Reports</h1>
           <p className="text-gray-500 text-sm mt-1">
             GSTR-1, GSTR-3B, and HSN Summary for GST filing
           </p>
@@ -511,7 +511,7 @@ export default function GSTReports() {
                     <CardContent className="py-6">
                       <div className="text-center">
                         <p className="text-sm text-gray-600 mb-1">Net Tax Payable</p>
-                        <p className="text-4xl font-bold text-gray-900">{formatCurrency(gstr3bData.summary?.net_tax_payable)}</p>
+                        <p className="text-4xl font-bold text-[#F4F6F0]">{formatCurrency(gstr3bData.summary?.net_tax_payable)}</p>
                       </div>
                     </CardContent>
                   </Card>

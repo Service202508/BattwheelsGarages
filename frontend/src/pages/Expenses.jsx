@@ -137,7 +137,7 @@ export default function Expenses() {
     <div className="space-y-6" data-testid="expenses-page">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Expenses</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Expenses</h1>
           <p className="text-gray-500 text-sm mt-1">{total} expense records</p>
         </div>
         <Dialog 
@@ -269,7 +269,7 @@ export default function Expenses() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Records</p>
-                <p className="text-2xl font-bold text-gray-900">{total}</p>
+                <p className="text-2xl font-bold text-[#F4F6F0]">{total}</p>
               </div>
               <Receipt className="h-8 w-8 text-blue-500" />
             </div>
@@ -280,7 +280,7 @@ export default function Expenses() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Categories</p>
-                <p className="text-2xl font-bold text-gray-900">{Object.keys(expensesByCategory).length}</p>
+                <p className="text-2xl font-bold text-[#F4F6F0]">{Object.keys(expensesByCategory).length}</p>
               </div>
               <Wallet className="h-8 w-8 text-purple-500" />
             </div>
@@ -291,7 +291,7 @@ export default function Expenses() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Avg per Record</p>
-                <p className="text-2xl font-bold text-gray-900">₹{total > 0 ? Math.round(expenseTotal / total).toLocaleString('en-IN') : 0}</p>
+                <p className="text-2xl font-bold text-[#F4F6F0]">₹{total > 0 ? Math.round(expenseTotal / total).toLocaleString('en-IN') : 0}</p>
               </div>
               <IndianRupee className="h-8 w-8 text-green-500" />
             </div>

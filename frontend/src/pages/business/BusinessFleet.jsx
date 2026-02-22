@@ -199,7 +199,7 @@ export default function BusinessFleet({ user }) {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -213,7 +213,7 @@ export default function BusinessFleet({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -227,7 +227,7 @@ export default function BusinessFleet({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -265,7 +265,7 @@ export default function BusinessFleet({ user }) {
           <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
         </div>
       ) : filteredVehicles.length === 0 ? (
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="py-12 text-center">
             <Car className="h-16 w-16 mx-auto text-slate-300 mb-4" />
             <h3 className="text-lg font-medium text-slate-900 mb-2">No vehicles found</h3>
@@ -275,7 +275,7 @@ export default function BusinessFleet({ user }) {
           </CardContent>
         </Card>
       ) : (
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <Table>
             <TableHeader>
               <TableRow>

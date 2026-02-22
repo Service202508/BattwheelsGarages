@@ -289,7 +289,7 @@ export default function PriceLists() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Price Lists</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Price Lists</h1>
           <p className="text-gray-500 text-sm mt-1">Manage custom pricing for items (Zoho Books compatible)</p>
         </div>
         <div className="flex items-center gap-2">

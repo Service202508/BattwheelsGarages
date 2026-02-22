@@ -247,7 +247,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
             <Brain className="h-5 w-5" />
             <h2 className="font-semibold">EV Failure Intelligence</h2>
           </div>
-          <Button variant="ghost" size="icon" onClick={onToggle} className="text-white hover:bg-white/20">
+          <Button variant="ghost" size="icon" onClick={onToggle} className="text-white hover:bg-[#111820]/20">
             <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
@@ -315,7 +315,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                 </div>
 
                 {/* Current Step */}
-                <div className="p-3 bg-white dark:bg-gray-900 rounded-lg border">
+                <div className="p-3 bg-[#111820] dark:bg-gray-900 rounded-lg border">
                   <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
                     <Target className="h-4 w-4 text-blue-600" />
                     {currentStep.instruction}
@@ -451,7 +451,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                     <h5 className="text-xs font-medium mb-1">Suggested Parts:</h5>
                     <div className="space-y-1">
                       {estimate.parts.map((part, idx) => (
-                        <div key={idx} className="flex justify-between text-xs p-1.5 bg-white dark:bg-gray-900 rounded">
+                        <div key={idx} className="flex justify-between text-xs p-1.5 bg-[#111820] dark:bg-gray-900 rounded">
                           <span>{part.name} × {part.quantity}</span>
                           <span className="font-mono">₹{(part.price || 0).toLocaleString()}</span>
                         </div>
@@ -461,7 +461,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                 )}
 
                 {/* Estimate Summary */}
-                <div className="p-3 bg-white dark:bg-gray-900 rounded-lg border space-y-1 text-sm">
+                <div className="p-3 bg-[#111820] dark:bg-gray-900 rounded-lg border space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Parts Total</span>
                     <span className="font-mono">₹{(estimate.parts_total || 0).toLocaleString()}</span>

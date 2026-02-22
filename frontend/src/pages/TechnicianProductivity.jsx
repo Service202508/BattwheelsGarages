@@ -133,7 +133,7 @@ export default function TechnicianProductivity({ user }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Technician Productivity</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Technician Productivity</h1>
           <p className="text-gray-600">Monitor and analyze technician performance metrics.</p>
         </div>
         <div className="flex gap-2">

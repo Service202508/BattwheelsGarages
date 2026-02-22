@@ -101,7 +101,7 @@ export default function TechnicianPayroll({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-blue-500/10">
@@ -116,7 +116,7 @@ export default function TechnicianPayroll({ user }) {
           </CardContent>
         </Card>
         
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-purple-500/10">
@@ -134,7 +134,7 @@ export default function TechnicianPayroll({ user }) {
 
       {/* Latest Payslip Detail */}
       {currentMonth && (
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -221,7 +221,7 @@ export default function TechnicianPayroll({ user }) {
       )}
 
       {/* Payslip History */}
-      <Card className="bg-slate-900/50 border-slate-800">
+      <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
         <CardHeader>
           <CardTitle className="text-white">Payslip History</CardTitle>
           <CardDescription>Past 12 months</CardDescription>

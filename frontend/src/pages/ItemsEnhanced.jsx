@@ -978,7 +978,7 @@ export default function ItemsEnhanced() {
               </CardContent>
             </Card>
           ) : (
-            <div className="border rounded-lg overflow-hidden bg-white">
+            <div className="border rounded-lg overflow-hidden bg-[#111820]">
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 border-b">
                   <tr>
@@ -1229,7 +1229,7 @@ export default function ItemsEnhanced() {
           {adjustments.length === 0 ? (
             <Card><CardContent className="py-12 text-center text-gray-500"><ArrowUpDown className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No inventory adjustments yet</p></CardContent></Card>
           ) : (
-            <div className="border rounded-lg overflow-hidden bg-white">
+            <div className="border rounded-lg overflow-hidden bg-[#111820]">
               <table className="w-full text-sm">
                 <thead className="bg-gray-50">
                   <tr>
@@ -2097,7 +2097,7 @@ export default function ItemsEnhanced() {
             {barcodeResult && (
               <div className="border rounded-lg p-4 bg-green-50">
                 <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded bg-white flex items-center justify-center">
+                  <div className="w-12 h-12 rounded bg-[#111820] flex items-center justify-center">
                     <Package className="h-6 w-6 text-gray-400" />
                   </div>
                   <div className="flex-1">
@@ -2465,7 +2465,7 @@ export default function ItemsEnhanced() {
                 </thead>
                 <tbody>
                   {fieldConfig.map((field, idx) => (
-                    <tr key={field.field_name} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                    <tr key={field.field_name} className={idx % 2 === 0 ? "bg-[#111820]" : "bg-gray-50"}>
                       <td className="px-4 py-2 font-medium">{field.display_name || field.field_name}</td>
                       <td className="px-4 py-2 text-center">
                         <Switch 
@@ -2575,7 +2575,7 @@ export default function ItemsEnhanced() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {lowStockItems.slice(0, 6).map(item => (
-                <div key={item.item_id} className="bg-white rounded-lg p-3 border border-red-200">
+                <div key={item.item_id} className="bg-[#111820] rounded-lg p-3 border border-red-200">
                   <p className="font-medium text-sm">{item.name}</p>
                   <div className="flex justify-between mt-1 text-xs">
                     <span className="text-gray-500">Current: <span className="text-red-600 font-bold">{item.current_stock}</span></span>

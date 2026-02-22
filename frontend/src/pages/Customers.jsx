@@ -95,7 +95,7 @@ export default function Customers() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Customers</h1>
           <p className="text-gray-500 text-sm mt-1">{total} customers in database</p>
         </div>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
@@ -238,7 +238,7 @@ export default function Customers() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-gray-900">{customer.display_name}</h3>
+                      <h3 className="font-semibold text-[#F4F6F0]">{customer.display_name}</h3>
                       {customer.company_name && (
                         <Badge variant="outline" className="text-xs">
                           <Building2 className="h-3 w-3 mr-1" />

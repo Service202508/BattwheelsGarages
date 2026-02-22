@@ -111,7 +111,7 @@ export default function Inventory() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Inventory</h1>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Inventory</h1>
           <p className="text-gray-500 text-sm mt-1">
             {totals.services} services, {totals.parts} parts
           </p>
@@ -218,7 +218,7 @@ export default function Inventory() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Total Services</p>
-                <p className="text-2xl font-bold text-gray-900">{totals.services}</p>
+                <p className="text-2xl font-bold text-[#F4F6F0]">{totals.services}</p>
               </div>
               <Wrench className="h-8 w-8 text-[#22EDA9]" />
             </div>
@@ -229,7 +229,7 @@ export default function Inventory() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Total Parts</p>
-                <p className="text-2xl font-bold text-gray-900">{totals.parts}</p>
+                <p className="text-2xl font-bold text-[#F4F6F0]">{totals.parts}</p>
               </div>
               <Package className="h-8 w-8 text-blue-500" />
             </div>
@@ -301,7 +301,7 @@ export default function Inventory() {
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-1">
-                          <h3 className="font-semibold text-gray-900">{service.name}</h3>
+                          <h3 className="font-semibold text-[#F4F6F0]">{service.name}</h3>
                           {service.hsn_sac && (
                             <Badge variant="outline" className="text-xs">
                               HSN: {service.hsn_sac}
@@ -324,7 +324,7 @@ export default function Inventory() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-gray-900">₹{service.rate?.toLocaleString('en-IN')}</p>
+                        <p className="text-lg font-bold text-[#F4F6F0]">₹{service.rate?.toLocaleString('en-IN')}</p>
                         <p className="text-xs text-gray-400">+ {service.tax_rate || 18}% GST</p>
                       </div>
                     </div>
@@ -354,7 +354,7 @@ export default function Inventory() {
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-1">
-                            <h3 className="font-semibold text-gray-900">{part.name}</h3>
+                            <h3 className="font-semibold text-[#F4F6F0]">{part.name}</h3>
                             {isLowStock && (
                               <Badge className="bg-orange-100 text-orange-700 text-xs">
                                 <AlertTriangle className="h-3 w-3 mr-1" />
@@ -381,7 +381,7 @@ export default function Inventory() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-bold text-gray-900">₹{part.rate?.toLocaleString('en-IN')}</p>
+                          <p className="text-lg font-bold text-[#F4F6F0]">₹{part.rate?.toLocaleString('en-IN')}</p>
                           <p className="text-xs text-gray-400">+ {part.tax_rate || 18}% GST</p>
                         </div>
                       </div>

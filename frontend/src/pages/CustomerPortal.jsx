@@ -372,7 +372,7 @@ export default function CustomerPortal() {
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4" data-testid="portal-login-page">
-        <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20">
+        <Card className="w-full max-w-md bg-[#111820]/10 backdrop-blur-lg border-white/20">
           <CardHeader className="text-center">
             <div className="mx-auto w-16 h-16 bg-[#22EDA9] rounded-full flex items-center justify-center mb-4">
               <Building2 className="h-8 w-8 text-black" />
@@ -388,7 +388,7 @@ export default function CustomerPortal() {
                 onChange={(e) => setPortalToken(e.target.value)}
                 onKeyUp={(e) => e.key === "Enter" && handleLogin()}
                 placeholder="Enter your portal token"
-                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500"
+                className="bg-[#111820]/10 border-white/20 text-white placeholder:text-gray-500"
                 data-testid="portal-token-input"
               />
               <p className="text-xs text-gray-500 mt-2">Your portal token was sent to your email</p>
@@ -412,7 +412,7 @@ export default function CustomerPortal() {
   return (
     <div className="min-h-screen bg-gray-50" data-testid="customer-portal-dashboard">
       {/* Header */}
-      <header className="bg-white border-b px-6 py-4">
+      <header className="bg-[#111820] border-b px-6 py-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#22EDA9] rounded-full flex items-center justify-center">
@@ -431,7 +431,7 @@ export default function CustomerPortal() {
 
       <main className="max-w-6xl mx-auto p-6 space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-white border">
+          <TabsList className="bg-[#111820] border">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="invoices">Invoices</TabsTrigger>
             <TabsTrigger value="estimates">Estimates</TabsTrigger>
