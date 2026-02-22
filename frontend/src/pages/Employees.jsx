@@ -302,9 +302,60 @@ export default function Employees({ user }) {
         ? `${API}/employees/${selectedEmployee.employee_id}`
         : `${API}/employees`;
       
-      const body = isEditing ? { ...formData } : formData;
-      delete body.password; // Remove password for edit
-      if (!isEditing) {
+      // Create a proper copy of the form data, mapping fields to backend expected names
+      const body = {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.work_email, // Backend expects 'email', frontend uses 'work_email'
+        phone: formData.phone,
+        department: formData.department,
+        designation: formData.designation,
+        employment_type: formData.employment_type,
+        date_of_joining: formData.joining_date, // Backend expects 'date_of_joining'
+        date_of_birth: formData.date_of_birth,
+        gender: formData.gender,
+        reporting_manager: formData.reporting_manager_id,
+        system_role: formData.system_role,
+        salary_structure: {
+          basic_salary: parseFloat(formData.basic_salary) || 0,
+          hra: parseFloat(formData.hra) || 0,
+          da: parseFloat(formData.da) || 0,
+          conveyance: parseFloat(formData.conveyance) || 0,
+          medical_allowance: parseFloat(formData.medical_allowance) || 0,
+          special_allowance: parseFloat(formData.special_allowance) || 0,
+          other_allowances: parseFloat(formData.other_allowances) || 0,
+        },
+        bank_details: {
+          bank_name: formData.bank_name,
+          account_number: formData.account_number,
+          ifsc_code: formData.ifsc_code,
+          branch_name: formData.branch_name,
+          account_type: formData.account_type,
+        },
+        pan_number: formData.pan_number,
+        aadhaar_number: formData.aadhaar_number,
+        pf_number: formData.pf_number,
+        uan: formData.uan,
+        esi_number: formData.esi_number,
+        pf_enrolled: formData.pf_enrolled,
+        esi_enrolled: formData.esi_enrolled,
+        personal_email: formData.personal_email,
+        current_address: formData.current_address,
+        permanent_address: formData.permanent_address,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pincode,
+        emergency_contact_name: formData.emergency_contact_name,
+        emergency_contact_phone: formData.emergency_contact_phone,
+        emergency_contact_relation: formData.emergency_contact_relation,
+        employee_code: formData.employee_code,
+        work_location: formData.work_location,
+        shift: formData.shift,
+        probation_period_months: formData.probation_period_months,
+      };
+
+      // Add password only for new employees
+      if (!isEditing && formData.password) {
         body.password = formData.password;
       }
 
