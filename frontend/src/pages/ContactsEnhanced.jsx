@@ -880,31 +880,31 @@ export default function ContactsEnhanced() {
                   {/* Contact Persons */}
                   <div>
                     <div className="flex justify-between items-center mb-3">
-                      <h4 className="font-medium flex items-center gap-2"><User className="h-4 w-4" /> Contact Persons ({selectedContact.persons?.length || 0})</h4>
-                      <Button size="sm" variant="outline" onClick={() => setShowPersonDialog(true)}><UserPlus className="h-4 w-4 mr-1" /> Add</Button>
+                      <h4 className="font-semibold flex items-center gap-2 text-[#F4F6F0]"><User className="h-4 w-4 text-[rgba(244,246,240,0.45)]" /> Contact Persons ({selectedContact.persons?.length || 0})</h4>
+                      <Button size="sm" variant="outline" onClick={() => setShowPersonDialog(true)} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"><UserPlus className="h-4 w-4 mr-1" /> Add</Button>
                     </div>
                     {selectedContact.persons?.length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {selectedContact.persons.map(person => (
-                          <Card key={person.person_id} className={person.is_primary ? "border-blue-300 bg-blue-50" : ""}>
+                          <Card key={person.person_id} className={`bg-[#141E27] border ${person.is_primary ? "border-[rgba(59,158,255,0.30)]" : "border-[rgba(255,255,255,0.07)]"}`}>
                             <CardContent className="pt-4">
                               <div className="flex justify-between">
                                 <div>
-                                  <p className="font-medium">{person.first_name} {person.last_name} {person.is_primary && <Badge className="ml-2 text-xs">Primary</Badge>}</p>
-                                  {person.designation && <p className="text-xs text-gray-500">{person.designation}</p>}
-                                  {person.email && <p className="text-xs text-gray-600">{person.email}</p>}
-                                  {person.phone && <p className="text-xs text-gray-600">{person.phone}</p>}
+                                  <p className="font-semibold text-[#F4F6F0]">{person.first_name} {person.last_name} {person.is_primary && <Badge className="ml-2 text-xs bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]">Primary</Badge>}</p>
+                                  {person.designation && <p className="text-xs text-[rgba(244,246,240,0.35)]">{person.designation}</p>}
+                                  {person.email && <p className="text-xs text-[rgba(244,246,240,0.45)]">{person.email}</p>}
+                                  {person.phone && <p className="text-xs text-[rgba(244,246,240,0.45)]">{person.phone}</p>}
                                 </div>
-                                <Button size="icon" variant="ghost" onClick={() => handleDeletePerson(person.person_id)}><Trash2 className="h-4 w-4 text-red-400" /></Button>
+                                <Button size="icon" variant="ghost" onClick={() => handleDeletePerson(person.person_id)} className="text-[#FF3B2F] hover:bg-[rgba(255,59,47,0.1)]"><Trash2 className="h-4 w-4" /></Button>
                               </div>
                             </CardContent>
                           </Card>
                         ))}
                       </div>
-                    ) : <p className="text-sm text-gray-500">No contact persons added</p>}
+                    ) : <p className="text-sm text-[rgba(244,246,240,0.35)]">No contact persons added</p>}
                   </div>
 
-                  <Separator />
+                  <Separator className="bg-[rgba(255,255,255,0.07)]" />
 
                   {/* Addresses */}
                   <div>
