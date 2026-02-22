@@ -1767,11 +1767,36 @@ export default function ItemsEnhanced() {
             </TabsContent>
           </Tabs>
           <DialogFooter className="mt-4 pt-4 border-t">
-            <Button variant="outline" onClick={() => { setShowItemDialog(false); resetItemForm(); }}>Cancel</Button>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                if (!editItem && itemPersistence.isDirty) {
+                  itemPersistence.setShowCloseConfirm(true);
+                } else {
+                  setShowItemDialog(false);
+                  resetItemForm();
+                }
+              }}
+            >
+              Cancel
+            </Button>
             <Button onClick={handleCreateItem} className="bg-[#22EDA9] text-black" data-testid="create-item-submit">Create Item</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Item Unsaved Changes Confirmation Dialog */}
+      <FormCloseConfirmDialog
+        open={itemPersistence.showCloseConfirm}
+        onClose={() => itemPersistence.setShowCloseConfirm(false)}
+        onSave={handleCreateItem}
+        onDiscard={() => {
+          itemPersistence.clearSavedData();
+          resetItemForm();
+          setShowItemDialog(false);
+        }}
+        entityName="Item"
+      />
 
       {/* Edit Item Dialog */}
       <Dialog open={!!editItem} onOpenChange={(open) => !open && setEditItem(null)}>
