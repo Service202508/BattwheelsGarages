@@ -398,18 +398,18 @@ export default function Dashboard({ user }) {
             >
               <div className="space-y-3">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-4xl font-bold text-slate-800">
+                  <span className="text-4xl font-bold text-[#C8FF00]" style={{ textShadow: '0 0 24px rgba(200,255,0,0.2)' }}>
                     {serviceTicketStats.onsite_resolution_percentage}%
                   </span>
                   <Badge 
                     className={`${serviceTicketStats.onsite_resolution_percentage >= 40 
-                      ? 'bg-emerald-100 text-emerald-700 border-emerald-200' 
-                      : 'bg-amber-100 text-amber-700 border-amber-200'} border text-xs font-medium`}
+                      ? 'bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border-[rgba(200,255,0,0.25)]' 
+                      : 'bg-[rgba(234,179,8,0.10)] text-[#EAB308] border-[rgba(234,179,8,0.25)]'} border text-xs font-medium`}
                   >
                     {serviceTicketStats.onsite_resolution_percentage >= 40 ? 'On Target' : 'Improving'}
                   </Badge>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-2 bg-[rgba(255,255,255,0.05)] rounded-full overflow-hidden">
                   <div 
                     className="h-full rounded-full transition-all duration-500"
                     style={{ 
@@ -418,7 +418,7 @@ export default function Dashboard({ user }) {
                     }}
                   />
                 </div>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[rgba(244,246,240,0.45)]">
                   {serviceTicketStats.total_onsite_resolved_30d} of {serviceTicketStats.total_resolved_30d} tickets resolved onsite
                 </p>
               </div>
@@ -431,23 +431,23 @@ export default function Dashboard({ user }) {
               color="amber"
             >
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-100 rounded-xl">
+                <div className="flex items-center justify-between p-3 bg-[rgba(234,179,8,0.08)] border border-[rgba(234,179,8,0.20)] rounded-lg">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-amber-100 rounded-lg">
-                      <Truck className="h-4 w-4 text-amber-600" />
+                    <div className="p-1.5 bg-[rgba(234,179,8,0.12)] border border-[rgba(234,179,8,0.25)] rounded-lg">
+                      <Truck className="h-4 w-4 text-[#EAB308]" />
                     </div>
-                    <span className="text-sm font-medium text-slate-700">Pickup Service</span>
+                    <span className="text-sm font-medium text-[#F4F6F0]">Pickup Service</span>
                   </div>
-                  <span className="text-xl font-bold text-amber-600">{serviceTicketStats.pickup}</span>
+                  <span className="text-xl font-bold text-[#EAB308]">{serviceTicketStats.pickup}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-violet-50 border border-violet-100 rounded-xl">
+                <div className="flex items-center justify-between p-3 bg-[rgba(139,92,246,0.08)] border border-[rgba(139,92,246,0.20)] rounded-lg">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-violet-100 rounded-lg">
-                      <Wifi className="h-4 w-4 text-violet-600" />
+                    <div className="p-1.5 bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.25)] rounded-lg">
+                      <Wifi className="h-4 w-4 text-[#8B5CF6]" />
                     </div>
-                    <span className="text-sm font-medium text-slate-700">Remote Support</span>
+                    <span className="text-sm font-medium text-[#F4F6F0]">Remote Support</span>
                   </div>
-                  <span className="text-xl font-bold text-violet-600">{serviceTicketStats.remote}</span>
+                  <span className="text-xl font-bold text-[#8B5CF6]">{serviceTicketStats.remote}</span>
                 </div>
               </div>
             </KPICard>
@@ -461,19 +461,19 @@ export default function Dashboard({ user }) {
             >
               <div className="space-y-3">
                 <div className="text-center py-2">
-                  <p className="text-4xl font-bold text-slate-800">{serviceTicketStats.total_resolved_30d}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Total Resolved</p>
+                  <p className="text-4xl font-bold text-[#C8FF00]" style={{ textShadow: '0 0 24px rgba(200,255,0,0.2)' }}>{serviceTicketStats.total_resolved_30d}</p>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-0.5">Total Resolved</p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="text-center p-2.5 bg-emerald-50 border border-emerald-100 rounded-xl">
-                    <p className="text-lg font-bold text-emerald-600">{serviceTicketStats.total_onsite_resolved_30d}</p>
-                    <p className="text-xs text-slate-500">Onsite</p>
+                  <div className="text-center p-2.5 bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.20)] rounded-lg">
+                    <p className="text-lg font-bold text-[#C8FF00]">{serviceTicketStats.total_onsite_resolved_30d}</p>
+                    <p className="text-xs text-[rgba(244,246,240,0.45)]">Onsite</p>
                   </div>
-                  <div className="text-center p-2.5 bg-blue-50 border border-blue-100 rounded-xl">
-                    <p className="text-lg font-bold text-blue-600">
+                  <div className="text-center p-2.5 bg-[rgba(59,158,255,0.08)] border border-[rgba(59,158,255,0.20)] rounded-lg">
+                    <p className="text-lg font-bold text-[#3B9EFF]">
                       {serviceTicketStats.total_resolved_30d - serviceTicketStats.total_onsite_resolved_30d}
                     </p>
-                    <p className="text-xs text-slate-500">Workshop/Other</p>
+                    <p className="text-xs text-[rgba(244,246,240,0.45)]">Workshop/Other</p>
                   </div>
                 </div>
               </div>
