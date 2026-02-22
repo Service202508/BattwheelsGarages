@@ -1043,13 +1043,13 @@ export default function ContactsEnhanced() {
 
                   {/* Usage Stats (Legacy) */}
                   {selectedContact.usage && selectedContact.usage.is_used && !contactTransactions.length && (
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <p className="text-xs text-gray-500 mb-2">Transaction Summary</p>
-                      <div className="flex gap-4 text-xs">
-                        {selectedContact.usage.invoices > 0 && <span>Invoices: {selectedContact.usage.invoices}</span>}
-                        {selectedContact.usage.bills > 0 && <span>Bills: {selectedContact.usage.bills}</span>}
-                        {selectedContact.usage.estimates > 0 && <span>Estimates: {selectedContact.usage.estimates}</span>}
-                        {selectedContact.usage.purchase_orders > 0 && <span>POs: {selectedContact.usage.purchase_orders}</span>}
+                    <div className="bg-[#141E27] border border-[rgba(255,255,255,0.07)] rounded-lg p-3">
+                      <p className="font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.45)] mb-2">Transaction Summary</p>
+                      <div className="flex gap-4 text-xs text-[rgba(244,246,240,0.45)]">
+                        {selectedContact.usage.invoices > 0 && <span>Invoices: <span className="text-[#C8FF00]">{selectedContact.usage.invoices}</span></span>}
+                        {selectedContact.usage.bills > 0 && <span>Bills: <span className="text-[#C8FF00]">{selectedContact.usage.bills}</span></span>}
+                        {selectedContact.usage.estimates > 0 && <span>Estimates: <span className="text-[#C8FF00]">{selectedContact.usage.estimates}</span></span>}
+                        {selectedContact.usage.purchase_orders > 0 && <span>POs: <span className="text-[#C8FF00]">{selectedContact.usage.purchase_orders}</span></span>}
                       </div>
                     </div>
                   )}
