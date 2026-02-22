@@ -101,8 +101,8 @@ const KPICard = ({ title, description, value, unit = "", target, icon: Icon, col
             </div>
           )}
           <div>
-            <CardTitle className="text-base font-semibold text-slate-700">{title}</CardTitle>
-            <CardDescription className="text-xs">{description}</CardDescription>
+            <CardTitle className="text-base font-semibold text-[#F4F6F0]">{title}</CardTitle>
+            <CardDescription className="text-xs text-[rgba(244,246,240,0.45)]">{description}</CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -261,10 +261,10 @@ export default function Dashboard({ user }) {
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Vehicle Status Distribution */}
-            <Card className="bg-white border border-slate-200" data-testid="vehicle-status-chart">
+            <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]" data-testid="vehicle-status-chart">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold text-slate-700">Vehicle Status Distribution</CardTitle>
-                <CardDescription className="text-xs">Live breakdown of vehicle statuses</CardDescription>
+                <CardTitle className="text-base font-semibold text-[#F4F6F0]">Vehicle Status Distribution</CardTitle>
+                <CardDescription className="text-xs text-[rgba(244,246,240,0.45)]">Live breakdown of vehicle statuses</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer isVisible={activeTab === "workshop"} height="240px">
@@ -286,10 +286,10 @@ export default function Dashboard({ user }) {
                         </Pie>
                         <Tooltip 
                           contentStyle={{ 
-                            backgroundColor: '#fff', 
-                            border: '1px solid #e2e8f0',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                            backgroundColor: '#111820', 
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '4px',
+                            color: '#F4F6F0'
                           }}
                         />
                       </PieChart>
@@ -300,7 +300,7 @@ export default function Dashboard({ user }) {
                   {vehicleStatusData.map((entry, index) => (
                     <div key={index} className="flex items-center gap-1.5">
                       <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.fill }} />
-                      <span className="text-xs text-slate-500">{entry.name}: {entry.value}</span>
+                      <span className="text-xs text-[rgba(244,246,240,0.45)]">{entry.name}: {entry.value}</span>
                     </div>
                   ))}
                 </div>
@@ -308,10 +308,10 @@ export default function Dashboard({ user }) {
             </Card>
 
             {/* Repair Time Trend */}
-            <Card className="bg-white border border-slate-200" data-testid="repair-trend-chart">
+            <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]" data-testid="repair-trend-chart">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold text-slate-700">Repair Time Trend</CardTitle>
-                <CardDescription className="text-xs">Monthly average time per repair order</CardDescription>
+                <CardTitle className="text-base font-semibold text-[#F4F6F0]">Repair Time Trend</CardTitle>
+                <CardDescription className="text-xs text-[rgba(244,246,240,0.45)]">Monthly average time per repair order</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer isVisible={activeTab === "workshop"} height="260px">
@@ -322,20 +322,20 @@ export default function Dashboard({ user }) {
                           dataKey="month" 
                           axisLine={false} 
                           tickLine={false}
-                          tick={{ fill: '#64748b', fontSize: 11 }}
+                          tick={{ fill: 'rgba(244,246,240,0.45)', fontSize: 11 }}
                         />
                         <YAxis 
                           axisLine={false} 
                           tickLine={false}
-                          tick={{ fill: '#64748b', fontSize: 11 }}
+                          tick={{ fill: 'rgba(244,246,240,0.45)', fontSize: 11 }}
                           tickFormatter={(value) => `${value}h`}
                         />
                         <Tooltip 
                           contentStyle={{ 
-                            backgroundColor: '#fff', 
-                            border: '1px solid #e2e8f0',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                            backgroundColor: '#111820', 
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '4px',
+                            color: '#F4F6F0'
                           }}
                           formatter={(value) => [`${value} hours`, 'Avg Time']}
                         />
