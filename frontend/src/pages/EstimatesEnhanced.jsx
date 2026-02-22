@@ -233,6 +233,52 @@ export default function EstimatesEnhanced() {
     } catch (e) { console.error("Failed to fetch items:", e); }
   };
 
+  // Quick add new item
+  const handleQuickAddItem = async () => {
+    if (!quickAddItem.name) return toast.error("Item name is required");
+    try {
+      const res = await fetch(`${API}/items-enhanced/`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          name: quickAddItem.name,
+          sku: quickAddItem.sku || `SKU-${Date.now()}`,
+          description: quickAddItem.description,
+          rate: quickAddItem.rate || 0,
+          unit: quickAddItem.unit || "pcs",
+          tax_percentage: quickAddItem.tax_percentage || 18,
+          hsn_code: quickAddItem.hsn_code,
+          item_type: quickAddItem.item_type || "product",
+          status: "active"
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`Item "${quickAddItem.name}" created`);
+        setShowAddItemDialog(false);
+        // Add the new item to the line items
+        setNewLineItem({
+          item_id: data.item?.item_id || "",
+          name: quickAddItem.name,
+          description: quickAddItem.description || "",
+          quantity: 1,
+          unit: quickAddItem.unit || "pcs",
+          rate: quickAddItem.rate || 0,
+          discount_type: "percent",
+          discount_percent: 0,
+          discount_value: 0,
+          tax_percentage: quickAddItem.tax_percentage || 18,
+          hsn_code: quickAddItem.hsn_code || ""
+        });
+        // Reset and refresh items
+        setQuickAddItem({ name: "", sku: "", rate: 0, description: "", unit: "pcs", tax_percentage: 18, hsn_code: "", item_type: "product" });
+        fetchItems();
+      } else {
+        toast.error(data.detail || "Failed to create item");
+      }
+    } catch (e) { toast.error("Error creating item"); }
+  };
+
   const searchContacts = async (query) => {
     if (!query || query.length < 2) {
       setContacts([]);
