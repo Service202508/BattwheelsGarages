@@ -774,7 +774,7 @@ export default function SalesOrdersEnhanced() {
               {/* Actions */}
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={resetForm}>Reset</Button>
-                <Button onClick={handleCreateOrder} className="bg-[#22EDA9] text-black" data-testid="create-order-submit">Create Sales Order</Button>
+                <Button onClick={handleCreateOrder} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-order-submit">Create Sales Order</Button>
               </div>
             </CardContent>
           </Card>
@@ -991,7 +991,7 @@ export default function SalesOrdersEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowFulfillDialog(false)}>Cancel</Button>
-            <Button onClick={handleFulfill} className="bg-[#22EDA9] text-black">Create Fulfillment</Button>
+            <Button onClick={handleFulfill} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Fulfillment</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1015,7 +1015,7 @@ export default function SalesOrdersEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowSendDialog(false)}>Cancel</Button>
-            <Button onClick={handleSendOrder} className="bg-[#22EDA9] text-black">Send Order</Button>
+            <Button onClick={handleSendOrder} className="bg-[#C8FF00] text-[#080C0F] font-bold">Send Order</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

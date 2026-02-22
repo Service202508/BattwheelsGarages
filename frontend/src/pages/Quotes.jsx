@@ -137,7 +137,7 @@ export default function Quotes() {
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
               <Plus className="h-4 w-4 mr-2" /> New Quote
             </Button>
           </DialogTrigger>
@@ -201,7 +201,7 @@ export default function Quotes() {
                     <Input value={newLineItem.item_name} readOnly className="bg-[#111820]" />
                     <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" />
                     <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
-                    <Button onClick={handleAddLineItem} className="bg-[#22EDA9] text-black">Add</Button>
+                    <Button onClick={handleAddLineItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
                   </div>
                 )}
               </div>
@@ -236,7 +236,7 @@ export default function Quotes() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreateQuote} className="bg-[#22EDA9] text-black">Create Quote</Button>
+              <Button onClick={handleCreateQuote} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Quote</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -246,7 +246,7 @@ export default function Quotes() {
         {["", "draft", "sent", "accepted", "expired"].map(s => (
           <Button key={s} size="sm" variant={statusFilter === s ? "default" : "outline"}
             onClick={() => setStatusFilter(s)}
-            className={statusFilter === s ? "bg-[#22EDA9] text-black" : ""}>
+            className={statusFilter === s ? "bg-[#C8FF00] text-[#080C0F] font-bold" : ""}>
             {s || "All"}
           </Button>
         ))}
@@ -279,7 +279,7 @@ export default function Quotes() {
                         <Button size="sm" variant="outline" onClick={() => handleConvert(q.quote_id, 'salesorder')}>
                           <ArrowRight className="h-4 w-4 mr-1" /> SO
                         </Button>
-                        <Button size="sm" className="bg-[#22EDA9] text-black" onClick={() => handleConvert(q.quote_id, 'invoice')}>
+                        <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => handleConvert(q.quote_id, 'invoice')}>
                           <ArrowRight className="h-4 w-4 mr-1" /> Invoice
                         </Button>
                       </div>

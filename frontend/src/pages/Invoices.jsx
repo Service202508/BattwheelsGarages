@@ -209,7 +209,7 @@ export default function Invoices() {
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-invoice-btn">
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-invoice-btn">
               <Plus className="h-4 w-4 mr-2" />
               Create Invoice
             </Button>
@@ -316,7 +316,7 @@ export default function Invoices() {
                       />
                     </div>
                     <div className="flex items-end">
-                      <Button onClick={handleAddLineItem} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
+                      <Button onClick={handleAddLineItem} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
                         Add Item
                       </Button>
                     </div>
@@ -381,7 +381,7 @@ export default function Invoices() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreateInvoice} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
+              <Button onClick={handleCreateInvoice} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
                 Create Invoice
               </Button>
             </div>
@@ -399,7 +399,7 @@ export default function Invoices() {
                   <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Revenue</p>
                   <p className="text-2xl font-bold text-[#F4F6F0]">₹{analytics.revenue.total.toLocaleString('en-IN')}</p>
                 </div>
-                <IndianRupee className="h-8 w-8 text-[#22EDA9]" />
+                <IndianRupee className="h-8 w-8 text-[#C8FF00]" />
               </div>
             </CardContent>
           </Card>
@@ -445,7 +445,7 @@ export default function Invoices() {
           variant={statusFilter === "" ? "default" : "outline"}
           size="sm"
           onClick={() => setStatusFilter("")}
-          className={statusFilter === "" ? "bg-[#22EDA9] text-black hover:bg-[#1DD69A]" : ""}
+          className={statusFilter === "" ? "bg-[#C8FF00] text-[#080C0F] font-bold hover:bg-[#d4ff1a]" : ""}
         >
           All
         </Button>
@@ -455,7 +455,7 @@ export default function Invoices() {
             variant={statusFilter === status ? "default" : "outline"}
             size="sm"
             onClick={() => setStatusFilter(status)}
-            className={statusFilter === status ? "bg-[#22EDA9] text-black hover:bg-[#1DD69A]" : ""}
+            className={statusFilter === status ? "bg-[#C8FF00] text-[#080C0F] font-bold hover:bg-[#d4ff1a]" : ""}
           >
             {status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
           </Button>

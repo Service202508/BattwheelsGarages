@@ -213,7 +213,7 @@ export default function ActivityLogs() {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
             </div>
           ) : logs.length === 0 ? (
             <div className="text-center py-12 text-gray-500">

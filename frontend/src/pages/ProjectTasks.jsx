@@ -218,7 +218,7 @@ export default function ProjectTasks() {
           <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
             <DialogTrigger asChild>
               <Button 
-                className="bg-[#22EDA9] hover:bg-[#1dd699] text-black" 
+                className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold" 
                 disabled={!selectedProject}
                 data-testid="new-task-btn"
               >
@@ -279,7 +279,7 @@ export default function ProjectTasks() {
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
                 <Button 
                   onClick={editingTask ? handleUpdate : handleCreate} 
-                  className="bg-[#22EDA9] hover:bg-[#1dd699] text-black"
+                  className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold"
                   data-testid="save-task-btn"
                 >
                   {editingTask ? "Update Task" : "Create Task"}
@@ -322,7 +322,7 @@ export default function ProjectTasks() {
         <CardContent className="p-0">
           {loading || tasksLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
             </div>
           ) : !selectedProject ? (
             <div className="text-center py-12 text-gray-500">

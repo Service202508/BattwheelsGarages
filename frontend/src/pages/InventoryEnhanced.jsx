@@ -290,7 +290,7 @@ export default function InventoryEnhanced() {
             <Button variant="outline" size="sm" onClick={() => setShowSerialDialog(true)}>
               <Barcode className="h-4 w-4 mr-1" /> Serial/Batch
             </Button>
-            <Button className="bg-[#22EDA9] text-black" size="sm" onClick={() => setShowAdjustmentDialog(true)}>
+            <Button className="bg-[#C8FF00] text-[#080C0F] font-bold" size="sm" onClick={() => setShowAdjustmentDialog(true)}>
               <ArrowUpDown className="h-4 w-4 mr-1" /> Adjust Stock
             </Button>
           </div>
@@ -448,14 +448,14 @@ export default function InventoryEnhanced() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {warehouses.map(wh => (
-                <Card key={wh.warehouse_id} className={`cursor-pointer hover:shadow-md transition-shadow ${wh.is_primary ? 'border-[#22EDA9] border-2' : ''}`} onClick={() => viewDetail('warehouse', wh.warehouse_id)}>
+                <Card key={wh.warehouse_id} className={`cursor-pointer hover:shadow-md transition-shadow ${wh.is_primary ? 'border-[#C8FF00] border-2' : ''}`} onClick={() => viewDetail('warehouse', wh.warehouse_id)}>
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h3 className="font-semibold">{wh.name}</h3>
                         {wh.code && <p className="text-xs text-gray-500">{wh.code}</p>}
                       </div>
-                      {wh.is_primary && <Badge className="bg-[#22EDA9] text-black">Primary</Badge>}
+                      {wh.is_primary && <Badge className="bg-[#C8FF00] text-[#080C0F] font-bold">Primary</Badge>}
                     </div>
                     <p className="text-sm text-gray-500">{wh.city}{wh.state ? `, ${wh.state}` : ''}</p>
                   </CardContent>
@@ -572,7 +572,7 @@ export default function InventoryEnhanced() {
                           </Button>
                         )}
                         {s.status === 'shipped' && (
-                          <Button size="sm" className="bg-[#22EDA9] text-black" onClick={(e) => { e.stopPropagation(); handleShipmentAction(s.shipment_id, 'deliver'); }}>
+                          <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={(e) => { e.stopPropagation(); handleShipmentAction(s.shipment_id, 'deliver'); }}>
                             <CheckCircle className="h-4 w-4 mr-1" /> Deliver
                           </Button>
                         )}
@@ -641,7 +641,7 @@ export default function InventoryEnhanced() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowWarehouseDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateWarehouse} className="bg-[#22EDA9] text-black">Create</Button>
+            <Button onClick={handleCreateWarehouse} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -683,7 +683,7 @@ export default function InventoryEnhanced() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowVariantDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateVariant} className="bg-[#22EDA9] text-black">Create</Button>
+            <Button onClick={handleCreateVariant} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -734,7 +734,7 @@ export default function InventoryEnhanced() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowBundleDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateBundle} className="bg-[#22EDA9] text-black">Create</Button>
+            <Button onClick={handleCreateBundle} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -785,7 +785,7 @@ export default function InventoryEnhanced() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowSerialDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateSerial} className="bg-[#22EDA9] text-black">Create</Button>
+            <Button onClick={handleCreateSerial} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -833,7 +833,7 @@ export default function InventoryEnhanced() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowAdjustmentDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateAdjustment} className="bg-[#22EDA9] text-black">Apply Adjustment</Button>
+            <Button onClick={handleCreateAdjustment} className="bg-[#C8FF00] text-[#080C0F] font-bold">Apply Adjustment</Button>
           </div>
         </DialogContent>
       </Dialog>

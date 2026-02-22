@@ -141,7 +141,7 @@ export default function Bills() {
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-bill-btn">
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-bill-btn">
               <Plus className="h-4 w-4 mr-2" /> New Bill
             </Button>
           </DialogTrigger>
@@ -175,7 +175,7 @@ export default function Bills() {
                   <Input value={newLineItem.name} onChange={(e) => setNewLineItem({ ...newLineItem, name: e.target.value })} placeholder="Item name" />
                   <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" />
                   <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
-                  <Button onClick={handleAddLineItem} className="bg-[#22EDA9] text-black">Add</Button>
+                  <Button onClick={handleAddLineItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
                 </div>
               </div>
 
@@ -215,7 +215,7 @@ export default function Bills() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreateBill} className="bg-[#22EDA9] text-black">Create Bill</Button>
+              <Button onClick={handleCreateBill} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Bill</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -225,7 +225,7 @@ export default function Bills() {
         {["", "open", "partially_paid", "paid", "overdue"].map(s => (
           <Button key={s} size="sm" variant={statusFilter === s ? "default" : "outline"}
             onClick={() => setStatusFilter(s)}
-            className={statusFilter === s ? "bg-[#22EDA9] text-black" : ""}>
+            className={statusFilter === s ? "bg-[#C8FF00] text-[#080C0F] font-bold" : ""}>
             {s || "All"}
           </Button>
         ))}
@@ -255,7 +255,7 @@ export default function Bills() {
                       {bill.balance > 0 && <p className="text-xs text-[#FF8C00]">Due: ₹{bill.balance?.toLocaleString('en-IN')}</p>}
                     </div>
                     {bill.balance > 0 && (
-                      <Button size="sm" className="bg-[#22EDA9] text-black" onClick={() => { setSelectedBill(bill); setPayment({ ...payment, amount: bill.balance }); setShowPaymentDialog(true); }}>
+                      <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => { setSelectedBill(bill); setPayment({ ...payment, amount: bill.balance }); setShowPaymentDialog(true); }}>
                         <CreditCard className="h-4 w-4 mr-1" /> Pay
                       </Button>
                     )}
@@ -298,7 +298,7 @@ export default function Bills() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowPaymentDialog(false)}>Cancel</Button>
-            <Button onClick={handleRecordPayment} className="bg-[#22EDA9] text-black">Record Payment</Button>
+            <Button onClick={handleRecordPayment} className="bg-[#C8FF00] text-[#080C0F] font-bold">Record Payment</Button>
           </div>
         </DialogContent>
       </Dialog>

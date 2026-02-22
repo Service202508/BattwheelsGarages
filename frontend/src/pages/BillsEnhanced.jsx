@@ -386,7 +386,7 @@ export default function BillsEnhanced() {
             <Button variant="outline" onClick={() => setShowCreatePO(true)} data-testid="create-po-btn">
               <Truck className="h-4 w-4 mr-2" /> New PO
             </Button>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" onClick={() => setShowCreateBill(true)} data-testid="create-bill-btn">
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" onClick={() => setShowCreateBill(true)} data-testid="create-bill-btn">
               <Plus className="h-4 w-4 mr-2" /> New Bill
             </Button>
           </div>
@@ -500,7 +500,7 @@ export default function BillsEnhanced() {
                         {bill.status !== "paid" && bill.status !== "void" && bill.status !== "draft" && (
                           <Button 
                             size="sm" 
-                            className="bg-[#22EDA9] text-black"
+                            className="bg-[#C8FF00] text-[#080C0F] font-bold"
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedBill(bill);
@@ -559,7 +559,7 @@ export default function BillsEnhanced() {
                         {po.status === "issued" && (
                           <Button 
                             size="sm" 
-                            className="bg-[#22EDA9] text-black"
+                            className="bg-[#C8FF00] text-[#080C0F] font-bold"
                             onClick={(e) => { e.stopPropagation(); receivePO(po.po_id); }}
                           >
                             <CheckCircle className="h-4 w-4 mr-1" /> Receive
@@ -689,7 +689,7 @@ export default function BillsEnhanced() {
                   <Input type="number" placeholder="Qty" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) || 1 })} />
                   <Input type="number" placeholder="Rate *" value={newLineItem.rate || ""} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) || 0 })} />
                   <Input type="number" placeholder="Tax %" value={newLineItem.tax_rate} onChange={(e) => setNewLineItem({ ...newLineItem, tax_rate: parseFloat(e.target.value) || 0 })} />
-                  <Button onClick={() => handleAddLineItem("bill")} className="bg-[#22EDA9] text-black">Add</Button>
+                  <Button onClick={() => handleAddLineItem("bill")} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
                 </div>
 
                 {newBill.line_items.length > 0 && (
@@ -757,7 +757,7 @@ export default function BillsEnhanced() {
             >
               Cancel
             </Button>
-            <Button onClick={handleCreateBill} className="bg-[#22EDA9] text-black">Create Bill</Button>
+            <Button onClick={handleCreateBill} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Bill</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -835,7 +835,7 @@ export default function BillsEnhanced() {
                   <Input type="number" placeholder="Qty" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) || 1 })} />
                   <Input type="number" placeholder="Rate *" value={newLineItem.rate || ""} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) || 0 })} />
                   <Input type="number" placeholder="Tax %" value={newLineItem.tax_rate} onChange={(e) => setNewLineItem({ ...newLineItem, tax_rate: parseFloat(e.target.value) || 0 })} />
-                  <Button onClick={() => handleAddLineItem("po")} className="bg-[#22EDA9] text-black">Add</Button>
+                  <Button onClick={() => handleAddLineItem("po")} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
                 </div>
 
                 {newPO.line_items.length > 0 && (
@@ -903,7 +903,7 @@ export default function BillsEnhanced() {
             >
               Cancel
             </Button>
-            <Button onClick={handleCreatePO} className="bg-[#22EDA9] text-black">Create PO</Button>
+            <Button onClick={handleCreatePO} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create PO</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -1069,7 +1069,7 @@ export default function BillsEnhanced() {
             </div>
             <div className="flex gap-2">
               {billDetail?.balance_due > 0 && billDetail?.status !== "draft" && (
-                <Button className="bg-[#22EDA9] text-black" onClick={() => {
+                <Button className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => {
                   setSelectedBill(billDetail);
                   setPayment({ ...payment, amount: billDetail.balance_due });
                   setShowPaymentDialog(true);
@@ -1166,7 +1166,7 @@ export default function BillsEnhanced() {
                 </Button>
               )}
               {(poDetail?.status === "received" || poDetail?.status === "issued") && !poDetail?.bill_id && (
-                <Button className="bg-[#22EDA9] text-black" onClick={() => convertPOToBill(poDetail.po_id)}>
+                <Button className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => convertPOToBill(poDetail.po_id)}>
                   <Receipt className="h-4 w-4 mr-1" /> Convert to Bill
                 </Button>
               )}
@@ -1220,7 +1220,7 @@ export default function BillsEnhanced() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowPaymentDialog(false)}>Cancel</Button>
-            <Button onClick={recordPayment} className="bg-[#22EDA9] text-black">Record Payment</Button>
+            <Button onClick={recordPayment} className="bg-[#C8FF00] text-[#080C0F] font-bold">Record Payment</Button>
           </div>
         </DialogContent>
       </Dialog>

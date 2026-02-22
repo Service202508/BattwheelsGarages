@@ -86,7 +86,7 @@ export default function ChartOfAccounts() {
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-account-btn">
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-account-btn">
               <Plus className="h-4 w-4 mr-2" /> New Account
             </Button>
           </DialogTrigger>
@@ -121,7 +121,7 @@ export default function ChartOfAccounts() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreate} className="bg-[#22EDA9] text-black">Create Account</Button>
+              <Button onClick={handleCreate} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Account</Button>
             </div>
           </DialogContent>
         </Dialog>

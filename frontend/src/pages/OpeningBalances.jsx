@@ -186,7 +186,7 @@ export default function OpeningBalances() {
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-[#22EDA9] hover:bg-[#1dd699] text-black" data-testid="new-opening-balance-btn">
+              <Button className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold" data-testid="new-opening-balance-btn">
                 <Plus className="h-4 w-4 mr-2" /> Set Opening Balance
               </Button>
             </DialogTrigger>
@@ -262,7 +262,7 @@ export default function OpeningBalances() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreate} className="bg-[#22EDA9] hover:bg-[#1dd699] text-black" data-testid="save-opening-balance-btn">
+                <Button onClick={handleCreate} className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold" data-testid="save-opening-balance-btn">
                   Set Balance
                 </Button>
               </DialogFooter>
@@ -332,7 +332,7 @@ export default function OpeningBalances() {
             <CardContent className="p-0">
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
                 </div>
               ) : balances.length === 0 ? (
                 <div className="text-center py-12 text-gray-500">

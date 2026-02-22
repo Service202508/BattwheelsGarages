@@ -153,13 +153,13 @@ export default function Projects() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setShowTimeDialog(false)}>Cancel</Button>
-                <Button onClick={handleLogTime} className="bg-[#22EDA9] text-black">Log Time</Button>
+                <Button onClick={handleLogTime} className="bg-[#C8FF00] text-[#080C0F] font-bold">Log Time</Button>
               </div>
             </DialogContent>
           </Dialog>
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-project-btn">
+              <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-project-btn">
                 <Plus className="h-4 w-4 mr-2" /> New Project
               </Button>
             </DialogTrigger>
@@ -207,7 +207,7 @@ export default function Projects() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-                <Button onClick={handleCreateProject} className="bg-[#22EDA9] text-black">Create Project</Button>
+                <Button onClick={handleCreateProject} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Project</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -225,7 +225,7 @@ export default function Projects() {
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <FolderKanban className="h-5 w-5 text-[#22EDA9]" />
+                        <FolderKanban className="h-5 w-5 text-[#C8FF00]" />
                         <h3 className="font-semibold">{project.project_name}</h3>
                       </div>
                       <Badge className={statusColors[project.status]}>{project.status}</Badge>

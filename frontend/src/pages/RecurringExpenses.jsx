@@ -257,7 +257,7 @@ export default function RecurringExpenses() {
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-[#22EDA9] hover:bg-[#1dd699] text-black" data-testid="new-recurring-expense-btn">
+              <Button className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold" data-testid="new-recurring-expense-btn">
                 <Plus className="h-4 w-4 mr-2" /> New Recurring
               </Button>
             </DialogTrigger>
@@ -389,7 +389,7 @@ export default function RecurringExpenses() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreate} className="bg-[#22EDA9] hover:bg-[#1dd699] text-black" data-testid="save-recurring-btn">
+                <Button onClick={handleCreate} className="bg-[#C8FF00] hover:bg-[#1dd699] text-[#080C0F] font-bold" data-testid="save-recurring-btn">
                   Create Recurring
                 </Button>
               </DialogFooter>
@@ -402,7 +402,7 @@ export default function RecurringExpenses() {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
             </div>
           ) : expenses.length === 0 ? (
             <div className="text-center py-12 text-gray-500">

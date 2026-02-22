@@ -208,7 +208,7 @@ const EmptyState = React.forwardRef(({
       {actionLabel && onAction && (
         <Button 
           onClick={onAction} 
-          className="bg-[#22EDA9] text-[#F4F6F0] hover:bg-[#1DD69A] font-semibold"
+          className="bg-[#C8FF00] text-[#F4F6F0] hover:bg-[#d4ff1a] font-semibold"
         >
           {ActionIcon && <ActionIcon className="h-4 w-4 mr-2" />}
           {actionLabel}

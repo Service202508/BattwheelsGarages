@@ -1817,7 +1817,7 @@ export default function EstimatesEnhanced() {
               {/* Actions */}
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={resetForm}>Reset</Button>
-                <Button onClick={handleCreateEstimate} className="bg-[#22EDA9] text-black" data-testid="create-estimate-submit">Create Estimate</Button>
+                <Button onClick={handleCreateEstimate} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-estimate-submit">Create Estimate</Button>
               </div>
             </CardContent>
           </Card>
@@ -2069,7 +2069,7 @@ export default function EstimatesEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowSendDialog(false)}>Cancel</Button>
-            <Button onClick={handleSendEstimate} className="bg-[#22EDA9] text-black">Send Estimate</Button>
+            <Button onClick={handleSendEstimate} className="bg-[#C8FF00] text-[#080C0F] font-bold">Send Estimate</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2137,7 +2137,7 @@ export default function EstimatesEnhanced() {
                 <Button 
                   onClick={handleCreateShareLink} 
                   disabled={shareLoading}
-                  className="w-full bg-[#22EDA9] text-black"
+                  className="w-full bg-[#C8FF00] text-[#080C0F] font-bold"
                   data-testid="generate-share-link-btn"
                 >
                   {shareLoading ? "Generating..." : "Generate Share Link"}
@@ -2345,7 +2345,7 @@ export default function EstimatesEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPreferencesDialog(false)}>Cancel</Button>
-            <Button onClick={handleSavePreferences} className="bg-[#22EDA9] text-black">Save Preferences</Button>
+            <Button onClick={handleSavePreferences} className="bg-[#C8FF00] text-[#080C0F] font-bold">Save Preferences</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2382,7 +2382,7 @@ export default function EstimatesEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setShowImportDialog(false); setImportFile(null); }}>Cancel</Button>
-            <Button onClick={handleImport} disabled={!importFile || importing} className="bg-[#22EDA9] text-black">
+            <Button onClick={handleImport} disabled={!importFile || importing} className="bg-[#C8FF00] text-[#080C0F] font-bold">
               {importing ? "Importing..." : "Import"}
             </Button>
           </DialogFooter>
@@ -2427,7 +2427,7 @@ export default function EstimatesEnhanced() {
             <Button 
               onClick={handleBulkAction} 
               disabled={!bulkAction}
-              className={bulkAction === "delete" || bulkAction === "void" ? "bg-red-600 hover:bg-red-700" : "bg-[#22EDA9] text-black"}
+              className={bulkAction === "delete" || bulkAction === "void" ? "bg-red-600 hover:bg-red-700" : "bg-[#C8FF00] text-[#080C0F] font-bold"}
             >
               Apply to {selectedIds.length} Estimates
             </Button>
@@ -2521,7 +2521,7 @@ export default function EstimatesEnhanced() {
                   Show in PDF
                 </label>
               </div>
-              <Button onClick={handleAddCustomField} className="w-full bg-[#22EDA9] text-black">
+              <Button onClick={handleAddCustomField} className="w-full bg-[#C8FF00] text-[#080C0F] font-bold">
                 <Plus className="h-4 w-4 mr-2" /> Add Field
               </Button>
             </div>
@@ -2542,7 +2542,7 @@ export default function EstimatesEnhanced() {
                 key={template.id}
                 className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                   selectedTemplate === template.id 
-                    ? 'border-[#22EDA9] bg-[rgba(34,197,94,0.08)]' 
+                    ? 'border-[#C8FF00] bg-[rgba(34,197,94,0.08)]' 
                     : 'border-[rgba(255,255,255,0.07)] hover:border-[rgba(255,255,255,0.13)]'
                 }`}
                 onClick={() => setSelectedTemplate(template.id)}
@@ -2568,7 +2568,7 @@ export default function EstimatesEnhanced() {
                   handleDownloadWithTemplate(selectedEstimate.estimate_id, selectedTemplate);
                   setShowTemplateDialog(false);
                 }}
-                className="bg-[#22EDA9] text-black"
+                className="bg-[#C8FF00] text-[#080C0F] font-bold"
               >
                 <Download className="h-4 w-4 mr-2" /> Download with {selectedTemplate}
               </Button>
@@ -2877,7 +2877,7 @@ export default function EstimatesEnhanced() {
           
           <DialogFooter className="flex-shrink-0 border-t pt-4 mt-4">
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
-            <Button onClick={handleUpdateEstimate} className="bg-[#22EDA9] text-black" data-testid="save-estimate-btn">Save Changes</Button>
+            <Button onClick={handleUpdateEstimate} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="save-estimate-btn">Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2984,7 +2984,7 @@ export default function EstimatesEnhanced() {
               setShowAddItemDialog(false);
               setQuickAddItem({ name: newLineItem.name || "", sku: "", rate: 0, description: "", unit: "pcs", tax_percentage: 18, hsn_code: "", item_type: "product" });
             }}>Cancel</Button>
-            <Button onClick={handleQuickAddItem} className="bg-[#22EDA9] text-black">
+            <Button onClick={handleQuickAddItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">
               <Plus className="h-4 w-4 mr-2" /> Create & Add
             </Button>
           </DialogFooter>

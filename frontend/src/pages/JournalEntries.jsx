@@ -82,7 +82,7 @@ export default function JournalEntries() {
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-journal-btn">
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-journal-btn">
               <Plus className="h-4 w-4 mr-2" /> New Journal Entry
             </Button>
           </DialogTrigger>
@@ -116,7 +116,7 @@ export default function JournalEntries() {
                   </div>
                   <Input type="number" value={newLine.debit || ""} onChange={(e) => setNewLine({ ...newLine, debit: parseFloat(e.target.value) || 0 })} placeholder="Debit" />
                   <Input type="number" value={newLine.credit || ""} onChange={(e) => setNewLine({ ...newLine, credit: parseFloat(e.target.value) || 0 })} placeholder="Credit" />
-                  <Button onClick={handleAddLine} className="bg-[#22EDA9] text-black">Add</Button>
+                  <Button onClick={handleAddLine} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
                 </div>
               </div>
 
@@ -161,7 +161,7 @@ export default function JournalEntries() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreate} className="bg-[#22EDA9] text-black" disabled={!isBalanced}>Create Entry</Button>
+              <Button onClick={handleCreate} className="bg-[#C8FF00] text-[#080C0F] font-bold" disabled={!isBalanced}>Create Entry</Button>
             </div>
           </DialogContent>
         </Dialog>

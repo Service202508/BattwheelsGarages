@@ -172,7 +172,7 @@ export default function PurchaseOrders() {
               }
             }}>
               <DialogTrigger asChild>
-                <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
+                <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
                   <Plus className="h-4 w-4 mr-2" /> New Purchase Order
                 </Button>
               </DialogTrigger>
@@ -235,7 +235,7 @@ export default function PurchaseOrders() {
                         <Input value={newLineItem.item_name} readOnly className="bg-[#111820]" />
                         <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" />
                         <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
-                        <Button onClick={handleAddLineItem} className="bg-[#22EDA9] text-black">Add</Button>
+                        <Button onClick={handleAddLineItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
                       </div>
                     )}
                   </div>
@@ -276,7 +276,7 @@ export default function PurchaseOrders() {
                       setShowCreateDialog(false);
                     }
                   }}>Cancel</Button>
-                  <Button onClick={handleCreatePO} className="bg-[#22EDA9] text-black">
+                  <Button onClick={handleCreatePO} className="bg-[#C8FF00] text-[#080C0F] font-bold">
                     <Save className="h-4 w-4 mr-2" /> Create PO
                   </Button>
                 </div>
@@ -340,7 +340,7 @@ export default function PurchaseOrders() {
         {["", "draft", "issued", "partially_billed", "billed"].map(s => (
           <Button key={s} size="sm" variant={statusFilter === s ? "default" : "outline"}
             onClick={() => setStatusFilter(s)}
-            className={statusFilter === s ? "bg-[#22EDA9] text-black" : ""}>
+            className={statusFilter === s ? "bg-[#C8FF00] text-[#080C0F] font-bold" : ""}>
             {s ? s.replace('_', ' ') : "All"}
           </Button>
         ))}
@@ -380,7 +380,7 @@ export default function PurchaseOrders() {
                       <p className="font-bold text-lg">₹{po.total?.toLocaleString('en-IN')}</p>
                     </div>
                     {po.status === "draft" && (
-                      <Button size="sm" className="bg-[#22EDA9] text-black" onClick={() => handleConvertToBill(po.po_id)}>
+                      <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => handleConvertToBill(po.po_id)}>
                         <ArrowRight className="h-4 w-4 mr-1" /> Create Bill
                       </Button>
                     )}
