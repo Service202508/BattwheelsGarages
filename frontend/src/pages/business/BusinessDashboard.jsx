@@ -108,7 +108,7 @@ export default function BusinessDashboard({ user }) {
           </p>
         </div>
         <Link to="/business/tickets/new">
-          <Button className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30">
+          <Button className="bg-indigo-600 hover:bg-indigo-700 hover:shadow-[0_0_20px_rgba(99,102,241,0.30)]">
             <Plus className="h-4 w-4 mr-2" />
             Raise Service Ticket
           </Button>
@@ -117,7 +117,7 @@ export default function BusinessDashboard({ user }) {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -125,14 +125,14 @@ export default function BusinessDashboard({ user }) {
                 <p className="text-3xl font-bold text-slate-900 mt-2">{dashboard?.fleet?.total_vehicles || 0}</p>
                 <p className="text-xs text-slate-400 mt-1">{dashboard?.fleet?.active_services || 0} in service</p>
               </div>
-              <div className="p-3 rounded-xl bg-indigo-50">
+              <div className="p-3 rounded bg-indigo-50">
                 <Car className="h-6 w-6 text-indigo-600" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -140,14 +140,14 @@ export default function BusinessDashboard({ user }) {
                 <p className="text-3xl font-bold text-slate-900 mt-2">{dashboard?.tickets?.open || 0}</p>
                 <p className="text-xs text-slate-400 mt-1">{dashboard?.tickets?.in_progress || 0} in progress</p>
               </div>
-              <div className="p-3 rounded-xl bg-amber-50">
+              <div className="p-3 rounded bg-amber-50">
                 <Ticket className="h-6 w-6 text-amber-600" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -155,14 +155,14 @@ export default function BusinessDashboard({ user }) {
                 <p className="text-3xl font-bold text-slate-900 mt-2">{dashboard?.tickets?.pending_estimate_approval || 0}</p>
                 <p className="text-xs text-slate-400 mt-1">estimates waiting</p>
               </div>
-              <div className="p-3 rounded-xl bg-[rgba(139,92,246,0.08)]">
+              <div className="p-3 rounded bg-[rgba(139,92,246,0.08)]">
                 <FileText className="h-6 w-6 text-purple-600" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -172,7 +172,7 @@ export default function BusinessDashboard({ user }) {
                 </p>
                 <p className="text-xs text-slate-400 mt-1">to be paid</p>
               </div>
-              <div className="p-3 rounded-xl bg-[rgba(255,59,47,0.08)]">
+              <div className="p-3 rounded bg-[rgba(255,59,47,0.08)]">
                 <CreditCard className="h-6 w-6 text-red-600" />
               </div>
             </div>
