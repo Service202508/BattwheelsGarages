@@ -249,7 +249,17 @@ export default function LeaveManagement({ user }) {
           <h1 className="text-3xl font-bold tracking-tight">Leave Management</h1>
           <p className="text-muted-foreground">Apply for leaves and track your balance.</p>
         </div>
-        <Dialog open={isApplyOpen} onOpenChange={setIsApplyOpen}>
+        <Dialog 
+          open={isApplyOpen} 
+          onOpenChange={(open) => {
+            if (!open && leavePersistence.isDirty) {
+              leavePersistence.setShowCloseConfirm(true);
+            } else {
+              if (!open) leavePersistence.clearSavedData();
+              setIsApplyOpen(open);
+            }
+          }}
+        >
           <DialogTrigger asChild>
             <Button data-testid="apply-leave-btn">
               <Plus className="mr-2 h-4 w-4" />
@@ -258,8 +268,23 @@ export default function LeaveManagement({ user }) {
           </DialogTrigger>
           <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Apply for Leave</DialogTitle>
+              <div className="flex items-center justify-between">
+                <DialogTitle>Apply for Leave</DialogTitle>
+                <AutoSaveIndicator 
+                  lastSaved={leavePersistence.lastSaved} 
+                  isSaving={leavePersistence.isSaving} 
+                  isDirty={leavePersistence.isDirty} 
+                />
+              </div>
             </DialogHeader>
+            
+            <DraftRecoveryBanner
+              show={leavePersistence.showRecoveryBanner}
+              savedAt={leavePersistence.savedDraftInfo?.timestamp}
+              onRestore={leavePersistence.handleRestoreDraft}
+              onDiscard={leavePersistence.handleDiscardDraft}
+            />
+            
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label>Leave Type</Label>
@@ -311,7 +336,18 @@ export default function LeaveManagement({ user }) {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsApplyOpen(false)}>Cancel</Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  if (leavePersistence.isDirty) {
+                    leavePersistence.setShowCloseConfirm(true);
+                  } else {
+                    setIsApplyOpen(false);
+                  }
+                }}
+              >
+                Cancel
+              </Button>
               <Button onClick={handleApplyLeave}>Submit Request</Button>
             </DialogFooter>
           </DialogContent>
