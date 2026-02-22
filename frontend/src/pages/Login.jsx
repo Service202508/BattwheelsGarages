@@ -302,10 +302,6 @@ const PremiumButton = ({ children, onClick, type, disabled, variant = "primary",
     </button>
   );
 };
-      </span>
-    </button>
-  );
-};
 
 export default function Login({ onLogin }) {
   const navigate = useNavigate();
