@@ -428,11 +428,21 @@ async def create_business_ticket(request: Request, data: BusinessTicketCreate):
     if not vehicle:
         raise HTTPException(status_code=400, detail="Vehicle not found in your fleet")
     
+    # Get organization_id from business or default org
+    organization_id = business.get("organization_id")
+    if not organization_id:
+        default_org = await db.organizations.find_one(
+            {"$or": [{"is_default": True}, {"slug": "battwheels-default"}]},
+            {"_id": 0, "organization_id": 1}
+        )
+        organization_id = default_org.get("organization_id") if default_org else None
+    
     now = datetime.now(timezone.utc)
     ticket_id = f"tkt_{uuid.uuid4().hex[:12]}"
     
     ticket_doc = {
         "ticket_id": ticket_id,
+        "organization_id": organization_id,  # Link to organization
         "title": data.title,
         "description": data.description,
         "category": data.issue_type,
