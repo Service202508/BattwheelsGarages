@@ -1157,7 +1157,7 @@ export default function EstimatesEnhanced() {
             variant="outline" 
             size="sm" 
             onClick={() => handleExport("csv")}
-            className="gap-2"
+            className="gap-2 bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"
             data-testid="export-csv-btn"
           >
             <FileDown className="h-4 w-4" /> Export CSV
@@ -1166,7 +1166,7 @@ export default function EstimatesEnhanced() {
             variant="outline" 
             size="sm" 
             onClick={() => setShowImportDialog(true)}
-            className="gap-2"
+            className="gap-2 bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"
             data-testid="import-btn"
           >
             <FileUp className="h-4 w-4" /> Import
@@ -1176,7 +1176,7 @@ export default function EstimatesEnhanced() {
               variant="outline" 
               size="sm" 
               onClick={() => setShowBulkActionDialog(true)}
-              className="gap-2 border-blue-300 text-blue-700"
+              className="gap-2 bg-[rgba(59,158,255,0.08)] border-[rgba(59,158,255,0.25)] text-[#3B9EFF] hover:bg-[rgba(59,158,255,0.15)]"
               data-testid="bulk-action-btn"
             >
               <ListChecks className="h-4 w-4" /> Bulk Actions ({selectedIds.length})
@@ -1188,7 +1188,7 @@ export default function EstimatesEnhanced() {
             variant="outline" 
             size="sm" 
             onClick={() => { fetchCustomFields(); setShowCustomFieldsDialog(true); }}
-            className="gap-2"
+            className="gap-2 bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"
             data-testid="custom-fields-btn"
           >
             <Edit className="h-4 w-4" /> Custom Fields
@@ -1197,7 +1197,7 @@ export default function EstimatesEnhanced() {
             variant="outline" 
             size="sm" 
             onClick={() => { fetchPdfTemplates(); setShowTemplateDialog(true); }}
-            className="gap-2"
+            className="gap-2 bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"
             data-testid="templates-btn"
           >
             <LayoutTemplate className="h-4 w-4" /> Templates
