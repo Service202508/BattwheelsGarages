@@ -477,7 +477,7 @@ export default function PublicTicketForm() {
                 
                 <AnimatePresence>
                   {showAiSuggestions && aiSuggestions.length > 0 && (
-                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute z-50 w-full mt-2 bg-[#111820] border-2 border-[rgba(200,255,0,0.20)] rounded-xl shadow-2xl shadow-emerald-500/10 overflow-hidden">
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute z-50 w-full mt-2 bg-[#111820] border-2 border-[rgba(200,255,0,0.20)] rounded border border-[rgba(255,255,255,0.13)] overflow-hidden">
                       <div className="px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center gap-2">
                         <Brain className="w-4 h-4 text-white" />
                         <span className="text-sm font-semibold text-white">AI Suggestions</span>
@@ -498,7 +498,7 @@ export default function PublicTicketForm() {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">Detailed Description <span className="text-[#C8FF00] text-500">*</span></Label>
-                <Textarea placeholder="Describe symptoms, when it started, error codes..." value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} className="min-h-[120px] bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded-xl text-[#F4F6F0] placeholder:text-gray-400 resize-none" data-testid="description-input" />
+                <Textarea placeholder="Describe symptoms, when it started, error codes..." value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} className="min-h-[120px] bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded text-[#F4F6F0] placeholder:text-gray-400 resize-none" data-testid="description-input" />
               </div>
 
               {/* Priority */}
@@ -509,7 +509,7 @@ export default function PublicTicketForm() {
                     const isSelected = formData.priority === p.value;
                     return (
                       <motion.button key={p.value} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setFormData(prev => ({ ...prev, priority: p.value }))}
-                        className={`px-4 py-2.5 rounded-xl border-2 transition-all duration-200 ${isSelected ? `${p.activeBg} text-white border-transparent shadow-lg` : `${p.bgColor} ${p.textColor} ${p.borderColor}`}`}
+                        className={`px-4 py-2.5 rounded border-2 transition-all duration-200 ${isSelected ? `${p.activeBg} text-white border-transparent` : `${p.bgColor} ${p.textColor} ${p.borderColor}`}`}
                         data-testid={`priority-${p.value}`}>
                         <span className="text-sm font-semibold">{p.label}</span>
                       </motion.button>
@@ -529,7 +529,7 @@ export default function PublicTicketForm() {
                 const isSelected = formData.resolution_type === r.value;
                 return (
                   <motion.button key={r.value} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setFormData(prev => ({ ...prev, resolution_type: r.value }))}
-                    className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${isSelected ? "border-[rgba(200,255,0,0.50)] bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg shadow-emerald-500/10" : "border-gray-200 bg-[#111820] hover:border-gray-300"}`}
+                    className={`p-4 rounded border-2 transition-all duration-200 text-left ${isSelected ? "border-[rgba(200,255,0,0.50)] bg-gradient-to-br from-emerald-50 to-teal-50" : "border-gray-200 bg-[#111820] hover:border-gray-300"}`}
                     data-testid={`resolution-${r.value}`}>
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 ${isSelected ? "bg-gradient-to-br from-emerald-500 to-teal-500" : "bg-[rgba(255,255,255,0.05)]"}`}>
                       <Icon className={`w-5 h-5 ${isSelected ? "text-white" : "text-gray-500"}`} strokeWidth={2} />
