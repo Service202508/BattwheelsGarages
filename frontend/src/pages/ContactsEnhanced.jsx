@@ -1091,49 +1091,49 @@ export default function ContactsEnhanced() {
 
       {/* Add Address Dialog */}
       <Dialog open={showAddressDialog} onOpenChange={setShowAddressDialog}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Add Address</DialogTitle></DialogHeader>
+        <DialogContent className="bg-[#111820] border-[rgba(255,255,255,0.13)]">
+          <DialogHeader><DialogTitle className="text-[#F4F6F0] font-bold">Add Address</DialogTitle></DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Address Type *</Label>
+                <Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">Address Type *</Label>
                 <Select value={newAddress.address_type} onValueChange={(v) => setNewAddress({ ...newAddress, address_type: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="billing">Billing</SelectItem>
-                    <SelectItem value="shipping">Shipping</SelectItem>
+                  <SelectTrigger className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0]"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-[#111820] border-[rgba(255,255,255,0.1)]">
+                    <SelectItem value="billing" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Billing</SelectItem>
+                    <SelectItem value="shipping" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Shipping</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div><Label>Attention</Label><Input value={newAddress.attention} onChange={(e) => setNewAddress({ ...newAddress, attention: e.target.value })} placeholder="Attn: Name" /></div>
+              <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">Attention</Label><Input value={newAddress.attention} onChange={(e) => setNewAddress({ ...newAddress, attention: e.target.value })} placeholder="Attn: Name" className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.20)] focus:border-[#C8FF00]" /></div>
             </div>
-            <div><Label>Street Address</Label><Input value={newAddress.street} onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })} placeholder="Street line 1" /></div>
-            <div><Label>Street Address 2</Label><Input value={newAddress.street2} onChange={(e) => setNewAddress({ ...newAddress, street2: e.target.value })} placeholder="Street line 2 (optional)" /></div>
+            <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">Street Address</Label><Input value={newAddress.street} onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })} placeholder="Street line 1" className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.20)] focus:border-[#C8FF00]" /></div>
+            <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">Street Address 2</Label><Input value={newAddress.street2} onChange={(e) => setNewAddress({ ...newAddress, street2: e.target.value })} placeholder="Street line 2 (optional)" className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.20)] focus:border-[#C8FF00]" /></div>
             <div className="grid grid-cols-3 gap-4">
-              <div><Label>City</Label><Input value={newAddress.city} onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })} /></div>
+              <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">City</Label><Input value={newAddress.city} onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })} className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] focus:border-[#C8FF00]" /></div>
               <div>
-                <Label>State</Label>
+                <Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">State</Label>
                 <Select value={newAddress.state_code || "none"} onValueChange={(v) => {
                   const stateName = states.find(s => s.code === v)?.name || "";
                   setNewAddress({ ...newAddress, state_code: v === "none" ? "" : v, state: stateName });
                 }}>
-                  <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Select State</SelectItem>
-                    {states.map(s => <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>)}
+                  <SelectTrigger className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0]"><SelectValue placeholder="Select" /></SelectTrigger>
+                  <SelectContent className="bg-[#111820] border-[rgba(255,255,255,0.1)]">
+                    <SelectItem value="none" className="text-[rgba(244,246,240,0.45)]">Select State</SelectItem>
+                    {states.map(s => <SelectItem key={s.code} value={s.code} className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">{s.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
-              <div><Label>ZIP Code</Label><Input value={newAddress.zip_code} onChange={(e) => setNewAddress({ ...newAddress, zip_code: e.target.value })} /></div>
+              <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">ZIP Code</Label><Input value={newAddress.zip_code} onChange={(e) => setNewAddress({ ...newAddress, zip_code: e.target.value })} className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] focus:border-[#C8FF00]" /></div>
             </div>
             <div className="flex items-center gap-2">
               <Switch checked={newAddress.is_default} onCheckedChange={(checked) => setNewAddress({ ...newAddress, is_default: checked })} />
-              <Label>Set as default {newAddress.address_type} address</Label>
+              <Label className="text-[#F4F6F0]">Set as default {newAddress.address_type} address</Label>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddressDialog(false)}>Cancel</Button>
-            <Button onClick={handleAddAddress} className="bg-[#22EDA9] text-black">Add Address</Button>
+          <DialogFooter className="border-t border-[rgba(255,255,255,0.07)] pt-4">
+            <Button variant="outline" onClick={() => setShowAddressDialog(false)} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]">Cancel</Button>
+            <Button onClick={handleAddAddress} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">Add Address</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
