@@ -494,7 +494,17 @@ export default function ContactsEnhanced() {
                 </SelectContent>
               </Select>
             </div>
-            <Dialog open={showContactDialog} onOpenChange={(open) => { setShowContactDialog(open); if (!open) resetContactForm(); }}>
+            <Dialog open={showContactDialog} onOpenChange={(open) => {
+              if (!open && contactPersistence.isDirty) {
+                contactPersistence.setShowCloseConfirm(true);
+              } else {
+                setShowContactDialog(open);
+                if (!open) {
+                  contactPersistence.clearSavedData();
+                  resetContactForm();
+                }
+              }
+            }}>
               <DialogTrigger asChild>
                 <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-contact-btn">
                   <Plus className="h-4 w-4" /> New Contact
@@ -502,10 +512,27 @@ export default function ContactsEnhanced() {
               </DialogTrigger>
               <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>Create Contact</DialogTitle>
-                  <DialogDescription>Add a new customer, vendor, or both</DialogDescription>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <DialogTitle>Create Contact</DialogTitle>
+                      <DialogDescription>Add a new customer, vendor, or both</DialogDescription>
+                    </div>
+                    <AutoSaveIndicator 
+                      lastSaved={contactPersistence.lastSaved} 
+                      isSaving={contactPersistence.isSaving} 
+                      isDirty={contactPersistence.isDirty} 
+                    />
+                  </div>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
+                  {/* Draft Recovery Banner */}
+                  <DraftRecoveryBanner
+                    show={contactPersistence.showRecoveryBanner}
+                    savedAt={contactPersistence.savedDraftInfo?.timestamp}
+                    onRestore={contactPersistence.handleRestoreDraft}
+                    onDiscard={contactPersistence.handleDiscardDraft}
+                  />
+                  
                   {/* Basic Info */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
