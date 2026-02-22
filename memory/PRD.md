@@ -254,9 +254,9 @@ The Public Ticket Form (`/submit-ticket`) was redesigned from a rejected dark th
 3. **Real-time Sync:** Tickets submitted via public form are stored in the same `tickets` collection used by the admin panel - instant sync
 
 **Public URL for Domain Mapping:**
-- **Service Request Form:** `https://multi-tenant-app-19.preview.emergentagent.com/submit-ticket`
-- **Ticket Tracking:** `https://multi-tenant-app-19.preview.emergentagent.com/track-ticket`
-- **Admin Panel:** `https://multi-tenant-app-19.preview.emergentagent.com/login`
+- **Service Request Form:** `https://unsaved-changes-2.preview.emergentagent.com/submit-ticket`
+- **Ticket Tracking:** `https://unsaved-changes-2.preview.emergentagent.com/track-ticket`
+- **Admin Panel:** `https://unsaved-changes-2.preview.emergentagent.com/login`
 
 ---
 
