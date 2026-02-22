@@ -83,20 +83,49 @@ def is_razorpay_configured(config: Dict = None) -> bool:
 
 
 async def get_org_id_from_request(request: Request) -> str:
-    """Extract organization ID from request"""
+    """Extract organization ID from request - JWT, header, or cookie"""
+    db = get_db()
+    
+    # Priority 1: X-Organization-ID header
     org_id = request.headers.get("X-Organization-ID")
+    
+    # Priority 2: Extract from JWT token
     if not org_id:
-        db = get_db()
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            try:
+                payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+                org_id = payload.get("org_id")
+                
+                # If no org_id in token, look up user's membership
+                if not org_id:
+                    user_id = payload.get("user_id")
+                    if user_id:
+                        membership = await db.organization_users.find_one(
+                            {"user_id": user_id, "status": "active"},
+                            {"organization_id": 1, "_id": 0}
+                        )
+                        if membership:
+                            org_id = membership.get("organization_id")
+            except jwt.ExpiredSignatureError:
+                pass
+            except jwt.InvalidTokenError:
+                pass
+    
+    # Priority 3: Session cookie fallback
+    if not org_id:
         session_token = request.cookies.get("session_token")
         if session_token:
             session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
             if session:
                 membership = await db.organization_users.find_one(
                     {"user_id": session["user_id"], "status": "active"},
-                    {"organization_id": 1}
+                    {"organization_id": 1, "_id": 0}
                 )
                 if membership:
-                    org_id = membership["organization_id"]
+                    org_id = membership.get("organization_id")
+    
     return org_id or ""
 
 
