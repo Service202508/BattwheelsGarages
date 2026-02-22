@@ -5,6 +5,11 @@
 
 ---
 
+## Design Philosophy
+**Dark-First Enterprise Platform** - Battwheels OS uses a single, excellent dark volt theme. No light mode toggle. This eliminates doubled design maintenance, ensures a consistent premium experience, and establishes clear product identity.
+
+---
+
 ## Session 101 Updates (Feb 22, 2026)
 
 ### Targeted Visual Fixes for Dark Volt Theme ✅
@@ -38,9 +43,16 @@ Completed the remaining 5 visual fixes to polish the dark volt theme:
    - Already implemented in Layout.jsx with `border-l-2 border-[#C8FF00]`
    - Verified working correctly
 
+### KPI Card Hover Effect ✅
+Added subtle hover interaction to ServiceMetricCard:
+- Border color: `rgba(200,255,0,0.20)`
+- Background: `#141E27`
+- Top reveal line: gradient from `#C8FF00` to `#1AFFE4`, scales from left
+- Transitions: `background 0.2s ease, border-color 0.2s ease`, reveal line `0.4s cubic-bezier(0.4,0,0.2,1)`
+- No transform, lift, or scale effects
+
 **Files Modified:**
-- `/app/frontend/src/pages/Dashboard.jsx` - Full dark volt conversion
-- `/app/frontend/src/components/ai/AIDiagnosticAssistant.jsx` - Full dark volt conversion
+- `/app/frontend/src/pages/Dashboard.jsx` - Full dark volt conversion + hover effect
 
 ---
 
