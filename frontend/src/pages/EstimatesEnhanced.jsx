@@ -2873,7 +2873,7 @@ export default function EstimatesEnhanced() {
             </div>
           )}
           
-          <DialogFooter>
+          <DialogFooter className="flex-shrink-0 border-t pt-4 mt-4">
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
             <Button onClick={handleUpdateEstimate} className="bg-[#22EDA9] text-black" data-testid="save-estimate-btn">Save Changes</Button>
           </DialogFooter>
