@@ -19,7 +19,7 @@ import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
   pending: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  approved: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+  approved: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-emerald-500/30",
   rejected: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400 border-red-500/30",
 };
 
@@ -201,7 +201,7 @@ export default function TechnicianLeave({ user }) {
         <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800 hover:border-purple-500/30 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-purple-500/10">
+              <div className="p-2 rounded-lg bg-[rgba(139,92,246,0.08)]0/10">
                 <Plane className="h-5 w-5 text-purple-400" />
               </div>
               <Badge variant="outline" className="text-xs text-slate-400">Total Used</Badge>

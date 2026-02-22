@@ -16,7 +16,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  active: "bg-emerald-100 text-emerald-700",
+  active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
   inactive: "bg-slate-100 text-slate-600",
   in_service: "bg-amber-100 text-amber-700",
 };
@@ -218,10 +218,10 @@ export default function BusinessFleet({ user }) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500">Active</p>
-                <p className="text-2xl font-bold text-emerald-600">{stats.active}</p>
+                <p className="text-2xl font-bold text-[#C8FF00] text-600">{stats.active}</p>
               </div>
-              <div className="p-3 rounded-xl bg-emerald-50">
-                <CheckCircle className="h-5 w-5 text-emerald-600" />
+              <div className="p-3 rounded-xl bg-[rgba(200,255,0,0.08)]">
+                <CheckCircle className="h-5 w-5 text-[#C8FF00] text-600" />
               </div>
             </div>
           </CardContent>

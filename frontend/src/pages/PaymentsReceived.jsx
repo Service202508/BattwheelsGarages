@@ -983,7 +983,7 @@ export default function PaymentsReceived() {
 
             {/* Retainer Option */}
             {paymentForm.allocations.length === 0 && paymentForm.amount > 0 && (
-              <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-lg">
+              <div className="flex items-center gap-2 p-3 bg-[rgba(139,92,246,0.08)] rounded-lg">
                 <Checkbox
                   id="is_retainer"
                   checked={paymentForm.is_retainer}

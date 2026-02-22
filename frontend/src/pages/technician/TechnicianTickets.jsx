@@ -19,11 +19,11 @@ import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
   open: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  assigned: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  technician_assigned: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+  assigned: "bg-[rgba(139,92,246,0.08)]0/20 text-purple-400 border-purple-500/30",
+  technician_assigned: "bg-[rgba(139,92,246,0.08)]0/20 text-purple-400 border-purple-500/30",
   work_in_progress: "bg-[rgba(255,140,0,0.08)]0/20 text-orange-400 border-orange-500/30",
   estimate_sent: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
-  estimate_approved: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+  estimate_approved: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-emerald-500/30",
   work_completed: "bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30",
   closed: "bg-slate-500/20 text-slate-400 border-[rgba(255,255,255,0.07)] border-500/30",
   resolved: "bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30",

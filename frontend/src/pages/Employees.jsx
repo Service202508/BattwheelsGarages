@@ -30,10 +30,10 @@ const statusColors = {
 };
 
 const roleColors = {
-  admin: "bg-purple-500/20 text-purple-400",
+  admin: "bg-[rgba(139,92,246,0.08)]0/20 text-purple-400",
   manager: "bg-blue-500/20 text-blue-400",
   technician: "bg-cyan-500/20 text-cyan-400",
-  accountant: "bg-emerald-500/20 text-emerald-400",
+  accountant: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400",
   customer_support: "bg-pink-500/20 text-pink-400"
 };
 

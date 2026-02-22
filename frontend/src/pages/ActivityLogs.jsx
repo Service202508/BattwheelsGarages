@@ -22,7 +22,7 @@ const ENTITY_TYPES = {
   customer: { label: "Customer", color: "bg-green-100 text-green-800", icon: User },
   vendor: { label: "Vendor", color: "bg-yellow-100 text-yellow-800", icon: User },
   item: { label: "Item", color: "bg-purple-100 text-purple-800", icon: FileText },
-  payment: { label: "Payment", color: "bg-emerald-100 text-emerald-800", icon: FileText },
+  payment: { label: "Payment", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-800", icon: FileText },
   project: { label: "Project", color: "bg-indigo-100 text-indigo-800", icon: FileText },
   estimate: { label: "Estimate", color: "bg-cyan-100 text-cyan-800", icon: FileText },
   creditnote: { label: "Credit Note", color: "bg-pink-100 text-pink-800", icon: FileText },
@@ -36,7 +36,7 @@ const ACTION_TYPES = {
   deleted: { label: "Deleted", color: "bg-red-100 text-red-700", icon: Trash2 },
   viewed: { label: "Viewed", color: "bg-gray-100 text-gray-700", icon: Eye },
   sent: { label: "Sent", color: "bg-purple-100 text-purple-700", icon: FileText },
-  paid: { label: "Paid", color: "bg-emerald-100 text-emerald-700", icon: FileText },
+  paid: { label: "Paid", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700", icon: FileText },
   approved: { label: "Approved", color: "bg-green-100 text-green-700", icon: FileText },
   voided: { label: "Voided", color: "bg-red-100 text-red-700", icon: FileText }
 };

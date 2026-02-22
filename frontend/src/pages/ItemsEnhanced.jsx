@@ -1354,7 +1354,7 @@ export default function ItemsEnhanced() {
                         <p className="text-gray-500 text-xs">Total Value</p>
                         <p className="font-bold text-blue-700">₹{(valuationReport.summary?.total_stock_value || 0).toLocaleString('en-IN')}</p>
                       </div>
-                      <div className="bg-purple-50 rounded p-2">
+                      <div className="bg-[rgba(139,92,246,0.08)] rounded p-2">
                         <p className="text-gray-500 text-xs">Method</p>
                         <p className="font-bold text-purple-700">{valuationReport.valuation_method || 'FIFO'}</p>
                       </div>

@@ -301,16 +301,16 @@ export default function CompositeItems() {
               <p className="text-2xl font-bold text-blue-700">{summary.kits}</p>
             </CardContent>
           </Card>
-          <Card className="bg-purple-50 border-purple-200">
+          <Card className="bg-[rgba(139,92,246,0.08)] border-purple-200">
             <CardContent className="p-4">
               <p className="text-sm text-purple-600">Assemblies</p>
               <p className="text-2xl font-bold text-purple-700">{summary.assemblies}</p>
             </CardContent>
           </Card>
-          <Card className="bg-emerald-50 border-emerald-200">
+          <Card className="bg-[rgba(200,255,0,0.08)] border-emerald-200">
             <CardContent className="p-4">
-              <p className="text-sm text-emerald-600">Bundles</p>
-              <p className="text-2xl font-bold text-emerald-700">{summary.bundles}</p>
+              <p className="text-sm text-[#C8FF00] text-600">Bundles</p>
+              <p className="text-2xl font-bold text-[#C8FF00] text-700">{summary.bundles}</p>
             </CardContent>
           </Card>
           <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">

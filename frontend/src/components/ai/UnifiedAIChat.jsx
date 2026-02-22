@@ -232,7 +232,7 @@ How can I help you today?`,
         return (
           <p key={i} className="mb-1">
             {parts.map((part, j) => 
-              j % 2 === 1 ? <strong key={j} className="text-emerald-400 font-medium">{part}</strong> : part
+              j % 2 === 1 ? <strong key={j} className="text-[#C8FF00] text-400 font-medium">{part}</strong> : part
             )}
           </p>
         );
@@ -257,15 +257,15 @@ How can I help you today?`,
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-emerald-500/20 rounded-xl blur-xl animate-pulse" />
+              <div className="absolute inset-0 bg-[rgba(200,255,0,0.08)]0/20 rounded-xl blur-xl animate-pulse" />
               <div className="relative p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-xl border border-emerald-500/20">
-                <Sparkles className="h-6 w-6 text-emerald-400" />
+                <Sparkles className="h-6 w-6 text-[#C8FF00] text-400" />
               </div>
             </div>
             <div>
               <h1 className="text-xl font-bold text-white flex items-center gap-2">
                 AI Assistant
-                <Badge variant="outline" className="ml-2 border-emerald-500/30 text-emerald-400 text-xs font-normal">
+                <Badge variant="outline" className="ml-2 border-emerald-500/30 text-[#C8FF00] text-400 text-xs font-normal">
                   Gemini Powered
                 </Badge>
               </h1>
@@ -282,9 +282,9 @@ How can I help you today?`,
               <RotateCcw className="h-4 w-4 mr-1" />
               Clear
             </Button>
-            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-              <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs text-emerald-400 font-medium">Online</span>
+            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[rgba(200,255,0,0.08)]0/10 border border-emerald-500/20">
+              <div className="h-2 w-2 rounded-full bg-[rgba(200,255,0,0.08)]0 animate-pulse" />
+              <span className="text-xs text-[#C8FF00] text-400 font-medium">Online</span>
             </div>
           </div>
         </div>
@@ -300,7 +300,7 @@ How can I help you today?`,
                 onClick={() => setSelectedCategory(cat.value)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                   isSelected 
-                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" 
+                    ? "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border border-emerald-500/30" 
                     : "bg-slate-800/50 text-slate-400 border border-[rgba(255,255,255,0.07)] border-700/50 hover:bg-slate-800 hover:text-white"
                 }`}
               >
@@ -324,9 +324,9 @@ How can I help you today?`,
               <div className={`flex-shrink-0 ${message.role === "user" ? "order-1" : ""}`}>
                 {message.role === "assistant" ? (
                   <div className="relative">
-                    <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-md" />
+                    <div className="absolute inset-0 bg-[rgba(200,255,0,0.08)]0/20 rounded-full blur-md" />
                     <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
-                      <Bot className="h-5 w-5 text-emerald-400" />
+                      <Bot className="h-5 w-5 text-[#C8FF00] text-400" />
                     </div>
                   </div>
                 ) : (
@@ -366,7 +366,7 @@ How can I help you today?`,
                       <Copy className="h-3 w-3" />
                       Copy
                     </button>
-                    <button className="text-xs hover:text-emerald-400 flex items-center gap-1 transition-colors">
+                    <button className="text-xs hover:text-[#C8FF00] text-400 flex items-center gap-1 transition-colors">
                       <ThumbsUp className="h-3 w-3" />
                     </button>
                     <button className="text-xs hover:text-rose-400 flex items-center gap-1 transition-colors">
@@ -382,9 +382,9 @@ How can I help you today?`,
           {loading && (
             <div className="flex gap-4">
               <div className="relative">
-                <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-md animate-pulse" />
+                <div className="absolute inset-0 bg-[rgba(200,255,0,0.08)]0/20 rounded-full blur-md animate-pulse" />
                 <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
-                  <Bot className="h-5 w-5 text-emerald-400" />
+                  <Bot className="h-5 w-5 text-[#C8FF00] text-400" />
                 </div>
               </div>
               <div className="bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 rounded-2xl rounded-bl-md px-5 py-4">

@@ -350,7 +350,7 @@ export default function BrandingSettings({ user }) {
         <Label>{label}</Label>
         <div
           className={`border-2 border-dashed rounded-lg p-6 text-center transition-all ${
-            isDragging ? "border-emerald-500 bg-emerald-50" : "border-gray-200"
+            isDragging ? "border-emerald-500 bg-[rgba(200,255,0,0.08)]" : "border-gray-200"
           }`}
           style={{ backgroundColor: bgColor === "dark" ? "#1e293b" : "#fff" }}
           onDrop={(e) => handleDrop(e, logoType)}
@@ -359,7 +359,7 @@ export default function BrandingSettings({ user }) {
         >
           {isUploading ? (
             <div className="space-y-3">
-              <RefreshCw className="h-8 w-8 mx-auto animate-spin text-emerald-500" />
+              <RefreshCw className="h-8 w-8 mx-auto animate-spin text-[#C8FF00] text-500" />
               <Progress value={uploadProgress[logoType]} className="w-32 mx-auto" />
               <p className="text-sm text-gray-500">Uploading...</p>
             </div>
@@ -398,7 +398,7 @@ export default function BrandingSettings({ user }) {
             >
               <Upload className={`h-10 w-10 mx-auto ${bgColor === "dark" ? "text-gray-400" : "text-gray-300"}`} />
               <p className={`text-sm ${bgColor === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                <span className="text-emerald-500 font-medium">Click to upload</span> or drag and drop
+                <span className="text-[#C8FF00] text-500 font-medium">Click to upload</span> or drag and drop
               </p>
               <p className={`text-xs ${bgColor === "dark" ? "text-gray-500" : "text-gray-400"}`}>
                 {description}
@@ -537,7 +537,7 @@ export default function BrandingSettings({ user }) {
                     <div className="flex gap-4 items-start">
                       <div 
                         className={`w-16 h-16 border-2 border-dashed rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer transition-all ${
-                          dragOver.favicon ? "border-emerald-500 bg-emerald-50" : "border-gray-200"
+                          dragOver.favicon ? "border-emerald-500 bg-[rgba(200,255,0,0.08)]" : "border-gray-200"
                         }`}
                         onClick={() => faviconRef.current?.click()}
                         onDrop={(e) => handleDrop(e, "favicon")}
@@ -545,7 +545,7 @@ export default function BrandingSettings({ user }) {
                         onDragLeave={(e) => handleDragLeave(e, "favicon")}
                       >
                         {uploadProgress.favicon !== undefined ? (
-                          <RefreshCw className="h-5 w-5 animate-spin text-emerald-500" />
+                          <RefreshCw className="h-5 w-5 animate-spin text-[#C8FF00] text-500" />
                         ) : branding.favicon_url ? (
                           <img 
                             src={branding.favicon_url.startsWith("/api") ? `${API.replace("/api", "")}${branding.favicon_url}` : branding.favicon_url}

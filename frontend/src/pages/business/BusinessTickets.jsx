@@ -23,7 +23,7 @@ const statusColors = {
   technician_assigned: "bg-purple-100 text-purple-700 border-purple-200",
   work_in_progress: "bg-amber-100 text-amber-700 border-amber-200",
   estimate_sent: "bg-cyan-100 text-cyan-700 border-cyan-200",
-  estimate_approved: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  estimate_approved: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700 border-emerald-200",
   work_completed: "bg-green-100 text-green-700 border-green-200",
   closed: "bg-slate-100 text-slate-600 border-[rgba(255,255,255,0.07)] border-200",
   resolved: "bg-green-100 text-green-700 border-green-200",
@@ -216,10 +216,10 @@ export default function BusinessTickets({ user }) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500">Completed</p>
-                <p className="text-2xl font-bold text-emerald-600">{stats.completed}</p>
+                <p className="text-2xl font-bold text-[#C8FF00] text-600">{stats.completed}</p>
               </div>
-              <div className="p-3 rounded-xl bg-emerald-50">
-                <CheckCircle className="h-5 w-5 text-emerald-600" />
+              <div className="p-3 rounded-xl bg-[rgba(200,255,0,0.08)]">
+                <CheckCircle className="h-5 w-5 text-[#C8FF00] text-600" />
               </div>
             </div>
           </CardContent>

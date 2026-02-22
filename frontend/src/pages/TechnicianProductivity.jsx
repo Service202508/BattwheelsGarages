@@ -110,7 +110,7 @@ export default function TechnicianProductivity({ user }) {
         {data.map((item, index) => (
           <div key={index} className="flex-1 flex flex-col items-center">
             <div 
-              className="w-full bg-emerald-500 rounded-t transition-all duration-300 hover:bg-emerald-600"
+              className="w-full bg-[rgba(200,255,0,0.08)]0 rounded-t transition-all duration-300 hover:bg-emerald-600"
               style={{ height: `${(item.value / max) * 100}%`, minHeight: item.value > 0 ? '4px' : '0' }}
             />
             <span className="text-xs text-gray-500 mt-1 truncate w-full text-center">{item.label}</span>
@@ -343,7 +343,7 @@ export default function TechnicianProductivity({ user }) {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-emerald-500" />
+                <BarChart3 className="h-5 w-5 text-[#C8FF00] text-500" />
                 Tickets Resolved (Weekly)
               </CardTitle>
             </CardHeader>
@@ -395,8 +395,8 @@ export default function TechnicianProductivity({ user }) {
               <div className="space-y-6 py-4">
                 {/* Technician Info */}
                 <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                  <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
-                    <span className="text-emerald-700 font-bold text-lg">
+                  <div className="h-12 w-12 rounded-full bg-[rgba(200,255,0,0.10)] flex items-center justify-center">
+                    <span className="text-[#C8FF00] text-700 font-bold text-lg">
                       {technicianDetail.technician?.name?.charAt(0)}
                     </span>
                   </div>

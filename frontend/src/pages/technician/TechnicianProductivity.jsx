@@ -141,7 +141,7 @@ export default function TechnicianProductivity({ user }) {
         <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-purple-500/10">
+              <div className="p-2 rounded-lg bg-[rgba(139,92,246,0.08)]0/10">
                 <Target className="h-5 w-5 text-purple-400" />
               </div>
             </div>
@@ -279,7 +279,7 @@ export default function TechnicianProductivity({ user }) {
             </div>
             
             <div className="p-4 rounded-xl bg-slate-800/50 border border-[rgba(255,255,255,0.07)] border-700">
-              <div className="p-2 rounded-lg bg-purple-500/10 w-fit mb-3">
+              <div className="p-2 rounded-lg bg-[rgba(139,92,246,0.08)]0/10 w-fit mb-3">
                 <Target className="h-5 w-5 text-purple-400" />
               </div>
               <h4 className="text-white font-medium mb-1">Prioritize Critical</h4>

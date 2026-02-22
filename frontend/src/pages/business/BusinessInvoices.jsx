@@ -15,7 +15,7 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  paid: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  paid: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700 border-emerald-200",
   unpaid: "bg-amber-100 text-amber-700 border-amber-200",
   overdue: "bg-red-100 text-red-700 border-red-200",
   partial: "bg-blue-100 text-blue-700 border-blue-200",
@@ -226,12 +226,12 @@ export default function BusinessInvoices({ user }) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500">Paid</p>
-                <p className="text-2xl font-bold text-emerald-600">
+                <p className="text-2xl font-bold text-[#C8FF00] text-600">
                   {formatCurrency(summary.total_invoiced - summary.pending_payment)}
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-emerald-50">
-                <CheckCircle className="h-5 w-5 text-emerald-600" />
+              <div className="p-3 rounded-xl bg-[rgba(200,255,0,0.08)]">
+                <CheckCircle className="h-5 w-5 text-[#C8FF00] text-600" />
               </div>
             </div>
           </CardContent>

@@ -255,12 +255,12 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                 <div 
                   key={step.id}
                   className={`flex flex-col items-center ${
-                    isActive ? "text-emerald-600" : isComplete ? "text-emerald-500" : "text-gray-400"
+                    isActive ? "text-[#C8FF00] text-600" : isComplete ? "text-[#C8FF00] text-500" : "text-gray-400"
                   }`}
                 >
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
-                    isActive ? "bg-emerald-100 ring-2 ring-emerald-500" :
-                    isComplete ? "bg-emerald-500 text-white" : "bg-gray-100"
+                    isActive ? "bg-[rgba(200,255,0,0.10)] ring-2 ring-emerald-500" :
+                    isComplete ? "bg-[rgba(200,255,0,0.08)]0 text-white" : "bg-gray-100"
                   }`}>
                     {isComplete ? <Check className="h-5 w-5" /> : <StepIcon className="h-5 w-5" />}
                   </div>
@@ -277,7 +277,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
             <CardTitle className="flex items-center gap-2">
               {(() => {
                 const StepIcon = STEPS[currentStep - 1].icon;
-                return <StepIcon className="h-5 w-5 text-emerald-500" />;
+                return <StepIcon className="h-5 w-5 text-[#C8FF00] text-500" />;
               })()}
               {STEPS[currentStep - 1].title}
             </CardTitle>
@@ -526,8 +526,8 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                     {orgData.team_invites.map((invite) => (
                       <div key={invite.id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                            <Mail className="h-4 w-4 text-emerald-600" />
+                          <div className="w-8 h-8 rounded-full bg-[rgba(200,255,0,0.10)] flex items-center justify-center">
+                            <Mail className="h-4 w-4 text-[#C8FF00] text-600" />
                           </div>
                           <div>
                             <p className="font-medium">{invite.name}</p>
@@ -574,8 +574,8 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
             {/* Step 4: Complete */}
             {currentStep === 4 && (
               <div className="text-center py-8">
-                <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Sparkles className="h-10 w-10 text-emerald-500" />
+                <div className="w-20 h-20 bg-[rgba(200,255,0,0.10)] rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Sparkles className="h-10 w-10 text-[#C8FF00] text-500" />
                 </div>
                 <h2 className="text-2xl font-bold text-[#F4F6F0] mb-2">You're All Set! 🎉</h2>
                 <p className="text-gray-600 mb-8 max-w-md mx-auto">
@@ -585,17 +585,17 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-left">
                   <div className="p-4 border rounded-lg">
-                    <Briefcase className="h-6 w-6 text-emerald-500 mb-2" />
+                    <Briefcase className="h-6 w-6 text-[#C8FF00] text-500 mb-2" />
                     <h3 className="font-medium">Create Tickets</h3>
                     <p className="text-sm text-gray-500">Log service requests and track repairs</p>
                   </div>
                   <div className="p-4 border rounded-lg">
-                    <IndianRupee className="h-6 w-6 text-emerald-500 mb-2" />
+                    <IndianRupee className="h-6 w-6 text-[#C8FF00] text-500 mb-2" />
                     <h3 className="font-medium">Send Invoices</h3>
                     <p className="text-sm text-gray-500">Generate GST-compliant invoices</p>
                   </div>
                   <div className="p-4 border rounded-lg">
-                    <Sparkles className="h-6 w-6 text-emerald-500 mb-2" />
+                    <Sparkles className="h-6 w-6 text-[#C8FF00] text-500 mb-2" />
                     <h3 className="font-medium">AI Diagnostics</h3>
                     <p className="text-sm text-gray-500">Get AI-powered repair guidance</p>
                   </div>

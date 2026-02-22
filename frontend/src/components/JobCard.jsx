@@ -26,7 +26,7 @@ import EstimateItemsPanel from "./EstimateItemsPanel";
 const statusColors = {
   open: "bg-[rgba(234,179,8,0.08)]0",
   technician_assigned: "bg-blue-500",
-  estimate_shared: "bg-purple-500",
+  estimate_shared: "bg-[rgba(139,92,246,0.08)]0",
   estimate_approved: "bg-indigo-500",
   work_in_progress: "bg-[rgba(255,140,0,0.08)]0",
   work_completed: "bg-teal-500",
@@ -802,7 +802,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
           {/* Panel Header with Mode Toggle */}
           <div className="p-3 border-b border-[rgba(255,255,255,0.07)] border-700 flex items-center justify-between bg-slate-800/50">
             <div className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-emerald-400" />
+              <Brain className="h-5 w-5 text-[#C8FF00] text-400" />
               <span className="font-semibold text-white">EFI Assistant</span>
             </div>
             <div className="flex items-center gap-2">

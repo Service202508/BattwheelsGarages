@@ -298,10 +298,10 @@ export default function Reports() {
                         <p className="text-xl font-bold text-blue-800">{formatCurrency(profitLoss.gross_profit)}</p>
                       </CardContent>
                     </Card>
-                    <Card className={`${profitLoss.net_profit >= 0 ? 'bg-emerald-50 border-emerald-200' : 'bg-[rgba(255,59,47,0.08)] border-red-200'}`}>
+                    <Card className={`${profitLoss.net_profit >= 0 ? 'bg-[rgba(200,255,0,0.08)] border-emerald-200' : 'bg-[rgba(255,59,47,0.08)] border-red-200'}`}>
                       <CardContent className="p-4">
-                        <p className={`text-xs font-medium ${profitLoss.net_profit >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>Net Profit</p>
-                        <p className={`text-xl font-bold ${profitLoss.net_profit >= 0 ? 'text-emerald-800' : 'text-red-800'}`}>
+                        <p className={`text-xs font-medium ${profitLoss.net_profit >= 0 ? 'text-[#C8FF00] text-700' : 'text-red-700'}`}>Net Profit</p>
+                        <p className={`text-xl font-bold ${profitLoss.net_profit >= 0 ? 'text-[#C8FF00] text-800' : 'text-red-800'}`}>
                           {formatCurrency(profitLoss.net_profit)}
                         </p>
                       </CardContent>

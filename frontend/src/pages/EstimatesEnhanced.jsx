@@ -1656,7 +1656,7 @@ export default function EstimatesEnhanced() {
                                   .map(item => (
                                     <div 
                                       key={item.item_id}
-                                      className="px-3 py-2 hover:bg-emerald-50 cursor-pointer border-b last:border-0"
+                                      className="px-3 py-2 hover:bg-[rgba(200,255,0,0.08)] cursor-pointer border-b last:border-0"
                                       onClick={() => selectItem(item)}
                                     >
                                       <div className="flex justify-between">
@@ -1762,7 +1762,7 @@ export default function EstimatesEnhanced() {
                           ₹{((newLineItem.quantity || 0) * (newLineItem.rate || 0)).toLocaleString('en-IN', {minimumFractionDigits: 2})}
                         </td>
                         <td className="px-3 py-2">
-                          <Button size="sm" onClick={addLineItem} className="h-7 bg-emerald-500 hover:bg-emerald-600" disabled={!newLineItem.name}>
+                          <Button size="sm" onClick={addLineItem} className="h-7 bg-[rgba(200,255,0,0.08)]0 hover:bg-emerald-600" disabled={!newLineItem.name}>
                             <Plus className="h-4 w-4" />
                           </Button>
                         </td>
@@ -1995,7 +1995,7 @@ export default function EstimatesEnhanced() {
                   )}
                   {selectedEstimate.status === "accepted" && (
                     <>
-                      <Button onClick={() => handleConvertToInvoice(selectedEstimate.estimate_id)} className="bg-purple-500 hover:bg-purple-600"><ArrowRightLeft className="h-4 w-4 mr-1" /> Convert to Invoice</Button>
+                      <Button onClick={() => handleConvertToInvoice(selectedEstimate.estimate_id)} className="bg-[rgba(139,92,246,0.08)]0 hover:bg-purple-600"><ArrowRightLeft className="h-4 w-4 mr-1" /> Convert to Invoice</Button>
                       <Button variant="outline" onClick={() => handleConvertToSO(selectedEstimate.estimate_id)}><ArrowRightLeft className="h-4 w-4 mr-1" /> Convert to Sales Order</Button>
                     </>
                   )}
@@ -2023,7 +2023,7 @@ export default function EstimatesEnhanced() {
 
                 {/* Converted To */}
                 {selectedEstimate.converted_to && (
-                  <div className="bg-purple-50 rounded-lg p-3">
+                  <div className="bg-[rgba(139,92,246,0.08)] rounded-lg p-3">
                     <p className="text-sm text-purple-700">
                       <strong>Converted to:</strong> {selectedEstimate.converted_to}
                     </p>
