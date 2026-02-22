@@ -832,12 +832,12 @@ export default function EFIGuidancePanel({
                   </div>
                   
                   <div className="flex justify-between items-center p-3 bg-[rgba(200,255,0,0.08)]0/10 rounded-lg">
-                    <span className="text-sm text-slate-300">
+                    <span className="text-sm text-[rgba(244,246,240,0.70)]">
                       Total: ₹{guidance.estimate_suggestions.reduce((sum, i) => sum + (i.estimated_cost || 0), 0).toLocaleString()}
                     </span>
                     <Button
                       onClick={() => addToEstimate(guidance.estimate_suggestions)}
-                      className="bg-emerald-600 hover:bg-emerald-700"
+                      className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold"
                       data-testid="add-all-to-estimate-btn"
                     >
                       <Plus className="h-4 w-4 mr-2" />
