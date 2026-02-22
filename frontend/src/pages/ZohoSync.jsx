@@ -303,7 +303,7 @@ export default function ZohoSync() {
             return (
               <Card 
                 key={module.id} 
-                className={`hover:shadow-md transition-shadow ${
+                className={`hover:border-[rgba(200,255,0,0.2)] transition-colors ${
                   result?.status === "success" ? "border-green-200 bg-[rgba(34,197,94,0.08)]" :
                   result?.status === "error" ? "border-red-200 bg-[rgba(255,59,47,0.08)]" : ""
                 }`}
