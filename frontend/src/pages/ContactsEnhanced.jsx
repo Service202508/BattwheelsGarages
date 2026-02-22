@@ -72,6 +72,29 @@ export default function ContactsEnhanced() {
   const [newAddress, setNewAddress] = useState({ address_type: "billing", attention: "", street: "", street2: "", city: "", state: "", state_code: "", zip_code: "", country: "India", phone: "", is_default: false });
   const [editMode, setEditMode] = useState(false);
 
+  // Initial form data for comparison
+  const initialContactData = {
+    name: "", company_name: "", contact_type: "customer", email: "", phone: "", mobile: "",
+    website: "", currency_code: "INR", payment_terms: 30, credit_limit: 0,
+    gstin: "", pan: "", place_of_supply: "", tax_treatment: "business_gst",
+    gst_treatment: "registered", opening_balance: 0, opening_balance_type: "credit",
+    tags: [], notes: "", custom_fields: {}
+  };
+
+  // Auto-save for Contact form
+  const contactPersistence = useFormPersistence(
+    editMode && selectedContact ? `contact_edit_${selectedContact.contact_id}` : 'contact_new',
+    newContact,
+    initialContactData,
+    {
+      enabled: showContactDialog,
+      isDialogOpen: showContactDialog,
+      setFormData: setNewContact,
+      debounceMs: 2000,
+      entityName: 'Contact'
+    }
+  );
+
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
