@@ -50,7 +50,8 @@ class TestGSTAccountingFlow:
         
         self.headers = {
             "Authorization": f"Bearer {TestGSTAccountingFlow.token}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "X-Organization-ID": TEST_ORG_ID
         }
 
     # ==================== AUTHENTICATION TEST ====================
