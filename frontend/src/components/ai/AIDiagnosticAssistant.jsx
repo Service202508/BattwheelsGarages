@@ -272,18 +272,18 @@ Please provide:
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Panel - Input Form */}
-        <Card className="border border-gray-200 dark:border-gray-700 shadow-sm">
-          <CardHeader className="pb-4 border-b border-gray-100 dark:border-gray-800">
+        <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+          <CardHeader className="pb-4 border-b border-[rgba(255,255,255,0.07)]">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-emerald-500" />
-              <CardTitle className="text-lg text-gray-800 dark:text-white">Describe Your Issue</CardTitle>
+              <Sparkles className="h-5 w-5 text-[#C8FF00]" />
+              <CardTitle className="text-lg text-[#F4F6F0]">Describe Your Issue</CardTitle>
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Select category and provide details about your EV problem</p>
+            <p className="text-sm text-[rgba(244,246,240,0.45)]">Select category and provide details about your EV problem</p>
           </CardHeader>
           <CardContent className="p-5 space-y-5">
             {/* Issue Category */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Issue Category</label>
+              <label className="text-sm font-medium text-[#F4F6F0]">Issue Category</label>
               <div className="grid grid-cols-4 gap-2">
                 {ISSUE_CATEGORIES.map((category) => {
                   const Icon = category.icon;
@@ -314,7 +314,7 @@ Please provide:
 
             {/* Vehicle Category */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Vehicle Category</label>
+              <label className="text-sm font-medium text-[#F4F6F0]">Vehicle Category</label>
               <div className="grid grid-cols-4 gap-3">
                 {VEHICLE_CATEGORIES.map((vehicle) => {
                   const Icon = vehicle.icon;
