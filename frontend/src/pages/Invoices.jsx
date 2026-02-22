@@ -501,7 +501,7 @@ export default function Invoices() {
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="text-xs text-gray-400">Total</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.25)]">Total</p>
                       <p className="font-bold text-lg">₹{invoice.total?.toLocaleString('en-IN')}</p>
                       {invoice.balance_due > 0 && (
                         <p className="text-xs text-orange-600">Due: ₹{invoice.balance_due?.toLocaleString('en-IN')}</p>
@@ -521,19 +521,19 @@ export default function Invoices() {
                           <div className="space-y-4 py-4">
                             <div className="grid grid-cols-2 gap-4 text-sm">
                               <div>
-                                <p className="text-gray-400">Customer</p>
+                                <p className="text-[rgba(244,246,240,0.25)]">Customer</p>
                                 <p className="font-medium">{invoice.customer_name}</p>
                               </div>
                               <div>
-                                <p className="text-gray-400">Status</p>
+                                <p className="text-[rgba(244,246,240,0.25)]">Status</p>
                                 <Badge className={statusColors[invoice.status]}>{invoice.status}</Badge>
                               </div>
                               <div>
-                                <p className="text-gray-400">Invoice Date</p>
+                                <p className="text-[rgba(244,246,240,0.25)]">Invoice Date</p>
                                 <p className="font-medium">{invoice.invoice_date}</p>
                               </div>
                               <div>
-                                <p className="text-gray-400">Due Date</p>
+                                <p className="text-[rgba(244,246,240,0.25)]">Due Date</p>
                                 <p className="font-medium">{invoice.due_date}</p>
                               </div>
                             </div>
@@ -577,7 +577,7 @@ export default function Invoices() {
 
                             <div className="flex gap-2 justify-end pt-4">
                               {invoice.status === "draft" && (
-                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "sent")} className="bg-blue-500 hover:bg-blue-600 text-white">
+                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "sent")} className="bg-[rgba(59,158,255,0.08)]0 hover:bg-blue-600 text-white">
                                   <Send className="h-4 w-4 mr-2" />
                                   Mark as Sent
                                 </Button>

@@ -853,7 +853,7 @@ export default function InvoicesEnhanced() {
           <div className="flex flex-col sm:flex-row gap-4 justify-between">
             <div className="flex flex-1 gap-2 max-w-3xl">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.25)]" />
                 <Input 
                   value={search} 
                   onChange={(e) => setSearch(e.target.value)} 
@@ -887,7 +887,7 @@ export default function InvoicesEnhanced() {
 
           {/* Invoice List */}
           {loading ? (
-            <Card><CardContent className="py-12 text-center"><RefreshCw className="h-8 w-8 animate-spin mx-auto text-gray-400" /></CardContent></Card>
+            <Card><CardContent className="py-12 text-center"><RefreshCw className="h-8 w-8 animate-spin mx-auto text-[rgba(244,246,240,0.25)]" /></CardContent></Card>
           ) : invoices.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
@@ -1384,7 +1384,7 @@ export default function InvoicesEnhanced() {
                       <h4 className="font-medium mb-3 flex items-center gap-2"><Clock className="h-4 w-4" /> History</h4>
                       <div className="space-y-1 text-xs text-[rgba(244,246,240,0.45)] max-h-32 overflow-y-auto">
                         {selectedInvoice.history.slice(0, 10).map((h, idx) => (
-                          <p key={idx}><span className="text-gray-400">{formatDate(h.timestamp)}</span> - {h.action}: {h.details}</p>
+                          <p key={idx}><span className="text-[rgba(244,246,240,0.25)]">{formatDate(h.timestamp)}</span> - {h.action}: {h.details}</p>
                         ))}
                       </div>
                     </div>
@@ -1502,7 +1502,7 @@ export default function InvoicesEnhanced() {
                       {selectedInvoice.history.slice(0, 5).map((h, idx) => (
                         <div key={idx} className="flex justify-between text-[rgba(244,246,240,0.45)] py-1">
                           <span>{h.action}: {h.details}</span>
-                          <span className="text-xs text-gray-400">{new Date(h.timestamp).toLocaleString("en-IN")}</span>
+                          <span className="text-xs text-[rgba(244,246,240,0.25)]">{new Date(h.timestamp).toLocaleString("en-IN")}</span>
                         </div>
                       ))}
                     </div>
@@ -1763,9 +1763,9 @@ export default function InvoicesEnhanced() {
                 disabled={uploadingAttachment}
               />
               <label htmlFor="attachment-upload" className="cursor-pointer">
-                <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                <Upload className="h-8 w-8 mx-auto text-[rgba(244,246,240,0.25)] mb-2" />
                 <p className="text-sm text-[rgba(244,246,240,0.45)]">Click to upload or drag & drop</p>
-                <p className="text-xs text-gray-400">PDF, DOC, XLS, Images (max 10MB)</p>
+                <p className="text-xs text-[rgba(244,246,240,0.25)]">PDF, DOC, XLS, Images (max 10MB)</p>
               </label>
               {uploadingAttachment && <p className="text-sm text-blue-600 mt-2">Uploading...</p>}
             </div>
@@ -1831,7 +1831,7 @@ export default function InvoicesEnhanced() {
                         <p className="text-sm">{c.comment}</p>
                         <Button size="icon" variant="ghost" onClick={() => handleDeleteComment(c.comment_id)}><X className="h-3 w-3" /></Button>
                       </div>
-                      <p className="text-xs text-gray-400 mt-1">{new Date(c.created_time).toLocaleString("en-IN")}</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.25)] mt-1">{new Date(c.created_time).toLocaleString("en-IN")}</p>
                     </div>
                   ))}
                 </div>
@@ -1849,7 +1849,7 @@ export default function InvoicesEnhanced() {
                         <p className="text-sm font-medium">{h.action}</p>
                         <p className="text-xs text-[rgba(244,246,240,0.45)]">{h.details}</p>
                       </div>
-                      <span className="text-xs text-gray-400">{new Date(h.timestamp).toLocaleString("en-IN")}</span>
+                      <span className="text-xs text-[rgba(244,246,240,0.25)]">{new Date(h.timestamp).toLocaleString("en-IN")}</span>
                     </div>
                   ))}
                 </div>

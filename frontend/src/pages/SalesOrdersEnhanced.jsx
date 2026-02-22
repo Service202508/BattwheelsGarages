@@ -442,19 +442,19 @@ export default function SalesOrdersEnhanced() {
               <div className="text-center">
                 <p className="text-[rgba(244,246,240,0.45)]">Unfulfilled</p>
                 <p className="text-xl font-bold text-red-600">{fulfillmentSummary.unfulfilled}</p>
-                <p className="text-gray-400">₹{(fulfillmentSummary.unfulfilled_value || 0).toLocaleString('en-IN')}</p>
+                <p className="text-[rgba(244,246,240,0.25)]">₹{(fulfillmentSummary.unfulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-gray-300" />
               <div className="text-center">
                 <p className="text-[rgba(244,246,240,0.45)]">Partially Fulfilled</p>
                 <p className="text-xl font-bold text-yellow-600">{fulfillmentSummary.partially_fulfilled}</p>
-                <p className="text-gray-400">₹{(fulfillmentSummary.partially_fulfilled_value || 0).toLocaleString('en-IN')}</p>
+                <p className="text-[rgba(244,246,240,0.25)]">₹{(fulfillmentSummary.partially_fulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-gray-300" />
               <div className="text-center">
                 <p className="text-[rgba(244,246,240,0.45)]">Fulfilled</p>
                 <p className="text-xl font-bold text-green-600">{fulfillmentSummary.fulfilled}</p>
-                <p className="text-gray-400">₹{(fulfillmentSummary.fulfilled_value || 0).toLocaleString('en-IN')}</p>
+                <p className="text-[rgba(244,246,240,0.25)]">₹{(fulfillmentSummary.fulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
               <div className="text-center ml-8 border-l pl-8">
                 <p className="text-[rgba(244,246,240,0.45)]">Fulfillment Rate</p>
@@ -477,7 +477,7 @@ export default function SalesOrdersEnhanced() {
           <div className="flex flex-col sm:flex-row gap-4 justify-between">
             <div className="flex flex-1 gap-2 max-w-2xl">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.25)]" />
                 <Input value={search} onChange={(e) => setSearch(e.target.value)} onKeyUp={(e) => e.key === 'Enter' && fetchOrders()} placeholder="Search orders..." className="pl-10" data-testid="search-orders" />
               </div>
               <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setTimeout(fetchOrders, 100); }}>
@@ -525,7 +525,7 @@ export default function SalesOrdersEnhanced() {
                 </thead>
                 <tbody>
                   {orders.map(order => (
-                    <tr key={order.salesorder_id} className="border-t hover:bg-[#111820] cursor-pointer" onClick={() => fetchOrderDetail(order.salesorder_id)} data-testid={`order-row-${order.salesorder_id}`}>
+                    <tr key={order.salesorder_id} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#111820] cursor-pointer" onClick={() => fetchOrderDetail(order.salesorder_id)} data-testid={`order-row-${order.salesorder_id}`}>
                       <td className="px-4 py-3 font-mono font-medium">{order.salesorder_number}</td>
                       <td className="px-4 py-3">{order.customer_name}</td>
                       <td className="px-4 py-3 text-[rgba(244,246,240,0.45)]">{order.date}</td>
@@ -809,7 +809,7 @@ export default function SalesOrdersEnhanced() {
                 </div>
 
                 {selectedOrder.from_estimate_number && (
-                  <div className="bg-blue-50 rounded-lg p-3 text-sm">
+                  <div className="bg-[rgba(59,158,255,0.08)] rounded-lg p-3 text-sm">
                     <strong>From Estimate:</strong> {selectedOrder.from_estimate_number}
                   </div>
                 )}
@@ -891,7 +891,7 @@ export default function SalesOrdersEnhanced() {
                 <div className="flex flex-wrap gap-2">
                   {selectedOrder.status === "draft" && (
                     <>
-                      <Button onClick={() => handleConfirm(selectedOrder.salesorder_id)} className="bg-blue-500 hover:bg-blue-600"><CheckCircle className="h-4 w-4 mr-1" /> Confirm Order</Button>
+                      <Button onClick={() => handleConfirm(selectedOrder.salesorder_id)} className="bg-[rgba(59,158,255,0.08)]0 hover:bg-blue-600"><CheckCircle className="h-4 w-4 mr-1" /> Confirm Order</Button>
                       <Button variant="destructive" size="sm" onClick={() => handleDeleteOrder(selectedOrder.salesorder_id)}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
                     </>
                   )}

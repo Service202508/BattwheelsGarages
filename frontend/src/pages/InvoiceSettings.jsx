@@ -376,7 +376,7 @@ export default function InvoiceSettings() {
               <CardContent className="p-4">
                 <p className="text-sm text-[rgba(244,246,240,0.45)]">{bucket.label}</p>
                 <p className="text-lg font-bold">{formatCurrency(bucket.amount)}</p>
-                <p className="text-xs text-gray-400">{bucket.count} invoices</p>
+                <p className="text-xs text-[rgba(244,246,240,0.25)]">{bucket.count} invoices</p>
               </CardContent>
             </Card>
           ))}
@@ -608,7 +608,7 @@ export default function InvoiceSettings() {
                   <div className="text-center py-8">
                     <Repeat className="h-12 w-12 mx-auto text-gray-300 mb-2" />
                     <p className="text-[rgba(244,246,240,0.45)]">No recurring invoices yet</p>
-                    <p className="text-sm text-gray-400">Create one to automate billing</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.25)]">Create one to automate billing</p>
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
