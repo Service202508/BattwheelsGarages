@@ -98,7 +98,7 @@ export function UnsavedChangesDialog({
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700"
+            className="w-full sm:w-auto bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold"
             data-testid="unsaved-save-btn"
           >
             <Save className="h-4 w-4 mr-2" />
