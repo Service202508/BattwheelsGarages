@@ -27,11 +27,27 @@ export default function Attendance({ user }) {
   const [clockingIn, setClockingIn] = useState(false);
   const [clockingOut, setClockingOut] = useState(false);
   const [showClockOutDialog, setShowClockOutDialog] = useState(false);
-  const [breakMinutes, setBreakMinutes] = useState(60);
-  const [remarks, setRemarks] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Clock-out form state
+  const initialClockOutData = { breakMinutes: 60, remarks: "" };
+  const [clockOutForm, setClockOutForm] = useState(initialClockOutData);
+
+  // Auto-save for Clock Out form
+  const clockOutPersistence = useFormPersistence(
+    'attendance_clock_out',
+    clockOutForm,
+    initialClockOutData,
+    {
+      enabled: showClockOutDialog,
+      isDialogOpen: showClockOutDialog,
+      setFormData: setClockOutForm,
+      debounceMs: 2000,
+      entityName: 'Clock Out'
+    }
+  );
 
   // Update time every second
   useEffect(() => {
