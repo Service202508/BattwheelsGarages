@@ -1,29 +1,41 @@
 # Battwheels OS - Product Requirements Document
 
 ## SaaS Status: FULL SAAS PLATFORM COMPLETE ✅
-**Last Updated:** February 22, 2026 (Session 95)
+**Last Updated:** February 22, 2026 (Session 96)
+
+---
+
+## Session 96 Updates (Feb 22, 2026)
+
+### Auto-Save & Unsaved Changes Feature - FULL ROLLOUT COMPLETE ✅
+**Status:** ✅ COMPLETE & TESTED (100% pass rate across all modules)
+
+**Test Report:** `/app/test_reports/iteration_96.json`
+
+#### All Modules with Full Auto-Save Integration:
+
+| Module | File | Status | Components Added |
+|--------|------|--------|------------------|
+| **Sales** | EstimatesEnhanced.jsx | ✅ | Auto-save, Draft Recovery, Close Confirm |
+| **Sales** | InvoicesEnhanced.jsx | ✅ | Auto-save, Draft Recovery, Close Confirm |
+| **Sales** | SalesOrdersEnhanced.jsx | ✅ | Auto-save, Draft Recovery (Tab-based) |
+| **Purchase** | PurchaseOrders.jsx | ✅ | Auto-save, Draft Recovery, Close Confirm |
+| **Purchase** | BillsEnhanced.jsx | ✅ | Auto-save for Bill & PO forms |
+| **Finance** | Banking.jsx | ✅ | Auto-save for Account & Transaction forms |
+| **Finance** | Expenses.jsx | ✅ | Auto-save, Draft Recovery, Close Confirm |
+| **Inventory** | ItemsEnhanced.jsx | ✅ | Auto-save, Draft Recovery, Close Confirm |
+| **Contacts** | ContactsEnhanced.jsx | ✅ | Auto-save, Draft Recovery, Close Confirm |
+| **HR** | Employees.jsx | ✅ | Auto-save, Draft Recovery, Close Confirm |
+| **HR** | Attendance.jsx | ✅ | Auto-save on Clock Out dialog |
+| **HR** | LeaveManagement.jsx | ✅ | Auto-save on Apply Leave dialog |
+
+**Modules Without Forms (No auto-save needed):**
+- Tickets.jsx - Uses separate `/tickets/new` page
+- Payroll.jsx - View-only functionality
 
 ---
 
 ## Session 95 Updates (Feb 22, 2026)
-
-### Auto-Save & Save/Discard Dialog - Final Module Integration
-**Status:** ✅ COMPLETE & TESTED (100% pass rate)
-
-**Enhancement:** Completed auto-save rollout to remaining HR modules (Attendance, Leave Management) and verified Purchase Orders
-
-#### Newly Integrated Modules:
-| Module | File | Features Added |
-|--------|------|----------------|
-| **Purchase** | PurchaseOrders.jsx | Auto-save indicator, Draft recovery, Close confirm |
-| **HR** | Attendance.jsx | Auto-save on Clock Out dialog (break duration, remarks) |
-| **HR** | LeaveManagement.jsx | Auto-save on Apply Leave dialog (leave type, dates, reason) |
-
-**Test Report:** `/app/test_reports/iteration_95.json`
-
----
-
-## Session 94 Updates (Feb 22, 2026)
 
 ### Auto-Save & Save/Discard Dialog System
 **Status:** ✅ COMPLETE & TESTED
