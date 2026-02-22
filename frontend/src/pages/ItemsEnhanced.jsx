@@ -27,11 +27,11 @@ import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const itemTypeColors = {
-  inventory: "bg-blue-100 text-blue-700",
+  inventory: "bg-blue-100 text-[#3B9EFF]",
   non_inventory: "bg-gray-100 text-gray-700",
   service: "bg-green-100 text-green-700",
   sales: "bg-purple-100 text-purple-700",
-  sales_and_purchases: "bg-orange-100 text-orange-700"
+  sales_and_purchases: "bg-orange-100 text-[#FF8C00]"
 };
 
 const itemTypeLabels = {
@@ -945,7 +945,7 @@ export default function ItemsEnhanced() {
           {/* Bulk Actions */}
           {selectedItems.length > 0 && (
             <div className="flex items-center gap-4 p-3 bg-blue-50 rounded-lg">
-              <span className="text-sm font-medium text-blue-700">{selectedItems.length} items selected</span>
+              <span className="text-sm font-medium text-[#3B9EFF]">{selectedItems.length} items selected</span>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" onClick={() => handleBulkAction("activate")}>
                   <CheckCircle2 className="h-4 w-4 mr-1" /> Activate
@@ -1015,7 +1015,7 @@ export default function ItemsEnhanced() {
                             </div>
                           )}
                           <div>
-                            <p className="font-medium hover:text-blue-600 cursor-pointer" onClick={() => setViewItem(item)}>{item.name}</p>
+                            <p className="font-medium hover:text-[#3B9EFF] cursor-pointer" onClick={() => setViewItem(item)}>{item.name}</p>
                             {item.hsn_code && <p className="text-xs text-gray-500">HSN: {item.hsn_code}</p>}
                           </div>
                         </div>
@@ -1176,7 +1176,7 @@ export default function ItemsEnhanced() {
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-lg">{pl.name}</CardTitle>
-                        <Badge className={pl.price_list_type === "sales" ? "bg-blue-100 text-blue-700" : "bg-orange-100 text-orange-700"}>
+                        <Badge className={pl.price_list_type === "sales" ? "bg-blue-100 text-[#3B9EFF]" : "bg-orange-100 text-[#FF8C00]"}>
                           {pl.price_list_type || "sales"}
                         </Badge>
                       </div>
@@ -1249,7 +1249,7 @@ export default function ItemsEnhanced() {
                       <td className="px-4 py-3 font-medium">{adj.item_name}</td>
                       <td className="px-4 py-3">{adj.warehouse_name}</td>
                       <td className="px-4 py-3 text-center">
-                        <Badge className={adj.adjustment_type === "add" ? "bg-green-100 text-green-700" : adj.adjustment_type === "value" ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700"}>
+                        <Badge className={adj.adjustment_type === "add" ? "bg-green-100 text-green-700" : adj.adjustment_type === "value" ? "bg-blue-100 text-[#3B9EFF]" : "bg-red-100 text-red-700"}>
                           {adj.adjustment_type === "add" ? "+" : adj.adjustment_type === "value" ? "Value" : "-"}{adj.adjustment_type !== "value" && adj.quantity}
                         </Badge>
                       </td>
@@ -1284,7 +1284,7 @@ export default function ItemsEnhanced() {
                       </div>
                       <div className="bg-blue-50 rounded p-2">
                         <p className="text-gray-500 text-xs">Qty Sold</p>
-                        <p className="font-bold text-blue-700">{salesReport.summary?.total_quantity_sold || 0}</p>
+                        <p className="font-bold text-[#3B9EFF]">{salesReport.summary?.total_quantity_sold || 0}</p>
                       </div>
                     </div>
                     <div className="border-t pt-2">
@@ -1307,7 +1307,7 @@ export default function ItemsEnhanced() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <ShoppingCart className="h-5 w-5 text-orange-600" /> Purchases by Item
+                  <ShoppingCart className="h-5 w-5 text-[#FF8C00]" /> Purchases by Item
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -1316,11 +1316,11 @@ export default function ItemsEnhanced() {
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="bg-[rgba(255,140,0,0.08)] rounded p-2">
                         <p className="text-gray-500 text-xs">Total Cost</p>
-                        <p className="font-bold text-orange-700">₹{(purchasesReport.summary?.total_cost || 0).toLocaleString('en-IN')}</p>
+                        <p className="font-bold text-[#FF8C00]">₹{(purchasesReport.summary?.total_cost || 0).toLocaleString('en-IN')}</p>
                       </div>
                       <div className="bg-blue-50 rounded p-2">
                         <p className="text-gray-500 text-xs">Qty Purchased</p>
-                        <p className="font-bold text-blue-700">{purchasesReport.summary?.total_quantity_purchased || 0}</p>
+                        <p className="font-bold text-[#3B9EFF]">{purchasesReport.summary?.total_quantity_purchased || 0}</p>
                       </div>
                     </div>
                     <div className="border-t pt-2">
@@ -1328,7 +1328,7 @@ export default function ItemsEnhanced() {
                       {(purchasesReport.items || []).slice(0, 5).map((item, idx) => (
                         <div key={idx} className="flex justify-between text-sm py-1 border-b border-gray-100">
                           <span className="truncate flex-1">{item.item_name}</span>
-                          <span className="text-orange-600 font-medium">₹{item.total_cost?.toLocaleString('en-IN')}</span>
+                          <span className="text-[#FF8C00] font-medium">₹{item.total_cost?.toLocaleString('en-IN')}</span>
                         </div>
                       ))}
                     </div>
@@ -1343,7 +1343,7 @@ export default function ItemsEnhanced() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <DollarSign className="h-5 w-5 text-blue-600" /> Inventory Valuation
+                  <DollarSign className="h-5 w-5 text-[#3B9EFF]" /> Inventory Valuation
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -1352,7 +1352,7 @@ export default function ItemsEnhanced() {
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="bg-blue-50 rounded p-2">
                         <p className="text-gray-500 text-xs">Total Value</p>
-                        <p className="font-bold text-blue-700">₹{(valuationReport.summary?.total_stock_value || 0).toLocaleString('en-IN')}</p>
+                        <p className="font-bold text-[#3B9EFF]">₹{(valuationReport.summary?.total_stock_value || 0).toLocaleString('en-IN')}</p>
                       </div>
                       <div className="bg-[rgba(139,92,246,0.08)] rounded p-2">
                         <p className="text-gray-500 text-xs">Method</p>
@@ -1364,7 +1364,7 @@ export default function ItemsEnhanced() {
                       {(valuationReport.items || []).slice(0, 5).map((item, idx) => (
                         <div key={idx} className="flex justify-between text-sm py-1 border-b border-gray-100">
                           <span className="truncate flex-1">{item.item_name}</span>
-                          <span className="text-blue-600 font-medium">₹{item.stock_value?.toLocaleString('en-IN')}</span>
+                          <span className="text-[#3B9EFF] font-medium">₹{item.stock_value?.toLocaleString('en-IN')}</span>
                         </div>
                       ))}
                     </div>
@@ -1399,8 +1399,8 @@ export default function ItemsEnhanced() {
                     <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                         entry.action === "created" ? "bg-green-100 text-green-600" :
-                        entry.action === "updated" ? "bg-blue-100 text-blue-600" :
-                        entry.action === "stock_adjusted" ? "bg-orange-100 text-orange-600" :
+                        entry.action === "updated" ? "bg-blue-100 text-[#3B9EFF]" :
+                        entry.action === "stock_adjusted" ? "bg-orange-100 text-[#FF8C00]" :
                         "bg-gray-100 text-gray-600"
                       }`}>
                         {entry.action === "created" && <Plus className="h-4 w-4" />}

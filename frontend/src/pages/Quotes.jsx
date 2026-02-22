@@ -16,10 +16,10 @@ import { API } from "@/App";
 
 const statusColors = {
   draft: "bg-gray-100 text-gray-700",
-  sent: "bg-blue-100 text-blue-700",
+  sent: "bg-blue-100 text-[#3B9EFF]",
   accepted: "bg-green-100 text-green-700",
   declined: "bg-red-100 text-red-700",
-  expired: "bg-orange-100 text-orange-700",
+  expired: "bg-orange-100 text-[#FF8C00]",
   invoiced: "bg-purple-100 text-purple-700"
 };
 

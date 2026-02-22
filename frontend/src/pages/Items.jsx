@@ -14,9 +14,9 @@ import { Plus, Package, Wrench, Search, Edit, Trash2, Upload, Download, FileSpre
 import { API } from "@/App";
 
 const itemTypeColors = {
-  goods: "bg-blue-100 text-blue-700",
+  goods: "bg-blue-100 text-[#3B9EFF]",
   service: "bg-green-100 text-green-700",
-  inventory: "bg-blue-100 text-blue-700",
+  inventory: "bg-blue-100 text-[#3B9EFF]",
   sales: "bg-green-100 text-green-700",
   sales_and_purchases: "bg-purple-100 text-purple-700"
 };
@@ -213,9 +213,9 @@ export default function Items() {
                           <p className="text-xs text-green-600">Created</p>
                         </div>
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
-                          <AlertCircle className="h-5 w-5 text-blue-600 mx-auto mb-1" />
-                          <p className="text-lg font-bold text-blue-700">{importResult.summary.updated}</p>
-                          <p className="text-xs text-blue-600">Updated</p>
+                          <AlertCircle className="h-5 w-5 text-[#3B9EFF] mx-auto mb-1" />
+                          <p className="text-lg font-bold text-[#3B9EFF]">{importResult.summary.updated}</p>
+                          <p className="text-xs text-[#3B9EFF]">Updated</p>
                         </div>
                         <div className="bg-[rgba(255,59,47,0.08)] border border-red-200 rounded-lg p-3 text-center">
                           <XCircle className="h-5 w-5 text-red-600 mx-auto mb-1" />

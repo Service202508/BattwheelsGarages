@@ -14,9 +14,9 @@ import { API } from "@/App";
 const accountTypeColors = {
   asset: "bg-green-100 text-green-700",
   liability: "bg-red-100 text-red-700",
-  equity: "bg-blue-100 text-blue-700",
+  equity: "bg-blue-100 text-[#3B9EFF]",
   income: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
-  expense: "bg-orange-100 text-orange-700"
+  expense: "bg-orange-100 text-[#FF8C00]"
 };
 
 const accountTypeIcons = {

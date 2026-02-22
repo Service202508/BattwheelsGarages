@@ -15,7 +15,7 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  open: "bg-blue-100 text-blue-700",
+  open: "bg-blue-100 text-[#3B9EFF]",
   partially_paid: "bg-yellow-100 text-yellow-700",
   paid: "bg-green-100 text-green-700",
   overdue: "bg-red-100 text-red-700",
@@ -252,7 +252,7 @@ export default function Bills() {
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <p className="font-bold text-lg">₹{bill.total?.toLocaleString('en-IN')}</p>
-                      {bill.balance > 0 && <p className="text-xs text-orange-600">Due: ₹{bill.balance?.toLocaleString('en-IN')}</p>}
+                      {bill.balance > 0 && <p className="text-xs text-[#FF8C00]">Due: ₹{bill.balance?.toLocaleString('en-IN')}</p>}
                     </div>
                     {bill.balance > 0 && (
                       <Button size="sm" className="bg-[#22EDA9] text-black" onClick={() => { setSelectedBill(bill); setPayment({ ...payment, amount: bill.balance }); setShowPaymentDialog(true); }}>

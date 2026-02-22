@@ -65,7 +65,7 @@ export default function SubscriptionManagement() {
   const getPlanBadgeColor = (planCode) => {
     const colors = {
       free: "bg-gray-100 text-gray-700",
-      starter: "bg-blue-100 text-blue-700",
+      starter: "bg-blue-100 text-[#3B9EFF]",
       professional: "bg-purple-100 text-purple-700",
       enterprise: "bg-amber-100 text-amber-700"
     };
@@ -74,7 +74,7 @@ export default function SubscriptionManagement() {
 
   const getStatusBadge = (status) => {
     const badges = {
-      trialing: { color: "bg-blue-100 text-blue-700", icon: Clock, label: "Trial" },
+      trialing: { color: "bg-blue-100 text-[#3B9EFF]", icon: Clock, label: "Trial" },
       active: { color: "bg-green-100 text-green-700", icon: Check, label: "Active" },
       past_due: { color: "bg-red-100 text-red-700", icon: AlertTriangle, label: "Past Due" },
       canceled: { color: "bg-gray-100 text-gray-700", icon: X, label: "Canceled" },
@@ -155,7 +155,7 @@ export default function SubscriptionManagement() {
                     {StatusIcon && <StatusIcon className="h-4 w-4" />}
                     {statusBadge?.label}
                     {subscription.is_in_trial && (
-                      <span className="text-blue-600">
+                      <span className="text-[#3B9EFF]">
                         • Trial ends {new Date(subscription.trial_end).toLocaleDateString()}
                       </span>
                     )}

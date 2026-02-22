@@ -20,7 +20,7 @@ const confidenceBadge = (level, score) => {
   const styles = {
     high: "bg-[rgba(34,197,94,0.08)]0/15 text-green-600 border-green-500/30",
     medium: "bg-[rgba(234,179,8,0.08)]0/15 text-yellow-600 border-yellow-500/30",
-    low: "bg-[rgba(255,140,0,0.08)]0/15 text-orange-600 border-orange-500/30"
+    low: "bg-[rgba(255,140,0,0.08)]0/15 text-[#FF8C00] border-orange-500/30"
   };
   return (
     <Badge variant="outline" className={styles[level] || styles.low}>
@@ -291,10 +291,10 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Play className="h-4 w-4 text-blue-600" />
+                    <Play className="h-4 w-4 text-[#3B9EFF]" />
                     Active Diagnosis
                   </CardTitle>
-                  <Badge variant="outline" className="bg-blue-100 text-blue-700">
+                  <Badge variant="outline" className="bg-blue-100 text-[#3B9EFF]">
                     Step {completedSteps.length + 1}
                   </Badge>
                 </div>
@@ -317,7 +317,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                 {/* Current Step */}
                 <div className="p-3 bg-[#111820] dark:bg-gray-900 rounded-lg border">
                   <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                    <Target className="h-4 w-4 text-blue-600" />
+                    <Target className="h-4 w-4 text-[#3B9EFF]" />
                     {currentStep.instruction}
                   </h4>
                   
@@ -343,7 +343,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
 
                   {currentStep.reference_image && (
                     <div className="mb-3">
-                      <div className="flex items-center gap-2 text-xs text-blue-600 mb-2">
+                      <div className="flex items-center gap-2 text-xs text-[#3B9EFF] mb-2">
                         <Image className="h-3 w-3" />
                         <span className="font-medium">Reference Image</span>
                       </div>

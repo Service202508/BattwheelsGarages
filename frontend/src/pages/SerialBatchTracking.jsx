@@ -20,7 +20,7 @@ import { API } from "@/App";
 
 const statusColors = {
   available: "bg-green-100 text-green-700",
-  sold: "bg-blue-100 text-blue-700",
+  sold: "bg-blue-100 text-[#3B9EFF]",
   returned: "bg-yellow-100 text-yellow-700",
   damaged: "bg-red-100 text-red-700",
   reserved: "bg-purple-100 text-purple-700",
@@ -258,7 +258,7 @@ export default function SerialBatchTracking() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">Serial Numbers</p>
-                <p className="text-2xl font-bold text-blue-700">{serialSummary?.total_serials || 0}</p>
+                <p className="text-2xl font-bold text-[#3B9EFF]">{serialSummary?.total_serials || 0}</p>
                 <p className="text-xs text-green-600">{serialSummary?.available || 0} available</p>
               </div>
               <Hash className="h-10 w-10 text-blue-300" />
@@ -284,7 +284,7 @@ export default function SerialBatchTracking() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wide">Expiring Soon</p>
-                <p className="text-2xl font-bold text-orange-700">{batchSummary?.expiring_soon || 0}</p>
+                <p className="text-2xl font-bold text-[#FF8C00]">{batchSummary?.expiring_soon || 0}</p>
                 <p className="text-xs text-gray-500">within 30 days</p>
               </div>
               <AlertTriangle className="h-10 w-10 text-orange-300" />
@@ -311,21 +311,21 @@ export default function SerialBatchTracking() {
         <Card className="border-orange-300 bg-[rgba(255,140,0,0.08)]">
           <CardContent className="py-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
+              <AlertTriangle className="h-5 w-5 text-[#FF8C00] mt-0.5" />
               <div className="flex-1">
                 <p className="font-medium text-orange-800">Batches Expiring Soon</p>
-                <p className="text-sm text-orange-700 mt-1">
+                <p className="text-sm text-[#FF8C00] mt-1">
                   {expiringBatches.length} batch(es) will expire within the next 30 days. 
                   Review and take necessary action.
                 </p>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {expiringBatches.slice(0, 5).map(batch => (
-                    <Badge key={batch.batch_id} variant="outline" className="border-orange-400 text-orange-700">
+                    <Badge key={batch.batch_id} variant="outline" className="border-orange-400 text-[#FF8C00]">
                       {batch.batch_number} ({batch.days_to_expiry}d)
                     </Badge>
                   ))}
                   {expiringBatches.length > 5 && (
-                    <Badge variant="outline" className="border-orange-400 text-orange-700">
+                    <Badge variant="outline" className="border-orange-400 text-[#FF8C00]">
                       +{expiringBatches.length - 5} more
                     </Badge>
                   )}
@@ -434,7 +434,7 @@ export default function SerialBatchTracking() {
                     >
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                          <Hash className="h-5 w-5 text-blue-600" />
+                          <Hash className="h-5 w-5 text-[#3B9EFF]" />
                         </div>
                         <div>
                           <p className="font-medium">{serial.serial_number}</p>
@@ -486,7 +486,7 @@ export default function SerialBatchTracking() {
                           batch.is_expired ? "bg-red-100" : batch.days_to_expiry && batch.days_to_expiry < 30 ? "bg-orange-100" : "bg-purple-100"
                         }`}>
                           <Package className={`h-5 w-5 ${
-                            batch.is_expired ? "text-red-600" : batch.days_to_expiry && batch.days_to_expiry < 30 ? "text-orange-600" : "text-purple-600"
+                            batch.is_expired ? "text-red-600" : batch.days_to_expiry && batch.days_to_expiry < 30 ? "text-[#FF8C00]" : "text-purple-600"
                           }`} />
                         </div>
                         <div>
@@ -501,7 +501,7 @@ export default function SerialBatchTracking() {
                         </div>
                         {batch.expiry_date && (
                           <div className="text-right text-sm">
-                            <p className={batch.is_expired ? "text-red-600" : batch.days_to_expiry < 30 ? "text-orange-600" : "text-gray-500"}>
+                            <p className={batch.is_expired ? "text-red-600" : batch.days_to_expiry < 30 ? "text-[#FF8C00]" : "text-gray-500"}>
                               {batch.is_expired ? "Expired" : `${batch.days_to_expiry}d left`}
                             </p>
                             <p className="text-xs text-gray-400">{formatDate(batch.expiry_date)}</p>
@@ -543,7 +543,7 @@ export default function SerialBatchTracking() {
                       <div className="flex items-center gap-4">
                         <div className="flex gap-2">
                           {item.enable_serial_tracking && (
-                            <Badge variant="outline" className="border-blue-300 text-blue-700">
+                            <Badge variant="outline" className="border-blue-300 text-[#3B9EFF]">
                               <Hash className="h-3 w-3 mr-1" /> Serial ({item.serial_count || 0})
                             </Badge>
                           )}

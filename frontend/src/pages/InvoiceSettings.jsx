@@ -367,7 +367,7 @@ export default function InvoiceSettings() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
           <Card className="col-span-2 md:col-span-1 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="p-4">
-              <p className="text-sm text-blue-600 font-medium">Total AR</p>
+              <p className="text-sm text-[#3B9EFF] font-medium">Total AR</p>
               <p className="text-xl font-bold text-blue-800">{formatCurrency(agingReport.total_receivable)}</p>
             </CardContent>
           </Card>
@@ -484,7 +484,7 @@ export default function InvoiceSettings() {
                                 <Bell className="h-3 w-3 mr-1" /> Remind
                               </Button>
                               {lateFeeSettings.enabled && (
-                                <Button size="sm" variant="outline" className="text-orange-600" onClick={() => applyLateFee(inv.invoice_id)}>
+                                <Button size="sm" variant="outline" className="text-[#FF8C00]" onClick={() => applyLateFee(inv.invoice_id)}>
                                   <DollarSign className="h-3 w-3 mr-1" /> Fee
                                 </Button>
                               )}
@@ -576,14 +576,14 @@ export default function InvoiceSettings() {
                 </Card>
                 <Card className="bg-blue-50 border-blue-200">
                   <CardContent className="p-4">
-                    <p className="text-sm text-blue-600">MRR</p>
-                    <p className="text-2xl font-bold text-blue-700">{formatCurrency(recurringStats.monthly_recurring_revenue)}</p>
+                    <p className="text-sm text-[#3B9EFF]">MRR</p>
+                    <p className="text-2xl font-bold text-[#3B9EFF]">{formatCurrency(recurringStats.monthly_recurring_revenue)}</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
                   <CardContent className="p-4">
-                    <p className="text-sm text-orange-600">Due Today</p>
-                    <p className="text-2xl font-bold text-orange-700">{recurringStats.due_today}</p>
+                    <p className="text-sm text-[#FF8C00]">Due Today</p>
+                    <p className="text-2xl font-bold text-[#FF8C00]">{recurringStats.due_today}</p>
                   </CardContent>
                 </Card>
               </div>
@@ -708,7 +708,7 @@ export default function InvoiceSettings() {
                 <h4 className="font-medium text-blue-800 mb-2 flex items-center gap-2">
                   <Mail className="h-4 w-4" /> Email Integration Status
                 </h4>
-                <p className="text-sm text-blue-700">
+                <p className="text-sm text-[#3B9EFF]">
                   Email reminders will be sent via <strong>Resend</strong>. 
                   To activate, add <code className="bg-[#111820] px-1 rounded">RESEND_API_KEY</code> to your environment.
                 </p>

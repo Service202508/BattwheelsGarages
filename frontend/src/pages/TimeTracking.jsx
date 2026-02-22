@@ -562,7 +562,7 @@ export default function TimeTracking({ user }) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-blue-600" />
+                <Clock className="h-5 w-5 text-[#3B9EFF]" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{unbilled?.total_hours || 0}</p>
@@ -590,7 +590,7 @@ export default function TimeTracking({ user }) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center">
-                <FileText className="h-5 w-5 text-orange-600" />
+                <FileText className="h-5 w-5 text-[#FF8C00]" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{unbilled?.entry_count || 0}</p>

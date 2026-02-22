@@ -14,7 +14,7 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  open: "bg-blue-100 text-blue-700",
+  open: "bg-blue-100 text-[#3B9EFF]",
   closed: "bg-green-100 text-green-700"
 };
 
@@ -244,7 +244,7 @@ export default function CreditNotes() {
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <p className="font-bold text-lg">₹{cn.total?.toLocaleString('en-IN')}</p>
-                      {cn.credits_remaining > 0 && <p className="text-xs text-blue-600">Available: ₹{cn.credits_remaining?.toLocaleString('en-IN')}</p>}
+                      {cn.credits_remaining > 0 && <p className="text-xs text-[#3B9EFF]">Available: ₹{cn.credits_remaining?.toLocaleString('en-IN')}</p>}
                     </div>
                     {cn.credits_remaining > 0 && (
                       <Button size="sm" className="bg-[#22EDA9] text-black" onClick={() => { setSelectedCN(cn); setApplyAmount(cn.credits_remaining); setShowApplyDialog(true); }}>

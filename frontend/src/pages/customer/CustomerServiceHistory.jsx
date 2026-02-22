@@ -70,10 +70,10 @@ export default function CustomerServiceHistory({ user }) {
   const getStatusConfig = (status) => {
     const configs = {
       open: { color: "bg-yellow-100 text-yellow-700", icon: AlertCircle, label: "Open" },
-      technician_assigned: { color: "bg-blue-100 text-blue-700", icon: User, label: "Assigned" },
+      technician_assigned: { color: "bg-blue-100 text-[#3B9EFF]", icon: User, label: "Assigned" },
       estimate_shared: { color: "bg-purple-100 text-purple-700", icon: FileText, label: "Estimate Shared" },
       estimate_approved: { color: "bg-indigo-100 text-indigo-700", icon: CheckCircle, label: "Approved" },
-      in_progress: { color: "bg-orange-100 text-orange-700", icon: Clock, label: "In Progress" },
+      in_progress: { color: "bg-orange-100 text-[#FF8C00]", icon: Clock, label: "In Progress" },
       resolved: { color: "bg-green-100 text-green-700", icon: CheckCircle, label: "Resolved" },
       closed: { color: "bg-gray-100 text-gray-700", icon: CheckCircle, label: "Closed" }
     };

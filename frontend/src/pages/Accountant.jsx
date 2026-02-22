@@ -273,9 +273,9 @@ export default function Accountant() {
   const accountTypeColors = {
     asset: "bg-green-100 text-green-700",
     liability: "bg-red-100 text-red-700",
-    equity: "bg-blue-100 text-blue-700",
+    equity: "bg-blue-100 text-[#3B9EFF]",
     income: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
-    expense: "bg-orange-100 text-orange-700"
+    expense: "bg-orange-100 text-[#FF8C00]"
   };
 
   return (
@@ -329,7 +329,7 @@ export default function Accountant() {
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-blue-100 rounded-lg">
-                    <Building className="h-5 w-5 text-blue-600" />
+                    <Building className="h-5 w-5 text-[#3B9EFF]" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Bank Accounts</p>
@@ -860,7 +860,7 @@ export default function Accountant() {
               <Card>
                 <CardHeader className="bg-gradient-to-r from-blue-50 to-white">
                   <CardTitle className="flex items-center gap-2">
-                    <Scale className="h-5 w-5 text-blue-600" />
+                    <Scale className="h-5 w-5 text-[#3B9EFF]" />
                     Balance Sheet
                   </CardTitle>
                   <CardDescription>As of {balanceSheet?.as_of_date}</CardDescription>
@@ -876,7 +876,7 @@ export default function Accountant() {
                   </div>
                   <div className="flex justify-between py-2 bg-blue-50 px-2 rounded">
                     <span className="font-bold">Total Equity</span>
-                    <span className="font-bold text-lg text-blue-700">{formatCurrency(balanceSheet?.equity?.total)}</span>
+                    <span className="font-bold text-lg text-[#3B9EFF]">{formatCurrency(balanceSheet?.equity?.total)}</span>
                   </div>
                   <div className="text-sm text-center">
                     {balanceSheet?.is_balanced ? (
@@ -917,8 +917,8 @@ export default function Accountant() {
                     </Card>
                     <Card className={`${cashFlow?.net_cash_flow >= 0 ? 'bg-[rgba(200,255,0,0.08)] border-emerald-200' : 'bg-[rgba(255,140,0,0.08)] border-orange-200'}`}>
                       <CardContent className="p-4 text-center">
-                        <IndianRupee className={`h-6 w-6 mx-auto mb-2 ${cashFlow?.net_cash_flow >= 0 ? 'text-[#C8FF00] text-600' : 'text-orange-600'}`} />
-                        <p className={`text-xs ${cashFlow?.net_cash_flow >= 0 ? 'text-[#C8FF00] text-700' : 'text-orange-700'}`}>Net Cash Flow</p>
+                        <IndianRupee className={`h-6 w-6 mx-auto mb-2 ${cashFlow?.net_cash_flow >= 0 ? 'text-[#C8FF00] text-600' : 'text-[#FF8C00]'}`} />
+                        <p className={`text-xs ${cashFlow?.net_cash_flow >= 0 ? 'text-[#C8FF00] text-700' : 'text-[#FF8C00]'}`}>Net Cash Flow</p>
                         <p className={`text-xl font-bold ${cashFlow?.net_cash_flow >= 0 ? 'text-[#C8FF00] text-800' : 'text-orange-800'}`}>
                           {formatCurrency(cashFlow?.net_cash_flow)}
                         </p>

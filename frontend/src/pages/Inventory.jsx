@@ -240,7 +240,7 @@ export default function Inventory() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Low Stock Items</p>
-                <p className="text-2xl font-bold text-orange-600">{lowStockParts.length}</p>
+                <p className="text-2xl font-bold text-[#FF8C00]">{lowStockParts.length}</p>
               </div>
               <AlertTriangle className="h-8 w-8 text-orange-500" />
             </div>
@@ -356,7 +356,7 @@ export default function Inventory() {
                           <div className="flex items-center gap-3 mb-1">
                             <h3 className="font-semibold text-[#F4F6F0]">{part.name}</h3>
                             {isLowStock && (
-                              <Badge className="bg-orange-100 text-orange-700 text-xs">
+                              <Badge className="bg-orange-100 text-[#FF8C00] text-xs">
                                 <AlertTriangle className="h-3 w-3 mr-1" />
                                 Low Stock
                               </Badge>

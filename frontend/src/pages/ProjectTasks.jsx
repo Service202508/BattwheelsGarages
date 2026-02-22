@@ -297,7 +297,7 @@ export default function ProjectTasks() {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h2 className="text-lg font-semibold text-blue-900">{selectedProject.project_name}</h2>
-                <p className="text-sm text-blue-600">{selectedProject.customer_name || "No customer"}</p>
+                <p className="text-sm text-[#3B9EFF]">{selectedProject.customer_name || "No customer"}</p>
               </div>
               <div className="flex gap-6 text-sm">
                 <div>
@@ -379,7 +379,7 @@ export default function ProjectTasks() {
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button variant="ghost" size="sm" onClick={() => openEditDialog(task)} title="Edit">
-                          <Edit className="h-4 w-4 text-blue-600" />
+                          <Edit className="h-4 w-4 text-[#3B9EFF]" />
                         </Button>
                         <Button variant="ghost" size="sm" onClick={() => handleDelete(task.task_id)} title="Delete">
                           <Trash2 className="h-4 w-4 text-red-600" />

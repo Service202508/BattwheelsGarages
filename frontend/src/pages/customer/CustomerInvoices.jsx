@@ -56,7 +56,7 @@ export default function CustomerInvoices({ user }) {
   const getPaymentStatusConfig = (status) => {
     const configs = {
       paid: { color: "bg-green-100 text-green-700", icon: CheckCircle, label: "Paid" },
-      partial: { color: "bg-orange-100 text-orange-700", icon: Clock, label: "Partial" },
+      partial: { color: "bg-orange-100 text-[#FF8C00]", icon: Clock, label: "Partial" },
       pending: { color: "bg-red-100 text-red-700", icon: AlertCircle, label: "Pending" }
     };
     return configs[status] || configs.pending;
@@ -244,14 +244,14 @@ export default function CustomerInvoices({ user }) {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <CreditCard className={`h-5 w-5 ${
-                        selectedInvoice.payment_status === 'paid' ? 'text-green-600' : 'text-orange-600'
+                        selectedInvoice.payment_status === 'paid' ? 'text-green-600' : 'text-[#FF8C00]'
                       }`} />
                       <span className="font-medium">
                         {selectedInvoice.payment_status === 'paid' ? 'Payment Complete' : 'Payment Pending'}
                       </span>
                     </div>
                     {selectedInvoice.payment_status !== 'paid' && (
-                      <span className="font-bold text-orange-600">
+                      <span className="font-bold text-[#FF8C00]">
                         Balance: ₹{((selectedInvoice.total_amount || 0) - (selectedInvoice.amount_paid || 0)).toLocaleString()}
                       </span>
                     )}

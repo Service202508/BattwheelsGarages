@@ -97,7 +97,7 @@ export default function TechnicianProductivity({ user }) {
 
   const getPerformanceBadge = (tickets, avgTime) => {
     if (tickets >= 10 && avgTime <= 4) return { label: "Excellent", color: "bg-green-100 text-green-700" };
-    if (tickets >= 5 && avgTime <= 8) return { label: "Good", color: "bg-blue-100 text-blue-700" };
+    if (tickets >= 5 && avgTime <= 8) return { label: "Good", color: "bg-blue-100 text-[#3B9EFF]" };
     if (tickets >= 3) return { label: "Average", color: "bg-yellow-100 text-yellow-700" };
     return { label: "Needs Improvement", color: "bg-red-100 text-red-700" };
   };
@@ -161,7 +161,7 @@ export default function TechnicianProductivity({ user }) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-blue-100">
-                <Users className="h-5 w-5 text-blue-600" />
+                <Users className="h-5 w-5 text-[#3B9EFF]" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Active Technicians</p>
@@ -189,7 +189,7 @@ export default function TechnicianProductivity({ user }) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-orange-100">
-                <Clock className="h-5 w-5 text-orange-600" />
+                <Clock className="h-5 w-5 text-[#FF8C00]" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Overall Avg. Resolution Time</p>
@@ -219,10 +219,10 @@ export default function TechnicianProductivity({ user }) {
         <Card className="border-orange-200 bg-[rgba(255,140,0,0.08)]">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <AlertTriangle className="h-5 w-5 text-orange-600" />
+              <AlertTriangle className="h-5 w-5 text-[#FF8C00]" />
               <div className="flex-1">
                 <p className="font-medium text-orange-900">Attention Required</p>
-                <p className="text-sm text-orange-700">
+                <p className="text-sm text-[#FF8C00]">
                   {kpis.overdue_tickets > 0 && `${kpis.overdue_tickets} overdue tickets. `}
                   {kpis.pending_tickets > 5 && `${kpis.pending_tickets} tickets pending assignment.`}
                 </p>
@@ -457,7 +457,7 @@ export default function TechnicianProductivity({ user }) {
                         <Badge className={
                           ticket.status === 'resolved' || ticket.status === 'closed' 
                             ? 'bg-green-100 text-green-700' 
-                            : 'bg-blue-100 text-blue-700'
+                            : 'bg-blue-100 text-[#3B9EFF]'
                         }>
                           {ticket.status}
                         </Badge>

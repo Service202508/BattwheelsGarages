@@ -280,10 +280,10 @@ export default function ZohoSync() {
         <Card className="border-blue-200 bg-blue-50">
           <CardContent className="py-4">
             <div className="flex items-center gap-4">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#3B9EFF]" />
               <div className="flex-1">
                 <h3 className="font-semibold text-blue-900">Full Sync in Progress</h3>
-                <p className="text-sm text-blue-700">Sync ID: {currentSync.sync_id}</p>
+                <p className="text-sm text-[#3B9EFF]">Sync ID: {currentSync.sync_id}</p>
                 <Progress value={50} className="h-2 mt-2" />
               </div>
             </div>

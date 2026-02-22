@@ -16,7 +16,7 @@ import { API } from "@/App";
 
 const statusColors = {
   draft: "bg-gray-100 text-[#F4F6F0]",
-  sent: "bg-blue-100 text-blue-700",
+  sent: "bg-blue-100 text-[#3B9EFF]",
   viewed: "bg-purple-100 text-purple-700",
   paid: "bg-green-100 text-[#22C55E]",
   partially_paid: "bg-yellow-100 text-yellow-700",
@@ -419,7 +419,7 @@ export default function Invoices() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-[rgba(244,246,240,0.45)]">Outstanding</p>
-                  <p className="text-2xl font-bold text-orange-600">₹{analytics.revenue.outstanding.toLocaleString('en-IN')}</p>
+                  <p className="text-2xl font-bold text-[#FF8C00]">₹{analytics.revenue.outstanding.toLocaleString('en-IN')}</p>
                 </div>
                 <Clock className="h-8 w-8 text-orange-500" />
               </div>
@@ -504,7 +504,7 @@ export default function Invoices() {
                       <p className="text-xs text-[rgba(244,246,240,0.25)]">Total</p>
                       <p className="font-bold text-lg">₹{invoice.total?.toLocaleString('en-IN')}</p>
                       {invoice.balance_due > 0 && (
-                        <p className="text-xs text-orange-600">Due: ₹{invoice.balance_due?.toLocaleString('en-IN')}</p>
+                        <p className="text-xs text-[#FF8C00]">Due: ₹{invoice.balance_due?.toLocaleString('en-IN')}</p>
                       )}
                     </div>
                     <div className="flex gap-1">

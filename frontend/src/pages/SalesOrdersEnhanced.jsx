@@ -24,7 +24,7 @@ import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "
 
 const statusColors = {
   draft: "bg-gray-100 text-[#F4F6F0]",
-  confirmed: "bg-blue-100 text-blue-700",
+  confirmed: "bg-blue-100 text-[#3B9EFF]",
   open: "bg-green-100 text-[#22C55E]",
   partially_fulfilled: "bg-yellow-100 text-yellow-700",
   fulfilled: "bg-purple-100 text-purple-700",
@@ -841,7 +841,7 @@ export default function SalesOrdersEnhanced() {
                               </td>
                               <td className="px-3 py-2 text-right">{item.quantity_ordered || item.quantity} {item.unit}</td>
                               <td className="px-3 py-2 text-right text-[#22C55E]">{item.quantity_fulfilled || 0}</td>
-                              <td className="px-3 py-2 text-right text-orange-600">{(item.quantity_ordered || item.quantity) - (item.quantity_fulfilled || 0)}</td>
+                              <td className="px-3 py-2 text-right text-[#FF8C00]">{(item.quantity_ordered || item.quantity) - (item.quantity_fulfilled || 0)}</td>
                               <td className="px-3 py-2 text-right">₹{item.rate?.toLocaleString('en-IN')}</td>
                               <td className="px-3 py-2 text-right font-medium">₹{item.total?.toLocaleString('en-IN')}</td>
                             </tr>
@@ -966,7 +966,7 @@ export default function SalesOrdersEnhanced() {
                         <td className="px-3 py-2">{item.name}</td>
                         <td className="px-3 py-2 text-right">{item.quantity_ordered}</td>
                         <td className="px-3 py-2 text-right text-[#22C55E]">{item.quantity_fulfilled}</td>
-                        <td className="px-3 py-2 text-right text-orange-600">{remaining}</td>
+                        <td className="px-3 py-2 text-right text-[#FF8C00]">{remaining}</td>
                         <td className="px-3 py-2 text-right">
                           <Input 
                             type="number" 

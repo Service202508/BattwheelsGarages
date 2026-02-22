@@ -231,7 +231,7 @@ export default function AMCManagement({ user }) {
   const getStatusBadge = (status) => {
     const configs = {
       active: { color: "bg-green-100 text-green-700", label: "Active" },
-      expiring: { color: "bg-orange-100 text-orange-700", label: "Expiring" },
+      expiring: { color: "bg-orange-100 text-[#FF8C00]", label: "Expiring" },
       expired: { color: "bg-red-100 text-red-700", label: "Expired" },
       cancelled: { color: "bg-gray-100 text-gray-700", label: "Cancelled" }
     };
@@ -717,7 +717,7 @@ export default function AMCManagement({ user }) {
                 <li>• <strong>Fleet Essential</strong> - ₹699/mo or ₹5,599/year (2W pricing)</li>
                 <li>• <strong>Fleet Essential Pro</strong> - ₹799/mo or ₹6,499/year (2W pricing)</li>
               </ul>
-              <p className="text-xs text-blue-600 mt-2">
+              <p className="text-xs text-[#3B9EFF] mt-2">
                 * 3W plans are 1.5x, 4W plans are 2x the 2W pricing
               </p>
             </div>

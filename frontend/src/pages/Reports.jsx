@@ -288,13 +288,13 @@ export default function Reports() {
                     </Card>
                     <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
                       <CardContent className="p-4">
-                        <p className="text-xs text-orange-700 font-medium">Cost of Goods</p>
+                        <p className="text-xs text-[#FF8C00] font-medium">Cost of Goods</p>
                         <p className="text-xl font-bold text-orange-800">{formatCurrency(profitLoss.total_cogs)}</p>
                       </CardContent>
                     </Card>
                     <Card className="bg-blue-50 border-blue-200">
                       <CardContent className="p-4">
-                        <p className="text-xs text-blue-700 font-medium">Gross Profit</p>
+                        <p className="text-xs text-[#3B9EFF] font-medium">Gross Profit</p>
                         <p className="text-xl font-bold text-blue-800">{formatCurrency(profitLoss.gross_profit)}</p>
                       </CardContent>
                     </Card>
@@ -498,7 +498,7 @@ export default function Reports() {
                     <Card className="border-l-4 border-l-orange-400">
                       <CardContent className="p-3 text-center">
                         <p className="text-xs text-gray-500">31-60 Days</p>
-                        <p className="text-lg font-bold text-orange-700">{formatCurrency(arAging.aging_data?.["31_60"])}</p>
+                        <p className="text-lg font-bold text-[#FF8C00]">{formatCurrency(arAging.aging_data?.["31_60"])}</p>
                       </CardContent>
                     </Card>
                     <Card className="border-l-4 border-l-orange-600">
@@ -601,7 +601,7 @@ export default function Reports() {
                     <Card className="border-l-4 border-l-orange-400">
                       <CardContent className="p-3 text-center">
                         <p className="text-xs text-gray-500">31-60 Days</p>
-                        <p className="text-lg font-bold text-orange-700">{formatCurrency(apAging.aging_data?.["31_60"])}</p>
+                        <p className="text-lg font-bold text-[#FF8C00]">{formatCurrency(apAging.aging_data?.["31_60"])}</p>
                       </CardContent>
                     </Card>
                     <Card className="border-l-4 border-l-orange-600">
@@ -691,7 +691,7 @@ export default function Reports() {
                   <div className="grid grid-cols-2 gap-4">
                     <Card className="bg-blue-50 border-blue-200">
                       <CardContent className="p-4">
-                        <p className="text-xs text-blue-700 font-medium">Total Invoices</p>
+                        <p className="text-xs text-[#3B9EFF] font-medium">Total Invoices</p>
                         <p className="text-2xl font-bold text-blue-800">{salesByCustomer.total_invoices || 0}</p>
                       </CardContent>
                     </Card>
