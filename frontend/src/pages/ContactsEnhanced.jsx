@@ -1062,29 +1062,29 @@ export default function ContactsEnhanced() {
 
       {/* Add Person Dialog */}
       <Dialog open={showPersonDialog} onOpenChange={setShowPersonDialog}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Add Contact Person</DialogTitle></DialogHeader>
+        <DialogContent className="bg-[#111820] border-[rgba(255,255,255,0.13)]">
+          <DialogHeader><DialogTitle className="text-[#F4F6F0] font-bold">Add Contact Person</DialogTitle></DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
-              <div><Label>First Name *</Label><Input value={newPerson.first_name} onChange={(e) => setNewPerson({ ...newPerson, first_name: e.target.value })} /></div>
-              <div><Label>Last Name</Label><Input value={newPerson.last_name} onChange={(e) => setNewPerson({ ...newPerson, last_name: e.target.value })} /></div>
+              <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">First Name *</Label><Input value={newPerson.first_name} onChange={(e) => setNewPerson({ ...newPerson, first_name: e.target.value })} className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] focus:border-[#C8FF00]" /></div>
+              <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">Last Name</Label><Input value={newPerson.last_name} onChange={(e) => setNewPerson({ ...newPerson, last_name: e.target.value })} className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] focus:border-[#C8FF00]" /></div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div><Label>Email</Label><Input value={newPerson.email} onChange={(e) => setNewPerson({ ...newPerson, email: e.target.value })} /></div>
-              <div><Label>Phone</Label><Input value={newPerson.phone} onChange={(e) => setNewPerson({ ...newPerson, phone: e.target.value })} /></div>
+              <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">Email</Label><Input value={newPerson.email} onChange={(e) => setNewPerson({ ...newPerson, email: e.target.value })} className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] focus:border-[#C8FF00]" /></div>
+              <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">Phone</Label><Input value={newPerson.phone} onChange={(e) => setNewPerson({ ...newPerson, phone: e.target.value })} className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] focus:border-[#C8FF00]" /></div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div><Label>Designation</Label><Input value={newPerson.designation} onChange={(e) => setNewPerson({ ...newPerson, designation: e.target.value })} placeholder="e.g. Manager" /></div>
-              <div><Label>Department</Label><Input value={newPerson.department} onChange={(e) => setNewPerson({ ...newPerson, department: e.target.value })} placeholder="e.g. Sales" /></div>
+              <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">Designation</Label><Input value={newPerson.designation} onChange={(e) => setNewPerson({ ...newPerson, designation: e.target.value })} placeholder="e.g. Manager" className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.20)] focus:border-[#C8FF00]" /></div>
+              <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">Department</Label><Input value={newPerson.department} onChange={(e) => setNewPerson({ ...newPerson, department: e.target.value })} placeholder="e.g. Sales" className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.20)] focus:border-[#C8FF00]" /></div>
             </div>
             <div className="flex items-center gap-2">
               <Switch checked={newPerson.is_primary} onCheckedChange={(checked) => setNewPerson({ ...newPerson, is_primary: checked })} />
-              <Label>Primary Contact</Label>
+              <Label className="text-[#F4F6F0]">Primary Contact</Label>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPersonDialog(false)}>Cancel</Button>
-            <Button onClick={handleAddPerson} className="bg-[#22EDA9] text-black">Add Person</Button>
+          <DialogFooter className="border-t border-[rgba(255,255,255,0.07)] pt-4">
+            <Button variant="outline" onClick={() => setShowPersonDialog(false)} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]">Cancel</Button>
+            <Button onClick={handleAddPerson} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">Add Person</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
