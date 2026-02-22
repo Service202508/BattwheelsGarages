@@ -7,7 +7,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://cloud-finance-suite.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://service-form-2.preview.emergentagent.com').rstrip('/')
 
 class TestItemGroups:
     """Test Item Groups CRUD operations"""
