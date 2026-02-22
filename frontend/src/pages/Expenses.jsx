@@ -58,7 +58,7 @@ export default function Expenses() {
   const [total, setTotal] = useState(0);
   const [expenseTotal, setExpenseTotal] = useState(0);
 
-  const [newExpense, setNewExpense] = useState({
+  const initialExpenseData = {
     expense_date: new Date().toISOString().split('T')[0],
     expense_account: "",
     amount: 0,
@@ -66,7 +66,23 @@ export default function Expenses() {
     vendor_name: "",
     description: "",
     tax_rate: 0
-  });
+  };
+
+  const [newExpense, setNewExpense] = useState(initialExpenseData);
+
+  // Auto-save for Expense form
+  const expensePersistence = useFormPersistence(
+    'expense_new',
+    newExpense,
+    initialExpenseData,
+    {
+      enabled: showAddDialog,
+      isDialogOpen: showAddDialog,
+      setFormData: setNewExpense,
+      debounceMs: 2000,
+      entityName: 'Expense'
+    }
+  );
 
   useEffect(() => { fetchExpenses(); }, [search]);
 
