@@ -116,12 +116,9 @@ export default function Expenses() {
       });
       if (res.ok) {
         toast.success("Expense recorded");
+        expensePersistence.onSuccessfulSave();
         setShowAddDialog(false);
-        setNewExpense({
-          expense_date: new Date().toISOString().split('T')[0],
-          expense_account: "", amount: 0, paid_through: "Petty Cash",
-          vendor_name: "", description: "", tax_rate: 0
-        });
+        setNewExpense(initialExpenseData);
         fetchExpenses();
       }
     } catch { toast.error("Error recording expense"); }
