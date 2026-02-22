@@ -217,7 +217,7 @@ export default function GSTReports() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">GST Reports</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">
             GSTR-1, GSTR-3B, and HSN Summary for GST filing
           </p>
         </div>
@@ -285,13 +285,13 @@ export default function GSTReports() {
 
       {/* Current GSTIN Display */}
       {orgSettings?.gstin && (
-        <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
+        <Card className="bg-[#111820] border border-[rgba(200,255,0,0.25)]">
           <CardContent className="py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
+              <Badge variant="outline" className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] font-mono tracking-wider">
                 GSTIN: {orgSettings.gstin}
               </Badge>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-[rgba(244,246,240,0.45)]">
                 State: {indianStates.find(s => s.code === orgSettings.place_of_supply)?.name || orgSettings.place_of_supply}
               </span>
             </div>
@@ -356,71 +356,71 @@ export default function GSTReports() {
                 <div className="space-y-6">
                   {/* Summary Cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Card className="bg-blue-50 border-blue-200">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
                       <CardContent className="p-4">
                         <p className="text-xs text-[#3B9EFF] font-medium">Total Invoices</p>
-                        <p className="text-2xl font-bold text-blue-800">{gstr1Data.grand_total?.total_invoices || 0}</p>
+                        <p className="text-2xl font-bold text-[#F4F6F0]">{gstr1Data.grand_total?.total_invoices || 0}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
                       <CardContent className="p-4">
-                        <p className="text-xs text-green-700 font-medium">Taxable Value</p>
-                        <p className="text-xl font-bold text-green-800">{formatCurrency(gstr1Data.grand_total?.taxable_value)}</p>
+                        <p className="text-xs text-[#22C55E] font-medium">Taxable Value</p>
+                        <p className="text-xl font-bold text-[#22C55E]">{formatCurrency(gstr1Data.grand_total?.taxable_value)}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
                       <CardContent className="p-4">
                         <p className="text-xs text-[#FF8C00] font-medium">CGST + SGST</p>
-                        <p className="text-xl font-bold text-orange-800">{formatCurrency((gstr1Data.grand_total?.cgst || 0) + (gstr1Data.grand_total?.sgst || 0))}</p>
+                        <p className="text-xl font-bold text-[#FF8C00]">{formatCurrency((gstr1Data.grand_total?.cgst || 0) + (gstr1Data.grand_total?.sgst || 0))}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-[rgba(139,92,246,0.08)] border-purple-200">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
                       <CardContent className="p-4">
                         <p className="text-xs text-[#8B5CF6] font-medium">IGST</p>
-                        <p className="text-xl font-bold text-purple-800">{formatCurrency(gstr1Data.grand_total?.igst)}</p>
+                        <p className="text-xl font-bold text-[#8B5CF6]">{formatCurrency(gstr1Data.grand_total?.igst)}</p>
                       </CardContent>
                     </Card>
                   </div>
 
                   {/* B2B Section */}
                   <div>
-                    <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                      <Badge className="bg-blue-100 text-blue-800">B2B</Badge>
+                    <h3 className="font-semibold text-lg mb-3 flex items-center gap-2 text-[#F4F6F0]">
+                      <Badge className="bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]">B2B</Badge>
                       Registered Business Invoices ({gstr1Data.b2b?.summary?.count || 0})
                     </h3>
-                    <div className="border rounded-lg overflow-hidden">
+                    <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
                       <Table>
                         <TableHeader>
-                          <TableRow className="bg-gray-50">
-                            <TableHead>Invoice #</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Customer</TableHead>
-                            <TableHead>GSTIN</TableHead>
-                            <TableHead className="text-right">Taxable</TableHead>
-                            <TableHead className="text-right">CGST</TableHead>
-                            <TableHead className="text-right">SGST</TableHead>
-                            <TableHead className="text-right">IGST</TableHead>
+                          <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Invoice #</TableHead>
+                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Date</TableHead>
+                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Customer</TableHead>
+                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">GSTIN</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Taxable</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">CGST</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">SGST</TableHead>
+                            <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">IGST</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {gstr1Data.b2b?.invoices?.slice(0, 10).map((inv, idx) => (
-                            <TableRow key={idx}>
-                              <TableCell className="font-medium">{inv.invoice_number}</TableCell>
-                              <TableCell>{inv.invoice_date}</TableCell>
-                              <TableCell>{inv.customer_name?.slice(0, 25)}</TableCell>
-                              <TableCell className="font-mono text-xs">{inv.customer_gstin}</TableCell>
-                              <TableCell className="text-right">{formatCurrency(inv.taxable_value)}</TableCell>
-                              <TableCell className="text-right">{formatCurrency(inv.cgst)}</TableCell>
-                              <TableCell className="text-right">{formatCurrency(inv.sgst)}</TableCell>
-                              <TableCell className="text-right">{formatCurrency(inv.igst)}</TableCell>
+                            <TableRow key={idx} className="border-b border-[rgba(255,255,255,0.07)]">
+                              <TableCell className="font-medium text-[#F4F6F0]">{inv.invoice_number}</TableCell>
+                              <TableCell className="text-[#F4F6F0]">{inv.invoice_date}</TableCell>
+                              <TableCell className="text-[#F4F6F0]">{inv.customer_name?.slice(0, 25)}</TableCell>
+                              <TableCell className="font-mono text-xs text-[#C8FF00] tracking-wider">{inv.customer_gstin}</TableCell>
+                              <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(inv.taxable_value)}</TableCell>
+                              <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(inv.cgst)}</TableCell>
+                              <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(inv.sgst)}</TableCell>
+                              <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(inv.igst)}</TableCell>
                             </TableRow>
                           ))}
-                          <TableRow className="bg-blue-50 font-semibold">
-                            <TableCell colSpan={4}>Total B2B</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr1Data.b2b?.summary?.taxable_value)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr1Data.b2b?.summary?.cgst)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr1Data.b2b?.summary?.sgst)}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(gstr1Data.b2b?.summary?.igst)}</TableCell>
+                          <TableRow className="bg-[rgba(59,158,255,0.08)] font-semibold border-b border-[rgba(255,255,255,0.07)]">
+                            <TableCell colSpan={4} className="text-[#F4F6F0]">Total B2B</TableCell>
+                            <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(gstr1Data.b2b?.summary?.taxable_value)}</TableCell>
+                            <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(gstr1Data.b2b?.summary?.cgst)}</TableCell>
+                            <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(gstr1Data.b2b?.summary?.sgst)}</TableCell>
+                            <TableCell className="text-right text-[#F4F6F0]">{formatCurrency(gstr1Data.b2b?.summary?.igst)}</TableCell>
                           </TableRow>
                         </TableBody>
                       </Table>
@@ -429,34 +429,34 @@ export default function GSTReports() {
 
                   {/* B2C Summary */}
                   <div className="grid md:grid-cols-2 gap-4">
-                    <Card>
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
                       <CardHeader className="py-3">
-                        <CardTitle className="text-base flex items-center gap-2">
-                          <Badge className="bg-green-100 text-green-800">B2C Large</Badge>
+                        <CardTitle className="text-base flex items-center gap-2 text-[#F4F6F0]">
+                          <Badge className="bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.25)]">B2C Large</Badge>
                           Inter-state &gt; ₹2.5L
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-2">
-                          <div className="flex justify-between"><span className="text-gray-600">Count:</span><span className="font-medium">{gstr1Data.b2c_large?.summary?.count || 0}</span></div>
-                          <div className="flex justify-between"><span className="text-gray-600">Taxable:</span><span className="font-medium">{formatCurrency(gstr1Data.b2c_large?.summary?.taxable_value)}</span></div>
-                          <div className="flex justify-between"><span className="text-gray-600">IGST:</span><span className="font-medium">{formatCurrency(gstr1Data.b2c_large?.summary?.igst)}</span></div>
+                          <div className="flex justify-between"><span className="text-[rgba(244,246,240,0.45)]">Count:</span><span className="font-medium text-[#F4F6F0]">{gstr1Data.b2c_large?.summary?.count || 0}</span></div>
+                          <div className="flex justify-between"><span className="text-[rgba(244,246,240,0.45)]">Taxable:</span><span className="font-medium text-[#F4F6F0]">{formatCurrency(gstr1Data.b2c_large?.summary?.taxable_value)}</span></div>
+                          <div className="flex justify-between"><span className="text-[rgba(244,246,240,0.45)]">IGST:</span><span className="font-medium text-[#F4F6F0]">{formatCurrency(gstr1Data.b2c_large?.summary?.igst)}</span></div>
                         </div>
                       </CardContent>
                     </Card>
-                    <Card>
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
                       <CardHeader className="py-3">
-                        <CardTitle className="text-base flex items-center gap-2">
-                          <Badge className="bg-orange-100 text-orange-800">B2C Small</Badge>
+                        <CardTitle className="text-base flex items-center gap-2 text-[#F4F6F0]">
+                          <Badge className="bg-[rgba(255,140,0,0.10)] text-[#FF8C00] border border-[rgba(255,140,0,0.25)]">B2C Small</Badge>
                           Other B2C
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-2">
-                          <div className="flex justify-between"><span className="text-gray-600">Count:</span><span className="font-medium">{gstr1Data.b2c_small?.summary?.count || 0}</span></div>
-                          <div className="flex justify-between"><span className="text-gray-600">Taxable:</span><span className="font-medium">{formatCurrency(gstr1Data.b2c_small?.summary?.taxable_value)}</span></div>
-                          <div className="flex justify-between"><span className="text-gray-600">CGST:</span><span className="font-medium">{formatCurrency(gstr1Data.b2c_small?.summary?.cgst)}</span></div>
-                          <div className="flex justify-between"><span className="text-gray-600">SGST:</span><span className="font-medium">{formatCurrency(gstr1Data.b2c_small?.summary?.sgst)}</span></div>
+                          <div className="flex justify-between"><span className="text-[rgba(244,246,240,0.45)]">Count:</span><span className="font-medium text-[#F4F6F0]">{gstr1Data.b2c_small?.summary?.count || 0}</span></div>
+                          <div className="flex justify-between"><span className="text-[rgba(244,246,240,0.45)]">Taxable:</span><span className="font-medium text-[#F4F6F0]">{formatCurrency(gstr1Data.b2c_small?.summary?.taxable_value)}</span></div>
+                          <div className="flex justify-between"><span className="text-[rgba(244,246,240,0.45)]">CGST:</span><span className="font-medium text-[#F4F6F0]">{formatCurrency(gstr1Data.b2c_small?.summary?.cgst)}</span></div>
+                          <div className="flex justify-between"><span className="text-[rgba(244,246,240,0.45)]">SGST:</span><span className="font-medium text-[#F4F6F0]">{formatCurrency(gstr1Data.b2c_small?.summary?.sgst)}</span></div>
                         </div>
                       </CardContent>
                     </Card>
