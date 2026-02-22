@@ -265,7 +265,7 @@ export default function CustomerInvoices({ user }) {
                     Download PDF
                   </Button>
                   {selectedInvoice.payment_status !== 'paid' && (
-                    <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700">
+                    <Button className="flex-1 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
                       <CreditCard className="h-4 w-4 mr-2" />
                       Pay Now
                     </Button>
