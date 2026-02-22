@@ -300,7 +300,7 @@ export default function BusinessAMC({ user }) {
           
           {selectedContract && (
             <div className="space-y-4 py-4">
-              <div className="flex items-center justify-between p-4 rounded-xl bg-indigo-50">
+              <div className="flex items-center justify-between p-4 rounded bg-indigo-50">
                 <div>
                   <p className="text-sm text-indigo-600">Plan</p>
                   <p className="font-semibold text-indigo-700">{selectedContract.plan_name}</p>
