@@ -106,18 +106,19 @@ const StatCard = React.forwardRef(({
   ...props
 }, ref) => {
   const variantStyles = variants[variant] || variants.default;
+  const isZeroValue = value === 0 || value === "0" || value === "₹0";
 
   if (loading) {
     return (
-      <Card ref={ref} className={cn(variantStyles.card, className)} {...props}>
+      <Card ref={ref} className={cn("border rounded", variantStyles.card, className)} {...props}>
         <CardContent className="pt-4 pb-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1 space-y-2">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-7 w-16" />
-              {subtitle && <Skeleton className="h-3 w-20" />}
+              <Skeleton className="h-4 w-24 bg-[rgba(255,255,255,0.05)]" />
+              <Skeleton className="h-7 w-16 bg-[rgba(255,255,255,0.05)]" />
+              {subtitle && <Skeleton className="h-3 w-20 bg-[rgba(255,255,255,0.05)]" />}
             </div>
-            <Skeleton className="h-10 w-10 rounded-lg" />
+            <Skeleton className="h-10 w-10 rounded bg-[rgba(255,255,255,0.05)]" />
           </div>
         </CardContent>
       </Card>
@@ -125,31 +126,33 @@ const StatCard = React.forwardRef(({
   }
 
   return (
-    <Card ref={ref} className={cn(variantStyles.card, className)} {...props}>
+    <Card ref={ref} className={cn("border rounded card-hover", variantStyles.card, className)} {...props}>
       <CardContent className="pt-4 pb-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-xs sm:text-sm text-muted-foreground font-medium truncate">
+            <p className="text-[11px] text-[rgba(244,246,240,0.45)] font-medium uppercase tracking-[0.08em] truncate">
               {title}
             </p>
             <p 
               className={cn(
                 "text-lg sm:text-xl md:text-2xl font-bold mt-1 truncate",
-                variantStyles.value
+                isZeroValue ? "text-[rgba(244,246,240,0.2)]" : variantStyles.value,
+                !isZeroValue && variant === "default" && "text-shadow-volt"
               )}
+              style={!isZeroValue && variant === "default" ? { textShadow: '0 0 24px rgba(200,255,0,0.25)' } : undefined}
               title={typeof value === 'string' ? value : undefined}
             >
               {value}
             </p>
             {subtitle && (
-              <p className="text-xs text-muted-foreground mt-1 truncate">
+              <p className="text-[11px] text-[rgba(244,246,240,0.25)] mt-1 truncate">
                 {subtitle}
               </p>
             )}
             {trend && (
               <div className={cn(
                 "flex items-center gap-1 mt-1 text-xs",
-                trend === "up" ? "text-green-600" : "text-red-600"
+                trend === "up" ? "text-[#22C55E]" : "text-[#FF3B2F]"
               )}>
                 {trend === "up" ? "↑" : "↓"} {trendValue}
               </div>
@@ -157,7 +160,7 @@ const StatCard = React.forwardRef(({
           </div>
           {Icon && (
             <div className={cn(
-              "h-9 w-9 sm:h-10 sm:w-10 rounded-lg flex items-center justify-center shrink-0",
+              "h-9 w-9 sm:h-10 sm:w-10 rounded flex items-center justify-center shrink-0 opacity-70",
               variantStyles.iconContainer
             )}>
               <Icon className={cn("h-4 w-4 sm:h-5 sm:w-5", variantStyles.icon)} strokeWidth={1.5} />
