@@ -182,7 +182,7 @@ export default function BusinessInvoices({ user }) {
         {selectedInvoices.length > 0 && (
           <Button 
             onClick={() => setShowPaymentDialog(true)}
-            className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30"
+            className="bg-indigo-600 hover:bg-indigo-700 hover:shadow-[0_0_20px_rgba(99,102,241,0.30)]"
             data-testid="pay-selected-btn"
           >
             <CreditCard className="h-4 w-4 mr-2" />
@@ -200,7 +200,7 @@ export default function BusinessInvoices({ user }) {
                 <p className="text-sm text-slate-500">Total Invoiced</p>
                 <p className="text-2xl font-bold text-slate-900">{formatCurrency(summary.total_invoiced)}</p>
               </div>
-              <div className="p-3 rounded-xl bg-indigo-50">
+              <div className="p-3 rounded bg-indigo-50">
                 <FileText className="h-5 w-5 text-indigo-600" />
               </div>
             </div>
@@ -214,7 +214,7 @@ export default function BusinessInvoices({ user }) {
                 <p className="text-sm text-slate-500">Pending Payment</p>
                 <p className="text-2xl font-bold text-amber-600">{formatCurrency(summary.pending_payment)}</p>
               </div>
-              <div className="p-3 rounded-xl bg-amber-50">
+              <div className="p-3 rounded bg-amber-50">
                 <Clock className="h-5 w-5 text-amber-600" />
               </div>
             </div>
@@ -230,7 +230,7 @@ export default function BusinessInvoices({ user }) {
                   {formatCurrency(summary.total_invoiced - summary.pending_payment)}
                 </p>
               </div>
-              <div className="p-3 rounded-xl bg-[rgba(200,255,0,0.08)]">
+              <div className="p-3 rounded bg-[rgba(200,255,0,0.08)]">
                 <CheckCircle className="h-5 w-5 text-[#C8FF00] text-600" />
               </div>
             </div>
