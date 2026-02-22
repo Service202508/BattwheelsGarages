@@ -156,9 +156,9 @@ export default function OpeningBalances() {
 
   const getEntityTypeBadge = (type) => {
     const styles = {
-      customer: "bg-blue-100 text-blue-800",
-      vendor: "bg-orange-100 text-orange-800",
-      account: "bg-purple-100 text-purple-800"
+      customer: "bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]",
+      vendor: "bg-[rgba(255,140,0,0.10)] text-[#FF8C00] border border-[rgba(255,140,0,0.25)]",
+      account: "bg-[rgba(139,92,246,0.10)] text-[#8B5CF6] border border-[rgba(139,92,246,0.25)]"
     };
     return <Badge className={styles[type] || "bg-[rgba(255,255,255,0.05)]"}>{type}</Badge>;
   };
@@ -178,7 +178,7 @@ export default function OpeningBalances() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Opening Balances</h1>
-          <p className="text-gray-500 text-sm mt-1">Set initial balances for customers, vendors, and accounts</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Set initial balances for customers, vendors, and accounts</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" onClick={fetchBalances}>
@@ -239,7 +239,7 @@ export default function OpeningBalances() {
                       placeholder="Use negative for credit balance"
                       data-testid="opening-balance-input"
                     />
-                    <p className="text-xs text-gray-500">Positive = Debit, Negative = Credit</p>
+                    <p className="text-xs text-[rgba(244,246,240,0.45)]">Positive = Debit, Negative = Credit</p>
                   </div>
                   <div className="space-y-2">
                     <Label>As of Date *</Label>
@@ -273,41 +273,41 @@ export default function OpeningBalances() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="bg-blue-50 border-blue-200">
+        <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
+              <div className="p-2 bg-[rgba(59,158,255,0.10)] rounded">
                 <IndianRupee className="h-5 w-5 text-[#3B9EFF]" />
               </div>
               <div>
                 <p className="text-xs text-[#3B9EFF]">Total Entries</p>
-                <p className="text-xl font-bold text-blue-800">{balances.length}</p>
+                <p className="text-xl font-bold text-[#F4F6F0]">{balances.length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
+        <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <IndianRupee className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-[rgba(34,197,94,0.10)] rounded">
+                <IndianRupee className="h-5 w-5 text-[#22C55E]" />
               </div>
               <div>
-                <p className="text-xs text-green-600">Total Debit</p>
-                <p className="text-xl font-bold text-green-800">{formatCurrency(totals.debit)}</p>
+                <p className="text-xs text-[#22C55E]">Total Debit</p>
+                <p className="text-xl font-bold text-[#22C55E]">{formatCurrency(totals.debit)}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[rgba(255,59,47,0.08)] border-red-200">
+        <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <IndianRupee className="h-5 w-5 text-red-600" />
+              <div className="p-2 bg-[rgba(255,59,47,0.10)] rounded">
+                <IndianRupee className="h-5 w-5 text-[#FF3B2F]" />
               </div>
               <div>
-                <p className="text-xs text-red-600">Total Credit</p>
-                <p className="text-xl font-bold text-red-800">{formatCurrency(totals.credit)}</p>
+                <p className="text-xs text-[#FF3B2F]">Total Credit</p>
+                <p className="text-xl font-bold text-[#FF3B2F]">{formatCurrency(totals.credit)}</p>
               </div>
             </div>
           </CardContent>
@@ -335,7 +335,7 @@ export default function OpeningBalances() {
                   <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
                 </div>
               ) : balances.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
                   {getEntityIcon(activeTab)}
                   <p className="mt-4">No opening balances set for {activeTab}s</p>
                   <p className="text-sm">Set opening balances to start with accurate financial data</p>
@@ -343,29 +343,29 @@ export default function OpeningBalances() {
               ) : (
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-gray-50">
-                      <TableHead>Entity Name</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead className="text-right">Opening Balance</TableHead>
-                      <TableHead>As of Date</TableHead>
-                      <TableHead>Notes</TableHead>
-                      <TableHead>Created</TableHead>
+                    <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                      <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Entity Name</TableHead>
+                      <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Type</TableHead>
+                      <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Opening Balance</TableHead>
+                      <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">As of Date</TableHead>
+                      <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Notes</TableHead>
+                      <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Created</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {balances.map((bal) => (
-                      <TableRow key={bal.opening_balance_id}>
-                        <TableCell className="font-medium">{bal.entity_name}</TableCell>
+                      <TableRow key={bal.opening_balance_id} className="border-b border-[rgba(255,255,255,0.07)]">
+                        <TableCell className="font-medium text-[#F4F6F0]">{bal.entity_name}</TableCell>
                         <TableCell>{getEntityTypeBadge(bal.entity_type)}</TableCell>
-                        <TableCell className={`text-right font-medium ${bal.opening_balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <TableCell className={`text-right font-medium ${bal.opening_balance >= 0 ? 'text-[#22C55E]' : 'text-[#FF3B2F]'}`}>
                           {bal.opening_balance >= 0 ? '' : '-'}{formatCurrency(Math.abs(bal.opening_balance))}
-                          <span className="text-xs text-gray-500 ml-1">
+                          <span className="text-xs text-[rgba(244,246,240,0.45)] ml-1">
                             ({bal.opening_balance >= 0 ? 'Dr' : 'Cr'})
                           </span>
                         </TableCell>
-                        <TableCell>{bal.as_of_date}</TableCell>
-                        <TableCell className="max-w-[150px] truncate">{bal.notes || "-"}</TableCell>
-                        <TableCell className="text-sm text-gray-500">
+                        <TableCell className="text-[#F4F6F0]">{bal.as_of_date}</TableCell>
+                        <TableCell className="max-w-[150px] truncate text-[rgba(244,246,240,0.45)]">{bal.notes || "-"}</TableCell>
+                        <TableCell className="text-sm text-[rgba(244,246,240,0.45)]">
                           {bal.created_time ? new Date(bal.created_time).toLocaleDateString() : "-"}
                         </TableCell>
                       </TableRow>
