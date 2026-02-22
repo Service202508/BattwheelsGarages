@@ -233,7 +233,7 @@ export default function AMCManagement({ user }) {
       active: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", label: "Active" },
       expiring: { color: "bg-orange-100 text-[#FF8C00]", label: "Expiring" },
       expired: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", label: "Expired" },
-      cancelled: { color: "bg-gray-100 text-gray-700", label: "Cancelled" }
+      cancelled: { color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]", label: "Cancelled" }
     };
     const config = configs[status] || configs.active;
     return <Badge className={config.color}>{config.label}</Badge>;

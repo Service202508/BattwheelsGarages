@@ -188,9 +188,9 @@ export default function TeamManagement({ user }) {
       manager: "bg-blue-100 text-[#3B9EFF]",
       technician: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
       accountant: "bg-teal-100 text-teal-700",
-      viewer: "bg-gray-100 text-gray-700"
+      viewer: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"
     };
-    return colors[role] || "bg-gray-100 text-gray-700";
+    return colors[role] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]";
   };
 
   const getStatusBadgeColor = (status) => {
@@ -198,9 +198,9 @@ export default function TeamManagement({ user }) {
       pending: "bg-yellow-100 text-[#EAB308]",
       accepted: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
       expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-      cancelled: "bg-gray-100 text-gray-700"
+      cancelled: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"
     };
-    return colors[status] || "bg-gray-100 text-gray-700";
+    return colors[status] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]";
   };
 
   const getInitials = (name) => {

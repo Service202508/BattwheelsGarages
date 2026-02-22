@@ -42,7 +42,7 @@ export default function CustomerVehicles({ user }) {
       expiring: "bg-orange-100 text-[#FF8C00] border-orange-200",
       expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)] border-red-200"
     };
-    return colors[status] || "bg-gray-100 text-gray-700";
+    return colors[status] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]";
   };
 
   if (loading) {

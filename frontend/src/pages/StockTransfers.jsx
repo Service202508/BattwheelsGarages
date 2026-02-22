@@ -17,7 +17,7 @@ import {
 import { API } from "@/App";
 
 const statusConfig = {
-  draft: { label: "Draft", color: "bg-gray-100 text-gray-700", icon: Clock },
+  draft: { label: "Draft", color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]", icon: Clock },
   pending: { label: "Pending", color: "bg-yellow-100 text-[#EAB308]", icon: Clock },
   in_transit: { label: "In Transit", color: "bg-blue-100 text-[#3B9EFF]", icon: Truck },
   received: { label: "Received", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: CheckCircle2 },

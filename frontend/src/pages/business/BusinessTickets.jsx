@@ -22,7 +22,7 @@ const statusColors = {
   assigned: "bg-purple-100 text-[#8B5CF6] border-purple-200",
   technician_assigned: "bg-purple-100 text-[#8B5CF6] border-purple-200",
   work_in_progress: "bg-amber-100 text-amber-700 border-amber-200",
-  estimate_sent: "bg-cyan-100 text-cyan-700 border-cyan-200",
+  estimate_sent: "bg-[rgba(26,255,228,0.10)] text-[#1AFFE4] border border-[rgba(26,255,228,0.25)] border-cyan-200",
   estimate_approved: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700 border-emerald-200",
   work_completed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] border-green-200",
   closed: "bg-slate-100 text-slate-600 border-[rgba(255,255,255,0.07)] border-200",

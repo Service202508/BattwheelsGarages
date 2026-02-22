@@ -64,12 +64,12 @@ export default function SubscriptionManagement() {
 
   const getPlanBadgeColor = (planCode) => {
     const colors = {
-      free: "bg-gray-100 text-gray-700",
+      free: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
       starter: "bg-blue-100 text-[#3B9EFF]",
       professional: "bg-purple-100 text-[#8B5CF6]",
       enterprise: "bg-amber-100 text-amber-700"
     };
-    return colors[planCode] || "bg-gray-100 text-gray-700";
+    return colors[planCode] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]";
   };
 
   const getStatusBadge = (status) => {
@@ -77,7 +77,7 @@ export default function SubscriptionManagement() {
       trialing: { color: "bg-blue-100 text-[#3B9EFF]", icon: Clock, label: "Trial" },
       active: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: Check, label: "Active" },
       past_due: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: AlertTriangle, label: "Past Due" },
-      canceled: { color: "bg-gray-100 text-gray-700", icon: X, label: "Canceled" },
+      canceled: { color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]", icon: X, label: "Canceled" },
       suspended: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: AlertTriangle, label: "Suspended" }
     };
     return badges[status] || badges.active;

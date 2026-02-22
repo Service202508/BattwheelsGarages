@@ -34,7 +34,7 @@ const ACTION_TYPES = {
   created: { label: "Created", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: Plus },
   updated: { label: "Updated", color: "bg-blue-100 text-[#3B9EFF]", icon: Edit },
   deleted: { label: "Deleted", color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: Trash2 },
-  viewed: { label: "Viewed", color: "bg-gray-100 text-gray-700", icon: Eye },
+  viewed: { label: "Viewed", color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]", icon: Eye },
   sent: { label: "Sent", color: "bg-purple-100 text-[#8B5CF6]", icon: FileText },
   paid: { label: "Paid", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700", icon: FileText },
   approved: { label: "Approved", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: FileText },
@@ -86,7 +86,7 @@ export default function ActivityLogs() {
   const getActionBadge = (action) => {
     const config = ACTION_TYPES[action?.toLowerCase()] || { 
       label: action, 
-      color: "bg-gray-100 text-gray-700" 
+      color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]" 
     };
     const Icon = config.icon || Activity;
     return (

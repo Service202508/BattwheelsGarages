@@ -355,7 +355,7 @@ export default function Items() {
                           </div>
                         </td>
                         <td className="px-4 py-3 text-gray-600">{item.sku || '-'}</td>
-                        <td className="px-4 py-3"><Badge className={itemTypeColors[item.item_type] || "bg-gray-100 text-gray-700"}>{item.item_type}</Badge></td>
+                        <td className="px-4 py-3"><Badge className={itemTypeColors[item.item_type] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"}>{item.item_type}</Badge></td>
                         <td className="px-4 py-3 text-right font-medium">₹{item.rate?.toLocaleString('en-IN')}</td>
                         <td className="px-4 py-3 text-right">
                           {isGoodsType(item.item_type) ? (

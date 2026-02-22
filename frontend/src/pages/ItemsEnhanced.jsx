@@ -28,7 +28,7 @@ import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "
 
 const itemTypeColors = {
   inventory: "bg-blue-100 text-[#3B9EFF]",
-  non_inventory: "bg-gray-100 text-gray-700",
+  non_inventory: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
   service: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   sales: "bg-purple-100 text-[#8B5CF6]",
   sales_and_purchases: "bg-orange-100 text-[#FF8C00]"
@@ -1022,7 +1022,7 @@ export default function ItemsEnhanced() {
                       </td>
                       <td className="px-4 py-3 text-gray-600">{item.sku || '-'}</td>
                       <td className="px-4 py-3">
-                        <Badge className={itemTypeColors[item.item_type] || "bg-gray-100 text-gray-700"}>
+                        <Badge className={itemTypeColors[item.item_type] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"}>
                           {itemTypeLabels[item.item_type] || item.item_type}
                         </Badge>
                       </td>
