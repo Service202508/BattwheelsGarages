@@ -879,7 +879,7 @@ async def disconnect_and_purge(request: DisconnectRequest):
                 try:
                     await db.drop_collection(coll)
                     backup_count += 1
-                except:
+                except Exception:
                     pass
         if backup_count > 0:
             purge_stats["backup_collections_dropped"] = backup_count
