@@ -2612,12 +2612,14 @@ export default function EstimatesEnhanced() {
                                       setEditItemSearch(value);
                                       updateEditLineItem(idx, "name", value);
                                       updateEditLineItem(idx, "item_id", "");
-                                      // Filter items
+                                      // Filter items - debug log
+                                      console.log("Edit search - items count:", items.length, "search:", value);
                                       if (value.length >= 1) {
                                         const filtered = items.filter(i => 
                                           i.name?.toLowerCase().includes(value.toLowerCase()) || 
                                           i.sku?.toLowerCase().includes(value.toLowerCase())
                                         );
+                                        console.log("Edit search - filtered count:", filtered.length);
                                         setEditSearchResults(filtered);
                                       } else {
                                         setEditSearchResults([]);
