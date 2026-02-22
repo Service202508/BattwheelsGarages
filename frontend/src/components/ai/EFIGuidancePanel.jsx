@@ -242,13 +242,13 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
 // Diagnostic Step Component
 const DiagnosticStep = ({ step, index, onMarkDone, isDone }) => (
   <div className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
-    isDone ? 'bg-[rgba(200,255,0,0.08)]0/10 border border-emerald-500/30' : 'bg-slate-800/50'
+    isDone ? 'bg-[rgba(200,255,0,0.08)]0/10 border border-[rgba(200,255,0,0.50)]/30' : 'bg-slate-800/50'
   }`}>
     <button
       onClick={() => onMarkDone(index)}
       className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
         isDone 
-          ? 'bg-[rgba(200,255,0,0.08)]0 border-emerald-500 text-white' 
+          ? 'bg-[rgba(200,255,0,0.08)]0 border-[rgba(200,255,0,0.50)] text-white' 
           : 'border-[rgba(255,255,255,0.07)] border-600 hover:border-emerald-400'
       }`}
     >
@@ -501,7 +501,7 @@ export default function EFIGuidancePanel({
             <div>
               <CardTitle className="text-white flex items-center gap-2 text-base sm:text-lg">
                 EFI Guidance
-                <Badge variant="outline" className="text-xs border-emerald-500/50 text-[#C8FF00] text-400">
+                <Badge variant="outline" className="text-xs border-[rgba(200,255,0,0.50)]/50 text-[#C8FF00] text-400">
                   Hinglish
                 </Badge>
               </CardTitle>
@@ -700,7 +700,7 @@ export default function EFIGuidancePanel({
               
               {/* Recommended Fix */}
               {guidance?.recommended_fix && (
-                <div className="p-3 bg-[rgba(200,255,0,0.08)]0/10 border border-emerald-500/30 rounded-lg">
+                <div className="p-3 bg-[rgba(200,255,0,0.08)]0/10 border border-[rgba(200,255,0,0.50)]/30 rounded-lg">
                   <h4 className="text-sm font-medium text-[#C8FF00] text-400 mb-2 flex items-center gap-2">
                     <Wrench className="h-4 w-4" />
                     Recommended Fix

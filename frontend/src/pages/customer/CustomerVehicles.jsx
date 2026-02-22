@@ -145,7 +145,7 @@ export default function CustomerVehicles({ user }) {
                 {/* AMC Info */}
                 {vehicle.amc_plan && (
                   <div className={`p-3 rounded-lg border ${
-                    vehicle.amc_plan.status === 'expiring' ? 'bg-[rgba(255,140,0,0.08)] border-orange-200' : 'bg-[rgba(200,255,0,0.08)] border-emerald-200'
+                    vehicle.amc_plan.status === 'expiring' ? 'bg-[rgba(255,140,0,0.08)] border-orange-200' : 'bg-[rgba(200,255,0,0.08)] border-[rgba(200,255,0,0.20)]'
                   }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">

@@ -258,14 +258,14 @@ How can I help you today?`,
           <div className="flex items-center gap-4">
             <div className="relative">
               <div className="absolute inset-0 bg-[rgba(200,255,0,0.08)]0/20 rounded-xl blur-xl animate-pulse" />
-              <div className="relative p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-xl border border-emerald-500/20">
+              <div className="relative p-3 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-xl border border-[rgba(200,255,0,0.50)]/20">
                 <Sparkles className="h-6 w-6 text-[#C8FF00] text-400" />
               </div>
             </div>
             <div>
               <h1 className="text-xl font-bold text-white flex items-center gap-2">
                 AI Assistant
-                <Badge variant="outline" className="ml-2 border-emerald-500/30 text-[#C8FF00] text-400 text-xs font-normal">
+                <Badge variant="outline" className="ml-2 border-[rgba(200,255,0,0.50)]/30 text-[#C8FF00] text-400 text-xs font-normal">
                   Gemini Powered
                 </Badge>
               </h1>
@@ -282,7 +282,7 @@ How can I help you today?`,
               <RotateCcw className="h-4 w-4 mr-1" />
               Clear
             </Button>
-            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[rgba(200,255,0,0.08)]0/10 border border-emerald-500/20">
+            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[rgba(200,255,0,0.08)]0/10 border border-[rgba(200,255,0,0.50)]/20">
               <div className="h-2 w-2 rounded-full bg-[rgba(200,255,0,0.08)]0 animate-pulse" />
               <span className="text-xs text-[#C8FF00] text-400 font-medium">Online</span>
             </div>
@@ -300,7 +300,7 @@ How can I help you today?`,
                 onClick={() => setSelectedCategory(cat.value)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                   isSelected 
-                    ? "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border border-emerald-500/30" 
+                    ? "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border border-[rgba(200,255,0,0.50)]/30" 
                     : "bg-slate-800/50 text-slate-400 border border-[rgba(255,255,255,0.07)] border-700/50 hover:bg-slate-800 hover:text-white"
                 }`}
               >
@@ -325,7 +325,7 @@ How can I help you today?`,
                 {message.role === "assistant" ? (
                   <div className="relative">
                     <div className="absolute inset-0 bg-[rgba(200,255,0,0.08)]0/20 rounded-full blur-md" />
-                    <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
+                    <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-[rgba(200,255,0,0.50)]/30 flex items-center justify-center">
                       <Bot className="h-5 w-5 text-[#C8FF00] text-400" />
                     </div>
                   </div>
@@ -383,7 +383,7 @@ How can I help you today?`,
             <div className="flex gap-4">
               <div className="relative">
                 <div className="absolute inset-0 bg-[rgba(200,255,0,0.08)]0/20 rounded-full blur-md animate-pulse" />
-                <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
+                <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-[rgba(200,255,0,0.50)]/30 flex items-center justify-center">
                   <Bot className="h-5 w-5 text-[#C8FF00] text-400" />
                 </div>
               </div>
@@ -436,7 +436,7 @@ How can I help you today?`,
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
-              className="pr-20 py-6 bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700/50 rounded-xl text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20"
+              className="pr-20 py-6 bg-slate-800/50 border-[rgba(255,255,255,0.07)] border-700/50 rounded-xl text-white placeholder:text-slate-500 focus:border-[rgba(200,255,0,0.50)]/50 focus:ring-emerald-500/20"
               disabled={loading}
               data-testid="ai-chat-input"
             />

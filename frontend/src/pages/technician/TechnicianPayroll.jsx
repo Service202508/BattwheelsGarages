@@ -10,7 +10,7 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  paid: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-emerald-500/30",
+  paid: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-[rgba(200,255,0,0.50)]/30",
   pending: "bg-amber-500/20 text-amber-400 border-amber-500/30",
   processing: "bg-blue-500/20 text-blue-400 border-blue-500/30",
 };

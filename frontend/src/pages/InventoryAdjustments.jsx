@@ -518,7 +518,7 @@ export default function InventoryAdjustments() {
               <p className="text-xl font-bold">{summary.this_month}</p>
             </CardContent>
           </Card>
-          <Card className="bg-[rgba(200,255,0,0.08)] border-emerald-200">
+          <Card className="bg-[rgba(200,255,0,0.08)] border-[rgba(200,255,0,0.20)]">
             <CardContent className="p-3">
               <p className="text-xs text-[#C8FF00] text-600">Total Increases</p>
               <p className="text-lg font-bold text-[#C8FF00] text-700">{summary.total_increases}</p>

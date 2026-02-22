@@ -342,7 +342,7 @@ export default function AMCManagement({ user }) {
             <p className="text-xs text-gray-500">Tata, MG, Hyundai</p>
           </CardContent>
         </Card>
-        <Card className="bg-[rgba(200,255,0,0.08)] border-emerald-200">
+        <Card className="bg-[rgba(200,255,0,0.08)] border-[rgba(200,255,0,0.20)]">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <IndianRupee className="h-5 w-5 text-[#C8FF00] text-600" />
