@@ -43,49 +43,49 @@ export function formatNumberCompact(num) {
   return num.toLocaleString("en-IN");
 }
 
-// Variant configurations
+// Variant configurations - Dark Volt Theme
 const variants = {
   default: {
-    card: "bg-card border-border",
-    iconContainer: "bg-primary/10",
-    icon: "text-primary",
-    value: "text-foreground"
+    card: "bg-[#111820] border-[rgba(255,255,255,0.07)]",
+    iconContainer: "bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.15)]",
+    icon: "text-[#C8FF00]",
+    value: "text-[#C8FF00]"
   },
   success: {
-    card: "bg-green-50 border-green-200",
-    iconContainer: "bg-green-100",
-    icon: "text-green-600",
-    value: "text-green-700"
+    card: "bg-[#111820] border-[rgba(34,197,94,0.25)]",
+    iconContainer: "bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.2)]",
+    icon: "text-[#22C55E]",
+    value: "text-[#22C55E]"
   },
   warning: {
-    card: "bg-orange-50 border-orange-200",
-    iconContainer: "bg-orange-100",
-    icon: "text-orange-600",
-    value: "text-orange-700"
+    card: "bg-[#111820] border-[rgba(255,140,0,0.25)]",
+    iconContainer: "bg-[rgba(255,140,0,0.1)] border border-[rgba(255,140,0,0.2)]",
+    icon: "text-[#FF8C00]",
+    value: "text-[#FF8C00]"
   },
   danger: {
-    card: "bg-red-50 border-red-200",
-    iconContainer: "bg-red-100",
-    icon: "text-red-600",
-    value: "text-red-700"
+    card: "bg-[#111820] border-[rgba(255,59,47,0.25)]",
+    iconContainer: "bg-[rgba(255,59,47,0.1)] border border-[rgba(255,59,47,0.2)]",
+    icon: "text-[#FF3B2F]",
+    value: "text-[#FF3B2F]"
   },
   info: {
-    card: "bg-blue-50 border-blue-200",
-    iconContainer: "bg-blue-100",
-    icon: "text-blue-600",
-    value: "text-blue-700"
+    card: "bg-[#111820] border-[rgba(59,158,255,0.25)]",
+    iconContainer: "bg-[rgba(59,158,255,0.1)] border border-[rgba(59,158,255,0.2)]",
+    icon: "text-[#3B9EFF]",
+    value: "text-[#3B9EFF]"
   },
   purple: {
-    card: "bg-purple-50 border-purple-200",
-    iconContainer: "bg-purple-100",
-    icon: "text-purple-600",
-    value: "text-purple-700"
+    card: "bg-[#111820] border-[rgba(139,92,246,0.25)]",
+    iconContainer: "bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.2)]",
+    icon: "text-[#8B5CF6]",
+    value: "text-[#8B5CF6]"
   },
   teal: {
-    card: "bg-teal-50 border-teal-200",
-    iconContainer: "bg-teal-100",
-    icon: "text-teal-600",
-    value: "text-teal-700"
+    card: "bg-[#111820] border-[rgba(20,184,166,0.25)]",
+    iconContainer: "bg-[rgba(20,184,166,0.1)] border border-[rgba(20,184,166,0.2)]",
+    icon: "text-[#14B8A6]",
+    value: "text-[#14B8A6]"
   }
 };
 
