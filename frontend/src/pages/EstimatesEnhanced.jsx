@@ -1375,7 +1375,7 @@ export default function EstimatesEnhanced() {
               ) : (
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-[#111820]">
                       <tr>
                         <th className="px-4 py-3 text-left font-medium">Estimate #</th>
                         <th className="px-4 py-3 text-left font-medium">Linked Ticket</th>
@@ -1389,7 +1389,7 @@ export default function EstimatesEnhanced() {
                     </thead>
                     <tbody>
                       {ticketEstimates.map((est) => (
-                        <tr key={est.estimate_id} className="border-t hover:bg-gray-50">
+                        <tr key={est.estimate_id} className="border-t hover:bg-[#111820]">
                           <td className="px-4 py-3 font-mono text-sm">{est.estimate_number}</td>
                           <td className="px-4 py-3">
                             <a 
@@ -1403,7 +1403,7 @@ export default function EstimatesEnhanced() {
                           <td className="px-4 py-3">{est.customer_name || '-'}</td>
                           <td className="px-4 py-3">
                             {est.vehicle_number ? (
-                              <span>{est.vehicle_number} <span className="text-xs text-gray-500">{est.vehicle_model}</span></span>
+                              <span>{est.vehicle_number} <span className="text-xs text-[rgba(244,246,240,0.45)]">{est.vehicle_model}</span></span>
                             ) : '-'}
                           </td>
                           <td className="px-4 py-3">
@@ -1413,7 +1413,7 @@ export default function EstimatesEnhanced() {
                                 est.status === 'approved' ? 'bg-green-100 text-green-700' :
                                 est.status === 'sent' ? 'bg-blue-100 text-blue-700' :
                                 est.locked_at ? 'bg-orange-100 text-orange-700' :
-                                'bg-gray-100 text-gray-700'
+                                'bg-gray-100 text-[#F4F6F0]'
                               }
                             >
                               {est.locked_at ? 'Locked' : est.status}
@@ -1422,7 +1422,7 @@ export default function EstimatesEnhanced() {
                           <td className="px-4 py-3 text-right font-mono font-semibold">
                             ₹{(est.grand_total || 0).toLocaleString('en-IN')}
                           </td>
-                          <td className="px-4 py-3 text-xs text-gray-500">
+                          <td className="px-4 py-3 text-xs text-[rgba(244,246,240,0.45)]">
                             {new Date(est.created_at).toLocaleDateString()}
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -1518,14 +1518,14 @@ export default function EstimatesEnhanced() {
                             }}
                           >
                             <p className="font-medium">{c.name}</p>
-                            <p className="text-xs text-gray-500">{c.company_name} {c.gstin && `• ${c.gstin}`}</p>
+                            <p className="text-xs text-[rgba(244,246,240,0.45)]">{c.company_name} {c.gstin && `• ${c.gstin}`}</p>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
                   {selectedContact && (
-                    <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                    <div className="mt-2 p-2 bg-[#111820] rounded text-xs">
                       <p><strong>{selectedContact.name}</strong></p>
                       {selectedContact.email && <p>{selectedContact.email}</p>}
                       {selectedContact.gstin && <p>GSTIN: {selectedContact.gstin}</p>}
@@ -1574,7 +1574,7 @@ export default function EstimatesEnhanced() {
                 {/* Enhanced Line Items Table */}
                 <div className="border rounded-lg overflow-visible">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50 border-b">
+                    <thead className="bg-[#111820] border-b">
                       <tr>
                         <th className="px-3 py-2 text-left font-medium w-[280px]">ITEM DETAILS</th>
                         <th className="px-3 py-2 text-center font-medium w-20">QUANTITY</th>
@@ -1592,10 +1592,10 @@ export default function EstimatesEnhanced() {
                     <tbody>
                       {/* Existing Line Items */}
                       {newEstimate.line_items.map((item, idx) => (
-                        <tr key={idx} className="border-t hover:bg-gray-50">
+                        <tr key={idx} className="border-t hover:bg-[#111820]">
                           <td className="px-3 py-2">
                             <div className="font-medium">{item.name}</div>
-                            {item.description && <div className="text-xs text-gray-500">{item.description}</div>}
+                            {item.description && <div className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</div>}
                             {item.hsn_code && <div className="text-xs text-gray-400">HSN: {item.hsn_code}</div>}
                             {item.price_list_applied && (
                               <span className="text-[10px] text-green-600 bg-green-50 px-1 rounded">
@@ -1661,13 +1661,13 @@ export default function EstimatesEnhanced() {
                                       <div className="flex justify-between">
                                         <div>
                                           <div className="font-medium text-gray-900">{item.name}</div>
-                                          <div className="text-xs text-gray-500">
+                                          <div className="text-xs text-[rgba(244,246,240,0.45)]">
                                             {item.sku && <span>SKU: {item.sku}</span>}
                                             {item.rate && <span className="ml-2">Rate: ₹{item.rate?.toLocaleString('en-IN')}</span>}
                                           </div>
                                         </div>
                                         <div className="text-right">
-                                          <div className={`text-sm font-medium ${(item.stock_on_hand || 0) < 0 ? 'text-red-500' : 'text-gray-600'}`}>
+                                          <div className={`text-sm font-medium ${(item.stock_on_hand || 0) < 0 ? 'text-red-500' : 'text-[rgba(244,246,240,0.45)]'}`}>
                                             {item.stock_on_hand !== undefined && (
                                               <>Stock on Hand<br/><span className={`font-bold ${(item.stock_on_hand || 0) < 0 ? 'text-red-500' : 'text-green-600'}`}>{item.stock_on_hand} {item.unit || 'pcs'}</span></>
                                             )}
@@ -1877,18 +1877,18 @@ export default function EstimatesEnhanced() {
 
                 {/* Info Grid */}
                 <div className="grid grid-cols-4 gap-4 text-sm">
-                  <div><p className="text-gray-500">Date</p><p className="font-medium">{selectedEstimate.date}</p></div>
-                  <div><p className="text-gray-500">Expiry</p><p className="font-medium">{selectedEstimate.expiry_date || '-'}</p></div>
-                  <div><p className="text-gray-500">Reference</p><p className="font-medium">{selectedEstimate.reference_number || '-'}</p></div>
-                  <div><p className="text-gray-500">GSTIN</p><p className="font-medium font-mono text-xs">{selectedEstimate.customer_gstin || '-'}</p></div>
+                  <div><p className="text-[rgba(244,246,240,0.45)]">Date</p><p className="font-medium">{selectedEstimate.date}</p></div>
+                  <div><p className="text-[rgba(244,246,240,0.45)]">Expiry</p><p className="font-medium">{selectedEstimate.expiry_date || '-'}</p></div>
+                  <div><p className="text-[rgba(244,246,240,0.45)]">Reference</p><p className="font-medium">{selectedEstimate.reference_number || '-'}</p></div>
+                  <div><p className="text-[rgba(244,246,240,0.45)]">GSTIN</p><p className="font-medium font-mono text-xs">{selectedEstimate.customer_gstin || '-'}</p></div>
                 </div>
 
                 {/* Vehicle Info for Ticket Estimates */}
                 {selectedEstimate.is_ticket_estimate && selectedEstimate.vehicle_number && (
-                  <div className="grid grid-cols-3 gap-4 text-sm bg-gray-50 p-3 rounded-lg">
-                    <div><p className="text-gray-500">Vehicle</p><p className="font-medium">{selectedEstimate.vehicle_number}</p></div>
-                    <div><p className="text-gray-500">Model</p><p className="font-medium">{selectedEstimate.vehicle_model || '-'}</p></div>
-                    <div><p className="text-gray-500">Technician</p><p className="font-medium">{selectedEstimate.assigned_technician_name || '-'}</p></div>
+                  <div className="grid grid-cols-3 gap-4 text-sm bg-[#111820] p-3 rounded-lg">
+                    <div><p className="text-[rgba(244,246,240,0.45)]">Vehicle</p><p className="font-medium">{selectedEstimate.vehicle_number}</p></div>
+                    <div><p className="text-[rgba(244,246,240,0.45)]">Model</p><p className="font-medium">{selectedEstimate.vehicle_model || '-'}</p></div>
+                    <div><p className="text-[rgba(244,246,240,0.45)]">Technician</p><p className="font-medium">{selectedEstimate.assigned_technician_name || '-'}</p></div>
                   </div>
                 )}
 
@@ -1910,7 +1910,7 @@ export default function EstimatesEnhanced() {
                   {selectedEstimate.line_items?.length > 0 && (
                     <div className="border rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-[#111820]">
                           <tr>
                             <th className="px-3 py-2 text-left">Item</th>
                             <th className="px-3 py-2 text-left">HSN</th>
@@ -1925,7 +1925,7 @@ export default function EstimatesEnhanced() {
                             <tr key={idx} className="border-t">
                               <td className="px-3 py-2">
                                 <p className="font-medium">{item.name}</p>
-                                {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
+                                {item.description && <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</p>}
                                 {item.price_list_applied && (
                                   <span className="text-[10px] text-green-600 bg-green-50 px-1 rounded">
                                     {item.price_list_applied}
@@ -2035,7 +2035,7 @@ export default function EstimatesEnhanced() {
                     <h4 className="font-medium mb-2">History</h4>
                     <div className="space-y-2 text-sm">
                       {selectedEstimate.history.slice(0, 5).map((h, idx) => (
-                        <div key={idx} className="flex justify-between text-gray-600">
+                        <div key={idx} className="flex justify-between text-[rgba(244,246,240,0.45)]">
                           <span>{h.action}: {h.details}</span>
                           <span className="text-xs">{new Date(h.timestamp).toLocaleString('en-IN')}</span>
                         </div>
@@ -2157,7 +2157,7 @@ export default function EstimatesEnhanced() {
                     </Button>
                   </div>
                 </div>
-                <div className="text-xs text-gray-500 space-y-1">
+                <div className="text-xs text-[rgba(244,246,240,0.45)] space-y-1">
                   <p><strong>Expires:</strong> {new Date(shareLink.expires_at).toLocaleDateString('en-IN')}</p>
                   <p><strong>Can Accept:</strong> {shareLink.allow_accept ? 'Yes' : 'No'}</p>
                   <p><strong>Can Decline:</strong> {shareLink.allow_decline ? 'Yes' : 'No'}</p>
@@ -2195,7 +2195,7 @@ export default function EstimatesEnhanced() {
               />
               <label htmlFor="attachment-upload" className="cursor-pointer">
                 <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">
                   {uploading ? "Uploading..." : "Click to upload a file"}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">PDF, Images, Word, Excel (max 10MB)</p>
@@ -2207,7 +2207,7 @@ export default function EstimatesEnhanced() {
               <div className="space-y-2">
                 <Label>Attached Files ({attachments.length}/3)</Label>
                 {attachments.map((att) => (
-                  <div key={att.attachment_id} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                  <div key={att.attachment_id} className="flex items-center justify-between bg-[#111820] rounded-lg p-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <FileText className="h-4 w-4 text-gray-400 flex-shrink-0" />
                       <div className="min-w-0">
@@ -2236,7 +2236,7 @@ export default function EstimatesEnhanced() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500 text-center">No attachments yet</p>
+              <p className="text-sm text-[rgba(244,246,240,0.45)] text-center">No attachments yet</p>
             )}
           </div>
         </DialogContent>
@@ -2256,7 +2256,7 @@ export default function EstimatesEnhanced() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Auto-convert accepted estimates</Label>
-                  <p className="text-xs text-gray-500">Automatically create invoices when estimates are accepted</p>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Automatically create invoices when estimates are accepted</p>
                 </div>
                 <input 
                   type="checkbox" 
@@ -2367,7 +2367,7 @@ export default function EstimatesEnhanced() {
               />
               <label htmlFor="import-file" className="cursor-pointer">
                 <Upload className="h-10 w-10 mx-auto text-gray-400 mb-2" />
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">
                   {importFile ? importFile.name : "Click to select CSV file"}
                 </p>
               </label>
@@ -2375,7 +2375,7 @@ export default function EstimatesEnhanced() {
             <Button variant="outline" onClick={downloadImportTemplate} className="w-full gap-2">
               <Download className="h-4 w-4" /> Download Template
             </Button>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[rgba(244,246,240,0.45)]">
               Template includes: customer_name, date, item_name, quantity, rate, tax_percentage
             </p>
           </div>
@@ -2447,10 +2447,10 @@ export default function EstimatesEnhanced() {
               <div className="space-y-2">
                 <Label>Existing Fields</Label>
                 {customFields.map((field, idx) => (
-                  <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                  <div key={idx} className="flex items-center justify-between bg-[#111820] rounded-lg p-3">
                     <div>
                       <p className="font-medium text-sm">{field.field_name}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-[rgba(244,246,240,0.45)]">
                         {field.field_type} {field.is_required && "• Required"} 
                         {field.show_in_pdf && " • PDF"} {field.show_in_portal && " • Portal"}
                       </p>
@@ -2467,7 +2467,7 @@ export default function EstimatesEnhanced() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500 text-center py-4">No custom fields defined yet</p>
+              <p className="text-sm text-[rgba(244,246,240,0.45)] text-center py-4">No custom fields defined yet</p>
             )}
             
             <Separator />
@@ -2549,7 +2549,7 @@ export default function EstimatesEnhanced() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">{template.name}</p>
-                    <p className="text-sm text-gray-500">{template.description}</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">{template.description}</p>
                   </div>
                   <div 
                     className="w-8 h-8 rounded-full"
@@ -2645,7 +2645,7 @@ export default function EstimatesEnhanced() {
                 </div>
                 <div className="border rounded-lg overflow-visible">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50 border-b">
+                    <thead className="bg-[#111820] border-b">
                       <tr>
                         <th className="px-3 py-2 text-left font-medium w-[250px]">ITEM DETAILS</th>
                         <th className="px-3 py-2 text-center font-medium w-20">QTY</th>
@@ -2674,7 +2674,7 @@ export default function EstimatesEnhanced() {
                         const total = taxableAmount + taxAmount;
                         
                         return (
-                          <tr key={idx} className="border-t hover:bg-gray-50">
+                          <tr key={idx} className="border-t hover:bg-[#111820]">
                             <td className="px-3 py-2">
                               <div className="relative">
                                 <div className="flex items-center gap-1">
@@ -2718,9 +2718,9 @@ export default function EstimatesEnhanced() {
                                       >
                                         <div>
                                           <p className="font-medium text-sm">{searchItem.name}</p>
-                                          <p className="text-xs text-gray-500">SKU: {searchItem.sku || 'N/A'}</p>
+                                          <p className="text-xs text-[rgba(244,246,240,0.45)]">SKU: {searchItem.sku || 'N/A'}</p>
                                         </div>
-                                        <span className="text-sm font-mono text-gray-600">₹{(searchItem.rate || searchItem.sales_rate || 0).toLocaleString()}</span>
+                                        <span className="text-sm font-mono text-[rgba(244,246,240,0.45)]">₹{(searchItem.rate || searchItem.sales_rate || 0).toLocaleString()}</span>
                                       </div>
                                     ))}
                                   </div>

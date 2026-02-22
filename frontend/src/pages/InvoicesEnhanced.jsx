@@ -890,7 +890,7 @@ export default function InvoicesEnhanced() {
             <Card><CardContent className="py-12 text-center"><RefreshCw className="h-8 w-8 animate-spin mx-auto text-gray-400" /></CardContent></Card>
           ) : invoices.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center text-gray-500">
+              <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
                 <Receipt className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <p>No invoices found</p>
                 <Button onClick={() => setShowCreateDialog(true)} className="mt-4 bg-[#22EDA9] text-black">Create First Invoice</Button>
@@ -899,7 +899,7 @@ export default function InvoicesEnhanced() {
           ) : (
             <div className="bg-white rounded-lg border overflow-hidden">
               <table className="w-full">
-                <thead className="bg-gray-50 text-xs text-gray-500 uppercase">
+                <thead className="bg-[#111820] text-xs text-[rgba(244,246,240,0.45)] uppercase">
                   <tr>
                     <th className="px-4 py-3 text-left">Invoice #</th>
                     <th className="px-4 py-3 text-left">Customer</th>
@@ -913,12 +913,12 @@ export default function InvoicesEnhanced() {
                 </thead>
                 <tbody className="divide-y">
                   {invoices.map(inv => (
-                    <tr key={inv.invoice_id} className="hover:bg-gray-50 cursor-pointer" onClick={() => fetchInvoiceDetail(inv.invoice_id)} data-testid={`invoice-row-${inv.invoice_id}`}>
+                    <tr key={inv.invoice_id} className="hover:bg-[#111820] cursor-pointer" onClick={() => fetchInvoiceDetail(inv.invoice_id)} data-testid={`invoice-row-${inv.invoice_id}`}>
                       <td className="px-4 py-3 font-medium text-blue-600">{inv.invoice_number}</td>
                       <td className="px-4 py-3">
                         <div>
                           <p className="font-medium">{inv.customer_name}</p>
-                          {inv.reference_number && <p className="text-xs text-gray-500">Ref: {inv.reference_number}</p>}
+                          {inv.reference_number && <p className="text-xs text-[rgba(244,246,240,0.45)]">Ref: {inv.reference_number}</p>}
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm">{formatDate(inv.invoice_date)}</td>
@@ -945,7 +945,7 @@ export default function InvoicesEnhanced() {
 
         <TabsContent value="overdue">
           {invoices.filter(i => i.status === "overdue").length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500"><CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-300" /><p>No overdue invoices!</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-300" /><p>No overdue invoices!</p></CardContent></Card>
           ) : (
             <div className="grid gap-4">
               {invoices.filter(i => i.status === "overdue").map(inv => (
@@ -954,7 +954,7 @@ export default function InvoicesEnhanced() {
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-bold text-lg">{inv.invoice_number}</p>
-                        <p className="text-gray-600">{inv.customer_name}</p>
+                        <p className="text-[rgba(244,246,240,0.45)]">{inv.customer_name}</p>
                         <p className="text-sm text-red-600">Due: {formatDate(inv.due_date)}</p>
                       </div>
                       <div className="text-right">
@@ -971,7 +971,7 @@ export default function InvoicesEnhanced() {
 
         <TabsContent value="drafts">
           {invoices.filter(i => i.status === "draft").length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500"><FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No draft invoices</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No draft invoices</p></CardContent></Card>
           ) : (
             <div className="grid gap-4">
               {invoices.filter(i => i.status === "draft").map(inv => (
@@ -980,12 +980,12 @@ export default function InvoicesEnhanced() {
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-bold text-lg">{inv.invoice_number}</p>
-                        <p className="text-gray-600">{inv.customer_name}</p>
-                        <p className="text-sm text-gray-500">Created: {formatDate(inv.created_time)}</p>
+                        <p className="text-[rgba(244,246,240,0.45)]">{inv.customer_name}</p>
+                        <p className="text-sm text-[rgba(244,246,240,0.45)]">Created: {formatDate(inv.created_time)}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-bold">{formatCurrency(inv.grand_total)}</p>
-                        <Badge className="bg-gray-100 text-gray-700">Draft</Badge>
+                        <Badge className="bg-gray-100 text-[#F4F6F0]">Draft</Badge>
                       </div>
                     </div>
                   </CardContent>
@@ -1066,7 +1066,7 @@ export default function InvoicesEnhanced() {
               
               <div className="space-y-3">
                 {newInvoice.line_items.map((item, idx) => (
-                  <div key={idx} className="grid grid-cols-12 gap-2 items-end bg-gray-50 p-3 rounded-lg">
+                  <div key={idx} className="grid grid-cols-12 gap-2 items-end bg-[#111820] p-3 rounded-lg">
                     <div className="col-span-4">
                       <Label className="text-xs">Item</Label>
                       <Select onValueChange={(v) => selectItem(idx, v)}>
@@ -1131,7 +1131,7 @@ export default function InvoicesEnhanced() {
                 </div>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+              <div className="bg-[#111820] p-4 rounded-lg space-y-2">
                 <div className="flex justify-between"><span>Sub Total:</span><span className="font-medium">{formatCurrency(calculateSubtotal())}</span></div>
                 <div className="flex gap-2 items-center">
                   <span>Discount:</span>
@@ -1217,10 +1217,10 @@ export default function InvoicesEnhanced() {
               <div className="space-y-6 py-4">
                 {/* Info Grid */}
                 <div className="grid grid-cols-4 gap-4 text-sm">
-                  <div><span className="text-gray-500">Invoice Date:</span><br/><span className="font-medium">{formatDate(selectedInvoice.invoice_date)}</span></div>
-                  <div><span className="text-gray-500">Due Date:</span><br/><span className="font-medium">{formatDate(selectedInvoice.due_date)}</span></div>
-                  <div><span className="text-gray-500">Reference:</span><br/><span className="font-medium">{selectedInvoice.reference_number || "-"}</span></div>
-                  <div><span className="text-gray-500">Payment Terms:</span><br/><span className="font-medium">{selectedInvoice.payment_terms} days</span></div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Invoice Date:</span><br/><span className="font-medium">{formatDate(selectedInvoice.invoice_date)}</span></div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Due Date:</span><br/><span className="font-medium">{formatDate(selectedInvoice.due_date)}</span></div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Reference:</span><br/><span className="font-medium">{selectedInvoice.reference_number || "-"}</span></div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Payment Terms:</span><br/><span className="font-medium">{selectedInvoice.payment_terms} days</span></div>
                 </div>
 
                 {/* Line Items */}
@@ -1231,7 +1231,7 @@ export default function InvoicesEnhanced() {
                       <h4 className="font-medium mb-3">Line Items</h4>
                       <div className="border rounded-lg overflow-hidden">
                         <table className="w-full text-sm">
-                          <thead className="bg-gray-50">
+                          <thead className="bg-[#111820]">
                             <tr>
                               <th className="px-3 py-2 text-left">Item</th>
                               <th className="px-3 py-2 text-right">Qty</th>
@@ -1245,7 +1245,7 @@ export default function InvoicesEnhanced() {
                               <tr key={idx} className="border-t">
                                 <td className="px-3 py-2">
                                   <p className="font-medium">{item.name}</p>
-                                  {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
+                                  {item.description && <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</p>}
                                 </td>
                                 <td className="px-3 py-2 text-right">{item.quantity}</td>
                                 <td className="px-3 py-2 text-right">{formatCurrency(item.rate)}</td>
@@ -1261,7 +1261,7 @@ export default function InvoicesEnhanced() {
                 )}
 
                 {/* Totals */}
-                <div className="bg-gray-50 p-4 rounded-lg w-64 ml-auto space-y-1 text-sm">
+                <div className="bg-[#111820] p-4 rounded-lg w-64 ml-auto space-y-1 text-sm">
                   <div className="flex justify-between"><span>Sub Total:</span><span>{formatCurrency(selectedInvoice.sub_total)}</span></div>
                   {selectedInvoice.total_discount > 0 && <div className="flex justify-between text-red-600"><span>Discount:</span><span>-{formatCurrency(selectedInvoice.total_discount)}</span></div>}
                   <div className="flex justify-between"><span>Tax:</span><span>{formatCurrency(selectedInvoice.tax_total)}</span></div>
@@ -1283,8 +1283,8 @@ export default function InvoicesEnhanced() {
                           <div key={payment.payment_id} className="flex justify-between items-center bg-green-50 p-3 rounded-lg">
                             <div>
                               <p className="font-medium">{formatCurrency(payment.amount)}</p>
-                              <p className="text-xs text-gray-500">{formatDate(payment.payment_date)} • {payment.payment_mode}</p>
-                              {payment.reference_number && <p className="text-xs text-gray-500">Ref: {payment.reference_number}</p>}
+                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{formatDate(payment.payment_date)} • {payment.payment_mode}</p>
+                              {payment.reference_number && <p className="text-xs text-[rgba(244,246,240,0.45)]">Ref: {payment.reference_number}</p>}
                             </div>
                             <Button size="icon" variant="ghost" onClick={() => handleDeletePayment(payment.payment_id)}><Trash2 className="h-4 w-4 text-red-400" /></Button>
                           </div>
@@ -1305,7 +1305,7 @@ export default function InvoicesEnhanced() {
                           <div key={payment.payment_id} className="flex justify-between items-center bg-green-50 p-3 rounded-lg">
                             <div>
                               <p className="font-medium">{formatCurrency(payment.amount_applied)}</p>
-                              <p className="text-xs text-gray-500">{payment.payment_number} • {formatDate(payment.payment_date)} • {payment.payment_mode}</p>
+                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{payment.payment_number} • {formatDate(payment.payment_date)} • {payment.payment_mode}</p>
                             </div>
                             <Badge variant="outline" className="text-green-600">Applied</Badge>
                           </div>
@@ -1326,7 +1326,7 @@ export default function InvoicesEnhanced() {
                           <div key={credit.credit_id} className="flex justify-between items-center bg-orange-50 p-3 rounded-lg">
                             <div>
                               <p className="font-medium text-orange-700">{formatCurrency(credit.amount)}</p>
-                              <p className="text-xs text-gray-500">{credit.source_number} • {credit.source_type}</p>
+                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{credit.source_number} • {credit.source_type}</p>
                             </div>
                             <Button 
                               size="sm" 
@@ -1351,7 +1351,7 @@ export default function InvoicesEnhanced() {
                       <div className="flex items-center justify-between">
                         <div>
                           <h4 className="font-medium flex items-center gap-2"><CreditCard className="h-4 w-4 text-blue-600" /> Online Payment</h4>
-                          <p className="text-sm text-gray-600 mt-1">Pay securely via Stripe (Card, UPI)</p>
+                          <p className="text-sm text-[rgba(244,246,240,0.45)] mt-1">Pay securely via Stripe (Card, UPI)</p>
                         </div>
                         <Button 
                           onClick={() => handleCreatePaymentLink(selectedInvoice.invoice_id)}
@@ -1382,7 +1382,7 @@ export default function InvoicesEnhanced() {
                     <Separator />
                     <div>
                       <h4 className="font-medium mb-3 flex items-center gap-2"><Clock className="h-4 w-4" /> History</h4>
-                      <div className="space-y-1 text-xs text-gray-600 max-h-32 overflow-y-auto">
+                      <div className="space-y-1 text-xs text-[rgba(244,246,240,0.45)] max-h-32 overflow-y-auto">
                         {selectedInvoice.history.slice(0, 10).map((h, idx) => (
                           <p key={idx}><span className="text-gray-400">{formatDate(h.timestamp)}</span> - {h.action}: {h.details}</p>
                         ))}
@@ -1395,7 +1395,7 @@ export default function InvoicesEnhanced() {
 
                 {/* View Toggle */}
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-sm text-gray-500">View:</span>
+                  <span className="text-sm text-[rgba(244,246,240,0.45)]">View:</span>
                   <Button 
                     size="sm" 
                     variant={detailViewMode === "details" ? "default" : "outline"}
@@ -1500,7 +1500,7 @@ export default function InvoicesEnhanced() {
                     <h4 className="font-medium mb-2 flex items-center gap-2"><History className="h-4 w-4" /> Recent Activity</h4>
                     <div className="space-y-1 text-sm max-h-32 overflow-y-auto">
                       {selectedInvoice.history.slice(0, 5).map((h, idx) => (
-                        <div key={idx} className="flex justify-between text-gray-600 py-1">
+                        <div key={idx} className="flex justify-between text-[rgba(244,246,240,0.45)] py-1">
                           <span>{h.action}: {h.details}</span>
                           <span className="text-xs text-gray-400">{new Date(h.timestamp).toLocaleString("en-IN")}</span>
                         </div>
@@ -1558,7 +1558,7 @@ export default function InvoicesEnhanced() {
                 </div>
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-[#111820]">
                       <tr>
                         <th className="px-3 py-2 text-left">Item</th>
                         <th className="px-3 py-2 text-right w-20">Qty</th>
@@ -1737,7 +1737,7 @@ export default function InvoicesEnhanced() {
                     <Button size="sm" onClick={copyShareLink}><Link className="h-4 w-4" /></Button>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500">Expires: {new Date(shareLink.expiry_date).toLocaleDateString("en-IN")}</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)]">Expires: {new Date(shareLink.expiry_date).toLocaleDateString("en-IN")}</p>
                 <Button variant="outline" className="w-full" onClick={() => setShareLink(null)}>Create New Link</Button>
               </div>
             )}
@@ -1764,7 +1764,7 @@ export default function InvoicesEnhanced() {
               />
               <label htmlFor="attachment-upload" className="cursor-pointer">
                 <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                <p className="text-sm text-gray-600">Click to upload or drag & drop</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Click to upload or drag & drop</p>
                 <p className="text-xs text-gray-400">PDF, DOC, XLS, Images (max 10MB)</p>
               </label>
               {uploadingAttachment && <p className="text-sm text-blue-600 mt-2">Uploading...</p>}
@@ -1774,12 +1774,12 @@ export default function InvoicesEnhanced() {
             {attachments.length > 0 ? (
               <div className="space-y-2">
                 {attachments.map(att => (
-                  <div key={att.attachment_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={att.attachment_id} className="flex items-center justify-between p-3 bg-[#111820] rounded-lg">
                     <div className="flex items-center gap-2">
                       <FileText className="h-4 w-4 text-blue-600" />
                       <div>
                         <p className="text-sm font-medium">{att.filename}</p>
-                        <p className="text-xs text-gray-500">{(att.size_bytes / 1024).toFixed(1)} KB</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{(att.size_bytes / 1024).toFixed(1)} KB</p>
                       </div>
                     </div>
                     <div className="flex gap-1">
@@ -1790,7 +1790,7 @@ export default function InvoicesEnhanced() {
                 ))}
               </div>
             ) : (
-              <p className="text-center text-gray-500 py-4">No attachments yet</p>
+              <p className="text-center text-[rgba(244,246,240,0.45)] py-4">No attachments yet</p>
             )}
           </div>
         </DialogContent>
@@ -1826,7 +1826,7 @@ export default function InvoicesEnhanced() {
               {comments.length > 0 ? (
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   {comments.map(c => (
-                    <div key={c.comment_id} className="p-3 bg-gray-50 rounded-lg">
+                    <div key={c.comment_id} className="p-3 bg-[#111820] rounded-lg">
                       <div className="flex justify-between items-start">
                         <p className="text-sm">{c.comment}</p>
                         <Button size="icon" variant="ghost" onClick={() => handleDeleteComment(c.comment_id)}><X className="h-3 w-3" /></Button>
@@ -1836,7 +1836,7 @@ export default function InvoicesEnhanced() {
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-gray-500 py-8">No notes yet</p>
+                <p className="text-center text-[rgba(244,246,240,0.45)] py-8">No notes yet</p>
               )}
             </TabsContent>
             
@@ -1847,14 +1847,14 @@ export default function InvoicesEnhanced() {
                     <div key={idx} className="flex justify-between items-center py-2 border-b last:border-0">
                       <div>
                         <p className="text-sm font-medium">{h.action}</p>
-                        <p className="text-xs text-gray-500">{h.details}</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{h.details}</p>
                       </div>
                       <span className="text-xs text-gray-400">{new Date(h.timestamp).toLocaleString("en-IN")}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-gray-500 py-8">No history available</p>
+                <p className="text-center text-[rgba(244,246,240,0.45)] py-8">No history available</p>
               )}
             </TabsContent>
           </Tabs>
@@ -1894,7 +1894,7 @@ export default function InvoicesEnhanced() {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
-            <div className="bg-gray-50 p-3 rounded-lg">
+            <div className="bg-[#111820] p-3 rounded-lg">
               <div className="flex justify-between">
                 <span>Balance Due:</span>
                 <span className="font-bold text-red-600">{formatCurrency(selectedInvoice?.balance_due)}</span>
