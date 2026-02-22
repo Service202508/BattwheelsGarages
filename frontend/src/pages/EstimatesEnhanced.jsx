@@ -1389,7 +1389,7 @@ export default function EstimatesEnhanced() {
                     </thead>
                     <tbody>
                       {ticketEstimates.map((est) => (
-                        <tr key={est.estimate_id} className="border-t hover:bg-[#111820]">
+                        <tr key={est.estimate_id} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#111820]">
                           <td className="px-4 py-3 font-mono text-sm">{est.estimate_number}</td>
                           <td className="px-4 py-3">
                             <a 
@@ -1592,11 +1592,11 @@ export default function EstimatesEnhanced() {
                     <tbody>
                       {/* Existing Line Items */}
                       {newEstimate.line_items.map((item, idx) => (
-                        <tr key={idx} className="border-t hover:bg-[#111820]">
+                        <tr key={idx} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#111820]">
                           <td className="px-3 py-2">
                             <div className="font-medium">{item.name}</div>
                             {item.description && <div className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</div>}
-                            {item.hsn_code && <div className="text-xs text-gray-400">HSN: {item.hsn_code}</div>}
+                            {item.hsn_code && <div className="text-xs text-[rgba(244,246,240,0.25)]">HSN: {item.hsn_code}</div>}
                             {item.price_list_applied && (
                               <span className="text-[10px] text-green-600 bg-green-50 px-1 rounded">
                                 {item.price_list_applied}
@@ -1607,7 +1607,7 @@ export default function EstimatesEnhanced() {
                           <td className="px-3 py-2 text-center">
                             ₹{item.rate?.toLocaleString('en-IN')}
                             {item.base_rate && item.base_rate !== item.rate && (
-                              <div className="text-[10px] text-gray-400 line-through">₹{item.base_rate}</div>
+                              <div className="text-[10px] text-[rgba(244,246,240,0.25)] line-through">₹{item.base_rate}</div>
                             )}
                           </td>
                           <td className="px-3 py-2 text-center">
@@ -1630,11 +1630,11 @@ export default function EstimatesEnhanced() {
                       ))}
                       
                       {/* New Item Row - Searchable */}
-                      <tr className="border-t bg-blue-50/30">
+                      <tr className="border-t bg-[rgba(59,158,255,0.08)]/30">
                         <td className="px-3 py-2">
                           <div className="relative">
                             <div className="flex items-center gap-1">
-                              <Package className="h-4 w-4 text-gray-400" />
+                              <Package className="h-4 w-4 text-[rgba(244,246,240,0.25)]" />
                               <Input 
                                 value={newLineItem.name}
                                 onChange={(e) => {
@@ -1678,7 +1678,7 @@ export default function EstimatesEnhanced() {
                                   ))}
                                 {/* Add New Item Option */}
                                 <div 
-                                  className="px-3 py-2 hover:bg-blue-50 cursor-pointer border-t flex items-center gap-2 text-blue-600"
+                                  className="px-3 py-2 hover:bg-[rgba(59,158,255,0.08)] cursor-pointer border-t flex items-center gap-2 text-blue-600"
                                   onClick={() => {
                                     setQuickAddItem({...quickAddItem, name: newLineItem.name});
                                     setShowAddItemDialog(true);
@@ -1757,7 +1757,7 @@ export default function EstimatesEnhanced() {
                             </SelectContent>
                           </Select>
                         </td>
-                        <td className="px-3 py-2 text-right font-medium text-gray-400">
+                        <td className="px-3 py-2 text-right font-medium text-[rgba(244,246,240,0.25)]">
                           ₹{((newLineItem.quantity || 0) * (newLineItem.rate || 0)).toLocaleString('en-IN', {minimumFractionDigits: 2})}
                         </td>
                         <td className="px-3 py-2">
@@ -1844,7 +1844,7 @@ export default function EstimatesEnhanced() {
               <div className="space-y-4 py-4 flex-1 overflow-y-auto min-h-0">
                 {/* Linked Ticket Banner - For ticket estimates */}
                 {selectedEstimate.is_ticket_estimate && selectedEstimate.ticket_id && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex items-center justify-between">
+                  <div className="bg-[rgba(59,158,255,0.08)] border border-blue-200 rounded-lg px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Ticket className="h-5 w-5 text-blue-600" />
                       <div>
@@ -1937,7 +1937,7 @@ export default function EstimatesEnhanced() {
                               <td className="px-3 py-2 text-right">
                                 ₹{item.rate?.toLocaleString('en-IN')}
                                 {item.base_rate && item.base_rate !== item.rate && (
-                                  <span className="text-[10px] text-gray-400 line-through ml-1">₹{item.base_rate}</span>
+                                  <span className="text-[10px] text-[rgba(244,246,240,0.25)] line-through ml-1">₹{item.base_rate}</span>
                                 )}
                               </td>
                               <td className="px-3 py-2 text-right">{item.tax_percentage}%</td>
@@ -2194,11 +2194,11 @@ export default function EstimatesEnhanced() {
                 accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.txt,.csv"
               />
               <label htmlFor="attachment-upload" className="cursor-pointer">
-                <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                <Upload className="h-8 w-8 mx-auto text-[rgba(244,246,240,0.25)] mb-2" />
                 <p className="text-sm text-[rgba(244,246,240,0.45)]">
                   {uploading ? "Uploading..." : "Click to upload a file"}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">PDF, Images, Word, Excel (max 10MB)</p>
+                <p className="text-xs text-[rgba(244,246,240,0.25)] mt-1">PDF, Images, Word, Excel (max 10MB)</p>
               </label>
             </div>
 
@@ -2209,10 +2209,10 @@ export default function EstimatesEnhanced() {
                 {attachments.map((att) => (
                   <div key={att.attachment_id} className="flex items-center justify-between bg-[#111820] rounded-lg p-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <FileText className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <FileText className="h-4 w-4 text-[rgba(244,246,240,0.25)] flex-shrink-0" />
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{att.filename}</p>
-                        <p className="text-xs text-gray-400">{(att.file_size / 1024).toFixed(1)} KB</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.25)]">{(att.file_size / 1024).toFixed(1)} KB</p>
                       </div>
                     </div>
                     <div className="flex gap-1">
@@ -2366,7 +2366,7 @@ export default function EstimatesEnhanced() {
                 onChange={(e) => setImportFile(e.target.files[0])}
               />
               <label htmlFor="import-file" className="cursor-pointer">
-                <Upload className="h-10 w-10 mx-auto text-gray-400 mb-2" />
+                <Upload className="h-10 w-10 mx-auto text-[rgba(244,246,240,0.25)] mb-2" />
                 <p className="text-sm text-[rgba(244,246,240,0.45)]">
                   {importFile ? importFile.name : "Click to select CSV file"}
                 </p>
@@ -2674,11 +2674,11 @@ export default function EstimatesEnhanced() {
                         const total = taxableAmount + taxAmount;
                         
                         return (
-                          <tr key={idx} className="border-t hover:bg-[#111820]">
+                          <tr key={idx} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#111820]">
                             <td className="px-3 py-2">
                               <div className="relative">
                                 <div className="flex items-center gap-1">
-                                  <Package className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                  <Package className="h-4 w-4 text-[rgba(244,246,240,0.25)] flex-shrink-0" />
                                   <Input 
                                     value={editActiveItemIndex === idx ? editItemSearch : item.name}
                                     onChange={(e) => {
@@ -2713,7 +2713,7 @@ export default function EstimatesEnhanced() {
                                     {editSearchResults.slice(0, 8).map(searchItem => (
                                       <div 
                                         key={searchItem.item_id}
-                                        className="px-3 py-2 hover:bg-blue-50 cursor-pointer flex justify-between items-center"
+                                        className="px-3 py-2 hover:bg-[rgba(59,158,255,0.08)] cursor-pointer flex justify-between items-center"
                                         onClick={() => selectEditItem(searchItem, idx)}
                                       >
                                         <div>
@@ -2727,7 +2727,7 @@ export default function EstimatesEnhanced() {
                                 )}
                                 {/* Show SKU if item is selected */}
                                 {item.item_id && (
-                                  <p className="text-xs text-gray-400 mt-0.5 ml-5">SKU: {item.sku || item.item_id?.slice(0, 8)}</p>
+                                  <p className="text-xs text-[rgba(244,246,240,0.25)] mt-0.5 ml-5">SKU: {item.sku || item.item_id?.slice(0, 8)}</p>
                                 )}
                               </div>
                             </td>
@@ -2807,7 +2807,7 @@ export default function EstimatesEnhanced() {
                       })}
                       {editEstimate.line_items.length === 0 && (
                         <tr>
-                          <td colSpan={7} className="px-3 py-8 text-center text-gray-400">
+                          <td colSpan={7} className="px-3 py-8 text-center text-[rgba(244,246,240,0.25)]">
                             No items added. Click "+ Add Row" to start.
                           </td>
                         </tr>
