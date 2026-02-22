@@ -1207,6 +1207,15 @@ async def mark_invoice_sent(invoice_id: str):
         }}
     )
     
+    # Post journal entry for double-entry bookkeeping
+    org_id = invoice.get("organization_id", "")
+    if org_id:
+        try:
+            await post_invoice_journal_entry(org_id, invoice)
+            logger.info(f"Posted journal entry for invoice {invoice.get('invoice_number')}")
+        except Exception as e:
+            logger.warning(f"Failed to post journal entry for invoice {invoice.get('invoice_number')}: {e}")
+    
     await add_invoice_history(invoice_id, "sent", "Invoice marked as sent manually")
     await update_contact_balance(invoice["customer_id"])
     
