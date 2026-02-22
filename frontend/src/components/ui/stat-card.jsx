@@ -355,25 +355,25 @@ const MiniStatCard = React.forwardRef(({
 
   if (loading) {
     return (
-      <div ref={ref} className={cn("flex items-center gap-2 p-2 rounded-lg", variantStyles.card, className)} {...props}>
-        <Skeleton className="h-6 w-6 rounded" />
+      <div ref={ref} className={cn("flex items-center gap-2 p-2 rounded border", variantStyles.card, className)} {...props}>
+        <Skeleton className="h-6 w-6 rounded bg-[rgba(255,255,255,0.05)]" />
         <div className="space-y-1">
-          <Skeleton className="h-3 w-12" />
-          <Skeleton className="h-4 w-8" />
+          <Skeleton className="h-3 w-12 bg-[rgba(255,255,255,0.05)]" />
+          <Skeleton className="h-4 w-8 bg-[rgba(255,255,255,0.05)]" />
         </div>
       </div>
     );
   }
 
   return (
-    <div ref={ref} className={cn("flex items-center gap-2 p-2 rounded-lg", variantStyles.card, className)} {...props}>
+    <div ref={ref} className={cn("flex items-center gap-2 p-2 rounded border", variantStyles.card, className)} {...props}>
       {Icon && (
         <div className={cn("p-1.5 rounded", variantStyles.iconContainer)}>
           <Icon className={cn("h-4 w-4", variantStyles.icon)} />
         </div>
       )}
       <div>
-        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-xs text-[rgba(244,246,240,0.45)]">{label}</p>
         <p className={cn("text-sm font-bold", variantStyles.value)}>{value}</p>
       </div>
     </div>
