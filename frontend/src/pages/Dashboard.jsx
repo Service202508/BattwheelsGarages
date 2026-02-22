@@ -189,35 +189,35 @@ export default function Dashboard({ user }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
-          <p className="text-sm text-slate-500 mt-0.5">A high-level overview of your garage's operations.</p>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]">Dashboard</h1>
+          <p className="text-sm text-[rgba(244,246,240,0.45)] mt-0.5">A high-level overview of your garage's operations.</p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full">
-          <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-xs font-medium text-emerald-700">Live</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.20)] rounded-full">
+          <div className="h-2 w-2 rounded-full bg-[#C8FF00] animate-pulse" />
+          <span className="text-xs font-medium text-[#C8FF00]">Live</span>
         </div>
       </div>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-slate-100 border border-slate-200 p-1 rounded-xl">
+        <TabsList className="bg-[#111820] border border-[rgba(255,255,255,0.07)] p-1 rounded-lg">
           <TabsTrigger 
             value="workshop" 
-            className="data-[state=active]:bg-white data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm rounded-lg px-4 py-2 text-sm font-medium"
+            className="data-[state=active]:bg-[rgba(200,255,0,0.12)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-t-2 data-[state=active]:border-t-[#C8FF00] rounded px-4 py-2 text-sm font-medium text-[rgba(244,246,240,0.45)]"
             data-testid="workshop-tab"
           >
             Workshop Overview
           </TabsTrigger>
           <TabsTrigger 
             value="service-tickets" 
-            className="data-[state=active]:bg-white data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm rounded-lg px-4 py-2 text-sm font-medium"
+            className="data-[state=active]:bg-[rgba(200,255,0,0.12)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-t-2 data-[state=active]:border-t-[#C8FF00] rounded px-4 py-2 text-sm font-medium text-[rgba(244,246,240,0.45)]"
             data-testid="service-tickets-tab"
           >
             Service Tickets
           </TabsTrigger>
           <TabsTrigger 
             value="receivables" 
-            className="data-[state=active]:bg-white data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm rounded-lg px-4 py-2 text-sm font-medium"
+            className="data-[state=active]:bg-[rgba(200,255,0,0.12)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-t-2 data-[state=active]:border-t-[#C8FF00] rounded px-4 py-2 text-sm font-medium text-[rgba(244,246,240,0.45)]"
             data-testid="receivables-tab"
           >
             Receivables Overview
