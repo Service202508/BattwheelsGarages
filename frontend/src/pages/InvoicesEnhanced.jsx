@@ -16,12 +16,14 @@ import {
   DollarSign, CreditCard, Calendar, Clock, AlertTriangle, CheckCircle,
   FileText, ArrowRight, Download, Filter, MoreVertical, Users, Building2,
   TrendingUp, TrendingDown, Wallet, PieChart, ExternalLink, Edit, Share2,
-  Paperclip, MessageSquare, Printer, History, Link, X, Upload
+  Paperclip, MessageSquare, Printer, History, Link, X, Upload, Save
 } from "lucide-react";
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
 import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
+import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
   draft: "bg-gray-100 text-gray-700",
