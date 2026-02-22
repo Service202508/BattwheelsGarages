@@ -98,7 +98,7 @@ export default function BusinessAMC({ user }) {
           <h1 className="text-2xl font-bold text-slate-900">AMC Contracts</h1>
           <p className="text-slate-500">Annual Maintenance Contracts for your fleet</p>
         </div>
-        <Button className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30">
+        <Button className="bg-indigo-600 hover:bg-indigo-700 hover:shadow-[0_0_20px_rgba(99,102,241,0.30)]">
           <Plus className="h-4 w-4 mr-2" />
           Request New AMC
         </Button>
@@ -113,7 +113,7 @@ export default function BusinessAMC({ user }) {
                 <p className="text-sm text-slate-500">Active Contracts</p>
                 <p className="text-2xl font-bold text-[#C8FF00] text-600">{stats.active}</p>
               </div>
-              <div className="p-3 rounded-xl bg-[rgba(200,255,0,0.08)]">
+              <div className="p-3 rounded bg-[rgba(200,255,0,0.08)]">
                 <Shield className="h-5 w-5 text-[#C8FF00] text-600" />
               </div>
             </div>
@@ -127,7 +127,7 @@ export default function BusinessAMC({ user }) {
                 <p className="text-sm text-slate-500">Total Contracts</p>
                 <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
               </div>
-              <div className="p-3 rounded-xl bg-indigo-50">
+              <div className="p-3 rounded bg-indigo-50">
                 <FileText className="h-5 w-5 text-indigo-600" />
               </div>
             </div>
@@ -141,7 +141,7 @@ export default function BusinessAMC({ user }) {
                 <p className="text-sm text-slate-500">Contract Value</p>
                 <p className="text-2xl font-bold text-slate-900">{formatCurrency(stats.totalValue)}</p>
               </div>
-              <div className="p-3 rounded-xl bg-[rgba(139,92,246,0.08)]">
+              <div className="p-3 rounded bg-[rgba(139,92,246,0.08)]">
                 <IndianRupee className="h-5 w-5 text-purple-600" />
               </div>
             </div>
@@ -177,14 +177,14 @@ export default function BusinessAMC({ user }) {
             return (
               <Card 
                 key={contract.amc_id || contract.contract_id} 
-                className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 hover:shadow-md transition-shadow cursor-pointer"
+                className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer"
                 onClick={() => { setSelectedContract(contract); setShowDetailDialog(true); }}
                 data-testid={`amc-card-${contract.amc_id || contract.contract_id}`}
               >
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-indigo-50">
+                      <div className="p-2.5 rounded bg-indigo-50">
                         <Shield className="h-6 w-6 text-indigo-600" />
                       </div>
                       <div>
