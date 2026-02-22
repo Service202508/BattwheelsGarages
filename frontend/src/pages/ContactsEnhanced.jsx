@@ -16,12 +16,14 @@ import {
   Plus, Users, Search, Edit, Trash2, Building2, User, Phone, Mail, Globe, 
   MapPin, Tag, Shield, FileText, RefreshCw, CheckCircle, XCircle, Eye,
   UserPlus, Home, Truck, CreditCard, MoreVertical, Send, Key, ChevronRight,
-  Receipt, ShoppingCart, History
+  Receipt, ShoppingCart, History, Save
 } from "lucide-react";
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
 import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
+import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const contactTypeColors = {
   customer: "bg-blue-100 text-blue-700",
