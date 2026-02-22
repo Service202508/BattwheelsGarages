@@ -1649,7 +1649,7 @@ export default function EstimatesEnhanced() {
                             </div>
                             {/* Item Search Dropdown */}
                             {newLineItem.name && newLineItem.name.length >= 1 && !newLineItem.item_id && (
-                              <div className="absolute z-50 left-0 right-0 mt-1 bg-[#111820] border rounded-lg shadow-xl max-h-64 overflow-y-auto">
+                              <div className="absolute z-50 left-0 right-0 mt-1 bg-[#111820] border border-[rgba(255,255,255,0.13)] rounded max-h-64 overflow-y-auto">
                                 {items
                                   .filter(item => item.name?.toLowerCase().includes(newLineItem.name.toLowerCase()) || item.sku?.toLowerCase().includes(newLineItem.name.toLowerCase()))
                                   .slice(0, 10)
