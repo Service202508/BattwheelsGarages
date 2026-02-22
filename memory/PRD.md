@@ -1,7 +1,31 @@
 # Battwheels OS - Product Requirements Document
 
 ## SaaS Status: FULL SAAS PLATFORM COMPLETE ✅
-**Last Updated:** February 22, 2026 (Session 89)
+**Last Updated:** February 22, 2026 (Session 90)
+
+---
+
+## Session 90 Updates (Feb 22, 2026)
+
+### Employee Creation Bug Fix
+**Status:** ✅ COMPLETE & TESTED (100% pass rate)
+
+**Root Cause:** Field name mismatch between frontend and backend
+- Frontend was sending: `email`, `date_of_joining`, nested salary objects
+- Backend expected: `work_email`, `joining_date`, flat salary fields
+
+**Fix Applied:**
+- Updated `/app/frontend/src/pages/Employees.jsx` handleSubmit function (lines 298-370)
+- Changed field mapping to use `work_email` instead of `email`
+- Changed `joining_date` instead of `date_of_joining`
+- Flattened salary structure fields (basic_salary, hra, da, etc.)
+- Added default values for required fields
+
+**Also Updated:**
+- `/app/backend/routes/hr.py` - Added password field and additional employee fields to EmployeeCreateRequest model
+- `/app/backend/services/hr_service.py` - Enhanced create_employee to create user accounts with bcrypt hashed passwords
+
+**Test Report:** `/app/test_reports/iteration_90.json` - All 7 backend tests passed, frontend UI flow verified
 
 ---
 
