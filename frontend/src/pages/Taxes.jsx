@@ -193,7 +193,7 @@ export default function Taxes() {
             taxes.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No taxes configured</CardContent></Card> :
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {taxes.map(tax => (
-                <Card key={tax.tax_id} className="hover:shadow-md transition-shadow">
+                <Card key={tax.tax_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -223,7 +223,7 @@ export default function Taxes() {
             taxGroups.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No tax groups configured</CardContent></Card> :
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {taxGroups.map(group => (
-                <Card key={group.tax_group_id} className="hover:shadow-md transition-shadow">
+                <Card key={group.tax_group_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">

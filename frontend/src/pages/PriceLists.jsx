@@ -389,7 +389,7 @@ export default function PriceLists() {
       ) : (
         <div className="space-y-4">
           {priceLists.map(pl => (
-            <Card key={pl.price_list_id || pl.pricelist_id} className="hover:shadow-md transition-shadow" data-testid={`pricelist-${pl.price_list_id || pl.pricelist_id}`}>
+            <Card key={pl.price_list_id || pl.pricelist_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors" data-testid={`pricelist-${pl.price_list_id || pl.pricelist_id}`}>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 cursor-pointer" onClick={() => toggleExpand(pl.price_list_id || pl.pricelist_id)}>
