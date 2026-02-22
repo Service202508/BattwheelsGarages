@@ -860,22 +860,22 @@ export default function ContactsEnhanced() {
                 <div className="space-y-6 py-4">
                   {/* Contact Info */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {selectedContact.email && <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-gray-400" /><span className="text-sm">{selectedContact.email}</span></div>}
-                    {selectedContact.phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-gray-400" /><span className="text-sm">{selectedContact.phone}</span></div>}
-                    {selectedContact.website && <div className="flex items-center gap-2"><Globe className="h-4 w-4 text-gray-400" /><span className="text-sm truncate">{selectedContact.website}</span></div>}
-                    {selectedContact.gstin && <div className="flex items-center gap-2"><Shield className="h-4 w-4 text-gray-400" /><span className="text-sm font-mono">{selectedContact.gstin}</span></div>}
+                    {selectedContact.email && <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-[rgba(244,246,240,0.35)]" /><span className="text-sm text-[#F4F6F0]">{selectedContact.email}</span></div>}
+                    {selectedContact.phone && <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-[rgba(244,246,240,0.35)]" /><span className="text-sm text-[#F4F6F0]">{selectedContact.phone}</span></div>}
+                    {selectedContact.website && <div className="flex items-center gap-2"><Globe className="h-4 w-4 text-[rgba(244,246,240,0.35)]" /><span className="text-sm text-[#F4F6F0] truncate">{selectedContact.website}</span></div>}
+                    {selectedContact.gstin && <div className="flex items-center gap-2"><Shield className="h-4 w-4 text-[rgba(244,246,240,0.35)]" /><span className="text-sm font-mono text-[#C8FF00]">{selectedContact.gstin}</span></div>}
                   </div>
 
                   {/* Balance */}
                   {selectedContact.balance && (
                     <div className="grid grid-cols-3 gap-4">
-                      <Card className="bg-green-50"><CardContent className="pt-4"><p className="text-xs text-gray-500">Receivable</p><p className="text-lg font-bold text-green-700">₹{selectedContact.balance.receivable.toLocaleString('en-IN')}</p></CardContent></Card>
-                      <Card className="bg-red-50"><CardContent className="pt-4"><p className="text-xs text-gray-500">Payable</p><p className="text-lg font-bold text-red-700">₹{selectedContact.balance.payable.toLocaleString('en-IN')}</p></CardContent></Card>
-                      <Card><CardContent className="pt-4"><p className="text-xs text-gray-500">Net Balance</p><p className={`text-lg font-bold ${selectedContact.balance.net >= 0 ? 'text-green-700' : 'text-red-700'}`}>₹{selectedContact.balance.net.toLocaleString('en-IN')}</p></CardContent></Card>
+                      <Card className="bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.20)]"><CardContent className="pt-4"><p className="font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.45)]">Receivable</p><p className="text-lg font-bold text-[#22C55E]">₹{selectedContact.balance.receivable.toLocaleString('en-IN')}</p></CardContent></Card>
+                      <Card className="bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.20)]"><CardContent className="pt-4"><p className="font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.45)]">Payable</p><p className="text-lg font-bold text-[#FF3B2F]">₹{selectedContact.balance.payable.toLocaleString('en-IN')}</p></CardContent></Card>
+                      <Card className="bg-[#141E27] border border-[rgba(255,255,255,0.07)]"><CardContent className="pt-4"><p className="font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.45)]">Net Balance</p><p className={`text-lg font-bold ${selectedContact.balance.net >= 0 ? 'text-[#22C55E]' : 'text-[#FF3B2F]'}`}>₹{selectedContact.balance.net.toLocaleString('en-IN')}</p></CardContent></Card>
                     </div>
                   )}
 
-                  <Separator />
+                  <Separator className="bg-[rgba(255,255,255,0.07)]" />
 
                   {/* Contact Persons */}
                   <div>
