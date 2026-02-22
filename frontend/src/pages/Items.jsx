@@ -197,7 +197,7 @@ export default function Items() {
                   <p className="text-xs text-gray-500 mb-4">Columns: name, sku, description, rate, purchase_rate, item_type, unit, hsn_or_sac, tax_percentage, stock_on_hand, reorder_level</p>
                   <input ref={fileInputRef} type="file" accept=".csv" onChange={handleImport} className="hidden" id="import-file" />
                   <div className="flex gap-2 justify-center">
-                    <Button onClick={() => fileInputRef.current?.click()} disabled={importing} className="bg-[#22EDA9] text-black">
+                    <Button onClick={() => fileInputRef.current?.click()} disabled={importing} className="bg-[#C8FF00] text-[#080C0F] font-bold">
                       {importing ? "Importing..." : "Select CSV File"}
                     </Button>
                     <Button variant="outline" onClick={handleDownloadTemplate}><Download className="h-4 w-4 mr-1" /> Get Template</Button>
@@ -242,7 +242,7 @@ export default function Items() {
           </Dialog>
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-item-btn">
+              <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-item-btn">
                 <Plus className="h-4 w-4 mr-2" /> New Item
               </Button>
             </DialogTrigger>
@@ -301,7 +301,7 @@ export default function Items() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-                <Button onClick={handleCreate} className="bg-[#22EDA9] text-black">Create Item</Button>
+                <Button onClick={handleCreate} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Item</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -310,7 +310,7 @@ export default function Items() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card><CardContent className="pt-6"><div className="flex items-center justify-between"><div><p className="text-sm text-gray-500">Total Items</p><p className="text-2xl font-bold">{items.length}</p></div><Package className="h-8 w-8 text-[#22EDA9]" /></div></CardContent></Card>
+        <Card><CardContent className="pt-6"><div className="flex items-center justify-between"><div><p className="text-sm text-gray-500">Total Items</p><p className="text-2xl font-bold">{items.length}</p></div><Package className="h-8 w-8 text-[#C8FF00]" /></div></CardContent></Card>
         <Card><CardContent className="pt-6"><div className="flex items-center justify-between"><div><p className="text-sm text-gray-500">Goods</p><p className="text-2xl font-bold">{goodsCount}</p></div><Package className="h-8 w-8 text-blue-500" /></div></CardContent></Card>
         <Card><CardContent className="pt-6"><div className="flex items-center justify-between"><div><p className="text-sm text-gray-500">Services</p><p className="text-2xl font-bold">{servicesCount}</p></div><Wrench className="h-8 w-8 text-green-500" /></div></CardContent></Card>
       </div>
@@ -417,7 +417,7 @@ export default function Items() {
           )}
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setEditItem(null)}>Cancel</Button>
-            <Button onClick={handleUpdate} className="bg-[#22EDA9] text-black">Update Item</Button>
+            <Button onClick={handleUpdate} className="bg-[#C8FF00] text-[#080C0F] font-bold">Update Item</Button>
           </div>
         </DialogContent>
       </Dialog>

@@ -124,7 +124,7 @@ export default function DeliveryChallans() {
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-challan-btn">
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-challan-btn">
               <Plus className="h-4 w-4 mr-2" /> New Delivery Challan
             </Button>
           </DialogTrigger>
@@ -178,7 +178,7 @@ export default function DeliveryChallans() {
                   <Input value={newLineItem.name} onChange={(e) => setNewLineItem({ ...newLineItem, name: e.target.value })} placeholder="Item name" />
                   <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" min={1} />
                   <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
-                  <Button onClick={handleAddLineItem} className="bg-[#22EDA9] text-black">Add</Button>
+                  <Button onClick={handleAddLineItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
                 </div>
               </div>
 
@@ -227,7 +227,7 @@ export default function DeliveryChallans() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreate} className="bg-[#22EDA9] text-black">Create Challan</Button>
+              <Button onClick={handleCreate} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Challan</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -250,7 +250,7 @@ export default function DeliveryChallans() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-3 mb-1">
-                        <Truck className="h-5 w-5 text-[#22EDA9]" />
+                        <Truck className="h-5 w-5 text-[#C8FF00]" />
                         <h3 className="font-semibold">{dc.challan_number}</h3>
                         <Badge className={statusColors[dc.status]}>{dc.status}</Badge>
                         <Badge variant="outline">{challanTypes[dc.challan_type] || dc.challan_type}</Badge>
@@ -273,7 +273,7 @@ export default function DeliveryChallans() {
                           </Button>
                         )}
                         {dc.status === "delivered" && !dc.is_invoiced && (
-                          <Button size="sm" className="bg-[#22EDA9] text-black" onClick={() => handleConvertToInvoice(dc.delivery_challan_id)}>
+                          <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => handleConvertToInvoice(dc.delivery_challan_id)}>
                             <ArrowRight className="h-4 w-4 mr-1" /> Convert to Invoice
                           </Button>
                         )}

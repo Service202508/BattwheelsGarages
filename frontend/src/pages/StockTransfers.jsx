@@ -274,7 +274,7 @@ export default function StockTransfers() {
           </Button>
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-transfer-btn">
+              <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-transfer-btn">
                 <Plus className="h-4 w-4 mr-2" /> New Transfer
               </Button>
             </DialogTrigger>
@@ -335,9 +335,9 @@ export default function StockTransfers() {
                         {warehouses.find(w => w.warehouse_id === newTransfer.source_warehouse_id)?.name}
                       </span>
                     </div>
-                    <ArrowRight className="h-5 w-5 text-[#22EDA9]" />
-                    <div className="flex items-center gap-2 px-3 py-2 bg-[#22EDA9]/10 rounded-lg">
-                      <Warehouse className="h-4 w-4 text-[#22EDA9]" />
+                    <ArrowRight className="h-5 w-5 text-[#C8FF00]" />
+                    <div className="flex items-center gap-2 px-3 py-2 bg-[#C8FF00]/10 rounded-lg">
+                      <Warehouse className="h-4 w-4 text-[#C8FF00]" />
                       <span className="text-sm font-medium">
                         {warehouses.find(w => w.warehouse_id === newTransfer.destination_warehouse_id)?.name}
                       </span>
@@ -428,7 +428,7 @@ export default function StockTransfers() {
                 </Button>
                 <Button 
                   onClick={handleCreateTransfer} 
-                  className="bg-[#22EDA9] text-black"
+                  className="bg-[#C8FF00] text-[#080C0F] font-bold"
                   disabled={newTransfer.items.length === 0}
                 >
                   Create Transfer
@@ -523,7 +523,7 @@ export default function StockTransfers() {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
             </div>
           ) : filteredTransfers.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
@@ -639,9 +639,9 @@ export default function StockTransfers() {
                   <p className="text-sm font-medium">{selectedTransfer.source_warehouse_name}</p>
                   <p className="text-xs text-gray-500">Source</p>
                 </div>
-                <ArrowRight className="h-6 w-6 text-[#22EDA9]" />
+                <ArrowRight className="h-6 w-6 text-[#C8FF00]" />
                 <div className="text-center">
-                  <Building2 className="h-6 w-6 mx-auto text-[#22EDA9] mb-1" />
+                  <Building2 className="h-6 w-6 mx-auto text-[#C8FF00] mb-1" />
                   <p className="text-sm font-medium">{selectedTransfer.destination_warehouse_name}</p>
                   <p className="text-xs text-gray-500">Destination</p>
                 </div>

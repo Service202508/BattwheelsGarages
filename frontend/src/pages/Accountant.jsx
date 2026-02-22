@@ -373,7 +373,7 @@ export default function Accountant() {
               {bankAccounts.map(acc => (
                 <Card 
                   key={acc.bank_account_id}
-                  className={`cursor-pointer hover:shadow-md transition-shadow ${selectedAccount?.bank_account_id === acc.bank_account_id ? "ring-2 ring-[#22EDA9]" : ""}`}
+                  className={`cursor-pointer hover:shadow-md transition-shadow ${selectedAccount?.bank_account_id === acc.bank_account_id ? "ring-2 ring-[#C8FF00]" : ""}`}
                   onClick={() => { setSelectedAccount(acc); fetchTransactions(acc.bank_account_id); }}
                 >
                   <CardContent className="p-4">
@@ -442,7 +442,7 @@ export default function Accountant() {
             <h3 className="font-semibold">Bank Reconciliation</h3>
             <Dialog open={showReconDialog} onOpenChange={setShowReconDialog}>
               <DialogTrigger asChild>
-                <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
+                <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
                   <Plus className="h-4 w-4 mr-2" /> Start Reconciliation
                 </Button>
               </DialogTrigger>
@@ -473,7 +473,7 @@ export default function Accountant() {
                       <Label>Statement Ending Balance</Label>
                       <Input type="number" value={reconForm.statement_balance} onChange={(e) => setReconForm({ ...reconForm, statement_balance: parseFloat(e.target.value) })} />
                     </div>
-                    <Button onClick={handleStartReconciliation} className="w-full bg-[#22EDA9] text-black">
+                    <Button onClick={handleStartReconciliation} className="w-full bg-[#C8FF00] text-[#080C0F] font-bold">
                       Start Reconciliation
                     </Button>
                   </div>
@@ -580,7 +580,7 @@ export default function Accountant() {
             <h3 className="font-semibold">Journal Entries</h3>
             <Dialog open={showJournalDialog} onOpenChange={setShowJournalDialog}>
               <DialogTrigger asChild>
-                <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
+                <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
                   <Plus className="h-4 w-4 mr-2" /> New Journal Entry
                 </Button>
               </DialogTrigger>
@@ -701,7 +701,7 @@ export default function Accountant() {
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => setShowJournalDialog(false)}>Cancel</Button>
-                  <Button onClick={handleCreateJournalEntry} className="bg-[#22EDA9] text-black">
+                  <Button onClick={handleCreateJournalEntry} className="bg-[#C8FF00] text-[#080C0F] font-bold">
                     Create Entry
                   </Button>
                 </div>
@@ -764,7 +764,7 @@ export default function Accountant() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
                 </div>
               ) : trialBalance ? (
                 <div className="space-y-4">
@@ -790,7 +790,7 @@ export default function Accountant() {
                           <TableCell className="text-right">{acc.credit > 0 ? formatCurrency(acc.credit) : "-"}</TableCell>
                         </TableRow>
                       ))}
-                      <TableRow className="bg-[#22EDA9]/20 font-bold text-lg">
+                      <TableRow className="bg-[#C8FF00]/20 font-bold text-lg">
                         <TableCell colSpan={3}>TOTALS</TableCell>
                         <TableCell className="text-right">{formatCurrency(trialBalance.total_debit)}</TableCell>
                         <TableCell className="text-right">{formatCurrency(trialBalance.total_credit)}</TableCell>
@@ -822,7 +822,7 @@ export default function Accountant() {
         <TabsContent value="reports" className="space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -844,7 +844,7 @@ export default function Accountant() {
                     <span className="text-gray-600">Total Expenses</span>
                     <span className="font-bold text-red-600">{formatCurrency(profitLoss?.expenses?.total)}</span>
                   </div>
-                  <div className="flex justify-between py-2 bg-[#22EDA9]/20 px-2 rounded">
+                  <div className="flex justify-between py-2 bg-[#C8FF00]/20 px-2 rounded">
                     <span className="font-bold">Net Profit</span>
                     <span className={`font-bold text-lg ${profitLoss?.net_profit >= 0 ? 'text-green-700' : 'text-red-700'}`}>
                       {formatCurrency(profitLoss?.net_profit)}

@@ -53,8 +53,8 @@ export default function PageHeader({
         <div className="flex items-start gap-4">
           {/* Icon */}
           {Icon && (
-            <div className="hidden sm:flex h-12 w-12 rounded-xl bg-gradient-to-br from-[#22EDA9]/10 to-[#22EDA9]/5 items-center justify-center flex-shrink-0 shadow-sm border border-[#22EDA9]/10">
-              <Icon className="h-6 w-6 text-[#22EDA9]" strokeWidth={1.5} />
+            <div className="hidden sm:flex h-12 w-12 rounded-xl bg-gradient-to-br from-[#C8FF00]/10 to-[#C8FF00]/5 items-center justify-center flex-shrink-0 shadow-sm border border-[#C8FF00]/10">
+              <Icon className="h-6 w-6 text-[#C8FF00]" strokeWidth={1.5} />
             </div>
           )}
           
@@ -174,7 +174,7 @@ export function EmptyState({
         {description || "Get started by creating your first item."}
       </p>
       {actionLabel && onAction && (
-        <Button onClick={onAction} className="bg-[#22EDA9] text-[#F4F6F0] hover:bg-[#1DD69A] font-semibold">
+        <Button onClick={onAction} className="bg-[#C8FF00] text-[#F4F6F0] hover:bg-[#d4ff1a] font-semibold">
           {ActionIcon && <ActionIcon className="h-4 w-4 mr-2" />}
           {actionLabel}
         </Button>

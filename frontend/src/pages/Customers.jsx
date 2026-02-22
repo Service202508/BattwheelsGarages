@@ -100,7 +100,7 @@ export default function Customers() {
         </div>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="add-customer-btn">
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="add-customer-btn">
               <Plus className="h-4 w-4 mr-2" />
               Add Customer
             </Button>
@@ -201,7 +201,7 @@ export default function Customers() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button>
-              <Button onClick={handleAddCustomer} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
+              <Button onClick={handleAddCustomer} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
                 Add Customer
               </Button>
             </div>

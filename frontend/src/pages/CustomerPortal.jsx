@@ -374,8 +374,8 @@ export default function CustomerPortal() {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4" data-testid="portal-login-page">
         <Card className="w-full max-w-md bg-[#111820]/10 backdrop-blur-lg border-white/20">
           <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-[#22EDA9] rounded-full flex items-center justify-center mb-4">
-              <Building2 className="h-8 w-8 text-black" />
+            <div className="mx-auto w-16 h-16 bg-[#C8FF00] rounded-full flex items-center justify-center mb-4">
+              <Building2 className="h-8 w-8 text-[#080C0F] font-bold" />
             </div>
             <CardTitle className="text-2xl text-white">Customer Portal</CardTitle>
             <p className="text-gray-400 text-sm mt-2">Access your invoices, estimates, and statements</p>
@@ -396,7 +396,7 @@ export default function CustomerPortal() {
             <Button 
               onClick={handleLogin} 
               disabled={loading}
-              className="w-full bg-[#22EDA9] hover:bg-[#1DD69A] text-black"
+              className="w-full bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold"
               data-testid="portal-login-btn"
             >
               {loading ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : <LogIn className="h-4 w-4 mr-2" />}
@@ -415,8 +415,8 @@ export default function CustomerPortal() {
       <header className="bg-[#111820] border-b px-6 py-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#22EDA9] rounded-full flex items-center justify-center">
-              <Building2 className="h-5 w-5 text-black" />
+            <div className="w-10 h-10 bg-[#C8FF00] rounded-full flex items-center justify-center">
+              <Building2 className="h-5 w-5 text-[#080C0F] font-bold" />
             </div>
             <div>
               <h1 className="font-bold text-lg">{contact?.contact_name || dashboard?.contact?.name}</h1>

@@ -232,7 +232,7 @@ export default function Banking() {
                 >
                   Cancel
                 </Button>
-                <Button onClick={handleCreateAccount} className="bg-[#22EDA9] text-black">Add Account</Button>
+                <Button onClick={handleCreateAccount} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add Account</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -249,7 +249,7 @@ export default function Banking() {
             }}
           >
             <DialogTrigger asChild>
-              <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="add-txn-btn">
+              <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="add-txn-btn">
                 <Plus className="h-4 w-4 mr-2" /> Add Transaction
               </Button>
             </DialogTrigger>
@@ -322,7 +322,7 @@ export default function Banking() {
                 >
                   Cancel
                 </Button>
-                <Button onClick={handleCreateTransaction} className="bg-[#22EDA9] text-black">Record Transaction</Button>
+                <Button onClick={handleCreateTransaction} className="bg-[#C8FF00] text-[#080C0F] font-bold">Record Transaction</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -375,7 +375,7 @@ export default function Banking() {
           <h2 className="text-lg font-semibold text-[#F4F6F0]">Accounts</h2>
           <Button 
             variant={selectedAccount === null ? "default" : "outline"} 
-            className={`w-full justify-start ${selectedAccount === null ? "bg-[#22EDA9] text-black" : ""}`}
+            className={`w-full justify-start ${selectedAccount === null ? "bg-[#C8FF00] text-[#080C0F] font-bold" : ""}`}
             onClick={() => setSelectedAccount(null)}
           >
             All Accounts
@@ -385,7 +385,7 @@ export default function Banking() {
             return (
               <Card 
                 key={acc.account_id} 
-                className={`cursor-pointer hover:shadow-md transition-shadow ${selectedAccount?.account_id === acc.account_id ? "ring-2 ring-[#22EDA9]" : ""}`}
+                className={`cursor-pointer hover:shadow-md transition-shadow ${selectedAccount?.account_id === acc.account_id ? "ring-2 ring-[#C8FF00]" : ""}`}
                 onClick={() => setSelectedAccount(acc)}
               >
                 <CardContent className="p-4">

@@ -299,7 +299,7 @@ export default function PriceLists() {
           </Button>
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-pricelist-btn">
+              <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-pricelist-btn">
                 <Plus className="h-4 w-4 mr-2" /> New Price List
               </Button>
             </DialogTrigger>
@@ -365,7 +365,7 @@ export default function PriceLists() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-                <Button onClick={handleCreate} className="bg-[#22EDA9] text-black" data-testid="submit-pricelist-btn">Create Price List</Button>
+                <Button onClick={handleCreate} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="submit-pricelist-btn">Create Price List</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -393,8 +393,8 @@ export default function PriceLists() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 cursor-pointer" onClick={() => toggleExpand(pl.price_list_id || pl.pricelist_id)}>
-                    <div className="p-2 bg-[#22EDA9]/10 rounded-lg">
-                      <List className="h-5 w-5 text-[#22EDA9]" />
+                    <div className="p-2 bg-[#C8FF00]/10 rounded-lg">
+                      <List className="h-5 w-5 text-[#C8FF00]" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
@@ -479,7 +479,7 @@ export default function PriceLists() {
                               <td className="px-4 py-2 text-right text-gray-500">
                                 {formatCurrency(item.item_price || item.synced_item_price || 0)}
                               </td>
-                              <td className="px-4 py-2 text-right font-medium text-[#22EDA9]">
+                              <td className="px-4 py-2 text-right font-medium text-[#C8FF00]">
                                 {formatCurrency(item.pricelist_rate || item.custom_rate || 0)}
                               </td>
                               <td className="px-4 py-2 text-right">
@@ -571,7 +571,7 @@ export default function PriceLists() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAddItemDialog(false)}>Cancel</Button>
-            <Button onClick={handleAddItem} className="bg-[#22EDA9] text-black" data-testid="add-item-submit">Add Item</Button>
+            <Button onClick={handleAddItem} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="add-item-submit">Add Item</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -642,7 +642,7 @@ export default function PriceLists() {
                   <div className="text-right">
                     <div className="font-medium">{formatCurrency(item.rate)}</div>
                     {bulkPercentageType !== "none" && bulkPercentageValue > 0 && (
-                      <div className="text-xs text-[#22EDA9]">
+                      <div className="text-xs text-[#C8FF00]">
                         → {formatCurrency(
                           bulkPercentageType === "markup_percentage" 
                             ? item.rate * (1 + bulkPercentageValue / 100)
@@ -661,7 +661,7 @@ export default function PriceLists() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setShowBulkAddDialog(false); setBulkAddItems([]); }}>Cancel</Button>
-            <Button onClick={handleBulkAdd} className="bg-[#22EDA9] text-black" disabled={bulkAddItems.length === 0}>
+            <Button onClick={handleBulkAdd} className="bg-[#C8FF00] text-[#080C0F] font-bold" disabled={bulkAddItems.length === 0}>
               Add {bulkAddItems.length} Items
             </Button>
           </DialogFooter>
@@ -696,7 +696,7 @@ export default function PriceLists() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setShowImportDialog(false); setImportCsvData(""); }}>Cancel</Button>
-            <Button onClick={handleImport} className="bg-[#22EDA9] text-black" disabled={importing} data-testid="import-submit-btn">
+            <Button onClick={handleImport} className="bg-[#C8FF00] text-[#080C0F] font-bold" disabled={importing} data-testid="import-submit-btn">
               {importing ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Importing...</> : <><Upload className="h-4 w-4 mr-2" />Import</>}
             </Button>
           </DialogFooter>
@@ -749,7 +749,7 @@ export default function PriceLists() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
-            <Button onClick={handleUpdate} className="bg-[#22EDA9] text-black">Save Changes</Button>
+            <Button onClick={handleUpdate} className="bg-[#C8FF00] text-[#080C0F] font-bold">Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

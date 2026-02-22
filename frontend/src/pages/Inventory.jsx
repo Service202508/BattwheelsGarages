@@ -118,7 +118,7 @@ export default function Inventory() {
         </div>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="add-item-btn">
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="add-item-btn">
               <Plus className="h-4 w-4 mr-2" />
               Add {activeTab === "services" ? "Service" : "Part"}
             </Button>
@@ -203,7 +203,7 @@ export default function Inventory() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button>
-              <Button onClick={handleAddItem} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
+              <Button onClick={handleAddItem} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
                 Add {activeTab === "services" ? "Service" : "Part"}
               </Button>
             </div>
@@ -220,7 +220,7 @@ export default function Inventory() {
                 <p className="text-sm text-gray-500">Total Services</p>
                 <p className="text-2xl font-bold text-[#F4F6F0]">{totals.services}</p>
               </div>
-              <Wrench className="h-8 w-8 text-[#22EDA9]" />
+              <Wrench className="h-8 w-8 text-[#C8FF00]" />
             </div>
           </CardContent>
         </Card>
@@ -274,11 +274,11 @@ export default function Inventory() {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="services" className="data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black">
+          <TabsTrigger value="services" className="data-[state=active]:bg-[#C8FF00] data-[state=active]:text-[#080C0F] font-bold">
             <Wrench className="h-4 w-4 mr-2" />
             Services ({services.length})
           </TabsTrigger>
-          <TabsTrigger value="parts" className="data-[state=active]:bg-[#22EDA9] data-[state=active]:text-black">
+          <TabsTrigger value="parts" className="data-[state=active]:bg-[#C8FF00] data-[state=active]:text-[#080C0F] font-bold">
             <Package className="h-4 w-4 mr-2" />
             Parts ({parts.length})
           </TabsTrigger>

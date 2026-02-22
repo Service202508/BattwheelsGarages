@@ -350,7 +350,7 @@ export default function GSTReports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
                 </div>
               ) : gstr1Data && (
                 <div className="space-y-6">
@@ -502,12 +502,12 @@ export default function GSTReports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
                 </div>
               ) : gstr3bData && (
                 <div className="space-y-6">
                   {/* Net Tax Payable Highlight */}
-                  <Card className="bg-[#22EDA9]/10 border-[#22EDA9]">
+                  <Card className="bg-[#C8FF00]/10 border-[#C8FF00]">
                     <CardContent className="py-6">
                       <div className="text-center">
                         <p className="text-sm text-gray-600 mb-1">Net Tax Payable</p>
@@ -615,7 +615,7 @@ export default function GSTReports() {
                             <TableCell className="text-right text-green-600">{formatCurrency(gstr3bData.section_4?.igst)}</TableCell>
                             <TableCell className="text-right font-medium">{formatCurrency(gstr3bData.section_6?.net_igst)}</TableCell>
                           </TableRow>
-                          <TableRow className="bg-[#22EDA9] font-bold">
+                          <TableRow className="bg-[#C8FF00] font-bold">
                             <TableCell>TOTAL</TableCell>
                             <TableCell className="text-right">{formatCurrency(gstr3bData.section_3_1?.total_tax)}</TableCell>
                             <TableCell className="text-right">{formatCurrency(gstr3bData.section_4?.total_itc)}</TableCell>
@@ -663,7 +663,7 @@ export default function GSTReports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
                 </div>
               ) : hsnSummary && (
                 <div className="border rounded-lg overflow-hidden">
@@ -691,7 +691,7 @@ export default function GSTReports() {
                           <TableCell className="text-right">{formatCurrency(item.sgst)}</TableCell>
                         </TableRow>
                       ))}
-                      <TableRow className="bg-[#22EDA9]/20 font-bold">
+                      <TableRow className="bg-[#C8FF00]/20 font-bold">
                         <TableCell colSpan={4}>TOTAL</TableCell>
                         <TableCell className="text-right">{formatCurrency(hsnSummary.total?.taxable_value)}</TableCell>
                         <TableCell className="text-right">{formatCurrency(hsnSummary.total?.cgst)}</TableCell>

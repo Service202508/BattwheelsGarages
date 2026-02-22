@@ -274,7 +274,7 @@ export default function Reports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
                 </div>
               ) : profitLoss && (
                 <div className="space-y-6">
@@ -358,7 +358,7 @@ export default function Reports() {
                         <TableCell className="text-right font-semibold">{formatCurrency(profitLoss.total_expenses)}</TableCell>
                       </TableRow>
                       
-                      <TableRow className="bg-[#22EDA9]/20">
+                      <TableRow className="bg-[#C8FF00]/20">
                         <TableCell className="font-bold text-lg">NET PROFIT</TableCell>
                         <TableCell className={`text-right font-bold text-lg ${profitLoss.net_profit >= 0 ? 'text-green-700' : 'text-red-700'}`}>
                           {formatCurrency(profitLoss.net_profit)}
@@ -393,7 +393,7 @@ export default function Reports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
                 </div>
               ) : balanceSheet && (
                 <div className="grid md:grid-cols-2 gap-6">
@@ -477,7 +477,7 @@ export default function Reports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
                 </div>
               ) : arAging && (
                 <div className="space-y-6">
@@ -516,7 +516,7 @@ export default function Reports() {
                   </div>
 
                   {/* Total */}
-                  <div className="bg-[#22EDA9]/10 p-4 rounded-lg flex justify-between items-center">
+                  <div className="bg-[#C8FF00]/10 p-4 rounded-lg flex justify-between items-center">
                     <span className="font-semibold text-gray-700">Total Accounts Receivable</span>
                     <span className="text-2xl font-bold text-[#F4F6F0]">{formatCurrency(arAging.total_ar)}</span>
                   </div>
@@ -580,7 +580,7 @@ export default function Reports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
                 </div>
               ) : apAging && (
                 <div className="space-y-6">
@@ -683,7 +683,7 @@ export default function Reports() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#22EDA9]" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
                 </div>
               ) : salesByCustomer && (
                 <div className="space-y-6">
@@ -723,7 +723,7 @@ export default function Reports() {
                             <TableCell className="text-right font-medium">{formatCurrency(item.total_sales)}</TableCell>
                           </TableRow>
                         ))}
-                        <TableRow className="bg-[#22EDA9]/20 font-bold">
+                        <TableRow className="bg-[#C8FF00]/20 font-bold">
                           <TableCell></TableCell>
                           <TableCell>TOTAL</TableCell>
                           <TableCell className="text-center">{salesByCustomer.total_invoices}</TableCell>

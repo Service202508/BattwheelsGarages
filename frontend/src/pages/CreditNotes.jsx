@@ -129,7 +129,7 @@ export default function CreditNotes() {
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-cn-btn">
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-cn-btn">
               <Plus className="h-4 w-4 mr-2" /> New Credit Note
             </Button>
           </DialogTrigger>
@@ -172,7 +172,7 @@ export default function CreditNotes() {
                   <Input value={newLineItem.name} onChange={(e) => setNewLineItem({ ...newLineItem, name: e.target.value })} placeholder="Item name" />
                   <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" />
                   <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
-                  <Button onClick={handleAddLineItem} className="bg-[#22EDA9] text-black">Add</Button>
+                  <Button onClick={handleAddLineItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
                 </div>
               </div>
 
@@ -217,7 +217,7 @@ export default function CreditNotes() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreateCN} className="bg-[#22EDA9] text-black">Create Credit Note</Button>
+              <Button onClick={handleCreateCN} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Credit Note</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -247,7 +247,7 @@ export default function CreditNotes() {
                       {cn.credits_remaining > 0 && <p className="text-xs text-[#3B9EFF]">Available: ₹{cn.credits_remaining?.toLocaleString('en-IN')}</p>}
                     </div>
                     {cn.credits_remaining > 0 && (
-                      <Button size="sm" className="bg-[#22EDA9] text-black" onClick={() => { setSelectedCN(cn); setApplyAmount(cn.credits_remaining); setShowApplyDialog(true); }}>
+                      <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => { setSelectedCN(cn); setApplyAmount(cn.credits_remaining); setShowApplyDialog(true); }}>
                         <ArrowRight className="h-4 w-4 mr-1" /> Apply
                       </Button>
                     )}
@@ -287,7 +287,7 @@ export default function CreditNotes() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowApplyDialog(false)}>Cancel</Button>
-            <Button onClick={handleApplyToInvoice} className="bg-[#22EDA9] text-black">Apply Credit</Button>
+            <Button onClick={handleApplyToInvoice} className="bg-[#C8FF00] text-[#080C0F] font-bold">Apply Credit</Button>
           </div>
         </DialogContent>
       </Dialog>

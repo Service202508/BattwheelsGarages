@@ -132,13 +132,13 @@ export default function Taxes() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setShowGroupDialog(false)}>Cancel</Button>
-                <Button onClick={handleCreateGroup} className="bg-[#22EDA9] text-black">Create Group</Button>
+                <Button onClick={handleCreateGroup} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Group</Button>
               </div>
             </DialogContent>
           </Dialog>
           <Dialog open={showTaxDialog} onOpenChange={setShowTaxDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-tax-btn">
+              <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-tax-btn">
                 <Plus className="h-4 w-4 mr-2" /> New Tax
               </Button>
             </DialogTrigger>
@@ -175,7 +175,7 @@ export default function Taxes() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setShowTaxDialog(false)}>Cancel</Button>
-                <Button onClick={handleCreateTax} className="bg-[#22EDA9] text-black">Create Tax</Button>
+                <Button onClick={handleCreateTax} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Tax</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -197,8 +197,8 @@ export default function Taxes() {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[#22EDA9]/10 rounded-lg">
-                          <Percent className="h-5 w-5 text-[#22EDA9]" />
+                        <div className="p-2 bg-[#C8FF00]/10 rounded-lg">
+                          <Percent className="h-5 w-5 text-[#C8FF00]" />
                         </div>
                         <div>
                           <h3 className="font-semibold">{tax.tax_name}</h3>
@@ -235,7 +235,7 @@ export default function Taxes() {
                           {group.description && <p className="text-sm text-gray-500">{group.description}</p>}
                         </div>
                       </div>
-                      <p className="text-2xl font-bold text-[#22EDA9]">{group.combined_rate}%</p>
+                      <p className="text-2xl font-bold text-[#C8FF00]">{group.combined_rate}%</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {group.taxes?.map(tax => (

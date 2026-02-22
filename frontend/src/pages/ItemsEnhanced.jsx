@@ -839,7 +839,7 @@ export default function ItemsEnhanced() {
             <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
               <RefreshCw className="h-4 w-4" />
             </Button>
-            <Button onClick={() => setShowItemDialog(true)} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-item-btn">
+            <Button onClick={() => setShowItemDialog(true)} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-item-btn">
               <Plus className="h-4 w-4" /> New Item
             </Button>
           </div>
@@ -1084,7 +1084,7 @@ export default function ItemsEnhanced() {
         {/* Groups Tab */}
         <TabsContent value="groups" className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={() => setShowGroupDialog(true)} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-group-btn">
+            <Button onClick={() => setShowGroupDialog(true)} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-group-btn">
               <Plus className="h-4 w-4" /> New Group
             </Button>
           </div>
@@ -1116,7 +1116,7 @@ export default function ItemsEnhanced() {
         {/* Warehouses Tab */}
         <TabsContent value="warehouses" className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={() => setShowWarehouseDialog(true)} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-warehouse-btn">
+            <Button onClick={() => setShowWarehouseDialog(true)} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-warehouse-btn">
               <Plus className="h-4 w-4" /> New Warehouse
             </Button>
           </div>
@@ -1161,7 +1161,7 @@ export default function ItemsEnhanced() {
               <Button variant="outline" onClick={() => { fetchContacts(); setShowAssignPriceListDialog(true); }} className="gap-2">
                 <Users className="h-4 w-4" /> Assign to Contact
               </Button>
-              <Button onClick={() => setShowPriceListDialog(true)} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-pricelist-btn">
+              <Button onClick={() => setShowPriceListDialog(true)} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-pricelist-btn">
                 <Plus className="h-4 w-4" /> New Price List
               </Button>
             </div>
@@ -1222,7 +1222,7 @@ export default function ItemsEnhanced() {
         {/* Adjustments Tab */}
         <TabsContent value="adjustments" className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={() => setShowAdjustmentDialog(true)} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-adjustment-btn">
+            <Button onClick={() => setShowAdjustmentDialog(true)} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-adjustment-btn">
               <Plus className="h-4 w-4" /> New Adjustment
             </Button>
           </div>
@@ -1780,7 +1780,7 @@ export default function ItemsEnhanced() {
             >
               Cancel
             </Button>
-            <Button onClick={handleCreateItem} className="bg-[#22EDA9] text-black" data-testid="create-item-submit">Create Item</Button>
+            <Button onClick={handleCreateItem} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-item-submit">Create Item</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1842,7 +1842,7 @@ export default function ItemsEnhanced() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditItem(null)}>Cancel</Button>
-            <Button onClick={handleUpdateItem} className="bg-[#22EDA9] text-black">Update Item</Button>
+            <Button onClick={handleUpdateItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Update Item</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1867,7 +1867,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowGroupDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateGroup} className="bg-[#22EDA9] text-black" data-testid="create-group-submit">Create</Button>
+            <Button onClick={handleCreateGroup} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-group-submit">Create</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1886,7 +1886,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowWarehouseDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateWarehouse} className="bg-[#22EDA9] text-black" data-testid="create-warehouse-submit">Create</Button>
+            <Button onClick={handleCreateWarehouse} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-warehouse-submit">Create</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1915,7 +1915,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPriceListDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreatePriceList} className="bg-[#22EDA9] text-black" data-testid="create-pricelist-submit">Create</Button>
+            <Button onClick={handleCreatePriceList} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-pricelist-submit">Create</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1978,7 +1978,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdjustmentDialog(false)}>Cancel</Button>
-            <Button onClick={handleCreateAdjustment} className="bg-[#22EDA9] text-black" data-testid="create-adjustment-submit">Create Adjustment</Button>
+            <Button onClick={handleCreateAdjustment} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-adjustment-submit">Create Adjustment</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2010,7 +2010,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setShowImportDialog(false); setImportFile(null); }}>Cancel</Button>
-            <Button onClick={handleImport} disabled={!importFile} className="bg-[#22EDA9] text-black">Import</Button>
+            <Button onClick={handleImport} disabled={!importFile} className="bg-[#C8FF00] text-[#080C0F] font-bold">Import</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2065,7 +2065,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCustomFieldDialog(false)}>Close</Button>
-            <Button onClick={handleCreateCustomField} className="bg-[#22EDA9] text-black">Add Field</Button>
+            <Button onClick={handleCreateCustomField} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add Field</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2089,7 +2089,7 @@ export default function ItemsEnhanced() {
                 autoFocus
                 data-testid="barcode-input"
               />
-              <Button onClick={handleBarcodeLookup} className="bg-[#22EDA9] text-black">
+              <Button onClick={handleBarcodeLookup} className="bg-[#C8FF00] text-[#080C0F] font-bold">
                 <Search className="h-4 w-4" />
               </Button>
             </div>
@@ -2170,7 +2170,7 @@ export default function ItemsEnhanced() {
                   handleBulkSetPrices(selectedPriceList.pricelist_id, percentage);
                 }
               }}
-              className="bg-[#22EDA9] text-black"
+              className="bg-[#C8FF00] text-[#080C0F] font-bold"
             >
               Apply to All Items
             </Button>
@@ -2250,7 +2250,7 @@ export default function ItemsEnhanced() {
                   toast.error("Please select a contact");
                 }
               }}
-              className="bg-[#22EDA9] text-black"
+              className="bg-[#C8FF00] text-[#080C0F] font-bold"
             >
               Assign Price List
             </Button>
@@ -2428,7 +2428,7 @@ export default function ItemsEnhanced() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPreferencesDialog(false)}>Cancel</Button>
-            <Button onClick={handleSavePreferences} className="bg-[#22EDA9] text-black gap-2">
+            <Button onClick={handleSavePreferences} className="bg-[#C8FF00] text-[#080C0F] font-bold gap-2">
               <Save className="h-4 w-4" /> Save Preferences
             </Button>
           </DialogFooter>
@@ -2511,7 +2511,7 @@ export default function ItemsEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowFieldConfigDialog(false)}>Cancel</Button>
-            <Button onClick={handleSaveFieldConfig} className="bg-[#22EDA9] text-black gap-2">
+            <Button onClick={handleSaveFieldConfig} className="bg-[#C8FF00] text-[#080C0F] font-bold gap-2">
               <Save className="h-4 w-4" /> Save Configuration
             </Button>
           </DialogFooter>

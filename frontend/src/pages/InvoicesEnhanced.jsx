@@ -893,7 +893,7 @@ export default function InvoicesEnhanced() {
               <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
                 <Receipt className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
                 <p>No invoices found</p>
-                <Button onClick={() => setShowCreateDialog(true)} className="mt-4 bg-[#22EDA9] text-black">Create First Invoice</Button>
+                <Button onClick={() => setShowCreateDialog(true)} className="mt-4 bg-[#C8FF00] text-[#080C0F] font-bold">Create First Invoice</Button>
               </CardContent>
             </Card>
           ) : (
@@ -1173,7 +1173,7 @@ export default function InvoicesEnhanced() {
             >
               Cancel
             </Button>
-            <Button onClick={handleCreateInvoice} className="bg-[#22EDA9] text-black" data-testid="create-invoice-submit">Create Invoice</Button>
+            <Button onClick={handleCreateInvoice} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-invoice-submit">Create Invoice</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1664,7 +1664,7 @@ export default function InvoicesEnhanced() {
           
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancel</Button>
-            <Button onClick={handleUpdateInvoice} className="bg-[#22EDA9] text-black" data-testid="save-invoice-btn">Save Changes</Button>
+            <Button onClick={handleUpdateInvoice} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="save-invoice-btn">Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1722,7 +1722,7 @@ export default function InvoicesEnhanced() {
                 <Button 
                   onClick={handleCreateShareLink} 
                   disabled={shareLoading}
-                  className="w-full bg-[#22EDA9] text-black"
+                  className="w-full bg-[#C8FF00] text-[#080C0F] font-bold"
                   data-testid="generate-share-link-btn"
                 >
                   {shareLoading ? "Generating..." : "Generate Share Link"}
@@ -1880,7 +1880,7 @@ export default function InvoicesEnhanced() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowSendDialog(false)}>Cancel</Button>
-            <Button onClick={handleSendInvoiceEmail} className="bg-[#22EDA9] text-black">Send Invoice</Button>
+            <Button onClick={handleSendInvoiceEmail} className="bg-[#C8FF00] text-[#080C0F] font-bold">Send Invoice</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

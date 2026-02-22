@@ -104,7 +104,7 @@ export default function VendorCredits() {
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black" data-testid="create-vc-btn">
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-vc-btn">
               <Plus className="h-4 w-4 mr-2" /> New Vendor Credit
             </Button>
           </DialogTrigger>
@@ -141,7 +141,7 @@ export default function VendorCredits() {
                   <Input value={newLineItem.name} onChange={(e) => setNewLineItem({ ...newLineItem, name: e.target.value })} placeholder="Item name" />
                   <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({ ...newLineItem, quantity: parseFloat(e.target.value) })} placeholder="Qty" />
                   <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({ ...newLineItem, rate: parseFloat(e.target.value) })} placeholder="Rate" />
-                  <Button onClick={handleAddLineItem} className="bg-[#22EDA9] text-black">Add</Button>
+                  <Button onClick={handleAddLineItem} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add</Button>
                 </div>
               </div>
               {newVC.line_items.length > 0 && (
@@ -166,7 +166,7 @@ export default function VendorCredits() {
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button onClick={handleCreate} className="bg-[#22EDA9] text-black">Create</Button>
+              <Button onClick={handleCreate} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -196,7 +196,7 @@ export default function VendorCredits() {
                       {vc.credits_remaining > 0 && <p className="text-xs text-[#3B9EFF]">Available: ₹{vc.credits_remaining?.toLocaleString('en-IN')}</p>}
                     </div>
                     {vc.credits_remaining > 0 && (
-                      <Button size="sm" className="bg-[#22EDA9] text-black" onClick={() => { setSelectedVC(vc); setApplyAmount(vc.credits_remaining); setShowApplyDialog(true); }}>
+                      <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => { setSelectedVC(vc); setApplyAmount(vc.credits_remaining); setShowApplyDialog(true); }}>
                         <ArrowRight className="h-4 w-4 mr-1" /> Apply
                       </Button>
                     )}
@@ -229,7 +229,7 @@ export default function VendorCredits() {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowApplyDialog(false)}>Cancel</Button>
-            <Button onClick={handleApplyToBill} className="bg-[#22EDA9] text-black">Apply Credit</Button>
+            <Button onClick={handleApplyToBill} className="bg-[#C8FF00] text-[#080C0F] font-bold">Apply Credit</Button>
           </div>
         </DialogContent>
       </Dialog>
