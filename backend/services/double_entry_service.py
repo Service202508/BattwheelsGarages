@@ -428,6 +428,9 @@ class DoubleEntryService:
         entry_dict = entry.to_dict()
         await self.journal_entries.insert_one(entry_dict)
         
+        # Remove MongoDB _id from response
+        entry_dict.pop("_id", None)
+        
         logger.info(f"Created journal entry {reference_number} for org {organization_id}")
         
         return True, "Journal entry created successfully", entry_dict
