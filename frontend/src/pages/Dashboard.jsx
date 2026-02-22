@@ -199,7 +199,7 @@ export default function Dashboard({ user }) {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="service-tickets" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="bg-slate-100 border border-slate-200 p-1 rounded-xl">
           <TabsTrigger 
             value="workshop" 
