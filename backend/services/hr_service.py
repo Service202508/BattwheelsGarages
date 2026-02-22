@@ -13,6 +13,7 @@ from datetime import datetime, timezone, timedelta
 from pydantic import BaseModel
 import uuid
 import logging
+import bcrypt
 
 from events import get_dispatcher, EventType, EventPriority
 
@@ -36,37 +37,118 @@ class HRService:
     # ==================== EMPLOYEE MANAGEMENT ====================
     
     async def create_employee(self, data: Dict[str, Any], user_id: str) -> Dict[str, Any]:
-        """Create new employee with Indian compliance fields"""
+        """Create new employee with Indian compliance fields and optional user account"""
         employee_id = f"emp_{uuid.uuid4().hex[:12]}"
         now = datetime.now(timezone.utc)
         
+        # Generate employee code if not provided
+        employee_code = data.get("employee_code")
+        if not employee_code:
+            count = await self.db.employees.count_documents({})
+            employee_code = f"EMP{str(count + 1).zfill(4)}"
+        
+        # Create user account if password is provided
+        created_user_id = data.get("user_id")
+        email = data.get("email")
+        password = data.get("password")
+        system_role = data.get("system_role", "technician")
+        
+        if password and email:
+            # Check if user already exists with this email
+            existing_user = await self.db.users.find_one({"email": email})
+            if existing_user:
+                raise ValueError(f"User with email {email} already exists")
+            
+            # Hash the password
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            
+            # Create user account
+            new_user_id = f"user_{uuid.uuid4().hex[:12]}"
+            user_doc = {
+                "user_id": new_user_id,
+                "email": email,
+                "password": hashed_password,
+                "name": f"{data.get('first_name', '')} {data.get('last_name', '')}".strip(),
+                "role": system_role,
+                "status": "active",
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat()
+            }
+            await self.db.users.insert_one(user_doc)
+            created_user_id = new_user_id
+            logger.info(f"Created user account for employee: {email}")
+        
+        # Build emergency contact
+        emergency_contact = {}
+        if data.get("emergency_contact_name"):
+            emergency_contact = {
+                "name": data.get("emergency_contact_name"),
+                "phone": data.get("emergency_contact_phone"),
+                "relation": data.get("emergency_contact_relation")
+            }
+        
+        # Build address
+        address = {}
+        if data.get("current_address") or data.get("city"):
+            address = {
+                "current": data.get("current_address"),
+                "permanent": data.get("permanent_address"),
+                "city": data.get("city"),
+                "state": data.get("state"),
+                "pincode": data.get("pincode")
+            }
+        
+        # Build compliance info
+        compliance = {
+            "pan_number": data.get("pan_number"),
+            "aadhaar_number": data.get("aadhaar_number"),
+            "pf_number": data.get("pf_number"),
+            "uan": data.get("uan"),
+            "esi_number": data.get("esi_number"),
+            "pf_enrolled": data.get("pf_enrolled", False),
+            "esi_enrolled": data.get("esi_enrolled", False)
+        }
+        
         employee = {
             "employee_id": employee_id,
-            "user_id": data.get("user_id"),
+            "employee_code": employee_code,
+            "user_id": created_user_id,
             "first_name": data.get("first_name"),
             "last_name": data.get("last_name"),
-            "email": data.get("email"),
+            "full_name": f"{data.get('first_name', '')} {data.get('last_name', '')}".strip(),
+            "work_email": email,
+            "email": email,
+            "personal_email": data.get("personal_email"),
             "phone": data.get("phone"),
             "department": data.get("department"),
             "designation": data.get("designation"),
             "employment_type": data.get("employment_type", "full_time"),
+            "joining_date": data.get("date_of_joining"),
             "date_of_joining": data.get("date_of_joining"),
             "date_of_birth": data.get("date_of_birth"),
             "gender": data.get("gender"),
             "marital_status": data.get("marital_status"),
             "blood_group": data.get("blood_group"),
-            "emergency_contact": data.get("emergency_contact", {}),
-            "address": data.get("address", {}),
+            "emergency_contact": emergency_contact,
+            "address": address,
+            "work_location": data.get("work_location", "office"),
+            "shift": data.get("shift", "general"),
+            "probation_period_months": data.get("probation_period_months", 0),
+            
+            # System role
+            "system_role": system_role,
             
             # Compensation
+            "salary": data.get("salary_structure", {}),
             "salary_structure": data.get("salary_structure", {}),
             "bank_details": data.get("bank_details", {}),
             
             # Indian compliance
+            "compliance": compliance,
             "pan_number": data.get("pan_number"),
             "aadhaar_number": data.get("aadhaar_number"),
-            "pf_account_number": data.get("pf_account_number"),
-            "uan_number": data.get("uan_number"),
+            "pf_account_number": data.get("pf_number"),
+            "uan_number": data.get("uan"),
             "esi_number": data.get("esi_number"),
             
             # Leave balances
@@ -82,6 +164,7 @@ class HRService:
             # Status
             "status": "active",
             "reporting_manager": data.get("reporting_manager"),
+            "reporting_manager_id": data.get("reporting_manager"),
             "shift_timing": data.get("shift_timing", {"start": "09:00", "end": "18:00"}),
             
             "created_at": now.isoformat(),
