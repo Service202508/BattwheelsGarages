@@ -16,6 +16,8 @@ import {
   AlertTriangle, CheckCircle2, XCircle, Timer, Coffee
 } from "lucide-react";
 import { API } from "@/App";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
+import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 export default function Attendance({ user }) {
   const [todayAttendance, setTodayAttendance] = useState(null);
