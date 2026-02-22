@@ -744,18 +744,55 @@ export default function BillsEnhanced() {
             </div>
           </ScrollArea>
           <div className="flex justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={() => { setShowCreateBill(false); resetBillForm(); }}>Cancel</Button>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                if (billPersistence.isDirty) {
+                  billPersistence.setShowCloseConfirm(true);
+                } else {
+                  setShowCreateBill(false);
+                  resetBillForm();
+                }
+              }}
+            >
+              Cancel
+            </Button>
             <Button onClick={handleCreateBill} className="bg-[#22EDA9] text-black">Create Bill</Button>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Create PO Dialog */}
-      <Dialog open={showCreatePO} onOpenChange={setShowCreatePO}>
+      <Dialog 
+        open={showCreatePO} 
+        onOpenChange={(open) => {
+          if (!open && poPersistence.isDirty) {
+            poPersistence.setShowCloseConfirm(true);
+          } else {
+            if (!open) poPersistence.clearSavedData();
+            setShowCreatePO(open);
+          }
+        }}
+      >
         <DialogContent className="max-w-4xl max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle>Create Purchase Order</DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Create Purchase Order</DialogTitle>
+              <AutoSaveIndicator 
+                lastSaved={poPersistence.lastSaved} 
+                isSaving={poPersistence.isSaving} 
+                isDirty={poPersistence.isDirty} 
+              />
+            </div>
           </DialogHeader>
+          
+          <DraftRecoveryBanner
+            show={poPersistence.showRecoveryBanner}
+            savedAt={poPersistence.savedDraftInfo?.timestamp}
+            onRestore={poPersistence.handleRestoreDraft}
+            onDiscard={poPersistence.handleDiscardDraft}
+          />
+          
           <ScrollArea className="max-h-[calc(90vh-120px)]">
             <div className="space-y-4 p-1">
               <div className="grid grid-cols-2 gap-4">
