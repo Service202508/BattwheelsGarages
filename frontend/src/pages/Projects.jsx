@@ -220,7 +220,7 @@ export default function Projects() {
           {projects.map(project => {
             const progress = project.budget_hours > 0 ? (project.total_hours / project.budget_hours) * 100 : 0;
             return (
-              <Card key={project.project_id} className="hover:shadow-md transition-shadow">
+              <Card key={project.project_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between mb-3">
                     <div>

@@ -233,7 +233,7 @@ export default function Customers() {
       ) : (
         <div className="grid gap-4">
           {customers.map((customer) => (
-            <Card key={customer.customer_id} className="hover:shadow-md transition-shadow" data-testid={`customer-card-${customer.customer_id}`}>
+            <Card key={customer.customer_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors" data-testid={`customer-card-${customer.customer_id}`}>
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

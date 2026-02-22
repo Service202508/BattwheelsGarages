@@ -361,7 +361,7 @@ export default function PurchaseOrders() {
         ) :
         <div className="space-y-3">
           {orders.map(po => (
-            <Card key={po.po_id} className="hover:shadow-md transition-shadow">
+            <Card key={po.po_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>

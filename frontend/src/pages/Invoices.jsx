@@ -474,7 +474,7 @@ export default function Invoices() {
       ) : (
         <div className="space-y-3">
           {invoices.map((invoice) => (
-            <Card key={invoice.invoice_id} className="hover:shadow-md transition-shadow" data-testid={`invoice-card-${invoice.invoice_id}`}>
+            <Card key={invoice.invoice_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors" data-testid={`invoice-card-${invoice.invoice_id}`}>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
