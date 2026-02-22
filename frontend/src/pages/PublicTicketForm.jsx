@@ -889,7 +889,7 @@ export default function PublicTicketForm() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-slate-300 text-sm">Vehicle Number <span className="text-emerald-500">*</span></Label>
-                  <Input placeholder="e.g., MH12AB1234" className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 uppercase rounded-xl transition-all" value={formData.vehicle_number} onChange={(e) => setFormData(prev => ({ ...prev, vehicle_number: e.target.value.toUpperCase() }))} data-testid="vehicle-number-input" />
+                  <Input placeholder="e.g., MH12AB1234" className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 uppercase rounded-xl transition-all text-white placeholder:text-slate-500" value={formData.vehicle_number} onChange={(e) => setFormData(prev => ({ ...prev, vehicle_number: e.target.value.toUpperCase() }))} data-testid="vehicle-number-input" />
                 </div>
               </div>
 
@@ -902,13 +902,13 @@ export default function PublicTicketForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Full Name <span className="text-emerald-500">*</span></Label>
-                    <Input placeholder="Your name" className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-xl transition-all" value={formData.customer_name} onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))} data-testid="customer-name-input" />
+                    <Input placeholder="Your name" className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 rounded-xl transition-all text-white placeholder:text-slate-500" value={formData.customer_name} onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))} data-testid="customer-name-input" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Contact Number <span className="text-emerald-500">*</span></Label>
                     <div className="flex">
                       <div className="flex items-center px-4 bg-slate-800 border border-r-0 border-slate-700/50 rounded-l-xl text-sm text-slate-400 font-medium">+91</div>
-                      <Input placeholder="98765 43210" className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-l-none rounded-r-xl transition-all" value={formData.contact_number} onChange={(e) => setFormData(prev => ({ ...prev, contact_number: e.target.value }))} data-testid="contact-number-input" />
+                      <Input placeholder="98765 43210" className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 rounded-l-none rounded-r-xl transition-all text-white placeholder:text-slate-500" value={formData.contact_number} onChange={(e) => setFormData(prev => ({ ...prev, contact_number: e.target.value }))} data-testid="contact-number-input" />
                     </div>
                   </div>
                 </div>
@@ -917,20 +917,20 @@ export default function PublicTicketForm() {
                     <Label className="text-slate-300 text-sm">Email Address</Label>
                     <div className="relative">
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                      <Input type="email" placeholder="your@email.com" className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 pl-11 rounded-xl transition-all" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} data-testid="email-input" />
+                      <Input type="email" placeholder="your@email.com" className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 pl-11 rounded-xl transition-all text-white placeholder:text-slate-500" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} data-testid="email-input" />
                     </div>
                   </div>
                   {formData.customer_type === "business" && (
                     <div className="space-y-2">
                       <Label className="text-slate-300 text-sm">Business Name</Label>
-                      <Input placeholder="Company name" className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-xl transition-all" value={formData.business_name} onChange={(e) => setFormData(prev => ({ ...prev, business_name: e.target.value }))} data-testid="business-name-input" />
+                      <Input placeholder="Company name" className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 rounded-xl transition-all text-white placeholder:text-slate-500" value={formData.business_name} onChange={(e) => setFormData(prev => ({ ...prev, business_name: e.target.value }))} data-testid="business-name-input" />
                     </div>
                   )}
                 </div>
                 {formData.customer_type === "business" && (
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">GST Number</Label>
-                    <Input placeholder="22AAAAA0000A1Z5" className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 uppercase rounded-xl transition-all" value={formData.gst_number} onChange={(e) => setFormData(prev => ({ ...prev, gst_number: e.target.value.toUpperCase() }))} data-testid="gst-number-input" />
+                    <Input placeholder="22AAAAA0000A1Z5" className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 uppercase rounded-xl transition-all text-white placeholder:text-slate-500" value={formData.gst_number} onChange={(e) => setFormData(prev => ({ ...prev, gst_number: e.target.value.toUpperCase() }))} data-testid="gst-number-input" />
                   </div>
                 )}
               </div>
@@ -946,7 +946,7 @@ export default function PublicTicketForm() {
                     <Label className="text-slate-300 text-sm">Issue Title <span className="text-emerald-500">*</span></Label>
                     {aiLoading && <span className="text-xs text-emerald-400 flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" />AI analyzing...</span>}
                   </div>
-                  <Input placeholder="Describe the issue briefly..." className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-xl transition-all" value={formData.title} onChange={(e) => handleTitleChange(e.target.value)} onFocus={() => { if (issueSuggestions.length > 0) setShowSuggestions(true); if (aiSuggestions.length > 0) setShowAiSuggestions(true); }} data-testid="issue-title-input" />
+                  <Input placeholder="Describe the issue briefly..." className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 rounded-xl transition-all text-white placeholder:text-slate-500" value={formData.title} onChange={(e) => handleTitleChange(e.target.value)} onFocus={() => { if (issueSuggestions.length > 0) setShowSuggestions(true); if (aiSuggestions.length > 0) setShowAiSuggestions(true); }} data-testid="issue-title-input" />
                   
                   {showAiSuggestions && aiSuggestions.length > 0 && (
                     <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-emerald-500/30 rounded-xl shadow-xl shadow-emerald-900/20 max-h-60 overflow-auto">
@@ -965,7 +965,7 @@ export default function PublicTicketForm() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-slate-300 text-sm">Detailed Description <span className="text-emerald-500">*</span></Label>
-                  <Textarea placeholder="Describe the issue in detail - symptoms, when it started, any error codes..." className="min-h-[120px] bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-xl transition-all resize-none" value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} data-testid="description-input" />
+                  <Textarea placeholder="Describe the issue in detail - symptoms, when it started, any error codes..." className="min-h-[120px] bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 rounded-xl transition-all resize-none text-white placeholder:text-slate-500" value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} data-testid="description-input" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
