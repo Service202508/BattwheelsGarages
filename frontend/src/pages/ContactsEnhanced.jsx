@@ -680,9 +680,9 @@ export default function ContactsEnhanced() {
                     <Textarea value={newContact.notes} onChange={(e) => setNewContact({ ...newContact, notes: e.target.value })} placeholder="Internal notes about this contact" rows={2} />
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setShowContactDialog(false)}>Cancel</Button>
-                  <Button onClick={handleCreateContact} className="bg-[#22EDA9] text-black" data-testid="create-contact-submit">Create Contact</Button>
+                <DialogFooter className="border-t border-[rgba(255,255,255,0.07)] pt-4">
+                  <Button variant="outline" onClick={() => setShowContactDialog(false)} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]">Cancel</Button>
+                  <Button onClick={handleCreateContact} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-contact-submit">Create Contact</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
