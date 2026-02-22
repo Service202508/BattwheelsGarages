@@ -265,7 +265,7 @@ export default function CustomerDashboard({ user }) {
                     Protect your EV with our Annual Maintenance Contract. Get priority service, discounts, and peace of mind.
                   </p>
                   <Link to="/customer/amc">
-                    <Button size="sm" className="mt-3 bg-emerald-600 hover:bg-emerald-700">
+                    <Button size="sm" className="mt-3 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
                       Explore Plans
                     </Button>
                   </Link>
