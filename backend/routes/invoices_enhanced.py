@@ -21,6 +21,9 @@ from services.invoice_validation import pre_save_validation, validate_and_correc
 # Import tenant context for multi-tenant scoping
 from core.tenant.context import TenantContext, tenant_context_required, optional_tenant_context
 
+# Import double-entry posting hooks
+from services.posting_hooks import post_invoice_journal_entry
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/invoices-enhanced", tags=["Invoices Enhanced"])
