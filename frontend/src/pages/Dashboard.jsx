@@ -116,6 +116,7 @@ const KPICard = ({ title, description, value, unit = "", target, icon: Icon, col
 export default function Dashboard({ user }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("service-tickets");
 
   useEffect(() => {
     const fetchStats = async () => {
