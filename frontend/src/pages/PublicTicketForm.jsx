@@ -859,7 +859,7 @@ export default function PublicTicketForm() {
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Vehicle Category <span className="text-emerald-500">*</span></Label>
                     <Select value={formData.vehicle_category} onValueChange={(value) => setFormData(prev => ({ ...prev, vehicle_category: value, vehicle_model_id: "", vehicle_model_name: "", vehicle_oem: "" }))}>
-                      <SelectTrigger className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all rounded-xl" data-testid="vehicle-category-select">
+                      <SelectTrigger className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all rounded-xl text-white" data-testid="vehicle-category-select">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-800 border-slate-700">
@@ -873,7 +873,7 @@ export default function PublicTicketForm() {
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Vehicle Model (OEM)</Label>
                     <Select value={formData.vehicle_model_id} onValueChange={handleModelSelect} disabled={!formData.vehicle_category}>
-                      <SelectTrigger className="h-12 bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all rounded-xl disabled:opacity-50" data-testid="vehicle-model-select">
+                      <SelectTrigger className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all rounded-xl text-white disabled:opacity-50" data-testid="vehicle-model-select">
                         <SelectValue placeholder="Select model" />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
