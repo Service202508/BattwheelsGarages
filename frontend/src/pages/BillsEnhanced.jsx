@@ -209,6 +209,7 @@ export default function BillsEnhanced() {
       const data = await res.json();
       if (res.ok) {
         toast.success("Bill created successfully");
+        billPersistence.onSuccessfulSave();
         setShowCreateBill(false);
         resetBillForm();
         fetchData();
@@ -233,6 +234,7 @@ export default function BillsEnhanced() {
       const data = await res.json();
       if (res.ok) {
         toast.success("Purchase order created");
+        poPersistence.onSuccessfulSave();
         setShowCreatePO(false);
         resetPOForm();
         fetchData();
@@ -245,22 +247,11 @@ export default function BillsEnhanced() {
   };
 
   const resetBillForm = () => {
-    setNewBill({
-      vendor_id: "", bill_number: "", reference_number: "",
-      bill_date: new Date().toISOString().split('T')[0],
-      payment_terms: 30, line_items: [], discount_type: "percentage",
-      discount_value: 0, tds_applicable: false, tds_rate: 0, vendor_notes: ""
-    });
+    setNewBill(initialBillData);
   };
 
   const resetPOForm = () => {
-    setNewPO({
-      vendor_id: "", reference_number: "",
-      order_date: new Date().toISOString().split('T')[0],
-      expected_delivery_date: "", delivery_address: "",
-      line_items: [], discount_type: "percentage",
-      discount_value: 0, shipping_charge: 0, vendor_notes: "", terms_conditions: ""
-    });
+    setNewPO(initialPOData);
   };
 
   const viewBillDetail = async (billId) => {
