@@ -22,12 +22,12 @@ const API = `${BACKEND_URL}/api`;
 const statusConfig = {
   pending_payment: { label: "Pending Payment", color: "bg-amber-500", icon: CreditCard },
   open: { label: "Open", color: "bg-blue-500", icon: Ticket },
-  assigned: { label: "Technician Assigned", color: "bg-purple-500", icon: User },
-  technician_assigned: { label: "Technician Assigned", color: "bg-purple-500", icon: User },
+  assigned: { label: "Technician Assigned", color: "bg-[rgba(139,92,246,0.08)]0", icon: User },
+  technician_assigned: { label: "Technician Assigned", color: "bg-[rgba(139,92,246,0.08)]0", icon: User },
   estimate_sent: { label: "Estimate Shared", color: "bg-cyan-500", icon: FileText },
   estimate_approved: { label: "Estimate Approved", color: "bg-[rgba(34,197,94,0.08)]0", icon: CheckCircle },
   work_in_progress: { label: "Work In Progress", color: "bg-[rgba(255,140,0,0.08)]0", icon: Loader2 },
-  work_completed: { label: "Work Completed", color: "bg-emerald-500", icon: CheckCircle },
+  work_completed: { label: "Work Completed", color: "bg-[rgba(200,255,0,0.08)]0", icon: CheckCircle },
   closed: { label: "Closed", color: "bg-slate-500", icon: CheckCircle },
 };
 

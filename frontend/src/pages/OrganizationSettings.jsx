@@ -23,7 +23,7 @@ import { API } from "@/App";
 
 // Role badge colors
 const roleBadgeColors = {
-  owner: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+  owner: "bg-[rgba(139,92,246,0.08)]0/20 text-purple-400 border-purple-500/30",
   admin: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   manager: "bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30",
   dispatcher: "bg-[rgba(234,179,8,0.08)]0/20 text-yellow-400 border-yellow-500/30",

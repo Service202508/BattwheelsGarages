@@ -145,12 +145,12 @@ export default function CustomerVehicles({ user }) {
                 {/* AMC Info */}
                 {vehicle.amc_plan && (
                   <div className={`p-3 rounded-lg border ${
-                    vehicle.amc_plan.status === 'expiring' ? 'bg-[rgba(255,140,0,0.08)] border-orange-200' : 'bg-emerald-50 border-emerald-200'
+                    vehicle.amc_plan.status === 'expiring' ? 'bg-[rgba(255,140,0,0.08)] border-orange-200' : 'bg-[rgba(200,255,0,0.08)] border-emerald-200'
                   }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Shield className={`h-4 w-4 ${
-                          vehicle.amc_plan.status === 'expiring' ? 'text-orange-600' : 'text-emerald-600'
+                          vehicle.amc_plan.status === 'expiring' ? 'text-orange-600' : 'text-[#C8FF00] text-600'
                         }`} />
                         <span className="font-medium text-sm">{vehicle.amc_plan.plan_name}</span>
                       </div>

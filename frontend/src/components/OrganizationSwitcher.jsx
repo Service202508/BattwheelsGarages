@@ -80,9 +80,9 @@ const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
 
   const getRoleColor = (role) => {
     switch (role) {
-      case 'owner': return 'bg-purple-500/20 text-purple-400';
+      case 'owner': return 'bg-[rgba(139,92,246,0.08)]0/20 text-purple-400';
       case 'admin': return 'bg-blue-500/20 text-blue-400';
-      case 'manager': return 'bg-emerald-500/20 text-emerald-400';
+      case 'manager': return 'bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400';
       default: return 'bg-slate-500/20 text-slate-400';
     }
   };
@@ -91,8 +91,8 @@ const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
     // Single org - just show the name
     return (
       <div className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-[rgba(255,255,255,0.07)] border-700">
-        <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-          <Building2 className="w-4 h-4 text-emerald-400" />
+        <div className="w-8 h-8 bg-[rgba(200,255,0,0.08)]0/20 rounded-lg flex items-center justify-center">
+          <Building2 className="w-4 h-4 text-[#C8FF00] text-400" />
         </div>
         <div className="hidden sm:block">
           <p className="text-sm font-medium text-white truncate max-w-[150px]">
@@ -113,11 +113,11 @@ const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
         className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg border border-[rgba(255,255,255,0.07)] border-700 transition"
         data-testid="org-switcher-btn"
       >
-        <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+        <div className="w-8 h-8 bg-[rgba(200,255,0,0.08)]0/20 rounded-lg flex items-center justify-center">
           {currentOrg?.logo_url ? (
             <img src={currentOrg.logo_url} alt="" className="w-6 h-6 rounded" />
           ) : (
-            <Building2 className="w-4 h-4 text-emerald-400" />
+            <Building2 className="w-4 h-4 text-[#C8FF00] text-400" />
           )}
         </div>
         <div className="hidden sm:block text-left">
@@ -147,11 +147,11 @@ const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
                   org.organization_id === currentOrg?.organization_id ? 'bg-slate-700/30' : ''
                 }`}
               >
-                <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-[rgba(200,255,0,0.08)]0/20 rounded-lg flex items-center justify-center flex-shrink-0">
                   {org.logo_url ? (
                     <img src={org.logo_url} alt="" className="w-8 h-8 rounded" />
                   ) : (
-                    <Building2 className="w-5 h-5 text-emerald-400" />
+                    <Building2 className="w-5 h-5 text-[#C8FF00] text-400" />
                   )}
                 </div>
                 <div className="flex-1 text-left min-w-0">
@@ -164,7 +164,7 @@ const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
                   </div>
                 </div>
                 {org.organization_id === currentOrg?.organization_id && (
-                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <Check className="w-4 h-4 text-[#C8FF00] text-400 flex-shrink-0" />
                 )}
               </button>
             ))}
@@ -187,7 +187,7 @@ const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
             </a>
             <a
               href="/subscription"
-              className="flex items-center gap-2 px-3 py-2 text-sm text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-lg transition"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-[#C8FF00] text-400 hover:text-[#C8FF00] text-300 hover:bg-[rgba(200,255,0,0.08)]0/10 rounded-lg transition"
             >
               <Plus className="w-4 h-4" />
               Upgrade Plan

@@ -13,11 +13,11 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  present: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+  present: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-emerald-500/30",
   absent: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400 border-red-500/30",
   late: "bg-amber-500/20 text-amber-400 border-amber-500/30",
   half_day: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  leave: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+  leave: "bg-[rgba(139,92,246,0.08)]0/20 text-purple-400 border-purple-500/30",
 };
 
 const statusIcons = {
@@ -210,10 +210,10 @@ export default function TechnicianAttendance({ user }) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-slate-500 uppercase tracking-wider">Present</p>
-                <p className="text-2xl font-bold text-emerald-400 mt-1">{summary.present || 0}</p>
+                <p className="text-2xl font-bold text-[#C8FF00] text-400 mt-1">{summary.present || 0}</p>
               </div>
-              <div className="p-2.5 rounded-xl bg-emerald-500/10">
-                <CheckCircle className="h-5 w-5 text-emerald-400" />
+              <div className="p-2.5 rounded-xl bg-[rgba(200,255,0,0.08)]0/10">
+                <CheckCircle className="h-5 w-5 text-[#C8FF00] text-400" />
               </div>
             </div>
           </CardContent>
@@ -310,10 +310,10 @@ export default function TechnicianAttendance({ user }) {
                           </p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-lg ${record.status === 'present' ? 'bg-emerald-500/10' : 
+                          <div className={`p-2 rounded-lg ${record.status === 'present' ? 'bg-[rgba(200,255,0,0.08)]0/10' : 
                             record.status === 'absent' ? 'bg-[rgba(255,59,47,0.08)]0/10' : 
                             record.status === 'late' ? 'bg-amber-500/10' : 'bg-blue-500/10'}`}>
-                            <StatusIcon className={`h-5 w-5 ${record.status === 'present' ? 'text-emerald-400' : 
+                            <StatusIcon className={`h-5 w-5 ${record.status === 'present' ? 'text-[#C8FF00] text-400' : 
                               record.status === 'absent' ? 'text-red-400' : 
                               record.status === 'late' ? 'text-amber-400' : 'text-blue-400'}`} />
                           </div>
@@ -337,7 +337,7 @@ export default function TechnicianAttendance({ user }) {
                           </div>
                         )}
                         {record.working_hours && (
-                          <div className="text-emerald-400 font-medium">
+                          <div className="text-[#C8FF00] text-400 font-medium">
                             {record.working_hours}h
                           </div>
                         )}

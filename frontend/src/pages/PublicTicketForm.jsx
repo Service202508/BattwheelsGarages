@@ -36,7 +36,7 @@ const resolutionTypes = [
 
 // Priority levels
 const priorities = [
-  { value: "low", label: "Low", desc: "Can wait", bgColor: "bg-emerald-50", textColor: "text-emerald-700", borderColor: "border-emerald-200", activeBg: "bg-emerald-500" },
+  { value: "low", label: "Low", desc: "Can wait", bgColor: "bg-[rgba(200,255,0,0.08)]", textColor: "text-[#C8FF00] text-700", borderColor: "border-emerald-200", activeBg: "bg-[rgba(200,255,0,0.08)]0" },
   { value: "medium", label: "Medium", desc: "24-48h", bgColor: "bg-amber-50", textColor: "text-amber-700", borderColor: "border-amber-200", activeBg: "bg-amber-500" },
   { value: "high", label: "High", desc: "Urgent", bgColor: "bg-[rgba(255,140,0,0.08)]", textColor: "text-orange-700", borderColor: "border-orange-200", activeBg: "bg-[rgba(255,140,0,0.08)]0" },
   { value: "critical", label: "Critical", desc: "Immobile", bgColor: "bg-[rgba(255,59,47,0.08)]", textColor: "text-red-700", borderColor: "border-red-200", activeBg: "bg-[rgba(255,59,47,0.08)]0" },
@@ -294,9 +294,9 @@ export default function PublicTicketForm() {
         <header className="sticky top-0 z-50 bg-[#111820]/80 backdrop-blur-xl border-b border-gray-100 shadow-sm">
           <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
             <img src="/battwheels_garages_logo.png" alt="Battwheels Garages" className="h-10 invert" />
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-xs font-semibold text-emerald-700">EFI Active</span>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[rgba(200,255,0,0.08)] border border-emerald-200 rounded-full">
+              <div className="w-2 h-2 bg-[rgba(200,255,0,0.08)]0 rounded-full animate-pulse" />
+              <span className="text-xs font-semibold text-[#C8FF00] text-700">EFI Active</span>
             </div>
           </div>
         </header>
@@ -358,11 +358,11 @@ export default function PublicTicketForm() {
                     }`}>
                       <Icon className={`w-6 h-6 ${isSelected ? "text-white" : "text-gray-500"}`} strokeWidth={2} />
                     </div>
-                    <p className={`font-semibold ${isSelected ? "text-emerald-700" : "text-[#F4F6F0]"}`}>{type.label}</p>
+                    <p className={`font-semibold ${isSelected ? "text-[#C8FF00] text-700" : "text-[#F4F6F0]"}`}>{type.label}</p>
                     <p className="text-xs text-gray-500 mt-1">{type.desc}</p>
                     {isSelected && (
                       <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-3 right-3">
-                        <CheckCircle2 className="w-6 h-6 text-emerald-500" fill="#10b981" stroke="white" />
+                        <CheckCircle2 className="w-6 h-6 text-[#C8FF00] text-500" fill="#10b981" stroke="white" />
                       </motion.div>
                     )}
                   </motion.button>
@@ -377,7 +377,7 @@ export default function PublicTicketForm() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Category <span className="text-emerald-500">*</span></Label>
+                  <Label className="text-sm font-medium text-gray-700">Category <span className="text-[#C8FF00] text-500">*</span></Label>
                   <Select value={formData.vehicle_category} onValueChange={(v) => setFormData(prev => ({ ...prev, vehicle_category: v, vehicle_model_id: "", vehicle_model_name: "", vehicle_oem: "" }))}>
                     <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 rounded-xl text-[#F4F6F0]" data-testid="vehicle-category-select">
                       <SelectValue placeholder="Select category" />
@@ -386,10 +386,10 @@ export default function PublicTicketForm() {
                       {categories.map((cat) => {
                         const Icon = categoryIcons[cat.code] || Car;
                         return (
-                          <SelectItem key={cat.code} value={cat.code} className="hover:bg-emerald-50 focus:bg-emerald-50 rounded-lg">
+                          <SelectItem key={cat.code} value={cat.code} className="hover:bg-[rgba(200,255,0,0.08)] focus:bg-[rgba(200,255,0,0.08)] rounded-lg">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                                <Icon className="w-4 h-4 text-emerald-600" />
+                              <div className="w-8 h-8 rounded-lg bg-[rgba(200,255,0,0.10)] flex items-center justify-center">
+                                <Icon className="w-4 h-4 text-[#C8FF00] text-600" />
                               </div>
                               <span className="font-medium">{cat.name}</span>
                             </div>
@@ -408,9 +408,9 @@ export default function PublicTicketForm() {
                     <SelectContent className="bg-[#111820] border-gray-200 rounded-xl shadow-xl max-h-60">
                       {Object.entries(modelsByOem).map(([oem, oemModels]) => (
                         <div key={oem}>
-                          <div className="px-3 py-2 text-xs font-bold text-emerald-600 bg-emerald-50 sticky top-0">{oem}</div>
+                          <div className="px-3 py-2 text-xs font-bold text-[#C8FF00] text-600 bg-[rgba(200,255,0,0.08)] sticky top-0">{oem}</div>
                           {oemModels.map((m) => (
-                            <SelectItem key={m.model_id} value={m.model_id} className="hover:bg-emerald-50 rounded-lg">{m.name}</SelectItem>
+                            <SelectItem key={m.model_id} value={m.model_id} className="hover:bg-[rgba(200,255,0,0.08)] rounded-lg">{m.name}</SelectItem>
                           ))}
                         </div>
                       ))}
@@ -419,7 +419,7 @@ export default function PublicTicketForm() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">Vehicle Number <span className="text-emerald-500">*</span></Label>
+                <Label className="text-sm font-medium text-gray-700">Vehicle Number <span className="text-[#C8FF00] text-500">*</span></Label>
                 <StyledInput placeholder="MH12AB1234" value={formData.vehicle_number} onChange={(e) => setFormData(prev => ({ ...prev, vehicle_number: e.target.value.toUpperCase() }))} className="uppercase tracking-widest font-mono text-lg" data-testid="vehicle-number-input" />
               </div>
             </div>
@@ -431,13 +431,13 @@ export default function PublicTicketForm() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Full Name <span className="text-emerald-500">*</span></Label>
+                  <Label className="text-sm font-medium text-gray-700">Full Name <span className="text-[#C8FF00] text-500">*</span></Label>
                   <StyledInput placeholder="Enter your name" value={formData.customer_name} onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))} data-testid="customer-name-input" />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Phone Number <span className="text-emerald-500">*</span></Label>
+                  <Label className="text-sm font-medium text-gray-700">Phone Number <span className="text-[#C8FF00] text-500">*</span></Label>
                   <div className="flex">
-                    <div className="flex items-center px-4 bg-emerald-50 border-2 border-r-0 border-emerald-200 rounded-l-xl text-sm font-semibold text-emerald-700">+91</div>
+                    <div className="flex items-center px-4 bg-[rgba(200,255,0,0.08)] border-2 border-r-0 border-emerald-200 rounded-l-xl text-sm font-semibold text-[#C8FF00] text-700">+91</div>
                     <StyledInput type="tel" placeholder="9876543210" value={formData.contact_number} onChange={(e) => setFormData(prev => ({ ...prev, contact_number: e.target.value }))} className="rounded-l-none" data-testid="contact-number-input" />
                   </div>
                 </div>
@@ -470,8 +470,8 @@ export default function PublicTicketForm() {
             <div className="space-y-4">
               <div className="space-y-2 relative">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium text-gray-700">Issue <span className="text-emerald-500">*</span></Label>
-                  {aiLoading && <span className="flex items-center gap-1.5 text-xs text-emerald-600"><Loader2 className="w-3 h-3 animate-spin" />Analyzing...</span>}
+                  <Label className="text-sm font-medium text-gray-700">Issue <span className="text-[#C8FF00] text-500">*</span></Label>
+                  {aiLoading && <span className="flex items-center gap-1.5 text-xs text-[#C8FF00] text-600"><Loader2 className="w-3 h-3 animate-spin" />Analyzing...</span>}
                 </div>
                 <StyledInput placeholder="e.g., Battery not charging, motor noise..." value={formData.title} onChange={(e) => handleTitleChange(e.target.value)} onFocus={() => { if (aiSuggestions.length > 0) setShowAiSuggestions(true); }} data-testid="issue-title-input" />
                 
@@ -485,9 +485,9 @@ export default function PublicTicketForm() {
                       </div>
                       <div className="max-h-48 overflow-y-auto">
                         {aiSuggestions.slice(0, 4).map((s, i) => (
-                          <button key={i} onClick={() => handleSuggestionSelect(s)} className="w-full px-4 py-3 text-left hover:bg-emerald-50 transition-colors border-b border-gray-100 last:border-b-0 flex items-center justify-between group">
+                          <button key={i} onClick={() => handleSuggestionSelect(s)} className="w-full px-4 py-3 text-left hover:bg-[rgba(200,255,0,0.08)] transition-colors border-b border-gray-100 last:border-b-0 flex items-center justify-between group">
                             <span className="text-sm text-gray-700 font-medium">{s.title}</span>
-                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-emerald-500 transition-colors" />
+                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#C8FF00] text-500 transition-colors" />
                           </button>
                         ))}
                       </div>
@@ -497,7 +497,7 @@ export default function PublicTicketForm() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">Detailed Description <span className="text-emerald-500">*</span></Label>
+                <Label className="text-sm font-medium text-gray-700">Detailed Description <span className="text-[#C8FF00] text-500">*</span></Label>
                 <Textarea placeholder="Describe symptoms, when it started, error codes..." value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} className="min-h-[120px] bg-gray-50 border-2 border-gray-200 focus:border-emerald-500 focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded-xl text-[#F4F6F0] placeholder:text-gray-400 resize-none" data-testid="description-input" />
               </div>
 
@@ -534,7 +534,7 @@ export default function PublicTicketForm() {
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 ${isSelected ? "bg-gradient-to-br from-emerald-500 to-teal-500" : "bg-gray-100"}`}>
                       <Icon className={`w-5 h-5 ${isSelected ? "text-white" : "text-gray-500"}`} strokeWidth={2} />
                     </div>
-                    <p className={`font-semibold text-sm ${isSelected ? "text-emerald-700" : "text-[#F4F6F0]"}`}>{r.label}</p>
+                    <p className={`font-semibold text-sm ${isSelected ? "text-[#C8FF00] text-700" : "text-[#F4F6F0]"}`}>{r.label}</p>
                     <p className="text-xs text-gray-500 mt-1">{r.desc}</p>
                   </motion.button>
                 );
@@ -559,10 +559,10 @@ export default function PublicTicketForm() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-4 bg-[#111820] rounded-xl border border-gray-100 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <Checkbox checked disabled className="bg-emerald-500 border-emerald-500" />
+                    <Checkbox checked disabled className="bg-[rgba(200,255,0,0.08)]0 border-emerald-500" />
                     <div><p className="text-sm font-medium text-[#F4F6F0]">Visit Charges</p><p className="text-xs text-gray-500">Mandatory</p></div>
                   </div>
-                  <span className="text-lg font-bold text-emerald-600">₹{serviceCharges.visit_fee}</span>
+                  <span className="text-lg font-bold text-[#C8FF00] text-600">₹{serviceCharges.visit_fee}</span>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-[#111820] rounded-xl border border-gray-100 shadow-sm">
                   <div className="flex items-center gap-3">
@@ -583,11 +583,11 @@ export default function PublicTicketForm() {
           <SectionCard>
             <SectionHeader icon={Camera} title="Attach Photos" subtitle="Optional - helps diagnose faster" />
             <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} onClick={() => fileInputRef.current?.click()}
-              className="w-full p-8 border-2 border-dashed border-gray-200 rounded-xl hover:border-emerald-400 hover:bg-emerald-50/50 transition-all duration-200 group">
-              <div className="w-14 h-14 mx-auto mb-3 rounded-xl bg-gray-100 group-hover:bg-emerald-100 flex items-center justify-center transition-colors">
-                <Upload className="w-7 h-7 text-gray-400 group-hover:text-emerald-500" />
+              className="w-full p-8 border-2 border-dashed border-gray-200 rounded-xl hover:border-emerald-400 hover:bg-[rgba(200,255,0,0.08)]/50 transition-all duration-200 group">
+              <div className="w-14 h-14 mx-auto mb-3 rounded-xl bg-gray-100 group-hover:bg-[rgba(200,255,0,0.10)] flex items-center justify-center transition-colors">
+                <Upload className="w-7 h-7 text-gray-400 group-hover:text-[#C8FF00] text-500" />
               </div>
-              <p className="text-sm font-medium text-gray-600 group-hover:text-emerald-700">Tap to upload photos</p>
+              <p className="text-sm font-medium text-gray-600 group-hover:text-[#C8FF00] text-700">Tap to upload photos</p>
               <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 10MB</p>
               <input ref={fileInputRef} type="file" multiple accept="image/*" className="hidden" onChange={handleFileChange} />
             </motion.button>
@@ -620,9 +620,9 @@ export default function PublicTicketForm() {
 
           {/* Links */}
           <div className="flex items-center justify-center gap-6 text-sm text-gray-500 pt-2">
-            <a href="/track-ticket" className="hover:text-emerald-600 transition-colors flex items-center gap-1 font-medium">Track Ticket <ChevronRight className="w-4 h-4" /></a>
+            <a href="/track-ticket" className="hover:text-[#C8FF00] text-600 transition-colors flex items-center gap-1 font-medium">Track Ticket <ChevronRight className="w-4 h-4" /></a>
             <span className="text-gray-300">|</span>
-            <a href="/login" className="hover:text-emerald-600 transition-colors flex items-center gap-1 font-medium">Customer Portal <ChevronRight className="w-4 h-4" /></a>
+            <a href="/login" className="hover:text-[#C8FF00] text-600 transition-colors flex items-center gap-1 font-medium">Customer Portal <ChevronRight className="w-4 h-4" /></a>
           </div>
 
           <Footer />
@@ -652,7 +652,7 @@ export default function PublicTicketForm() {
             </div>
             <div className="p-6 space-y-4">
               <div className="p-4 bg-gray-50 rounded-xl space-y-3">
-                <div className="flex justify-between text-sm"><span className="text-gray-500">Ticket ID</span><span className="text-emerald-600 font-mono font-bold">{ticketResult?.ticket_id}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-500">Ticket ID</span><span className="text-[#C8FF00] text-600 font-mono font-bold">{ticketResult?.ticket_id}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-gray-500">Visit Charges</span><span className="text-[#F4F6F0] font-medium">₹{paymentDetails?.visit_fee}</span></div>
                 {paymentDetails?.diagnostic_fee > 0 && <div className="flex justify-between text-sm"><span className="text-gray-500">Diagnostic</span><span className="text-[#F4F6F0] font-medium">₹{paymentDetails?.diagnostic_fee}</span></div>}
                 <div className="flex justify-between pt-3 border-t border-gray-200"><span className="font-semibold text-[#F4F6F0]">Total</span><span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">₹{paymentDetails?.amount}</span></div>
@@ -683,15 +683,15 @@ export default function PublicTicketForm() {
           <div className="relative p-8 text-center bg-gradient-to-br from-emerald-500 to-teal-500">
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }} className="relative w-20 h-20 mx-auto mb-4 bg-[#111820] rounded-full flex items-center justify-center shadow-2xl">
-              <CheckCircle className="w-10 h-10 text-emerald-500" fill="#d1fae5" />
+              <CheckCircle className="w-10 h-10 text-[#C8FF00] text-500" fill="#d1fae5" />
             </motion.div>
             <h2 className="text-2xl font-bold text-white mb-1">Request Submitted!</h2>
-            <p className="text-emerald-100">Your service ticket has been created</p>
+            <p className="text-[#C8FF00] text-100">Your service ticket has been created</p>
           </div>
 
           <div className="p-6 space-y-5">
             <div className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl text-center border border-emerald-100">
-              <p className="text-xs text-emerald-600 uppercase tracking-wider font-semibold mb-1">Ticket ID</p>
+              <p className="text-xs text-[#C8FF00] text-600 uppercase tracking-wider font-semibold mb-1">Ticket ID</p>
               <p className="text-3xl font-mono font-bold text-[#F4F6F0] tracking-wider">{ticketResult?.ticket_id}</p>
             </div>
 

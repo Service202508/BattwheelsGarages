@@ -148,8 +148,8 @@ export default function BusinessReports({ user }) {
                     <p className="text-sm text-slate-500">Total Invoiced</p>
                     <p className="text-2xl font-bold text-slate-900">{formatCurrency(reportData?.financials?.total_invoiced)}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-emerald-50">
-                    <IndianRupee className="h-5 w-5 text-emerald-600" />
+                  <div className="p-3 rounded-xl bg-[rgba(200,255,0,0.08)]">
+                    <IndianRupee className="h-5 w-5 text-[#C8FF00] text-600" />
                   </div>
                 </div>
               </CardContent>
@@ -160,10 +160,10 @@ export default function BusinessReports({ user }) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-500">Paid</p>
-                    <p className="text-2xl font-bold text-emerald-600">{formatCurrency(reportData?.financials?.total_paid)}</p>
+                    <p className="text-2xl font-bold text-[#C8FF00] text-600">{formatCurrency(reportData?.financials?.total_paid)}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-emerald-50">
-                    <TrendingUp className="h-5 w-5 text-emerald-600" />
+                  <div className="p-3 rounded-xl bg-[rgba(200,255,0,0.08)]">
+                    <TrendingUp className="h-5 w-5 text-[#C8FF00] text-600" />
                   </div>
                 </div>
               </CardContent>

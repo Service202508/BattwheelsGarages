@@ -16,7 +16,7 @@ const statusColors = {
   open: "bg-blue-100 text-blue-700",
   in_progress: "bg-amber-100 text-amber-700",
   work_in_progress: "bg-amber-100 text-amber-700",
-  completed: "bg-emerald-100 text-emerald-700",
+  completed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
   pending: "bg-purple-100 text-purple-700",
 };
 
@@ -155,7 +155,7 @@ export default function BusinessDashboard({ user }) {
                 <p className="text-3xl font-bold text-slate-900 mt-2">{dashboard?.tickets?.pending_estimate_approval || 0}</p>
                 <p className="text-xs text-slate-400 mt-1">estimates waiting</p>
               </div>
-              <div className="p-3 rounded-xl bg-purple-50">
+              <div className="p-3 rounded-xl bg-[rgba(139,92,246,0.08)]">
                 <FileText className="h-6 w-6 text-purple-600" />
               </div>
             </div>
@@ -213,14 +213,14 @@ export default function BusinessDashboard({ user }) {
         <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-slate-900 flex items-center gap-2">
-              <Shield className="h-5 w-5 text-emerald-600" />
+              <Shield className="h-5 w-5 text-[#C8FF00] text-600" />
               AMC Status
             </CardTitle>
             <CardDescription>Active contracts</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center py-4">
-              <p className="text-5xl font-bold text-emerald-600">
+              <p className="text-5xl font-bold text-[#C8FF00] text-600">
                 {dashboard?.amc?.active_contracts || 0}
               </p>
               <p className="text-slate-500 mt-1">active AMC contracts</p>

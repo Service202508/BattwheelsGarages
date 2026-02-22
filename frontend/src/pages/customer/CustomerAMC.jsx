@@ -152,21 +152,21 @@ export default function CustomerAMC({ user }) {
                   {/* Features */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="text-center p-3 rounded-lg bg-gray-50">
-                      <Wrench className="h-5 w-5 mx-auto mb-1 text-emerald-600" />
+                      <Wrench className="h-5 w-5 mx-auto mb-1 text-[#C8FF00] text-600" />
                       <p className="text-sm font-medium">{sub.max_services} Services</p>
                     </div>
                     {sub.includes_parts && (
                       <div className="text-center p-3 rounded-lg bg-gray-50">
-                        <Gift className="h-5 w-5 mx-auto mb-1 text-emerald-600" />
+                        <Gift className="h-5 w-5 mx-auto mb-1 text-[#C8FF00] text-600" />
                         <p className="text-sm font-medium">{sub.parts_discount_percent}% Parts Discount</p>
                       </div>
                     )}
                     <div className="text-center p-3 rounded-lg bg-gray-50">
-                      <Phone className="h-5 w-5 mx-auto mb-1 text-emerald-600" />
+                      <Phone className="h-5 w-5 mx-auto mb-1 text-[#C8FF00] text-600" />
                       <p className="text-sm font-medium">Priority Support</p>
                     </div>
                     <div className="text-center p-3 rounded-lg bg-gray-50">
-                      <Car className="h-5 w-5 mx-auto mb-1 text-emerald-600" />
+                      <Car className="h-5 w-5 mx-auto mb-1 text-[#C8FF00] text-600" />
                       <p className="text-sm font-medium">Roadside Assist</p>
                     </div>
                   </div>
@@ -213,7 +213,7 @@ export default function CustomerAMC({ user }) {
                 }`}
               >
                 {plan.tier === 'premium' && (
-                  <div className="bg-purple-500 text-white text-center text-xs font-bold py-1">
+                  <div className="bg-[rgba(139,92,246,0.08)]0 text-white text-center text-xs font-bold py-1">
                     <Sparkles className="h-3 w-3 inline mr-1" />
                     MOST POPULAR
                   </div>
@@ -235,24 +235,24 @@ export default function CustomerAMC({ user }) {
 
                   <ul className="space-y-3 mb-6">
                     <li className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-emerald-500" />
+                      <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500" />
                       {plan.max_service_visits} Free Services
                     </li>
                     {plan.includes_parts && (
                       <li className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-emerald-500" />
+                        <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500" />
                         {plan.parts_discount_percent}% Discount on Parts
                       </li>
                     )}
                     {plan.priority_support && (
                       <li className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-emerald-500" />
+                        <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500" />
                         Priority Support
                       </li>
                     )}
                     {plan.roadside_assistance && (
                       <li className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-emerald-500" />
+                        <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500" />
                         24/7 Roadside Assistance
                       </li>
                     )}

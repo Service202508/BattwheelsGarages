@@ -18,7 +18,7 @@ import JobCard from "@/components/JobCard";
 const statusColors = {
   open: "bg-[rgba(234,179,8,0.08)]0",
   technician_assigned: "bg-blue-500",
-  estimate_shared: "bg-purple-500",
+  estimate_shared: "bg-[rgba(139,92,246,0.08)]0",
   estimate_approved: "bg-indigo-500",
   in_progress: "bg-[rgba(255,140,0,0.08)]0",
   resolved: "bg-[rgba(34,197,94,0.08)]0",
@@ -36,7 +36,7 @@ const statusLabels = {
 };
 
 const priorityColors = {
-  low: "bg-emerald-500/20 text-emerald-400",
+  low: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400",
   medium: "bg-[rgba(234,179,8,0.08)]0/20 text-yellow-400",
   high: "bg-[rgba(255,140,0,0.08)]0/20 text-orange-400",
   critical: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400"

@@ -274,7 +274,7 @@ export default function Accountant() {
     asset: "bg-green-100 text-green-700",
     liability: "bg-red-100 text-red-700",
     equity: "bg-blue-100 text-blue-700",
-    income: "bg-emerald-100 text-emerald-700",
+    income: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
     expense: "bg-orange-100 text-orange-700"
   };
 
@@ -341,12 +341,12 @@ export default function Accountant() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-emerald-100 rounded-lg">
-                    <ArrowDownLeft className="h-5 w-5 text-emerald-600" />
+                  <div className="p-2 bg-[rgba(200,255,0,0.10)] rounded-lg">
+                    <ArrowDownLeft className="h-5 w-5 text-[#C8FF00] text-600" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Monthly Deposits</p>
-                    <p className="text-xl font-bold text-emerald-600">{formatCurrency(dashboardStats?.monthly_deposits)}</p>
+                    <p className="text-xl font-bold text-[#C8FF00] text-600">{formatCurrency(dashboardStats?.monthly_deposits)}</p>
                   </div>
                 </div>
               </CardContent>
@@ -915,11 +915,11 @@ export default function Accountant() {
                         <p className="text-xl font-bold text-red-800">{formatCurrency(cashFlow?.cash_outflows)}</p>
                       </CardContent>
                     </Card>
-                    <Card className={`${cashFlow?.net_cash_flow >= 0 ? 'bg-emerald-50 border-emerald-200' : 'bg-[rgba(255,140,0,0.08)] border-orange-200'}`}>
+                    <Card className={`${cashFlow?.net_cash_flow >= 0 ? 'bg-[rgba(200,255,0,0.08)] border-emerald-200' : 'bg-[rgba(255,140,0,0.08)] border-orange-200'}`}>
                       <CardContent className="p-4 text-center">
-                        <IndianRupee className={`h-6 w-6 mx-auto mb-2 ${cashFlow?.net_cash_flow >= 0 ? 'text-emerald-600' : 'text-orange-600'}`} />
-                        <p className={`text-xs ${cashFlow?.net_cash_flow >= 0 ? 'text-emerald-700' : 'text-orange-700'}`}>Net Cash Flow</p>
-                        <p className={`text-xl font-bold ${cashFlow?.net_cash_flow >= 0 ? 'text-emerald-800' : 'text-orange-800'}`}>
+                        <IndianRupee className={`h-6 w-6 mx-auto mb-2 ${cashFlow?.net_cash_flow >= 0 ? 'text-[#C8FF00] text-600' : 'text-orange-600'}`} />
+                        <p className={`text-xs ${cashFlow?.net_cash_flow >= 0 ? 'text-[#C8FF00] text-700' : 'text-orange-700'}`}>Net Cash Flow</p>
+                        <p className={`text-xl font-bold ${cashFlow?.net_cash_flow >= 0 ? 'text-[#C8FF00] text-800' : 'text-orange-800'}`}>
                           {formatCurrency(cashFlow?.net_cash_flow)}
                         </p>
                       </CardContent>

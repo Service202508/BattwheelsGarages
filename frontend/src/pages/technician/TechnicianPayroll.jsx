@@ -10,7 +10,7 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  paid: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+  paid: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400 border-emerald-500/30",
   pending: "bg-amber-500/20 text-amber-400 border-amber-500/30",
   processing: "bg-blue-500/20 text-blue-400 border-blue-500/30",
 };
@@ -119,7 +119,7 @@ export default function TechnicianPayroll({ user }) {
         <Card className="bg-slate-900/50 border-[rgba(255,255,255,0.07)] border-800">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-purple-500/10">
+              <div className="p-2 rounded-lg bg-[rgba(139,92,246,0.08)]0/10">
                 <Wallet className="h-5 w-5 text-purple-400" />
               </div>
             </div>

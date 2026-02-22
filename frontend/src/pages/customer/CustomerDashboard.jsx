@@ -78,12 +78,12 @@ export default function CustomerDashboard({ user }) {
         <h1 className="text-2xl font-bold mb-1">
           Welcome back, {user?.name?.split(" ")[0] || "Customer"}!
         </h1>
-        <p className="text-emerald-100">
+        <p className="text-[#C8FF00] text-100">
           Manage your vehicles, track services, and view invoices all in one place.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <Link to="/customer/book-appointment">
-            <Button className="bg-[#111820] text-emerald-700 hover:bg-emerald-50">
+            <Button className="bg-[#111820] text-[#C8FF00] text-700 hover:bg-[rgba(200,255,0,0.08)]">
               <Clock className="h-4 w-4 mr-2" />
               Book Service
             </Button>
@@ -102,11 +102,11 @@ export default function CustomerDashboard({ user }) {
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">My Vehicles</CardTitle>
-            <Car className="h-5 w-5 text-emerald-500" />
+            <Car className="h-5 w-5 text-[#C8FF00] text-500" />
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{dashboard?.vehicles_count || 0}</p>
-            <Link to="/customer/vehicles" className="text-sm text-emerald-600 hover:underline flex items-center mt-1">
+            <Link to="/customer/vehicles" className="text-sm text-[#C8FF00] text-600 hover:underline flex items-center mt-1">
               View all <ArrowRight className="h-3 w-3 ml-1" />
             </Link>
           </CardContent>
@@ -156,11 +156,11 @@ export default function CustomerDashboard({ user }) {
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">Active AMC</CardTitle>
-            <Shield className="h-5 w-5 text-emerald-500" />
+            <Shield className="h-5 w-5 text-[#C8FF00] text-500" />
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{dashboard?.active_amc_plans || 0}</p>
-            <Link to="/customer/amc" className="text-sm text-emerald-600 hover:underline flex items-center mt-1">
+            <Link to="/customer/amc" className="text-sm text-[#C8FF00] text-600 hover:underline flex items-center mt-1">
               Manage plans <ArrowRight className="h-3 w-3 ml-1" />
             </Link>
           </CardContent>
@@ -235,7 +235,7 @@ export default function CustomerDashboard({ user }) {
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-xl bg-[#111820] shadow-sm">
-                <Phone className="h-6 w-6 text-emerald-600" />
+                <Phone className="h-6 w-6 text-[#C8FF00] text-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-[#F4F6F0]">Need Help?</h3>
@@ -257,7 +257,7 @@ export default function CustomerDashboard({ user }) {
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-xl bg-[#111820] shadow-sm">
-                  <Shield className="h-6 w-6 text-emerald-600" />
+                  <Shield className="h-6 w-6 text-[#C8FF00] text-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-[#F4F6F0]">Get AMC Protection</h3>

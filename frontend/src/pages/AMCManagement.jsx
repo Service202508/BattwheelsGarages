@@ -342,13 +342,13 @@ export default function AMCManagement({ user }) {
             <p className="text-xs text-gray-500">Tata, MG, Hyundai</p>
           </CardContent>
         </Card>
-        <Card className="bg-emerald-50 border-emerald-200">
+        <Card className="bg-[rgba(200,255,0,0.08)] border-emerald-200">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <IndianRupee className="h-5 w-5 text-emerald-600" />
+              <IndianRupee className="h-5 w-5 text-[#C8FF00] text-600" />
               <span className="text-gray-600">Total Revenue</span>
             </div>
-            <p className="text-3xl font-bold mt-2 text-emerald-700">
+            <p className="text-3xl font-bold mt-2 text-[#C8FF00] text-700">
               ₹{(analytics?.total_revenue || 0).toLocaleString()}
             </p>
             <p className="text-xs text-gray-500">{analytics?.total_active || 0} active subscriptions</p>
@@ -570,7 +570,7 @@ export default function AMCManagement({ user }) {
                         /{billingFrequency === "monthly" ? "month" : "year"}/vehicle
                       </p>
                       {billingFrequency === "monthly" && plan.annual_price && (
-                        <p className="text-xs text-emerald-600 mt-1">
+                        <p className="text-xs text-[#C8FF00] text-600 mt-1">
                           or ₹{plan.annual_price.toLocaleString()} annually
                         </p>
                       )}
@@ -579,11 +579,11 @@ export default function AMCManagement({ user }) {
                     {/* Features */}
                     <ul className="space-y-2.5 text-sm">
                       <li className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
                         <span>{plan.periodic_services_per_month} periodic service{plan.periodic_services_per_month > 1 ? 's' : ''}/month</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
                         <span>
                           {plan.breakdown_visits_per_month >= 999 
                             ? "Unlimited breakdown visits" 
@@ -593,37 +593,37 @@ export default function AMCManagement({ user }) {
                       </li>
                       {plan.digital_service_history && (
                         <li className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
                           <span>Digital service history</span>
                         </li>
                       )}
                       {plan.priority_support && (
                         <li className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
                           <span>Priority support ({plan.priority_response_minutes}-min response)</span>
                         </li>
                       )}
                       {plan.fleet_dashboard && (
                         <li className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
                           <span>Fleet dashboard access</span>
                         </li>
                       )}
                       {plan.dedicated_manager && (
                         <li className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
                           <span>Dedicated service manager</span>
                         </li>
                       )}
                       {plan.custom_sla && (
                         <li className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
                           <span>Custom SLAs & uptime guarantees</span>
                         </li>
                       )}
                       {plan.telematics_integration && (
                         <li className="flex items-start gap-2">
-                          <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 mt-0.5 flex-shrink-0" />
                           <span>Telematics integration</span>
                         </li>
                       )}
@@ -723,7 +723,7 @@ export default function AMCManagement({ user }) {
             </div>
             
             <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Zap className="h-4 w-4 text-emerald-500" />
+              <Zap className="h-4 w-4 text-[#C8FF00] text-500" />
               <span>Source: battwheelsgarages.in/plans</span>
             </div>
           </div>

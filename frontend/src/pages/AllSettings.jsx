@@ -43,7 +43,7 @@ const iconMap = {
 
 // Color classes for categories
 const colorClasses = {
-  "#10B981": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+  "#10B981": "bg-[rgba(200,255,0,0.08)]0/10 text-[#C8FF00] text-500 border-emerald-500/20",
   "#3B82F6": "bg-blue-500/10 text-blue-500 border-blue-500/20",
   "#F59E0B": "bg-amber-500/10 text-amber-500 border-amber-500/20",
   "#8B5CF6": "bg-violet-500/10 text-violet-500 border-violet-500/20",
@@ -1870,7 +1870,7 @@ function GSTSettingsPanel({ settings, onUpdate }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 p-4 border rounded-lg bg-emerald-500/5">
+      <div className="flex items-center gap-4 p-4 border rounded-lg bg-[rgba(200,255,0,0.08)]0/5">
         <input type="checkbox" id="gstRegistered" checked={form.is_gst_registered !== false} onChange={(e) => handleChange("is_gst_registered", e.target.checked)} />
         <div>
           <label htmlFor="gstRegistered" className="font-medium">GST Registered</label>

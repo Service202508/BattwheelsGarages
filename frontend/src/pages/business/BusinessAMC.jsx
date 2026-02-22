@@ -12,7 +12,7 @@ import {
 import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
-  active: "bg-emerald-100 text-emerald-700",
+  active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
   expired: "bg-red-100 text-red-700",
   pending: "bg-amber-100 text-amber-700",
   cancelled: "bg-slate-100 text-slate-600",
@@ -111,10 +111,10 @@ export default function BusinessAMC({ user }) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500">Active Contracts</p>
-                <p className="text-2xl font-bold text-emerald-600">{stats.active}</p>
+                <p className="text-2xl font-bold text-[#C8FF00] text-600">{stats.active}</p>
               </div>
-              <div className="p-3 rounded-xl bg-emerald-50">
-                <Shield className="h-5 w-5 text-emerald-600" />
+              <div className="p-3 rounded-xl bg-[rgba(200,255,0,0.08)]">
+                <Shield className="h-5 w-5 text-[#C8FF00] text-600" />
               </div>
             </div>
           </CardContent>
@@ -141,7 +141,7 @@ export default function BusinessAMC({ user }) {
                 <p className="text-sm text-slate-500">Contract Value</p>
                 <p className="text-2xl font-bold text-slate-900">{formatCurrency(stats.totalValue)}</p>
               </div>
-              <div className="p-3 rounded-xl bg-purple-50">
+              <div className="p-3 rounded-xl bg-[rgba(139,92,246,0.08)]">
                 <IndianRupee className="h-5 w-5 text-purple-600" />
               </div>
             </div>
@@ -267,7 +267,7 @@ export default function BusinessAMC({ user }) {
                   <ul className="space-y-2 mb-4">
                     {plan.features?.slice(0, 4).map((feature, idx) => (
                       <li key={idx} className="flex items-center gap-2 text-sm text-slate-600">
-                        <CheckCircle className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-[#C8FF00] text-500 flex-shrink-0" />
                         {feature}
                       </li>
                     ))}
@@ -333,9 +333,9 @@ export default function BusinessAMC({ user }) {
                 </div>
               </div>
               
-              <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-50">
-                <span className="text-sm text-emerald-700">Contract Value</span>
-                <span className="text-xl font-bold text-emerald-700">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-[rgba(200,255,0,0.08)]">
+                <span className="text-sm text-[#C8FF00] text-700">Contract Value</span>
+                <span className="text-xl font-bold text-[#C8FF00] text-700">
                   {formatCurrency(selectedContract.contract_value)}
                 </span>
               </div>

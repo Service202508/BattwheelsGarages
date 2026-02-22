@@ -98,7 +98,7 @@ export default function Alerts({ user }) {
             <div className="p-8 text-center text-muted-foreground">Loading alerts...</div>
           ) : alerts.length === 0 ? (
             <div className="p-8 text-center text-muted-foreground">
-              <CheckCircle className="h-12 w-12 mx-auto mb-4 text-emerald-400" />
+              <CheckCircle className="h-12 w-12 mx-auto mb-4 text-[#C8FF00] text-400" />
               <p>All systems operational. No alerts at this time.</p>
             </div>
           ) : (

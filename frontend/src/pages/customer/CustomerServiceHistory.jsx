@@ -256,7 +256,7 @@ export default function CustomerServiceHistory({ user }) {
                       {selectedService.status_history.map((item, index) => (
                         <div key={index} className="flex items-start gap-3">
                           <div className="flex flex-col items-center">
-                            <div className="h-3 w-3 rounded-full bg-emerald-500"></div>
+                            <div className="h-3 w-3 rounded-full bg-[rgba(200,255,0,0.08)]0"></div>
                             {index < selectedService.status_history.length - 1 && (
                               <div className="w-0.5 h-8 bg-gray-200 mt-1"></div>
                             )}

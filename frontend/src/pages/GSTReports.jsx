@@ -374,7 +374,7 @@ export default function GSTReports() {
                         <p className="text-xl font-bold text-orange-800">{formatCurrency((gstr1Data.grand_total?.cgst || 0) + (gstr1Data.grand_total?.sgst || 0))}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-purple-50 border-purple-200">
+                    <Card className="bg-[rgba(139,92,246,0.08)] border-purple-200">
                       <CardContent className="p-4">
                         <p className="text-xs text-purple-700 font-medium">IGST</p>
                         <p className="text-xl font-bold text-purple-800">{formatCurrency(gstr1Data.grand_total?.igst)}</p>

@@ -15,7 +15,7 @@ import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
   open: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  assigned: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+  assigned: "bg-[rgba(139,92,246,0.08)]0/20 text-purple-400 border-purple-500/30",
   work_in_progress: "bg-[rgba(255,140,0,0.08)]0/20 text-orange-400 border-orange-500/30",
   estimate_sent: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
   work_completed: "bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30",
@@ -232,7 +232,7 @@ export default function TechnicianDashboard({ user }) {
                 <p className="text-xs text-slate-500 uppercase tracking-wider">This Month</p>
                 <p className="text-2xl font-bold text-white mt-1">{dashboard?.tickets?.completed_month || 0}</p>
               </div>
-              <div className="p-2.5 rounded-xl bg-purple-500/10">
+              <div className="p-2.5 rounded-xl bg-[rgba(139,92,246,0.08)]0/10">
                 <Target className="h-5 w-5 text-purple-400" />
               </div>
             </div>
@@ -347,7 +347,7 @@ export default function TechnicianDashboard({ user }) {
                   <Calendar className="h-4 w-4 mr-2 text-purple-400" />
                   Apply for Leave
                   {dashboard?.pending_leave_requests > 0 && (
-                    <Badge className="ml-auto bg-purple-500/20 text-purple-400">{dashboard.pending_leave_requests}</Badge>
+                    <Badge className="ml-auto bg-[rgba(139,92,246,0.08)]0/20 text-purple-400">{dashboard.pending_leave_requests}</Badge>
                   )}
                 </Button>
               </Link>

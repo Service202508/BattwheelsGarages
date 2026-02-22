@@ -85,8 +85,8 @@ const HorizontalBarChart = ({ data, title, max = 100 }) => (
 
 const InfoCard = ({ title, value, unit, icon: Icon, subtitle }) => (
   <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg">
-    <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-      {Icon && <Icon className="h-5 w-5 text-emerald-400" />}
+    <div className="w-10 h-10 rounded-full bg-[rgba(200,255,0,0.08)]0/20 flex items-center justify-center">
+      {Icon && <Icon className="h-5 w-5 text-[#C8FF00] text-400" />}
     </div>
     <div>
       <span className="text-xs text-slate-400">{title}</span>
@@ -242,13 +242,13 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
 // Diagnostic Step Component
 const DiagnosticStep = ({ step, index, onMarkDone, isDone }) => (
   <div className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
-    isDone ? 'bg-emerald-500/10 border border-emerald-500/30' : 'bg-slate-800/50'
+    isDone ? 'bg-[rgba(200,255,0,0.08)]0/10 border border-emerald-500/30' : 'bg-slate-800/50'
   }`}>
     <button
       onClick={() => onMarkDone(index)}
       className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
         isDone 
-          ? 'bg-emerald-500 border-emerald-500 text-white' 
+          ? 'bg-[rgba(200,255,0,0.08)]0 border-emerald-500 text-white' 
           : 'border-[rgba(255,255,255,0.07)] border-600 hover:border-emerald-400'
       }`}
     >
@@ -256,12 +256,12 @@ const DiagnosticStep = ({ step, index, onMarkDone, isDone }) => (
       {!isDone && <span className="text-xs text-slate-400">{index + 1}</span>}
     </button>
     <div className="flex-1">
-      <p className={`text-sm ${isDone ? 'text-emerald-300 line-through' : 'text-white'}`}>
+      <p className={`text-sm ${isDone ? 'text-[#C8FF00] text-300 line-through' : 'text-white'}`}>
         {step.hinglish || step.action}
       </p>
       {step.expected && (
         <p className="text-xs text-slate-400 mt-1">
-          Expected: <span className="text-emerald-400">{step.expected}</span>
+          Expected: <span className="text-[#C8FF00] text-400">{step.expected}</span>
         </p>
       )}
     </div>
@@ -495,13 +495,13 @@ export default function EFIGuidancePanel({
       <CardHeader className="bg-gradient-to-r from-emerald-900/50 to-slate-900 border-b border-[rgba(255,255,255,0.07)] border-700 pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-              <Zap className="h-6 w-6 text-emerald-400" />
+            <div className="w-10 h-10 rounded-lg bg-[rgba(200,255,0,0.08)]0/20 flex items-center justify-center">
+              <Zap className="h-6 w-6 text-[#C8FF00] text-400" />
             </div>
             <div>
               <CardTitle className="text-white flex items-center gap-2 text-base sm:text-lg">
                 EFI Guidance
-                <Badge variant="outline" className="text-xs border-emerald-500/50 text-emerald-400">
+                <Badge variant="outline" className="text-xs border-emerald-500/50 text-[#C8FF00] text-400">
                   Hinglish
                 </Badge>
               </CardTitle>
@@ -528,7 +528,7 @@ export default function EFIGuidancePanel({
             
             {/* Refresh/Loading indicator */}
             {loading && (
-              <RefreshCw className="h-4 w-4 animate-spin text-emerald-400" />
+              <RefreshCw className="h-4 w-4 animate-spin text-[#C8FF00] text-400" />
             )}
             
             {/* Mode Toggle */}
@@ -557,7 +557,7 @@ export default function EFIGuidancePanel({
         {isSupervisorOrAdmin && guidance?.confidence && (
           <div className="mt-3 flex items-center gap-2">
             <Badge className={`text-xs ${
-              guidance.confidence === 'high' ? 'bg-emerald-500/20 text-emerald-400' :
+              guidance.confidence === 'high' ? 'bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400' :
               guidance.confidence === 'medium' ? 'bg-amber-500/20 text-amber-400' :
               'bg-rose-500/20 text-rose-400'
             }`}>
@@ -580,7 +580,7 @@ export default function EFIGuidancePanel({
       <CardContent className="p-0">
         {loading && !guidance ? (
           <div className="flex items-center justify-center p-12">
-            <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+            <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00] text-400" />
             <span className="ml-3 text-slate-400">Generating guidance...</span>
           </div>
         ) : guidance?.needs_ask_back && guidance.ask_back_questions?.length > 0 ? (
@@ -656,7 +656,7 @@ export default function EFIGuidancePanel({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                    <ClipboardList className="h-4 w-4 text-emerald-400" />
+                    <ClipboardList className="h-4 w-4 text-[#C8FF00] text-400" />
                     Diagnostic Steps ({mode === "quick" ? "Quick Mode" : "Deep Mode"})
                   </h4>
                   <span className="text-xs text-slate-500">
@@ -700,12 +700,12 @@ export default function EFIGuidancePanel({
               
               {/* Recommended Fix */}
               {guidance?.recommended_fix && (
-                <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
-                  <h4 className="text-sm font-medium text-emerald-400 mb-2 flex items-center gap-2">
+                <div className="p-3 bg-[rgba(200,255,0,0.08)]0/10 border border-emerald-500/30 rounded-lg">
+                  <h4 className="text-sm font-medium text-[#C8FF00] text-400 mb-2 flex items-center gap-2">
                     <Wrench className="h-4 w-4" />
                     Recommended Fix
                   </h4>
-                  <p className="text-sm text-emerald-200">{guidance.recommended_fix}</p>
+                  <p className="text-sm text-[#C8FF00] text-200">{guidance.recommended_fix}</p>
                 </div>
               )}
               
@@ -797,7 +797,7 @@ export default function EFIGuidancePanel({
             {/* ESTIMATE TAB */}
             <TabsContent value="estimate" className="p-4 space-y-4 m-0">
               <h4 className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                <Wrench className="h-4 w-4 text-emerald-400" />
+                <Wrench className="h-4 w-4 text-[#C8FF00] text-400" />
                 Suggested Parts & Labour
               </h4>
               
@@ -811,7 +811,7 @@ export default function EFIGuidancePanel({
                       >
                         <div className="flex items-center gap-3">
                           <Badge className={`text-xs ${
-                            item.type === "part" ? "bg-blue-500/20 text-blue-400" : "bg-purple-500/20 text-purple-400"
+                            item.type === "part" ? "bg-blue-500/20 text-blue-400" : "bg-[rgba(139,92,246,0.08)]0/20 text-purple-400"
                           }`}>
                             {item.type}
                           </Badge>
@@ -823,7 +823,7 @@ export default function EFIGuidancePanel({
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-medium text-emerald-400">
+                          <p className="text-sm font-medium text-[#C8FF00] text-400">
                             ₹{item.estimated_cost?.toLocaleString()}
                           </p>
                         </div>
@@ -831,7 +831,7 @@ export default function EFIGuidancePanel({
                     ))}
                   </div>
                   
-                  <div className="flex justify-between items-center p-3 bg-emerald-500/10 rounded-lg">
+                  <div className="flex justify-between items-center p-3 bg-[rgba(200,255,0,0.08)]0/10 rounded-lg">
                     <span className="text-sm text-slate-300">
                       Total: ₹{guidance.estimate_suggestions.reduce((sum, i) => sum + (i.estimated_cost || 0), 0).toLocaleString()}
                     </span>
@@ -866,7 +866,7 @@ export default function EFIGuidancePanel({
                   size="sm"
                   variant="ghost"
                   onClick={() => submitFeedback(true)}
-                  className="text-emerald-400 hover:bg-emerald-500/20"
+                  className="text-[#C8FF00] text-400 hover:bg-[rgba(200,255,0,0.08)]0/20"
                 >
                   <ThumbsUp className="h-4 w-4" />
                 </Button>
@@ -880,7 +880,7 @@ export default function EFIGuidancePanel({
                 </Button>
               </div>
             ) : (
-              <span className="text-xs text-emerald-400">Dhanyavaad for feedback!</span>
+              <span className="text-xs text-[#C8FF00] text-400">Dhanyavaad for feedback!</span>
             )}
             
             {/* Escalate */}

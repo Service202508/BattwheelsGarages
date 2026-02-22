@@ -49,11 +49,11 @@ export default function CustomerLayout({ children, user, onLogout }) {
           <button onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
-          <span className="font-bold text-lg text-emerald-600">Battwheels OS</span>
+          <span className="font-bold text-lg text-[#C8FF00] text-600">Battwheels OS</span>
         </div>
         <Avatar className="h-8 w-8">
           <AvatarImage src={user?.picture} />
-          <AvatarFallback className="bg-emerald-100 text-emerald-700">
+          <AvatarFallback className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700">
             {getInitials(user?.name)}
           </AvatarFallback>
         </Avatar>
@@ -69,7 +69,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
           <div className="flex flex-col h-full">
             {/* Logo */}
             <div className="hidden lg:flex items-center gap-3 px-6 py-5 border-b border-gray-200">
-              <div className="h-10 w-10 rounded-lg bg-emerald-500 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-lg bg-[rgba(200,255,0,0.08)]0 flex items-center justify-center">
                 <Car className="h-6 w-6 text-white" />
               </div>
               <div>
@@ -95,12 +95,12 @@ export default function CustomerLayout({ children, user, onLogout }) {
                         flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                         transition-colors duration-150
                         ${isActive 
-                          ? 'bg-emerald-50 text-emerald-700' 
+                          ? 'bg-[rgba(200,255,0,0.08)] text-[#C8FF00] text-700' 
                           : 'text-gray-600 hover:bg-gray-50 hover:text-[#F4F6F0]'
                         }
                       `}
                     >
-                      <Icon className={`h-5 w-5 ${isActive ? 'text-emerald-600' : 'text-gray-400'}`} />
+                      <Icon className={`h-5 w-5 ${isActive ? 'text-[#C8FF00] text-600' : 'text-gray-400'}`} />
                       {item.label}
                     </Link>
                   );
@@ -136,7 +136,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
               <div className="flex items-center gap-3 mb-3">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={user?.picture} />
-                  <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                  <AvatarFallback className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700">
                     {getInitials(user?.name)}
                   </AvatarFallback>
                 </Avatar>

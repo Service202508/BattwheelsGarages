@@ -912,7 +912,7 @@ export default function SalesOrdersEnhanced() {
 
                 {/* Converted To */}
                 {selectedOrder.converted_to && (
-                  <div className="bg-purple-50 rounded-lg p-3">
+                  <div className="bg-[rgba(139,92,246,0.08)] rounded-lg p-3">
                     <p className="text-sm text-purple-700">
                       <strong>Converted to:</strong> {selectedOrder.converted_to}
                     </p>
