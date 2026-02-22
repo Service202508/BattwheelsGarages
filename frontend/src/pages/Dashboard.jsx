@@ -16,88 +16,88 @@ const ChartContainer = ({ children, isVisible, height = "240px" }) => {
   return children;
 };
 
-// Clean, consistent color palette with emerald as primary brand color
+// Clean, consistent color palette with volt as primary brand color
 const BRAND_COLORS = {
+  volt: {
+    primary: "#C8FF00",
+    secondary: "#1AFFE4",
+    bg: "rgba(200,255,0,0.08)",
+    border: "rgba(200,255,0,0.2)"
+  },
   emerald: {
-    primary: "#10B981",
-    light: "#34D399",
-    dark: "#059669",
-    bg: "rgba(16, 185, 129, 0.1)",
-    border: "rgba(16, 185, 129, 0.3)"
+    primary: "#C8FF00",
+    light: "#d4ff1a",
+    dark: "#a6d400",
+    bg: "rgba(200,255,0,0.08)",
+    border: "rgba(200,255,0,0.2)"
   },
   blue: {
-    primary: "#3B82F6",
+    primary: "#3B9EFF",
     light: "#60A5FA",
     dark: "#2563EB",
-    bg: "rgba(59, 130, 246, 0.1)",
-    border: "rgba(59, 130, 246, 0.3)"
+    bg: "rgba(59,158,255,0.1)",
+    border: "rgba(59,158,255,0.25)"
   },
   amber: {
-    primary: "#F59E0B",
+    primary: "#EAB308",
     light: "#FBBF24",
     dark: "#D97706",
-    bg: "rgba(245, 158, 11, 0.1)",
-    border: "rgba(245, 158, 11, 0.3)"
+    bg: "rgba(234,179,8,0.1)",
+    border: "rgba(234,179,8,0.25)"
   },
   violet: {
     primary: "#8B5CF6",
     light: "#A78BFA",
     dark: "#7C3AED",
-    bg: "rgba(139, 92, 246, 0.1)",
-    border: "rgba(139, 92, 246, 0.3)"
+    bg: "rgba(139,92,246,0.1)",
+    border: "rgba(139,92,246,0.25)"
   },
   slate: {
-    bg: "#F8FAFC",
-    card: "#FFFFFF",
-    border: "#E2E8F0",
-    text: "#334155",
-    muted: "#64748B"
+    bg: "#111820",
+    card: "#111820",
+    border: "rgba(255,255,255,0.07)",
+    text: "#F4F6F0",
+    muted: "rgba(244,246,240,0.45)"
   }
 };
 
-// Enhanced Stat Card Component for Service Tickets
+// Enhanced Stat Card Component for Service Tickets - Dark Volt Theme
 const ServiceMetricCard = ({ title, value, subtitle, icon: Icon, color = "emerald", className = "" }) => {
-  const colorStyles = BRAND_COLORS[color] || BRAND_COLORS.emerald;
+  const isZero = value === 0 || value === "0";
   
   return (
-    <Card className={`relative overflow-hidden bg-white border border-slate-200 hover:border-slate-300 hover:shadow-lg transition-all duration-300 ${className}`}>
+    <Card className={`relative overflow-hidden bg-[#111820] border border-[rgba(255,255,255,0.07)] rounded hover:border-[rgba(200,255,0,0.2)] transition-all duration-300 ${className}`}>
       <CardContent className="p-5">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-slate-500">{title}</p>
-            <p className="text-3xl font-bold text-slate-800">{value}</p>
-            <p className="text-xs text-slate-400 mt-1">{subtitle}</p>
+            <p className="text-[11px] font-medium text-[rgba(244,246,240,0.45)] uppercase tracking-[0.1em] font-mono">{title}</p>
+            <p className={`text-3xl font-bold ${isZero ? 'text-[rgba(244,246,240,0.20)]' : 'text-[#C8FF00]'}`} style={!isZero ? { textShadow: '0 0 24px rgba(200,255,0,0.2)' } : undefined}>{value}</p>
+            <p className="text-[11px] text-[rgba(244,246,240,0.25)] mt-1">{subtitle}</p>
           </div>
-          <div 
-            className="p-3 rounded-xl" 
-            style={{ backgroundColor: colorStyles.bg }}
-          >
-            <Icon className="h-5 w-5" style={{ color: colorStyles.primary }} />
+          <div className="p-3 rounded bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.15)]">
+            <Icon className="h-5 w-5 text-[#C8FF00]" />
           </div>
         </div>
         {/* Accent line at bottom */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-1 opacity-60"
-          style={{ backgroundColor: colorStyles.primary }}
-        />
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#C8FF00] to-[#1AFFE4] opacity-60" />
       </CardContent>
     </Card>
   );
 };
 
-// KPI Card with progress
+// KPI Card with progress - Dark Volt Theme
 const KPICard = ({ title, description, value, unit = "", target, icon: Icon, color = "emerald", children }) => {
-  const colorStyles = BRAND_COLORS[color] || BRAND_COLORS.emerald;
   const percentage = target ? Math.min((parseFloat(value) / target) * 100, 100) : 0;
   const isOnTarget = target ? parseFloat(value) >= target : true;
+  const isZero = value === 0 || value === "0" || value === "0%";
   
   return (
-    <Card className="bg-white border border-slate-200 hover:shadow-md transition-all duration-300">
+    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] rounded hover:border-[rgba(200,255,0,0.15)] transition-all duration-300">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           {Icon && (
-            <div className="p-1.5 rounded-lg" style={{ backgroundColor: colorStyles.bg }}>
-              <Icon className="h-4 w-4" style={{ color: colorStyles.primary }} />
+            <div className="p-1.5 rounded bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.15)]">
+              <Icon className="h-4 w-4 text-[#C8FF00]" />
             </div>
           )}
           <div>
