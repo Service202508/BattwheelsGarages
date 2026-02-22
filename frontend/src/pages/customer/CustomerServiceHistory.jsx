@@ -74,7 +74,7 @@ export default function CustomerServiceHistory({ user }) {
       estimate_shared: { color: "bg-purple-100 text-[#8B5CF6]", icon: FileText, label: "Estimate Shared" },
       estimate_approved: { color: "bg-indigo-100 text-indigo-700", icon: CheckCircle, label: "Approved" },
       in_progress: { color: "bg-orange-100 text-[#FF8C00]", icon: Clock, label: "In Progress" },
-      resolved: { color: "bg-green-100 text-green-700", icon: CheckCircle, label: "Resolved" },
+      resolved: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: CheckCircle, label: "Resolved" },
       closed: { color: "bg-gray-100 text-gray-700", icon: CheckCircle, label: "Closed" }
     };
     return configs[status] || configs.open;

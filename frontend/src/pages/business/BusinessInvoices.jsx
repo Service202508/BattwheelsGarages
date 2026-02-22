@@ -17,7 +17,7 @@ import { API, getAuthHeaders } from "@/App";
 const statusColors = {
   paid: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700 border-emerald-200",
   unpaid: "bg-amber-100 text-amber-700 border-amber-200",
-  overdue: "bg-red-100 text-red-700 border-red-200",
+  overdue: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)] border-red-200",
   partial: "bg-blue-100 text-[#3B9EFF] border-blue-200",
   draft: "bg-slate-100 text-slate-600 border-[rgba(255,255,255,0.07)] border-200",
 };

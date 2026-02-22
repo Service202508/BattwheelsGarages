@@ -637,9 +637,9 @@ export default function InvoiceSettings() {
                             <td className="px-4 py-3 text-center">{ri.next_invoice_date}</td>
                             <td className="px-4 py-3 text-center">
                               <Badge className={
-                                ri.status === "active" ? "bg-green-100 text-green-700" :
+                                ri.status === "active" ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" :
                                 ri.status === "stopped" ? "bg-gray-200 text-[rgba(244,246,240,0.45)]" :
-                                "bg-red-100 text-red-700"
+                                "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"
                               }>
                                 {ri.status}
                               </Badge>

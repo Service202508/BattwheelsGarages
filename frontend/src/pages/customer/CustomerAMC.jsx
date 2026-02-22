@@ -57,9 +57,9 @@ export default function CustomerAMC({ user }) {
 
   const getStatusConfig = (status) => {
     const configs = {
-      active: { color: "bg-green-100 text-green-700 border-green-200", icon: CheckCircle, label: "Active" },
+      active: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] border-green-200", icon: CheckCircle, label: "Active" },
       expiring: { color: "bg-orange-100 text-[#FF8C00] border-orange-200", icon: AlertCircle, label: "Expiring Soon" },
-      expired: { color: "bg-red-100 text-red-700 border-red-200", icon: Clock, label: "Expired" },
+      expired: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)] border-red-200", icon: Clock, label: "Expired" },
       cancelled: { color: "bg-gray-100 text-gray-700 border-gray-200", icon: Clock, label: "Cancelled" }
     };
     return configs[status] || configs.active;

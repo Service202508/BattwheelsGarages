@@ -1340,7 +1340,7 @@ export default function InventoryAdjustments() {
                         <td className="px-3 py-2 text-right">{item.value_percentage}%</td>
                         <td className="px-3 py-2 text-right">{item.cumulative_percentage}%</td>
                         <td className="px-3 py-2 text-center">
-                          <Badge className={item.classification === "A" ? "bg-green-100 text-green-700" : item.classification === "B" ? "bg-yellow-100 text-[#EAB308]" : "bg-gray-100 text-gray-700"}>
+                          <Badge className={item.classification === "A" ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : item.classification === "B" ? "bg-yellow-100 text-[#EAB308]" : "bg-gray-100 text-gray-700"}>
                             {item.classification}
                           </Badge>
                         </td>

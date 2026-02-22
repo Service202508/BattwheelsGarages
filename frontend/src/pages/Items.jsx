@@ -15,9 +15,9 @@ import { API } from "@/App";
 
 const itemTypeColors = {
   goods: "bg-blue-100 text-[#3B9EFF]",
-  service: "bg-green-100 text-green-700",
+  service: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   inventory: "bg-blue-100 text-[#3B9EFF]",
-  sales: "bg-green-100 text-green-700",
+  sales: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   sales_and_purchases: "bg-purple-100 text-[#8B5CF6]"
 };
 

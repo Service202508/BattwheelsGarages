@@ -259,7 +259,7 @@ export default function CompositeItems() {
   const typeColors = {
     kit: "bg-blue-100 text-[#3B9EFF]",
     assembly: "bg-purple-100 text-[#8B5CF6]",
-    bundle: "bg-green-100 text-green-700"
+    bundle: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]"
   };
 
   return (
@@ -398,9 +398,9 @@ export default function CompositeItems() {
                       <td className="px-4 py-3 text-center font-medium">{item.stock_on_hand || 0}</td>
                       <td className="px-4 py-3 text-center">
                         {item.components_available ? (
-                          <Badge className="bg-green-100 text-green-700">Ready</Badge>
+                          <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">Ready</Badge>
                         ) : (
-                          <Badge className="bg-red-100 text-red-700">Shortage</Badge>
+                          <Badge className="bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]">Shortage</Badge>
                         )}
                       </td>
                       <td className="px-4 py-3 text-right">

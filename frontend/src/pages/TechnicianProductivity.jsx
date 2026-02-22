@@ -96,10 +96,10 @@ export default function TechnicianProductivity({ user }) {
   };
 
   const getPerformanceBadge = (tickets, avgTime) => {
-    if (tickets >= 10 && avgTime <= 4) return { label: "Excellent", color: "bg-green-100 text-green-700" };
+    if (tickets >= 10 && avgTime <= 4) return { label: "Excellent", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" };
     if (tickets >= 5 && avgTime <= 8) return { label: "Good", color: "bg-blue-100 text-[#3B9EFF]" };
     if (tickets >= 3) return { label: "Average", color: "bg-yellow-100 text-[#EAB308]" };
-    return { label: "Needs Improvement", color: "bg-red-100 text-red-700" };
+    return { label: "Needs Improvement", color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]" };
   };
 
   // Simple bar chart using divs
@@ -456,7 +456,7 @@ export default function TechnicianProductivity({ user }) {
                         </div>
                         <Badge className={
                           ticket.status === 'resolved' || ticket.status === 'closed' 
-                            ? 'bg-green-100 text-green-700' 
+                            ? 'bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]' 
                             : 'bg-blue-100 text-[#3B9EFF]'
                         }>
                           {ticket.status}

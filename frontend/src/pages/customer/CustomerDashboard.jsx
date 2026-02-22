@@ -57,7 +57,7 @@ export default function CustomerDashboard({ user }) {
     const colors = {
       open: "bg-yellow-100 text-[#EAB308]",
       in_progress: "bg-blue-100 text-[#3B9EFF]",
-      resolved: "bg-green-100 text-green-700",
+      resolved: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
       closed: "bg-gray-100 text-gray-700"
     };
     return colors[status] || "bg-gray-100 text-gray-700";

@@ -23,15 +23,15 @@ import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
 
 const statusColors = {
-  available: "bg-green-100 text-green-700",
+  available: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   sold: "bg-blue-100 text-[#3B9EFF]",
   returned: "bg-yellow-100 text-[#EAB308]",
-  damaged: "bg-red-100 text-red-700",
+  damaged: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
   packed: "bg-purple-100 text-[#8B5CF6]",
   shipped: "bg-indigo-100 text-indigo-700",
-  delivered: "bg-green-100 text-green-700",
+  delivered: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   pending: "bg-yellow-100 text-[#EAB308]",
-  processed: "bg-green-100 text-green-700"
+  processed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]"
 };
 
 export default function InventoryEnhanced() {

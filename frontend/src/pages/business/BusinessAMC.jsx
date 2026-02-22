@@ -13,7 +13,7 @@ import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
   active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
-  expired: "bg-red-100 text-red-700",
+  expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
   pending: "bg-amber-100 text-amber-700",
   cancelled: "bg-slate-100 text-slate-600",
 };

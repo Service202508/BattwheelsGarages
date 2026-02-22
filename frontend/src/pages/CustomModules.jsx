@@ -422,7 +422,7 @@ export default function CustomModules() {
                           </div>
                           <div className="flex items-center gap-2">
                             <Badge variant="outline">{field.type}</Badge>
-                            {field.required && <Badge className="bg-red-100 text-red-700">Required</Badge>}
+                            {field.required && <Badge className="bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]">Required</Badge>}
                             <Button size="sm" variant="ghost" onClick={() => removeField(idx)}>
                               <Trash2 className="h-4 w-4 text-red-500" />
                             </Button>

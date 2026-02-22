@@ -38,9 +38,9 @@ export default function CustomerVehicles({ user }) {
   const getAMCStatusColor = (status) => {
     if (!status) return "";
     const colors = {
-      active: "bg-green-100 text-green-700 border-green-200",
+      active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] border-green-200",
       expiring: "bg-orange-100 text-[#FF8C00] border-orange-200",
-      expired: "bg-red-100 text-red-700 border-red-200"
+      expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)] border-red-200"
     };
     return colors[status] || "bg-gray-100 text-gray-700";
   };

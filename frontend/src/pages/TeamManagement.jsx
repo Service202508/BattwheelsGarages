@@ -186,7 +186,7 @@ export default function TeamManagement({ user }) {
       owner: "bg-amber-100 text-amber-700",
       admin: "bg-purple-100 text-[#8B5CF6]",
       manager: "bg-blue-100 text-[#3B9EFF]",
-      technician: "bg-green-100 text-green-700",
+      technician: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
       accountant: "bg-teal-100 text-teal-700",
       viewer: "bg-gray-100 text-gray-700"
     };
@@ -196,8 +196,8 @@ export default function TeamManagement({ user }) {
   const getStatusBadgeColor = (status) => {
     const colors = {
       pending: "bg-yellow-100 text-[#EAB308]",
-      accepted: "bg-green-100 text-green-700",
-      expired: "bg-red-100 text-red-700",
+      accepted: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
+      expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
       cancelled: "bg-gray-100 text-gray-700"
     };
     return colors[status] || "bg-gray-100 text-gray-700";
@@ -456,7 +456,7 @@ export default function TeamManagement({ user }) {
                           }
                         </TableCell>
                         <TableCell>
-                          <Badge className="bg-green-100 text-green-700">Active</Badge>
+                          <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">Active</Badge>
                         </TableCell>
                         <TableCell className="text-right">
                           {member.role !== "owner" && member.user_id !== user?.user_id && (

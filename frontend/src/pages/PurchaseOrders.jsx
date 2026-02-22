@@ -23,9 +23,9 @@ const statusColors = {
   draft: "bg-gray-100 text-gray-700",
   issued: "bg-blue-100 text-[#3B9EFF]",
   partially_billed: "bg-yellow-100 text-[#EAB308]",
-  billed: "bg-green-100 text-green-700",
+  billed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   closed: "bg-purple-100 text-[#8B5CF6]",
-  cancelled: "bg-red-100 text-red-700"
+  cancelled: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"
 };
 
 export default function PurchaseOrders() {

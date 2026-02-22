@@ -20,8 +20,8 @@ const statusConfig = {
   draft: { label: "Draft", color: "bg-gray-100 text-gray-700", icon: Clock },
   pending: { label: "Pending", color: "bg-yellow-100 text-[#EAB308]", icon: Clock },
   in_transit: { label: "In Transit", color: "bg-blue-100 text-[#3B9EFF]", icon: Truck },
-  received: { label: "Received", color: "bg-green-100 text-green-700", icon: CheckCircle2 },
-  void: { label: "Void", color: "bg-red-100 text-red-700", icon: XCircle },
+  received: { label: "Received", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: CheckCircle2 },
+  void: { label: "Void", color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: XCircle },
 };
 
 export default function StockTransfers() {

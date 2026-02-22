@@ -271,8 +271,8 @@ export default function Accountant() {
   };
 
   const accountTypeColors = {
-    asset: "bg-green-100 text-green-700",
-    liability: "bg-red-100 text-red-700",
+    asset: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
+    liability: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
     equity: "bg-blue-100 text-[#3B9EFF]",
     income: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700",
     expense: "bg-orange-100 text-[#FF8C00]"
@@ -561,7 +561,7 @@ export default function Accountant() {
                       <TableCell className="text-right">{formatCurrency(rec.statement_balance)}</TableCell>
                       <TableCell className="text-right">{formatCurrency(rec.book_balance)}</TableCell>
                       <TableCell>
-                        <Badge className={rec.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-[#EAB308]'}>
+                        <Badge className={rec.status === 'completed' ? 'bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]' : 'bg-yellow-100 text-[#EAB308]'}>
                           {rec.status}
                         </Badge>
                       </TableCell>
@@ -737,7 +737,7 @@ export default function Accountant() {
                       <TableCell className="text-right">{formatCurrency(entry.total_debit)}</TableCell>
                       <TableCell className="text-right">{formatCurrency(entry.total_credit)}</TableCell>
                       <TableCell>
-                        <Badge className="bg-green-100 text-green-700">{entry.status}</Badge>
+                        <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">{entry.status}</Badge>
                       </TableCell>
                     </TableRow>
                   ))}

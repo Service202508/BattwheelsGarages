@@ -29,7 +29,7 @@ import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "
 const itemTypeColors = {
   inventory: "bg-blue-100 text-[#3B9EFF]",
   non_inventory: "bg-gray-100 text-gray-700",
-  service: "bg-green-100 text-green-700",
+  service: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   sales: "bg-purple-100 text-[#8B5CF6]",
   sales_and_purchases: "bg-orange-100 text-[#FF8C00]"
 };
@@ -1037,7 +1037,7 @@ export default function ItemsEnhanced() {
                         ) : '-'}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <Badge className={item.is_active !== false ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}>
+                        <Badge className={item.is_active !== false ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : "bg-gray-100 text-gray-500"}>
                           {item.is_active !== false ? "Active" : "Inactive"}
                         </Badge>
                       </td>
@@ -1129,7 +1129,7 @@ export default function ItemsEnhanced() {
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
                       <CardTitle className="text-lg">{wh.name}</CardTitle>
-                      {wh.is_primary && <Badge className="bg-green-100 text-green-700 text-xs">Primary</Badge>}
+                      {wh.is_primary && <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] text-xs">Primary</Badge>}
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -1249,7 +1249,7 @@ export default function ItemsEnhanced() {
                       <td className="px-4 py-3 font-medium">{adj.item_name}</td>
                       <td className="px-4 py-3">{adj.warehouse_name}</td>
                       <td className="px-4 py-3 text-center">
-                        <Badge className={adj.adjustment_type === "add" ? "bg-green-100 text-green-700" : adj.adjustment_type === "value" ? "bg-blue-100 text-[#3B9EFF]" : "bg-red-100 text-red-700"}>
+                        <Badge className={adj.adjustment_type === "add" ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : adj.adjustment_type === "value" ? "bg-blue-100 text-[#3B9EFF]" : "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"}>
                           {adj.adjustment_type === "add" ? "+" : adj.adjustment_type === "value" ? "Value" : "-"}{adj.adjustment_type !== "value" && adj.quantity}
                         </Badge>
                       </td>
