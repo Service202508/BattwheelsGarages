@@ -1373,66 +1373,213 @@ export default function EstimatesEnhanced() {
 
               <Separator />
 
-              {/* Line Items */}
+              {/* Line Items - Enhanced Zoho-like Table */}
               <div>
-                <h4 className="font-medium mb-3">Line Items</h4>
-                
-                {/* Add Item Form */}
-                <div className="grid grid-cols-12 gap-2 mb-4 items-end">
-                  <div className="col-span-3">
-                    <Label className="text-xs">Item</Label>
-                    <Select value={newLineItem.item_id || "custom"} onValueChange={(v) => {
-                      if (v === "custom") {
-                        setNewLineItem({...newLineItem, item_id: "", name: ""});
-                      } else {
-                        const item = items.find(i => i.item_id === v);
-                        if (item) selectItem(item);
-                      }
-                    }}>
-                      <SelectTrigger><SelectValue placeholder="Select item" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="custom">Custom Item</SelectItem>
-                        {items.map(item => (
-                          <SelectItem key={item.item_id} value={item.item_id}>{item.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="col-span-2">
-                    <Label className="text-xs">Name</Label>
-                    <Input value={newLineItem.name} onChange={(e) => setNewLineItem({...newLineItem, name: e.target.value})} placeholder="Item name" />
-                  </div>
-                  <div className="col-span-1">
-                    <Label className="text-xs">Qty</Label>
-                    <Input type="number" value={newLineItem.quantity} onChange={(e) => setNewLineItem({...newLineItem, quantity: parseFloat(e.target.value) || 0})} min="0" />
-                  </div>
-                  <div className="col-span-1">
-                    <Label className="text-xs">Rate</Label>
-                    <div className="relative">
-                      <Input type="number" value={newLineItem.rate} onChange={(e) => setNewLineItem({...newLineItem, rate: parseFloat(e.target.value) || 0})} min="0" />
-                      {newLineItem.price_list_applied && (
-                        <span className="absolute -top-5 right-0 text-[10px] text-green-600 truncate max-w-[80px]" title={newLineItem.price_list_applied}>
-                          {newLineItem.price_list_applied}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="col-span-1">
-                    <Label className="text-xs">Disc %</Label>
-                    <Input type="number" value={newLineItem.discount_percent} onChange={(e) => setNewLineItem({...newLineItem, discount_percent: parseFloat(e.target.value) || 0})} min="0" max="100" />
-                  </div>
-                  <div className="col-span-1">
-                    <Label className="text-xs">Tax %</Label>
-                    <Input type="number" value={newLineItem.tax_percentage} onChange={(e) => setNewLineItem({...newLineItem, tax_percentage: parseFloat(e.target.value) || 0})} min="0" />
-                  </div>
-                  <div className="col-span-1">
-                    <Label className="text-xs">HSN</Label>
-                    <Input value={newLineItem.hsn_code} onChange={(e) => setNewLineItem({...newLineItem, hsn_code: e.target.value})} />
-                  </div>
-                  <div className="col-span-2">
-                    <Button onClick={addLineItem} className="w-full"><Plus className="h-4 w-4 mr-1" /> Add</Button>
-                  </div>
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-medium">Item Table</h4>
+                  <Button variant="outline" size="sm" className="text-blue-600" onClick={() => setShowBulkActionDialog(true)}>
+                    <Settings className="h-4 w-4 mr-1" /> Bulk Actions
+                  </Button>
                 </div>
+                
+                {/* Enhanced Line Items Table */}
+                <div className="border rounded-lg overflow-visible">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 border-b">
+                      <tr>
+                        <th className="px-3 py-2 text-left font-medium w-[280px]">ITEM DETAILS</th>
+                        <th className="px-3 py-2 text-center font-medium w-20">QUANTITY</th>
+                        <th className="px-3 py-2 text-center font-medium w-24">
+                          <div className="flex items-center justify-center gap-1">
+                            RATE <IndianRupee className="h-3 w-3" />
+                          </div>
+                        </th>
+                        <th className="px-3 py-2 text-center font-medium w-28">DISCOUNT</th>
+                        <th className="px-3 py-2 text-center font-medium w-32">TAX</th>
+                        <th className="px-3 py-2 text-right font-medium w-24">AMOUNT</th>
+                        <th className="px-3 py-2 w-10"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Existing Line Items */}
+                      {newEstimate.line_items.map((item, idx) => (
+                        <tr key={idx} className="border-t hover:bg-gray-50">
+                          <td className="px-3 py-2">
+                            <div className="font-medium">{item.name}</div>
+                            {item.description && <div className="text-xs text-gray-500">{item.description}</div>}
+                            {item.hsn_code && <div className="text-xs text-gray-400">HSN: {item.hsn_code}</div>}
+                            {item.price_list_applied && (
+                              <span className="text-[10px] text-green-600 bg-green-50 px-1 rounded">
+                                {item.price_list_applied}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-3 py-2 text-center">{item.quantity} {item.unit}</td>
+                          <td className="px-3 py-2 text-center">
+                            ₹{item.rate?.toLocaleString('en-IN')}
+                            {item.base_rate && item.base_rate !== item.rate && (
+                              <div className="text-[10px] text-gray-400 line-through">₹{item.base_rate}</div>
+                            )}
+                          </td>
+                          <td className="px-3 py-2 text-center">
+                            {item.discount_type === 'amount' ? (
+                              <span>₹{item.discount_value || 0}</span>
+                            ) : (
+                              <span>{item.discount_percent || 0}%</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-2 text-center">
+                            <Badge variant="outline" className="text-xs">{item.tax_percentage}% GST</Badge>
+                          </td>
+                          <td className="px-3 py-2 text-right font-medium">₹{(item.total || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                          <td className="px-3 py-2">
+                            <Button size="icon" variant="ghost" onClick={() => removeLineItem(idx)} className="h-7 w-7">
+                              <X className="h-4 w-4 text-red-500" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                      
+                      {/* New Item Row - Searchable */}
+                      <tr className="border-t bg-blue-50/30">
+                        <td className="px-3 py-2">
+                          <div className="relative">
+                            <div className="flex items-center gap-1">
+                              <Package className="h-4 w-4 text-gray-400" />
+                              <Input 
+                                value={newLineItem.name}
+                                onChange={(e) => {
+                                  setNewLineItem({...newLineItem, name: e.target.value, item_id: ""});
+                                  // Filter items based on search
+                                }}
+                                placeholder="Type or click to select an item..."
+                                className="border-0 bg-transparent focus:ring-0 h-8"
+                                data-testid="item-search-input"
+                              />
+                            </div>
+                            {/* Item Search Dropdown */}
+                            {newLineItem.name && newLineItem.name.length >= 1 && !newLineItem.item_id && (
+                              <div className="absolute z-50 left-0 right-0 mt-1 bg-white border rounded-lg shadow-xl max-h-64 overflow-y-auto">
+                                {items
+                                  .filter(item => item.name?.toLowerCase().includes(newLineItem.name.toLowerCase()) || item.sku?.toLowerCase().includes(newLineItem.name.toLowerCase()))
+                                  .slice(0, 10)
+                                  .map(item => (
+                                    <div 
+                                      key={item.item_id}
+                                      className="px-3 py-2 hover:bg-emerald-50 cursor-pointer border-b last:border-0"
+                                      onClick={() => selectItem(item)}
+                                    >
+                                      <div className="flex justify-between">
+                                        <div>
+                                          <div className="font-medium text-gray-900">{item.name}</div>
+                                          <div className="text-xs text-gray-500">
+                                            {item.sku && <span>SKU: {item.sku}</span>}
+                                            {item.rate && <span className="ml-2">Rate: ₹{item.rate?.toLocaleString('en-IN')}</span>}
+                                          </div>
+                                        </div>
+                                        <div className="text-right">
+                                          <div className={`text-sm font-medium ${(item.stock_on_hand || 0) < 0 ? 'text-red-500' : 'text-gray-600'}`}>
+                                            {item.stock_on_hand !== undefined && (
+                                              <>Stock on Hand<br/><span className={`font-bold ${(item.stock_on_hand || 0) < 0 ? 'text-red-500' : 'text-green-600'}`}>{item.stock_on_hand} {item.unit || 'pcs'}</span></>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                {/* Add New Item Option */}
+                                <div 
+                                  className="px-3 py-2 hover:bg-blue-50 cursor-pointer border-t flex items-center gap-2 text-blue-600"
+                                  onClick={() => {
+                                    setShowAddItemDialog(true);
+                                  }}
+                                >
+                                  <Plus className="h-4 w-4" />
+                                  <span>Add New Item "{newLineItem.name}"</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-3 py-2">
+                          <Input 
+                            type="number" 
+                            value={newLineItem.quantity} 
+                            onChange={(e) => setNewLineItem({...newLineItem, quantity: parseFloat(e.target.value) || 1})} 
+                            min="1"
+                            className="w-16 h-8 text-center mx-auto"
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <Input 
+                            type="number" 
+                            value={newLineItem.rate} 
+                            onChange={(e) => setNewLineItem({...newLineItem, rate: parseFloat(e.target.value) || 0})} 
+                            min="0"
+                            className="w-20 h-8 text-center mx-auto"
+                            placeholder="0.00"
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <div className="flex items-center gap-1 justify-center">
+                            <Input 
+                              type="number" 
+                              value={newLineItem.discount_type === 'amount' ? newLineItem.discount_value : newLineItem.discount_percent} 
+                              onChange={(e) => {
+                                const val = parseFloat(e.target.value) || 0;
+                                if (newLineItem.discount_type === 'amount') {
+                                  setNewLineItem({...newLineItem, discount_value: val, discount_percent: 0});
+                                } else {
+                                  setNewLineItem({...newLineItem, discount_percent: val, discount_value: 0});
+                                }
+                              }}
+                              min="0"
+                              className="w-14 h-8 text-center"
+                            />
+                            <Select 
+                              value={newLineItem.discount_type || "percent"} 
+                              onValueChange={(v) => setNewLineItem({...newLineItem, discount_type: v, discount_percent: 0, discount_value: 0})}
+                            >
+                              <SelectTrigger className="w-12 h-8 px-1">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="percent">%</SelectItem>
+                                <SelectItem value="amount">₹</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2">
+                          <Select 
+                            value={String(newLineItem.tax_percentage || 18)} 
+                            onValueChange={(v) => setNewLineItem({...newLineItem, tax_percentage: parseFloat(v)})}
+                          >
+                            <SelectTrigger className="w-28 h-8 mx-auto">
+                              <SelectValue placeholder="Select Tax" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="0">GST 0%</SelectItem>
+                              <SelectItem value="5">GST 5%</SelectItem>
+                              <SelectItem value="12">GST 12%</SelectItem>
+                              <SelectItem value="18">GST 18%</SelectItem>
+                              <SelectItem value="28">GST 28%</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </td>
+                        <td className="px-3 py-2 text-right font-medium text-gray-400">
+                          ₹{((newLineItem.quantity || 0) * (newLineItem.rate || 0)).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+                        </td>
+                        <td className="px-3 py-2">
+                          <Button size="sm" onClick={addLineItem} className="h-7 bg-emerald-500 hover:bg-emerald-600" disabled={!newLineItem.name}>
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
                 {/* Line Items Table */}
                 {newEstimate.line_items.length > 0 && (
