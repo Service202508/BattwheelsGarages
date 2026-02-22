@@ -36,10 +36,10 @@ const statusLabels = {
 };
 
 const priorityColors = {
-  low: "bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400",
-  medium: "bg-[rgba(234,179,8,0.08)]0/20 text-yellow-400",
-  high: "bg-[rgba(255,140,0,0.08)]0/20 text-orange-400",
-  critical: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400"
+  low: "bg-[rgba(200,255,0,0.20)] text-[#C8FF00]",
+  medium: "bg-[rgba(234,179,8,0.20)] text-yellow-400",
+  high: "bg-[rgba(255,140,0,0.20)] text-orange-400",
+  critical: "bg-[rgba(255,59,47,0.20)] text-red-400"
 };
 
 export default function Tickets({ user }) {

@@ -56,7 +56,7 @@ const ActiveTimer = ({ timer, onStop }) => {
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-[rgba(34,197,94,0.08)]0 flex items-center justify-center animate-pulse">
+            <div className="h-12 w-12 rounded-full bg-[#22C55E] flex items-center justify-center animate-pulse">
               <Timer className="h-6 w-6 text-white" />
             </div>
             <div>
