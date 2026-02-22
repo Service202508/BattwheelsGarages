@@ -642,23 +642,23 @@ export default function PublicTicketForm() {
         </header>
 
         <div className="flex-1 flex items-center justify-center p-4">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-[#111820] rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-[#111820] rounded border border-[rgba(255,255,255,0.13)] overflow-hidden">
             <div className="p-8 text-center bg-gradient-to-br from-emerald-50 to-teal-50">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-500/30">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-emerald-500 to-teal-500 rounded flex items-center justify-center">
                 <CreditCard className="w-8 h-8 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-[#F4F6F0]">Complete Payment</h2>
               <p className="text-gray-500 mt-1">Confirm your service booking</p>
             </div>
             <div className="p-6 space-y-4">
-              <div className="p-4 bg-gray-50 rounded-xl space-y-3">
+              <div className="p-4 bg-gray-50 rounded space-y-3">
                 <div className="flex justify-between text-sm"><span className="text-gray-500">Ticket ID</span><span className="text-[#C8FF00] text-600 font-mono font-bold">{ticketResult?.ticket_id}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-gray-500">Visit Charges</span><span className="text-[#F4F6F0] font-medium">₹{paymentDetails?.visit_fee}</span></div>
                 {paymentDetails?.diagnostic_fee > 0 && <div className="flex justify-between text-sm"><span className="text-gray-500">Diagnostic</span><span className="text-[#F4F6F0] font-medium">₹{paymentDetails?.diagnostic_fee}</span></div>}
                 <div className="flex justify-between pt-3 border-t border-gray-200"><span className="font-semibold text-[#F4F6F0]">Total</span><span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">₹{paymentDetails?.amount}</span></div>
               </div>
-              {paymentDetails?.is_mock && <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl"><p className="text-sm text-amber-700 text-center font-medium">Test Mode - Payment will be simulated</p></div>}
-              <Button onClick={handlePayment} className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-lg rounded-xl shadow-xl shadow-emerald-500/30" data-testid="pay-now-btn">
+              {paymentDetails?.is_mock && <div className="p-3 bg-amber-50 border border-amber-200 rounded"><p className="text-sm text-amber-700 text-center font-medium">Test Mode - Payment will be simulated</p></div>}
+              <Button onClick={handlePayment} className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-lg rounded hover:shadow-[0_0_20px_rgba(16,185,129,0.30)]" data-testid="pay-now-btn">
                 <IndianRupee className="w-5 h-5 mr-2" />Pay ₹{paymentDetails?.amount}
               </Button>
             </div>
@@ -679,7 +679,7 @@ export default function PublicTicketForm() {
       </header>
 
       <div className="flex-1 flex items-center justify-center p-4">
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-[#111820] rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-[#111820] rounded border border-[rgba(255,255,255,0.13)] overflow-hidden">
           <div className="relative p-8 text-center bg-gradient-to-br from-emerald-500 to-teal-500">
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }} className="relative w-20 h-20 mx-auto mb-4 bg-[#111820] rounded-full flex items-center justify-center shadow-2xl">
@@ -690,7 +690,7 @@ export default function PublicTicketForm() {
           </div>
 
           <div className="p-6 space-y-5">
-            <div className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl text-center border border-emerald-100">
+            <div className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 rounded text-center border border-emerald-100">
               <p className="text-xs text-[#C8FF00] text-600 uppercase tracking-wider font-semibold mb-1">Ticket ID</p>
               <p className="text-3xl font-mono font-bold text-[#F4F6F0] tracking-wider">{ticketResult?.ticket_id}</p>
             </div>
@@ -702,7 +702,7 @@ export default function PublicTicketForm() {
                 { icon: Brain, text: "EFI Intelligence is analyzing your issue", color: "purple" }
               ].map((item, i) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.1 }}
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  className="flex items-center gap-3 p-3 bg-gray-50 rounded">
                   <div className={`w-8 h-8 rounded-lg bg-${item.color}-100 flex items-center justify-center`}>
                     <item.icon className={`w-4 h-4 text-${item.color}-600`} />
                   </div>
@@ -712,10 +712,10 @@ export default function PublicTicketForm() {
             </div>
 
             <div className="space-y-3 pt-2">
-              <Button onClick={() => navigate(`/track-ticket?id=${ticketResult?.ticket_id}`)} className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-xl shadow-lg" data-testid="track-ticket-btn">
+              <Button onClick={() => navigate(`/track-ticket?id=${ticketResult?.ticket_id}`)} className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded hover:shadow-[0_0_20px_rgba(16,185,129,0.30)]" data-testid="track-ticket-btn">
                 Track Your Ticket<ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <Button variant="outline" onClick={() => { setStep(1); setFormData({ ...formData, title: "", description: "" }); }} className="w-full h-12 border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-xl">
+              <Button variant="outline" onClick={() => { setStep(1); setFormData({ ...formData, title: "", description: "" }); }} className="w-full h-12 border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded">
                 Submit Another Request
               </Button>
             </div>
