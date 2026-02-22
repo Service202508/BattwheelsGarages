@@ -473,24 +473,24 @@ export default function ContactsEnhanced() {
           <div className="flex flex-col sm:flex-row gap-4 justify-between">
             <div className="flex flex-1 gap-2 max-w-2xl">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input value={search} onChange={(e) => setSearch(e.target.value)} onKeyUp={(e) => e.key === 'Enter' && fetchContacts()} placeholder="Search contacts..." className="pl-10" data-testid="search-contacts" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.25)]" />
+                <Input value={search} onChange={(e) => setSearch(e.target.value)} onKeyUp={(e) => e.key === 'Enter' && fetchContacts()} placeholder="Search contacts..." className="pl-10 bg-[#111820] border-[rgba(255,255,255,0.07)] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.25)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)]" data-testid="search-contacts" />
               </div>
               <Select value={typeFilter} onValueChange={(v) => { setTypeFilter(v); setTimeout(fetchContacts, 100); }}>
-                <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="customer">Customers</SelectItem>
-                  <SelectItem value="vendor">Vendors</SelectItem>
-                  <SelectItem value="both">Both</SelectItem>
+                <SelectTrigger className="w-40 bg-[#111820] border-[rgba(255,255,255,0.07)] text-[#F4F6F0]"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-[#111820] border-[rgba(255,255,255,0.1)]">
+                  <SelectItem value="all" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">All Types</SelectItem>
+                  <SelectItem value="customer" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Customers</SelectItem>
+                  <SelectItem value="vendor" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Vendors</SelectItem>
+                  <SelectItem value="both" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Both</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={activeFilter} onValueChange={(v) => { setActiveFilter(v); setTimeout(fetchContacts, 100); }}>
-                <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectTrigger className="w-32 bg-[#111820] border-[rgba(255,255,255,0.07)] text-[#F4F6F0]"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-[#111820] border-[rgba(255,255,255,0.1)]">
+                  <SelectItem value="all" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">All Status</SelectItem>
+                  <SelectItem value="active" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Active</SelectItem>
+                  <SelectItem value="inactive" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Inactive</SelectItem>
                 </SelectContent>
               </Select>
             </div>
