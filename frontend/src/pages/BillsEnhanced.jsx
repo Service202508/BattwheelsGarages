@@ -476,7 +476,7 @@ export default function BillsEnhanced() {
           ) : (
             <div className="space-y-3">
               {bills.map(bill => (
-                <Card key={bill.bill_id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => viewBillDetail(bill.bill_id)}>
+                <Card key={bill.bill_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewBillDetail(bill.bill_id)}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
@@ -529,7 +529,7 @@ export default function BillsEnhanced() {
           ) : (
             <div className="space-y-3">
               {purchaseOrders.map(po => (
-                <Card key={po.po_id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => viewPODetail(po.po_id)}>
+                <Card key={po.po_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewPODetail(po.po_id)}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
@@ -587,7 +587,7 @@ export default function BillsEnhanced() {
                 </CardContent></Card>
               ) : (
                 bills.filter(b => b.status === "overdue").map(bill => (
-                  <Card key={bill.bill_id} className="hover:shadow-md transition-shadow border-l-4 border-l-red-500 cursor-pointer" onClick={() => viewBillDetail(bill.bill_id)}>
+                  <Card key={bill.bill_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors border-l-4 border-l-red-500 cursor-pointer" onClick={() => viewBillDetail(bill.bill_id)}>
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div>

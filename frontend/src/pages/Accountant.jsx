@@ -373,7 +373,7 @@ export default function Accountant() {
               {bankAccounts.map(acc => (
                 <Card 
                   key={acc.bank_account_id}
-                  className={`cursor-pointer hover:shadow-md transition-shadow ${selectedAccount?.bank_account_id === acc.bank_account_id ? "ring-2 ring-[#C8FF00]" : ""}`}
+                  className={`cursor-pointer transition-colors ${selectedAccount?.bank_account_id === acc.bank_account_id ? "ring-2 ring-[#C8FF00]" : ""}`}
                   onClick={() => { setSelectedAccount(acc); fetchTransactions(acc.bank_account_id); }}
                 >
                   <CardContent className="p-4">
