@@ -551,10 +551,26 @@ export default function SalesOrdersEnhanced() {
 
         {/* Create Tab */}
         <TabsContent value="create" className="space-y-6">
+          <DraftRecoveryBanner
+            show={orderPersistence.showRecoveryBanner}
+            savedAt={orderPersistence.savedDraftInfo?.timestamp}
+            onRestore={orderPersistence.handleRestoreDraft}
+            onDiscard={orderPersistence.handleDiscardDraft}
+          />
+          
           <Card>
             <CardHeader>
-              <CardTitle>Create New Sales Order</CardTitle>
-              <CardDescription>Fill in the details and add line items</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Create New Sales Order</CardTitle>
+                  <CardDescription>Fill in the details and add line items</CardDescription>
+                </div>
+                <AutoSaveIndicator 
+                  lastSaved={orderPersistence.lastSaved} 
+                  isSaving={orderPersistence.isSaving} 
+                  isDirty={orderPersistence.isDirty} 
+                />
+              </div>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Customer Selection */}
