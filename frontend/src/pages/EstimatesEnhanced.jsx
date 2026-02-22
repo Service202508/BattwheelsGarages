@@ -602,6 +602,11 @@ export default function EstimatesEnhanced() {
     setShowEditDialog(true);
   };
 
+  // Edit item search state
+  const [editItemSearch, setEditItemSearch] = useState("");
+  const [editSearchResults, setEditSearchResults] = useState([]);
+  const [editActiveItemIndex, setEditActiveItemIndex] = useState(null);
+
   const updateEditLineItem = (index, field, value) => {
     setEditEstimate(prev => {
       const updated = [...prev.line_items];
@@ -613,8 +618,38 @@ export default function EstimatesEnhanced() {
   const addEditLineItem = () => {
     setEditEstimate(prev => ({
       ...prev,
-      line_items: [...prev.line_items, { name: "", description: "", quantity: 1, rate: 0, tax_percentage: 18, unit: "pcs" }]
+      line_items: [...prev.line_items, { 
+        name: "", description: "", quantity: 1, rate: 0, 
+        tax_percentage: 18, unit: "pcs", item_id: "",
+        discount_type: "percent", discount_percent: 0, discount_value: 0
+      }]
     }));
+    // Set focus to the new item
+    setTimeout(() => {
+      setEditActiveItemIndex(editEstimate?.line_items?.length || 0);
+      setEditItemSearch("");
+    }, 100);
+  };
+
+  // Select item from search results for edit dialog
+  const selectEditItem = (item, index) => {
+    setEditEstimate(prev => {
+      const updated = [...prev.line_items];
+      updated[index] = {
+        ...updated[index],
+        item_id: item.item_id,
+        name: item.name,
+        description: item.description || "",
+        rate: item.rate || item.sales_rate || 0,
+        unit: item.unit || "pcs",
+        tax_percentage: item.tax_percentage || 18,
+        hsn_code: item.hsn_code || ""
+      };
+      return { ...prev, line_items: updated };
+    });
+    setEditItemSearch("");
+    setEditSearchResults([]);
+    setEditActiveItemIndex(null);
   };
 
   const removeEditLineItem = (index) => {
