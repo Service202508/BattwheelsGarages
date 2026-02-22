@@ -791,7 +791,7 @@ export default function InvoicesEnhanced() {
             <Button onClick={fetchData} variant="outline" className="gap-2" data-testid="refresh-btn">
               <RefreshCw className="h-4 w-4" /> Refresh
             </Button>
-            <Button onClick={() => setShowCreateDialog(true)} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-invoice-btn">
+            <Button onClick={() => setShowCreateDialog(true)} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2" data-testid="new-invoice-btn">
               <Plus className="h-4 w-4" /> New Invoice
             </Button>
           </div>
