@@ -266,16 +266,17 @@ const PremiumInput = ({ icon: Icon, type, id, placeholder, value, onChange, requ
 const PremiumButton = ({ children, onClick, type, disabled, variant = "primary", className = "", dataTestId }) => {
   const [isPressed, setIsPressed] = useState(false);
   
-  const baseStyles = "relative w-full h-14 font-bold rounded-lg transition-all duration-300 overflow-hidden";
+  const baseStyles = "relative w-full h-14 font-bold rounded transition-all duration-300 overflow-hidden";
   
   const variants = {
     primary: `bg-[#C8FF00] text-[#080C0F] 
-      shadow-lg shadow-[rgba(200,255,0,0.3)] 
-      hover:shadow-xl hover:shadow-[rgba(200,255,0,0.4)] hover:-translate-y-0.5 hover:bg-[#d4ff1a]
-      active:translate-y-0 active:shadow-md
+      hover:bg-[#d4ff1a] hover:-translate-y-0.5
+      hover:shadow-[0_0_20px_rgba(200,255,0,0.30)]
+      active:translate-y-0
       disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0`,
     outline: `bg-[#111820] border-2 border-[rgba(255,255,255,0.15)] text-[rgba(244,246,240,0.7)] 
-      shadow-sm hover:shadow-md hover:border-[rgba(200,255,0,0.3)] hover:text-[#F4F6F0] hover:-translate-y-0.5
+      hover:border-[rgba(200,255,0,0.3)] hover:text-[#F4F6F0] hover:-translate-y-0.5
+      hover:shadow-[0_0_20px_rgba(200,255,0,0.30)]
       active:translate-y-0`
   };
   
@@ -445,7 +446,7 @@ export default function Login({ onLogin }) {
               <div className="flex items-center gap-2">
                 <div className="relative">
                   <div className="absolute inset-0 bg-[rgba(200,255,0,0.4)] rounded-full blur-md animate-pulse" />
-                  <div className="relative w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center shadow-lg shadow-[rgba(200,255,0,0.3)]">
+                  <div className="relative w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center">
                     <Zap className="w-4 h-4 text-[#080C0F]" />
                   </div>
                 </div>
@@ -454,7 +455,7 @@ export default function Login({ onLogin }) {
               <div className="flex items-center gap-2">
                 <div className="relative">
                   <div className="absolute inset-0 bg-[rgba(200,255,0,0.4)] rounded-full blur-md animate-pulse" style={{ animationDelay: '0.3s' }} />
-                  <div className="relative w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center shadow-lg shadow-[rgba(200,255,0,0.3)]">
+                  <div className="relative w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center">
                     <Sparkles className="w-4 h-4 text-[#080C0F]" />
                   </div>
                 </div>
@@ -463,7 +464,7 @@ export default function Login({ onLogin }) {
               <div className="flex items-center gap-2">
                 <div className="relative">
                   <div className="absolute inset-0 bg-[rgba(200,255,0,0.4)] rounded-full blur-md animate-pulse" style={{ animationDelay: '0.6s' }} />
-                  <div className="relative w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center shadow-lg shadow-[rgba(200,255,0,0.3)]">
+                  <div className="relative w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center">
                     <Brain className="w-4 h-4 text-[#080C0F]" />
                   </div>
                 </div>
@@ -499,15 +500,15 @@ export default function Login({ onLogin }) {
           {/* Logo with Volt Glow - Compact */}
           <div className="relative group">
             {/* Outer volt glow */}
-            <div className="absolute -inset-3 sm:-inset-4 bg-gradient-to-br from-[rgba(200,255,0,0.3)] via-[rgba(200,255,0,0.15)] to-transparent rounded-2xl blur-xl opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
+            <div className="absolute -inset-3 sm:-inset-4 bg-gradient-to-br from-[rgba(200,255,0,0.3)] via-[rgba(200,255,0,0.15)] to-transparent rounded blur-xl opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
             {/* Inner glow ring */}
-            <div className="absolute -inset-2 sm:-inset-2.5 bg-gradient-to-r from-[rgba(200,255,0,0.2)] to-[rgba(200,255,0,0.15)] rounded-xl blur-lg opacity-60" />
+            <div className="absolute -inset-2 sm:-inset-2.5 bg-gradient-to-r from-[rgba(200,255,0,0.2)] to-[rgba(200,255,0,0.15)] rounded blur-lg opacity-60" />
             {/* Subtle pulse animation */}
-            <div className="absolute -inset-2.5 sm:-inset-3 bg-[rgba(200,255,0,0.1)] rounded-2xl blur-md animate-pulse opacity-40" style={{ animationDuration: '3s' }} />
+            <div className="absolute -inset-2.5 sm:-inset-3 bg-[rgba(200,255,0,0.1)] rounded blur-md animate-pulse opacity-40" style={{ animationDuration: '3s' }} />
             <img 
               src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
               alt="Battwheels" 
-              className="relative h-10 sm:h-12 md:h-14 lg:h-16 w-auto drop-shadow-lg"
+              className="relative h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
             />
           </div>
         </div>
@@ -529,10 +530,10 @@ export default function Login({ onLogin }) {
             {/* Premium Glass Card */}
             <div className="relative">
               {/* Card Glow */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[rgba(200,255,0,0.15)] via-transparent to-[rgba(200,255,0,0.15)] rounded-xl blur-xl opacity-60" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-[rgba(200,255,0,0.15)] via-transparent to-[rgba(200,255,0,0.15)] rounded blur-xl opacity-60" />
               
               {/* Main Card */}
-              <Card className="relative border border-[rgba(255,255,255,0.1)] shadow-2xl rounded-xl overflow-hidden bg-[#111820]/95 backdrop-blur-xl">
+              <Card className="relative border border-[rgba(255,255,255,0.07)] rounded overflow-hidden bg-[#111820]/95 backdrop-blur-xl" style={{ borderRadius: '4px' }}>
                 {/* Top Accent Line */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C8FF00] to-transparent" />
                 
@@ -548,13 +549,13 @@ export default function Login({ onLogin }) {
                 <CardContent className="px-6 sm:px-8 pb-8">
                   <Tabs defaultValue="login" className="w-full">
                     {/* Premium Tab List */}
-                    <TabsList className="grid w-full grid-cols-2 mb-6 bg-[#080C0F] rounded-lg p-1 h-12 border border-[rgba(255,255,255,0.07)]">
+                    <TabsList className="grid w-full grid-cols-2 mb-6 bg-[#080C0F] rounded p-1 h-12 border border-[rgba(255,255,255,0.07)]">
                       <TabsTrigger 
                         value="login" 
                         data-testid="login-tab" 
                         className="rounded font-semibold text-sm transition-all duration-300
                           data-[state=active]:bg-[#C8FF00]
-                          data-[state=active]:text-[#080C0F] data-[state=active]:shadow-lg data-[state=active]:shadow-[rgba(200,255,0,0.3)]
+                          data-[state=active]:text-[#080C0F]
                           data-[state=inactive]:text-[rgba(244,246,240,0.5)] data-[state=inactive]:hover:text-[#F4F6F0]
                           h-10"
                       >
@@ -565,7 +566,7 @@ export default function Login({ onLogin }) {
                         data-testid="register-tab" 
                         className="rounded font-semibold text-sm transition-all duration-300
                           data-[state=active]:bg-[#C8FF00]
-                          data-[state=active]:text-[#080C0F] data-[state=active]:shadow-lg data-[state=active]:shadow-[rgba(200,255,0,0.3)]
+                          data-[state=active]:text-[#080C0F]
                           data-[state=inactive]:text-[rgba(244,246,240,0.5)] data-[state=inactive]:hover:text-[#F4F6F0]
                           h-10"
                       >
