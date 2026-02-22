@@ -205,26 +205,26 @@ const PremiumInput = ({ icon: Icon, type, id, placeholder, value, onChange, requ
   return (
     <div className={`relative group transition-all duration-300 ${isFocused ? 'transform scale-[1.02]' : ''}`}>
       {/* 3D Shadow Effect */}
-      <div className={`absolute inset-0 rounded-2xl transition-all duration-300 ${
+      <div className={`absolute inset-0 rounded-lg transition-all duration-300 ${
         isFocused 
-          ? 'bg-gradient-to-r from-[#22EDA9]/20 to-[#1DD69A]/20 blur-xl opacity-100' 
+          ? 'bg-[rgba(200,255,0,0.1)] blur-xl opacity-100' 
           : 'opacity-0'
       }`} />
       
       {/* Input Container */}
-      <div className={`relative rounded-2xl transition-all duration-300 ${
+      <div className={`relative rounded-lg transition-all duration-300 ${
         isFocused 
-          ? 'shadow-lg shadow-[#22EDA9]/20 ring-2 ring-[#22EDA9]/50' 
+          ? 'shadow-lg shadow-[rgba(200,255,0,0.15)] ring-2 ring-[rgba(200,255,0,0.4)]' 
           : 'shadow-sm hover:shadow-md'
       }`}>
         {/* Icon */}
-        <div className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all duration-300 ${
+        <div className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded transition-all duration-300 ${
           isFocused 
-            ? 'bg-[#22EDA9] shadow-lg shadow-[#22EDA9]/30' 
-            : 'bg-gray-100'
+            ? 'bg-[#C8FF00] shadow-lg shadow-[rgba(200,255,0,0.3)]' 
+            : 'bg-[#111820]'
         }`}>
           <Icon className={`h-4 w-4 transition-colors duration-300 ${
-            isFocused ? 'text-gray-900' : 'text-gray-500'
+            isFocused ? 'text-[#080C0F]' : 'text-[rgba(244,246,240,0.5)]'
           }`} />
         </div>
         
@@ -232,10 +232,10 @@ const PremiumInput = ({ icon: Icon, type, id, placeholder, value, onChange, requ
           id={id}
           type={inputType}
           placeholder={placeholder}
-          className={`pl-16 pr-${showPasswordToggle ? '14' : '4'} h-14 bg-white border-2 rounded-2xl text-base font-medium transition-all duration-300 ${
+          className={`pl-16 pr-${showPasswordToggle ? '14' : '4'} h-14 bg-[#111820] border-2 rounded-lg text-base font-medium text-[#F4F6F0] transition-all duration-300 ${
             isFocused 
-              ? 'border-[#22EDA9] bg-white' 
-              : 'border-gray-100 hover:border-gray-200'
+              ? 'border-[#C8FF00] bg-[#111820]' 
+              : 'border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]'
           }`}
           value={value}
           onChange={onChange}
@@ -250,8 +250,8 @@ const PremiumInput = ({ icon: Icon, type, id, placeholder, value, onChange, requ
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className={`absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all duration-300 hover:bg-gray-100 ${
-              isFocused ? 'text-[#22EDA9]' : 'text-gray-400'
+            className={`absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded transition-all duration-300 hover:bg-[rgba(255,255,255,0.1)] ${
+              isFocused ? 'text-[#C8FF00]' : 'text-[rgba(244,246,240,0.4)]'
             }`}
           >
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
