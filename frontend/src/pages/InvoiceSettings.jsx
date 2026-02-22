@@ -355,7 +355,7 @@ export default function InvoiceSettings() {
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-bold">Invoice Automation</h1>
-          <p className="text-gray-500">Payment reminders, late fees, recurring invoices, and aging reports</p>
+          <p className="text-[rgba(244,246,240,0.45)]">Payment reminders, late fees, recurring invoices, and aging reports</p>
         </div>
         <Button onClick={fetchData} variant="outline">
           <RefreshCw className="h-4 w-4 mr-2" /> Refresh
@@ -374,7 +374,7 @@ export default function InvoiceSettings() {
           {agingReport.aging_buckets?.map((bucket, idx) => (
             <Card key={idx} className={bucket.amount > 0 && idx > 0 ? "border-red-200 bg-red-50" : ""}>
               <CardContent className="p-4">
-                <p className="text-sm text-gray-500">{bucket.label}</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">{bucket.label}</p>
                 <p className="text-lg font-bold">{formatCurrency(bucket.amount)}</p>
                 <p className="text-xs text-gray-400">{bucket.count} invoices</p>
               </CardContent>
@@ -422,11 +422,11 @@ export default function InvoiceSettings() {
             </CardHeader>
             <CardContent>
               {loading ? (
-                <p className="text-center py-8 text-gray-500">Loading...</p>
+                <p className="text-center py-8 text-[rgba(244,246,240,0.45)]">Loading...</p>
               ) : overdueInvoices.length === 0 ? (
                 <div className="text-center py-8">
                   <CheckCircle className="h-12 w-12 mx-auto text-green-500 mb-2" />
-                  <p className="text-gray-500">No overdue invoices! Great job.</p>
+                  <p className="text-[rgba(244,246,240,0.45)]">No overdue invoices! Great job.</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -455,7 +455,7 @@ export default function InvoiceSettings() {
                     </thead>
                     <tbody className="divide-y">
                       {overdueInvoices.map((inv) => (
-                        <tr key={inv.invoice_id} className="hover:bg-gray-50">
+                        <tr key={inv.invoice_id} className="hover:bg-[#111820]">
                           <td className="px-4 py-3">
                             <input 
                               type="checkbox"
@@ -511,7 +511,7 @@ export default function InvoiceSettings() {
             </CardHeader>
             <CardContent>
               {dueSoonInvoices.length === 0 ? (
-                <p className="text-center py-8 text-gray-500">No invoices due soon</p>
+                <p className="text-center py-8 text-[rgba(244,246,240,0.45)]">No invoices due soon</p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -527,7 +527,7 @@ export default function InvoiceSettings() {
                     </thead>
                     <tbody className="divide-y">
                       {dueSoonInvoices.map((inv) => (
-                        <tr key={inv.invoice_id} className="hover:bg-gray-50">
+                        <tr key={inv.invoice_id} className="hover:bg-[#111820]">
                           <td className="px-4 py-3 font-medium">{inv.invoice_number}</td>
                           <td className="px-4 py-3">{inv.customer_name}</td>
                           <td className="px-4 py-3 text-right font-medium">{formatCurrency(inv.balance_due)}</td>
@@ -558,7 +558,7 @@ export default function InvoiceSettings() {
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <Card>
                   <CardContent className="p-4">
-                    <p className="text-sm text-gray-500">Total Profiles</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Profiles</p>
                     <p className="text-2xl font-bold">{recurringStats.total_profiles}</p>
                   </CardContent>
                 </Card>
@@ -570,7 +570,7 @@ export default function InvoiceSettings() {
                 </Card>
                 <Card>
                   <CardContent className="p-4">
-                    <p className="text-sm text-gray-500">Stopped</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Stopped</p>
                     <p className="text-2xl font-bold">{recurringStats.stopped}</p>
                   </CardContent>
                 </Card>
@@ -607,13 +607,13 @@ export default function InvoiceSettings() {
                 {recurringInvoices.length === 0 ? (
                   <div className="text-center py-8">
                     <Repeat className="h-12 w-12 mx-auto text-gray-300 mb-2" />
-                    <p className="text-gray-500">No recurring invoices yet</p>
+                    <p className="text-[rgba(244,246,240,0.45)]">No recurring invoices yet</p>
                     <p className="text-sm text-gray-400">Create one to automate billing</p>
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-[#111820]">
                         <tr>
                           <th className="px-4 py-3 text-left">Profile Name</th>
                           <th className="px-4 py-3 text-left">Customer</th>
@@ -626,7 +626,7 @@ export default function InvoiceSettings() {
                       </thead>
                       <tbody className="divide-y">
                         {recurringInvoices.map((ri) => (
-                          <tr key={ri.recurring_id} className="hover:bg-gray-50">
+                          <tr key={ri.recurring_id} className="hover:bg-[#111820]">
                             <td className="px-4 py-3 font-medium">{ri.profile_name}</td>
                             <td className="px-4 py-3">{ri.customer_name}</td>
                             <td className="px-4 py-3 text-center">
@@ -638,7 +638,7 @@ export default function InvoiceSettings() {
                             <td className="px-4 py-3 text-center">
                               <Badge className={
                                 ri.status === "active" ? "bg-green-100 text-green-700" :
-                                ri.status === "stopped" ? "bg-gray-200 text-gray-600" :
+                                ri.status === "stopped" ? "bg-gray-200 text-[rgba(244,246,240,0.45)]" :
                                 "bg-red-100 text-red-700"
                               }>
                                 {ri.status}
@@ -681,7 +681,7 @@ export default function InvoiceSettings() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Enable Payment Reminders</Label>
-                  <p className="text-sm text-gray-500">Send automatic email reminders</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.45)]">Send automatic email reminders</p>
                 </div>
                 <Switch
                   checked={reminderSettings.enabled}
@@ -694,7 +694,7 @@ export default function InvoiceSettings() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Include Payment Link</Label>
-                  <p className="text-sm text-gray-500">Add online payment link (Stripe) in reminders</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.45)]">Add online payment link (Stripe) in reminders</p>
                 </div>
                 <Switch
                   checked={reminderSettings.include_payment_link}
@@ -732,7 +732,7 @@ export default function InvoiceSettings() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Enable Late Fees</Label>
-                  <p className="text-sm text-gray-500">Apply late fees to overdue invoices</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.45)]">Apply late fees to overdue invoices</p>
                 </div>
                 <Switch
                   checked={lateFeeSettings.enabled}
@@ -778,7 +778,7 @@ export default function InvoiceSettings() {
                         value={lateFeeSettings.grace_period_days}
                         onChange={(e) => setLateFeeSettings({...lateFeeSettings, grace_period_days: parseInt(e.target.value) || 0})}
                       />
-                      <p className="text-xs text-gray-500 mt-1">Days after due date before fee applies</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Days after due date before fee applies</p>
                     </div>
                     <div>
                       <Label>Maximum Fee (%)</Label>
@@ -787,14 +787,14 @@ export default function InvoiceSettings() {
                         value={lateFeeSettings.max_fee_percentage}
                         onChange={(e) => setLateFeeSettings({...lateFeeSettings, max_fee_percentage: parseFloat(e.target.value) || 0})}
                       />
-                      <p className="text-xs text-gray-500 mt-1">Cap on total late fees</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Cap on total late fees</p>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
                       <Label>Apply Automatically</Label>
-                      <p className="text-sm text-gray-500">Auto-apply fees when invoice becomes overdue</p>
+                      <p className="text-sm text-[rgba(244,246,240,0.45)]">Auto-apply fees when invoice becomes overdue</p>
                     </div>
                     <Switch
                       checked={lateFeeSettings.apply_automatically}
@@ -947,7 +947,7 @@ export default function InvoiceSettings() {
               {newRecurring.line_items.length > 0 && (
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-[#111820]">
                       <tr>
                         <th className="px-3 py-2 text-left">Item</th>
                         <th className="px-3 py-2 text-right">Rate</th>
@@ -971,7 +971,7 @@ export default function InvoiceSettings() {
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-gray-50">
+                    <tfoot className="bg-[#111820]">
                       <tr>
                         <td colSpan="3" className="px-3 py-2 text-right font-medium">Total (incl. 18% GST):</td>
                         <td className="px-3 py-2 text-right font-bold">{formatCurrency(calculateRecurringTotal())}</td>
@@ -997,7 +997,7 @@ export default function InvoiceSettings() {
             <div className="flex items-center justify-between">
               <div>
                 <Label>Send Email on Generation</Label>
-                <p className="text-sm text-gray-500">Automatically email invoice to customer</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Automatically email invoice to customer</p>
               </div>
               <Switch
                 checked={newRecurring.send_email_on_generation}

@@ -15,13 +15,13 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  draft: "bg-gray-100 text-gray-700",
+  draft: "bg-gray-100 text-[#F4F6F0]",
   sent: "bg-blue-100 text-blue-700",
   viewed: "bg-purple-100 text-purple-700",
   paid: "bg-green-100 text-green-700",
   partially_paid: "bg-yellow-100 text-yellow-700",
   overdue: "bg-red-100 text-red-700",
-  void: "bg-gray-200 text-gray-500"
+  void: "bg-gray-200 text-[rgba(244,246,240,0.45)]"
 };
 
 export default function Invoices() {
@@ -205,7 +205,7 @@ export default function Invoices() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage your sales invoices</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Manage your sales invoices</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
@@ -217,7 +217,7 @@ export default function Invoices() {
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" aria-describedby="create-invoice-description">
             <DialogHeader>
               <DialogTitle>Create New Invoice</DialogTitle>
-              <p id="create-invoice-description" className="text-sm text-gray-500">Add customer and line items to generate a GST invoice</p>
+              <p id="create-invoice-description" className="text-sm text-[rgba(244,246,240,0.45)]">Add customer and line items to generate a GST invoice</p>
             </DialogHeader>
             <div className="space-y-6 py-4">
               {/* Customer Selection */}
@@ -256,7 +256,7 @@ export default function Invoices() {
               </div>
 
               {/* Add Line Items */}
-              <div className="border rounded-lg p-4 bg-gray-50">
+              <div className="border rounded-lg p-4 bg-[#111820]">
                 <h3 className="font-medium mb-4">Add Items</h3>
                 <Tabs defaultValue="services">
                   <TabsList className="mb-4">
@@ -328,13 +328,13 @@ export default function Invoices() {
               {newInvoice.line_items.length > 0 && (
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-[#111820]">
                       <tr>
-                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
-                        <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Qty</th>
-                        <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Rate</th>
-                        <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Tax</th>
-                        <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Amount</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-[rgba(244,246,240,0.45)]">Item</th>
+                        <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Qty</th>
+                        <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Rate</th>
+                        <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Tax</th>
+                        <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Amount</th>
                         <th className="px-4 py-2"></th>
                       </tr>
                     </thead>
@@ -358,7 +358,7 @@ export default function Invoices() {
                         );
                       })}
                     </tbody>
-                    <tfoot className="bg-gray-50">
+                    <tfoot className="bg-[#111820]">
                       <tr className="border-t">
                         <td colSpan={4} className="px-4 py-3 text-right font-semibold">Total:</td>
                         <td className="px-4 py-3 text-right font-bold text-lg">₹{calculateTotal().toLocaleString('en-IN')}</td>
@@ -396,7 +396,7 @@ export default function Invoices() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Total Revenue</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Revenue</p>
                   <p className="text-2xl font-bold text-gray-900">₹{analytics.revenue.total.toLocaleString('en-IN')}</p>
                 </div>
                 <IndianRupee className="h-8 w-8 text-[#22EDA9]" />
@@ -407,7 +407,7 @@ export default function Invoices() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Collected</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.45)]">Collected</p>
                   <p className="text-2xl font-bold text-green-600">₹{analytics.revenue.collected.toLocaleString('en-IN')}</p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-500" />
@@ -418,7 +418,7 @@ export default function Invoices() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Outstanding</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.45)]">Outstanding</p>
                   <p className="text-2xl font-bold text-orange-600">₹{analytics.revenue.outstanding.toLocaleString('en-IN')}</p>
                 </div>
                 <Clock className="h-8 w-8 text-orange-500" />
@@ -429,7 +429,7 @@ export default function Invoices() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Total Invoices</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Invoices</p>
                   <p className="text-2xl font-bold text-gray-900">{analytics.invoices.total}</p>
                 </div>
                 <FileText className="h-8 w-8 text-blue-500" />
@@ -464,10 +464,10 @@ export default function Invoices() {
 
       {/* Invoice List */}
       {loading ? (
-        <div className="text-center py-12 text-gray-500">Loading invoices...</div>
+        <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading invoices...</div>
       ) : invoices.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-gray-500">
+          <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
             No invoices found. Create your first invoice to get started.
           </CardContent>
         </Card>
@@ -484,7 +484,7 @@ export default function Invoices() {
                         {invoice.status.replace('_', ' ')}
                       </Badge>
                     </div>
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                    <div className="flex flex-wrap gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                       <span className="flex items-center gap-1">
                         <User className="h-3.5 w-3.5" />
                         {invoice.customer_name}
@@ -540,12 +540,12 @@ export default function Invoices() {
 
                             <div className="border rounded-lg overflow-hidden">
                               <table className="w-full">
-                                <thead className="bg-gray-50">
+                                <thead className="bg-[#111820]">
                                   <tr>
-                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
-                                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Qty</th>
-                                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Rate</th>
-                                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Amount</th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium text-[rgba(244,246,240,0.45)]">Item</th>
+                                    <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Qty</th>
+                                    <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Rate</th>
+                                    <th className="px-4 py-2 text-right text-xs font-medium text-[rgba(244,246,240,0.45)]">Amount</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -558,7 +558,7 @@ export default function Invoices() {
                                     </tr>
                                   ))}
                                 </tbody>
-                                <tfoot className="bg-gray-50">
+                                <tfoot className="bg-[#111820]">
                                   <tr className="border-t">
                                     <td colSpan={3} className="px-4 py-2 text-right text-sm">Subtotal:</td>
                                     <td className="px-4 py-2 text-right">₹{invoice.subtotal?.toLocaleString('en-IN')}</td>

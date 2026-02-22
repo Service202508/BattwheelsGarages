@@ -23,12 +23,12 @@ import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
-  draft: "bg-gray-100 text-gray-700",
+  draft: "bg-gray-100 text-[#F4F6F0]",
   confirmed: "bg-blue-100 text-blue-700",
   open: "bg-green-100 text-green-700",
   partially_fulfilled: "bg-yellow-100 text-yellow-700",
   fulfilled: "bg-purple-100 text-purple-700",
-  closed: "bg-gray-200 text-gray-600",
+  closed: "bg-gray-200 text-[rgba(244,246,240,0.45)]",
   void: "bg-red-100 text-red-500"
 };
 
@@ -440,24 +440,24 @@ export default function SalesOrdersEnhanced() {
           <CardContent>
             <div className="flex items-center justify-between text-xs">
               <div className="text-center">
-                <p className="text-gray-500">Unfulfilled</p>
+                <p className="text-[rgba(244,246,240,0.45)]">Unfulfilled</p>
                 <p className="text-xl font-bold text-red-600">{fulfillmentSummary.unfulfilled}</p>
                 <p className="text-gray-400">₹{(fulfillmentSummary.unfulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-gray-300" />
               <div className="text-center">
-                <p className="text-gray-500">Partially Fulfilled</p>
+                <p className="text-[rgba(244,246,240,0.45)]">Partially Fulfilled</p>
                 <p className="text-xl font-bold text-yellow-600">{fulfillmentSummary.partially_fulfilled}</p>
                 <p className="text-gray-400">₹{(fulfillmentSummary.partially_fulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-gray-300" />
               <div className="text-center">
-                <p className="text-gray-500">Fulfilled</p>
+                <p className="text-[rgba(244,246,240,0.45)]">Fulfilled</p>
                 <p className="text-xl font-bold text-green-600">{fulfillmentSummary.fulfilled}</p>
                 <p className="text-gray-400">₹{(fulfillmentSummary.fulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
               <div className="text-center ml-8 border-l pl-8">
-                <p className="text-gray-500">Fulfillment Rate</p>
+                <p className="text-[rgba(244,246,240,0.45)]">Fulfillment Rate</p>
                 <p className="text-2xl font-bold text-green-600">{fulfillmentSummary.fulfillment_rate}%</p>
               </div>
             </div>
@@ -507,11 +507,11 @@ export default function SalesOrdersEnhanced() {
           </div>
 
           {loading ? <div className="text-center py-8">Loading...</div> : orders.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500"><ShoppingCart className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No sales orders found</p></CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><ShoppingCart className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No sales orders found</p></CardContent></Card>
           ) : (
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50">
+                <thead className="bg-[#111820]">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium">Order #</th>
                     <th className="px-4 py-3 text-left font-medium">Customer</th>
@@ -525,11 +525,11 @@ export default function SalesOrdersEnhanced() {
                 </thead>
                 <tbody>
                   {orders.map(order => (
-                    <tr key={order.salesorder_id} className="border-t hover:bg-gray-50 cursor-pointer" onClick={() => fetchOrderDetail(order.salesorder_id)} data-testid={`order-row-${order.salesorder_id}`}>
+                    <tr key={order.salesorder_id} className="border-t hover:bg-[#111820] cursor-pointer" onClick={() => fetchOrderDetail(order.salesorder_id)} data-testid={`order-row-${order.salesorder_id}`}>
                       <td className="px-4 py-3 font-mono font-medium">{order.salesorder_number}</td>
                       <td className="px-4 py-3">{order.customer_name}</td>
-                      <td className="px-4 py-3 text-gray-600">{order.date}</td>
-                      <td className="px-4 py-3 text-gray-600">{order.expected_shipment_date}</td>
+                      <td className="px-4 py-3 text-[rgba(244,246,240,0.45)]">{order.date}</td>
+                      <td className="px-4 py-3 text-[rgba(244,246,240,0.45)]">{order.expected_shipment_date}</td>
                       <td className="px-4 py-3 text-right font-medium">₹{(order.grand_total || 0).toLocaleString('en-IN')}</td>
                       <td className="px-4 py-3 text-center">
                         <Badge className={statusColors[order.status]}>{statusLabels[order.status]}</Badge>
@@ -598,14 +598,14 @@ export default function SalesOrdersEnhanced() {
                             }}
                           >
                             <p className="font-medium">{c.name}</p>
-                            <p className="text-xs text-gray-500">{c.company_name} {c.gstin && `• ${c.gstin}`}</p>
+                            <p className="text-xs text-[rgba(244,246,240,0.45)]">{c.company_name} {c.gstin && `• ${c.gstin}`}</p>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
                   {selectedContact && (
-                    <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                    <div className="mt-2 p-2 bg-[#111820] rounded text-xs">
                       <p><strong>{selectedContact.name}</strong></p>
                       {selectedContact.email && <p>{selectedContact.email}</p>}
                       {selectedContact.gstin && <p>GSTIN: {selectedContact.gstin}</p>}
@@ -700,7 +700,7 @@ export default function SalesOrdersEnhanced() {
                 {newOrder.line_items.length > 0 && (
                   <div className="border rounded-lg overflow-hidden mb-4">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-[#111820]">
                         <tr>
                           <th className="px-3 py-2 text-left">Item</th>
                           <th className="px-3 py-2 text-right">Qty</th>
@@ -802,10 +802,10 @@ export default function SalesOrdersEnhanced() {
               <div className="space-y-4 py-4">
                 {/* Info Grid */}
                 <div className="grid grid-cols-4 gap-4 text-sm">
-                  <div><p className="text-gray-500">Order Date</p><p className="font-medium">{selectedOrder.date}</p></div>
-                  <div><p className="text-gray-500">Expected Shipment</p><p className="font-medium">{selectedOrder.expected_shipment_date}</p></div>
-                  <div><p className="text-gray-500">Reference</p><p className="font-medium">{selectedOrder.reference_number || '-'}</p></div>
-                  <div><p className="text-gray-500">GSTIN</p><p className="font-medium font-mono text-xs">{selectedOrder.customer_gstin || '-'}</p></div>
+                  <div><p className="text-[rgba(244,246,240,0.45)]">Order Date</p><p className="font-medium">{selectedOrder.date}</p></div>
+                  <div><p className="text-[rgba(244,246,240,0.45)]">Expected Shipment</p><p className="font-medium">{selectedOrder.expected_shipment_date}</p></div>
+                  <div><p className="text-[rgba(244,246,240,0.45)]">Reference</p><p className="font-medium">{selectedOrder.reference_number || '-'}</p></div>
+                  <div><p className="text-[rgba(244,246,240,0.45)]">GSTIN</p><p className="font-medium font-mono text-xs">{selectedOrder.customer_gstin || '-'}</p></div>
                 </div>
 
                 {selectedOrder.from_estimate_number && (
@@ -822,7 +822,7 @@ export default function SalesOrdersEnhanced() {
                   {selectedOrder.line_items?.length > 0 && (
                     <div className="border rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-[#111820]">
                           <tr>
                             <th className="px-3 py-2 text-left">Item</th>
                             <th className="px-3 py-2 text-right">Ordered</th>
@@ -837,7 +837,7 @@ export default function SalesOrdersEnhanced() {
                             <tr key={idx} className="border-t">
                               <td className="px-3 py-2">
                                 <p className="font-medium">{item.name}</p>
-                                {item.hsn_code && <p className="text-xs text-gray-500">HSN: {item.hsn_code}</p>}
+                                {item.hsn_code && <p className="text-xs text-[rgba(244,246,240,0.45)]">HSN: {item.hsn_code}</p>}
                               </td>
                               <td className="px-3 py-2 text-right">{item.quantity_ordered || item.quantity} {item.unit}</td>
                               <td className="px-3 py-2 text-right text-green-600">{item.quantity_fulfilled || 0}</td>
@@ -875,10 +875,10 @@ export default function SalesOrdersEnhanced() {
                     <h4 className="font-medium mb-2">Fulfillments</h4>
                     <div className="space-y-2">
                       {selectedOrder.fulfillments.map((f, idx) => (
-                        <div key={idx} className="bg-gray-50 rounded-lg p-3 text-sm">
+                        <div key={idx} className="bg-[#111820] rounded-lg p-3 text-sm">
                           <div className="flex justify-between">
                             <span className="font-medium">{f.fulfillment_id}</span>
-                            <span className="text-gray-500">{f.shipment_date}</span>
+                            <span className="text-[rgba(244,246,240,0.45)]">{f.shipment_date}</span>
                           </div>
                           {f.tracking_number && <p className="text-xs">Tracking: {f.tracking_number}</p>}
                         </div>
@@ -925,7 +925,7 @@ export default function SalesOrdersEnhanced() {
                     <h4 className="font-medium mb-2">History</h4>
                     <div className="space-y-2 text-sm">
                       {selectedOrder.history.slice(0, 5).map((h, idx) => (
-                        <div key={idx} className="flex justify-between text-gray-600">
+                        <div key={idx} className="flex justify-between text-[rgba(244,246,240,0.45)]">
                           <span>{h.action}: {h.details}</span>
                           <span className="text-xs">{new Date(h.timestamp).toLocaleString('en-IN')}</span>
                         </div>
@@ -949,7 +949,7 @@ export default function SalesOrdersEnhanced() {
           <div className="space-y-4 py-4">
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50">
+                <thead className="bg-[#111820]">
                   <tr>
                     <th className="px-3 py-2 text-left">Item</th>
                     <th className="px-3 py-2 text-right">Ordered</th>
