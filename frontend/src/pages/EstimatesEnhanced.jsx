@@ -1660,10 +1660,9 @@ export default function EstimatesEnhanced() {
                     </tbody>
                   </table>
                 </div>
-              </div>
 
                 {/* Totals */}
-                <div className="flex justify-end">
+                <div className="flex justify-end mt-4">
                   <div className="w-64 space-y-2 text-sm">
                     <div className="flex justify-between"><span>Subtotal:</span><span>₹{totals.subtotal.toFixed(2)}</span></div>
                     <div className="flex justify-between items-center gap-2">
