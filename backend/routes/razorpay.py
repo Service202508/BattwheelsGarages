@@ -15,8 +15,13 @@ import os
 import json
 import logging
 import razorpay
+import jwt
 
 logger = logging.getLogger(__name__)
+
+# JWT config
+JWT_SECRET = os.environ.get('JWT_SECRET', 'battwheels-secret')
+JWT_ALGORITHM = "HS256"
 
 def get_db():
     from server import db
