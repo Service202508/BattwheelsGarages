@@ -245,13 +245,13 @@ const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSec
               to={item.path}
               onClick={onClose}
               title={item.name}
-              className={`flex items-center justify-center p-2.5 rounded-xl transition-all duration-200 ${
+              className={`flex items-center justify-center p-2.5 rounded transition-all duration-200 ${
                 isActive
-                  ? "bg-[#22EDA9] text-gray-900 shadow-md shadow-[#22EDA9]/30"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+                  ? "bg-[rgba(200,255,0,0.12)] text-[#C8FF00] border-l-2 border-[#C8FF00]"
+                  : "text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"
               }`}
             >
-              <Icon className="h-5 w-5" strokeWidth={1.5} />
+              <Icon className={`h-5 w-5 ${isActive ? "text-[#C8FF00]" : ""}`} strokeWidth={1.5} />
             </Link>
           );
         })}
@@ -262,27 +262,27 @@ const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSec
   return (
     <Collapsible open={isOpen} onOpenChange={() => toggleSection(section.section)}>
       <CollapsibleTrigger className="w-full">
-        <div className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 group cursor-pointer ${
+        <div className={`flex items-center justify-between px-3 py-2.5 rounded transition-all duration-200 group cursor-pointer ${
           hasActiveItem 
-            ? "bg-[#22EDA9]/10 text-gray-900" 
-            : "text-gray-600 hover:bg-gray-50"
+            ? "bg-[rgba(200,255,0,0.08)] text-[#F4F6F0]" 
+            : "text-[rgba(244,246,240,0.45)] hover:bg-[rgba(200,255,0,0.06)]"
         }`}>
           <div className="flex items-center gap-3">
-            <div className={`p-1.5 rounded-lg transition-colors ${
-              hasActiveItem ? "bg-[#22EDA9]/20" : "bg-gray-100 group-hover:bg-gray-200"
+            <div className={`p-1.5 rounded transition-colors ${
+              hasActiveItem ? "bg-[rgba(200,255,0,0.12)]" : "bg-[#111820] group-hover:bg-[rgba(200,255,0,0.08)]"
             }`}>
-              <SectionIcon className={`h-4 w-4 ${hasActiveItem ? "text-[#22EDA9]" : "text-gray-500"}`} strokeWidth={1.5} />
+              <SectionIcon className={`h-4 w-4 ${hasActiveItem ? "text-[#C8FF00]" : "text-[rgba(244,246,240,0.3)]"}`} strokeWidth={1.5} />
             </div>
-            <span className={`text-sm font-medium ${hasActiveItem ? "text-gray-900" : ""}`}>
+            <span className={`text-sm font-medium nav-section-label ${hasActiveItem ? "text-[#F4F6F0] !text-sm !tracking-normal !normal-case !font-medium" : ""}`} style={{ fontFamily: hasActiveItem ? 'Manrope, sans-serif' : undefined }}>
               {section.section}
             </span>
           </div>
-          <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+          <ChevronDown className={`h-4 w-4 text-[rgba(244,246,240,0.25)] transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
         </div>
       </CollapsibleTrigger>
       
       <CollapsibleContent className="overflow-hidden data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp">
-        <div className="ml-4 pl-4 border-l border-gray-100 mt-1 space-y-0.5">
+        <div className="ml-4 pl-4 border-l border-[rgba(255,255,255,0.07)] mt-1 space-y-0.5">
           {visibleItems.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
@@ -292,13 +292,13 @@ const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSec
                 to={item.path}
                 onClick={onClose}
                 data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ${
+                className={`flex items-center gap-3 px-3 py-2 rounded transition-all duration-200 ${
                   isActive
-                    ? "bg-[#22EDA9] text-gray-900 font-medium shadow-sm shadow-[#22EDA9]/20"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    ? "bg-[rgba(200,255,0,0.12)] text-[#C8FF00] font-semibold border-l-2 border-[#C8FF00] rounded-l-none"
+                    : "text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"
                 }`}
               >
-                <Icon className={`h-4 w-4 flex-shrink-0 ${isActive ? "text-gray-900" : ""}`} strokeWidth={1.5} />
+                <Icon className={`h-4 w-4 flex-shrink-0 ${isActive ? "text-[#C8FF00]" : "text-[rgba(244,246,240,0.3)]"}`} strokeWidth={1.5} />
                 <span className="text-sm">{item.name}</span>
               </Link>
             );
