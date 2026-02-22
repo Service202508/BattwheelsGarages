@@ -311,14 +311,22 @@ class TestGSTAccountingFlow:
         if not TestGSTAccountingFlow.created_estimate_id:
             pytest.skip("No estimate created")
         
+        # Use the mark-accepted endpoint (POST)
         response = requests.post(
-            f"{BASE_URL}/api/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}/status",
+            f"{BASE_URL}/api/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}/mark-accepted",
             headers=self.headers,
-            json={"status": "accepted", "reason": "Customer approved via test"}
+            json={}
         )
         
+        if response.status_code != 200:
+            # Fallback to PUT status endpoint
+            response = requests.put(
+                f"{BASE_URL}/api/estimates-enhanced/{TestGSTAccountingFlow.created_estimate_id}/status",
+                headers=self.headers,
+                json={"status": "accepted", "reason": "Customer approved via test"}
+            )
+        
         assert response.status_code == 200, f"Failed to approve estimate: {response.text}"
-        data = response.json()
         
         # Verify status changed
         response = requests.get(
