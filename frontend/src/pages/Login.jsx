@@ -527,39 +527,39 @@ export default function Login({ onLogin }) {
                 <img src={VEHICLE_ICONS.commercial} alt="Truck" className="w-12 h-12 sm:w-14 sm:h-14 object-contain opacity-80 hover:opacity-100 transition-opacity" />
               </div>
               {/* Mobile tagline */}
-              <p className="text-sm text-[#22EDA9] font-medium mt-3 tracking-wide">EV Failure Intelligence</p>
+              <p className="text-sm text-[#C8FF00] font-medium mt-3 tracking-wide">EV Failure Intelligence</p>
             </div>
 
             {/* Premium Glass Card */}
             <div className="relative">
               {/* Card Glow */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#22EDA9]/20 via-transparent to-[#22EDA9]/20 rounded-3xl blur-xl opacity-60" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-[rgba(200,255,0,0.15)] via-transparent to-[rgba(200,255,0,0.15)] rounded-xl blur-xl opacity-60" />
               
               {/* Main Card */}
-              <Card className="relative border-0 shadow-2xl rounded-3xl overflow-hidden bg-white/95 backdrop-blur-xl">
+              <Card className="relative border border-[rgba(255,255,255,0.1)] shadow-2xl rounded-xl overflow-hidden bg-[#111820]/95 backdrop-blur-xl">
                 {/* Top Accent Line */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#22EDA9] to-transparent" />
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C8FF00] to-transparent" />
                 
                 <CardHeader className="text-center pt-8 pb-4 px-6 sm:px-8">
                   {/* Decorative Icon */}
-                  <div className="mx-auto mb-3 w-12 h-12 rounded-xl bg-gradient-to-br from-[#22EDA9]/10 to-[#22EDA9]/5 flex items-center justify-center shadow-inner">
-                    <Zap className="w-6 h-6 text-[#22EDA9]" />
+                  <div className="mx-auto mb-3 w-12 h-12 rounded-lg bg-[rgba(200,255,0,0.1)] border border-[rgba(200,255,0,0.2)] flex items-center justify-center shadow-inner">
+                    <Zap className="w-6 h-6 text-[#C8FF00]" />
                   </div>
-                  <CardTitle className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Battwheels OS</CardTitle>
-                  <CardDescription className="text-gray-500 mt-1.5 text-sm sm:text-base">Sign in to your account</CardDescription>
+                  <CardTitle className="text-2xl sm:text-3xl font-bold text-[#F4F6F0] tracking-tight">Battwheels OS</CardTitle>
+                  <CardDescription className="text-[rgba(244,246,240,0.5)] mt-1.5 text-sm sm:text-base">Sign in to your account</CardDescription>
                 </CardHeader>
                 
                 <CardContent className="px-6 sm:px-8 pb-8">
                   <Tabs defaultValue="login" className="w-full">
                     {/* Premium Tab List */}
-                    <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100/80 rounded-xl p-1 h-12 shadow-inner">
+                    <TabsList className="grid w-full grid-cols-2 mb-6 bg-[#080C0F] rounded-lg p-1 h-12 border border-[rgba(255,255,255,0.07)]">
                       <TabsTrigger 
                         value="login" 
                         data-testid="login-tab" 
-                        className="rounded-lg font-semibold text-sm transition-all duration-300
-                          data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#22EDA9] data-[state=active]:to-[#1DD69A]
-                          data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-[#22EDA9]/30
-                          data-[state=inactive]:text-gray-500 data-[state=inactive]:hover:text-gray-700
+                        className="rounded font-semibold text-sm transition-all duration-300
+                          data-[state=active]:bg-[#C8FF00]
+                          data-[state=active]:text-[#080C0F] data-[state=active]:shadow-lg data-[state=active]:shadow-[rgba(200,255,0,0.3)]
+                          data-[state=inactive]:text-[rgba(244,246,240,0.5)] data-[state=inactive]:hover:text-[#F4F6F0]
                           h-10"
                       >
                         Login
@@ -567,7 +567,7 @@ export default function Login({ onLogin }) {
                       <TabsTrigger 
                         value="register" 
                         data-testid="register-tab" 
-                        className="rounded-lg font-semibold text-sm transition-all duration-300
+                        className="rounded font-semibold text-sm transition-all duration-300
                           data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#22EDA9] data-[state=active]:to-[#1DD69A]
                           data-[state=active]:text-gray-900 data-[state=active]:shadow-lg data-[state=active]:shadow-[#22EDA9]/30
                           data-[state=inactive]:text-gray-500 data-[state=inactive]:hover:text-gray-700
