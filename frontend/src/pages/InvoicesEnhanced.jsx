@@ -997,12 +997,41 @@ export default function InvoicesEnhanced() {
       </Tabs>
 
       {/* Create Invoice Dialog */}
-      <Dialog open={showCreateDialog} onOpenChange={(open) => { setShowCreateDialog(open); if (!open) resetForm(); }}>
+      <Dialog 
+        open={showCreateDialog} 
+        onOpenChange={(open) => {
+          if (!open && invoicePersistence.isDirty) {
+            invoicePersistence.setShowCloseConfirm(true);
+          } else {
+            if (!open) {
+              invoicePersistence.clearSavedData();
+              resetForm();
+            }
+            setShowCreateDialog(open);
+          }
+        }}
+      >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create New Invoice</DialogTitle>
-            <DialogDescription>Create a new invoice for a customer</DialogDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle>Create New Invoice</DialogTitle>
+                <DialogDescription>Create a new invoice for a customer</DialogDescription>
+              </div>
+              <AutoSaveIndicator 
+                lastSaved={invoicePersistence.lastSaved} 
+                isSaving={invoicePersistence.isSaving} 
+                isDirty={invoicePersistence.isDirty} 
+              />
+            </div>
           </DialogHeader>
+          
+          <DraftRecoveryBanner
+            show={invoicePersistence.showRecoveryBanner}
+            savedAt={invoicePersistence.savedDraftInfo?.timestamp}
+            onRestore={invoicePersistence.handleRestoreDraft}
+            onDiscard={invoicePersistence.handleDiscardDraft}
+          />
           
           <div className="space-y-6 py-4">
             {/* Customer & Basic Info */}
