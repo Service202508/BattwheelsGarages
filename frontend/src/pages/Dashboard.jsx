@@ -314,38 +314,40 @@ export default function Dashboard({ user }) {
                 <CardDescription className="text-xs">Monthly average time per repair order</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[260px]">
-                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-                    <BarChart data={repairTrendData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
-                      <XAxis 
-                        dataKey="month" 
-                        axisLine={false} 
-                        tickLine={false}
-                        tick={{ fill: '#64748b', fontSize: 11 }}
-                      />
-                      <YAxis 
-                        axisLine={false} 
-                        tickLine={false}
-                        tick={{ fill: '#64748b', fontSize: 11 }}
-                        tickFormatter={(value) => `${value}h`}
-                      />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#fff', 
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                        }}
-                        formatter={(value) => [`${value} hours`, 'Avg Time']}
-                      />
-                      <Bar 
-                        dataKey="avgTime" 
-                        fill={BRAND_COLORS.emerald.primary} 
-                        radius={[6, 6, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+                <ChartContainer isVisible={activeTab === "workshop"} height="260px">
+                  <div className="h-[260px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={repairTrendData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+                        <XAxis 
+                          dataKey="month" 
+                          axisLine={false} 
+                          tickLine={false}
+                          tick={{ fill: '#64748b', fontSize: 11 }}
+                        />
+                        <YAxis 
+                          axisLine={false} 
+                          tickLine={false}
+                          tick={{ fill: '#64748b', fontSize: 11 }}
+                          tickFormatter={(value) => `${value}h`}
+                        />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: '#fff', 
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                          }}
+                          formatter={(value) => [`${value} hours`, 'Avg Time']}
+                        />
+                        <Bar 
+                          dataKey="avgTime" 
+                          fill={BRAND_COLORS.emerald.primary} 
+                          radius={[6, 6, 0, 0]}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </ChartContainer>
               </CardContent>
             </Card>
           </div>
