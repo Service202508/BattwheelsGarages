@@ -1151,11 +1151,12 @@ async def send_invoice(invoice_id: str, email_to: Optional[List[str]] = None, ba
     )
     
     # Deduct stock if transitioning from draft to sent
-    if invoice.get("status") == "draft":
+    was_draft = invoice.get("status") == "draft"
+    if was_draft:
         await update_item_stock_for_invoice(invoice_id, reverse=False)
     
     # Update status
-    new_status = "sent" if invoice.get("status") == "draft" else invoice.get("status")
+    new_status = "sent" if was_draft else invoice.get("status")
     await invoices_collection.update_one(
         {"invoice_id": invoice_id},
         {"$set": {
@@ -1166,6 +1167,16 @@ async def send_invoice(invoice_id: str, email_to: Optional[List[str]] = None, ba
             "stock_deducted": True
         }}
     )
+    
+    # Post journal entry for double-entry bookkeeping (only when transitioning from draft)
+    if was_draft:
+        org_id = invoice.get("organization_id", "")
+        if org_id:
+            try:
+                await post_invoice_journal_entry(org_id, invoice)
+                logger.info(f"Posted journal entry for invoice {invoice.get('invoice_number')}")
+            except Exception as e:
+                logger.warning(f"Failed to post journal entry for invoice {invoice.get('invoice_number')}: {e}")
     
     await add_invoice_history(invoice_id, "sent", f"Invoice emailed to {', '.join(recipients)}")
     await update_contact_balance(invoice["customer_id"])
