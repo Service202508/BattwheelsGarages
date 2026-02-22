@@ -272,7 +272,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
         </div>
 
         {/* Step Content */}
-        <Card className="shadow-lg">
+        <Card className="border border-[rgba(255,255,255,0.07)]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               {(() => {
