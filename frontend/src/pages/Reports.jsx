@@ -398,60 +398,60 @@ export default function Reports() {
               ) : balanceSheet && (
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Assets */}
-                  <Card className="border-green-200">
-                    <CardHeader className="bg-[rgba(34,197,94,0.08)] py-3">
-                      <CardTitle className="text-lg text-green-800">Assets</CardTitle>
+                  <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                    <CardHeader className="bg-[rgba(34,197,94,0.08)] py-3 border-b border-[rgba(255,255,255,0.07)]">
+                      <CardTitle className="text-lg text-[#22C55E]">Assets</CardTitle>
                     </CardHeader>
                     <CardContent className="pt-4 space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Accounts Receivable</span>
-                        <span className="font-medium">{formatCurrency(balanceSheet.assets?.accounts_receivable)}</span>
+                        <span className="text-[rgba(244,246,240,0.45)]">Accounts Receivable</span>
+                        <span className="font-medium text-[#F4F6F0]">{formatCurrency(balanceSheet.assets?.accounts_receivable)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Bank Balance</span>
-                        <span className="font-medium">{formatCurrency(balanceSheet.assets?.bank_balance)}</span>
+                        <span className="text-[rgba(244,246,240,0.45)]">Bank Balance</span>
+                        <span className="font-medium text-[#F4F6F0]">{formatCurrency(balanceSheet.assets?.bank_balance)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Inventory Value</span>
-                        <span className="font-medium">{formatCurrency(balanceSheet.assets?.inventory_value)}</span>
+                        <span className="text-[rgba(244,246,240,0.45)]">Inventory Value</span>
+                        <span className="font-medium text-[#F4F6F0]">{formatCurrency(balanceSheet.assets?.inventory_value)}</span>
                       </div>
-                      <div className="flex justify-between pt-3 border-t border-green-200">
-                        <span className="font-semibold text-green-800">Total Assets</span>
-                        <span className="font-bold text-green-800">{formatCurrency(balanceSheet.assets?.total)}</span>
+                      <div className="flex justify-between pt-3 border-t border-[rgba(255,255,255,0.07)]">
+                        <span className="font-semibold text-[#22C55E]">Total Assets</span>
+                        <span className="font-bold text-[#22C55E]">{formatCurrency(balanceSheet.assets?.total)}</span>
                       </div>
                     </CardContent>
                   </Card>
 
                   {/* Liabilities & Equity */}
                   <div className="space-y-4">
-                    <Card className="border-red-200">
-                      <CardHeader className="bg-[rgba(255,59,47,0.08)] py-3">
-                        <CardTitle className="text-lg text-red-800">Liabilities</CardTitle>
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                      <CardHeader className="bg-[rgba(255,59,47,0.08)] py-3 border-b border-[rgba(255,255,255,0.07)]">
+                        <CardTitle className="text-lg text-[#FF3B2F]">Liabilities</CardTitle>
                       </CardHeader>
                       <CardContent className="pt-4 space-y-3">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Accounts Payable</span>
-                          <span className="font-medium">{formatCurrency(balanceSheet.liabilities?.accounts_payable)}</span>
+                          <span className="text-[rgba(244,246,240,0.45)]">Accounts Payable</span>
+                          <span className="font-medium text-[#F4F6F0]">{formatCurrency(balanceSheet.liabilities?.accounts_payable)}</span>
                         </div>
-                        <div className="flex justify-between pt-3 border-t border-red-200">
-                          <span className="font-semibold text-red-800">Total Liabilities</span>
-                          <span className="font-bold text-red-800">{formatCurrency(balanceSheet.liabilities?.total)}</span>
+                        <div className="flex justify-between pt-3 border-t border-[rgba(255,255,255,0.07)]">
+                          <span className="font-semibold text-[#FF3B2F]">Total Liabilities</span>
+                          <span className="font-bold text-[#FF3B2F]">{formatCurrency(balanceSheet.liabilities?.total)}</span>
                         </div>
                       </CardContent>
                     </Card>
 
-                    <Card className="border-blue-200">
-                      <CardHeader className="bg-blue-50 py-3">
-                        <CardTitle className="text-lg text-blue-800">Equity</CardTitle>
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                      <CardHeader className="bg-[rgba(59,158,255,0.08)] py-3 border-b border-[rgba(255,255,255,0.07)]">
+                        <CardTitle className="text-lg text-[#3B9EFF]">Equity</CardTitle>
                       </CardHeader>
                       <CardContent className="pt-4 space-y-3">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Retained Earnings</span>
-                          <span className="font-medium">{formatCurrency(balanceSheet.equity?.retained_earnings)}</span>
+                          <span className="text-[rgba(244,246,240,0.45)]">Retained Earnings</span>
+                          <span className="font-medium text-[#F4F6F0]">{formatCurrency(balanceSheet.equity?.retained_earnings)}</span>
                         </div>
-                        <div className="flex justify-between pt-3 border-t border-blue-200">
-                          <span className="font-semibold text-blue-800">Total Equity</span>
-                          <span className="font-bold text-blue-800">{formatCurrency(balanceSheet.equity?.total)}</span>
+                        <div className="flex justify-between pt-3 border-t border-[rgba(255,255,255,0.07)]">
+                          <span className="font-semibold text-[#3B9EFF]">Total Equity</span>
+                          <span className="font-bold text-[#3B9EFF]">{formatCurrency(balanceSheet.equity?.total)}</span>
                         </div>
                       </CardContent>
                     </Card>
@@ -483,62 +483,62 @@ export default function Reports() {
                 <div className="space-y-6">
                   {/* Aging Buckets */}
                   <div className="grid grid-cols-5 gap-3">
-                    <Card className="border-l-4 border-l-green-500">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#22C55E]">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-gray-500">Current</p>
-                        <p className="text-lg font-bold text-green-700">{formatCurrency(arAging.aging_data?.current)}</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">Current</p>
+                        <p className="text-lg font-bold text-[#22C55E]">{formatCurrency(arAging.aging_data?.current)}</p>
                       </CardContent>
                     </Card>
-                    <Card className="border-l-4 border-l-yellow-400">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#EAB308]">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-gray-500">1-30 Days</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">1-30 Days</p>
                         <p className="text-lg font-bold text-[#EAB308]">{formatCurrency(arAging.aging_data?.["1_30"])}</p>
                       </CardContent>
                     </Card>
-                    <Card className="border-l-4 border-l-orange-400">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#FF8C00]">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-gray-500">31-60 Days</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">31-60 Days</p>
                         <p className="text-lg font-bold text-[#FF8C00]">{formatCurrency(arAging.aging_data?.["31_60"])}</p>
                       </CardContent>
                     </Card>
-                    <Card className="border-l-4 border-l-orange-600">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-orange-600">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-gray-500">61-90 Days</p>
-                        <p className="text-lg font-bold text-orange-800">{formatCurrency(arAging.aging_data?.["61_90"])}</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">61-90 Days</p>
+                        <p className="text-lg font-bold text-orange-600">{formatCurrency(arAging.aging_data?.["61_90"])}</p>
                       </CardContent>
                     </Card>
-                    <Card className="border-l-4 border-l-red-500">
+                    <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)] border-l-4 border-l-[#FF3B2F]">
                       <CardContent className="p-3 text-center">
-                        <p className="text-xs text-gray-500">90+ Days</p>
-                        <p className="text-lg font-bold text-red-700">{formatCurrency(arAging.aging_data?.over_90)}</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">90+ Days</p>
+                        <p className="text-lg font-bold text-[#FF3B2F]">{formatCurrency(arAging.aging_data?.over_90)}</p>
                       </CardContent>
                     </Card>
                   </div>
 
                   {/* Total */}
-                  <div className="bg-[#C8FF00]/10 p-4 rounded-lg flex justify-between items-center">
-                    <span className="font-semibold text-gray-700">Total Accounts Receivable</span>
-                    <span className="text-2xl font-bold text-[#F4F6F0]">{formatCurrency(arAging.total_ar)}</span>
+                  <div className="bg-[rgba(200,255,0,0.10)] p-4 rounded border border-[rgba(200,255,0,0.25)] flex justify-between items-center">
+                    <span className="font-semibold text-[#F4F6F0]">Total Accounts Receivable</span>
+                    <span className="text-2xl font-bold text-[#C8FF00]">{formatCurrency(arAging.total_ar)}</span>
                   </div>
 
                   {/* Invoice Details Table */}
-                  <div className="border rounded-lg overflow-hidden">
+                  <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-gray-50">
-                          <TableHead>Invoice #</TableHead>
-                          <TableHead>Customer</TableHead>
-                          <TableHead>Due Date</TableHead>
-                          <TableHead className="text-center">Days Overdue</TableHead>
-                          <TableHead className="text-right">Balance</TableHead>
+                        <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Invoice #</TableHead>
+                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Customer</TableHead>
+                          <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Due Date</TableHead>
+                          <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Days Overdue</TableHead>
+                          <TableHead className="text-right text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-[0.12em] font-mono">Balance</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {arAging.invoices?.slice(0, 20).map((inv, idx) => (
-                          <TableRow key={idx}>
-                            <TableCell className="font-medium">{inv.invoice_number}</TableCell>
-                            <TableCell>{inv.customer_name}</TableCell>
-                            <TableCell>{inv.due_date}</TableCell>
+                          <TableRow key={idx} className="border-b border-[rgba(255,255,255,0.07)]">
+                            <TableCell className="font-medium text-[#F4F6F0]">{inv.invoice_number}</TableCell>
+                            <TableCell className="text-[#F4F6F0]">{inv.customer_name}</TableCell>
+                            <TableCell className="text-[#F4F6F0]">{inv.due_date}</TableCell>
                             <TableCell className="text-center">
                               <Badge variant={
                                 inv.days_overdue <= 0 ? "success" :
