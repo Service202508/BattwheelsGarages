@@ -772,57 +772,7 @@ export default function ItemsEnhanced() {
   };
 
   const resetItemForm = () => {
-    setNewItem({
-      // Basic Info
-      name: "", sku: "", description: "", item_type: "inventory", product_type: "goods",
-      group_id: "", group_name: "",
-      
-      // Sales Information
-      rate: 0, sales_rate: 0, sales_description: "",
-      sales_account: "", sales_account_id: "", sales_account_code: "",
-      
-      // Purchase Information
-      purchase_rate: 0, purchase_description: "",
-      purchase_account: "", purchase_account_id: "", purchase_account_code: "",
-      
-      // Inventory Account
-      inventory_account: "", inventory_account_id: "", inventory_account_code: "",
-      inventory_valuation_method: "fifo",
-      
-      // Inventory Levels
-      opening_stock: 0, opening_stock_value: 0, opening_stock_rate: 0,
-      stock_on_hand: 0, reorder_level: 10,
-      
-      // Units
-      unit: "pcs", usage_unit: "pcs", unit_name: "Pieces",
-      
-      // Tax Information
-      taxable: true, tax_preference: "taxable", taxability_type: "Goods",
-      exemption_reason: "", tax_id: "", tax_percentage: 18,
-      
-      // GST Taxes
-      intra_state_tax_name: "GST", intra_state_tax_rate: 18, intra_state_tax_type: "percentage",
-      inter_state_tax_name: "IGST", inter_state_tax_rate: 18, inter_state_tax_type: "percentage",
-      
-      // HSN/SAC
-      hsn_code: "", sac_code: "",
-      
-      // Vendor
-      vendor: "", preferred_vendor_id: "", preferred_vendor_name: "",
-      
-      // Location
-      location_name: "", warehouse_id: "",
-      
-      // Sync Info
-      source: "Manual", reference_id: "", zoho_item_id: "", last_sync_time: "",
-      
-      // Status & Flags
-      status: "active", is_active: true,
-      sellable: true, purchasable: true, track_inventory: true,
-      
-      // Custom Fields
-      custom_fields: {}
-    });
+    setNewItem(initialItemData);
   };
 
   const toggleItemSelection = (itemId) => {
