@@ -374,6 +374,16 @@ def generate_estimate_html(estimate: dict, org_settings: dict = None) -> str:
     """Generate HTML template for estimate/quote"""
     org = org_settings or {}
     company_name = org.get('company_name', 'Battwheels')
+    company_address = org.get('address', '')
+    company_phone = org.get('phone', '')
+    company_email = org.get('email', '')
+    company_gstin = org.get('gstin', '')
+    logo_url = org.get('logo_url', '')
+    
+    # Logo HTML - only include if logo_url is provided
+    logo_html = ""
+    if logo_url:
+        logo_html = f'<img src="{logo_url}" alt="{company_name}" style="max-height: 50px; max-width: 180px; object-fit: contain;" />'
     
     items_html = ""
     for idx, item in enumerate(estimate.get("line_items", []), 1):
@@ -387,6 +397,9 @@ def generate_estimate_html(estimate: dict, org_settings: dict = None) -> str:
             </tr>
         """
     
+    # Customer details
+    customer_name = estimate.get('customer_name', '')
+    
     html = f"""
     <!DOCTYPE html>
     <html>
@@ -394,42 +407,112 @@ def generate_estimate_html(estimate: dict, org_settings: dict = None) -> str:
         <meta charset="UTF-8">
         <style>
             @page {{ size: A4; margin: 1cm; }}
-            body {{ font-family: Arial, sans-serif; font-size: 10pt; padding: 20px; }}
-            .header {{ border-bottom: 3px solid #22EDA9; padding-bottom: 15px; margin-bottom: 20px; }}
-            .company-name {{ font-size: 24pt; font-weight: bold; }}
-            h1 {{ color: #22EDA9; font-size: 28pt; text-align: right; margin: 0; }}
+            body {{ font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10pt; padding: 20px; }}
+            .header {{ 
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                border-bottom: 3px solid #C8FF00; 
+                padding-bottom: 15px; 
+                margin-bottom: 20px; 
+            }}
+            .company-info {{
+                flex: 1;
+            }}
+            .company-logo {{
+                margin-bottom: 8px;
+            }}
+            .company-name {{ font-size: 24pt; font-weight: bold; color: #1a1a1a; }}
+            .company-details {{ font-size: 9pt; color: #666; margin-top: 5px; }}
+            .estimate-title {{
+                text-align: right;
+            }}
+            .estimate-title h1 {{ 
+                color: #C8FF00; 
+                font-size: 28pt; 
+                margin: 0; 
+                letter-spacing: 2px;
+                text-shadow: 0 0 1px rgba(0,0,0,0.3);
+            }}
+            .estimate-number {{
+                font-size: 12pt;
+                color: #666;
+                margin-top: 5px;
+            }}
             .details {{ margin-bottom: 20px; }}
+            .details p {{ margin: 5px 0; }}
             table {{ width: 100%; border-collapse: collapse; }}
-            th {{ background: #f8f9fa; padding: 10px; text-align: left; border-bottom: 2px solid #22EDA9; }}
+            th {{ 
+                background: #111820; 
+                color: #C8FF00;
+                padding: 12px 10px; 
+                text-align: left; 
+                font-size: 9pt;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }}
             td {{ padding: 10px; border-bottom: 1px solid #eee; }}
             .center {{ text-align: center; }}
             .right {{ text-align: right; }}
-            .totals {{ float: right; width: 250px; margin-top: 20px; }}
-            .totals td {{ padding: 8px; }}
-            .total-row {{ font-weight: bold; font-size: 14pt; border-top: 2px solid #333; }}
+            .totals {{ float: right; width: 280px; margin-top: 20px; }}
+            .totals td {{ padding: 8px 10px; }}
+            .totals .label {{ text-align: right; color: #666; }}
+            .totals .value {{ text-align: right; font-weight: 500; }}
+            .total-row {{ 
+                font-weight: bold; 
+                font-size: 14pt; 
+                border-top: 2px solid #333; 
+                background: #C8FF00;
+                color: #080C0F;
+            }}
+            .footer {{
+                clear: both;
+                margin-top: 60px;
+                padding-top: 15px;
+                border-top: 2px solid #C8FF00;
+                text-align: center;
+                font-size: 8pt;
+                color: #666;
+            }}
+            .footer strong {{
+                color: #080C0F;
+            }}
         </style>
     </head>
     <body>
         <div class="header">
-            <div style="display: flex; justify-content: space-between;">
+            <div class="company-info">
+                {f'<div class="company-logo">{logo_html}</div>' if logo_html else ''}
                 <div class="company-name">{company_name}</div>
-                <div><h1>ESTIMATE</h1><p style="text-align: right;">#{estimate.get('estimate_number', '')}</p></div>
+                <div class="company-details">
+                    {company_address}
+                    {f"<br>Phone: {company_phone}" if company_phone else ""}
+                    {f"<br>Email: {company_email}" if company_email else ""}
+                    {f"<br>GSTIN: {company_gstin}" if company_gstin else ""}
+                </div>
+            </div>
+            <div class="estimate-title">
+                <h1>ESTIMATE</h1>
+                <div class="estimate-number">#{estimate.get('estimate_number', '')}</div>
             </div>
         </div>
         <div class="details">
-            <p><strong>Customer:</strong> {estimate.get('customer_name', '')}</p>
+            <p><strong>Customer:</strong> {customer_name}</p>
             <p><strong>Date:</strong> {estimate.get('date', '')} | <strong>Valid Until:</strong> {estimate.get('expiry_date', '')}</p>
         </div>
         <table>
-            <thead><tr><th>#</th><th>Item</th><th class="right">Qty</th><th class="right">Rate</th><th class="right">Amount</th></tr></thead>
+            <thead><tr><th class="center" style="width: 40px;">#</th><th>Item</th><th class="right" style="width: 60px;">Qty</th><th class="right" style="width: 90px;">Rate</th><th class="right" style="width: 100px;">Amount</th></tr></thead>
             <tbody>{items_html}</tbody>
         </table>
         <div class="totals">
             <table>
-                <tr><td>Subtotal:</td><td class="right">₹{estimate.get('sub_total', 0):,.2f}</td></tr>
-                <tr><td>Tax:</td><td class="right">₹{estimate.get('tax_total', 0):,.2f}</td></tr>
-                <tr class="total-row"><td>Total:</td><td class="right">₹{estimate.get('total', 0):,.2f}</td></tr>
+                <tr><td class="label">Subtotal:</td><td class="value">₹{estimate.get('sub_total', 0):,.2f}</td></tr>
+                <tr><td class="label">Tax:</td><td class="value">₹{estimate.get('tax_total', 0):,.2f}</td></tr>
+                <tr class="total-row"><td class="label">Total:</td><td class="value">₹{estimate.get('total', 0):,.2f}</td></tr>
             </table>
+        </div>
+        <div class="footer">
+            Generated on {datetime.now().strftime('%B %d, %Y')} | <strong>{company_name}</strong> | Powered by Battwheels OS
         </div>
     </body>
     </html>
