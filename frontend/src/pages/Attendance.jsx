@@ -563,11 +563,36 @@ export default function Attendance({ user }) {
       </Tabs>
 
       {/* Clock Out Dialog */}
-      <Dialog open={showClockOutDialog} onOpenChange={setShowClockOutDialog}>
+      <Dialog 
+        open={showClockOutDialog} 
+        onOpenChange={(open) => {
+          if (!open && clockOutPersistence.isDirty) {
+            clockOutPersistence.setShowCloseConfirm(true);
+          } else {
+            if (!open) clockOutPersistence.clearSavedData();
+            setShowClockOutDialog(open);
+          }
+        }}
+      >
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Clock Out</DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Clock Out</DialogTitle>
+              <AutoSaveIndicator 
+                lastSaved={clockOutPersistence.lastSaved} 
+                isSaving={clockOutPersistence.isSaving} 
+                isDirty={clockOutPersistence.isDirty} 
+              />
+            </div>
           </DialogHeader>
+          
+          <DraftRecoveryBanner
+            show={clockOutPersistence.showRecoveryBanner}
+            savedAt={clockOutPersistence.savedDraftInfo?.timestamp}
+            onRestore={clockOutPersistence.handleRestoreDraft}
+            onDiscard={clockOutPersistence.handleDiscardDraft}
+          />
+          
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>Break Duration (minutes)</Label>
@@ -575,9 +600,9 @@ export default function Attendance({ user }) {
                 {[30, 45, 60, 90].map((mins) => (
                   <Button
                     key={mins}
-                    variant={breakMinutes === mins ? "default" : "outline"}
+                    variant={clockOutForm.breakMinutes === mins ? "default" : "outline"}
                     size="sm"
-                    onClick={() => setBreakMinutes(mins)}
+                    onClick={() => setClockOutForm({...clockOutForm, breakMinutes: mins})}
                   >
                     <Coffee className="mr-1 h-3 w-3" />
                     {mins}m
@@ -586,28 +611,53 @@ export default function Attendance({ user }) {
               </div>
               <Input
                 type="number"
-                value={breakMinutes}
-                onChange={(e) => setBreakMinutes(parseInt(e.target.value) || 0)}
+                value={clockOutForm.breakMinutes}
+                onChange={(e) => setClockOutForm({...clockOutForm, breakMinutes: parseInt(e.target.value) || 0})}
                 placeholder="Custom minutes"
               />
             </div>
             <div className="space-y-2">
               <Label>Remarks (optional)</Label>
               <Textarea
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
+                value={clockOutForm.remarks}
+                onChange={(e) => setClockOutForm({...clockOutForm, remarks: e.target.value})}
                 placeholder="Any notes for today..."
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowClockOutDialog(false)}>Cancel</Button>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                if (clockOutPersistence.isDirty) {
+                  clockOutPersistence.setShowCloseConfirm(true);
+                } else {
+                  setShowClockOutDialog(false);
+                }
+              }}
+            >
+              Cancel
+            </Button>
             <Button onClick={handleClockOut} disabled={clockingOut}>
               {clockingOut ? "Processing..." : "Confirm Clock Out"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Unsaved Changes Confirmation Dialog */}
+      <FormCloseConfirmDialog
+        open={clockOutPersistence.showCloseConfirm}
+        onClose={() => clockOutPersistence.setShowCloseConfirm(false)}
+        onSave={handleClockOut}
+        onDiscard={() => {
+          clockOutPersistence.clearSavedData();
+          setClockOutForm(initialClockOutData);
+          setShowClockOutDialog(false);
+        }}
+        isSaving={clockingOut}
+        entityName="Clock Out"
+      />
     </div>
   );
 }
