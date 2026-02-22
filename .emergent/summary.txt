@@ -1,51 +1,50 @@
 <analysis>**original_problem_statement:**
-The user's primary objective is to transform the existing Battwheels OS application into a fully cloud-based, enterprise-grade, multi-tenant SaaS platform, similar to Zoho Books.
+The user's primary objective is to transform the existing Battwheels OS application into a fully cloud-based, enterprise-grade, multi-tenant SaaS platform.
 
-In the last session, the user shifted focus from UI/design to deep functional improvements, requesting:
-1.  **Fix HR Module Bugs:** Resolve issues with adding new employees and populating the reporting manager dropdown.
-2.  **Verify Ticket Sync:** Ensure service tickets created from all portals (public, customer, business) are visible in the main admin panel.
-3.  **Enhance Estimates Module:** A comprehensive overhaul of the estimate creation page to include Zoho-like features: searchable items, inline item creation, flexible tax/discount options, attachment support, and a convert to invoice flow with status tracking.
+Recent user requests include:
+1.  **Enhance Estimate Editing:** Allow estimates to be edited at any stage until they are converted to an invoice.
+2.  **Implement Auto-Save & Unsaved Changes Warning:** Implement a comprehensive system where user actions and data entry in forms are automatically saved as drafts. When leaving a modified form, the user should be prompted to save or discard their changes. This functionality is requested for all major modules, including Operations, Sales, Purchase, Inventory, HR & Payroll, Finance, and Contacts.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a functional multi-tenant SaaS platform with a FastAPI backend and React frontend. Core features like user/org management, subscriptions, branding, a public ticket form, and a landing page are in place.
-
-In this session, several critical bug fixes and a major feature enhancement were completed:
--   The HR module's Add Employee and Reporting Manager selection functionalities were fixed.
--   A critical data synchronization bug was resolved, ensuring all tickets (especially from the public form) are correctly assigned an  and are visible in the admin panel.
--   The Estimates creation page was significantly enhanced with a new, more powerful and user-friendly interface for managing line items, taxes, and discounts.
+The application is a multi-tenant SaaS platform with a FastAPI backend and React frontend. In this session, several major enhancements were completed:
+-   The Edit Estimate dialog was upgraded to match the Create Estimate form's functionality, including searchable items and advanced discount/tax options.
+-   The business logic was updated to allow estimates to be edited in any status except Converted or Void.
+-   A core infrastructure for auto-saving form data and warning about unsaved changes has been built. This includes a global context () and a reusable custom hook ().
+-   This new auto-save feature has been successfully integrated into several key modules: Estimates, Contacts, Employees, Invoices, Items, and Bills. The integration for Purchase Orders is in progress.
 
 **Last working item**:
--   **Last item agent was working:** A comprehensive enhancement of the New/Edit Estimate pages to align with user's request for Zoho-like functionality. This involved a significant rework of the frontend component () to add a searchable item table, inline item creation, and improved UI for discounts and taxes. The backend's existing convert to invoice logic was leveraged.
--   **Status:** USER VERIFICATION PENDING
--   **Agent Testing Done:** Y
--   **Which testing method agent to use?** N/A
+-   **Last item agent was working:** The agent was in the middle of a deep integration phase for the auto-save feature. Specifically, it was applying the  hook and related UI components (, ) to the Purchase Orders module within the  file. The last action was adding the confirmation dialog component.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Frontend testing agent
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1:** The user has not yet seen or approved the newly implemented enhancements for the Estimates module. (Priority: P0)
+-   **Issue 1:** The deep integration of the auto-save feature is incomplete. (Priority: P0)
 
     **Issues Detail:**
-    -   **Issue 1:** User Verification for Estimates Module Enhancements
-        -   **Attempted fixes:** The agent has completed the full implementation based on the user's detailed request and successfully verified it with the testing sub-agent.
+    -   **Issue 1:** Complete Auto-Save/Unsaved Changes Feature Implementation
+        -   **Attempted fixes:** The core infrastructure (hooks, context) has been built and successfully applied to , , , , , and . Work on  has begun.
         -   **Next debug checklist:**
-            1.  Present the newly enhanced Create Estimate page to the user for feedback.
-            2.  Guide the user to test the searchable item dropdown, the + Add New Item flow, the discount toggle (₹/%), and the tax selection.
-            3.  Demonstrate the Convert to Invoice flow on an Accepted estimate.
-        -   **Why fix this issue and what will be achieved with the fix?** To confirm that the major feature enhancement meets user expectations before moving on to other tasks.
-        -   **Status:** USER VERIFICATION PENDING
+            1.  Verify the implementation in  is complete and correct.
+            2.  Integrate the  hook and associated UI components into .
+            3.  Integrate the  hook and associated UI components into .
+            4.  Run the frontend testing agent to validate the auto-save and unsaved-changes-dialog functionality across all newly modified modules (Purchase Orders, Attendance, Leave Management).
+        -   **Why fix this issue and what will be achieved with the fix?** To fulfill the user's critical request for a reliable application that prevents data loss and improves user experience across all modules.
+        -   **Status:** IN PROGRESS
         -   **Is recurring issue?** N
-        -   **Should Test frontend/backend/both after fix?** N/A
+        -   **Should Test frontend/backend/both after fix?** frontend
         -   **Blocked on other issue:** None
 
 **In progress Task List**:
--   **Task 1:** Finalize Estimates Module Enhancements (Priority: P0)
-    -   **Where to resume:** Await user feedback on the completed work. Be prepared to make adjustments based on their review.
-    -   **What will be achieved with this?** A fully user-approved, feature-rich estimates module.
-    -   **Status:** USER VERIFICATION PENDING
-    -   **Should Test frontend/backend/both after fix?** N/A
-    -   **Blocked on something:** User feedback.
+-   **Task 1:** Complete Deep Integration of Auto-Save Functionality (Priority: P0)
+    -   **Where to resume:** Continue the implementation in the  directory, specifically targeting  and , after verifying the work in .
+    -   **What will be achieved with this?** All major forms specified by the user will have auto-save and unsaved changes warnings, making the application more robust and user-friendly.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** frontend
+    -   **Blocked on something:** None
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
@@ -54,29 +53,26 @@ In this session, several critical bug fixes and a major feature enhancement were
 
 **Future Tasks:**
 -   **(P2) Implement Core Inventory Module:** Build out advanced inventory management features (Serial/Batch Number Tracking, Multi-Warehouse Management, Stock Transfers).
--   **(P2) Full Branding Integration:** Apply the custom brand colors and logos consistently across the entire application UI, beyond the settings preview.
--   **(P2) UI/Code Cleanup:** Address remaining technical debt, including theme inconsistencies between different portals and refactoring large components like .
+-   **(P2) Full Branding Integration:** Apply the custom brand colors and logos consistently across the entire application UI.
+-   **(P2) UI/Code Cleanup:** Address remaining technical debt and refactor large components.
 
 **Completed work in this session**
--   **Estimates Module Enhancement (DONE & TESTED):**
-    -   Implemented a searchable item dropdown in the estimate form, showing SKU and rate.
-    -   Added a feature to create a new item directly from the estimate form (+ Add New Item).
-    -   Implemented a UI toggle for line item discounts between percentage (%) and fixed amount (₹).
-    -   Ensured tax rates can be selected for each item.
-    -   Verified that attachments can be added to estimates.
-    -   Confirmed the existing Convert to Invoice flow works and correctly updates the estimate status.
--   **HR Module Bug Fixes (DONE & TESTED):**
-    -   **Add Employee:** Fixed a bug where the employee password was being incorrectly deleted on submission, preventing new employee creation. Corrected data mapping between frontend () and backend ().
-    -   **Reporting Manager:** Fixed the dropdown showing no employees. The backend logic was updated to include all active employees as potential managers, not just those with admin or manager roles.
--   **Ticket Sync Issue (DONE & TESTED):**
-    -   Identified and fixed a critical bug where tickets from the public form and business portal were not appearing in the admin panel because they lacked an .
-    -   The backend was updated to automatically assign a default  to these tickets upon creation, ensuring they are correctly synced.
--   **Deployment Support:**
-    -   Investigated and resolved issues in the  file that were failing the deployment health check.
-    -   Guided the user on how to locate and use the Save and Deploy buttons within the platform's UI.
+-   **Estimate Editing at Any Stage (DONE & TESTED):**
+    -   Modified frontend logic in  to display the Edit button for estimates with statuses like Sent and Accepted.
+    -   Modified backend validation in  to allow updates to estimates unless their status is Converted or Void.
+-   **Edit Estimate UI Enhancement (DONE & TESTED):**
+    -   Replicated the advanced item table from the Create Estimate form to the Edit Estimate dialog.
+    -   Functionality includes a searchable item dropdown, inline item creation, and a discount type toggle (₹/%).
+    -   Fixed a z-index/overflow bug that was preventing the search results dropdown from appearing correctly within the dialog.
+-   **Auto-Save & Unsaved Changes Infrastructure (DONE & TESTED):**
+    -   Created a reusable  custom hook to handle auto-saving to local storage, debounce logic, and unsaved changes detection.
+    -   Created  for global state management of the feature.
+    -   Created UI components: , , and .
+-   **Initial Auto-Save Integration (DONE & TESTED):**
+    -   Successfully implemented the auto-save feature in , , , , , and .
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: UI Theme Inconsistency:** Discrepancy between the light theme in the Admin portal and the dark theme in the Technician portal remains. This is a lower-priority future task.
+-   **Issue 1: UI Theme Inconsistency:** A discrepancy between the light theme in the Admin portal and the dark theme in the Technician portal remains. This is a lower-priority future task.
 
 **Known issue recurrence from previous fork**
 -   None.
@@ -85,60 +81,60 @@ In this session, several critical bug fixes and a major feature enhancement were
 
 
 **Key Technical Concepts**
--   **Data Synchronization:** Ensuring data integrity across different modules and portals by correctly associating records (e.g., tickets) with a parent entity ().
--   **Backend Model Validation:** Debugging and fixing  errors by aligning Pydantic models in the backend with the data structure sent by the frontend.
--   **Complex Form State Management (React):** Handling a highly interactive form with dynamic line items, searchable dropdowns, conditional UI, and inline creation dialogs.
--   **API Endpoint Debugging:** Tracing API calls from the frontend through backend routers and services to identify logic errors (e.g., incorrect filtering in the managers list).
+-   **Custom React Hooks:** Created  to encapsulate complex, reusable logic for state management, side effects (local storage), and UI interaction.
+-   **React Context API:** Used  to provide global state for unsaved changes without prop drilling, enabling features like the navigation confirmation prompt.
+-   **Debouncing:** Implemented within the  hook to prevent excessive writes to local storage and improve performance during rapid user input.
+-   **Local Storage:** Utilized for client-side persistence of form drafts, allowing users to recover their work after a page refresh or accidental closure.
+-   **Conditional Rendering:** Used extensively to show/hide the Edit button based on estimate status and to display auto-save UI elements.
 
 **key DB schema**
--   **tickets**:  is now consistently applied to all tickets, including those from the public form, which is critical for multi-tenancy.
--   **employees**: Contains employee records. The  field was identified as a key factor in filtering logic.
--   **users**: Stores login credentials. A  record is now correctly created alongside an  record.
+-   No database schema changes were made in this session.
 
 **changes in tech stack**
--   None in this session.
+-   None.
 
 **All files of reference**
--   **/app/frontend/src/pages/EstimatesPage.jsx**: The main file for the last major feature enhancement. It is now very large and complex.
--   **/app/frontend/src/pages/EmployeesPage.jsx**: The file where the Add Employee form bug was fixed.
--   **/app/backend/routes/hr.py**: Contains the  endpoint that was fixed.
--   **/app/backend/routes/employees.py**: Contains the  endpoint that was fixed.
--   **/app/backend/routes/public_routes.py**: Where the ticket sync issue was fixed for public submissions.
+-   **/app/frontend/src/hooks/useFormPersistence.js**: The core custom hook for the auto-save feature.
+-   **/app/frontend/src/contexts/AutoSaveContext.jsx**: The global context provider for the feature.
+-   **/app/frontend/src/pages/EstimatesEnhanced.jsx**: The first and most complex component to receive the UI/UX and auto-save enhancements.
+-   **/app/backend/routes/estimates_enhanced.py**: The backend file where editing permissions were relaxed.
+-   **/app/frontend/src/pages/PurchaseOrdersEnhanced.jsx**: The last file being worked on.
+-   **/app/frontend/src/pages/HumanResource/Attendance.jsx**: Next file for auto-save integration.
+-   **/app/frontend/src/pages/HumanResource/LeaveManagement.jsx**: Next file for auto-save integration.
 
 **Areas that need refactoring**:
--   ****: This component has grown significantly and now handles multiple complex states (item search, line items, totals, quick-add dialog). It should be broken down into smaller, more manageable sub-components (e.g., , ).
--   **Backend Employee Routes**: There may be redundant or confusing employee-related endpoints split between  and dedicated HR route files. These should be consolidated for clarity.
+-   ****: This component is extremely large (>3000 lines) and manages multiple complex states and dialogs. It should be broken down into smaller sub-components.
+-   The new auto-save implementation has added more logic to already large page components. Once the rollout is complete, these pages should be reviewed for potential refactoring opportunities to extract form logic from presentation.
 
 **key api endpoints**
--   : (MODIFIED) Creates a new employee and their associated user login.
--   : (MODIFIED) Fetches all active employees to act as potential reporting managers.
--   : (MODIFIED) Now correctly assigns a default  to new tickets.
--   : (MODIFIED) Now correctly assigns the  from the context.
--   : (VERIFIED) The existing endpoint used for the conversion feature.
+-   : (MODIFIED) Logic updated to allow editing for estimates with status not in ['converted', 'void'].
+-   : (MODIFIED) Logic updated.
+-   : (MODIFIED) Logic updated.
+-   : (MODIFIED) Logic updated.
 
 **Critical Info for New Agent**
--   **The user's top priority is now adding deep, functional business logic**, mirroring SaaS products like Zoho. The focus has shifted from aesthetics to core features.
--   **Await user feedback on the Estimates module before proceeding.** This was a large, user-driven enhancement, and their approval is required.
--   **Bugs are high-priority.** The user will pivot from feature requests to bug reports as they find them. Be prepared to switch context, investigate, and fix issues thoroughly.
--   The user has recurring questions about deployment and custom domains. The core issue seems to be a misunderstanding of the platform's UI. Be ready to provide clear, step-by-step guidance.
--   When fixing bugs, look for similar patterns across the application. The fix for the  in public tickets was also applied to the business portal, showing the importance of a holistic approach.
+-   The user has approved a multi-phase plan to implement auto-save functionality across the entire application. You are currently in the middle of this implementation.
+-   The core infrastructure (hooks, context, common components) is already built and located in , , and .
+-   Your immediate task is to complete the integration of the  hook into the remaining modules as per the user's request: , , and .
+-   Follow the pattern established in  for implementation: import the hook, initialize it with a unique key, wrap the form with the provider, and add the , , and  components.
 
 **documents and test reports created in this job**
+-   
 -   
 -   
 -    (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Requested comprehensive enhancements to the New/Edit Estimate page. (COMPLETED)
-2.  **User:** Confirmed to proceed with the sync fix for tickets. (COMPLETED)
-3.  **Agent:** Proposed a plan to fix the ticket synchronization issue. (COMPLETED)
-4.  **User:** Requested verification that all service tickets from all portals land in the admin panel. (COMPLETED)
-5.  **Agent:** Confirmed the reporting manager dropdown fix. (COMPLETED)
-6.  **User:** Reported that the Reporting Manager dropdown in the employee form is not showing any employees and requested a fix. (COMPLETED)
-7.  **Agent:** Updated PRD and finished after fixing the Add Employee bug. (COMPLETED)
-8.  **Agent:** Ran testing agent to confirm the fix for the employee creation flow. (COMPLETED)
-9.  **User:** Reported that Add Employee functionality is not working, showing a Password is required error. (COMPLETED)
-10. **Agent:** Responded to the user's query about the Deploy button being missing, providing guidance on how to find it. (IN PROGRESS - User interaction was interrupted by bug report).
+1.  **User:** Instructed the agent to complete the deep integration of the  hook into the remaining form dialogs (Purchase Orders, Attendance, Leave Management). (IN PROGRESS)
+2.  **User:** Approved the agent's multi-phase plan to implement auto-save and unsaved changes warnings across the application. (COMPLETED)
+3.  **Agent:** Presented a detailed, multi-phase plan to implement the auto-save and unsaved changes feature. (COMPLETED)
+4.  **User:** Requested a comprehensive auto-save and unsaved changes feature for all major modules to make the application more reliable. (IN PROGRESS)
+5.  **Agent:** Finished the task of allowing estimates to be edited at any stage before conversion. (COMPLETED)
+6.  **User:** Requested that estimates should be editable at any stage until they are converted to an invoice. (COMPLETED)
+7.  **Agent:** Finished implementing and testing the UI enhancements for the Edit Estimate dialog. (COMPLETED)
+8.  **Agent:** Called the testing agent to verify the Edit Estimate enhancements. (COMPLETED)
+9.  **User:** Reported that the Edit Estimate dialog does not have the same enhanced features (like item search) as the New Estimate form. (COMPLETED)
+10. **Agent:** Acknowledged the issue with the Edit Estimate dialog and began investigation. (COMPLETED)
 
 **Project Health Check:**
 -   **Broken:** None
@@ -154,13 +150,13 @@ In this session, several critical bug fixes and a major feature enhancement were
 -   **framer-motion:** Frontend animation library.
 
 **Testing status**
--   **Testing agent used after significant changes:** YES (Used twice: for the employee creation fix and for the estimates enhancement).
+-   **Testing agent used after significant changes:** YES (Used for Edit Estimate UI, Edit Estimate logic, and initial Auto-Save implementation).
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
 -   **Known regressions:** None
 
 **Credentials to test flow:**
--   Create a new user and organization via the signup flow on the landing page or the  endpoint.
+-   Create a new user and organization via the signup flow on the landing page or use existing credentials. The agent identified an admin user: .
 
 **What agent forgot to execute**
--   The agent fully addressed all direct requests from the user during the session. The user-side issue of locating the Deploy button was interrupted by a new, higher-priority bug report and was not fully resolved, though guidance was provided.</analysis>
+-   The agent is in the middle of executing a large, user-approved task. It has not forgotten anything, but the task to roll out the auto-save feature to all specified modules is not yet complete. The next immediate steps are to finish the work on  and then move on to  and .</analysis>
