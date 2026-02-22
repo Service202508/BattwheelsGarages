@@ -134,7 +134,7 @@ class TestGSTAccountingFlow:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/contacts-enhanced",
+            f"{BASE_URL}/api/contacts-enhanced/",
             headers=self.headers,
             json=contact_data
         )
