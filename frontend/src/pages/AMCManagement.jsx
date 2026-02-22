@@ -508,8 +508,8 @@ export default function AMCManagement({ user }) {
                   onClick={() => setBillingFrequency("annual")}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     billingFrequency === "annual" 
-                      ? "bg-emerald-600 text-white shadow-sm" 
-                      : "text-gray-600 hover:text-[#F4F6F0]"
+                      ? "bg-[#C8FF00] text-[#080C0F] font-bold" 
+                      : "text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0]"
                   }`}
                 >
                   <Sparkles className="h-3 w-3 inline mr-1" />
