@@ -536,7 +536,7 @@ export default function EFIGuidancePanel({
               <Button
                 size="sm"
                 variant={mode === "quick" ? "default" : "ghost"}
-                className={`text-xs px-2 py-1 h-7 ${mode === "quick" ? "bg-emerald-600" : "text-slate-400"}`}
+                className={`text-xs px-2 py-1 h-7 ${mode === "quick" ? "bg-[#C8FF00] text-[#080C0F] font-bold" : "text-[rgba(244,246,240,0.45)]"}`}
                 onClick={() => setMode("quick")}
               >
                 Quick
@@ -544,7 +544,7 @@ export default function EFIGuidancePanel({
               <Button
                 size="sm"
                 variant={mode === "deep" ? "default" : "ghost"}
-                className={`text-xs px-2 py-1 h-7 ${mode === "deep" ? "bg-emerald-600" : "text-slate-400"}`}
+                className={`text-xs px-2 py-1 h-7 ${mode === "deep" ? "bg-[#C8FF00] text-[#080C0F] font-bold" : "text-[rgba(244,246,240,0.45)]"}`}
                 onClick={() => setMode("deep")}
               >
                 Deep
