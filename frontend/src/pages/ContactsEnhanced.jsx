@@ -177,6 +177,7 @@ export default function ContactsEnhanced() {
       const res = await fetch(`${API}/contacts-enhanced/`, { method: "POST", headers, body: JSON.stringify(newContact) });
       if (res.ok) {
         toast.success("Contact created");
+        contactPersistence.onSuccessfulSave(); // Clear auto-saved draft
         setShowContactDialog(false);
         resetContactForm();
         fetchData();
@@ -193,6 +194,7 @@ export default function ContactsEnhanced() {
       const res = await fetch(`${API}/contacts-enhanced/${selectedContact.contact_id}`, { method: "PUT", headers, body: JSON.stringify(newContact) });
       if (res.ok) {
         toast.success("Contact updated");
+        contactPersistence.onSuccessfulSave(); // Clear auto-saved draft
         setEditMode(false);
         fetchContactDetail(selectedContact.contact_id);
         fetchData();
