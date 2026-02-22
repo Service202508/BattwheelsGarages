@@ -171,7 +171,7 @@ export default function JournalEntries() {
         journals.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No journal entries found</CardContent></Card> :
         <div className="space-y-3">
           {journals.map(journal => (
-            <Card key={journal.journal_id} className="hover:shadow-md transition-shadow">
+            <Card key={journal.journal_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">

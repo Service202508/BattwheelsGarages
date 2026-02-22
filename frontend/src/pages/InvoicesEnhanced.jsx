@@ -949,7 +949,7 @@ export default function InvoicesEnhanced() {
           ) : (
             <div className="grid gap-4">
               {invoices.filter(i => i.status === "overdue").map(inv => (
-                <Card key={inv.invoice_id} className="border-red-200 bg-[rgba(255,59,47,0.08)] cursor-pointer hover:shadow-md" onClick={() => fetchInvoiceDetail(inv.invoice_id)}>
+                <Card key={inv.invoice_id} className="border-red-200 bg-[rgba(255,59,47,0.08)] cursor-pointer hover:border-[rgba(200,255,0,0.2)]" onClick={() => fetchInvoiceDetail(inv.invoice_id)}>
                   <CardContent className="pt-4">
                     <div className="flex justify-between items-start">
                       <div>
@@ -975,7 +975,7 @@ export default function InvoicesEnhanced() {
           ) : (
             <div className="grid gap-4">
               {invoices.filter(i => i.status === "draft").map(inv => (
-                <Card key={inv.invoice_id} className="cursor-pointer hover:shadow-md" onClick={() => fetchInvoiceDetail(inv.invoice_id)}>
+                <Card key={inv.invoice_id} className="cursor-pointer hover:border-[rgba(200,255,0,0.2)]" onClick={() => fetchInvoiceDetail(inv.invoice_id)}>
                   <CardContent className="pt-4">
                     <div className="flex justify-between items-start">
                       <div>
