@@ -5,6 +5,29 @@
 
 ---
 
+## Session 91 Updates (Feb 22, 2026)
+
+### Estimates Module Enhancement
+**Status:** ✅ COMPLETE & TESTED (100% pass rate - 10/10 features)
+
+**What was implemented:**
+
+1. **Searchable Item Dropdown** - Type to search items with SKU and Rate info displayed
+2. **Add New Item Inline** - Blue "+" option appears when item not found, opens Quick Add dialog
+3. **Per-Item Tax Selection** - GST dropdown with 0%, 5%, 12%, 18%, 28% rates
+4. **Discount Type Toggle** - Switch between % (percentage) and ₹ (fixed amount)
+5. **File Attachments** - Upload up to 3 files (10MB each), supports PDF, images, documents
+6. **Convert to Invoice** - Button appears for accepted estimates, creates separate invoice
+7. **Separate Numbering** - EST-00001 for estimates, INV-00001 for invoices
+8. **Status Tracking** - Draft → Sent → Viewed → Accepted → Converted/Declined/Expired
+
+**Files Updated:**
+- `/app/frontend/src/pages/EstimatesEnhanced.jsx` - Enhanced item table, quick add item dialog, discount toggle
+
+**Test Report:** `/app/test_reports/iteration_91.json`
+
+---
+
 ## Session 90 Updates (Feb 22, 2026)
 
 ### Employee Creation Bug Fix
