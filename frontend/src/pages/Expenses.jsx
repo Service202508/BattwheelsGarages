@@ -140,7 +140,17 @@ export default function Expenses() {
           <h1 className="text-2xl font-bold text-gray-900">Expenses</h1>
           <p className="text-gray-500 text-sm mt-1">{total} expense records</p>
         </div>
-        <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <Dialog 
+          open={showAddDialog} 
+          onOpenChange={(open) => {
+            if (!open && expensePersistence.isDirty) {
+              expensePersistence.setShowCloseConfirm(true);
+            } else {
+              if (!open) expensePersistence.clearSavedData();
+              setShowAddDialog(open);
+            }
+          }}
+        >
           <DialogTrigger asChild>
             <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
               <Plus className="h-4 w-4 mr-2" /> Record Expense
@@ -148,8 +158,23 @@ export default function Expenses() {
           </DialogTrigger>
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Record Expense</DialogTitle>
+              <div className="flex items-center justify-between">
+                <DialogTitle>Record Expense</DialogTitle>
+                <AutoSaveIndicator 
+                  lastSaved={expensePersistence.lastSaved} 
+                  isSaving={expensePersistence.isSaving} 
+                  isDirty={expensePersistence.isDirty} 
+                />
+              </div>
             </DialogHeader>
+            
+            <DraftRecoveryBanner
+              show={expensePersistence.showRecoveryBanner}
+              savedAt={expensePersistence.savedDraftInfo?.timestamp}
+              onRestore={expensePersistence.handleRestoreDraft}
+              onDiscard={expensePersistence.handleDiscardDraft}
+            />
+            
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -195,11 +220,35 @@ export default function Expenses() {
               </div>
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  if (expensePersistence.isDirty) {
+                    expensePersistence.setShowCloseConfirm(true);
+                  } else {
+                    setShowAddDialog(false);
+                  }
+                }}
+              >
+                Cancel
+              </Button>
               <Button onClick={handleAddExpense} className="bg-[#22EDA9] text-black">Record Expense</Button>
             </div>
           </DialogContent>
         </Dialog>
+        
+        {/* Unsaved Changes Confirmation Dialog */}
+        <FormCloseConfirmDialog
+          open={expensePersistence.showCloseConfirm}
+          onClose={() => expensePersistence.setShowCloseConfirm(false)}
+          onSave={handleAddExpense}
+          onDiscard={() => {
+            expensePersistence.clearSavedData();
+            setNewExpense(initialExpenseData);
+            setShowAddDialog(false);
+          }}
+          entityName="Expense"
+        />
       </div>
 
       {/* Summary Cards */}
