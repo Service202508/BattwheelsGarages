@@ -154,6 +154,36 @@ code, .mono {
 
 /* Table styles - Light */
 .data-table tbody tr {
+
+
+/* Dialog overflow handling */
+[data-state="open"][role="dialog"] {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure dialog content with overflow-y-auto scrolls properly */
+[role="dialog"] .overflow-y-auto {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* Dialog body scrollable area */
+.dialog-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* Fix for nested dialogs (AlertDialog on top of Dialog) */
+[data-radix-alert-dialog-overlay] {
+    z-index: 60 !important;
+}
+
+[data-radix-alert-dialog-content] {
+    z-index: 60 !important;
+}
+
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
