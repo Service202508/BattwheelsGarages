@@ -82,7 +82,7 @@ export default function ChartOfAccounts() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Chart of Accounts</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage your account structure</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Manage your account structure</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
@@ -138,8 +138,8 @@ export default function ChartOfAccounts() {
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6">
-          {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
-            Object.keys(groupedAccounts).length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No accounts found</CardContent></Card> :
+          {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
+            Object.keys(groupedAccounts).length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No accounts found</CardContent></Card> :
             <div className="space-y-6">
               {Object.entries(groupedAccounts).map(([type, accs]) => {
                 const Icon = accountTypeIcons[type] || Layers;
@@ -154,12 +154,12 @@ export default function ChartOfAccounts() {
                     <CardContent>
                       <div className="space-y-2">
                         {accs.map(account => (
-                          <div key={account.account_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-[rgba(255,255,255,0.05)] transition-colors">
+                          <div key={account.account_id} className="flex items-center justify-between p-3 bg-[#111820] rounded hover:bg-[rgba(255,255,255,0.05)] transition-colors border border-[rgba(255,255,255,0.07)]">
                             <div className="flex items-center gap-3">
-                              {account.account_code && <span className="text-xs font-mono bg-gray-200 px-2 py-1 rounded">{account.account_code}</span>}
+                              {account.account_code && <span className="text-xs bg-[#141E27] px-2 py-1 rounded text-[#C8FF00] font-mono tracking-wider">{account.account_code}</span>}
                               <div>
-                                <p className="font-medium">{account.account_name}</p>
-                                {account.description && <p className="text-xs text-gray-500">{account.description}</p>}
+                                <p className="font-medium text-[#F4F6F0]">{account.account_name}</p>
+                                {account.description && <p className="text-xs text-[rgba(244,246,240,0.45)]">{account.description}</p>}
                               </div>
                             </div>
                             <Badge className={accountTypeColors[account.account_type]}>{account.account_type}</Badge>
