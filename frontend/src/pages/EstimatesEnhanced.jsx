@@ -1824,10 +1824,10 @@ export default function EstimatesEnhanced() {
 
       {/* Detail Dialog */}
       <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
           {selectedEstimate && (
             <>
-              <DialogHeader>
+              <DialogHeader className="flex-shrink-0">
                 <div className="flex items-center justify-between">
                   <div>
                     <DialogTitle className="flex items-center gap-2">
@@ -1840,7 +1840,7 @@ export default function EstimatesEnhanced() {
                 </div>
               </DialogHeader>
 
-              <div className="space-y-4 py-4">
+              <div className="space-y-4 py-4 flex-1 overflow-y-auto min-h-0">
                 {/* Linked Ticket Banner - For ticket estimates */}
                 {selectedEstimate.is_ticket_estimate && selectedEstimate.ticket_id && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex items-center justify-between">
