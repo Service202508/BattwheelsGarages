@@ -64,6 +64,18 @@ export default function OrganizationSettings({ user }) {
   // Import/Export state
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
+  
+  // Razorpay state
+  const [razorpayConfig, setRazorpayConfig] = useState({
+    key_id: "",
+    key_secret: "",
+    webhook_secret: "",
+    test_mode: true
+  });
+  const [razorpayConfigured, setRazorpayConfigured] = useState(false);
+  const [showSecrets, setShowSecrets] = useState(false);
+  const [savingRazorpay, setSavingRazorpay] = useState(false);
+  const [testingRazorpay, setTestingRazorpay] = useState(false);
 
   const getAuthHeaders = useCallback(() => {
     const token = localStorage.getItem("token");
