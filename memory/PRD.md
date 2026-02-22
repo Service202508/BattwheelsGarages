@@ -45,9 +45,9 @@
 3. **Real-time Sync:** Tickets submitted via public form are stored in the same `tickets` collection used by the admin panel - instant sync
 
 **Public URL for Domain Mapping:**
-- **Service Request Form:** `https://cloud-finance-suite.preview.emergentagent.com/submit-ticket`
-- **Ticket Tracking:** `https://cloud-finance-suite.preview.emergentagent.com/track-ticket`
-- **Admin Panel:** `https://cloud-finance-suite.preview.emergentagent.com/login`
+- **Service Request Form:** `https://service-form-2.preview.emergentagent.com/submit-ticket`
+- **Ticket Tracking:** `https://service-form-2.preview.emergentagent.com/track-ticket`
+- **Admin Panel:** `https://service-form-2.preview.emergentagent.com/login`
 
 ---
 
