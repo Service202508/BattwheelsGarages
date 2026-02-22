@@ -304,7 +304,7 @@ export default function Dashboard({ user }) {
               </CardHeader>
               <CardContent>
                 <div className="h-[260px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <BarChart data={repairTrendData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
                       <XAxis 
                         dataKey="month" 
