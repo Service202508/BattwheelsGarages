@@ -931,7 +931,7 @@ class DoubleEntryService:
                 "account_id": tds_payable["account_id"],
                 "debit_amount": 0,
                 "credit_amount": float(tds),
-                "description": f"TDS on Salary"
+                "description": "TDS on Salary"
             })
         
         # CREDIT: PF Payable
@@ -940,7 +940,7 @@ class DoubleEntryService:
                 "account_id": pf_payable["account_id"],
                 "debit_amount": 0,
                 "credit_amount": float(pf),
-                "description": f"PF Deduction"
+                "description": "PF Deduction"
             })
         
         # CREDIT: ESI Payable
@@ -949,7 +949,7 @@ class DoubleEntryService:
                 "account_id": esi_payable["account_id"],
                 "debit_amount": 0,
                 "credit_amount": float(esi),
-                "description": f"ESI Deduction"
+                "description": "ESI Deduction"
             })
         
         payroll_date = payroll.get("payroll_date", payroll.get("date", datetime.now().strftime("%Y-%m-%d")))
