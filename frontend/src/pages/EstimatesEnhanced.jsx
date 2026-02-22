@@ -2710,7 +2710,7 @@ export default function EstimatesEnhanced() {
                                 </div>
                                 {/* Search Results Dropdown */}
                                 {editActiveItemIndex === idx && editItemSearch.length >= 1 && !item.item_id && editSearchResults.length > 0 && (
-                                  <div className="absolute z-50 left-0 right-0 mt-1 bg-[#111820] border rounded-lg shadow-xl max-h-48 overflow-y-auto">
+                                  <div className="absolute z-50 left-0 right-0 mt-1 bg-[#111820] border border-[rgba(255,255,255,0.13)] rounded max-h-48 overflow-y-auto">
                                     {editSearchResults.slice(0, 8).map(searchItem => (
                                       <div 
                                         key={searchItem.item_id}
