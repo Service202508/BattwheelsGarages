@@ -73,12 +73,29 @@ export default function SalesOrdersEnhanced() {
   const [items, setItems] = useState([]);
 
   // Form states
-  const [newOrder, setNewOrder] = useState({
+  const initialOrderData = {
     customer_id: "", reference_number: "", date: new Date().toISOString().split('T')[0],
     expected_shipment_date: "", salesperson_name: "", terms_and_conditions: "", notes: "",
     discount_type: "none", discount_value: 0, shipping_charge: 0, adjustment: 0,
     delivery_method: "", line_items: []
-  });
+  };
+  
+  const [newOrder, setNewOrder] = useState(initialOrderData);
+  
+  // Auto-save for Sales Order form
+  const orderPersistence = useFormPersistence(
+    'sales_order_new',
+    newOrder,
+    initialOrderData,
+    {
+      enabled: activeTab === "create",
+      isDialogOpen: activeTab === "create",
+      setFormData: setNewOrder,
+      debounceMs: 2000,
+      entityName: 'Sales Order'
+    }
+  );
+  
   const [newLineItem, setNewLineItem] = useState({
     item_id: "", name: "", description: "", quantity: 1, unit: "pcs", rate: 0,
     discount_percent: 0, tax_percentage: 18, hsn_code: ""
