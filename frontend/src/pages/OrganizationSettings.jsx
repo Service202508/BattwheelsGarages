@@ -1263,6 +1263,187 @@ export default function OrganizationSettings({ user }) {
               </div>
             </CardContent>
           </Card>
+          
+          {/* Razorpay Payment Gateway Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <CreditCard className="h-4 w-4" />
+                Payment Gateway (Razorpay)
+                {razorpayConfigured && (
+                  <Badge className="ml-2 bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Configured
+                  </Badge>
+                )}
+              </CardTitle>
+              <CardDescription>
+                Connect your Razorpay account to accept online payments for invoices
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {razorpayConfigured ? (
+                <>
+                  <div className="p-4 bg-[rgba(34,197,94,0.08)] rounded-lg border border-green-500/20">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle className="h-5 w-5 text-green-400" />
+                      <span className="font-medium text-green-400">Razorpay is connected</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Your customers can now pay invoices online via UPI, Cards, Net Banking, and Wallets.
+                    </p>
+                    <div className="mt-3 flex items-center gap-2">
+                      <Badge variant="outline" className={razorpayConfig.test_mode ? "text-yellow-400" : "text-green-400"}>
+                        {razorpayConfig.test_mode ? "Test Mode" : "Live Mode"}
+                      </Badge>
+                      <a 
+                        href="https://dashboard.razorpay.com/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline flex items-center gap-1"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        Open Razorpay Dashboard
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 rounded-lg border">
+                    <div>
+                      <Label>Test Mode</Label>
+                      <p className="text-xs text-muted-foreground">Use test credentials for testing</p>
+                    </div>
+                    <Switch 
+                      checked={razorpayConfig.test_mode}
+                      onCheckedChange={(v) => {
+                        setRazorpayConfig({ ...razorpayConfig, test_mode: v });
+                      }}
+                    />
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setRazorpayConfigured(false)}
+                    >
+                      <Edit2 className="h-4 w-4 mr-2" />
+                      Update Credentials
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={removeRazorpayConfig}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Disconnect
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="p-4 bg-[rgba(234,179,8,0.08)] rounded-lg border border-yellow-500/20 mb-4">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-5 w-5 text-yellow-400 mt-0.5" />
+                      <div>
+                        <span className="font-medium text-yellow-400">Payment gateway not configured</span>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          To collect online payments, connect your Razorpay account. 
+                          Get your API keys from{" "}
+                          <a 
+                            href="https://dashboard.razorpay.com/app/keys" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                          >
+                            Razorpay Dashboard → Settings → API Keys
+                          </a>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Key ID *</Label>
+                      <Input 
+                        placeholder="rzp_test_xxxxxx or rzp_live_xxxxxx"
+                        value={razorpayConfig.key_id}
+                        onChange={(e) => setRazorpayConfig({ ...razorpayConfig, key_id: e.target.value })}
+                        data-testid="razorpay-key-id-input"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Starts with <code className="bg-muted px-1 rounded">rzp_test_</code> or <code className="bg-muted px-1 rounded">rzp_live_</code>
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Key Secret *</Label>
+                      <div className="relative">
+                        <Input 
+                          type={showSecrets ? "text" : "password"}
+                          placeholder="Your Razorpay Key Secret"
+                          value={razorpayConfig.key_secret}
+                          onChange={(e) => setRazorpayConfig({ ...razorpayConfig, key_secret: e.target.value })}
+                          data-testid="razorpay-key-secret-input"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-1 top-1 h-7 w-7"
+                          onClick={() => setShowSecrets(!showSecrets)}
+                        >
+                          {showSecrets ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Webhook Secret (Optional)</Label>
+                    <Input 
+                      type={showSecrets ? "text" : "password"}
+                      placeholder="Webhook secret for verifying payment notifications"
+                      value={razorpayConfig.webhook_secret}
+                      onChange={(e) => setRazorpayConfig({ ...razorpayConfig, webhook_secret: e.target.value })}
+                      data-testid="razorpay-webhook-secret-input"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Create a webhook at Razorpay Dashboard → Settings → Webhooks pointing to your callback URL
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 rounded-lg border">
+                    <div>
+                      <Label>Test Mode</Label>
+                      <p className="text-xs text-muted-foreground">Enable for testing with test credentials</p>
+                    </div>
+                    <Switch 
+                      checked={razorpayConfig.test_mode}
+                      onCheckedChange={(v) => setRazorpayConfig({ ...razorpayConfig, test_mode: v })}
+                    />
+                  </div>
+                  
+                  <div className="flex gap-2 pt-2">
+                    <Button 
+                      onClick={saveRazorpayConfig}
+                      disabled={savingRazorpay || !razorpayConfig.key_id || !razorpayConfig.key_secret}
+                      data-testid="save-razorpay-btn"
+                    >
+                      {savingRazorpay ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4 mr-2" />
+                      )}
+                      Connect Razorpay
+                    </Button>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* EFI Tab */}
