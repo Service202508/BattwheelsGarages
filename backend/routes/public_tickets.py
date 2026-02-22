@@ -128,6 +128,7 @@ async def submit_public_ticket(data: PublicTicketCreate, background_tasks: Backg
     # Build ticket document
     ticket_doc = {
         "ticket_id": ticket_id,
+        "organization_id": organization_id,  # Link to default organization
         "title": data.title,
         "description": data.description,
         "category": data.issue_type,
