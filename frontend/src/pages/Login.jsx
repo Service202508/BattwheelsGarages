@@ -453,25 +453,25 @@ export default function Login({ onLogin }) {
                     <Zap className="w-4 h-4 text-[#080C0F]" />
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-gray-700">Diagnose faster.</span>
+                <span className="text-sm font-semibold text-[rgba(244,246,240,0.6)]">Diagnose faster.</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-[#22EDA9]/40 rounded-full blur-md animate-pulse" style={{ animationDelay: '0.3s' }} />
-                  <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] flex items-center justify-center shadow-lg shadow-[#22EDA9]/30">
-                    <Sparkles className="w-4 h-4 text-gray-900" />
+                  <div className="absolute inset-0 bg-[rgba(200,255,0,0.4)] rounded-full blur-md animate-pulse" style={{ animationDelay: '0.3s' }} />
+                  <div className="relative w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center shadow-lg shadow-[rgba(200,255,0,0.3)]">
+                    <Sparkles className="w-4 h-4 text-[#080C0F]" />
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-gray-700">Resolve smarter.</span>
+                <span className="text-sm font-semibold text-[rgba(244,246,240,0.6)]">Resolve smarter.</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-[#22EDA9]/40 rounded-full blur-md animate-pulse" style={{ animationDelay: '0.6s' }} />
-                  <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-[#22EDA9] to-[#1DD69A] flex items-center justify-center shadow-lg shadow-[#22EDA9]/30">
-                    <Brain className="w-4 h-4 text-gray-900" />
+                  <div className="absolute inset-0 bg-[rgba(200,255,0,0.4)] rounded-full blur-md animate-pulse" style={{ animationDelay: '0.6s' }} />
+                  <div className="relative w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center shadow-lg shadow-[rgba(200,255,0,0.3)]">
+                    <Brain className="w-4 h-4 text-[#080C0F]" />
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-gray-700">Learn forever.</span>
+                <span className="text-sm font-semibold text-[rgba(244,246,240,0.6)]">Learn forever.</span>
               </div>
             </div>
 
@@ -482,7 +482,7 @@ export default function Login({ onLogin }) {
         
         {/* Copyright Footer - Left Panel */}
         <div className="absolute bottom-6 left-0 right-0 text-center z-10">
-          <p className="text-xs text-gray-400 font-medium tracking-wide">
+          <p className="text-xs text-[rgba(244,246,240,0.3)] font-medium tracking-wide">
             © 2026 BATTWHEELS SERVICES PRIVATE LIMITED. All rights reserved.
           </p>
         </div>
@@ -491,23 +491,23 @@ export default function Login({ onLogin }) {
       {/* Right Panel - Premium Auth Form */}
       <div className="flex-1 flex flex-col relative overflow-hidden min-h-screen">
         {/* Premium Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50/50 to-white" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#22EDA9]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#22EDA9]/3 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0D1317] via-[#111820] to-[#0D1317]" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[rgba(200,255,0,0.05)] rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[rgba(200,255,0,0.03)] rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
         
         {/* Top Header with Logo */}
         <div className="relative z-10 flex justify-between items-center px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
           {/* Spacer for mobile/tablet to push logo to right */}
           <div className="flex-1" />
           
-          {/* Logo with Emerald Glow - Compact */}
+          {/* Logo with Volt Glow - Compact */}
           <div className="relative group">
-            {/* Outer emerald glow */}
-            <div className="absolute -inset-3 sm:-inset-4 bg-gradient-to-br from-[#22EDA9]/30 via-[#22EDA9]/15 to-transparent rounded-2xl blur-xl opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
+            {/* Outer volt glow */}
+            <div className="absolute -inset-3 sm:-inset-4 bg-gradient-to-br from-[rgba(200,255,0,0.3)] via-[rgba(200,255,0,0.15)] to-transparent rounded-2xl blur-xl opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
             {/* Inner glow ring */}
-            <div className="absolute -inset-2 sm:-inset-2.5 bg-gradient-to-r from-[#22EDA9]/20 to-[#1DD69A]/20 rounded-xl blur-lg opacity-60" />
+            <div className="absolute -inset-2 sm:-inset-2.5 bg-gradient-to-r from-[rgba(200,255,0,0.2)] to-[rgba(200,255,0,0.15)] rounded-xl blur-lg opacity-60" />
             {/* Subtle pulse animation */}
-            <div className="absolute -inset-2.5 sm:-inset-3 bg-[#22EDA9]/10 rounded-2xl blur-md animate-pulse opacity-40" style={{ animationDuration: '3s' }} />
+            <div className="absolute -inset-2.5 sm:-inset-3 bg-[rgba(200,255,0,0.1)] rounded-2xl blur-md animate-pulse opacity-40" style={{ animationDuration: '3s' }} />
             <img 
               src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
               alt="Battwheels" 
