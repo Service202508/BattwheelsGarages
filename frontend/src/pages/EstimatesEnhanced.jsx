@@ -1504,7 +1504,7 @@ export default function EstimatesEnhanced() {
                       data-testid="customer-search"
                     />
                     {contacts.length > 0 && (
-                      <div className="absolute z-10 w-full mt-1 bg-[#111820] border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      <div className="absolute z-10 w-full mt-1 bg-[#111820] border border-[rgba(255,255,255,0.13)] rounded max-h-48 overflow-y-auto">
                         {contacts.map(c => (
                           <div 
                             key={c.contact_id} 
