@@ -8,6 +8,14 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveCo
 import { MetricCard } from "@/components/ui/stat-card";
 import { API, getAuthHeaders } from "@/App";
 
+// Wrapper component to prevent chart dimension warnings in hidden tabs
+const ChartContainer = ({ children, isVisible, height = "240px" }) => {
+  if (!isVisible) {
+    return <div style={{ height }} className="flex items-center justify-center" />;
+  }
+  return children;
+};
+
 // Clean, consistent color palette with emerald as primary brand color
 const BRAND_COLORS = {
   emerald: {
