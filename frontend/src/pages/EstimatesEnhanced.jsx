@@ -1206,7 +1206,7 @@ export default function EstimatesEnhanced() {
             variant="outline" 
             size="sm" 
             onClick={() => { fetchPreferences(); setShowPreferencesDialog(true); }}
-            className="gap-2"
+            className="gap-2 bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"
             data-testid="preferences-btn"
           >
             <Settings className="h-4 w-4" /> Preferences
@@ -1216,33 +1216,33 @@ export default function EstimatesEnhanced() {
 
       {/* Conversion Funnel */}
       {funnel && (
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2"><TrendingUp className="h-4 w-4" /> Conversion Funnel</CardTitle>
+        <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+          <CardHeader className="pb-2 border-b border-[rgba(255,255,255,0.07)]">
+            <CardTitle className="text-sm flex items-center gap-2 text-[#F4F6F0]"><TrendingUp className="h-4 w-4 text-[#C8FF00]" /> Conversion Funnel</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <div className="flex items-center justify-between text-xs">
               <div className="text-center">
-                <p className="text-gray-500">Created</p>
-                <p className="text-xl font-bold">{funnel.total_created}</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.45)]">Created</p>
+                <p className="text-xl font-bold text-[#F4F6F0]">{funnel.total_created}</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-gray-300" />
+              <ChevronRight className="h-4 w-4 text-[rgba(255,255,255,0.15)]" />
               <div className="text-center">
-                <p className="text-gray-500">Sent</p>
-                <p className="text-xl font-bold">{funnel.sent_to_customer}</p>
-                <p className="text-blue-600">{funnel.send_rate}%</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.45)]">Sent</p>
+                <p className="text-xl font-bold text-[#F4F6F0]">{funnel.sent_to_customer}</p>
+                <p className="text-[#3B9EFF] text-xs">{funnel.send_rate}%</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-gray-300" />
+              <ChevronRight className="h-4 w-4 text-[rgba(255,255,255,0.15)]" />
               <div className="text-center">
-                <p className="text-gray-500">Accepted</p>
-                <p className="text-xl font-bold">{funnel.accepted}</p>
-                <p className="text-green-600">{funnel.acceptance_rate}%</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.45)]">Accepted</p>
+                <p className="text-xl font-bold text-[#F4F6F0]">{funnel.accepted}</p>
+                <p className="text-[#C8FF00] text-xs">{funnel.acceptance_rate}%</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-gray-300" />
+              <ChevronRight className="h-4 w-4 text-[rgba(255,255,255,0.15)]" />
               <div className="text-center">
-                <p className="text-gray-500">Converted</p>
-                <p className="text-xl font-bold">{funnel.converted}</p>
-                <p className="text-purple-600">{funnel.conversion_rate}%</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[rgba(244,246,240,0.45)]">Converted</p>
+                <p className="text-xl font-bold text-[#F4F6F0]">{funnel.converted}</p>
+                <p className="text-[#8B5CF6] text-xs">{funnel.conversion_rate}%</p>
               </div>
             </div>
           </CardContent>
@@ -1251,13 +1251,13 @@ export default function EstimatesEnhanced() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="estimates">Estimates</TabsTrigger>
-          <TabsTrigger value="ticket-estimates" className="flex items-center gap-1">
+        <TabsList className="bg-[#111820] border border-[rgba(255,255,255,0.07)] p-1">
+          <TabsTrigger value="estimates" className="data-[state=active]:bg-[rgba(200,255,0,0.10)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-b-2 data-[state=active]:border-b-[#C8FF00] text-[rgba(244,246,240,0.45)]">Estimates</TabsTrigger>
+          <TabsTrigger value="ticket-estimates" className="flex items-center gap-1 data-[state=active]:bg-[rgba(200,255,0,0.10)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-b-2 data-[state=active]:border-b-[#C8FF00] text-[rgba(244,246,240,0.45)]">
             <Ticket className="h-4 w-4" />
             Ticket Estimates ({ticketEstimates.length})
           </TabsTrigger>
-          <TabsTrigger value="create">Create New</TabsTrigger>
+          <TabsTrigger value="create" className="data-[state=active]:bg-[rgba(200,255,0,0.10)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-b-2 data-[state=active]:border-b-[#C8FF00] text-[rgba(244,246,240,0.45)]">Create New</TabsTrigger>
         </TabsList>
 
         {/* Estimates Tab */}
@@ -1265,24 +1265,24 @@ export default function EstimatesEnhanced() {
           <div className="flex flex-col sm:flex-row gap-4 justify-between">
             <div className="flex flex-1 gap-2 max-w-xl">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input value={search} onChange={(e) => setSearch(e.target.value)} onKeyUp={(e) => e.key === 'Enter' && fetchEstimates()} placeholder="Search estimates..." className="pl-10" data-testid="search-estimates" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.25)]" />
+                <Input value={search} onChange={(e) => setSearch(e.target.value)} onKeyUp={(e) => e.key === 'Enter' && fetchEstimates()} placeholder="Search estimates..." className="pl-10 bg-[#111820] border-[rgba(255,255,255,0.07)] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.25)] focus:border-[#C8FF00]" data-testid="search-estimates" />
               </div>
               <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setTimeout(fetchEstimates, 100); }}>
-                <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="sent">Sent</SelectItem>
-                  <SelectItem value="customer_viewed">Viewed</SelectItem>
-                  <SelectItem value="accepted">Accepted</SelectItem>
-                  <SelectItem value="declined">Declined</SelectItem>
-                  <SelectItem value="expired">Expired</SelectItem>
-                  <SelectItem value="converted">Converted</SelectItem>
+                <SelectTrigger className="w-36 bg-[#111820] border-[rgba(255,255,255,0.07)] text-[#F4F6F0]"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-[#111820] border-[rgba(255,255,255,0.1)]">
+                  <SelectItem value="all" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">All Status</SelectItem>
+                  <SelectItem value="draft" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Draft</SelectItem>
+                  <SelectItem value="sent" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Sent</SelectItem>
+                  <SelectItem value="customer_viewed" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Viewed</SelectItem>
+                  <SelectItem value="accepted" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Accepted</SelectItem>
+                  <SelectItem value="declined" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Declined</SelectItem>
+                  <SelectItem value="expired" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Expired</SelectItem>
+                  <SelectItem value="converted" className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">Converted</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={() => setActiveTab("create")} className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-estimate-btn">
+            <Button onClick={() => setActiveTab("create")} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold gap-2 rounded-[3px] hover:shadow-[0_0_20px_rgba(200,255,0,0.3)]" data-testid="new-estimate-btn">
               <Plus className="h-4 w-4" /> New Estimate
             </Button>
           </div>
@@ -1290,7 +1290,7 @@ export default function EstimatesEnhanced() {
           {loading ? (
             <TableSkeleton columns={8} rows={5} />
           ) : estimates.length === 0 ? (
-            <Card>
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
               <EmptyState
                 icon={FileText}
                 title="No estimates found"
@@ -1301,53 +1301,54 @@ export default function EstimatesEnhanced() {
               />
             </Card>
           ) : (
-            <ResponsiveTable>
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-2 py-3 text-center font-medium text-sm w-10">
-                    <input 
-                      type="checkbox" 
-                      checked={selectedIds.length === estimates.length && estimates.length > 0}
-                      onChange={toggleSelectAll}
-                      className="h-4 w-4 rounded border-gray-300"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-sm">Estimate #</th>
-                  <th className="px-4 py-3 text-left font-medium text-sm">Customer</th>
-                  <th className="px-4 py-3 text-left font-medium text-sm">Date</th>
-                  <th className="px-4 py-3 text-left font-medium text-sm">Expiry</th>
-                  <th className="px-4 py-3 text-right font-medium text-sm">Amount</th>
-                  <th className="px-4 py-3 text-center font-medium text-sm">Status</th>
-                  <th className="px-4 py-3 text-right font-medium text-sm">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {estimates.map(est => (
-                  <tr key={est.estimate_id} className={`border-t hover:bg-gray-50 cursor-pointer ${selectedIds.includes(est.estimate_id) ? 'bg-blue-50' : ''}`} onClick={() => fetchEstimateDetail(est.estimate_id)} data-testid={`estimate-row-${est.estimate_id}`}>
-                    <td className="px-2 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-[#0D1317] border border-[rgba(255,255,255,0.07)] rounded">
+              <ResponsiveTable>
+                <thead className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                  <tr>
+                    <th className="px-2 py-3 text-center w-10">
                       <input 
                         type="checkbox" 
-                        checked={selectedIds.includes(est.estimate_id)}
-                        onChange={() => toggleSelect(est.estimate_id)}
-                        className="h-4 w-4 rounded border-gray-300"
+                        checked={selectedIds.length === estimates.length && estimates.length > 0}
+                        onChange={toggleSelectAll}
+                        className="h-4 w-4 rounded border-[rgba(255,255,255,0.2)] bg-transparent"
+                        onClick={(e) => e.stopPropagation()}
                       />
-                    </td>
-                    <td className="px-4 py-3 font-mono font-medium text-sm">{est.estimate_number}</td>
-                    <td className="px-4 py-3 text-sm">{est.customer_name}</td>
-                    <td className="px-4 py-3 text-gray-600 text-sm">{est.date}</td>
-                    <td className="px-4 py-3 text-gray-600 text-sm">{est.expiry_date}</td>
-                    <td className="px-4 py-3 text-right font-medium text-sm">₹{(est.grand_total || 0).toLocaleString('en-IN')}</td>
-                    <td className="px-4 py-3 text-center">
-                      <Badge className={statusColors[est.status]}>{statusLabels[est.status]}</Badge>
-                    </td>
-                    <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                      <Button size="icon" variant="ghost" onClick={() => fetchEstimateDetail(est.estimate_id)}><Eye className="h-4 w-4" /></Button>
-                      <Button size="icon" variant="ghost" onClick={() => handleClone(est.estimate_id)}><Copy className="h-4 w-4" /></Button>
-                    </td>
+                    </th>
+                    <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Estimate #</th>
+                    <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Customer</th>
+                    <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Date</th>
+                    <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Expiry</th>
+                    <th className="px-4 py-3 text-right font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Amount</th>
+                    <th className="px-4 py-3 text-center font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Status</th>
+                    <th className="px-4 py-3 text-right font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[rgba(244,246,240,0.25)]">Actions</th>
                   </tr>
-                ))}
-              </tbody>
+                </thead>
+                <tbody>
+                  {estimates.map(est => (
+                    <tr key={est.estimate_id} className={`border-b border-[rgba(255,255,255,0.04)] hover:bg-[rgba(200,255,0,0.03)] cursor-pointer transition-colors ${selectedIds.includes(est.estimate_id) ? 'bg-[rgba(59,158,255,0.08)]' : ''}`} onClick={() => fetchEstimateDetail(est.estimate_id)} data-testid={`estimate-row-${est.estimate_id}`}>
+                      <td className="px-2 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                        <input 
+                          type="checkbox" 
+                          checked={selectedIds.includes(est.estimate_id)}
+                          onChange={() => toggleSelect(est.estimate_id)}
+                          className="h-4 w-4 rounded border-[rgba(255,255,255,0.2)] bg-transparent"
+                        />
+                      </td>
+                      <td className="px-4 py-3 font-mono font-medium text-sm text-[#C8FF00] tracking-[0.06em]">{est.estimate_number}</td>
+                      <td className="px-4 py-3 text-sm font-semibold text-[#F4F6F0]">{est.customer_name}</td>
+                      <td className="px-4 py-3 text-[rgba(244,246,240,0.45)] text-sm">{est.date}</td>
+                      <td className="px-4 py-3 text-[rgba(244,246,240,0.45)] text-sm">{est.expiry_date}</td>
+                      <td className="px-4 py-3 text-right font-bold text-sm text-[#C8FF00]">₹{(est.grand_total || 0).toLocaleString('en-IN')}</td>
+                      <td className="px-4 py-3 text-center">
+                        <Badge className={`font-mono text-[10px] tracking-[0.08em] uppercase ${statusColors[est.status]}`}>{statusLabels[est.status]}</Badge>
+                      </td>
+                      <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                        <Button size="icon" variant="ghost" onClick={() => fetchEstimateDetail(est.estimate_id)} className="text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"><Eye className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => handleClone(est.estimate_id)} className="text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"><Copy className="h-4 w-4" /></Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
             </ResponsiveTable>
           )}
         </TabsContent>
