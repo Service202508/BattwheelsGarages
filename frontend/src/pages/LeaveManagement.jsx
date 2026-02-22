@@ -539,6 +539,19 @@ export default function LeaveManagement({ user }) {
           </TabsContent>
         )}
       </Tabs>
+      
+      {/* Unsaved Changes Confirmation Dialog */}
+      <FormCloseConfirmDialog
+        open={leavePersistence.showCloseConfirm}
+        onClose={() => leavePersistence.setShowCloseConfirm(false)}
+        onSave={handleApplyLeave}
+        onDiscard={() => {
+          leavePersistence.clearSavedData();
+          setFormData(initialFormData);
+          setIsApplyOpen(false);
+        }}
+        entityName="Leave Request"
+      />
     </div>
   );
 }
