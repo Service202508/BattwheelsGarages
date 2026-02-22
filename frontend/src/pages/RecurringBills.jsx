@@ -16,7 +16,7 @@ import { API } from "@/App";
 
 const statusColors = {
   active: "bg-green-100 text-green-700",
-  stopped: "bg-yellow-100 text-yellow-700",
+  stopped: "bg-yellow-100 text-[#EAB308]",
   expired: "bg-gray-100 text-gray-600"
 };
 
@@ -400,7 +400,7 @@ export default function RecurringBills() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-yellow-100 rounded-lg">
-                <Pause className="h-5 w-5 text-yellow-600" />
+                <Pause className="h-5 w-5 text-[#EAB308]" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Stopped</p>

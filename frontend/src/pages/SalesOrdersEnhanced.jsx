@@ -26,8 +26,8 @@ const statusColors = {
   draft: "bg-gray-100 text-[#F4F6F0]",
   confirmed: "bg-blue-100 text-[#3B9EFF]",
   open: "bg-green-100 text-[#22C55E]",
-  partially_fulfilled: "bg-yellow-100 text-yellow-700",
-  fulfilled: "bg-purple-100 text-purple-700",
+  partially_fulfilled: "bg-yellow-100 text-[#EAB308]",
+  fulfilled: "bg-purple-100 text-[#8B5CF6]",
   closed: "bg-gray-200 text-[rgba(244,246,240,0.45)]",
   void: "bg-red-100 text-red-500"
 };
@@ -44,7 +44,7 @@ const statusLabels = {
 
 const fulfillmentColors = {
   unfulfilled: "bg-red-100 text-[#FF3B2F]",
-  partially_fulfilled: "bg-yellow-100 text-yellow-700",
+  partially_fulfilled: "bg-yellow-100 text-[#EAB308]",
   fulfilled: "bg-green-100 text-[#22C55E]"
 };
 
@@ -447,7 +447,7 @@ export default function SalesOrdersEnhanced() {
               <ChevronRight className="h-4 w-4 text-gray-300" />
               <div className="text-center">
                 <p className="text-[rgba(244,246,240,0.45)]">Partially Fulfilled</p>
-                <p className="text-xl font-bold text-yellow-600">{fulfillmentSummary.partially_fulfilled}</p>
+                <p className="text-xl font-bold text-[#EAB308]">{fulfillmentSummary.partially_fulfilled}</p>
                 <p className="text-[rgba(244,246,240,0.25)]">₹{(fulfillmentSummary.partially_fulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-gray-300" />
@@ -913,7 +913,7 @@ export default function SalesOrdersEnhanced() {
                 {/* Converted To */}
                 {selectedOrder.converted_to && (
                   <div className="bg-[rgba(139,92,246,0.08)] rounded-lg p-3">
-                    <p className="text-sm text-purple-700">
+                    <p className="text-sm text-[#8B5CF6]">
                       <strong>Converted to:</strong> {selectedOrder.converted_to}
                     </p>
                   </div>

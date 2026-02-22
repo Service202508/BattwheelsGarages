@@ -692,7 +692,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
                           </div>
                         </div>
                         {activity.edited_at && (
-                          <p className="text-xs text-yellow-600 mt-1">Edited by {activity.edited_by}</p>
+                          <p className="text-xs text-[#EAB308] mt-1">Edited by {activity.edited_by}</p>
                         )}
                       </li>
                     )) : (

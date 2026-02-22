@@ -17,9 +17,9 @@ import { API } from "@/App";
 const statusColors = {
   draft: "bg-gray-100 text-[#F4F6F0]",
   sent: "bg-blue-100 text-[#3B9EFF]",
-  viewed: "bg-purple-100 text-purple-700",
+  viewed: "bg-purple-100 text-[#8B5CF6]",
   paid: "bg-green-100 text-[#22C55E]",
-  partially_paid: "bg-yellow-100 text-yellow-700",
+  partially_paid: "bg-yellow-100 text-[#EAB308]",
   overdue: "bg-red-100 text-[#FF3B2F]",
   void: "bg-gray-200 text-[rgba(244,246,240,0.45)]"
 };

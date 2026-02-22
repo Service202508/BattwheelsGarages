@@ -35,7 +35,7 @@ const ACTION_TYPES = {
   updated: { label: "Updated", color: "bg-blue-100 text-[#3B9EFF]", icon: Edit },
   deleted: { label: "Deleted", color: "bg-red-100 text-red-700", icon: Trash2 },
   viewed: { label: "Viewed", color: "bg-gray-100 text-gray-700", icon: Eye },
-  sent: { label: "Sent", color: "bg-purple-100 text-purple-700", icon: FileText },
+  sent: { label: "Sent", color: "bg-purple-100 text-[#8B5CF6]", icon: FileText },
   paid: { label: "Paid", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-700", icon: FileText },
   approved: { label: "Approved", color: "bg-green-100 text-green-700", icon: FileText },
   voided: { label: "Voided", color: "bg-red-100 text-red-700", icon: FileText }

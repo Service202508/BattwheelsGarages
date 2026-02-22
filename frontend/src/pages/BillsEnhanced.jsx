@@ -25,7 +25,7 @@ import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "
 const statusColors = {
   draft: "bg-gray-100 text-gray-700",
   open: "bg-blue-100 text-[#3B9EFF]",
-  partially_paid: "bg-yellow-100 text-yellow-700",
+  partially_paid: "bg-yellow-100 text-[#EAB308]",
   paid: "bg-green-100 text-green-700",
   overdue: "bg-red-100 text-red-700",
   void: "bg-gray-200 text-gray-500"
@@ -35,7 +35,7 @@ const poStatusColors = {
   draft: "bg-gray-100 text-gray-700",
   issued: "bg-blue-100 text-[#3B9EFF]",
   received: "bg-green-100 text-green-700",
-  billed: "bg-purple-100 text-purple-700",
+  billed: "bg-purple-100 text-[#8B5CF6]",
   void: "bg-gray-200 text-gray-500"
 };
 

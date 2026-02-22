@@ -561,7 +561,7 @@ export default function Accountant() {
                       <TableCell className="text-right">{formatCurrency(rec.statement_balance)}</TableCell>
                       <TableCell className="text-right">{formatCurrency(rec.book_balance)}</TableCell>
                       <TableCell>
-                        <Badge className={rec.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}>
+                        <Badge className={rec.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-[#EAB308]'}>
                           {rec.status}
                         </Badge>
                       </TableCell>

@@ -22,7 +22,7 @@ const statusColors = {
   accepted: "bg-green-100 text-green-700",
   declined: "bg-red-100 text-red-700",
   expired: "bg-orange-100 text-[#FF8C00]",
-  converted: "bg-purple-100 text-purple-700"
+  converted: "bg-purple-100 text-[#8B5CF6]"
 };
 
 const statusLabels = {
@@ -243,7 +243,7 @@ export default function PublicQuoteView() {
               {statusLabels[estimate?.status]}
             </Badge>
             {estimate?.status === "customer_viewed" && (
-              <span className="text-sm text-cyan-600 flex items-center gap-1">
+              <span className="text-sm text-[#1AFFE4] flex items-center gap-1">
                 <Eye className="h-4 w-4" /> You are viewing this estimate
               </span>
             )}

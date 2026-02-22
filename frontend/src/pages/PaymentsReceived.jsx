@@ -422,7 +422,7 @@ export default function PaymentsReceived() {
       return <Badge variant="destructive">Refunded</Badge>;
     }
     if (payment.is_retainer) {
-      return <Badge className="bg-purple-100 text-purple-700">Retainer</Badge>;
+      return <Badge className="bg-purple-100 text-[#8B5CF6]">Retainer</Badge>;
     }
     return <Badge className="bg-green-100 text-green-700">Recorded</Badge>;
   };
@@ -989,7 +989,7 @@ export default function PaymentsReceived() {
                   checked={paymentForm.is_retainer}
                   onCheckedChange={(checked) => setPaymentForm(prev => ({ ...prev, is_retainer: checked }))}
                 />
-                <Label htmlFor="is_retainer" className="text-purple-700">
+                <Label htmlFor="is_retainer" className="text-[#8B5CF6]">
                   Record as Retainer/Advance Payment (will be available as customer credit)
                 </Label>
               </div>

@@ -20,22 +20,22 @@ import { API } from "@/App";
 
 const statusColors = {
   sent: "bg-blue-100 text-[#3B9EFF]",
-  viewed: "bg-purple-100 text-purple-700",
-  partially_paid: "bg-yellow-100 text-yellow-700",
+  viewed: "bg-purple-100 text-[#8B5CF6]",
+  partially_paid: "bg-yellow-100 text-[#EAB308]",
   paid: "bg-green-100 text-green-700",
   overdue: "bg-red-100 text-red-700",
   accepted: "bg-green-100 text-green-700",
   declined: "bg-red-100 text-red-700",
   // Ticket statuses
   open: "bg-blue-100 text-[#3B9EFF]",
-  in_progress: "bg-yellow-100 text-yellow-700",
+  in_progress: "bg-yellow-100 text-[#EAB308]",
   resolved: "bg-green-100 text-green-700",
   closed: "bg-gray-100 text-gray-700",
 };
 
 const priorityColors = {
   low: "bg-gray-100 text-gray-700",
-  medium: "bg-yellow-100 text-yellow-700",
+  medium: "bg-yellow-100 text-[#EAB308]",
   high: "bg-red-100 text-red-700",
 };
 
@@ -535,7 +535,7 @@ export default function CustomerPortal() {
                     <CardContent className="pt-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <FileText className="h-8 w-8 text-yellow-600" />
+                          <FileText className="h-8 w-8 text-[#EAB308]" />
                           <div>
                             <p className="font-medium">Pending Estimates</p>
                             <p className="text-sm text-gray-600">You have {dashboard.summary.pending_estimates} estimate(s) awaiting your review</p>

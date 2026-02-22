@@ -25,12 +25,12 @@ import { API } from "@/App";
 const statusColors = {
   available: "bg-green-100 text-green-700",
   sold: "bg-blue-100 text-[#3B9EFF]",
-  returned: "bg-yellow-100 text-yellow-700",
+  returned: "bg-yellow-100 text-[#EAB308]",
   damaged: "bg-red-100 text-red-700",
-  packed: "bg-purple-100 text-purple-700",
+  packed: "bg-purple-100 text-[#8B5CF6]",
   shipped: "bg-indigo-100 text-indigo-700",
   delivered: "bg-green-100 text-green-700",
-  pending: "bg-yellow-100 text-yellow-700",
+  pending: "bg-yellow-100 text-[#EAB308]",
   processed: "bg-green-100 text-green-700"
 };
 

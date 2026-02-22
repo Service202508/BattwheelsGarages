@@ -184,7 +184,7 @@ export default function TeamManagement({ user }) {
   const getRoleBadgeColor = (role) => {
     const colors = {
       owner: "bg-amber-100 text-amber-700",
-      admin: "bg-purple-100 text-purple-700",
+      admin: "bg-purple-100 text-[#8B5CF6]",
       manager: "bg-blue-100 text-[#3B9EFF]",
       technician: "bg-green-100 text-green-700",
       accountant: "bg-teal-100 text-teal-700",
@@ -195,7 +195,7 @@ export default function TeamManagement({ user }) {
 
   const getStatusBadgeColor = (status) => {
     const colors = {
-      pending: "bg-yellow-100 text-yellow-700",
+      pending: "bg-yellow-100 text-[#EAB308]",
       accepted: "bg-green-100 text-green-700",
       expired: "bg-red-100 text-red-700",
       cancelled: "bg-gray-100 text-gray-700"
@@ -337,7 +337,7 @@ export default function TeamManagement({ user }) {
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-yellow-100 rounded-lg">
-                <Clock className="h-6 w-6 text-yellow-600" />
+                <Clock className="h-6 w-6 text-[#EAB308]" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Pending Invites</p>

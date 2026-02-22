@@ -82,7 +82,7 @@ const StockIndicator = ({ stockInfo, qty }) => {
       return {
         icon: AlertTriangle,
         label: `Low: ${available_stock} left`,
-        className: "text-yellow-600 bg-[rgba(234,179,8,0.08)]",
+        className: "text-[#EAB308] bg-[rgba(234,179,8,0.08)]",
         iconClass: "text-yellow-500",
       };
     }
@@ -828,7 +828,7 @@ export default function EstimateItemsPanel({
                                             isOutOfStock 
                                               ? "bg-[rgba(255,59,47,0.08)] text-red-600" 
                                               : isLowStock 
-                                                ? "bg-[rgba(234,179,8,0.08)] text-yellow-600" 
+                                                ? "bg-[rgba(234,179,8,0.08)] text-[#EAB308]" 
                                                 : "bg-[rgba(34,197,94,0.08)] text-green-600"
                                           }`}>
                                             {isOutOfStock ? (
@@ -863,7 +863,7 @@ export default function EstimateItemsPanel({
                             : newItem.qty > selectedPartStock.available_stock
                               ? "bg-[rgba(255,140,0,0.08)] text-[#FF8C00]"
                               : selectedPartStock.available_stock <= selectedPartStock.reorder_level
-                                ? "bg-[rgba(234,179,8,0.08)] text-yellow-700"
+                                ? "bg-[rgba(234,179,8,0.08)] text-[#EAB308]"
                                 : "bg-[rgba(34,197,94,0.08)] text-green-700"
                         }`}>
                           {selectedPartStock.available_stock <= 0 ? (

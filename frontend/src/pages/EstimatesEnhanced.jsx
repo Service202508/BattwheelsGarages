@@ -2024,7 +2024,7 @@ export default function EstimatesEnhanced() {
                 {/* Converted To */}
                 {selectedEstimate.converted_to && (
                   <div className="bg-[rgba(139,92,246,0.08)] rounded-lg p-3">
-                    <p className="text-sm text-purple-700">
+                    <p className="text-sm text-[#8B5CF6]">
                       <strong>Converted to:</strong> {selectedEstimate.converted_to}
                     </p>
                   </div>

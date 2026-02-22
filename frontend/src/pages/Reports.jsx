@@ -492,7 +492,7 @@ export default function Reports() {
                     <Card className="border-l-4 border-l-yellow-400">
                       <CardContent className="p-3 text-center">
                         <p className="text-xs text-gray-500">1-30 Days</p>
-                        <p className="text-lg font-bold text-yellow-700">{formatCurrency(arAging.aging_data?.["1_30"])}</p>
+                        <p className="text-lg font-bold text-[#EAB308]">{formatCurrency(arAging.aging_data?.["1_30"])}</p>
                       </CardContent>
                     </Card>
                     <Card className="border-l-4 border-l-orange-400">
@@ -595,7 +595,7 @@ export default function Reports() {
                     <Card className="border-l-4 border-l-yellow-400">
                       <CardContent className="p-3 text-center">
                         <p className="text-xs text-gray-500">1-30 Days</p>
-                        <p className="text-lg font-bold text-yellow-700">{formatCurrency(apAging.aging_data?.["1_30"])}</p>
+                        <p className="text-lg font-bold text-[#EAB308]">{formatCurrency(apAging.aging_data?.["1_30"])}</p>
                       </CardContent>
                     </Card>
                     <Card className="border-l-4 border-l-orange-400">
