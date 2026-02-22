@@ -675,6 +675,13 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/trial-balance" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <TrialBalance user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/recurring-transactions" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
