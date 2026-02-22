@@ -241,6 +241,17 @@ export default function ZohoSync() {
               </>
             )}
           </Button>
+          {connectionStatus?.status === "connected" && (
+            <Button 
+              variant="destructive"
+              onClick={() => setShowDisconnectDialog(true)}
+              disabled={fullSyncInProgress}
+              data-testid="disconnect-zoho-btn"
+            >
+              <Power className="h-4 w-4 mr-2" />
+              Turn Off Sync
+            </Button>
+          )}
         </div>
       </div>
 
