@@ -246,29 +246,38 @@ const MetricCard = React.forwardRef(({
 MetricCard.displayName = "MetricCard";
 
 /**
- * GradientStatCard - Card with gradient background for analytics
+ * GradientStatCard - Card with accent styling for analytics
  */
 const GradientStatCard = React.forwardRef(({
   title,
   value,
   subtitle,
   icon: Icon,
-  gradient = "from-blue-500 to-blue-600",
+  variant = "volt",
   loading = false,
   className,
   ...props
 }, ref) => {
+  const gradientStyles = {
+    volt: "bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.2)] text-[#C8FF00]",
+    blue: "bg-[rgba(59,158,255,0.08)] border border-[rgba(59,158,255,0.2)] text-[#3B9EFF]",
+    green: "bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.2)] text-[#22C55E]",
+    orange: "bg-[rgba(255,140,0,0.08)] border border-[rgba(255,140,0,0.2)] text-[#FF8C00]"
+  };
+
+  const currentStyle = gradientStyles[variant] || gradientStyles.volt;
+
   if (loading) {
     return (
-      <Card ref={ref} className={cn(`bg-gradient-to-br ${gradient} text-white`, className)} {...props}>
+      <Card ref={ref} className={cn(currentStyle, "rounded", className)} {...props}>
         <CardContent className="pt-4 pb-4">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1 space-y-2">
-              <Skeleton className="h-3 w-24 bg-white/20" />
-              <Skeleton className="h-7 w-20 bg-white/20" />
-              {subtitle && <Skeleton className="h-3 w-16 bg-white/20" />}
+              <Skeleton className="h-3 w-24 bg-[rgba(255,255,255,0.1)]" />
+              <Skeleton className="h-7 w-20 bg-[rgba(255,255,255,0.1)]" />
+              {subtitle && <Skeleton className="h-3 w-16 bg-[rgba(255,255,255,0.1)]" />}
             </div>
-            <Skeleton className="h-10 w-10 rounded-full bg-white/20" />
+            <Skeleton className="h-10 w-10 rounded-full bg-[rgba(255,255,255,0.1)]" />
           </div>
         </CardContent>
       </Card>
@@ -276,11 +285,11 @@ const GradientStatCard = React.forwardRef(({
   }
 
   return (
-    <Card ref={ref} className={cn(`bg-gradient-to-br ${gradient} text-white`, className)} {...props}>
+    <Card ref={ref} className={cn(currentStyle, "rounded", className)} {...props}>
       <CardContent className="pt-4 pb-4">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-xs opacity-80">{title}</p>
+            <p className="text-xs opacity-60">{title}</p>
             <p 
               className="text-lg sm:text-xl md:text-2xl font-bold mt-1 truncate"
               title={typeof value === 'string' ? value : undefined}
@@ -288,11 +297,11 @@ const GradientStatCard = React.forwardRef(({
               {value}
             </p>
             {subtitle && (
-              <p className="text-xs opacity-70 mt-1">{subtitle}</p>
+              <p className="text-xs opacity-50 mt-1">{subtitle}</p>
             )}
           </div>
           {Icon && (
-            <Icon className="h-8 w-8 sm:h-10 sm:w-10 shrink-0 opacity-60" />
+            <Icon className="h-8 w-8 sm:h-10 sm:w-10 shrink-0 opacity-50" />
           )}
         </div>
       </CardContent>
