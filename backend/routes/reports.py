@@ -915,11 +915,11 @@ async def get_ar_aging_report(
     
     as_of_datetime = datetime.strptime(as_of_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
     
-    # Get unpaid invoices
+    # Get unpaid invoices (limited for performance)
     invoices = await db.invoices.find(
         {"balance": {"$gt": 0}, "status": {"$in": ["sent", "partial", "overdue", "draft"]}},
         {"_id": 0}
-    ).to_list(length=10000)
+    ).to_list(length=1000)
     
     aging_data = {
         "current": 0,
