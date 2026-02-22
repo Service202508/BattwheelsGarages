@@ -279,15 +279,34 @@ async def create_payment_order(req: CreateOrderRequest, request: Request):
 
 
 @router.post("/create-payment-link/{invoice_id}")
-async def create_invoice_payment_link(invoice_id: str, expire_days: int = 30):
+async def create_invoice_payment_link(invoice_id: str, request: Request, expire_days: int = 30):
     """Create a shareable payment link for an invoice"""
     db = get_db()
+    org_id = await get_org_id_from_request(request)
     
-    invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    # Get org-specific config
+    config = await get_org_razorpay_config(org_id) if org_id else None
+    rp_client = get_razorpay_client(config)
+    
+    if not rp_client:
+        raise HTTPException(status_code=400, detail="Razorpay not configured")
+    
+    # Try enhanced invoices first
+    invoice = await db.invoices_enhanced.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    collection = db.invoices_enhanced
+    if not invoice:
+        invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+        collection = db.invoices
+    
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
-    if invoice.get("balance", 0) <= 0:
+    # Calculate balance
+    total = float(invoice.get("grand_total", invoice.get("total", invoice.get("balance", 0))))
+    paid = float(invoice.get("amount_paid", 0))
+    balance = total - paid
+    
+    if balance <= 0:
         raise HTTPException(status_code=400, detail="Invoice has no balance due")
     
     # Get customer details
@@ -295,23 +314,41 @@ async def create_invoice_payment_link(invoice_id: str, expire_days: int = 30):
     
     expire_timestamp = int((datetime.now(timezone.utc) + timedelta(days=expire_days)).timestamp())
     
-    payment_link = await create_payment_link(
-        amount_inr=invoice.get("balance", 0),
-        description=f"Payment for Invoice {invoice.get('invoice_number')}",
-        customer_name=invoice.get("customer_name", "Customer"),
-        customer_email=customer.get("email", "") if customer else "",
-        customer_phone=customer.get("phone", "") if customer else "",
-        reference_id=invoice_id,
-        expire_by=expire_timestamp
-    )
+    try:
+        payment_link = rp_client.payment_link.create({
+            "amount": int(balance * 100),
+            "currency": "INR",
+            "accept_partial": False,
+            "description": f"Payment for Invoice {invoice.get('invoice_number')}",
+            "customer": {
+                "name": invoice.get("customer_name", "Customer"),
+                "email": customer.get("email", "") if customer else invoice.get("customer_email", ""),
+                "contact": customer.get("phone", "") if customer else invoice.get("customer_phone", "")
+            },
+            "notify": {
+                "sms": bool(customer.get("phone") if customer else invoice.get("customer_phone")),
+                "email": bool(customer.get("email") if customer else invoice.get("customer_email"))
+            },
+            "reference_id": invoice_id,
+            "expire_by": expire_timestamp,
+            "notes": {
+                "invoice_id": invoice_id,
+                "invoice_number": invoice.get("invoice_number", ""),
+                "organization_id": org_id
+            }
+        })
+    except razorpay.errors.BadRequestError as e:
+        logger.error(f"Payment link creation failed: {e}")
+        raise HTTPException(status_code=400, detail=f"Failed to create payment link: {str(e)}")
     
     # Store payment link in database
     link_record = {
         "payment_link_id": payment_link["id"],
         "invoice_id": invoice_id,
+        "organization_id": org_id,
         "invoice_number": invoice.get("invoice_number"),
         "customer_id": invoice.get("customer_id"),
-        "amount": invoice.get("balance"),
+        "amount": balance,
         "short_url": payment_link.get("short_url"),
         "status": "active",
         "expire_by": expire_timestamp,
@@ -322,11 +359,12 @@ async def create_invoice_payment_link(invoice_id: str, expire_days: int = 30):
     await db.razorpay_payment_links.insert_one(link_record)
     
     # Update invoice with payment link
-    await db.invoices.update_one(
+    await collection.update_one(
         {"invoice_id": invoice_id},
         {"$set": {
             "payment_link_id": payment_link["id"],
             "payment_link_url": payment_link.get("short_url"),
+            "payment_link_expires_at": datetime.fromtimestamp(expire_timestamp, timezone.utc).isoformat(),
             "has_payment_link": True
         }}
     )
@@ -337,10 +375,9 @@ async def create_invoice_payment_link(invoice_id: str, expire_days: int = 30):
         "payment_link": {
             "id": payment_link["id"],
             "short_url": payment_link.get("short_url"),
-            "amount": invoice.get("balance"),
+            "amount": balance,
             "expire_by": expire_timestamp
-        },
-        "is_mock": payment_link.get("_mock", False)
+        }
     }
 
 
