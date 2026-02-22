@@ -635,10 +635,10 @@ export default function Login({ onLogin }) {
                       {/* Divider */}
                       <div className="relative my-6">
                         <div className="absolute inset-0 flex items-center">
-                          <div className="w-full border-t border-gray-200" />
+                          <div className="w-full border-t border-[rgba(255,255,255,0.1)]" />
                         </div>
                         <div className="relative flex justify-center">
-                          <span className="bg-white px-3 text-xs text-gray-400 font-medium">
+                          <span className="bg-[#111820] px-3 text-xs text-[rgba(244,246,240,0.4)] font-medium">
                             or continue with
                           </span>
                         </div>
@@ -663,7 +663,7 @@ export default function Login({ onLogin }) {
                     <TabsContent value="register" className="mt-0">
                       <form onSubmit={handleRegister} className="space-y-4">
                         <div className="space-y-1.5">
-                          <Label htmlFor="register-name" className="text-gray-700 text-sm font-semibold ml-1">Full Name</Label>
+                          <Label htmlFor="register-name" className="text-[rgba(244,246,240,0.7)] text-sm font-semibold ml-1">Full Name</Label>
                           <PremiumInput
                             icon={User}
                             type="text"
@@ -677,7 +677,7 @@ export default function Login({ onLogin }) {
                         </div>
                         
                         <div className="space-y-1.5">
-                          <Label htmlFor="register-email" className="text-gray-700 text-sm font-semibold ml-1">Email</Label>
+                          <Label htmlFor="register-email" className="text-[rgba(244,246,240,0.7)] text-sm font-semibold ml-1">Email</Label>
                           <PremiumInput
                             icon={Mail}
                             type="email"
