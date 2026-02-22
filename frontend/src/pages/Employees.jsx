@@ -383,6 +383,7 @@ export default function Employees({ user }) {
 
       if (response.ok) {
         toast.success(isEditing ? "Employee updated successfully" : "Employee created successfully");
+        employeePersistence.onSuccessfulSave(); // Clear auto-saved draft
         setDialogOpen(false);
         fetchEmployees();
         fetchManagers();
