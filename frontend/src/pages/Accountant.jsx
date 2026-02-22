@@ -901,21 +901,21 @@ export default function Accountant() {
                 </CardHeader>
                 <CardContent className="pt-4">
                   <div className="grid grid-cols-3 gap-4">
-                    <Card className="bg-green-50 border-green-200">
+                    <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
                       <CardContent className="p-4 text-center">
                         <ArrowDownLeft className="h-6 w-6 mx-auto text-green-600 mb-2" />
                         <p className="text-xs text-green-700">Cash Inflows</p>
                         <p className="text-xl font-bold text-green-800">{formatCurrency(cashFlow?.cash_inflows)}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-red-50 border-red-200">
+                    <Card className="bg-[rgba(255,59,47,0.08)] border-red-200">
                       <CardContent className="p-4 text-center">
                         <ArrowUpRight className="h-6 w-6 mx-auto text-red-600 mb-2" />
                         <p className="text-xs text-red-700">Cash Outflows</p>
                         <p className="text-xl font-bold text-red-800">{formatCurrency(cashFlow?.cash_outflows)}</p>
                       </CardContent>
                     </Card>
-                    <Card className={`${cashFlow?.net_cash_flow >= 0 ? 'bg-emerald-50 border-emerald-200' : 'bg-orange-50 border-orange-200'}`}>
+                    <Card className={`${cashFlow?.net_cash_flow >= 0 ? 'bg-emerald-50 border-emerald-200' : 'bg-[rgba(255,140,0,0.08)] border-orange-200'}`}>
                       <CardContent className="p-4 text-center">
                         <IndianRupee className={`h-6 w-6 mx-auto mb-2 ${cashFlow?.net_cash_flow >= 0 ? 'text-emerald-600' : 'text-orange-600'}`} />
                         <p className={`text-xs ${cashFlow?.net_cash_flow >= 0 ? 'text-emerald-700' : 'text-orange-700'}`}>Net Cash Flow</p>

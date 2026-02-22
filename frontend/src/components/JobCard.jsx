@@ -24,15 +24,15 @@ import EFIGuidancePanel from "./ai/EFIGuidancePanel";
 import EstimateItemsPanel from "./EstimateItemsPanel";
 
 const statusColors = {
-  open: "bg-yellow-500",
+  open: "bg-[rgba(234,179,8,0.08)]0",
   technician_assigned: "bg-blue-500",
   estimate_shared: "bg-purple-500",
   estimate_approved: "bg-indigo-500",
-  work_in_progress: "bg-orange-500",
+  work_in_progress: "bg-[rgba(255,140,0,0.08)]0",
   work_completed: "bg-teal-500",
-  resolved: "bg-green-500",
+  resolved: "bg-[rgba(34,197,94,0.08)]0",
   closed: "bg-gray-500",
-  in_progress: "bg-orange-500",  // Legacy alias
+  in_progress: "bg-[rgba(255,140,0,0.08)]0",  // Legacy alias
 };
 
 const statusLabels = {

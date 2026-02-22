@@ -226,9 +226,9 @@ export default function LeaveManagement({ user }) {
 
   const getStatusBadge = (status) => {
     const styles = {
-      pending: "bg-yellow-500",
+      pending: "bg-[rgba(234,179,8,0.08)]0",
       approved: "badge-success",
-      rejected: "bg-red-500",
+      rejected: "bg-[rgba(255,59,47,0.08)]0",
       cancelled: "badge-muted",
     };
     return <Badge className={styles[status]}>{status}</Badge>;
@@ -402,7 +402,7 @@ export default function LeaveManagement({ user }) {
             <TabsTrigger value="approvals">
               Pending Approvals
               {pendingApprovals.length > 0 && (
-                <Badge className="ml-2 bg-red-500">{pendingApprovals.length}</Badge>
+                <Badge className="ml-2 bg-[rgba(255,59,47,0.08)]0">{pendingApprovals.length}</Badge>
               )}
             </TabsTrigger>
           )}
@@ -515,7 +515,7 @@ export default function LeaveManagement({ user }) {
                             <div className="flex gap-2">
                               <Button
                                 size="sm"
-                                className="bg-green-500 hover:bg-green-600"
+                                className="bg-[rgba(34,197,94,0.08)]0 hover:bg-green-600"
                                 onClick={() => handleApproval(req.leave_id, "approved")}
                               >
                                 <CheckCircle2 className="h-4 w-4" />

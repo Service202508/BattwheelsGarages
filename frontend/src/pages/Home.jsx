@@ -168,7 +168,7 @@ const ReceivablesPayablesWidget = ({ type, data, loading }) => {
             <span>Current: {formatCurrency(current)}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-orange-500" />
+            <div className="h-3 w-3 rounded-full bg-[rgba(255,140,0,0.08)]0" />
             <span>Overdue: {formatCurrency(overdue)}</span>
           </div>
         </div>
@@ -335,12 +335,12 @@ const IncomeExpenseWidget = ({ data, loading, method, onMethodChange }) => {
       <CardContent>
         <div className="flex items-center gap-6 mb-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm bg-green-500" />
+            <div className="h-3 w-3 rounded-sm bg-[rgba(34,197,94,0.08)]0" />
             <span>Total Income</span>
             <span className="font-semibold">{formatCurrency(totalIncome, true)}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm bg-red-500" />
+            <div className="h-3 w-3 rounded-sm bg-[rgba(255,59,47,0.08)]0" />
             <span>Total Expenses</span>
             <span className="font-semibold">{formatCurrency(totalExpense, true)}</span>
           </div>
@@ -559,7 +559,7 @@ const BankAccountsWidget = ({ data, loading }) => {
       </CardHeader>
       <CardContent className="space-y-3">
         {totalUncategorized > 0 && (
-          <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800">
+          <div className="flex items-center justify-between p-3 bg-[rgba(255,140,0,0.08)] dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800">
             <div className="flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-orange-500" />
               <span className="text-sm">{totalUncategorized} Uncategorized Transactions</span>

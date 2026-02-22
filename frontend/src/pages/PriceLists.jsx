@@ -484,7 +484,7 @@ export default function PriceLists() {
                               </td>
                               <td className="px-4 py-2 text-right">
                                 {item.discount > 0 ? (
-                                  <Badge variant="outline" className="bg-orange-50 text-orange-700">
+                                  <Badge variant="outline" className="bg-[rgba(255,140,0,0.08)] text-orange-700">
                                     {item.discount}%
                                   </Badge>
                                 ) : '-'}

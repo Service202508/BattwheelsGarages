@@ -20,7 +20,7 @@ import { API, getAuthHeaders } from "@/App";
 const statusColors = {
   pending: "bg-amber-500/20 text-amber-400 border-amber-500/30",
   approved: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-  rejected: "bg-red-500/20 text-red-400 border-red-500/30",
+  rejected: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400 border-red-500/30",
 };
 
 const leaveTypeIcons = {

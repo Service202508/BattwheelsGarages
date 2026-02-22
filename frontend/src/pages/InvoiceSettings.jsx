@@ -372,7 +372,7 @@ export default function InvoiceSettings() {
             </CardContent>
           </Card>
           {agingReport.aging_buckets?.map((bucket, idx) => (
-            <Card key={idx} className={bucket.amount > 0 && idx > 0 ? "border-red-200 bg-red-50" : ""}>
+            <Card key={idx} className={bucket.amount > 0 && idx > 0 ? "border-red-200 bg-[rgba(255,59,47,0.08)]" : ""}>
               <CardContent className="p-4">
                 <p className="text-sm text-[rgba(244,246,240,0.45)]">{bucket.label}</p>
                 <p className="text-lg font-bold">{formatCurrency(bucket.amount)}</p>
@@ -414,7 +414,7 @@ export default function InvoiceSettings() {
                   <CardDescription>Invoices past their due date</CardDescription>
                 </div>
                 {selectedInvoices.length > 0 && (
-                  <Button onClick={sendBulkReminders} className="bg-orange-500 hover:bg-orange-600">
+                  <Button onClick={sendBulkReminders} className="bg-[rgba(255,140,0,0.08)]0 hover:bg-orange-600">
                     <Send className="h-4 w-4 mr-2" /> Send {selectedInvoices.length} Reminders
                   </Button>
                 )}
@@ -431,7 +431,7 @@ export default function InvoiceSettings() {
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead className="bg-red-50">
+                    <thead className="bg-[rgba(255,59,47,0.08)]">
                       <tr>
                         <th className="px-4 py-3 text-left">
                           <input 
@@ -515,7 +515,7 @@ export default function InvoiceSettings() {
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead className="bg-yellow-50">
+                    <thead className="bg-[rgba(234,179,8,0.08)]">
                       <tr>
                         <th className="px-4 py-3 text-left">Invoice #</th>
                         <th className="px-4 py-3 text-left">Customer</th>
@@ -533,7 +533,7 @@ export default function InvoiceSettings() {
                           <td className="px-4 py-3 text-right font-medium">{formatCurrency(inv.balance_due)}</td>
                           <td className="px-4 py-3 text-center">{inv.due_date}</td>
                           <td className="px-4 py-3 text-center">
-                            <Badge variant="outline" className="bg-yellow-50 text-yellow-700">{inv.days_until_due} days</Badge>
+                            <Badge variant="outline" className="bg-[rgba(234,179,8,0.08)] text-yellow-700">{inv.days_until_due} days</Badge>
                           </td>
                           <td className="px-4 py-3 text-right">
                             <Button size="sm" variant="outline" onClick={() => sendReminder(inv.invoice_id)}>
@@ -562,7 +562,7 @@ export default function InvoiceSettings() {
                     <p className="text-2xl font-bold">{recurringStats.total_profiles}</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-green-50 border-green-200">
+                <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
                   <CardContent className="p-4">
                     <p className="text-sm text-green-600">Active</p>
                     <p className="text-2xl font-bold text-green-700">{recurringStats.active}</p>
@@ -580,7 +580,7 @@ export default function InvoiceSettings() {
                     <p className="text-2xl font-bold text-blue-700">{formatCurrency(recurringStats.monthly_recurring_revenue)}</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-orange-50 border-orange-200">
+                <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
                   <CardContent className="p-4">
                     <p className="text-sm text-orange-600">Due Today</p>
                     <p className="text-2xl font-bold text-orange-700">{recurringStats.due_today}</p>

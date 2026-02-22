@@ -72,7 +72,7 @@ export default function BusinessLayout({ children, user, onLogout }) {
         <div className="flex items-center gap-3">
           <button className="relative text-slate-500 hover:text-slate-700">
             <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+            <span className="absolute -top-1 -right-1 h-2 w-2 bg-[rgba(255,59,47,0.08)]0 rounded-full"></span>
           </button>
           <Avatar className="h-8 w-8">
             <AvatarImage src={user?.picture} />
@@ -170,7 +170,7 @@ export default function BusinessLayout({ children, user, onLogout }) {
               </div>
               <Button 
                 variant="outline" 
-                className="w-full justify-start border-[rgba(255,255,255,0.07)] border-300 text-slate-600 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
+                className="w-full justify-start border-[rgba(255,255,255,0.07)] border-300 text-slate-600 hover:text-red-600 hover:border-red-200 hover:bg-[rgba(255,59,47,0.08)]"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />

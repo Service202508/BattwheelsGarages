@@ -289,7 +289,7 @@ export default function CompositeItems() {
               <p className="text-2xl font-bold" data-testid="total-items">{summary.total_items}</p>
             </CardContent>
           </Card>
-          <Card className="bg-green-50 border-green-200">
+          <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
             <CardContent className="p-4">
               <p className="text-sm text-green-600">Active</p>
               <p className="text-2xl font-bold text-green-700" data-testid="active-count">{summary.active}</p>
@@ -313,7 +313,7 @@ export default function CompositeItems() {
               <p className="text-2xl font-bold text-emerald-700">{summary.bundles}</p>
             </CardContent>
           </Card>
-          <Card className="bg-orange-50 border-orange-200">
+          <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
             <CardContent className="p-4">
               <p className="text-sm text-orange-600">Inventory Value</p>
               <p className="text-xl font-bold text-orange-700" data-testid="inventory-value">{formatCurrency(summary.inventory_value)}</p>
@@ -664,11 +664,11 @@ export default function CompositeItems() {
                     <p className="text-xs text-blue-600">Selling Price</p>
                     <p className="font-bold text-blue-700">{formatCurrency(selectedItem.selling_price)}</p>
                   </div>
-                  <div className="p-3 bg-green-50 rounded-lg text-center">
+                  <div className="p-3 bg-[rgba(34,197,94,0.08)] rounded-lg text-center">
                     <p className="text-xs text-green-600">Stock On Hand</p>
                     <p className="font-bold text-green-700">{selectedItem.stock_on_hand || 0}</p>
                   </div>
-                  <div className="p-3 bg-orange-50 rounded-lg text-center">
+                  <div className="p-3 bg-[rgba(255,140,0,0.08)] rounded-lg text-center">
                     <p className="text-xs text-orange-600">Total Builds</p>
                     <p className="font-bold text-orange-700">{selectedItem.total_builds || 0}</p>
                   </div>
@@ -768,7 +768,7 @@ export default function CompositeItems() {
 
             {/* Availability Check */}
             {availability && (
-              <div className={`p-4 rounded-lg border ${availability.can_build ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+              <div className={`p-4 rounded-lg border ${availability.can_build ? 'bg-[rgba(34,197,94,0.08)] border-green-200' : 'bg-[rgba(255,59,47,0.08)] border-red-200'}`}>
                 <div className="flex items-center gap-2 mb-2">
                   {availability.can_build ? (
                     <CheckCircle className="h-5 w-5 text-green-600" />

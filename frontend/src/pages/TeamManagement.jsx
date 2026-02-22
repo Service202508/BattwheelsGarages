@@ -463,7 +463,7 @@ export default function TeamManagement({ user }) {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="text-red-600 hover:text-red-700 hover:bg-[rgba(255,59,47,0.08)]"
                               onClick={() => handleRemoveMember(member.user_id)}
                             >
                               <Trash2 className="h-4 w-4" />
@@ -553,7 +553,7 @@ export default function TeamManagement({ user }) {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  className="text-red-600 hover:text-red-700 hover:bg-[rgba(255,59,47,0.08)]"
                                   onClick={() => handleCancelInvite(invite.invite_id)}
                                   title="Cancel invitation"
                                 >

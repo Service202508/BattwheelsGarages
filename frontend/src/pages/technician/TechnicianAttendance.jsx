@@ -14,7 +14,7 @@ import { API, getAuthHeaders } from "@/App";
 
 const statusColors = {
   present: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-  absent: "bg-red-500/20 text-red-400 border-red-500/30",
+  absent: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400 border-red-500/30",
   late: "bg-amber-500/20 text-amber-400 border-amber-500/30",
   half_day: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   leave: "bg-purple-500/20 text-purple-400 border-purple-500/30",
@@ -153,7 +153,7 @@ export default function TechnicianAttendance({ user }) {
             <Button 
               onClick={() => { setCheckType('out'); setShowCheckDialog(true); }}
               variant="outline"
-              className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+              className="border-red-500/30 text-red-400 hover:bg-[rgba(255,59,47,0.08)]0/10"
               data-testid="check-out-btn"
             >
               <Square className="h-4 w-4 mr-2" />
@@ -226,7 +226,7 @@ export default function TechnicianAttendance({ user }) {
                 <p className="text-xs text-slate-500 uppercase tracking-wider">Absent</p>
                 <p className="text-2xl font-bold text-red-400 mt-1">{summary.absent || 0}</p>
               </div>
-              <div className="p-2.5 rounded-xl bg-red-500/10">
+              <div className="p-2.5 rounded-xl bg-[rgba(255,59,47,0.08)]0/10">
                 <AlertCircle className="h-5 w-5 text-red-400" />
               </div>
             </div>
@@ -311,7 +311,7 @@ export default function TechnicianAttendance({ user }) {
                         </div>
                         <div className="flex items-center gap-3">
                           <div className={`p-2 rounded-lg ${record.status === 'present' ? 'bg-emerald-500/10' : 
-                            record.status === 'absent' ? 'bg-red-500/10' : 
+                            record.status === 'absent' ? 'bg-[rgba(255,59,47,0.08)]0/10' : 
                             record.status === 'late' ? 'bg-amber-500/10' : 'bg-blue-500/10'}`}>
                             <StatusIcon className={`h-5 w-5 ${record.status === 'present' ? 'text-emerald-400' : 
                               record.status === 'absent' ? 'text-red-400' : 
@@ -360,7 +360,7 @@ export default function TechnicianAttendance({ user }) {
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 text-center">
-            <div className={`inline-flex p-4 rounded-full ${checkType === 'in' ? 'bg-green-500/20' : 'bg-red-500/20'} mb-4`}>
+            <div className={`inline-flex p-4 rounded-full ${checkType === 'in' ? 'bg-[rgba(34,197,94,0.08)]0/20' : 'bg-[rgba(255,59,47,0.08)]0/20'} mb-4`}>
               {checkType === 'in' ? (
                 <Play className="h-8 w-8 text-green-400" />
               ) : (

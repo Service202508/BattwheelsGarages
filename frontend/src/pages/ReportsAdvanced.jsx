@@ -578,7 +578,7 @@ export default function ReportsAdvanced() {
                       <p className="text-3xl font-bold text-blue-600">{dashboardSummary.customers?.active || 0}</p>
                       <p className="text-sm text-gray-600">Active Customers</p>
                     </div>
-                    <div className="bg-yellow-50 p-4 rounded-lg text-center">
+                    <div className="bg-[rgba(234,179,8,0.08)] p-4 rounded-lg text-center">
                       <p className="text-3xl font-bold text-yellow-600">{dashboardSummary.pipeline?.pending_estimates || 0}</p>
                       <p className="text-sm text-gray-600">Pending Estimates</p>
                     </div>

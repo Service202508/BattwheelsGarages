@@ -1532,7 +1532,7 @@ export default function EstimatesEnhanced() {
                       {selectedContact.gstin && <p>GSTIN: {selectedContact.gstin}</p>}
                       {customerPricing?.sales_price_list && (
                         <div className="mt-1 flex items-center gap-1">
-                          <Badge variant="outline" className="text-xs bg-green-50 text-[#22C55E] border-green-200">
+                          <Badge variant="outline" className="text-xs bg-[rgba(34,197,94,0.08)] text-[#22C55E] border-green-200">
                             <IndianRupee className="h-3 w-3 mr-1" />
                             {customerPricing.sales_price_list.name}
                             {customerPricing.sales_price_list.discount_percentage > 0 && ` (-${customerPricing.sales_price_list.discount_percentage}%)`}
@@ -1599,7 +1599,7 @@ export default function EstimatesEnhanced() {
                             {item.description && <div className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</div>}
                             {item.hsn_code && <div className="text-xs text-[rgba(244,246,240,0.25)]">HSN: {item.hsn_code}</div>}
                             {item.price_list_applied && (
-                              <span className="text-[10px] text-[#22C55E] bg-green-50 px-1 rounded">
+                              <span className="text-[10px] text-[#22C55E] bg-[rgba(34,197,94,0.08)] px-1 rounded">
                                 {item.price_list_applied}
                               </span>
                             )}
@@ -1867,7 +1867,7 @@ export default function EstimatesEnhanced() {
 
                 {/* Lock Banner */}
                 {selectedEstimate.locked_at && (
-                  <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-3 flex items-center gap-2 text-orange-800">
+                  <div className="bg-[rgba(255,140,0,0.08)] border border-orange-200 rounded-lg px-4 py-3 flex items-center gap-2 text-orange-800">
                     <AlertTriangle className="h-5 w-5" />
                     <div>
                       <p className="font-medium">Estimate Locked</p>
@@ -1895,7 +1895,7 @@ export default function EstimatesEnhanced() {
 
                 {/* Price List Info */}
                 {selectedEstimate.price_list_name && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-sm flex items-center gap-2">
+                  <div className="bg-[rgba(34,197,94,0.08)] border border-green-200 rounded-lg px-3 py-2 text-sm flex items-center gap-2">
                     <IndianRupee className="h-4 w-4 text-[#22C55E]" />
                     <span className="text-[#22C55E]">
                       Price List Applied: <strong>{selectedEstimate.price_list_name}</strong>
@@ -1928,7 +1928,7 @@ export default function EstimatesEnhanced() {
                                 <p className="font-medium">{item.name}</p>
                                 {item.description && <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</p>}
                                 {item.price_list_applied && (
-                                  <span className="text-[10px] text-[#22C55E] bg-green-50 px-1 rounded">
+                                  <span className="text-[10px] text-[#22C55E] bg-[rgba(34,197,94,0.08)] px-1 rounded">
                                     {item.price_list_applied}
                                   </span>
                                 )}
@@ -1989,7 +1989,7 @@ export default function EstimatesEnhanced() {
                   {(selectedEstimate.status === "sent" || selectedEstimate.status === "customer_viewed") && (
                     <>
                       <Button variant="outline" onClick={() => { setSendEmail(selectedEstimate.customer_email || ""); setShowSendDialog(true); }}><Send className="h-4 w-4 mr-1" /> Resend</Button>
-                      <Button onClick={() => handleMarkAccepted(selectedEstimate.estimate_id)} className="bg-green-500 hover:bg-green-600"><CheckCircle className="h-4 w-4 mr-1" /> Mark Accepted</Button>
+                      <Button onClick={() => handleMarkAccepted(selectedEstimate.estimate_id)} className="bg-[rgba(34,197,94,0.08)]0 hover:bg-green-600"><CheckCircle className="h-4 w-4 mr-1" /> Mark Accepted</Button>
                       <Button variant="outline" onClick={() => handleMarkDeclined(selectedEstimate.estimate_id)}><XCircle className="h-4 w-4 mr-1" /> Mark Declined</Button>
                     </>
                   )}
@@ -2145,7 +2145,7 @@ export default function EstimatesEnhanced() {
               </>
             ) : (
               <div className="space-y-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="bg-[rgba(34,197,94,0.08)] border border-green-200 rounded-lg p-4">
                   <p className="text-sm text-[#22C55E] font-medium mb-2">Share link created successfully!</p>
                   <div className="flex items-center gap-2">
                     <Input 
@@ -2410,13 +2410,13 @@ export default function EstimatesEnhanced() {
               </Select>
             </div>
             {bulkAction === "void" && (
-              <div className="bg-orange-50 p-3 rounded-lg text-sm text-orange-700">
+              <div className="bg-[rgba(255,140,0,0.08)] p-3 rounded-lg text-sm text-orange-700">
                 <AlertTriangle className="h-4 w-4 inline mr-2" />
                 Voiding estimates is irreversible. Converted estimates cannot be voided.
               </div>
             )}
             {bulkAction === "delete" && (
-              <div className="bg-red-50 p-3 rounded-lg text-sm text-[#FF3B2F]">
+              <div className="bg-[rgba(255,59,47,0.08)] p-3 rounded-lg text-sm text-[#FF3B2F]">
                 <AlertTriangle className="h-4 w-4 inline mr-2" />
                 Only draft estimates will be deleted. This action is irreversible.
               </div>
@@ -2542,7 +2542,7 @@ export default function EstimatesEnhanced() {
                 key={template.id}
                 className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                   selectedTemplate === template.id 
-                    ? 'border-[#22EDA9] bg-green-50' 
+                    ? 'border-[#22EDA9] bg-[rgba(34,197,94,0.08)]' 
                     : 'border-[rgba(255,255,255,0.07)] hover:border-[rgba(255,255,255,0.13)]'
                 }`}
                 onClick={() => setSelectedTemplate(template.id)}

@@ -308,7 +308,7 @@ export default function SerialBatchTracking() {
 
       {/* Expiring Batches Alert */}
       {expiringBatches.length > 0 && (
-        <Card className="border-orange-300 bg-orange-50">
+        <Card className="border-orange-300 bg-[rgba(255,140,0,0.08)]">
           <CardContent className="py-4">
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />

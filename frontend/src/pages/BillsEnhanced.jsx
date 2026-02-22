@@ -1022,7 +1022,7 @@ export default function BillsEnhanced() {
                     <h4 className="font-medium mb-2">Payments</h4>
                     <div className="space-y-2">
                       {billDetail.payments.map(pmt => (
-                        <div key={pmt.payment_id} className="flex justify-between items-center p-3 bg-green-50 rounded-lg border border-green-100">
+                        <div key={pmt.payment_id} className="flex justify-between items-center p-3 bg-[rgba(34,197,94,0.08)] rounded-lg border border-green-100">
                           <div>
                             <p className="font-medium">₹{pmt.amount.toLocaleString('en-IN')}</p>
                             <p className="text-xs text-gray-500">{pmt.payment_mode} - {pmt.payment_date}</p>

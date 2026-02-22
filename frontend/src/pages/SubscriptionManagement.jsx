@@ -492,7 +492,7 @@ export default function SubscriptionManagement() {
                               key={feature}
                               className={`flex items-center gap-2 p-2 rounded-lg ${
                                 isEnabled 
-                                  ? "bg-green-50 text-green-700" 
+                                  ? "bg-[rgba(34,197,94,0.08)] text-green-700" 
                                   : "bg-gray-50 text-gray-400"
                               }`}
                             >

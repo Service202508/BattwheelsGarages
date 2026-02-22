@@ -456,11 +456,11 @@ export default function DataManagement() {
                     <p className="text-2xl font-bold">{sanitizationReport.total_records_scanned}</p>
                     <p className="text-sm text-muted-foreground">Records Scanned</p>
                   </div>
-                  <div className="p-4 border rounded-lg text-center bg-red-50">
+                  <div className="p-4 border rounded-lg text-center bg-[rgba(255,59,47,0.08)]">
                     <p className="text-2xl font-bold text-red-600">{sanitizationReport.total_test_records}</p>
                     <p className="text-sm text-muted-foreground">Test Records Found</p>
                   </div>
-                  <div className="p-4 border rounded-lg text-center bg-green-50">
+                  <div className="p-4 border rounded-lg text-center bg-[rgba(34,197,94,0.08)]">
                     <p className="text-2xl font-bold text-green-600">{sanitizationReport.total_deleted}</p>
                     <p className="text-sm text-muted-foreground">Records Deleted</p>
                   </div>

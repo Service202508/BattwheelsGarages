@@ -21,19 +21,19 @@ const statusColors = {
   open: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   assigned: "bg-purple-500/20 text-purple-400 border-purple-500/30",
   technician_assigned: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  work_in_progress: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+  work_in_progress: "bg-[rgba(255,140,0,0.08)]0/20 text-orange-400 border-orange-500/30",
   estimate_sent: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
   estimate_approved: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-  work_completed: "bg-green-500/20 text-green-400 border-green-500/30",
+  work_completed: "bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30",
   closed: "bg-slate-500/20 text-slate-400 border-[rgba(255,255,255,0.07)] border-500/30",
-  resolved: "bg-green-500/20 text-green-400 border-green-500/30",
+  resolved: "bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30",
 };
 
 const priorityColors = {
-  low: "bg-green-500/10 text-green-400",
-  medium: "bg-yellow-500/10 text-yellow-400",
-  high: "bg-orange-500/10 text-orange-400",
-  critical: "bg-red-500/10 text-red-400 animate-pulse",
+  low: "bg-[rgba(34,197,94,0.08)]0/10 text-green-400",
+  medium: "bg-[rgba(234,179,8,0.08)]0/10 text-yellow-400",
+  high: "bg-[rgba(255,140,0,0.08)]0/10 text-orange-400",
+  critical: "bg-[rgba(255,59,47,0.08)]0/10 text-red-400 animate-pulse",
 };
 
 export default function TechnicianTickets({ user }) {

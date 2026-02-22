@@ -216,7 +216,7 @@ export default function TechnicianProductivity({ user }) {
 
       {/* KPI Alerts */}
       {kpis && (kpis.overdue_tickets > 0 || kpis.pending_tickets > 5) && (
-        <Card className="border-orange-200 bg-orange-50">
+        <Card className="border-orange-200 bg-[rgba(255,140,0,0.08)]">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <AlertTriangle className="h-5 w-5 text-orange-600" />
@@ -318,7 +318,7 @@ export default function TechnicianProductivity({ user }) {
                 {leaderboard.slice(0, 5).map((tech, index) => (
                   <div key={tech.technician_id} className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
-                      index === 0 ? 'bg-yellow-500' :
+                      index === 0 ? 'bg-[rgba(234,179,8,0.08)]0' :
                       index === 1 ? 'bg-gray-400' :
                       index === 2 ? 'bg-amber-600' :
                       'bg-gray-300'

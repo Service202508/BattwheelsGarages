@@ -16,12 +16,12 @@ import { API, getAuthHeaders } from "@/App";
 import JobCard from "@/components/JobCard";
 
 const statusColors = {
-  open: "bg-yellow-500",
+  open: "bg-[rgba(234,179,8,0.08)]0",
   technician_assigned: "bg-blue-500",
   estimate_shared: "bg-purple-500",
   estimate_approved: "bg-indigo-500",
-  in_progress: "bg-orange-500",
-  resolved: "bg-green-500",
+  in_progress: "bg-[rgba(255,140,0,0.08)]0",
+  resolved: "bg-[rgba(34,197,94,0.08)]0",
   closed: "bg-gray-500",
 };
 
@@ -37,9 +37,9 @@ const statusLabels = {
 
 const priorityColors = {
   low: "bg-emerald-500/20 text-emerald-400",
-  medium: "bg-yellow-500/20 text-yellow-400",
-  high: "bg-orange-500/20 text-orange-400",
-  critical: "bg-red-500/20 text-red-400"
+  medium: "bg-[rgba(234,179,8,0.08)]0/20 text-yellow-400",
+  high: "bg-[rgba(255,140,0,0.08)]0/20 text-orange-400",
+  critical: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400"
 };
 
 export default function Tickets({ user }) {

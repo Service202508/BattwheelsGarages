@@ -973,7 +973,7 @@ export default function PaymentsReceived() {
 
             {/* Available Credits */}
             {customerCredits.length > 0 && (
-              <div className="p-3 bg-green-50 rounded-lg">
+              <div className="p-3 bg-[rgba(34,197,94,0.08)] rounded-lg">
                 <p className="text-sm font-medium text-green-700">
                   Available Credits: ₹{customerCredits.reduce((sum, c) => sum + c.amount, 0).toLocaleString('en-IN')}
                 </p>
@@ -1131,7 +1131,7 @@ export default function PaymentsReceived() {
 
               {/* Overpayment */}
               {selectedPayment.overpayment_amount > 0 && (
-                <div className="p-3 bg-green-50 rounded-lg flex justify-between items-center">
+                <div className="p-3 bg-[rgba(34,197,94,0.08)] rounded-lg flex justify-between items-center">
                   <div>
                     <p className="font-medium text-green-700">Overpayment Credited</p>
                     <p className="text-sm text-green-600">Available for future invoices</p>

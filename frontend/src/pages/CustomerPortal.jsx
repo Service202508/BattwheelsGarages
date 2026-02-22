@@ -460,7 +460,7 @@ export default function CustomerPortal() {
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-green-50 border-green-200">
+                  <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-3">
                         <CheckCircle className="h-8 w-8 text-green-500" />
@@ -471,7 +471,7 @@ export default function CustomerPortal() {
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-orange-50 border-orange-200">
+                  <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-3">
                         <DollarSign className="h-8 w-8 text-orange-500" />
@@ -482,7 +482,7 @@ export default function CustomerPortal() {
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className={dashboard.summary.overdue_invoices > 0 ? "bg-red-50 border-red-200" : "bg-gray-50"}>
+                  <Card className={dashboard.summary.overdue_invoices > 0 ? "bg-[rgba(255,59,47,0.08)] border-red-200" : "bg-gray-50"}>
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-3">
                         <AlertTriangle className={`h-8 w-8 ${dashboard.summary.overdue_invoices > 0 ? "text-red-500" : "text-gray-400"}`} />
@@ -531,7 +531,7 @@ export default function CustomerPortal() {
 
                 {/* Pending Estimates */}
                 {dashboard.summary.pending_estimates > 0 && (
-                  <Card className="border-yellow-200 bg-yellow-50">
+                  <Card className="border-yellow-200 bg-[rgba(234,179,8,0.08)]">
                     <CardContent className="pt-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -1037,7 +1037,7 @@ export default function CustomerPortal() {
                 
                 {selectedEstimate.status === "sent" && (
                   <div className="flex gap-3 justify-center">
-                    <Button onClick={() => handleAcceptEstimate(selectedEstimate.estimate_id)} className="bg-green-500 hover:bg-green-600 text-white">
+                    <Button onClick={() => handleAcceptEstimate(selectedEstimate.estimate_id)} className="bg-[rgba(34,197,94,0.08)]0 hover:bg-green-600 text-white">
                       <CheckCircle className="h-4 w-4 mr-2" /> Accept Estimate
                     </Button>
                     <Button variant="outline" onClick={() => handleDeclineEstimate(selectedEstimate.estimate_id)}>

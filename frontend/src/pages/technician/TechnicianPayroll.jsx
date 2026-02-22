@@ -86,10 +86,10 @@ export default function TechnicianPayroll({ user }) {
         <Card className="bg-gradient-to-br from-green-500/20 via-emerald-500/10 to-slate-900 border border-green-500/20">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <div className="p-2 rounded-lg bg-green-500/20">
+              <div className="p-2 rounded-lg bg-[rgba(34,197,94,0.08)]0/20">
                 <IndianRupee className="h-5 w-5 text-green-400" />
               </div>
-              <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Latest</Badge>
+              <Badge className="bg-[rgba(34,197,94,0.08)]0/20 text-green-400 border-green-500/30">Latest</Badge>
             </div>
             <p className="text-sm text-slate-400">Latest Salary</p>
             <p className="text-3xl font-bold text-white mt-1">
@@ -168,7 +168,7 @@ export default function TechnicianPayroll({ user }) {
                     <span className="text-slate-300">Overtime</span>
                     <span className="text-white font-medium">{formatCurrency(currentMonth.overtime || 0)}</span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                  <div className="flex justify-between p-3 rounded-lg bg-[rgba(34,197,94,0.08)]0/10 border border-green-500/20">
                     <span className="text-green-400 font-medium">Gross Earnings</span>
                     <span className="text-green-400 font-bold">{formatCurrency(currentMonth.gross_pay || 0)}</span>
                   </div>
@@ -195,7 +195,7 @@ export default function TechnicianPayroll({ user }) {
                     <span className="text-slate-300">TDS</span>
                     <span className="text-red-400 font-medium">-{formatCurrency(currentMonth.tds || 0)}</span>
                   </div>
-                  <div className="flex justify-between p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                  <div className="flex justify-between p-3 rounded-lg bg-[rgba(255,59,47,0.08)]0/10 border border-red-500/20">
                     <span className="text-red-400 font-medium">Total Deductions</span>
                     <span className="text-red-400 font-bold">{formatCurrency(currentMonth.total_deductions || 0)}</span>
                   </div>

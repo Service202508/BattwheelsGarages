@@ -362,7 +362,7 @@ export default function InventoryEnhanced() {
               <CardContent>
                 <div className="space-y-2">
                   {lowStockItems.slice(0, 5).map(item => (
-                    <div key={item.item_id} className="flex justify-between items-center p-2 bg-red-50 rounded">
+                    <div key={item.item_id} className="flex justify-between items-center p-2 bg-[rgba(255,59,47,0.08)] rounded">
                       <div>
                         <p className="font-medium">{item.name}</p>
                         <p className="text-xs text-gray-500">{item.sku}</p>
@@ -422,7 +422,7 @@ export default function InventoryEnhanced() {
                 ) : (
                   <div className="space-y-2">
                     {returns.filter(r => r.status === 'pending').slice(0, 5).map(r => (
-                      <div key={r.return_id} className="flex justify-between items-center p-2 bg-yellow-50 rounded cursor-pointer hover:bg-yellow-100" onClick={() => viewDetail('return', r.return_id)}>
+                      <div key={r.return_id} className="flex justify-between items-center p-2 bg-[rgba(234,179,8,0.08)] rounded cursor-pointer hover:bg-yellow-100" onClick={() => viewDetail('return', r.return_id)}>
                         <div>
                           <p className="font-medium">{r.customer_name}</p>
                           <p className="text-xs text-gray-500">{r.reason}</p>

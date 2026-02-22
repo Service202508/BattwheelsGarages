@@ -286,7 +286,7 @@ export default function OpeningBalances() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-green-50 border-green-200">
+        <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -299,7 +299,7 @@ export default function OpeningBalances() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-red-50 border-red-200">
+        <Card className="bg-[rgba(255,59,47,0.08)] border-red-200">
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-red-100 rounded-lg">

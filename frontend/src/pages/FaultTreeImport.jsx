@@ -364,15 +364,15 @@ const FaultTreeImport = () => {
                 <div className="text-2xl font-bold text-[#F4F6F0]">{preview.total_rows}</div>
                 <div className="text-sm text-gray-500">Total Rows</div>
               </div>
-              <div className="bg-green-50 p-4 rounded-lg text-center">
+              <div className="bg-[rgba(34,197,94,0.08)] p-4 rounded-lg text-center">
                 <div className="text-2xl font-bold text-green-600">{preview.valid_rows}</div>
                 <div className="text-sm text-gray-500">Valid</div>
               </div>
-              <div className="bg-yellow-50 p-4 rounded-lg text-center">
+              <div className="bg-[rgba(234,179,8,0.08)] p-4 rounded-lg text-center">
                 <div className="text-2xl font-bold text-yellow-600">{preview.warning_rows}</div>
                 <div className="text-sm text-gray-500">Warnings</div>
               </div>
-              <div className="bg-red-50 p-4 rounded-lg text-center">
+              <div className="bg-[rgba(255,59,47,0.08)] p-4 rounded-lg text-center">
                 <div className="text-2xl font-bold text-red-600">{preview.error_rows}</div>
                 <div className="text-sm text-gray-500">Errors</div>
               </div>

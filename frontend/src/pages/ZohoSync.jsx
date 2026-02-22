@@ -257,7 +257,7 @@ export default function ZohoSync() {
 
       {/* Connection Status */}
       {connectionStatus && (
-        <Alert className={connectionStatus.status === "connected" ? "border-green-500 bg-green-50" : "border-red-500 bg-red-50"}>
+        <Alert className={connectionStatus.status === "connected" ? "border-green-500 bg-[rgba(34,197,94,0.08)]" : "border-red-500 bg-[rgba(255,59,47,0.08)]"}>
           {connectionStatus.status === "connected" ? (
             <CheckCircle2 className="h-4 w-4 text-green-600" />
           ) : (
@@ -304,8 +304,8 @@ export default function ZohoSync() {
               <Card 
                 key={module.id} 
                 className={`hover:shadow-md transition-shadow ${
-                  result?.status === "success" ? "border-green-200 bg-green-50" :
-                  result?.status === "error" ? "border-red-200 bg-red-50" : ""
+                  result?.status === "success" ? "border-green-200 bg-[rgba(34,197,94,0.08)]" :
+                  result?.status === "error" ? "border-red-200 bg-[rgba(255,59,47,0.08)]" : ""
                 }`}
               >
                 <CardContent className="py-4">
@@ -449,7 +449,7 @@ export default function ZohoSync() {
               </AlertDescription>
             </Alert>
             
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm">
+            <div className="bg-[rgba(255,59,47,0.08)] border border-red-200 rounded-lg p-4 text-sm">
               <ul className="space-y-1 text-red-800">
                 <li className="flex items-center gap-2"><Trash2 className="h-3 w-3" /> All contacts (customers & vendors)</li>
                 <li className="flex items-center gap-2"><Trash2 className="h-3 w-3" /> All items (products & services)</li>

@@ -18,9 +18,9 @@ import { API } from "@/App";
 // Confidence badge styling
 const confidenceBadge = (level, score) => {
   const styles = {
-    high: "bg-green-500/15 text-green-600 border-green-500/30",
-    medium: "bg-yellow-500/15 text-yellow-600 border-yellow-500/30",
-    low: "bg-orange-500/15 text-orange-600 border-orange-500/30"
+    high: "bg-[rgba(34,197,94,0.08)]0/15 text-green-600 border-green-500/30",
+    medium: "bg-[rgba(234,179,8,0.08)]0/15 text-yellow-600 border-yellow-500/30",
+    low: "bg-[rgba(255,140,0,0.08)]0/15 text-orange-600 border-orange-500/30"
   };
   return (
     <Badge variant="outline" className={styles[level] || styles.low}>
@@ -335,7 +335,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                   )}
 
                   {currentStep.safety_notes && (
-                    <div className="flex items-start gap-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded text-xs text-yellow-700 dark:text-yellow-400 mb-2">
+                    <div className="flex items-start gap-2 p-2 bg-[rgba(234,179,8,0.08)] dark:bg-yellow-900/20 rounded text-xs text-yellow-700 dark:text-yellow-400 mb-2">
                       <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
                       <span>{currentStep.safety_notes}</span>
                     </div>
@@ -430,7 +430,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
 
           {/* Session Completed - Show Estimate */}
           {activeSession?.status === "completed" && estimate && (
-            <Card className="border-green-500/50 bg-green-50/50 dark:bg-green-950/20">
+            <Card className="border-green-500/50 bg-[rgba(34,197,94,0.08)]/50 dark:bg-green-950/20">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2 text-green-700 dark:text-green-400">
                   <CheckCircle2 className="h-5 w-5" />

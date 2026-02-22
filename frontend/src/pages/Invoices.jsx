@@ -583,7 +583,7 @@ export default function Invoices() {
                                 </Button>
                               )}
                               {["draft", "sent", "partially_paid"].includes(invoice.status) && (
-                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "paid")} className="bg-green-500 hover:bg-green-600 text-white">
+                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "paid")} className="bg-[rgba(34,197,94,0.08)]0 hover:bg-green-600 text-white">
                                   <CheckCircle className="h-4 w-4 mr-2" />
                                   Mark as Paid
                                 </Button>

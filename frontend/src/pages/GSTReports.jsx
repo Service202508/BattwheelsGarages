@@ -285,7 +285,7 @@ export default function GSTReports() {
 
       {/* Current GSTIN Display */}
       {orgSettings?.gstin && (
-        <Card className="bg-green-50 border-green-200">
+        <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
           <CardContent className="py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
@@ -362,13 +362,13 @@ export default function GSTReports() {
                         <p className="text-2xl font-bold text-blue-800">{gstr1Data.grand_total?.total_invoices || 0}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-green-50 border-green-200">
+                    <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
                       <CardContent className="p-4">
                         <p className="text-xs text-green-700 font-medium">Taxable Value</p>
                         <p className="text-xl font-bold text-green-800">{formatCurrency(gstr1Data.grand_total?.taxable_value)}</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-orange-50 border-orange-200">
+                    <Card className="bg-[rgba(255,140,0,0.08)] border-orange-200">
                       <CardContent className="p-4">
                         <p className="text-xs text-orange-700 font-medium">CGST + SGST</p>
                         <p className="text-xl font-bold text-orange-800">{formatCurrency((gstr1Data.grand_total?.cgst || 0) + (gstr1Data.grand_total?.sgst || 0))}</p>
@@ -554,7 +554,7 @@ export default function GSTReports() {
 
                   {/* Section 4 - ITC */}
                   <Card>
-                    <CardHeader className="py-3 bg-green-50">
+                    <CardHeader className="py-3 bg-[rgba(34,197,94,0.08)]">
                       <CardTitle className="text-base text-green-800">4. Eligible ITC (Input Tax Credit)</CardTitle>
                     </CardHeader>
                     <CardContent className="pt-4">
@@ -583,7 +583,7 @@ export default function GSTReports() {
 
                   {/* Section 6 - Payment */}
                   <Card>
-                    <CardHeader className="py-3 bg-orange-50">
+                    <CardHeader className="py-3 bg-[rgba(255,140,0,0.08)]">
                       <CardTitle className="text-base text-orange-800">6.1 Payment of Tax</CardTitle>
                     </CardHeader>
                     <CardContent className="pt-4">

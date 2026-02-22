@@ -22,11 +22,11 @@ import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
-  active: "bg-green-500/20 text-green-400",
+  active: "bg-[rgba(34,197,94,0.08)]0/20 text-green-400",
   inactive: "bg-gray-500/20 text-gray-400",
-  terminated: "bg-red-500/20 text-red-400",
-  resigned: "bg-yellow-500/20 text-yellow-400",
-  on_notice: "bg-orange-500/20 text-orange-400"
+  terminated: "bg-[rgba(255,59,47,0.08)]0/20 text-red-400",
+  resigned: "bg-[rgba(234,179,8,0.08)]0/20 text-yellow-400",
+  on_notice: "bg-[rgba(255,140,0,0.08)]0/20 text-orange-400"
 };
 
 const roleColors = {
