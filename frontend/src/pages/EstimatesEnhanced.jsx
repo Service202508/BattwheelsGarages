@@ -1349,7 +1349,8 @@ export default function EstimatesEnhanced() {
                     </tr>
                   ))}
                 </tbody>
-            </ResponsiveTable>
+              </ResponsiveTable>
+            </div>
           )}
         </TabsContent>
 
