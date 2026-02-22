@@ -294,16 +294,16 @@ Please provide:
                       onClick={() => setSelectedCategory(category.id)}
                       className={`relative flex flex-col items-center gap-2 p-3 rounded-lg border transition-all duration-150 ${
                         isSelected
-                          ? "bg-emerald-500 border-emerald-500 text-white shadow-md"
-                          : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                          ? "bg-[rgba(200,255,0,0.12)] border-[rgba(200,255,0,0.35)] border-t-2 border-t-[#C8FF00]"
+                          : "bg-[#111820] border-[rgba(255,255,255,0.07)] text-[rgba(244,246,240,0.6)] hover:border-[rgba(200,255,0,0.2)] hover:bg-[rgba(200,255,0,0.05)]"
                       }`}
                       data-testid={`category-${category.id}`}
                     >
-                      <Icon className={`h-5 w-5 ${isSelected ? "text-white" : ""}`} />
-                      <span className="text-xs font-medium text-center leading-tight">{category.label}</span>
+                      <Icon className={`h-5 w-5 ${isSelected ? "text-[#C8FF00]" : "text-[rgba(244,246,240,0.5)]"}`} />
+                      <span className={`text-xs font-medium text-center leading-tight ${isSelected ? "text-[#C8FF00]" : ""}`}>{category.label}</span>
                       {isSelected && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center shadow">
-                          <CheckCircle className="h-3 w-3 text-emerald-500" />
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#C8FF00] rounded-full flex items-center justify-center shadow">
+                          <CheckCircle className="h-3 w-3 text-[#080C0F]" />
                         </div>
                       )}
                     </button>
