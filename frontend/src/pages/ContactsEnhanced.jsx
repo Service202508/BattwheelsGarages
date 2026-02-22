@@ -758,49 +758,50 @@ export default function ContactsEnhanced() {
           <div className="flex justify-end">
             <Dialog open={showTagDialog} onOpenChange={setShowTagDialog}>
               <DialogTrigger asChild>
-                <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black gap-2" data-testid="new-tag-btn">
+                <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold rounded-[3px] gap-2 hover:shadow-[0_0_20px_rgba(200,255,0,0.3)]" data-testid="new-tag-btn">
                   <Plus className="h-4 w-4" /> New Tag
                 </Button>
               </DialogTrigger>
-              <DialogContent>
-                <DialogHeader><DialogTitle>Create Tag</DialogTitle></DialogHeader>
+              <DialogContent className="bg-[#111820] border-[rgba(255,255,255,0.13)]">
+                <DialogHeader><DialogTitle className="text-[#F4F6F0] font-bold">Create Tag</DialogTitle></DialogHeader>
                 <div className="space-y-4 py-4">
-                  <div><Label>Name *</Label><Input value={newTag.name} onChange={(e) => setNewTag({ ...newTag, name: e.target.value })} placeholder="Tag name" data-testid="tag-name-input" /></div>
-                  <div><Label>Description</Label><Textarea value={newTag.description} onChange={(e) => setNewTag({ ...newTag, description: e.target.value })} placeholder="Description" /></div>
+                  <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">Name *</Label><Input value={newTag.name} onChange={(e) => setNewTag({ ...newTag, name: e.target.value })} placeholder="Tag name" className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.20)] focus:border-[#C8FF00]" data-testid="tag-name-input" /></div>
+                  <div><Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">Description</Label><Textarea value={newTag.description} onChange={(e) => setNewTag({ ...newTag, description: e.target.value })} placeholder="Description" className="bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.20)] focus:border-[#C8FF00]" /></div>
                   <div>
-                    <Label>Color</Label>
+                    <Label className="font-mono text-[10px] font-medium tracking-[0.16em] uppercase text-[rgba(244,246,240,0.45)]">Color</Label>
                     <div className="flex items-center gap-2">
-                      <Input type="color" value={newTag.color} onChange={(e) => setNewTag({ ...newTag, color: e.target.value })} className="w-16 h-10 p-1" />
-                      <Input value={newTag.color} onChange={(e) => setNewTag({ ...newTag, color: e.target.value })} placeholder="#3B82F6" className="flex-1" />
+                      <Input type="color" value={newTag.color} onChange={(e) => setNewTag({ ...newTag, color: e.target.value })} className="w-16 h-10 p-1 bg-[#111820] border-[rgba(255,255,255,0.13)]" />
+                      <Input value={newTag.color} onChange={(e) => setNewTag({ ...newTag, color: e.target.value })} placeholder="#3B82F6" className="flex-1 bg-[#111820] border-[rgba(255,255,255,0.13)] text-[#F4F6F0] font-mono" />
                     </div>
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setShowTagDialog(false)}>Cancel</Button>
-                  <Button onClick={handleCreateTag} className="bg-[#22EDA9] text-black" data-testid="create-tag-submit">Create</Button>
+                <DialogFooter className="border-t border-[rgba(255,255,255,0.07)] pt-4">
+                  <Button variant="outline" onClick={() => setShowTagDialog(false)} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]">Cancel</Button>
+                  <Button onClick={handleCreateTag} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-tag-submit">Create</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>
 
           {tags.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500"><Tag className="h-12 w-12 mx-auto mb-4 text-gray-300" /><p>No tags yet</p></CardContent></Card>
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]"><CardContent className="py-12 text-center"><Tag className="h-12 w-12 mx-auto mb-4 text-[rgba(200,255,0,0.50)]" /><p className="text-[rgba(244,246,240,0.45)]">No tags yet</p></CardContent></Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {tags.map(tag => (
-                <Card key={tag.tag_id} data-testid={`tag-card-${tag.tag_id}`}>
+                <Card key={tag.tag_id} className="group relative overflow-hidden bg-[#111820] border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.20)] hover:bg-[#141E27] transition-[background,border-color] duration-200" data-testid={`tag-card-${tag.tag_id}`}>
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#C8FF00] to-[#1AFFE4] scale-x-0 origin-left transition-transform duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-x-100" />
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded" style={{ backgroundColor: tag.color }}></div>
-                        <CardTitle className="text-lg">{tag.name}</CardTitle>
+                        <CardTitle className="text-lg text-[#F4F6F0]">{tag.name}</CardTitle>
                       </div>
-                      <Button size="icon" variant="ghost" onClick={() => handleDeleteTag(tag.tag_id)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => handleDeleteTag(tag.tag_id)} className="text-[#FF3B2F] hover:bg-[rgba(255,59,47,0.1)]"><Trash2 className="h-4 w-4" /></Button>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-gray-600 mb-2">{tag.description || "No description"}</p>
-                    <Badge variant="secondary">{tag.contact_count || 0} contacts</Badge>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)] mb-2">{tag.description || "No description"}</p>
+                    <Badge className="bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]">{tag.contact_count || 0} contacts</Badge>
                   </CardContent>
                 </Card>
               ))}
