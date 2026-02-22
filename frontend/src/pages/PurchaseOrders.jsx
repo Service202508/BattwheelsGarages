@@ -163,7 +163,14 @@ export default function PurchaseOrders() {
             <Button onClick={fetchData} variant="outline" size="sm">
               <RefreshCw className="h-4 w-4 mr-1" /> Refresh
             </Button>
-            <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <Dialog open={showCreateDialog} onOpenChange={(open) => {
+              if (!open && poPersistence.isDirty) {
+                poPersistence.setShowCloseConfirm(true);
+              } else {
+                setShowCreateDialog(open);
+                if (!open) poPersistence.clearSavedData();
+              }
+            }}>
               <DialogTrigger asChild>
                 <Button className="bg-[#22EDA9] hover:bg-[#1DD69A] text-black">
                   <Plus className="h-4 w-4 mr-2" /> New Purchase Order
@@ -171,9 +178,24 @@ export default function PurchaseOrders() {
               </DialogTrigger>
               <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>Create Purchase Order</DialogTitle>
+                  <div className="flex justify-between items-start">
+                    <DialogTitle>Create Purchase Order</DialogTitle>
+                    <AutoSaveIndicator 
+                      lastSaved={poPersistence.lastSaved} 
+                      isSaving={poPersistence.isSaving} 
+                      isDirty={poPersistence.isDirty} 
+                    />
+                  </div>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
+                  {/* Draft Recovery Banner */}
+                  <DraftRecoveryBanner
+                    show={poPersistence.showRecoveryBanner}
+                    savedAt={poPersistence.savedDraftInfo?.timestamp}
+                    onRestore={poPersistence.handleRestoreDraft}
+                    onDiscard={poPersistence.handleDiscardDraft}
+                  />
+                  
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>Vendor *</Label>
