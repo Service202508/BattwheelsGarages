@@ -25,7 +25,7 @@ import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "
 const statusColors = {
   draft: "bg-gray-100 text-[#F4F6F0]",
   confirmed: "bg-blue-100 text-blue-700",
-  open: "bg-green-100 text-green-700",
+  open: "bg-green-100 text-[#22C55E]",
   partially_fulfilled: "bg-yellow-100 text-yellow-700",
   fulfilled: "bg-purple-100 text-purple-700",
   closed: "bg-gray-200 text-[rgba(244,246,240,0.45)]",
@@ -43,9 +43,9 @@ const statusLabels = {
 };
 
 const fulfillmentColors = {
-  unfulfilled: "bg-red-100 text-red-700",
+  unfulfilled: "bg-red-100 text-[#FF3B2F]",
   partially_fulfilled: "bg-yellow-100 text-yellow-700",
-  fulfilled: "bg-green-100 text-green-700"
+  fulfilled: "bg-green-100 text-[#22C55E]"
 };
 
 export default function SalesOrdersEnhanced() {
@@ -441,7 +441,7 @@ export default function SalesOrdersEnhanced() {
             <div className="flex items-center justify-between text-xs">
               <div className="text-center">
                 <p className="text-[rgba(244,246,240,0.45)]">Unfulfilled</p>
-                <p className="text-xl font-bold text-red-600">{fulfillmentSummary.unfulfilled}</p>
+                <p className="text-xl font-bold text-[#FF3B2F]">{fulfillmentSummary.unfulfilled}</p>
                 <p className="text-[rgba(244,246,240,0.25)]">₹{(fulfillmentSummary.unfulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-gray-300" />
@@ -453,12 +453,12 @@ export default function SalesOrdersEnhanced() {
               <ChevronRight className="h-4 w-4 text-gray-300" />
               <div className="text-center">
                 <p className="text-[rgba(244,246,240,0.45)]">Fulfilled</p>
-                <p className="text-xl font-bold text-green-600">{fulfillmentSummary.fulfilled}</p>
+                <p className="text-xl font-bold text-[#22C55E]">{fulfillmentSummary.fulfilled}</p>
                 <p className="text-[rgba(244,246,240,0.25)]">₹{(fulfillmentSummary.fulfilled_value || 0).toLocaleString('en-IN')}</p>
               </div>
               <div className="text-center ml-8 border-l pl-8">
                 <p className="text-[rgba(244,246,240,0.45)]">Fulfillment Rate</p>
-                <p className="text-2xl font-bold text-green-600">{fulfillmentSummary.fulfillment_rate}%</p>
+                <p className="text-2xl font-bold text-[#22C55E]">{fulfillmentSummary.fulfillment_rate}%</p>
               </div>
             </div>
           </CardContent>
@@ -840,7 +840,7 @@ export default function SalesOrdersEnhanced() {
                                 {item.hsn_code && <p className="text-xs text-[rgba(244,246,240,0.45)]">HSN: {item.hsn_code}</p>}
                               </td>
                               <td className="px-3 py-2 text-right">{item.quantity_ordered || item.quantity} {item.unit}</td>
-                              <td className="px-3 py-2 text-right text-green-600">{item.quantity_fulfilled || 0}</td>
+                              <td className="px-3 py-2 text-right text-[#22C55E]">{item.quantity_fulfilled || 0}</td>
                               <td className="px-3 py-2 text-right text-orange-600">{(item.quantity_ordered || item.quantity) - (item.quantity_fulfilled || 0)}</td>
                               <td className="px-3 py-2 text-right">₹{item.rate?.toLocaleString('en-IN')}</td>
                               <td className="px-3 py-2 text-right font-medium">₹{item.total?.toLocaleString('en-IN')}</td>
@@ -856,13 +856,13 @@ export default function SalesOrdersEnhanced() {
                 <div className="flex justify-end">
                   <div className="w-64 space-y-1 text-sm">
                     <div className="flex justify-between"><span>Subtotal:</span><span>₹{selectedOrder.subtotal?.toLocaleString('en-IN')}</span></div>
-                    {selectedOrder.total_discount > 0 && <div className="flex justify-between text-red-600"><span>Discount:</span><span>-₹{selectedOrder.total_discount?.toLocaleString('en-IN')}</span></div>}
+                    {selectedOrder.total_discount > 0 && <div className="flex justify-between text-[#FF3B2F]"><span>Discount:</span><span>-₹{selectedOrder.total_discount?.toLocaleString('en-IN')}</span></div>}
                     <div className="flex justify-between"><span>Tax ({selectedOrder.gst_type?.toUpperCase()}):</span><span>₹{selectedOrder.total_tax?.toLocaleString('en-IN')}</span></div>
                     {selectedOrder.shipping_charge > 0 && <div className="flex justify-between"><span>Shipping:</span><span>₹{selectedOrder.shipping_charge?.toLocaleString('en-IN')}</span></div>}
                     <Separator />
                     <div className="flex justify-between font-bold text-lg"><span>Grand Total:</span><span>₹{selectedOrder.grand_total?.toLocaleString('en-IN')}</span></div>
                     {selectedOrder.invoiced_amount > 0 && (
-                      <div className="flex justify-between text-green-600"><span>Invoiced:</span><span>₹{selectedOrder.invoiced_amount?.toLocaleString('en-IN')}</span></div>
+                      <div className="flex justify-between text-[#22C55E]"><span>Invoiced:</span><span>₹{selectedOrder.invoiced_amount?.toLocaleString('en-IN')}</span></div>
                     )}
                   </div>
                 </div>
@@ -965,7 +965,7 @@ export default function SalesOrdersEnhanced() {
                       <tr key={idx} className="border-t">
                         <td className="px-3 py-2">{item.name}</td>
                         <td className="px-3 py-2 text-right">{item.quantity_ordered}</td>
-                        <td className="px-3 py-2 text-right text-green-600">{item.quantity_fulfilled}</td>
+                        <td className="px-3 py-2 text-right text-[#22C55E]">{item.quantity_fulfilled}</td>
                         <td className="px-3 py-2 text-right text-orange-600">{remaining}</td>
                         <td className="px-3 py-2 text-right">
                           <Input 

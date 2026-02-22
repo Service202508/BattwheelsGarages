@@ -18,9 +18,9 @@ const statusColors = {
   draft: "bg-gray-100 text-[#F4F6F0]",
   sent: "bg-blue-100 text-blue-700",
   viewed: "bg-purple-100 text-purple-700",
-  paid: "bg-green-100 text-green-700",
+  paid: "bg-green-100 text-[#22C55E]",
   partially_paid: "bg-yellow-100 text-yellow-700",
-  overdue: "bg-red-100 text-red-700",
+  overdue: "bg-red-100 text-[#FF3B2F]",
   void: "bg-gray-200 text-[rgba(244,246,240,0.45)]"
 };
 
@@ -408,7 +408,7 @@ export default function Invoices() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-[rgba(244,246,240,0.45)]">Collected</p>
-                  <p className="text-2xl font-bold text-green-600">₹{analytics.revenue.collected.toLocaleString('en-IN')}</p>
+                  <p className="text-2xl font-bold text-[#22C55E]">₹{analytics.revenue.collected.toLocaleString('en-IN')}</p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-500" />
               </div>
