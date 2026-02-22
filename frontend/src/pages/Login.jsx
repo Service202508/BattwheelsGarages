@@ -79,7 +79,7 @@ const AnimatedVehicleIcons = () => {
 
 // Feature Badges
 const FeatureBadge = ({ icon: Icon, text }) => (
-  <div className="flex items-center gap-2 px-4 py-2 bg-[#111820]/60 backdrop-blur-sm rounded-full border border-[rgba(200,255,0,0.15)] shadow-sm">
+  <div className="flex items-center gap-2 px-4 py-2 bg-[#111820]/60 backdrop-blur-sm rounded-full border border-[rgba(200,255,0,0.15)]">
     <Icon className="w-4 h-4 text-[#C8FF00]" />
     <span className="text-xs font-medium text-[rgba(244,246,240,0.7)]">{text}</span>
   </div>
@@ -151,15 +151,15 @@ const AutoScrollFeatureCards = () => {
             <div
               key={feature.title}
               onClick={() => setActiveIndex(index)}
-              className={`flex-shrink-0 w-[260px] p-4 rounded-lg cursor-pointer transition-all duration-500 snap-start ${
+              className={`flex-shrink-0 w-[260px] p-4 rounded cursor-pointer transition-all duration-500 snap-start ${
                 isActive 
-                  ? 'bg-[rgba(200,255,0,0.08)] border-2 border-[rgba(200,255,0,0.25)] shadow-lg shadow-[rgba(200,255,0,0.1)] scale-105' 
+                  ? 'bg-[rgba(200,255,0,0.08)] border-2 border-[rgba(200,255,0,0.25)] scale-105' 
                   : 'bg-[#111820]/50 border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.15)] hover:bg-[rgba(200,255,0,0.04)]'
               }`}
             >
               <div className={`w-10 h-10 rounded flex items-center justify-center mb-3 transition-all duration-500 ${
                 isActive 
-                  ? 'bg-[#C8FF00] shadow-lg shadow-[rgba(200,255,0,0.3)]' 
+                  ? 'bg-[#C8FF00]' 
                   : 'bg-[#111820]'
               }`}>
                 <Icon className={`w-5 h-5 transition-colors duration-500 ${isActive ? 'text-[#080C0F]' : 'text-[rgba(244,246,240,0.5)]'}`} />
@@ -212,15 +212,15 @@ const PremiumInput = ({ icon: Icon, type, id, placeholder, value, onChange, requ
       }`} />
       
       {/* Input Container */}
-      <div className={`relative rounded-lg transition-all duration-300 ${
+      <div className={`relative rounded transition-all duration-300 ${
         isFocused 
-          ? 'shadow-lg shadow-[rgba(200,255,0,0.15)] ring-2 ring-[rgba(200,255,0,0.4)]' 
-          : 'shadow-sm hover:shadow-md'
+          ? 'ring-2 ring-[rgba(200,255,0,0.4)]' 
+          : 'border border-[rgba(255,255,255,0.07)]'
       }`}>
         {/* Icon */}
         <div className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded transition-all duration-300 ${
           isFocused 
-            ? 'bg-[#C8FF00] shadow-lg shadow-[rgba(200,255,0,0.3)]' 
+            ? 'bg-[#C8FF00]' 
             : 'bg-[#111820]'
         }`}>
           <Icon className={`h-4 w-4 transition-colors duration-300 ${
@@ -232,7 +232,7 @@ const PremiumInput = ({ icon: Icon, type, id, placeholder, value, onChange, requ
           id={id}
           type={inputType}
           placeholder={placeholder}
-          className={`pl-16 pr-${showPasswordToggle ? '14' : '4'} h-14 bg-[#111820] border-2 rounded-lg text-base font-medium text-[#F4F6F0] transition-all duration-300 ${
+          className={`pl-16 pr-${showPasswordToggle ? '14' : '4'} h-14 bg-[#111820] border-2 rounded text-base font-medium text-[#F4F6F0] transition-all duration-300 ${
             isFocused 
               ? 'border-[#C8FF00] bg-[#111820]' 
               : 'border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]'
