@@ -426,6 +426,98 @@ export default function ZohoSync() {
           )}
         </CardContent>
       </Card>
+
+      {/* Disconnect Confirmation Dialog */}
+      <Dialog open={showDisconnectDialog} onOpenChange={setShowDisconnectDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle className="h-5 w-5" />
+              Disconnect Zoho Books & Purge Data
+            </DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. Please read carefully:
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Warning: Destructive Action</AlertTitle>
+              <AlertDescription>
+                This will permanently delete ALL data synced from Zoho Books including:
+              </AlertDescription>
+            </Alert>
+            
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm">
+              <ul className="space-y-1 text-red-800">
+                <li className="flex items-center gap-2"><Trash2 className="h-3 w-3" /> All contacts (customers & vendors)</li>
+                <li className="flex items-center gap-2"><Trash2 className="h-3 w-3" /> All items (products & services)</li>
+                <li className="flex items-center gap-2"><Trash2 className="h-3 w-3" /> All invoices & estimates</li>
+                <li className="flex items-center gap-2"><Trash2 className="h-3 w-3" /> All bills & purchase orders</li>
+                <li className="flex items-center gap-2"><Trash2 className="h-3 w-3" /> All payments & expenses</li>
+                <li className="flex items-center gap-2"><Trash2 className="h-3 w-3" /> All sync history & logs</li>
+              </ul>
+            </div>
+            
+            <p className="text-sm text-gray-600">
+              After this, you can start fresh with manual data entry or reconnect to Zoho Books later.
+            </p>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDisconnectDialog(false)} disabled={disconnecting}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleDisconnectAndPurge}
+              disabled={disconnecting}
+              data-testid="confirm-disconnect-btn"
+            >
+              {disconnecting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Disconnecting...
+                </>
+              ) : (
+                <>
+                  <Power className="h-4 w-4 mr-2" />
+                  Disconnect & Purge Data
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Purge Results */}
+      {purgeStats && (
+        <Dialog open={!!purgeStats} onOpenChange={() => setPurgeStats(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-green-600">
+                <CheckCircle2 className="h-5 w-5" />
+                Data Purge Complete
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2 py-4">
+              <p className="text-sm text-gray-600">The following data was removed:</p>
+              <div className="bg-gray-50 rounded-lg p-4 text-sm">
+                {Object.entries(purgeStats).map(([key, value]) => (
+                  <div key={key} className="flex justify-between py-1 border-b border-gray-200 last:border-0">
+                    <span className="capitalize">{key.replace(/_/g, ' ')}</span>
+                    <span className="font-mono text-gray-600">{value} records</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={() => setPurgeStats(null)}>Close</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
