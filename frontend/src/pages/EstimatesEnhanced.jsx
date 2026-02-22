@@ -1762,7 +1762,7 @@ export default function EstimatesEnhanced() {
                           ₹{((newLineItem.quantity || 0) * (newLineItem.rate || 0)).toLocaleString('en-IN', {minimumFractionDigits: 2})}
                         </td>
                         <td className="px-3 py-2">
-                          <Button size="sm" onClick={addLineItem} className="h-7 bg-[rgba(200,255,0,0.08)]0 hover:bg-emerald-600" disabled={!newLineItem.name}>
+                          <Button size="sm" onClick={addLineItem} className="h-7 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" disabled={!newLineItem.name}>
                             <Plus className="h-4 w-4" />
                           </Button>
                         </td>
