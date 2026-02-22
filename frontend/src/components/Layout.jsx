@@ -160,6 +160,7 @@ const navItems = [
       { name: "Fixed Assets", path: "/fixed-assets", icon: Package },
       { name: "Chart of Accounts", path: "/chart-of-accounts", icon: Layers },
       { name: "Journal Entries", path: "/journal-entries", icon: BookOpen },
+      { name: "Trial Balance", path: "/trial-balance", icon: Scale },
       { name: "Opening Balances", path: "/opening-balances", icon: Landmark },
     ]
   },
