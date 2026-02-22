@@ -414,7 +414,7 @@ export default function InvoiceSettings() {
                   <CardDescription>Invoices past their due date</CardDescription>
                 </div>
                 {selectedInvoices.length > 0 && (
-                  <Button onClick={sendBulkReminders} className="bg-[rgba(255,140,0,0.08)]0 hover:bg-orange-600">
+                  <Button onClick={sendBulkReminders} className="bg-[#FF8C00] hover:bg-orange-600 text-[#080C0F]">
                     <Send className="h-4 w-4 mr-2" /> Send {selectedInvoices.length} Reminders
                   </Button>
                 )}

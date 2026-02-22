@@ -168,7 +168,7 @@ const ReceivablesPayablesWidget = ({ type, data, loading }) => {
             <span>Current: {formatCurrency(current)}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-[rgba(255,140,0,0.08)]0" />
+            <div className="h-3 w-3 rounded-full bg-[#FF8C00]" />
             <span>Overdue: {formatCurrency(overdue)}</span>
           </div>
         </div>
@@ -335,12 +335,12 @@ const IncomeExpenseWidget = ({ data, loading, method, onMethodChange }) => {
       <CardContent>
         <div className="flex items-center gap-6 mb-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm bg-[rgba(34,197,94,0.08)]0" />
+            <div className="h-3 w-3 rounded-sm bg-[#22C55E]" />
             <span>Total Income</span>
             <span className="font-semibold">{formatCurrency(totalIncome, true)}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm bg-[rgba(255,59,47,0.08)]0" />
+            <div className="h-3 w-3 rounded-sm bg-[#FF3B2F]" />
             <span>Total Expenses</span>
             <span className="font-semibold">{formatCurrency(totalExpense, true)}</span>
           </div>
