@@ -265,7 +265,7 @@ export default function FixedAssets() {
         actions={
           <Button 
             onClick={() => setShowCreateDialog(true)}
-            className="bg-[#C8FF00] text-[#F4F6F0] hover:bg-[#d4ff1a] font-semibold shadow-lg shadow-[#C8FF00]/20" 
+            className="bg-[#C8FF00] text-[#F4F6F0] hover:bg-[#d4ff1a] font-semibold hover:shadow-[0_0_20px_rgba(200,255,0,0.30)]" 
             data-testid="create-asset-btn"
           >
             <Plus className="h-4 w-4 mr-2" />
