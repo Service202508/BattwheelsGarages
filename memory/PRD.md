@@ -1,12 +1,75 @@
 # Battwheels OS - Product Requirements Document
 
 ## SaaS Status: FULL SAAS PLATFORM COMPLETE ✅
-**Last Updated:** December 2025 (Session 102)
+**Last Updated:** December 2025 (Session 103)
 
 ---
 
 ## Design Philosophy
 **Dark-First Enterprise Platform** - Battwheels OS uses a single, excellent dark volt theme. No light mode toggle. This eliminates doubled design maintenance, ensures a consistent premium experience, and establishes clear product identity.
+
+---
+
+## Session 103 Updates (December 2025)
+
+### Double-Entry Bookkeeping Engine ✅ (P0 CRITICAL FIX)
+**Status:** ✅ COMPLETE - Proper Accounting System Implemented
+
+Replaced the activity-log-style ledger with a true double-entry bookkeeping system:
+
+**Backend Implementation:**
+- `/backend/services/double_entry_service.py` - Core double-entry service (800+ lines)
+- `/backend/routes/journal_entries.py` - Full API endpoints
+- `/backend/services/posting_hooks.py` - Auto-posting hooks for transactions
+
+**Features Implemented:**
+
+1. **Journal Entries Table** ✅
+   - entry_id, entry_date, reference_number (auto-sequential)
+   - description, organization_id, created_by
+   - entry_type (SALES, PURCHASE, PAYMENT, RECEIPT, EXPENSE, JOURNAL, PAYROLL, DEPRECIATION)
+   - source_document_id, source_document_type
+   - is_posted, is_reversed, lines array
+
+2. **Journal Entry Lines** ✅
+   - account_id, account_name, account_code, account_type
+   - debit_amount, credit_amount
+   - **VALIDATION:** sum(debit) MUST equal sum(credit) - Rejects unbalanced entries
+
+3. **Auto-Posting Rules** ✅
+   - Sales Invoice: DR Accounts Receivable, CR Sales Revenue + GST Payable
+   - Payment Received: DR Bank/Cash, CR Accounts Receivable
+   - Purchase Bill: DR Expense + GST Input Credit, CR Accounts Payable
+   - Bill Payment: DR Accounts Payable, CR Bank/Cash
+   - Expense: DR Expense Account, CR Bank/Cash/AP
+   - Payroll: DR Salary Expense, CR Salary Payable + TDS + PF + ESI
+
+4. **Reports** ✅
+   - Trial Balance (with balanced/error status)
+   - Account Ledger with running balance
+   - P&L from journal entries
+   - Balance Sheet from journal entries (Assets = Liabilities + Equity)
+
+5. **System Accounts** ✅
+   - 28 pre-configured system accounts (Assets, Liabilities, Equity, Income, Expense)
+   - GST Input/Output accounts for Indian compliance
+   - Salary, TDS, PF, ESI payable accounts
+
+**API Endpoints:**
+- `POST /api/journal-entries` - Create entry (validates balance)
+- `GET /api/journal-entries` - List with filters
+- `GET /api/journal-entries/{id}` - Get specific entry
+- `POST /api/journal-entries/{id}/reverse` - Create reversal
+- `GET /api/journal-entries/reports/trial-balance` - Trial balance
+- `GET /api/journal-entries/reports/profit-loss` - P&L from journals
+- `GET /api/journal-entries/reports/balance-sheet` - Balance sheet
+- `GET /api/journal-entries/accounts/{id}/ledger` - Account ledger
+- `POST /api/journal-entries/accounts/initialize-system` - Create system accounts
+
+**Integration Hooks Added:**
+- `invoices_enhanced.py` - Auto-posts when invoice sent/marked-sent
+- `payments_received.py` - Auto-posts when payment recorded
+- `bills_enhanced.py` - Auto-posts when bill opened and payment made
 
 ---
 
