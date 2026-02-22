@@ -130,7 +130,7 @@ export default function Attendance({ user }) {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         credentials: "include",
-        body: JSON.stringify({ remarks, location: "Office" }),
+        body: JSON.stringify({ remarks: clockOutForm.remarks, location: "Office" }),
       });
 
       const data = await response.json();
@@ -162,7 +162,7 @@ export default function Attendance({ user }) {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         credentials: "include",
-        body: JSON.stringify({ break_minutes: breakMinutes, remarks }),
+        body: JSON.stringify({ break_minutes: clockOutForm.breakMinutes, remarks: clockOutForm.remarks }),
       });
 
       const data = await response.json();
@@ -171,7 +171,9 @@ export default function Attendance({ user }) {
         if (data.warnings) {
           data.warnings.forEach(w => toast.warning(w));
         }
+        clockOutPersistence.onSuccessfulSave();
         setShowClockOutDialog(false);
+        setClockOutForm(initialClockOutData);
         fetchTodayAttendance();
         fetchMyRecords();
       } else {
