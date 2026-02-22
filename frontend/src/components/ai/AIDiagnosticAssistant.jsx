@@ -244,29 +244,28 @@ Please provide:
 
   return (
     <div className="space-y-6">
-      {/* Clean Header with Glowing Brain Icon */}
-      <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-xl p-6 shadow-lg">
+      {/* Clean Header with Volt Theme */}
+      <div className="bg-[#111820] border border-[rgba(200,255,0,0.20)] border-l-[3px] border-l-[#C8FF00] rounded-xl p-6">
         <div className="flex items-center gap-4">
           <div className="relative">
-            {/* Glowing effect */}
-            <div className="absolute inset-0 bg-white/40 rounded-xl blur-md animate-pulse" />
-            <div className="relative p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-lg shadow-white/20">
-              <Brain className="h-8 w-8 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+            {/* Icon container */}
+            <div className="p-3 bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.2)] rounded-xl">
+              <Brain className="h-8 w-8 text-[#C8FF00]" />
             </div>
             {/* Live indicator dot */}
             <div className="absolute -top-1 -right-1 w-3 h-3">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-green-300 opacity-75 animate-ping" />
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-400 shadow-lg shadow-green-400/50" />
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[#C8FF00] opacity-75 animate-ping" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#C8FF00] shadow-lg shadow-[rgba(200,255,0,0.5)]" />
             </div>
           </div>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-white">AI Diagnostic Assistant</h1>
-              <span className="px-3 py-1 text-xs font-medium bg-white/20 text-white rounded-full backdrop-blur-sm">
+              <h1 className="text-2xl font-bold text-[#F4F6F0]">AI Diagnostic Assistant</h1>
+              <span className="px-3 py-1 text-[10px] font-semibold bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] rounded-full font-mono uppercase tracking-[0.1em]">
                 Powered by EFI
               </span>
             </div>
-            <p className="text-emerald-100 mt-1">Get instant AI-powered diagnosis for your EV issues</p>
+            <p className="text-[rgba(244,246,240,0.45)] mt-1">Get instant AI-powered diagnosis for your EV issues</p>
           </div>
         </div>
       </div>
