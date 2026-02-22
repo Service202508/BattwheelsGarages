@@ -1,7 +1,44 @@
 # Battwheels OS - Product Requirements Document
 
 ## SaaS Status: FULL SAAS PLATFORM COMPLETE ✅
-**Last Updated:** February 22, 2026 (Session 96)
+**Last Updated:** February 22, 2026 (Session 97)
+
+---
+
+## Session 97 Updates (Feb 22, 2026)
+
+### Dialog Overflow Fix - UI Enhancement ✅
+**Status:** ✅ COMPLETE & TESTED (100% pass rate)
+
+**Test Report:** `/app/test_reports/iteration_97.json`
+
+**Issue Fixed:** Dialog content was overflowing outside the dialog box, buttons were being cut off
+
+**Changes Made:**
+
+1. **DialogContent Component** (`/app/frontend/src/components/ui/dialog.jsx`)
+   - Added `max-h-[90vh] overflow-hidden flex flex-col` 
+   - Footer now stays fixed at bottom
+
+2. **DialogHeader/DialogFooter Components**
+   - Added `flex-shrink-0` to prevent compression
+
+3. **New DialogBody Component**
+   - Created `DialogBody` for scrollable content areas
+   - Has `flex-1 overflow-y-auto min-h-0`
+
+4. **AlertDialog z-index** (`/app/frontend/src/components/ui/alert-dialog.jsx`)
+   - Increased to z-index 60 (vs Dialog z-index 50)
+   - Confirmation dialogs now appear above edit dialogs
+
+5. **Global CSS** (`/app/frontend/src/index.css`)
+   - Added CSS overrides for nested dialog z-index handling
+
+**Dialogs Verified:**
+- ✅ Edit Estimate dialog
+- ✅ Create Invoice dialog
+- ✅ Create Bill dialog
+- ✅ Create Item dialog
 
 ---
 
