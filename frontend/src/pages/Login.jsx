@@ -691,7 +691,7 @@ export default function Login({ onLogin }) {
                         </div>
                         
                         <div className="space-y-1.5">
-                          <Label htmlFor="register-password" className="text-gray-700 text-sm font-semibold ml-1">Password</Label>
+                          <Label htmlFor="register-password" className="text-[rgba(244,246,240,0.7)] text-sm font-semibold ml-1">Password</Label>
                           <PremiumInput
                             icon={Lock}
                             type="password"
@@ -706,7 +706,7 @@ export default function Login({ onLogin }) {
                         </div>
                         
                         <div className="space-y-1.5">
-                          <Label htmlFor="register-confirm" className="text-gray-700 text-sm font-semibold ml-1">Confirm Password</Label>
+                          <Label htmlFor="register-confirm" className="text-[rgba(244,246,240,0.7)] text-sm font-semibold ml-1">Confirm Password</Label>
                           <PremiumInput
                             icon={Lock}
                             type="password"
