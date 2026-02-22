@@ -812,26 +812,26 @@ export default function ContactsEnhanced() {
 
       {/* Contact Detail Dialog */}
       <Dialog open={showDetailDialog} onOpenChange={(open) => { setShowDetailDialog(open); if (!open) { setSelectedContact(null); setEditMode(false); } }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#111820] border-[rgba(255,255,255,0.13)]">
           {selectedContact && (
             <>
-              <DialogHeader>
+              <DialogHeader className="border-b border-[rgba(255,255,255,0.07)] pb-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <DialogTitle className="flex items-center gap-2">
+                    <DialogTitle className="flex items-center gap-2 text-[#F4F6F0] font-bold">
                       {selectedContact.name}
                       <Badge className={contactTypeColors[selectedContact.contact_type]}>{contactTypeLabels[selectedContact.contact_type]}</Badge>
-                      {!selectedContact.is_active && <Badge variant="destructive">Inactive</Badge>}
+                      {!selectedContact.is_active && <Badge className="bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]">Inactive</Badge>}
                     </DialogTitle>
-                    {selectedContact.company_name && <DialogDescription>{selectedContact.company_name}</DialogDescription>}
+                    {selectedContact.company_name && <DialogDescription className="text-[rgba(244,246,240,0.45)]">{selectedContact.company_name}</DialogDescription>}
                   </div>
                   <div className="flex gap-2">
                     {!editMode ? (
-                      <Button size="sm" variant="outline" onClick={openEditMode}><Edit className="h-4 w-4 mr-1" /> Edit</Button>
+                      <Button size="sm" variant="outline" onClick={openEditMode} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]"><Edit className="h-4 w-4 mr-1" /> Edit</Button>
                     ) : (
                       <>
-                        <Button size="sm" variant="outline" onClick={() => setEditMode(false)}>Cancel</Button>
-                        <Button size="sm" onClick={handleUpdateContact} className="bg-[#22EDA9] text-black">Save</Button>
+                        <Button size="sm" variant="outline" onClick={() => setEditMode(false)} className="bg-transparent border-[rgba(255,255,255,0.13)] text-[rgba(244,246,240,0.70)] hover:border-[rgba(200,255,0,0.30)] hover:text-[#F4F6F0]">Cancel</Button>
+                        <Button size="sm" onClick={handleUpdateContact} className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">Save</Button>
                       </>
                     )}
                   </div>
