@@ -54,12 +54,22 @@ const DialogHeader = ({
 )
 DialogHeader.displayName = "DialogHeader"
 
+const DialogBody = ({
+  className,
+  ...props
+}) => (
+  <div
+    className={cn("flex-1 overflow-y-auto min-h-0", className)}
+    {...props} />
+)
+DialogBody.displayName = "DialogBody"
+
 const DialogFooter = ({
   className,
   ...props
 }) => (
   <div
-    className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 flex-shrink-0", className)}
+    className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 flex-shrink-0 pt-4", className)}
     {...props} />
 )
 DialogFooter.displayName = "DialogFooter"
