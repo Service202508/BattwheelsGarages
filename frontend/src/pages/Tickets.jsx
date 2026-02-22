@@ -14,8 +14,6 @@ import {
 } from "lucide-react";
 import { API, getAuthHeaders } from "@/App";
 import JobCard from "@/components/JobCard";
-import { useFormPersistence } from "@/hooks/useFormPersistence";
-import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const statusColors = {
   open: "bg-yellow-500",
