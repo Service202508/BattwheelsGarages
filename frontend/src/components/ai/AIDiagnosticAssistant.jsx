@@ -432,7 +432,7 @@ Please provide:
                     variant="ghost"
                     size="sm"
                     onClick={copyDiagnosis}
-                    className="text-gray-500 hover:text-gray-700 dark:hover:text-white"
+                    className="text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"
                   >
                     <Copy className="h-4 w-4 mr-1" />
                     Copy
@@ -441,7 +441,7 @@ Please provide:
                     variant="ghost"
                     size="sm"
                     onClick={handleReset}
-                    className="text-gray-500 hover:text-gray-700 dark:hover:text-white"
+                    className="text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"
                   >
                     <RotateCcw className="h-4 w-4 mr-1" />
                     Reset
@@ -449,7 +449,7 @@ Please provide:
                 </div>
               )}
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-[rgba(244,246,240,0.45)]">
               {diagnosis ? "AI-powered analysis of your issue" : "Submit your query for diagnosis"}
             </p>
           </CardHeader>
@@ -458,76 +458,76 @@ Please provide:
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="relative mb-6">
                   {/* Glowing ring animation */}
-                  <div className="absolute inset-0 bg-emerald-500/30 rounded-2xl blur-xl animate-pulse" />
-                  <div className="absolute -inset-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-2xl blur-lg animate-pulse" style={{ animationDelay: '150ms' }} />
-                  <div className="relative p-5 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-2xl border border-emerald-200 dark:border-emerald-700 shadow-lg">
-                    <Bot className="h-12 w-12 text-emerald-500 animate-bounce" style={{ animationDuration: '1.5s' }} />
+                  <div className="absolute inset-0 bg-[rgba(200,255,0,0.2)] rounded-2xl blur-xl animate-pulse" />
+                  <div className="absolute -inset-2 bg-gradient-to-r from-[rgba(200,255,0,0.15)] to-[rgba(26,255,228,0.15)] rounded-2xl blur-lg animate-pulse" style={{ animationDelay: '150ms' }} />
+                  <div className="relative p-5 bg-[rgba(200,255,0,0.08)] rounded-xl border border-[rgba(200,255,0,0.20)]">
+                    <Bot className="h-12 w-12 text-[#C8FF00] animate-bounce" style={{ animationDuration: '1.5s' }} />
                   </div>
                   {/* Scanning line effect */}
-                  <div className="absolute inset-x-0 top-1/2 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent animate-pulse" />
+                  <div className="absolute inset-x-0 top-1/2 h-0.5 bg-gradient-to-r from-transparent via-[#C8FF00] to-transparent animate-pulse" />
                 </div>
-                <p className="text-gray-800 dark:text-white font-semibold text-lg">Analyzing your issue...</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5">EFI Intelligence is processing</p>
+                <p className="text-[#F4F6F0] font-semibold text-lg">Analyzing your issue...</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)] mt-1.5">EFI Intelligence is processing</p>
                 {/* Loading dots */}
                 <div className="flex gap-1.5 mt-4">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0ms', animationDuration: '0.8s' }} />
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '150ms', animationDuration: '0.8s' }} />
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '300ms', animationDuration: '0.8s' }} />
+                  <span className="w-2 h-2 bg-[#C8FF00] rounded-full animate-bounce" style={{ animationDelay: '0ms', animationDuration: '0.8s' }} />
+                  <span className="w-2 h-2 bg-[#C8FF00] rounded-full animate-bounce" style={{ animationDelay: '150ms', animationDuration: '0.8s' }} />
+                  <span className="w-2 h-2 bg-[#C8FF00] rounded-full animate-bounce" style={{ animationDelay: '300ms', animationDuration: '0.8s' }} />
                 </div>
               </div>
             ) : diagnosis ? (
               <ScrollArea className="h-[500px] pr-4">
                 {/* Confidence Indicator */}
                 {diagnosis.confidence && (
-                  <div className="flex items-center gap-2 mb-4 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                    <CheckCircle className="h-5 w-5 text-emerald-500" />
-                    <span className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">
+                  <div className="flex items-center gap-2 mb-4 p-3 bg-[rgba(200,255,0,0.08)] rounded-lg border border-[rgba(200,255,0,0.20)]">
+                    <CheckCircle className="h-5 w-5 text-[#C8FF00]" />
+                    <span className="text-sm text-[#C8FF00] font-medium">
                       AI Confidence: {Math.round(diagnosis.confidence * 100)}%
                     </span>
                   </div>
                 )}
                 
                 {/* Diagnosis Content */}
-                <div className="prose prose-sm dark:prose-invert max-w-none">
+                <div className="prose prose-sm prose-invert max-w-none">
                   {formatDiagnosis(diagnosis.content)}
                 </div>
 
                 {/* Disclaimer */}
-                <div className="mt-6 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                <div className="mt-6 p-3 bg-[rgba(234,179,8,0.08)] rounded-lg border border-[rgba(234,179,8,0.20)]">
                   <div className="flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <p className="text-xs text-amber-700 dark:text-amber-400">
+                    <AlertTriangle className="h-4 w-4 text-[#EAB308] mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-[#EAB308]">
                       This AI diagnosis is for reference only. Always verify with proper diagnostic tools and follow manufacturer guidelines.
                     </p>
                   </div>
                 </div>
 
                 {/* Timestamp */}
-                <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-400">
+                <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[rgba(244,246,240,0.35)]">
                   <Clock className="h-3 w-3" />
                   Generated at {new Date(diagnosis.timestamp).toLocaleTimeString()}
                 </div>
               </ScrollArea>
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-full mb-4">
-                  <Bot className="h-12 w-12 text-gray-400" />
+                <div className="p-4 bg-[rgba(255,255,255,0.05)] rounded-full mb-4">
+                  <Bot className="h-12 w-12 text-[rgba(244,246,240,0.35)]" />
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 font-medium">Describe your issue to get started</p>
-                <p className="text-sm text-gray-500 mt-1 max-w-xs">
+                <p className="text-[#F4F6F0] font-medium">Describe your issue to get started</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)] mt-1 max-w-xs">
                   Fill in the details on the left panel and click "Get AI Diagnosis"
                 </p>
-                <div className="mt-6 flex items-center gap-4 text-xs text-gray-400">
+                <div className="mt-6 flex items-center gap-4 text-xs text-[rgba(244,246,240,0.35)]">
                   <div className="flex items-center gap-1">
-                    <Zap className="h-3.5 w-3.5 text-emerald-500" />
+                    <Zap className="h-3.5 w-3.5 text-[#C8FF00]" />
                     Instant Analysis
                   </div>
                   <div className="flex items-center gap-1">
-                    <Shield className="h-3.5 w-3.5 text-emerald-500" />
+                    <Shield className="h-3.5 w-3.5 text-[#C8FF00]" />
                     Expert Knowledge
                   </div>
                   <div className="flex items-center gap-1">
-                    <Target className="h-3.5 w-3.5 text-emerald-500" />
+                    <Target className="h-3.5 w-3.5 text-[#C8FF00]" />
                     Accurate Results
                   </div>
                 </div>
@@ -538,13 +538,13 @@ Please provide:
       </div>
 
       {/* Tips Section */}
-      <Card className="border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/10">
+      <Card className="bg-[rgba(200,255,0,0.05)] border border-[rgba(200,255,0,0.15)]">
         <CardContent className="py-4">
           <div className="flex items-start gap-3">
-            <Lightbulb className="h-5 w-5 text-emerald-500 mt-0.5 flex-shrink-0" />
+            <Lightbulb className="h-5 w-5 text-[#C8FF00] mt-0.5 flex-shrink-0" />
             <div>
-              <h4 className="font-medium text-emerald-700 dark:text-emerald-400 mb-1">Tips for better diagnosis</h4>
-              <ul className="text-sm text-emerald-600 dark:text-emerald-300/80 space-y-1">
+              <h4 className="font-medium text-[#C8FF00] mb-1">Tips for better diagnosis</h4>
+              <ul className="text-sm text-[rgba(244,246,240,0.6)] space-y-1">
                 <li>• Be specific about symptoms (sounds, warning lights, behavior)</li>
                 <li>• Include any DTC/error codes if available</li>
                 <li>• Mention when the issue started and under what conditions</li>
