@@ -890,11 +890,48 @@ export default function BillsEnhanced() {
             </div>
           </ScrollArea>
           <div className="flex justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={() => { setShowCreatePO(false); resetPOForm(); }}>Cancel</Button>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                if (poPersistence.isDirty) {
+                  poPersistence.setShowCloseConfirm(true);
+                } else {
+                  setShowCreatePO(false);
+                  resetPOForm();
+                }
+              }}
+            >
+              Cancel
+            </Button>
             <Button onClick={handleCreatePO} className="bg-[#22EDA9] text-black">Create PO</Button>
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Unsaved Changes Confirmation Dialogs */}
+      <FormCloseConfirmDialog
+        open={billPersistence.showCloseConfirm}
+        onClose={() => billPersistence.setShowCloseConfirm(false)}
+        onSave={handleCreateBill}
+        onDiscard={() => {
+          billPersistence.clearSavedData();
+          resetBillForm();
+          setShowCreateBill(false);
+        }}
+        entityName="Bill"
+      />
+      
+      <FormCloseConfirmDialog
+        open={poPersistence.showCloseConfirm}
+        onClose={() => poPersistence.setShowCloseConfirm(false)}
+        onSave={handleCreatePO}
+        onDiscard={() => {
+          poPersistence.clearSavedData();
+          resetPOForm();
+          setShowCreatePO(false);
+        }}
+        entityName="Purchase Order"
+      />
 
       {/* Bill Detail Dialog */}
       <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
