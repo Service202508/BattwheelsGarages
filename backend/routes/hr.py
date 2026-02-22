@@ -145,7 +145,13 @@ async def create_employee(data: EmployeeCreateRequest, request: Request):
     service = get_service()
     user = await get_current_user(request, service.db)
     
-    return await service.create_employee(data.model_dump(), user.get("user_id"))
+    try:
+        return await service.create_employee(data.model_dump(), user.get("user_id"))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Failed to create employee: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create employee")
 
 
 @router.get("/employees")
