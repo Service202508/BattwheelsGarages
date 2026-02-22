@@ -1,7 +1,36 @@
 # Battwheels OS - Product Requirements Document
 
 ## SaaS Status: FULL SAAS PLATFORM COMPLETE ✅
-**Last Updated:** February 22, 2026 (Session 90)
+**Last Updated:** February 22, 2026 (Session 92)
+
+---
+
+## Session 92 Updates (Feb 22, 2026)
+
+### Edit Estimate Dialog Enhancement
+**Status:** ✅ COMPLETE & TESTED (100% pass rate - 8/8 features)
+
+**Issue:** Edit Estimate dialog lacked the enhanced functionality present in the New Estimate form
+
+**What was implemented:**
+1. **Searchable Item Dropdown** - Type to search items with SKU and Rate displayed in dropdown
+2. **+ New Item Button** - Opens inline item creation dialog to add new inventory items
+3. **+ Add Row Button** - Adds new empty row for adding line items
+4. **Discount Type Toggle** - Switch between % (percentage) and ₹ (fixed amount) for each line item
+5. **Tax Selection Dropdown** - GST rates (0%, 5%, 12%, 18%, 28%) for each line item
+6. **Real-time Amount Calculation** - Updates automatically when qty/rate/discount/tax changes
+7. **Item Details Column** - Shows SKU after item selection
+8. **Save Changes Button** - Updates the estimate successfully
+
+**Files Updated:**
+- `/app/frontend/src/pages/EstimatesEnhanced.jsx`:
+  - Added `editItemSearch`, `editSearchResults`, `editActiveItemIndex` state variables (line ~619)
+  - Enhanced `handleOpenEdit` to normalize line items and ensure items are loaded (line ~587)
+  - Enhanced `addEditLineItem` to include discount fields (line ~630)
+  - Added `selectEditItem` function for search dropdown selection (line ~657)
+  - Updated Edit dialog Item Table with searchable dropdown, discount toggle, tax selection (line ~2570)
+
+**Test Report:** `/app/test_reports/iteration_92.json`
 
 ---
 
