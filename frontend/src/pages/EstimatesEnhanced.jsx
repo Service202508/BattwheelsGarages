@@ -2988,6 +2988,21 @@ export default function EstimatesEnhanced() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Estimate Close Confirmation */}
+      <FormCloseConfirmDialog
+        open={editEstimatePersistence.showCloseConfirm}
+        onClose={() => editEstimatePersistence.setShowCloseConfirm(false)}
+        onSave={async () => {
+          await handleUpdateEstimate();
+        }}
+        onDiscard={() => {
+          editEstimatePersistence.clearSavedData();
+          setShowEditDialog(false);
+        }}
+        isSaving={false}
+        entityName="Estimate"
+      />
     </div>
   );
 }
