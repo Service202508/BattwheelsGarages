@@ -911,7 +911,7 @@ export default function InvoicesEnhanced() {
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-[rgba(255,255,255,0.04)]">
                   {invoices.map(inv => (
                     <tr key={inv.invoice_id} className="hover:bg-[#111820] cursor-pointer" onClick={() => fetchInvoiceDetail(inv.invoice_id)} data-testid={`invoice-row-${inv.invoice_id}`}>
                       <td className="px-4 py-3 font-medium text-blue-600">{inv.invoice_number}</td>
