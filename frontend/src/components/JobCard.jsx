@@ -808,13 +808,13 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
             <div className="flex items-center gap-2">
               <div className="flex bg-slate-700 rounded p-0.5 text-xs">
                 <button
-                  className={`px-2 py-1 rounded ${efiMode === "guidance" ? "bg-emerald-600 text-white" : "text-slate-400"}`}
+                  className={`px-2 py-1 rounded ${efiMode === "guidance" ? "bg-[#C8FF00] text-[#080C0F] font-bold" : "text-[rgba(244,246,240,0.45)]"}`}
                   onClick={() => setEfiMode("guidance")}
                 >
                   Hinglish
                 </button>
                 <button
-                  className={`px-2 py-1 rounded ${efiMode === "legacy" ? "bg-emerald-600 text-white" : "text-slate-400"}`}
+                  className={`px-2 py-1 rounded ${efiMode === "legacy" ? "bg-[#C8FF00] text-[#080C0F] font-bold" : "text-[rgba(244,246,240,0.45)]"}`}
                   onClick={() => setEfiMode("legacy")}
                 >
                   Classic
@@ -822,7 +822,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
               </div>
               <button
                 onClick={() => setEfiPanelOpen(false)}
-                className="text-slate-400 hover:text-white p-1"
+                className="text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] p-1"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
