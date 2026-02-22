@@ -24,22 +24,53 @@ export default function Banking() {
   const [showAccountDialog, setShowAccountDialog] = useState(false);
   const [showTxnDialog, setShowTxnDialog] = useState(false);
 
-  const [newAccount, setNewAccount] = useState({
+  const initialAccountData = {
     account_name: "",
     account_type: "bank",
     account_number: "",
     bank_name: "",
     opening_balance: 0
-  });
+  };
 
-  const [newTxn, setNewTxn] = useState({
+  const initialTxnData = {
     account_id: "",
     amount: 0,
     transaction_type: "deposit",
     reference_number: "",
     description: "",
     payee: ""
-  });
+  };
+
+  const [newAccount, setNewAccount] = useState(initialAccountData);
+  const [newTxn, setNewTxn] = useState(initialTxnData);
+
+  // Auto-save for Account form
+  const accountPersistence = useFormPersistence(
+    'banking_account_new',
+    newAccount,
+    initialAccountData,
+    {
+      enabled: showAccountDialog,
+      isDialogOpen: showAccountDialog,
+      setFormData: setNewAccount,
+      debounceMs: 2000,
+      entityName: 'Bank Account'
+    }
+  );
+
+  // Auto-save for Transaction form
+  const txnPersistence = useFormPersistence(
+    'banking_txn_new',
+    newTxn,
+    initialTxnData,
+    {
+      enabled: showTxnDialog,
+      isDialogOpen: showTxnDialog,
+      setFormData: setNewTxn,
+      debounceMs: 2000,
+      entityName: 'Transaction'
+    }
+  );
 
   useEffect(() => { fetchData(); }, []);
 
