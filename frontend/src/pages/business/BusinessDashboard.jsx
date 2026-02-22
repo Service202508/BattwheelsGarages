@@ -284,7 +284,7 @@ export default function BusinessDashboard({ user }) {
                   <Link 
                     key={ticket.ticket_id}
                     to={`/business/tickets/${ticket.ticket_id}`}
-                    className="block p-4 rounded-xl border border-[rgba(255,255,255,0.07)] border-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all"
+                    className="block p-4 rounded border border-[rgba(255,255,255,0.07)] border-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -330,7 +330,7 @@ export default function BusinessDashboard({ user }) {
                 {pendingInvoices.map((invoice) => (
                   <div 
                     key={invoice.invoice_id}
-                    className="p-4 rounded-xl border border-[rgba(255,255,255,0.07)] border-200 hover:border-indigo-200 transition-all"
+                    className="p-4 rounded border border-[rgba(255,255,255,0.07)] border-200 hover:border-indigo-200 transition-all"
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -358,7 +358,7 @@ export default function BusinessDashboard({ user }) {
       </div>
 
       {/* Financial Summary */}
-      <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white border-0 shadow-xl">
+      <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white border border-[rgba(255,255,255,0.13)]">
         <CardContent className="p-6">
           <div className="grid md:grid-cols-3 gap-6">
             <div>
