@@ -759,3 +759,151 @@ async def get_import_history(limit: int = 10):
     logs = await cursor.to_list(length=limit)
     
     return {"code": 0, "sync_logs": logs}
+
+
+# ============== DISCONNECT & PURGE ==============
+
+class DisconnectRequest(BaseModel):
+    confirm: bool = False
+
+@router.post("/disconnect-and-purge")
+async def disconnect_and_purge(request: DisconnectRequest):
+    """
+    Disconnect from Zoho Books and purge ALL synced data.
+    This is a destructive operation that cannot be undone.
+    """
+    if not request.confirm:
+        return {
+            "code": 1,
+            "message": "Confirmation required. Set confirm=true to proceed."
+        }
+    
+    db = get_db()
+    purge_stats = {}
+    
+    try:
+        logger.info("Starting Zoho Books disconnect and data purge...")
+        
+        # Collections to purge (Zoho synced data)
+        collections_to_purge = [
+            # Primary business data
+            ("contacts", {"source": "zoho_books"}),
+            ("contacts_enhanced", {"source": "zoho_books"}),
+            ("customers", {"source": "zoho_books"}),
+            ("suppliers", {"source": "zoho_books"}),
+            ("items", {"source": "zoho_books"}),
+            ("invoices", {"source": "zoho_books"}),
+            ("invoices_enhanced", {"source": "zoho_books"}),
+            ("estimates", {"source": "zoho_books"}),
+            ("estimates_enhanced", {"source": "zoho_books"}),
+            ("bills", {"source": "zoho_books"}),
+            ("bills_enhanced", {"source": "zoho_books"}),
+            ("expenses", {"source": "zoho_books"}),
+            ("purchaseorders", {"source": "zoho_books"}),
+            ("purchase_orders", {"source": "zoho_books"}),
+            ("purchase_orders_enhanced", {"source": "zoho_books"}),
+            ("salesorders", {"source": "zoho_books"}),
+            ("sales_orders", {"source": "zoho_books"}),
+            ("salesorders_enhanced", {"source": "zoho_books"}),
+            ("creditnotes", {"source": "zoho_books"}),
+            ("vendorcredits", {"source": "zoho_books"}),
+            ("customerpayments", {"source": "zoho_books"}),
+            ("vendorpayments", {"source": "zoho_books"}),
+            ("payments", {"source": "zoho_books"}),
+            ("bankaccounts", {"source": "zoho_books"}),
+            ("bank_accounts", {"source": "zoho_books"}),
+            
+            # Line items and related data
+            ("invoice_line_items", {}),
+            ("estimate_line_items", {}),
+            ("bill_line_items", {}),
+            ("salesorder_line_items", {}),
+            ("po_line_items", {}),
+            
+            # History and audit logs for synced data
+            ("invoice_history", {}),
+            ("estimate_history", {}),
+            ("bill_history", {}),
+            ("salesorder_history", {}),
+            ("contact_history", {}),
+            ("item_history", {}),
+            
+            # Sync-related collections
+            ("sync_logs", {}),
+            ("sync_status", {}),
+            ("sync_events", {}),
+            ("sync_jobs", {}),
+            
+            # Books-specific collections
+            ("books_customers", {}),
+            ("books_invoices", {}),
+            ("books_payments", {}),
+            ("books_vendors", {}),
+            
+            # Item-related from sync
+            ("item_prices", {"source": "zoho_books"}),
+            ("item_stock", {}),
+            ("item_stock_locations", {}),
+            ("item_batch_numbers", {}),
+            ("item_serial_numbers", {}),
+            ("item_serial_batches", {}),
+            
+            # Payments and financial data
+            ("payments_received", {}),
+            ("payment_history", {}),
+            ("invoice_payments", {}),
+            ("bill_payments", {}),
+        ]
+        
+        # Perform the purge
+        for collection_name, filter_query in collections_to_purge:
+            try:
+                if filter_query:
+                    # Delete only Zoho-sourced records
+                    result = await db[collection_name].delete_many(filter_query)
+                else:
+                    # Delete all records in collection
+                    result = await db[collection_name].delete_many({})
+                
+                if result.deleted_count > 0:
+                    purge_stats[collection_name] = result.deleted_count
+                    logger.info(f"Purged {result.deleted_count} records from {collection_name}")
+            except Exception as e:
+                logger.warning(f"Error purging {collection_name}: {e}")
+        
+        # Clear any backup collections
+        all_collections = await db.list_collection_names()
+        backup_count = 0
+        for coll in all_collections:
+            if coll.startswith("_backup_"):
+                try:
+                    await db.drop_collection(coll)
+                    backup_count += 1
+                except:
+                    pass
+        if backup_count > 0:
+            purge_stats["backup_collections_dropped"] = backup_count
+        
+        # Log the disconnect event
+        await db.sync_logs.insert_one({
+            "sync_id": f"DISCONNECT-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
+            "type": "disconnect_and_purge",
+            "status": "completed",
+            "started_at": datetime.now(timezone.utc).isoformat(),
+            "completed_at": datetime.now(timezone.utc).isoformat(),
+            "purge_stats": purge_stats
+        })
+        
+        logger.info(f"Zoho Books disconnect completed. Stats: {purge_stats}")
+        
+        return {
+            "code": 0,
+            "status": "success",
+            "message": "Zoho Books disconnected and data purged successfully",
+            "purge_stats": purge_stats
+        }
+    
+    except Exception as e:
+        logger.error(f"Disconnect and purge failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
