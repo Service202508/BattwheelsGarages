@@ -440,13 +440,12 @@ async def verify_payment(request: PaymentVerifyRequest):
 
 @router.post("/webhook")
 async def handle_razorpay_webhook(request: Request):
-    """Handle Razorpay webhooks for payment events"""
+    """
+    Handle Razorpay webhooks for payment events.
+    Verifies signature and posts journal entries on payment capture.
+    """
     body = await request.body()
     signature = request.headers.get('X-Razorpay-Signature', '')
-    
-    # Verify webhook signature
-    if not verify_webhook_signature(body, signature):
-        raise HTTPException(status_code=400, detail="Invalid webhook signature")
     
     try:
         payload = json.loads(body)
@@ -455,6 +454,30 @@ async def handle_razorpay_webhook(request: Request):
     
     event = payload.get("event")
     payment_entity = payload.get("payload", {}).get("payment", {}).get("entity", {})
+    
+    # Get org_id from payment notes
+    notes = payment_entity.get("notes", {})
+    org_id = notes.get("organization_id", "")
+    
+    # Get org-specific webhook secret
+    if org_id:
+        config = await get_org_razorpay_config(org_id)
+        webhook_secret = config.get("webhook_secret", RAZORPAY_WEBHOOK_SECRET)
+    else:
+        webhook_secret = RAZORPAY_WEBHOOK_SECRET
+    
+    # Verify webhook signature
+    if webhook_secret:
+        import hmac
+        import hashlib
+        expected_signature = hmac.new(
+            webhook_secret.encode(),
+            body,
+            hashlib.sha256
+        ).hexdigest()
+        if not hmac.compare_digest(expected_signature, signature):
+            logger.warning(f"Invalid webhook signature for event {event}")
+            raise HTTPException(status_code=400, detail="Invalid webhook signature")
     
     db = get_db()
     
@@ -466,42 +489,28 @@ async def handle_razorpay_webhook(request: Request):
         "order_id": payment_entity.get("order_id"),
         "amount": payment_entity.get("amount"),
         "status": payment_entity.get("status"),
+        "organization_id": org_id,
         "payload": payload,
         "received_at": datetime.now(timezone.utc).isoformat()
     }
     await db.webhook_logs.insert_one(webhook_log)
     
+    logger.info(f"[RAZORPAY WEBHOOK] Event: {event}, Payment: {payment_entity.get('id')}")
+    
     # Handle specific events
     if event == "payment.captured":
-        # Payment successful - update order and invoice
-        order_id = payment_entity.get("order_id")
-        
-        order = await db.payment_orders.find_one({"order_id": order_id}, {"_id": 0})
-        if order:
-            invoice_id = order.get("invoice_id")
-            amount_paid = payment_entity.get("amount", 0) / 100
-            
-            # Update invoice if not already processed
-            invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
-            if invoice and invoice.get("balance", 0) > 0:
-                new_balance = invoice.get("balance", 0) - amount_paid
-                new_status = "paid" if new_balance <= 0 else "partial"
-                
-                await db.invoices.update_one(
-                    {"invoice_id": invoice_id},
-                    {"$set": {"balance": max(0, new_balance), "status": new_status}}
-                )
-            
-            await db.payment_orders.update_one(
-                {"order_id": order_id},
-                {"$set": {"status": "captured", "webhook_processed": True}}
-            )
+        await process_payment_captured_webhook(payment_entity, org_id, notes.get("invoice_id", ""))
     
     elif event == "payment.failed":
         order_id = payment_entity.get("order_id")
         await db.payment_orders.update_one(
             {"order_id": order_id},
-            {"$set": {"status": "failed", "error_reason": payment_entity.get("error_reason")}}
+            {"$set": {
+                "status": "failed",
+                "error_code": payment_entity.get("error_code"),
+                "error_reason": payment_entity.get("error_description"),
+                "failed_at": datetime.now(timezone.utc).isoformat()
+            }}
         )
     
     elif event == "payment_link.paid":
@@ -510,10 +519,138 @@ async def handle_razorpay_webhook(request: Request):
         
         await db.razorpay_payment_links.update_one(
             {"payment_link_id": link_id},
-            {"$set": {"status": "paid"}}
+            {"$set": {"status": "paid", "paid_at": datetime.now(timezone.utc).isoformat()}}
+        )
+    
+    elif event == "refund.processed":
+        refund_entity = payload.get("payload", {}).get("refund", {}).get("entity", {})
+        await db.refunds.update_one(
+            {"razorpay_refund_id": refund_entity.get("id")},
+            {"$set": {"status": "processed", "processed_at": datetime.now(timezone.utc).isoformat()}}
         )
     
     return {"status": "processed", "event": event}
+
+
+async def process_payment_captured_webhook(payment_entity: Dict, org_id: str, invoice_id: str):
+    """Process payment.captured webhook - update invoice and post journal entry"""
+    db = get_db()
+    
+    order_id = payment_entity.get("order_id")
+    payment_id = payment_entity.get("id")
+    amount_paise = payment_entity.get("amount", 0)
+    amount_inr = amount_paise / 100
+    
+    logger.info(f"Processing captured payment: {payment_id} for ₹{amount_inr}")
+    
+    # Get order to find invoice
+    order = await db.payment_orders.find_one({"order_id": order_id}, {"_id": 0})
+    if not order:
+        logger.warning(f"Order {order_id} not found for payment {payment_id}")
+        return
+    
+    invoice_id = invoice_id or order.get("invoice_id")
+    
+    # Get invoice (try enhanced first)
+    invoice = await db.invoices_enhanced.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    collection = db.invoices_enhanced
+    if not invoice:
+        invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+        collection = db.invoices
+    
+    if invoice:
+        # Calculate new balance
+        total = float(invoice.get("grand_total", invoice.get("total", 0)))
+        current_paid = float(invoice.get("amount_paid", 0))
+        new_paid = current_paid + amount_inr
+        new_balance = max(0, total - new_paid)
+        new_status = "paid" if new_balance <= 0 else "partially_paid"
+        
+        # Update invoice
+        await collection.update_one(
+            {"invoice_id": invoice_id},
+            {"$set": {
+                "status": new_status,
+                "amount_paid": new_paid,
+                "balance_due": new_balance,
+                "razorpay_payment_id": payment_id,
+                "razorpay_payment_method": payment_entity.get("method"),
+                "razorpay_payment_date": datetime.now(timezone.utc).isoformat(),
+                "last_modified_time": datetime.now(timezone.utc).isoformat()
+            },
+            "$push": {
+                "payments": {
+                    "payment_id": payment_id,
+                    "razorpay_payment_id": payment_id,
+                    "amount": amount_inr,
+                    "method": payment_entity.get("method"),
+                    "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")
+                }
+            }}
+        )
+        
+        # Post journal entry for double-entry bookkeeping
+        if org_id:
+            try:
+                await post_payment_received_journal_entry(
+                    organization_id=org_id,
+                    payment={
+                        "payment_id": payment_id,
+                        "amount": amount_inr,
+                        "payment_mode": payment_entity.get("method", "razorpay"),
+                        "payment_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                        "customer_name": invoice.get("customer_name", ""),
+                        "invoice_number": invoice.get("invoice_number", ""),
+                        "reference_number": payment_id
+                    }
+                )
+                logger.info(f"Posted journal entry for Razorpay payment {payment_id}")
+            except Exception as e:
+                logger.error(f"Failed to post journal entry for payment {payment_id}: {e}")
+        
+        # Update customer outstanding
+        customer_id = invoice.get("customer_id")
+        if customer_id:
+            await db.contacts.update_one(
+                {"contact_id": customer_id},
+                {"$inc": {"outstanding_receivable_amount": -amount_inr}}
+            )
+    
+    # Update order status
+    await db.payment_orders.update_one(
+        {"order_id": order_id},
+        {"$set": {
+            "status": "captured",
+            "razorpay_payment_id": payment_id,
+            "payment_method": payment_entity.get("method"),
+            "webhook_processed": True,
+            "captured_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # Create payment record
+    payment_record = {
+        "payment_id": f"RPAY-{uuid.uuid4().hex[:12].upper()}",
+        "razorpay_payment_id": payment_id,
+        "razorpay_order_id": order_id,
+        "invoice_id": invoice_id,
+        "organization_id": org_id,
+        "customer_id": invoice.get("customer_id") if invoice else None,
+        "customer_name": invoice.get("customer_name") if invoice else None,
+        "amount": amount_inr,
+        "payment_mode": "razorpay",
+        "method": payment_entity.get("method"),
+        "card_last4": payment_entity.get("card", {}).get("last4"),
+        "bank": payment_entity.get("bank"),
+        "wallet": payment_entity.get("wallet"),
+        "vpa": payment_entity.get("vpa"),
+        "status": "captured",
+        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "created_time": datetime.now(timezone.utc).isoformat()
+    }
+    await db.customerpayments.insert_one(payment_record)
+    
+    logger.info(f"Payment {payment_id} processed successfully")
 
 
 @router.post("/refund")
