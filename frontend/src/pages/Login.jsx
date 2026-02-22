@@ -49,7 +49,7 @@ const AnimatedVehicleIcons = () => {
         >
           <div className={`relative transition-all duration-700 ${vehicle.size} flex items-center justify-center`}>
             {activeIndex === index && (
-              <div className="absolute inset-0 bg-[#22EDA9]/20 blur-2xl rounded-full animate-pulse" />
+              <div className="absolute inset-0 bg-[#C8FF00]/20 blur-2xl rounded-full animate-pulse" />
             )}
             <img 
               src={vehicle.src} 
@@ -59,15 +59,15 @@ const AnimatedVehicleIcons = () => {
               }`}
               style={{ 
                 filter: activeIndex === index 
-                  ? 'drop-shadow(0 10px 20px rgba(34, 237, 169, 0.3))' 
-                  : 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))'
+                  ? 'drop-shadow(0 10px 20px rgba(200, 255, 0, 0.3))' 
+                  : 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
               }}
             />
           </div>
           <span className={`text-xs font-semibold mt-3 transition-all duration-500 tracking-wide ${
             activeIndex === index 
-              ? 'text-[#22EDA9]' 
-              : 'text-gray-400'
+              ? 'text-[#C8FF00]' 
+              : 'text-[rgba(244,246,240,0.4)]'
           }`}>
             {vehicle.label}
           </span>
