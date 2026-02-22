@@ -1824,13 +1824,14 @@ async def get_estimate(estimate_id: str):
 
 @router.put("/{estimate_id}")
 async def update_estimate(estimate_id: str, estimate: EstimateUpdate):
-    """Update an estimate (only if draft status)"""
+    """Update an estimate (available until converted to invoice)"""
     existing = await estimates_collection.find_one({"estimate_id": estimate_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Estimate not found")
     
-    if existing.get("status") not in ["draft"]:
-        raise HTTPException(status_code=400, detail="Only draft estimates can be edited")
+    # Allow editing for all statuses except converted and void
+    if existing.get("status") in ["converted", "void"]:
+        raise HTTPException(status_code=400, detail="Converted or void estimates cannot be edited")
     
     update_data = {k: v for k, v in estimate.dict().items() if v is not None}
     
