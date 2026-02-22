@@ -328,16 +328,16 @@ Please provide:
                       }}
                       className={`relative flex flex-col items-center gap-2 p-4 rounded-lg border transition-all duration-150 ${
                         isSelected
-                          ? "bg-emerald-500 border-emerald-500 text-white shadow-md"
-                          : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                          ? "bg-[rgba(200,255,0,0.12)] border-[rgba(200,255,0,0.35)] border-t-2 border-t-[#C8FF00]"
+                          : "bg-[#111820] border-[rgba(255,255,255,0.07)] text-[rgba(244,246,240,0.6)] hover:border-[rgba(200,255,0,0.2)] hover:bg-[rgba(200,255,0,0.05)]"
                       }`}
                       data-testid={`vehicle-${vehicle.id}`}
                     >
-                      <Icon className={`h-6 w-6 ${isSelected ? "text-white" : ""}`} />
-                      <span className="text-xs font-medium text-center">{vehicle.label}</span>
+                      <Icon className={`h-6 w-6 ${isSelected ? "text-[#C8FF00]" : "text-[rgba(244,246,240,0.5)]"}`} />
+                      <span className={`text-xs font-medium text-center ${isSelected ? "text-[#C8FF00]" : ""}`}>{vehicle.label}</span>
                       {isSelected && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center shadow">
-                          <CheckCircle className="h-3 w-3 text-emerald-500" />
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#C8FF00] rounded-full flex items-center justify-center shadow">
+                          <CheckCircle className="h-3 w-3 text-[#080C0F]" />
                         </div>
                       )}
                     </button>
@@ -348,18 +348,18 @@ Please provide:
 
             {/* Vehicle Model */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Vehicle Model</label>
+              <label className="text-sm font-medium text-[#F4F6F0]">Vehicle Model</label>
               <Select
                 value={selectedModel}
                 onValueChange={setSelectedModel}
                 disabled={!selectedVehicleType}
               >
-                <SelectTrigger className="w-full" data-testid="vehicle-model-select">
+                <SelectTrigger className="w-full bg-[#111820] border-[rgba(255,255,255,0.07)] text-[#F4F6F0]" data-testid="vehicle-model-select">
                   <SelectValue placeholder={selectedVehicleType ? "Select vehicle model" : "Select vehicle category first"} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-[#111820] border-[rgba(255,255,255,0.1)]">
                   {selectedVehicleType && VEHICLE_MODELS[selectedVehicleType]?.map((model) => (
-                    <SelectItem key={model} value={model}>
+                    <SelectItem key={model} value={model} className="text-[#F4F6F0] focus:bg-[rgba(200,255,0,0.1)] focus:text-[#C8FF00]">
                       {model}
                     </SelectItem>
                   ))}
@@ -369,29 +369,29 @@ Please provide:
 
             {/* DTC Codes */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                DTC/Error Codes <span className="text-gray-400 font-normal">(Optional)</span>
+              <label className="text-sm font-medium text-[#F4F6F0]">
+                DTC/Error Codes <span className="text-[rgba(244,246,240,0.35)] font-normal">(Optional)</span>
               </label>
               <input
                 type="text"
                 value={dtcCodes}
                 onChange={(e) => setDtcCodes(e.target.value)}
                 placeholder="e.g., P0A80, U0100, B1234"
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                className="w-full px-4 py-2.5 rounded border border-[rgba(255,255,255,0.07)] bg-[#111820] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.25)] focus:border-[#C8FF00] focus:ring-2 focus:ring-[rgba(200,255,0,0.2)] transition-all"
                 data-testid="dtc-codes-input"
               />
             </div>
 
             {/* Issue Description */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Describe the Issue <span className="text-red-500">*</span>
+              <label className="text-sm font-medium text-[#F4F6F0]">
+                Describe the Issue <span className="text-[#FF3B2F]">*</span>
               </label>
               <Textarea
                 value={issueDescription}
                 onChange={(e) => setIssueDescription(e.target.value)}
                 placeholder="Example: My scooter won't charge past 80%. The charging port light blinks red after reaching 80% and charging stops automatically..."
-                className="min-h-[120px] resize-none"
+                className="min-h-[120px] resize-none bg-[#111820] border-[rgba(255,255,255,0.07)] text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.25)] focus:border-[#C8FF00]"
                 data-testid="issue-description"
               />
             </div>
@@ -400,7 +400,7 @@ Please provide:
             <Button
               onClick={handleGetDiagnosis}
               disabled={loading || !issueDescription.trim()}
-              className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg shadow-md shadow-emerald-500/20"
+              className="w-full h-12 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold rounded shadow-lg shadow-[rgba(200,255,0,0.2)]"
               data-testid="get-diagnosis-btn"
             >
               {loading ? (
@@ -419,12 +419,12 @@ Please provide:
         </Card>
 
         {/* Right Panel - Diagnosis Results */}
-        <Card className="border border-gray-200 dark:border-gray-700 shadow-sm">
-          <CardHeader className="pb-4 border-b border-gray-100 dark:border-gray-800">
+        <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+          <CardHeader className="pb-4 border-b border-[rgba(255,255,255,0.07)]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-emerald-500" />
-                <CardTitle className="text-lg text-gray-800 dark:text-white">AI Diagnosis</CardTitle>
+                <Sparkles className="h-5 w-5 text-[#C8FF00]" />
+                <CardTitle className="text-lg text-[#F4F6F0]">AI Diagnosis</CardTitle>
               </div>
               {diagnosis && (
                 <div className="flex items-center gap-2">
