@@ -68,7 +68,7 @@ const formatCurrency = (amount, compact = false) => {
 // Metric Card Component
 const MetricCard = ({ title, value, subtitle, icon: Icon, trend, trendValue, onClick, badge, badgeVariant = "default" }) => (
   <Card 
-    className={`relative overflow-hidden transition-all duration-200 ${onClick ? 'cursor-pointer hover:shadow-lg hover:border-primary/50' : ''}`}
+    className={`relative overflow-hidden transition-all duration-200 ${onClick ? 'cursor-pointer hover:border-[rgba(200,255,0,0.2)]' : ''}`}
     onClick={onClick}
     data-testid={`metric-${title?.toLowerCase().replace(/\s+/g, '-')}`}
   >

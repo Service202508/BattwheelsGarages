@@ -196,7 +196,7 @@ export default function SubscriptionManagement() {
                     {plans.map((plan) => (
                       <Card 
                         key={plan.code} 
-                        className={`relative cursor-pointer transition-all hover:shadow-lg ${
+                        className={`relative cursor-pointer transition-all hover:border-[rgba(200,255,0,0.2)] ${
                           subscription.plan?.code === plan.code 
                             ? "ring-2 ring-indigo-500" 
                             : ""
