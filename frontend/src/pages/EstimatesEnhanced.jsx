@@ -611,6 +611,10 @@ export default function EstimatesEnhanced() {
     setEditItemSearch("");
     setEditSearchResults([]);
     setEditActiveItemIndex(null);
+    // Ensure items are loaded for search
+    if (items.length === 0) {
+      fetchItems();
+    }
     setShowEditDialog(true);
   };
 
