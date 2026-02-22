@@ -462,10 +462,10 @@ export default function AIKnowledgeBrain({ user, portalType = "technician", tick
                   <div
                     className={`inline-block rounded-2xl px-5 py-4 ${
                       message.role === "user"
-                        ? "bg-emerald-600 text-white rounded-br-md"
+                        ? "bg-[rgba(200,255,0,0.15)] text-[#F4F6F0] border border-[rgba(200,255,0,0.25)] rounded-br-md"
                         : message.error
-                        ? "bg-[rgba(255,59,47,0.08)]0/10 border border-red-500/30 text-slate-200 rounded-bl-md"
-                        : "bg-slate-800/80 border border-[rgba(255,255,255,0.07)] border-700/50 text-slate-200 rounded-bl-md"
+                        ? "bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.30)] text-[#F4F6F0] rounded-bl-md"
+                        : "bg-slate-800/80 border border-[rgba(255,255,255,0.07)] text-[#F4F6F0] rounded-bl-md"
                     }`}
                   >
                     {message.isWelcome ? (
