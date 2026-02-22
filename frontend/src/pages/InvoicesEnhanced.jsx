@@ -384,27 +384,139 @@ export default function InvoicesEnhanced() {
     }
   };
 
-  // Online Payment
+  // Online Payment - Razorpay
+  const [razorpayLoading, setRazorpayLoading] = useState(false);
+  const [razorpayConfigured, setRazorpayConfigured] = useState(false);
+  
+  // Check Razorpay config on mount
+  useEffect(() => {
+    const checkRazorpayConfig = async () => {
+      try {
+        const res = await fetch(`${API}/payments/config`, { headers });
+        const data = await res.json();
+        setRazorpayConfigured(data.configured || false);
+      } catch (e) {
+        console.error("Failed to check Razorpay config:", e);
+      }
+    };
+    checkRazorpayConfig();
+  }, []);
+  
   const handleCreatePaymentLink = async (invoiceId) => {
+    setRazorpayLoading(true);
     try {
-      const res = await fetch(`${API}/invoice-payments/create-payment-link`, {
+      const res = await fetch(`${API}/payments/create-payment-link/${invoiceId}`, {
         method: "POST",
         headers,
-        body: JSON.stringify({
-          invoice_id: invoiceId,
-          origin_url: window.location.origin
-        })
       });
       const data = await res.json();
-      if (data.code === 0) {
-        toast.success("Payment link created! Redirecting...");
-        // Redirect to Stripe checkout
-        window.location.href = data.payment_url;
+      if (data.code === 0 && data.payment_link?.short_url) {
+        toast.success("Payment link created!");
+        // Update invoice with the payment link
+        setSelectedInvoice(prev => ({
+          ...prev,
+          payment_link_url: data.payment_link.short_url,
+          payment_link_id: data.payment_link.id,
+          has_payment_link: true
+        }));
+        // Copy to clipboard
+        await navigator.clipboard.writeText(data.payment_link.short_url);
+        toast.success("Payment link copied to clipboard!");
+        // Optionally open in new tab
+        window.open(data.payment_link.short_url, "_blank");
       } else {
         toast.error(data.detail || "Failed to create payment link");
       }
     } catch (e) {
-      toast.error("Error creating payment link");
+      toast.error("Error creating payment link. Please configure Razorpay in Organization Settings.");
+    } finally {
+      setRazorpayLoading(false);
+    }
+  };
+  
+  // Create Razorpay order for checkout modal
+  const handleRazorpayCheckout = async (invoice) => {
+    setRazorpayLoading(true);
+    try {
+      // Create order
+      const res = await fetch(`${API}/payments/create-order`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ invoice_id: invoice.invoice_id })
+      });
+      const data = await res.json();
+      
+      if (data.code !== 0) {
+        toast.error(data.detail || "Failed to create payment order");
+        return;
+      }
+      
+      // Load Razorpay checkout
+      const options = {
+        key: data.key_id,
+        amount: data.order.amount,
+        currency: data.order.currency || "INR",
+        name: "Battwheels OS",
+        description: `Payment for Invoice ${invoice.invoice_number}`,
+        order_id: data.order.id,
+        handler: async function(response) {
+          // Verify payment
+          try {
+            const verifyRes = await fetch(`${API}/payments/verify`, {
+              method: "POST",
+              headers,
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                invoice_id: invoice.invoice_id
+              })
+            });
+            const verifyData = await verifyRes.json();
+            if (verifyData.code === 0) {
+              toast.success("Payment successful! Invoice updated.");
+              fetchData();
+              setShowDetailDialog(false);
+            } else {
+              toast.error("Payment verification failed");
+            }
+          } catch (e) {
+            toast.error("Payment verification error");
+          }
+        },
+        prefill: {
+          name: data.customer_name || invoice.customer_name,
+          email: data.customer_email || invoice.customer_email,
+          contact: data.customer_phone || ""
+        },
+        theme: {
+          color: "#C8FF00"
+        },
+        modal: {
+          ondismiss: function() {
+            setRazorpayLoading(false);
+          }
+        }
+      };
+      
+      // Check if Razorpay is loaded
+      if (typeof window.Razorpay === "undefined") {
+        // Load Razorpay script
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.onload = () => {
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+        };
+        document.body.appendChild(script);
+      } else {
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      }
+    } catch (e) {
+      toast.error("Error initiating payment");
+    } finally {
+      setRazorpayLoading(false);
     }
   };
 
