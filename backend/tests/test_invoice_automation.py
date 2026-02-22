@@ -298,7 +298,7 @@ class TestInvoicePaymentsStripe:
         """Test POST /api/invoice-payments/create-payment-link"""
         payload = {
             "invoice_id": unpaid_invoice_id,
-            "origin_url": "https://volt-theme-pass2.preview.emergentagent.com"
+            "origin_url": "https://volt-visual-pass.preview.emergentagent.com"
         }
         
         response = requests.post(
