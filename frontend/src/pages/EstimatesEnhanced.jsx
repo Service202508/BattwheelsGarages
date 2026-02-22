@@ -1609,52 +1609,6 @@ export default function EstimatesEnhanced() {
                 </div>
               </div>
 
-                {/* Line Items Table */}
-                {newEstimate.line_items.length > 0 && (
-                  <div className="border rounded-lg overflow-hidden mb-4">
-                    <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-3 py-2 text-left">Item</th>
-                          <th className="px-3 py-2 text-right">Qty</th>
-                          <th className="px-3 py-2 text-right">Rate</th>
-                          <th className="px-3 py-2 text-right">Disc</th>
-                          <th className="px-3 py-2 text-right">Tax</th>
-                          <th className="px-3 py-2 text-right">Total</th>
-                          <th className="px-3 py-2"></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {newEstimate.line_items.map((item, idx) => (
-                          <tr key={idx} className="border-t">
-                            <td className="px-3 py-2">
-                              <div>{item.name}</div>
-                              {item.price_list_applied && (
-                                <span className="text-[10px] text-green-600 bg-green-50 px-1 rounded">
-                                  {item.price_list_applied}
-                                  {item.discount_from_pricelist > 0 && ` -₹${item.discount_from_pricelist}`}
-                                  {item.markup_from_pricelist > 0 && ` +₹${item.markup_from_pricelist}`}
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-3 py-2 text-right">{item.quantity}</td>
-                            <td className="px-3 py-2 text-right">
-                              ₹{item.rate}
-                              {item.base_rate && item.base_rate !== item.rate && (
-                                <span className="text-[10px] text-gray-400 line-through ml-1">₹{item.base_rate}</span>
-                              )}
-                            </td>
-                            <td className="px-3 py-2 text-right">{item.discount_percent}%</td>
-                            <td className="px-3 py-2 text-right">{item.tax_percentage}%</td>
-                            <td className="px-3 py-2 text-right font-medium">₹{item.total?.toFixed(2)}</td>
-                            <td className="px-3 py-2"><Button size="icon" variant="ghost" onClick={() => removeLineItem(idx)}><Trash2 className="h-4 w-4 text-red-500" /></Button></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-
                 {/* Totals */}
                 <div className="flex justify-end">
                   <div className="w-64 space-y-2 text-sm">
