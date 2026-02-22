@@ -495,7 +495,11 @@ class TestGSTAccountingFlow:
         
         if response.status_code == 200:
             data = response.json()
-            accounts = data.get("accounts", data.get("chart_of_accounts", []))
+            # Chart of accounts returns a list directly
+            if isinstance(data, list):
+                accounts = data
+            else:
+                accounts = data.get("accounts", data.get("chart_of_accounts", []))
             print(f"Found {len(accounts)} accounts in Chart of Accounts")
             
             # Check for GST accounts
