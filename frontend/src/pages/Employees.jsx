@@ -145,6 +145,20 @@ export default function Employees({ user }) {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
 
+  // Auto-save for Employee form
+  const employeePersistence = useFormPersistence(
+    isEditing && selectedEmployee ? `employee_edit_${selectedEmployee.employee_id}` : 'employee_new',
+    formData,
+    initialFormData,
+    {
+      enabled: dialogOpen,
+      isDialogOpen: dialogOpen,
+      setFormData: setFormData,
+      debounceMs: 2000,
+      entityName: 'Employee'
+    }
+  );
+
   const fetchEmployees = useCallback(async () => {
     setLoading(true);
     try {
