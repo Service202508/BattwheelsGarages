@@ -235,8 +235,8 @@ export function AutoSaveIndicator({ lastSaved, isSaving, isDirty }) {
 
   if (lastSaved) {
     return (
-      <div className="flex items-center gap-1.5 text-xs text-gray-500">
-        <div className="h-2 w-2 rounded-full bg-emerald-400" />
+      <div className="flex items-center gap-1.5 text-xs text-[rgba(244,246,240,0.45)]">
+        <div className="h-2 w-2 rounded-full bg-[#C8FF00]" />
         <span>Saved {formatTime(lastSaved)}</span>
       </div>
     );
