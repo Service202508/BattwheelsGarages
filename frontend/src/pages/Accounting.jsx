@@ -181,7 +181,7 @@ export default function Accounting({ user }) {
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">Revenue - Expenses</p>
               </div>
-              <div className="h-12 w-12 rounded-xl bg-[rgba(200,255,0,0.08)]0/10 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-xl bg-[rgba(200,255,0,0.10)] flex items-center justify-center">
                 <Calculator className="h-6 w-6 text-[#C8FF00] text-400" />
               </div>
             </div>
