@@ -3742,13 +3742,23 @@ async def delete_employee(employee_id: str, request: Request):
 
 @api_router.get("/employees/managers/list")
 async def get_managers(request: Request):
-    """Get list of employees who can be managers"""
+    """Get list of employees who can be managers (all active employees)"""
     await require_auth(request)
     
+    # Return all active employees as potential reporting managers
+    # In HRMS, any employee can potentially be a reporting manager
     managers = await db.employees.find(
-        {"system_role": {"$in": ["admin", "manager"]}, "status": "active"},
-        {"_id": 0, "employee_id": 1, "full_name": 1, "designation": 1, "department": 1}
-    ).to_list(100)
+        {"status": "active"},
+        {"_id": 0, "employee_id": 1, "full_name": 1, "first_name": 1, "last_name": 1, "designation": 1, "department": 1, "system_role": 1}
+    ).to_list(500)
+    
+    # Ensure full_name is populated
+    for m in managers:
+        if not m.get("full_name"):
+            first = m.get("first_name", "")
+            last = m.get("last_name", "")
+            m["full_name"] = f"{first} {last}".strip() or "Unknown"
+    
     return managers
 
 @api_router.get("/employees/departments/list")
