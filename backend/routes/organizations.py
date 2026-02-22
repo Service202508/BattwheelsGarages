@@ -794,7 +794,7 @@ async def get_user_organizations(request: Request):
                 "logo_url": org.get("logo_url"),
                 "plan_type": org.get("plan_type"),
                 "role": m["role"],
-                "joined_at": m["joined_at"]
+                "joined_at": m.get("joined_at", m.get("created_at", ""))
             })
     
     return {
