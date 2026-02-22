@@ -183,20 +183,23 @@ const MetricCard = React.forwardRef(({
   icon: Icon,
   iconClassName = "",
   loading = false,
+  featured = false,
   className,
   ...props
 }, ref) => {
+  const isZeroValue = value === 0 || value === "0" || value === "₹0";
+
   if (loading) {
     return (
       <Card ref={ref} className={cn("metric-card", className)} {...props}>
         <CardContent className="p-4 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1 space-y-2">
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="h-10 w-20" />
-              {subtitle && <Skeleton className="h-3 w-24" />}
+              <Skeleton className="h-4 w-32 bg-[rgba(255,255,255,0.05)]" />
+              <Skeleton className="h-10 w-20 bg-[rgba(255,255,255,0.05)]" />
+              {subtitle && <Skeleton className="h-3 w-24 bg-[rgba(255,255,255,0.05)]" />}
             </div>
-            <Skeleton className="h-10 w-10 rounded-lg" />
+            <Skeleton className="h-10 w-10 rounded bg-[rgba(255,255,255,0.05)]" />
           </div>
         </CardContent>
       </Card>
@@ -204,31 +207,35 @@ const MetricCard = React.forwardRef(({
   }
 
   return (
-    <Card ref={ref} className={cn("metric-card card-hover", className)} {...props}>
+    <Card ref={ref} className={cn("metric-card card-hover", featured && "metric-card-featured", className)} {...props}>
       <CardContent className="p-4 sm:p-6">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+            <p className="metric-card-title">
               {title}
             </p>
             <p 
-              className="text-2xl sm:text-3xl lg:text-4xl font-bold mt-2 mono truncate"
+              className={cn(
+                "text-2xl sm:text-3xl lg:text-4xl font-bold mt-2 mono truncate",
+                isZeroValue ? "metric-card-value-zero" : "metric-card-value",
+                featured && !isZeroValue && "text-[48px]"
+              )}
               title={typeof value === 'string' ? value : undefined}
             >
               {value}
             </p>
             {subtitle && (
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="metric-card-subtitle mt-1">
                 {subtitle}
               </p>
             )}
           </div>
           {Icon && (
             <div className={cn(
-              "h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0",
+              "h-10 w-10 rounded metric-card-icon flex items-center justify-center shrink-0",
               iconClassName
             )}>
-              <Icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
+              <Icon className="h-5 w-5 text-[#C8FF00]" strokeWidth={1.5} />
             </div>
           )}
         </div>
