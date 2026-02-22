@@ -235,7 +235,7 @@ export default function Bills() {
         bills.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No bills found</CardContent></Card> :
         <div className="space-y-3">
           {bills.map(bill => (
-            <Card key={bill.bill_id} className="hover:shadow-md transition-shadow">
+            <Card key={bill.bill_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>

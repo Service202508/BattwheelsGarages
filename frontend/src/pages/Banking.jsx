@@ -385,7 +385,7 @@ export default function Banking() {
             return (
               <Card 
                 key={acc.account_id} 
-                className={`cursor-pointer hover:shadow-md transition-shadow ${selectedAccount?.account_id === acc.account_id ? "ring-2 ring-[#C8FF00]" : ""}`}
+                className={`cursor-pointer transition-colors ${selectedAccount?.account_id === acc.account_id ? "ring-2 ring-[#C8FF00]" : ""}`}
                 onClick={() => setSelectedAccount(acc)}
               >
                 <CardContent className="p-4">
