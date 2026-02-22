@@ -1,73 +1,81 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { 
-  Car, User, AlertCircle, MapPin, Upload, X, FileText, 
+  Car, User, MapPin, Upload, X, FileText, 
   Phone, Mail, Zap, Building2, IndianRupee, CreditCard,
   CheckCircle, Loader2, Bike, Truck, Bus, ArrowRight, Shield, Clock, Headphones,
-  Brain, Sparkles, ChevronRight, Wrench
+  Brain, Sparkles, ChevronRight, Wrench, AlertCircle, Camera
 } from "lucide-react";
 import LocationPicker from "@/components/LocationPicker";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Design System Colors
+const colors = {
+  bg: "#050505",
+  paper: "#0B1210",
+  subtle: "#121A16",
+  accent: "#65D396",
+  accentHover: "#4ADE80",
+  accentGlow: "rgba(101, 211, 150, 0.2)",
+  textPrimary: "#FFFFFF",
+  textSecondary: "#A1A1AA",
+  textMuted: "#52525B",
+  border: "#1F2937",
+  borderActive: "#65D396",
+};
+
 // Customer types
 const customerTypes = [
-  { value: "individual", label: "Individual", icon: User, description: "Personal vehicle owner" },
-  { value: "business", label: "Business/OEM/Fleet Operator", icon: Building2, description: "Company, fleet operator, or OEM" },
+  { value: "individual", label: "Individual", icon: User, desc: "Personal EV Owner" },
+  { value: "business", label: "Business / Fleet", icon: Building2, desc: "Company or Fleet Operator" },
 ];
 
 // Resolution types
 const resolutionTypes = [
-  { value: "workshop", label: "Workshop Visit", description: "Bring to service center", icon: Wrench, mobileIcon: Wrench },
-  { value: "onsite", label: "On-Site Service", description: "We come to you", icon: MapPin, mobileIcon: MapPin },
-  { value: "pickup", label: "Pickup & Drop", description: "We handle transport", icon: Truck, mobileIcon: Truck },
-  { value: "remote", label: "Remote Diagnosis", description: "OTA/Software fix", icon: Zap, mobileIcon: Zap },
+  { value: "workshop", label: "Workshop Visit", desc: "Visit our service center", icon: Wrench },
+  { value: "onsite", label: "Doorstep Service", desc: "We come to your location", icon: MapPin },
+  { value: "pickup", label: "Pickup & Drop", desc: "We handle everything", icon: Truck },
+  { value: "remote", label: "Remote Diagnosis", desc: "OTA / Software fix", icon: Zap },
 ];
 
 // Priority levels
 const priorities = [
-  { value: "low", label: "Low", sublabel: "Can wait a few days", color: "bg-emerald-500", textColor: "text-emerald-400" },
-  { value: "medium", label: "Medium", sublabel: "Within 24-48 hours", color: "bg-amber-500", textColor: "text-amber-400" },
-  { value: "high", label: "High", sublabel: "Within 24 hours", color: "bg-orange-500", textColor: "text-orange-400" },
-  { value: "critical", label: "Critical", sublabel: "Not operational", color: "bg-red-500", textColor: "text-red-400" },
+  { value: "low", label: "Low", desc: "Can wait few days", color: "#65D396" },
+  { value: "medium", label: "Medium", desc: "24-48 hours", color: "#F59E0B" },
+  { value: "high", label: "High", desc: "Within 24 hrs", color: "#F97316" },
+  { value: "critical", label: "Critical", desc: "Immobile", color: "#EF4444" },
 ];
 
 // Category icons
-const categoryIcons = {
-  "2W_EV": Bike,
-  "3W_EV": Truck,
-  "4W_EV": Car,
-  "COMM_EV": Bus,
-  "LEV": Bike,
+const categoryIcons = { "2W_EV": Bike, "3W_EV": Truck, "4W_EV": Car, "COMM_EV": Bus, "LEV": Bike };
+
+// Animation variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
 };
 
 export default function PublicTicketForm() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const fileInputRef = useRef(null);
   
-  // Detect mobile
   const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-  
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   
@@ -75,7 +83,6 @@ export default function PublicTicketForm() {
   const [categories, setCategories] = useState([]);
   const [models, setModels] = useState([]);
   const [modelsByOem, setModelsByOem] = useState({});
-  const [issueSuggestions, setIssueSuggestions] = useState([]);
   const [aiSuggestions, setAiSuggestions] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
   const [serviceCharges, setServiceCharges] = useState({ visit_fee: 299, diagnostic_fee: 199 });
@@ -108,18 +115,21 @@ export default function PublicTicketForm() {
   const [paymentDetails, setPaymentDetails] = useState(null);
   const [ticketResult, setTicketResult] = useState(null);
   const [attachments, setAttachments] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [showAiSuggestions, setShowAiSuggestions] = useState(false);
   const aiDebounceRef = useRef(null);
 
   useEffect(() => {
-    fetchMasterData();
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => { fetchMasterData(); }, []);
 
   useEffect(() => {
     if (formData.vehicle_category) {
       fetchModels(formData.vehicle_category);
-      fetchIssueSuggestions(formData.vehicle_category);
     }
   }, [formData.vehicle_category]);
 
@@ -129,12 +139,10 @@ export default function PublicTicketForm() {
         fetch(`${API}/public/vehicle-categories`),
         fetch(`${API}/public/service-charges`)
       ]);
-      
       if (catRes.ok) {
         const catData = await catRes.json();
         setCategories(catData.categories || []);
       }
-      
       if (chargesRes.ok) {
         const chargesData = await chargesRes.json();
         setServiceCharges({
@@ -160,21 +168,6 @@ export default function PublicTicketForm() {
     }
   };
 
-  const fetchIssueSuggestions = async (categoryCode, modelId = null) => {
-    try {
-      let url = `${API}/public/issue-suggestions?category_code=${categoryCode}`;
-      if (modelId) url += `&model_id=${modelId}`;
-      
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        setIssueSuggestions(data.suggestions || []);
-      }
-    } catch (error) {
-      console.error("Failed to fetch suggestions:", error);
-    }
-  };
-
   const handleModelSelect = (modelId) => {
     const model = models.find(m => m.model_id === modelId);
     if (model) {
@@ -184,23 +177,11 @@ export default function PublicTicketForm() {
         vehicle_model_name: model.name,
         vehicle_oem: model.oem
       }));
-      fetchIssueSuggestions(formData.vehicle_category, modelId);
     }
-  };
-
-  const handleSuggestionSelect = (suggestion) => {
-    setFormData(prev => ({
-      ...prev,
-      title: suggestion.title,
-      issue_type: suggestion.issue_type || "general"
-    }));
-    setShowSuggestions(false);
-    setShowAiSuggestions(false);
   };
 
   const fetchAiSuggestions = async (userInput) => {
     if (!userInput || userInput.length < 3 || !formData.vehicle_category) return;
-    
     setAiLoading(true);
     try {
       const res = await fetch(`${API}/public/ai/issue-suggestions`, {
@@ -213,13 +194,10 @@ export default function PublicTicketForm() {
           user_input: userInput
         })
       });
-      
       if (res.ok) {
         const data = await res.json();
         setAiSuggestions(data.suggestions || []);
-        if (data.suggestions && data.suggestions.length > 0) {
-          setShowAiSuggestions(true);
-        }
+        if (data.suggestions?.length > 0) setShowAiSuggestions(true);
       }
     } catch (error) {
       console.error("Failed to fetch AI suggestions:", error);
@@ -230,28 +208,24 @@ export default function PublicTicketForm() {
 
   const handleTitleChange = (value) => {
     setFormData(prev => ({ ...prev, title: value }));
-    
-    if (aiDebounceRef.current) {
-      clearTimeout(aiDebounceRef.current);
-    }
-    
+    if (aiDebounceRef.current) clearTimeout(aiDebounceRef.current);
     if (value.length >= 3) {
-      aiDebounceRef.current = setTimeout(() => {
-        fetchAiSuggestions(value);
-      }, 500);
+      aiDebounceRef.current = setTimeout(() => fetchAiSuggestions(value), 500);
     } else {
       setShowAiSuggestions(false);
     }
+  };
+
+  const handleSuggestionSelect = (suggestion) => {
+    setFormData(prev => ({ ...prev, title: suggestion.title, issue_type: suggestion.issue_type || "general" }));
+    setShowAiSuggestions(false);
   };
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     const newAttachments = files.map(file => ({
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      file,
-      name: file.name,
-      size: file.size,
-      type: file.type,
+      file, name: file.name, size: file.size, type: file.type,
       preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : null
     }));
     setAttachments(prev => [...prev, ...newAttachments]);
@@ -259,8 +233,8 @@ export default function PublicTicketForm() {
 
   const removeAttachment = (id) => {
     setAttachments(prev => {
-      const attachment = prev.find(a => a.id === id);
-      if (attachment?.preview) URL.revokeObjectURL(attachment.preview);
+      const att = prev.find(a => a.id === id);
+      if (att?.preview) URL.revokeObjectURL(att.preview);
       return prev.filter(a => a.id !== id);
     });
   };
@@ -272,73 +246,39 @@ export default function PublicTicketForm() {
   };
 
   const validateForm = () => {
-    if (!formData.vehicle_category) {
-      toast.error("Please select vehicle category");
-      return false;
-    }
-    if (!formData.vehicle_number) {
-      toast.error("Please enter vehicle number");
-      return false;
-    }
-    if (!formData.customer_name) {
-      toast.error("Please enter your name");
-      return false;
-    }
-    if (!formData.contact_number) {
-      toast.error("Please enter contact number");
-      return false;
-    }
-    if (!formData.title) {
-      toast.error("Please describe the issue");
-      return false;
-    }
-    if (!formData.description) {
-      toast.error("Please provide issue details");
-      return false;
-    }
+    if (!formData.vehicle_category) { toast.error("Please select vehicle category"); return false; }
+    if (!formData.vehicle_number) { toast.error("Please enter vehicle number"); return false; }
+    if (!formData.customer_name) { toast.error("Please enter your name"); return false; }
+    if (!formData.contact_number) { toast.error("Please enter contact number"); return false; }
+    if (!formData.title) { toast.error("Please describe the issue"); return false; }
+    if (!formData.description) { toast.error("Please provide issue details"); return false; }
     if (formData.resolution_type === "onsite" && !formData.incident_location) {
-      toast.error("Please enter location for on-site service");
-      return false;
+      toast.error("Please enter location for doorstep service"); return false;
     }
     return true;
   };
 
-  const requiresPayment = () => {
-    return formData.customer_type === "individual" && formData.resolution_type === "onsite";
-  };
+  const requiresPayment = () => formData.customer_type === "individual" && formData.resolution_type === "onsite";
 
   const calculateTotal = () => {
     if (!requiresPayment()) return 0;
     let total = serviceCharges.visit_fee;
-    if (formData.include_diagnostic_fee) {
-      total += serviceCharges.diagnostic_fee;
-    }
+    if (formData.include_diagnostic_fee) total += serviceCharges.diagnostic_fee;
     return total;
   };
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-    
     setSubmitting(true);
-    
     try {
-      const submitData = {
-        ...formData,
-        include_visit_fee: requiresPayment() ? true : false,
-      };
-      
+      const submitData = { ...formData, include_visit_fee: requiresPayment() };
       const res = await fetch(`${API}/public/tickets/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submitData)
       });
-      
       const data = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(data.detail || "Failed to submit ticket");
-      }
-      
+      if (!res.ok) throw new Error(data.detail || "Failed to submit ticket");
       if (data.requires_payment) {
         setPaymentDetails(data.payment_details);
         setTicketResult(data);
@@ -357,7 +297,6 @@ export default function PublicTicketForm() {
 
   const handlePayment = async () => {
     if (!paymentDetails) return;
-    
     if (paymentDetails.is_mock) {
       try {
         const verifyRes = await fetch(`${API}/public/tickets/verify-payment`, {
@@ -370,17 +309,10 @@ export default function PublicTicketForm() {
             razorpay_signature: "mock_signature"
           })
         });
-        
-        if (verifyRes.ok) {
-          setStep(3);
-          toast.success("Payment successful!");
-        }
-      } catch (error) {
-        toast.error("Payment verification failed");
-      }
+        if (verifyRes.ok) { setStep(3); toast.success("Payment successful!"); }
+      } catch (error) { toast.error("Payment verification failed"); }
       return;
     }
-    
     const options = {
       key: paymentDetails.key_id,
       amount: paymentDetails.amount_paise,
@@ -400,722 +332,720 @@ export default function PublicTicketForm() {
               razorpay_signature: response.razorpay_signature
             })
           });
-          
-          if (verifyRes.ok) {
-            setStep(3);
-            toast.success("Payment successful!");
-          } else {
-            toast.error("Payment verification failed");
-          }
-        } catch (error) {
-          toast.error("Payment verification failed");
-        }
+          if (verifyRes.ok) { setStep(3); toast.success("Payment successful!"); }
+          else { toast.error("Payment verification failed"); }
+        } catch (error) { toast.error("Payment verification failed"); }
       },
-      prefill: {
-        name: formData.customer_name,
-        email: formData.email,
-        contact: formData.contact_number
-      },
-      theme: { color: "#10b981" }
+      prefill: { name: formData.customer_name, email: formData.email, contact: formData.contact_number },
+      theme: { color: "#65D396" }
     };
-    
     const rzp = new window.Razorpay(options);
     rzp.open();
   };
 
-  // Footer Component
-  const Footer = ({ mobile = false }) => (
-    <footer className={`text-center space-y-3 ${mobile ? 'mt-6 pb-4' : 'mt-8'}`}>
-      <div className="flex items-center justify-center gap-2 text-emerald-400/80">
-        <Brain className="h-4 w-4" />
-        <span className="text-xs font-medium">Powered by EFI Intelligence</span>
-        <Sparkles className="h-3 w-3" />
-      </div>
-      <div className={`${mobile ? 'pt-3' : 'pt-4'} border-t border-slate-800/50`}>
-        <p className="text-[11px] text-slate-600 leading-relaxed">
-          © 2026 BATTWHEELS SERVICES PRIVATE LIMITED.
-          <br />All rights reserved.
-        </p>
-      </div>
-    </footer>
+  // Styled Input Component
+  const StyledInput = ({ className = "", ...props }) => (
+    <Input
+      className={`h-14 bg-[#050505] border-2 border-white/10 focus:border-[#65D396] focus:ring-2 focus:ring-[#65D396]/20 rounded-md text-white text-base placeholder:text-zinc-500 transition-all duration-200 ${className}`}
+      {...props}
+    />
   );
 
-  // Mobile Section Header
-  const MobileSectionHeader = ({ icon: Icon, title, subtitle }) => (
-    <div className="flex items-start gap-3 mb-4">
-      <div className="p-2 bg-emerald-500/10 rounded-xl flex-shrink-0">
-        <Icon className="h-5 w-5 text-emerald-400" />
+  // Styled Select Component
+  const StyledSelect = ({ children, ...props }) => (
+    <Select {...props}>
+      {children}
+    </Select>
+  );
+
+  // Section Card Component
+  const SectionCard = ({ children, className = "", delay = 0 }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay, ease: "easeOut" }}
+      className={`bg-[#0B1210] border border-white/10 rounded-lg p-5 md:p-6 ${className}`}
+    >
+      {children}
+    </motion.div>
+  );
+
+  // Section Header Component
+  const SectionHeader = ({ icon: Icon, title, subtitle, badge }) => (
+    <div className="flex items-start gap-4 mb-5">
+      <div className="w-11 h-11 rounded-lg bg-[#65D396]/10 border border-[#65D396]/20 flex items-center justify-center flex-shrink-0">
+        <Icon className="w-5 h-5 text-[#65D396]" strokeWidth={1.5} />
       </div>
-      <div>
-        <h3 className="text-base font-semibold text-white">{title}</h3>
-        {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+      <div className="flex-1">
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-white tracking-tight">{title}</h3>
+          {badge && (
+            <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#65D396]/10 text-[#65D396] border border-[#65D396]/20 rounded">
+              {badge}
+            </span>
+          )}
+        </div>
+        {subtitle && <p className="text-sm text-zinc-500 mt-0.5">{subtitle}</p>}
       </div>
     </div>
   );
 
-  // ==================== MOBILE VIEW ====================
-  if (isMobile) {
-    // Mobile Step 1: Form
-    if (step === 1) {
-      return (
-        <div className="min-h-screen bg-slate-950">
-          {/* Mobile Header */}
-          <div className="sticky top-0 z-50 bg-slate-950/95 backdrop-blur-lg border-b border-slate-800/50">
-            <div className="px-4 py-3 flex items-center justify-between">
-              <img src="/battwheels_garages_logo.png" alt="Battwheels Garages" className="h-8 w-auto" />
-              <div className="flex items-center gap-1.5 text-emerald-400">
-                <Brain className="h-4 w-4" />
-                <span className="text-xs font-medium">EFI</span>
-              </div>
+  // Footer Component
+  const Footer = () => (
+    <footer className="text-center py-6 mt-8 border-t border-white/5">
+      <div className="flex items-center justify-center gap-2 mb-3">
+        <Brain className="w-4 h-4 text-[#65D396]" strokeWidth={1.5} />
+        <span className="text-xs font-medium text-[#65D396] tracking-wide">Powered by EFI Intelligence</span>
+        <Sparkles className="w-3 h-3 text-[#65D396]" />
+      </div>
+      <p className="text-[11px] text-zinc-600 leading-relaxed">
+        © 2026 BATTWHEELS SERVICES PRIVATE LIMITED.<br />All rights reserved.
+      </p>
+    </footer>
+  );
+
+  // ===================== FORM VIEW (Step 1) =====================
+  if (step === 1) {
+    return (
+      <div className="min-h-screen bg-[#050505] text-white" style={{ fontFamily: "'Manrope', sans-serif" }}>
+        {/* Header */}
+        <header className="sticky top-0 z-50 bg-[#050505]/95 backdrop-blur-xl border-b border-white/5">
+          <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <img src="/battwheels_garages_logo.png" alt="Battwheels Garages" className="h-9" />
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#65D396]/10 border border-[#65D396]/20 rounded-full">
+              <div className="w-2 h-2 bg-[#65D396] rounded-full animate-pulse" />
+              <span className="text-xs font-semibold text-[#65D396] tracking-wide">EFI ACTIVE</span>
             </div>
           </div>
+        </header>
 
-          {/* Hero */}
-          <div className="px-4 pt-6 pb-4">
-            <div className="text-center space-y-2">
-              <h1 className="text-2xl font-bold text-white">EV Service Request</h1>
-              <p className="text-sm text-slate-400">Expert care for your electric vehicle</p>
-            </div>
-            <div className="flex justify-center gap-3 mt-5 overflow-x-auto pb-2 -mx-4 px-4">
-              {[{ icon: Shield, label: "Certified" }, { icon: Clock, label: "Quick" }, { icon: Headphones, label: "24/7" }].map((b, i) => (
-                <div key={i} className="flex items-center gap-1.5 text-xs text-slate-400 whitespace-nowrap bg-slate-900/50 px-3 py-2 rounded-full">
-                  <b.icon className="h-3.5 w-3.5 text-emerald-500" />
-                  <span>{b.label}</span>
+        {/* Hero */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#65D396]/5 via-transparent to-transparent" />
+          <div className="max-w-3xl mx-auto px-4 pt-8 pb-6 relative">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-center" style={{ fontFamily: "'Barlow', sans-serif" }}>
+                EV SERVICE REQUEST
+              </h1>
+              <p className="text-center text-zinc-400 mt-2 text-sm md:text-base">
+                AI-powered diagnostics for your electric vehicle
+              </p>
+            </motion.div>
+
+            {/* Trust Badges */}
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              transition={{ delay: 0.3 }}
+              className="flex justify-center gap-3 mt-6 flex-wrap"
+            >
+              {[
+                { icon: Shield, label: "Certified" },
+                { icon: Clock, label: "Quick Response" },
+                { icon: Headphones, label: "24/7 Support" }
+              ].map((badge, i) => (
+                <div key={i} className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full">
+                  <badge.icon className="w-4 h-4 text-[#65D396]" strokeWidth={1.5} />
+                  <span className="text-xs font-medium text-zinc-300">{badge.label}</span>
                 </div>
               ))}
-            </div>
+            </motion.div>
           </div>
+        </div>
 
-          {/* Form */}
-          <div className="px-4 pb-4 space-y-4" data-testid="public-ticket-form">
+        {/* Form */}
+        <div className="max-w-3xl mx-auto px-4 pb-8" data-testid="public-ticket-form">
+          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-4">
+            
             {/* Customer Type */}
-            <Card className="border-0 bg-slate-900/60 rounded-2xl">
-              <CardContent className="p-4">
-                <MobileSectionHeader icon={User} title="Customer Type" />
-                <div className="grid grid-cols-2 gap-3">
-                  {customerTypes.map((type) => {
-                    const Icon = type.icon;
-                    const isSelected = formData.customer_type === type.value;
-                    return (
-                      <button key={type.value} onClick={() => setFormData(prev => ({ ...prev, customer_type: type.value }))}
-                        className={`relative p-4 rounded-xl border-2 transition-all text-center ${isSelected ? "border-emerald-500 bg-emerald-500/10" : "border-slate-800 bg-slate-800/30 active:scale-[0.98]"}`}
-                        data-testid={`customer-type-${type.value}`}>
-                        <div className={`mx-auto w-10 h-10 rounded-xl flex items-center justify-center mb-2 ${isSelected ? "bg-emerald-500/20" : "bg-slate-700/50"}`}>
-                          <Icon className={`h-5 w-5 ${isSelected ? "text-emerald-400" : "text-slate-400"}`} />
-                        </div>
-                        <p className={`font-medium text-sm ${isSelected ? "text-emerald-400" : "text-white"}`}>{type.label.split('/')[0]}</p>
-                        {isSelected && <div className="absolute top-2 right-2"><CheckCircle className="h-4 w-4 text-emerald-500" /></div>}
-                      </button>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+            <SectionCard delay={0.1}>
+              <SectionHeader icon={User} title="Customer Type" />
+              <div className="grid grid-cols-2 gap-3">
+                {customerTypes.map((type) => {
+                  const Icon = type.icon;
+                  const isSelected = formData.customer_type === type.value;
+                  return (
+                    <motion.button
+                      key={type.value}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setFormData(prev => ({ ...prev, customer_type: type.value }))}
+                      className={`relative p-5 rounded-lg border-2 transition-all duration-200 text-left ${
+                        isSelected 
+                          ? "border-[#65D396] bg-[#65D396]/10 shadow-[0_0_20px_rgba(101,211,150,0.15)]" 
+                          : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                      }`}
+                      data-testid={`customer-type-${type.value}`}
+                    >
+                      <Icon className={`w-6 h-6 mb-3 ${isSelected ? "text-[#65D396]" : "text-zinc-400"}`} strokeWidth={1.5} />
+                      <p className={`font-semibold text-sm ${isSelected ? "text-[#65D396]" : "text-white"}`}>{type.label}</p>
+                      <p className="text-xs text-zinc-500 mt-1">{type.desc}</p>
+                      {isSelected && (
+                        <motion.div 
+                          initial={{ scale: 0 }} 
+                          animate={{ scale: 1 }}
+                          className="absolute top-3 right-3"
+                        >
+                          <CheckCircle className="w-5 h-5 text-[#65D396]" />
+                        </motion.div>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </SectionCard>
 
-            {/* Vehicle Info */}
-            <Card className="border-0 bg-slate-900/60 rounded-2xl">
-              <CardContent className="p-4">
-                <MobileSectionHeader icon={Car} title="Vehicle" subtitle="Your EV details" />
-                <div className="space-y-4">
+            {/* Vehicle Information */}
+            <SectionCard delay={0.2}>
+              <SectionHeader icon={Car} title="Vehicle Details" subtitle="Enter your EV information" />
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Category <span className="text-emerald-500">*</span></Label>
-                    <Select value={formData.vehicle_category} onValueChange={(v) => setFormData(prev => ({ ...prev, vehicle_category: v, vehicle_model_id: "", vehicle_model_name: "", vehicle_oem: "" }))}>
-                      <SelectTrigger className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" data-testid="vehicle-category-select">
+                    <Label className="text-sm font-medium text-zinc-300">
+                      Category <span className="text-[#65D396]">*</span>
+                    </Label>
+                    <Select
+                      value={formData.vehicle_category}
+                      onValueChange={(v) => setFormData(prev => ({ ...prev, vehicle_category: v, vehicle_model_id: "", vehicle_model_name: "", vehicle_oem: "" }))}
+                    >
+                      <SelectTrigger className="h-14 bg-[#050505] border-2 border-white/10 focus:border-[#65D396] rounded-md text-white" data-testid="vehicle-category-select">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-700">
+                      <SelectContent className="bg-[#0B1210] border-white/10">
                         {categories.map((cat) => {
                           const Icon = categoryIcons[cat.code] || Car;
-                          return <SelectItem key={cat.code} value={cat.code} className="py-3"><div className="flex items-center gap-2"><Icon className="h-4 w-4 text-emerald-500" />{cat.name}</div></SelectItem>;
+                          return (
+                            <SelectItem key={cat.code} value={cat.code} className="text-white hover:bg-white/5 focus:bg-[#65D396]/10">
+                              <div className="flex items-center gap-3">
+                                <Icon className="w-4 h-4 text-[#65D396]" />
+                                <span>{cat.name}</span>
+                              </div>
+                            </SelectItem>
+                          );
                         })}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Model</Label>
+                    <Label className="text-sm font-medium text-zinc-300">Model (OEM)</Label>
                     <Select value={formData.vehicle_model_id} onValueChange={handleModelSelect} disabled={!formData.vehicle_category}>
-                      <SelectTrigger className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50 disabled:opacity-50" data-testid="vehicle-model-select">
+                      <SelectTrigger className="h-14 bg-[#050505] border-2 border-white/10 focus:border-[#65D396] rounded-md text-white disabled:opacity-50" data-testid="vehicle-model-select">
                         <SelectValue placeholder="Select model" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
+                      <SelectContent className="bg-[#0B1210] border-white/10 max-h-60">
                         {Object.entries(modelsByOem).map(([oem, oemModels]) => (
                           <div key={oem}>
-                            <div className="px-2 py-2 text-xs font-semibold text-emerald-400 bg-slate-900/80 sticky top-0">{oem}</div>
-                            {oemModels.map((model) => <SelectItem key={model.model_id} value={model.model_id} className="py-3">{model.name}</SelectItem>)}
+                            <div className="px-3 py-2 text-xs font-bold text-[#65D396] bg-[#050505] sticky top-0">{oem}</div>
+                            {oemModels.map((model) => (
+                              <SelectItem key={model.model_id} value={model.model_id} className="text-white hover:bg-white/5">{model.name}</SelectItem>
+                            ))}
                           </div>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Number <span className="text-emerald-500">*</span></Label>
-                    <Input placeholder="MH12AB1234" className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50 uppercase tracking-wider" value={formData.vehicle_number} onChange={(e) => setFormData(prev => ({ ...prev, vehicle_number: e.target.value.toUpperCase() }))} data-testid="vehicle-number-input" />
-                  </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-zinc-300">
+                    Vehicle Number <span className="text-[#65D396]">*</span>
+                  </Label>
+                  <StyledInput
+                    placeholder="MH12AB1234"
+                    value={formData.vehicle_number}
+                    onChange={(e) => setFormData(prev => ({ ...prev, vehicle_number: e.target.value.toUpperCase() }))}
+                    className="uppercase tracking-widest font-mono"
+                    data-testid="vehicle-number-input"
+                  />
+                </div>
+              </div>
+            </SectionCard>
 
-            {/* Your Details */}
-            <Card className="border-0 bg-slate-900/60 rounded-2xl">
-              <CardContent className="p-4">
-                <MobileSectionHeader icon={Phone} title="Contact" subtitle="How to reach you" />
-                <div className="space-y-4">
+            {/* Contact Details */}
+            <SectionCard delay={0.3}>
+              <SectionHeader icon={Phone} title="Contact Details" subtitle="How can we reach you?" />
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Name <span className="text-emerald-500">*</span></Label>
-                    <Input placeholder="Your name" className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" value={formData.customer_name} onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))} data-testid="customer-name-input" />
+                    <Label className="text-sm font-medium text-zinc-300">
+                      Full Name <span className="text-[#65D396]">*</span>
+                    </Label>
+                    <StyledInput
+                      placeholder="Enter your name"
+                      value={formData.customer_name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))}
+                      data-testid="customer-name-input"
+                    />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Phone <span className="text-emerald-500">*</span></Label>
+                    <Label className="text-sm font-medium text-zinc-300">
+                      Phone Number <span className="text-[#65D396]">*</span>
+                    </Label>
                     <div className="flex">
-                      <div className="flex items-center px-4 bg-slate-800 border border-r-0 border-slate-700/50 rounded-l-xl text-sm text-slate-400 font-medium">+91</div>
-                      <Input type="tel" placeholder="98765 43210" className="h-12 bg-slate-800/80 border-slate-700/50 rounded-l-none rounded-r-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" value={formData.contact_number} onChange={(e) => setFormData(prev => ({ ...prev, contact_number: e.target.value }))} data-testid="contact-number-input" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Email <span className="text-slate-500 text-xs">(Optional)</span></Label>
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                      <Input type="email" placeholder="your@email.com" className="h-12 bg-slate-800/80 border-slate-700/50 pl-11 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} data-testid="email-input" />
+                      <div className="flex items-center px-4 bg-[#0B1210] border-2 border-r-0 border-white/10 rounded-l-md text-sm text-zinc-400 font-medium">
+                        +91
+                      </div>
+                      <StyledInput
+                        type="tel"
+                        placeholder="9876543210"
+                        value={formData.contact_number}
+                        onChange={(e) => setFormData(prev => ({ ...prev, contact_number: e.target.value }))}
+                        className="rounded-l-none"
+                        data-testid="contact-number-input"
+                      />
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Issue */}
-            <Card className="border-0 bg-slate-900/60 rounded-2xl">
-              <CardContent className="p-4">
-                <MobileSectionHeader icon={Brain} title="Issue" subtitle="AI will suggest solutions" />
-                <div className="space-y-4">
-                  <div className="space-y-2 relative">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-slate-300 text-sm">Problem <span className="text-emerald-500">*</span></Label>
-                      {aiLoading && <span className="text-xs text-emerald-400 flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" />AI...</span>}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-zinc-300">
+                    Email <span className="text-zinc-600">(Optional)</span>
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" strokeWidth={1.5} />
+                    <StyledInput
+                      type="email"
+                      placeholder="you@example.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      className="pl-12"
+                      data-testid="email-input"
+                    />
+                  </div>
+                </div>
+                {formData.customer_type === "business" && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-zinc-300">Business Name</Label>
+                      <StyledInput
+                        placeholder="Company name"
+                        value={formData.business_name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, business_name: e.target.value }))}
+                        data-testid="business-name-input"
+                      />
                     </div>
-                    <Input placeholder="Describe briefly..." className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" value={formData.title} onChange={(e) => handleTitleChange(e.target.value)} onFocus={() => { if (issueSuggestions.length > 0) setShowSuggestions(true); if (aiSuggestions.length > 0) setShowAiSuggestions(true); }} data-testid="issue-title-input" />
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-zinc-300">GSTIN</Label>
+                      <StyledInput
+                        placeholder="22AAAAA0000A1Z5"
+                        value={formData.gst_number}
+                        onChange={(e) => setFormData(prev => ({ ...prev, gst_number: e.target.value.toUpperCase() }))}
+                        className="uppercase font-mono"
+                        data-testid="gst-number-input"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            </SectionCard>
+
+            {/* Issue Details */}
+            <SectionCard delay={0.4}>
+              <SectionHeader icon={Brain} title="Describe Your Issue" subtitle="AI will analyze and suggest solutions" badge="AI" />
+              <div className="space-y-4">
+                <div className="space-y-2 relative">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium text-zinc-300">
+                      Issue <span className="text-[#65D396]">*</span>
+                    </Label>
+                    {aiLoading && (
+                      <span className="flex items-center gap-1.5 text-xs text-[#65D396]">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        Analyzing...
+                      </span>
+                    )}
+                  </div>
+                  <StyledInput
+                    placeholder="e.g., Battery not charging, motor noise..."
+                    value={formData.title}
+                    onChange={(e) => handleTitleChange(e.target.value)}
+                    onFocus={() => { if (aiSuggestions.length > 0) setShowAiSuggestions(true); }}
+                    data-testid="issue-title-input"
+                  />
+                  
+                  {/* AI Suggestions Dropdown */}
+                  <AnimatePresence>
                     {showAiSuggestions && aiSuggestions.length > 0 && (
-                      <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-emerald-500/30 rounded-xl shadow-xl overflow-hidden">
-                        <div className="p-2.5 text-xs text-emerald-400 border-b border-slate-700/50 flex items-center gap-2 bg-emerald-500/5"><Brain className="h-3.5 w-3.5" /><span className="font-medium">AI Suggestions</span></div>
-                        <div className="max-h-40 overflow-y-auto">
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="absolute z-50 w-full mt-2 bg-[#0B1210] border-2 border-[#65D396]/30 rounded-lg shadow-[0_0_30px_rgba(101,211,150,0.15)] overflow-hidden"
+                      >
+                        <div className="px-4 py-3 border-b border-white/10 bg-[#65D396]/5 flex items-center gap-2">
+                          <Brain className="w-4 h-4 text-[#65D396]" />
+                          <span className="text-sm font-semibold text-[#65D396]">AI Suggestions</span>
+                        </div>
+                        <div className="max-h-48 overflow-y-auto">
                           {aiSuggestions.slice(0, 4).map((s, i) => (
-                            <button key={i} className="w-full px-4 py-3 text-left hover:bg-emerald-500/10 border-b border-slate-700/30 last:border-b-0" onClick={() => handleSuggestionSelect(s)}>
-                              <p className="text-white text-sm font-medium">{s.title}</p>
+                            <button
+                              key={i}
+                              onClick={() => handleSuggestionSelect(s)}
+                              className="w-full px-4 py-3 text-left hover:bg-[#65D396]/10 transition-colors border-b border-white/5 last:border-b-0 flex items-center justify-between group"
+                            >
+                              <span className="text-sm text-white">{s.title}</span>
+                              <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#65D396] transition-colors" />
                             </button>
                           ))}
                         </div>
-                      </div>
+                      </motion.div>
                     )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Details <span className="text-emerald-500">*</span></Label>
-                    <Textarea placeholder="When did it start? Error codes?" className="min-h-[100px] bg-slate-800/80 border-slate-700/50 rounded-xl resize-none text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} data-testid="description-input" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Priority</Label>
-                    <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-                      {priorities.map((p) => {
-                        const isSelected = formData.priority === p.value;
-                        return <button key={p.value} onClick={() => setFormData(prev => ({ ...prev, priority: p.value }))} className={`flex-shrink-0 px-4 py-2.5 rounded-full border-2 text-sm font-medium ${isSelected ? `${p.color} border-transparent text-white` : `border-slate-700 bg-slate-800/30 ${p.textColor}`}`}>{p.label}</button>;
-                      })}
-                    </div>
+                  </AnimatePresence>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-zinc-300">
+                    Detailed Description <span className="text-[#65D396]">*</span>
+                  </Label>
+                  <Textarea
+                    placeholder="Describe the symptoms, when it started, any error codes..."
+                    value={formData.description}
+                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    className="min-h-[120px] bg-[#050505] border-2 border-white/10 focus:border-[#65D396] focus:ring-2 focus:ring-[#65D396]/20 rounded-md text-white text-base placeholder:text-zinc-500 resize-none"
+                    data-testid="description-input"
+                  />
+                </div>
+
+                {/* Priority */}
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-zinc-300">Priority Level</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {priorities.map((p) => {
+                      const isSelected = formData.priority === p.value;
+                      return (
+                        <motion.button
+                          key={p.value}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => setFormData(prev => ({ ...prev, priority: p.value }))}
+                          className={`px-4 py-2.5 rounded-lg border-2 transition-all duration-200 ${
+                            isSelected 
+                              ? "border-transparent text-[#050505] font-semibold" 
+                              : "border-white/10 text-zinc-400 hover:border-white/20"
+                          }`}
+                          style={{ backgroundColor: isSelected ? p.color : 'transparent' }}
+                          data-testid={`priority-${p.value}`}
+                        >
+                          <span className="text-sm">{p.label}</span>
+                        </motion.button>
+                      );
+                    })}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </SectionCard>
 
             {/* Service Type */}
-            <Card className="border-0 bg-slate-900/60 rounded-2xl">
-              <CardContent className="p-4">
-                <MobileSectionHeader icon={Wrench} title="Service Type" />
-                <div className="grid grid-cols-2 gap-3">
-                  {resolutionTypes.map((r) => {
-                    const Icon = r.mobileIcon;
-                    const isSelected = formData.resolution_type === r.value;
-                    return (
-                      <button key={r.value} onClick={() => setFormData(prev => ({ ...prev, resolution_type: r.value }))}
-                        className={`p-4 rounded-xl border-2 text-center ${isSelected ? "border-emerald-500 bg-emerald-500/10" : "border-slate-800 bg-slate-800/30 active:scale-[0.98]"}`}
-                        data-testid={`resolution-${r.value}`}>
-                        <div className={`mx-auto w-10 h-10 rounded-xl flex items-center justify-center mb-2 ${isSelected ? "bg-emerald-500/20" : "bg-slate-700/50"}`}>
-                          <Icon className={`h-5 w-5 ${isSelected ? "text-emerald-400" : "text-slate-400"}`} />
-                        </div>
-                        <p className={`font-medium text-sm ${isSelected ? "text-emerald-400" : "text-white"}`}>{r.label}</p>
-                        <p className="text-[10px] text-slate-500 mt-0.5">{r.description}</p>
-                      </button>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+            <SectionCard delay={0.5}>
+              <SectionHeader icon={Wrench} title="Service Type" subtitle="How would you like to be serviced?" />
+              <div className="grid grid-cols-2 gap-3">
+                {resolutionTypes.map((r) => {
+                  const Icon = r.icon;
+                  const isSelected = formData.resolution_type === r.value;
+                  return (
+                    <motion.button
+                      key={r.value}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setFormData(prev => ({ ...prev, resolution_type: r.value }))}
+                      className={`p-4 rounded-lg border-2 transition-all duration-200 text-left ${
+                        isSelected 
+                          ? "border-[#65D396] bg-[#65D396]/10 shadow-[0_0_20px_rgba(101,211,150,0.15)]" 
+                          : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                      }`}
+                      data-testid={`resolution-${r.value}`}
+                    >
+                      <Icon className={`w-6 h-6 mb-2 ${isSelected ? "text-[#65D396]" : "text-zinc-400"}`} strokeWidth={1.5} />
+                      <p className={`font-semibold text-sm ${isSelected ? "text-[#65D396]" : "text-white"}`}>{r.label}</p>
+                      <p className="text-xs text-zinc-500 mt-1">{r.desc}</p>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </SectionCard>
 
-            {/* Location */}
+            {/* Location for On-Site */}
             {formData.resolution_type === "onsite" && (
-              <Card className="border-0 bg-slate-900/60 rounded-2xl">
-                <CardContent className="p-4">
-                  <MobileSectionHeader icon={MapPin} title="Location" subtitle="Where should we come?" />
-                  <LocationPicker value={formData.incident_location ? { address: formData.incident_location, lat: formData.location_lat, lng: formData.location_lng } : null} onChange={(loc) => setFormData(prev => ({ ...prev, incident_location: loc.address, location_lat: loc.lat, location_lng: loc.lng }))} placeholder="Tap to select" buttonText="Map" />
-                </CardContent>
-              </Card>
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}>
+                <SectionCard>
+                  <SectionHeader icon={MapPin} title="Service Location" subtitle="Where should we come?" />
+                  <LocationPicker
+                    value={formData.incident_location ? { address: formData.incident_location, lat: formData.location_lat, lng: formData.location_lng } : null}
+                    onChange={(loc) => setFormData(prev => ({ ...prev, incident_location: loc.address, location_lat: loc.lat, location_lng: loc.lng }))}
+                    placeholder="Tap to select your location"
+                    buttonText="Open Map"
+                  />
+                </SectionCard>
+              </motion.div>
             )}
 
-            {/* Payment */}
+            {/* Payment Info */}
             {requiresPayment() && (
-              <Card className="border-0 bg-gradient-to-br from-amber-500/10 to-orange-500/5 rounded-2xl">
-                <CardContent className="p-4">
-                  <MobileSectionHeader icon={IndianRupee} title="Charges" />
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
-                      <div className="flex items-center gap-3"><Checkbox checked disabled className="bg-emerald-500 border-emerald-500" /><span className="text-sm text-white">Visit</span></div>
-                      <span className="text-emerald-400 font-semibold">₹{serviceCharges.visit_fee}</span>
+              <SectionCard delay={0.6} className="border-[#F59E0B]/30 bg-[#F59E0B]/5">
+                <SectionHeader icon={IndianRupee} title="Service Charges" subtitle="Doorstep service requires advance payment" />
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-4 bg-[#050505] rounded-lg border border-white/10">
+                    <div className="flex items-center gap-3">
+                      <Checkbox checked disabled className="bg-[#65D396] border-[#65D396]" />
+                      <div>
+                        <p className="text-sm font-medium text-white">Visit Charges</p>
+                        <p className="text-xs text-zinc-500">Mandatory</p>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
-                      <div className="flex items-center gap-3"><Checkbox checked={formData.include_diagnostic_fee} onCheckedChange={(c) => setFormData(prev => ({ ...prev, include_diagnostic_fee: !!c }))} className="border-slate-600" data-testid="diagnostic-fee-checkbox" /><span className="text-sm text-white">Diagnostic</span></div>
-                      <span className="text-slate-300 font-semibold">₹{serviceCharges.diagnostic_fee}</span>
-                    </div>
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-700/50">
-                      <span className="text-white font-semibold">Total</span>
-                      <span className="text-emerald-400 text-xl font-bold">₹{calculateTotal()}</span>
-                    </div>
+                    <span className="text-lg font-bold text-[#65D396]">₹{serviceCharges.visit_fee}</span>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex items-center justify-between p-4 bg-[#050505] rounded-lg border border-white/10">
+                    <div className="flex items-center gap-3">
+                      <Checkbox 
+                        checked={formData.include_diagnostic_fee}
+                        onCheckedChange={(c) => setFormData(prev => ({ ...prev, include_diagnostic_fee: !!c }))}
+                        className="border-zinc-600"
+                        data-testid="diagnostic-fee-checkbox"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-white">Diagnostic Report</p>
+                        <p className="text-xs text-zinc-500">Optional</p>
+                      </div>
+                    </div>
+                    <span className="text-lg font-semibold text-zinc-300">₹{serviceCharges.diagnostic_fee}</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                    <span className="font-semibold text-white">Total Amount</span>
+                    <span className="text-2xl font-bold text-[#65D396]">₹{calculateTotal()}</span>
+                  </div>
+                </div>
+              </SectionCard>
             )}
 
-            {/* Photos */}
-            <Card className="border-0 bg-slate-900/60 rounded-2xl">
-              <CardContent className="p-4">
-                <MobileSectionHeader icon={Upload} title="Photos" subtitle="Optional" />
-                <button className="w-full border-2 border-dashed border-slate-700/50 rounded-xl p-6 text-center active:scale-[0.99]" onClick={() => fileInputRef.current?.click()}>
-                  <Upload className="h-6 w-6 mx-auto mb-2 text-slate-500" />
-                  <p className="text-sm text-slate-400">Tap to upload</p>
-                  <input ref={fileInputRef} type="file" multiple accept="image/*" className="hidden" onChange={handleFileChange} />
-                </button>
-                {attachments.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2 mt-3">
-                    {attachments.map((att) => (
-                      <div key={att.id} className="relative aspect-square rounded-lg overflow-hidden bg-slate-800">
-                        {att.preview ? <img src={att.preview} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><FileText className="h-6 w-6 text-slate-400" /></div>}
-                        <button className="absolute top-1 right-1 p-1 bg-black/60 rounded-full" onClick={() => removeAttachment(att.id)}><X className="h-3 w-3 text-white" /></button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Submit */}
-            <div className="sticky bottom-0 -mx-4 px-4 py-3 bg-gradient-to-t from-slate-950 via-slate-950 to-transparent">
-              <Button onClick={handleSubmit} disabled={submitting} className="w-full h-14 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-base font-semibold rounded-xl shadow-lg active:scale-[0.98]" data-testid="submit-ticket-btn">
-                {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : requiresPayment() ? <><CreditCard className="h-5 w-5 mr-2" />Pay ₹{calculateTotal()}<ArrowRight className="h-5 w-5 ml-2" /></> : <><CheckCircle className="h-5 w-5 mr-2" />Submit<ArrowRight className="h-5 w-5 ml-2" /></>}
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-center gap-4 text-xs text-slate-500 pt-2">
-              <a href="/track-ticket" className="hover:text-emerald-400 flex items-center gap-1">Track<ChevronRight className="h-3 w-3" /></a>
-              <span className="text-slate-700">|</span>
-              <a href="/login" className="hover:text-emerald-400 flex items-center gap-1">Portal<ChevronRight className="h-3 w-3" /></a>
-            </div>
-
-            <Footer mobile />
-          </div>
-        </div>
-      );
-    }
-
-    // Mobile Step 2: Payment
-    if (step === 2) {
-      return (
-        <div className="min-h-screen bg-slate-950 flex flex-col">
-          <div className="sticky top-0 z-50 bg-slate-950/95 backdrop-blur-lg border-b border-slate-800/50">
-            <div className="px-4 py-3 flex items-center justify-center"><img src="/battwheels_garages_logo.png" alt="Battwheels Garages" className="h-8 w-auto" /></div>
-          </div>
-          <div className="flex-1 flex items-center justify-center p-4">
-            <Card className="border-0 bg-slate-900/80 rounded-2xl w-full max-w-sm">
-              <CardContent className="p-6 text-center space-y-6">
-                <div className="inline-flex p-4 bg-emerald-500/20 rounded-2xl"><CreditCard className="h-10 w-10 text-emerald-400" /></div>
-                <div><h2 className="text-xl font-bold text-white">Complete Payment</h2><p className="text-sm text-slate-400 mt-1">Confirm booking</p></div>
-                <div className="space-y-3 p-4 bg-slate-800/50 rounded-xl text-left">
-                  <div className="flex justify-between text-sm"><span className="text-slate-400">Ticket</span><span className="text-emerald-400 font-mono">{ticketResult?.ticket_id}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-slate-400">Visit</span><span className="text-white">₹{paymentDetails?.visit_fee}</span></div>
-                  {paymentDetails?.diagnostic_fee > 0 && <div className="flex justify-between text-sm"><span className="text-slate-400">Diagnostic</span><span className="text-white">₹{paymentDetails?.diagnostic_fee}</span></div>}
-                  <div className="flex justify-between pt-3 border-t border-slate-700/50"><span className="text-white font-semibold">Total</span><span className="text-emerald-400 text-2xl font-bold">₹{paymentDetails?.amount}</span></div>
-                </div>
-                {paymentDetails?.is_mock && <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl"><p className="text-amber-400 text-xs">Test Mode</p></div>}
-                <Button onClick={handlePayment} className="w-full h-14 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl active:scale-[0.98]" data-testid="pay-now-btn"><IndianRupee className="h-5 w-5 mr-2" />Pay ₹{paymentDetails?.amount}</Button>
-              </CardContent>
-            </Card>
-          </div>
-          <Footer mobile />
-        </div>
-      );
-    }
-
-    // Mobile Step 3: Success
-    return (
-      <div className="min-h-screen bg-slate-950 flex flex-col">
-        <div className="sticky top-0 z-50 bg-slate-950/95 backdrop-blur-lg border-b border-slate-800/50">
-          <div className="px-4 py-3 flex items-center justify-center"><img src="/battwheels_garages_logo.png" alt="Battwheels Garages" className="h-8 w-auto" /></div>
-        </div>
-        <div className="flex-1 flex items-center justify-center p-4">
-          <Card className="border-0 bg-slate-900/80 rounded-2xl w-full max-w-sm overflow-hidden">
-            <div className="bg-gradient-to-br from-emerald-500/20 to-teal-500/10 p-8 text-center">
-              <div className="inline-flex p-4 bg-emerald-500/30 rounded-full mb-4"><CheckCircle className="h-12 w-12 text-emerald-400" /></div>
-              <h2 className="text-2xl font-bold text-white">Submitted!</h2>
-              <p className="text-slate-400 mt-1 text-sm">Ticket created</p>
-            </div>
-            <CardContent className="p-6 space-y-5">
-              <div className="p-4 bg-slate-800/50 rounded-xl text-center">
-                <p className="text-slate-400 text-xs mb-1">TICKET ID</p>
-                <p className="text-emerald-400 text-2xl font-mono font-bold">{ticketResult?.ticket_id}</p>
-              </div>
-              <div className="space-y-2">
-                {[{ icon: CheckCircle, text: "Confirmation sent" }, { icon: CheckCircle, text: "Team will contact you" }, { icon: Brain, text: "EFI analyzing issue" }].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-xl">
-                    <item.icon className="h-4 w-4 text-emerald-500 flex-shrink-0" />
-                    <p className="text-sm text-slate-300">{item.text}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="space-y-3 pt-2">
-                <Button onClick={() => navigate(`/track-ticket?id=${ticketResult?.ticket_id}`)} className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl active:scale-[0.98]" data-testid="track-ticket-btn">Track Ticket<ArrowRight className="h-4 w-4 ml-2" /></Button>
-                <Button variant="outline" onClick={() => { setStep(1); setFormData({ ...formData, title: "", description: "" }); }} className="w-full h-12 border-slate-700 hover:bg-slate-800 rounded-xl">New Request</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        <Footer mobile />
-      </div>
-    );
-  }
-
-  // ==================== DESKTOP VIEW (Original Design) ====================
-  
-  // Desktop Step 1: Form
-  if (step === 1) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-        {/* Hero Header */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/10 via-transparent to-teal-600/10" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/20 via-transparent to-transparent" />
-          
-          <div className="relative max-w-4xl mx-auto px-4 pt-8 pb-12">
-            <div className="flex justify-center mb-6">
-              <img src="/battwheels_garages_logo.png" alt="Battwheels Garages" className="h-24 w-auto drop-shadow-2xl" />
-            </div>
-            <div className="text-center space-y-3">
-              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">EV Service Request</h1>
-              <p className="text-slate-400 text-lg max-w-xl mx-auto">Expert care for your electric vehicle. Submit your service request and our team will assist you promptly.</p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-6 mt-8">
-              <div className="flex items-center gap-2 text-sm text-slate-400"><Shield className="h-4 w-4 text-emerald-500" /><span>Certified Technicians</span></div>
-              <div className="flex items-center gap-2 text-sm text-slate-400"><Clock className="h-4 w-4 text-emerald-500" /><span>Quick Response</span></div>
-              <div className="flex items-center gap-2 text-sm text-slate-400"><Headphones className="h-4 w-4 text-emerald-500" /><span>24/7 Support</span></div>
-            </div>
-          </div>
-        </div>
-
-        {/* Form Container */}
-        <div className="max-w-3xl mx-auto px-4 pb-12" data-testid="public-ticket-form">
-          <Card className="border-0 bg-slate-900/80 backdrop-blur-xl shadow-2xl shadow-emerald-900/10 rounded-2xl overflow-hidden">
-            <CardContent className="p-6 md:p-8 space-y-8">
-              
-              {/* Customer Type */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                  <h2 className="text-lg font-semibold text-white">Customer Type</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {customerTypes.map((type) => {
-                    const Icon = type.icon;
-                    const isSelected = formData.customer_type === type.value;
-                    return (
-                      <button key={type.value} onClick={() => setFormData(prev => ({ ...prev, customer_type: type.value }))}
-                        className={`relative p-4 rounded-xl border-2 transition-all duration-200 text-left group ${isSelected ? "border-emerald-500 bg-emerald-500/10 ring-4 ring-emerald-500/20" : "border-slate-700/50 hover:border-slate-600 bg-slate-800/30 hover:bg-slate-800/50"}`}
-                        data-testid={`customer-type-${type.value}`}>
-                        <div className="flex items-center gap-3">
-                          <div className={`p-2.5 rounded-lg transition-colors ${isSelected ? "bg-emerald-500/20" : "bg-slate-700/50 group-hover:bg-slate-700"}`}>
-                            <Icon className={`h-5 w-5 ${isSelected ? "text-emerald-400" : "text-slate-400"}`} />
-                          </div>
-                          <div>
-                            <p className={`font-medium ${isSelected ? "text-emerald-400" : "text-white"}`}>{type.label}</p>
-                            <p className="text-sm text-slate-500">{type.description}</p>
-                          </div>
+            {/* Photo Attachments */}
+            <SectionCard delay={0.6}>
+              <SectionHeader icon={Camera} title="Attach Photos" subtitle="Optional - helps diagnose faster" />
+              <motion.button
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full p-8 border-2 border-dashed border-white/10 rounded-lg hover:border-[#65D396]/50 hover:bg-[#65D396]/5 transition-all duration-200"
+              >
+                <Upload className="w-8 h-8 mx-auto mb-3 text-zinc-500" strokeWidth={1.5} />
+                <p className="text-sm text-zinc-400">Tap to upload photos</p>
+                <p className="text-xs text-zinc-600 mt-1">PNG, JPG up to 10MB</p>
+                <input ref={fileInputRef} type="file" multiple accept="image/*" className="hidden" onChange={handleFileChange} />
+              </motion.button>
+              {attachments.length > 0 && (
+                <div className="grid grid-cols-3 gap-3 mt-4">
+                  {attachments.map((att) => (
+                    <div key={att.id} className="relative aspect-square rounded-lg overflow-hidden bg-[#050505] border border-white/10">
+                      {att.preview ? (
+                        <img src={att.preview} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <FileText className="w-6 h-6 text-zinc-500" />
                         </div>
-                        {isSelected && <div className="absolute top-3 right-3"><CheckCircle className="h-5 w-5 text-emerald-500" /></div>}
+                      )}
+                      <button 
+                        onClick={() => removeAttachment(att.id)}
+                        className="absolute top-2 right-2 p-1.5 bg-black/70 hover:bg-red-500 rounded-full transition-colors"
+                      >
+                        <X className="w-3 h-3 text-white" />
                       </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Vehicle Information */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                  <h2 className="text-lg font-semibold text-white">Vehicle Information</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Vehicle Category <span className="text-emerald-500">*</span></Label>
-                    <Select value={formData.vehicle_category} onValueChange={(value) => setFormData(prev => ({ ...prev, vehicle_category: value, vehicle_model_id: "", vehicle_model_name: "", vehicle_oem: "" }))}>
-                      <SelectTrigger className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all rounded-xl text-white" data-testid="vehicle-category-select">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-700">
-                        {categories.map((cat) => {
-                          const Icon = categoryIcons[cat.code] || Car;
-                          return <SelectItem key={cat.code} value={cat.code} className="focus:bg-emerald-500/20"><div className="flex items-center gap-2"><Icon className="h-4 w-4 text-emerald-500" />{cat.name}</div></SelectItem>;
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Vehicle Model (OEM)</Label>
-                    <Select value={formData.vehicle_model_id} onValueChange={handleModelSelect} disabled={!formData.vehicle_category}>
-                      <SelectTrigger className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all rounded-xl text-white disabled:opacity-50" data-testid="vehicle-model-select">
-                        <SelectValue placeholder="Select model" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
-                        {Object.entries(modelsByOem).map(([oem, oemModels]) => (
-                          <div key={oem}>
-                            <div className="px-2 py-1.5 text-xs font-semibold text-emerald-400 bg-slate-900/50 sticky top-0">{oem}</div>
-                            {oemModels.map((model) => <SelectItem key={model.model_id} value={model.model_id} className="focus:bg-emerald-500/20">{model.name} {model.range_km && <span className="text-slate-500 ml-1">({model.range_km} km)</span>}</SelectItem>)}
-                          </div>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-slate-300 text-sm">Vehicle Number <span className="text-emerald-500">*</span></Label>
-                  <Input placeholder="e.g., MH12AB1234" className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 uppercase rounded-xl transition-all text-white placeholder:text-slate-500" value={formData.vehicle_number} onChange={(e) => setFormData(prev => ({ ...prev, vehicle_number: e.target.value.toUpperCase() }))} data-testid="vehicle-number-input" />
-                </div>
-              </div>
-
-              {/* Customer Details */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                  <h2 className="text-lg font-semibold text-white">Your Details</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Full Name <span className="text-emerald-500">*</span></Label>
-                    <Input placeholder="Your name" className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 rounded-xl transition-all text-white placeholder:text-slate-500" value={formData.customer_name} onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))} data-testid="customer-name-input" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Contact Number <span className="text-emerald-500">*</span></Label>
-                    <div className="flex">
-                      <div className="flex items-center px-4 bg-slate-800 border border-r-0 border-slate-700/50 rounded-l-xl text-sm text-slate-400 font-medium">+91</div>
-                      <Input placeholder="98765 43210" className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 rounded-l-none rounded-r-xl transition-all text-white placeholder:text-slate-500" value={formData.contact_number} onChange={(e) => setFormData(prev => ({ ...prev, contact_number: e.target.value }))} data-testid="contact-number-input" />
                     </div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Email Address</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                      <Input type="email" placeholder="your@email.com" className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 pl-11 rounded-xl transition-all text-white placeholder:text-slate-500" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} data-testid="email-input" />
-                    </div>
-                  </div>
-                  {formData.customer_type === "business" && (
-                    <div className="space-y-2">
-                      <Label className="text-slate-300 text-sm">Business Name</Label>
-                      <Input placeholder="Company name" className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 rounded-xl transition-all text-white placeholder:text-slate-500" value={formData.business_name} onChange={(e) => setFormData(prev => ({ ...prev, business_name: e.target.value }))} data-testid="business-name-input" />
-                    </div>
-                  )}
-                </div>
-                {formData.customer_type === "business" && (
-                  <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">GST Number</Label>
-                    <Input placeholder="22AAAAA0000A1Z5" className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 uppercase rounded-xl transition-all text-white placeholder:text-slate-500" value={formData.gst_number} onChange={(e) => setFormData(prev => ({ ...prev, gst_number: e.target.value.toUpperCase() }))} data-testid="gst-number-input" />
-                  </div>
-                )}
-              </div>
-
-              {/* Issue Details */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                  <h2 className="text-lg font-semibold text-white">Issue Details</h2>
-                </div>
-                <div className="space-y-2 relative">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-slate-300 text-sm">Issue Title <span className="text-emerald-500">*</span></Label>
-                    {aiLoading && <span className="text-xs text-emerald-400 flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" />AI analyzing...</span>}
-                  </div>
-                  <Input placeholder="Describe the issue briefly..." className="h-12 bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 rounded-xl transition-all text-white placeholder:text-slate-500" value={formData.title} onChange={(e) => handleTitleChange(e.target.value)} onFocus={() => { if (issueSuggestions.length > 0) setShowSuggestions(true); if (aiSuggestions.length > 0) setShowAiSuggestions(true); }} data-testid="issue-title-input" />
-                  
-                  {showAiSuggestions && aiSuggestions.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-emerald-500/30 rounded-xl shadow-xl shadow-emerald-900/20 max-h-60 overflow-auto">
-                      <div className="p-3 text-xs text-emerald-400 border-b border-slate-700/50 flex items-center gap-2 bg-emerald-500/5"><Brain className="h-3.5 w-3.5" /><span className="font-medium">AI-Powered Suggestions</span><Sparkles className="h-3 w-3" /></div>
-                      {aiSuggestions.slice(0, 5).map((suggestion, idx) => (
-                        <div key={idx} className="px-4 py-3 hover:bg-emerald-500/10 cursor-pointer border-b border-slate-700/30 last:border-b-0 transition-colors" onClick={() => handleSuggestionSelect(suggestion)}>
-                          <div className="flex items-center justify-between">
-                            <p className="text-white text-sm font-medium">{suggestion.title}</p>
-                            <Badge className={`text-xs border ${suggestion.severity === 'critical' ? 'border-red-500/50 bg-red-500/10 text-red-400' : suggestion.severity === 'high' ? 'border-orange-500/50 bg-orange-500/10 text-orange-400' : suggestion.severity === 'medium' ? 'border-amber-500/50 bg-amber-500/10 text-amber-400' : 'border-emerald-500/50 bg-emerald-500/10 text-emerald-400'}`}>{suggestion.severity}</Badge>
-                          </div>
-                          {suggestion.description && <p className="text-xs text-slate-400 mt-1">{suggestion.description}</p>}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-slate-300 text-sm">Detailed Description <span className="text-emerald-500">*</span></Label>
-                  <Textarea placeholder="Describe the issue in detail - symptoms, when it started, any error codes..." className="min-h-[120px] bg-slate-800/80 border-slate-700/50 hover:border-emerald-500/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:bg-slate-800 rounded-xl transition-all resize-none text-white placeholder:text-slate-500" value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} data-testid="description-input" />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Priority Level</Label>
-                    <Select value={formData.priority} onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value }))}>
-                      <SelectTrigger className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" data-testid="priority-select"><SelectValue /></SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-700">
-                        {priorities.map((p) => <SelectItem key={p.value} value={p.value}><div className="flex items-center gap-2"><div className={`w-2 h-2 rounded-full ${p.color}`} />{p.label} - {p.sublabel}</div></SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-300 text-sm">Service Type <span className="text-emerald-500">*</span></Label>
-                    <Select value={formData.resolution_type} onValueChange={(value) => setFormData(prev => ({ ...prev, resolution_type: value }))}>
-                      <SelectTrigger className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" data-testid="resolution-type-select"><SelectValue /></SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-700">
-                        {resolutionTypes.map((r) => <SelectItem key={r.value} value={r.value}><div><p>{r.label}</p><p className="text-xs text-slate-400">{r.description}</p></div></SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-
-              {/* Location */}
-              {formData.resolution_type === "onsite" && (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                    <h2 className="text-lg font-semibold text-white">Service Location</h2>
-                  </div>
-                  <LocationPicker value={formData.incident_location ? { address: formData.incident_location, lat: formData.location_lat, lng: formData.location_lng } : null} onChange={(location) => setFormData(prev => ({ ...prev, incident_location: location.address, location_lat: location.lat, location_lng: location.lng }))} placeholder="Click to select your location" buttonText="Open Map" />
+                  ))}
                 </div>
               )}
+            </SectionCard>
 
-              {/* Payment */}
-              {requiresPayment() && (
-                <div className="space-y-4 p-5 bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20 rounded-2xl">
-                  <div className="flex items-center gap-2"><IndianRupee className="h-5 w-5 text-amber-400" /><h3 className="font-semibold text-amber-400">Service Charges</h3></div>
-                  <p className="text-sm text-slate-400">On-site service requires advance payment.</p>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
-                      <div className="flex items-center gap-3"><Checkbox checked disabled className="bg-emerald-500 border-emerald-500" /><div><p className="text-white font-medium text-sm">Visit Charges</p><p className="text-xs text-slate-500">Mandatory</p></div></div>
-                      <p className="text-emerald-400 font-semibold">₹{serviceCharges.visit_fee}</p>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
-                      <div className="flex items-center gap-3"><Checkbox checked={formData.include_diagnostic_fee} onCheckedChange={(checked) => setFormData(prev => ({ ...prev, include_diagnostic_fee: !!checked }))} className="border-slate-600" data-testid="diagnostic-fee-checkbox" /><div><p className="text-white font-medium text-sm">Diagnostic Report</p><p className="text-xs text-slate-500">Optional</p></div></div>
-                      <p className="text-slate-300 font-semibold">₹{serviceCharges.diagnostic_fee}</p>
-                    </div>
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-700/50"><p className="text-white font-semibold">Total</p><p className="text-emerald-400 text-xl font-bold">₹{calculateTotal()}</p></div>
-                  </div>
-                </div>
-              )}
-
-              {/* Attachments */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                  <h2 className="text-lg font-semibold text-white">Attachments</h2>
-                  <span className="text-xs text-slate-500">(Optional)</span>
-                </div>
-                <div className="border-2 border-dashed border-slate-700/50 rounded-xl p-8 text-center hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
-                  <Upload className="h-8 w-8 mx-auto mb-3 text-slate-500 group-hover:text-emerald-500 transition-colors" />
-                  <p className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">Click to upload photos or documents</p>
-                  <p className="text-xs text-slate-600 mt-1">PNG, JPG, PDF up to 10MB</p>
-                  <input ref={fileInputRef} type="file" multiple accept="image/*,.pdf,.doc,.docx" className="hidden" onChange={handleFileChange} />
-                </div>
-                {attachments.length > 0 && (
-                  <div className="grid grid-cols-2 gap-2">
-                    {attachments.map((att) => (
-                      <div key={att.id} className="flex items-center gap-2 p-3 bg-slate-800/50 rounded-xl border border-slate-700/30">
-                        {att.preview ? <img src={att.preview} alt="" className="h-10 w-10 object-cover rounded-lg" /> : <div className="h-10 w-10 bg-slate-700 rounded-lg flex items-center justify-center"><FileText className="h-5 w-5 text-slate-400" /></div>}
-                        <div className="flex-1 min-w-0"><p className="text-xs text-white truncate">{att.name}</p><p className="text-xs text-slate-500">{formatFileSize(att.size)}</p></div>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-red-500/20 hover:text-red-400" onClick={() => removeAttachment(att.id)}><X className="h-3.5 w-3.5" /></Button>
-                      </div>
-                    ))}
-                  </div>
+            {/* Submit Button */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="sticky bottom-4 pt-4"
+            >
+              <Button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="w-full h-16 bg-[#65D396] hover:bg-[#4ADE80] text-[#050505] text-lg font-bold uppercase tracking-wide rounded-lg shadow-[0_0_30px_rgba(101,211,150,0.3)] hover:shadow-[0_0_40px_rgba(101,211,150,0.4)] transition-all duration-200"
+                data-testid="submit-ticket-btn"
+              >
+                {submitting ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : requiresPayment() ? (
+                  <>
+                    <CreditCard className="w-5 h-5 mr-2" />
+                    Proceed to Pay ₹{calculateTotal()}
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-5 h-5 mr-2" />
+                    Submit Request
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </>
                 )}
-              </div>
+              </Button>
+            </motion.div>
 
-              {/* Submit */}
-              <div className="pt-4">
-                <Button onClick={handleSubmit} disabled={submitting} className="w-full h-14 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-lg font-semibold rounded-xl shadow-lg shadow-emerald-900/30 transition-all duration-200 group" data-testid="submit-ticket-btn">
-                  {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : requiresPayment() ? <><CreditCard className="h-5 w-5 mr-2" />Proceed to Payment - ₹{calculateTotal()}<ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" /></> : <><CheckCircle className="h-5 w-5 mr-2" />Submit Service Request<ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" /></>}
-                </Button>
-                <div className="flex items-center justify-center gap-4 mt-6 text-sm text-slate-500">
-                  <a href="/track-ticket" className="hover:text-emerald-400 transition-colors">Track Existing Ticket</a>
-                  <span>|</span>
-                  <a href="/login" className="hover:text-emerald-400 transition-colors">Customer Portal</a>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            {/* Quick Links */}
+            <div className="flex items-center justify-center gap-6 text-sm text-zinc-500 pt-2">
+              <a href="/track-ticket" className="hover:text-[#65D396] transition-colors flex items-center gap-1">
+                Track Ticket <ChevronRight className="w-4 h-4" />
+              </a>
+              <span className="text-zinc-700">|</span>
+              <a href="/login" className="hover:text-[#65D396] transition-colors flex items-center gap-1">
+                Customer Portal <ChevronRight className="w-4 h-4" />
+              </a>
+            </div>
 
-          <Footer />
+            <Footer />
+          </motion.div>
         </div>
       </div>
     );
   }
 
-  // Desktop Step 2: Payment
+  // ===================== PAYMENT VIEW (Step 2) =====================
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-8 px-4 flex items-center justify-center">
-        <Card className="border-0 bg-slate-900/80 backdrop-blur-xl shadow-2xl shadow-emerald-900/10 rounded-2xl max-w-md w-full">
-          <CardHeader className="text-center pb-2">
-            <div className="flex justify-center mb-4"><div className="p-4 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-2xl"><CreditCard className="h-10 w-10 text-emerald-400" /></div></div>
-            <CardTitle className="text-white text-2xl">Complete Payment</CardTitle>
-            <CardDescription className="text-slate-400">Confirm your service booking</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6 p-6">
-            <div className="space-y-3 p-4 bg-slate-800/50 rounded-xl">
-              <div className="flex justify-between text-sm"><span className="text-slate-400">Ticket ID</span><span className="text-emerald-400 font-mono font-medium">{ticketResult?.ticket_id}</span></div>
-              <div className="flex justify-between text-sm"><span className="text-slate-400">Visit Charges</span><span className="text-white">₹{paymentDetails?.visit_fee}</span></div>
-              {paymentDetails?.diagnostic_fee > 0 && <div className="flex justify-between text-sm"><span className="text-slate-400">Diagnostic</span><span className="text-white">₹{paymentDetails?.diagnostic_fee}</span></div>}
-              <div className="flex justify-between pt-3 border-t border-slate-700/50"><span className="text-white font-semibold">Total</span><span className="text-emerald-400 text-2xl font-bold">₹{paymentDetails?.amount}</span></div>
+      <div className="min-h-screen bg-[#050505] flex flex-col" style={{ fontFamily: "'Manrope', sans-serif" }}>
+        <header className="bg-[#050505]/95 backdrop-blur-xl border-b border-white/5">
+          <div className="max-w-md mx-auto px-4 py-4 flex justify-center">
+            <img src="/battwheels_garages_logo.png" alt="Battwheels Garages" className="h-9" />
+          </div>
+        </header>
+
+        <div className="flex-1 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-md bg-[#0B1210] border border-white/10 rounded-lg overflow-hidden"
+          >
+            <div className="p-8 text-center">
+              <div className="w-16 h-16 mx-auto mb-6 bg-[#65D396]/10 rounded-xl flex items-center justify-center">
+                <CreditCard className="w-8 h-8 text-[#65D396]" strokeWidth={1.5} />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Complete Payment</h2>
+              <p className="text-zinc-400">Confirm your service booking</p>
             </div>
-            {paymentDetails?.is_mock && <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl"><p className="text-amber-400 text-sm text-center">Test Mode: Payment will be simulated</p></div>}
-            <Button onClick={handlePayment} className="w-full h-14 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-lg font-semibold rounded-xl shadow-lg shadow-emerald-900/30" data-testid="pay-now-btn"><IndianRupee className="h-5 w-5 mr-2" />Pay ₹{paymentDetails?.amount}</Button>
-          </CardContent>
-        </Card>
+
+            <div className="px-8 pb-8 space-y-4">
+              <div className="p-4 bg-[#050505] rounded-lg space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Ticket ID</span>
+                  <span className="text-[#65D396] font-mono font-bold">{ticketResult?.ticket_id}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Visit Charges</span>
+                  <span className="text-white">₹{paymentDetails?.visit_fee}</span>
+                </div>
+                {paymentDetails?.diagnostic_fee > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-zinc-400">Diagnostic</span>
+                    <span className="text-white">₹{paymentDetails?.diagnostic_fee}</span>
+                  </div>
+                )}
+                <div className="flex justify-between pt-3 border-t border-white/10">
+                  <span className="font-semibold text-white">Total</span>
+                  <span className="text-2xl font-bold text-[#65D396]">₹{paymentDetails?.amount}</span>
+                </div>
+              </div>
+
+              {paymentDetails?.is_mock && (
+                <div className="p-3 bg-[#F59E0B]/10 border border-[#F59E0B]/20 rounded-lg">
+                  <p className="text-sm text-[#F59E0B] text-center">Test Mode - Payment will be simulated</p>
+                </div>
+              )}
+
+              <Button
+                onClick={handlePayment}
+                className="w-full h-14 bg-[#65D396] hover:bg-[#4ADE80] text-[#050505] font-bold uppercase tracking-wide rounded-lg shadow-[0_0_20px_rgba(101,211,150,0.3)]"
+                data-testid="pay-now-btn"
+              >
+                <IndianRupee className="w-5 h-5 mr-2" />
+                Pay ₹{paymentDetails?.amount}
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+
+        <Footer />
       </div>
     );
   }
 
-  // Desktop Step 3: Success
+  // ===================== SUCCESS VIEW (Step 3) =====================
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-8 px-4 flex items-center justify-center">
-      <Card className="border-0 bg-slate-900/80 backdrop-blur-xl shadow-2xl shadow-emerald-900/10 rounded-2xl max-w-md w-full overflow-hidden">
-        <div className="bg-gradient-to-br from-emerald-500/20 to-teal-500/10 p-8 text-center">
-          <div className="inline-flex p-4 bg-emerald-500/20 rounded-full mb-4 animate-pulse"><CheckCircle className="h-12 w-12 text-emerald-400" /></div>
-          <h2 className="text-2xl font-bold text-white">Request Submitted!</h2>
-          <p className="text-slate-400 mt-1">Your service ticket has been created</p>
+    <div className="min-h-screen bg-[#050505] flex flex-col" style={{ fontFamily: "'Manrope', sans-serif" }}>
+      <header className="bg-[#050505]/95 backdrop-blur-xl border-b border-white/5">
+        <div className="max-w-md mx-auto px-4 py-4 flex justify-center">
+          <img src="/battwheels_garages_logo.png" alt="Battwheels Garages" className="h-9" />
         </div>
-        <CardContent className="space-y-6 p-6">
-          <div className="p-4 bg-slate-800/50 rounded-xl text-center">
-            <p className="text-slate-400 text-sm mb-1">Ticket ID</p>
-            <p className="text-emerald-400 text-3xl font-mono font-bold tracking-wider">{ticketResult?.ticket_id}</p>
+      </header>
+
+      <div className="flex-1 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-md bg-[#0B1210] border border-white/10 rounded-lg overflow-hidden"
+        >
+          {/* Success Header */}
+          <div className="relative bg-gradient-to-br from-[#65D396]/20 to-transparent p-8 text-center">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", delay: 0.2 }}
+              className="w-20 h-20 mx-auto mb-6 bg-[#65D396]/20 rounded-full flex items-center justify-center"
+            >
+              <CheckCircle className="w-10 h-10 text-[#65D396]" strokeWidth={1.5} />
+            </motion.div>
+            <h2 className="text-2xl font-bold text-white mb-2">Request Submitted!</h2>
+            <p className="text-zinc-400">Your service ticket has been created</p>
           </div>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-xl"><CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" /><p className="text-sm text-slate-300">Confirmation sent to your phone</p></div>
-            <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-xl"><CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" /><p className="text-sm text-slate-300">Our team will contact you shortly</p></div>
-            <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-xl"><Brain className="h-5 w-5 text-emerald-500 flex-shrink-0" /><p className="text-sm text-slate-300">EFI Intelligence is analyzing your issue</p></div>
+
+          <div className="p-8 space-y-6">
+            <div className="p-6 bg-[#050505] rounded-lg text-center">
+              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Ticket ID</p>
+              <p className="text-3xl font-mono font-bold text-[#65D396] tracking-wider">{ticketResult?.ticket_id}</p>
+            </div>
+
+            <div className="space-y-3">
+              {[
+                { icon: CheckCircle, text: "Confirmation sent to your phone" },
+                { icon: Clock, text: "Our team will contact you shortly" },
+                { icon: Brain, text: "EFI Intelligence is analyzing your issue" }
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 + i * 0.1 }}
+                  className="flex items-center gap-3 p-3 bg-white/5 rounded-lg"
+                >
+                  <item.icon className="w-5 h-5 text-[#65D396] flex-shrink-0" strokeWidth={1.5} />
+                  <p className="text-sm text-zinc-300">{item.text}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <Button
+                onClick={() => navigate(`/track-ticket?id=${ticketResult?.ticket_id}`)}
+                className="w-full h-14 bg-[#65D396] hover:bg-[#4ADE80] text-[#050505] font-bold uppercase tracking-wide rounded-lg"
+                data-testid="track-ticket-btn"
+              >
+                Track Your Ticket
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => { setStep(1); setFormData({ ...formData, title: "", description: "" }); }}
+                className="w-full h-12 border-white/10 hover:bg-white/5 text-white rounded-lg"
+              >
+                Submit Another Request
+              </Button>
+            </div>
           </div>
-          <div className="space-y-3 pt-2">
-            <Button onClick={() => navigate(`/track-ticket?id=${ticketResult?.ticket_id}`)} className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl" data-testid="track-ticket-btn">Track Your Ticket<ArrowRight className="h-4 w-4 ml-2" /></Button>
-            <Button variant="outline" onClick={() => { setStep(1); setFormData({ ...formData, title: "", description: "" }); }} className="w-full h-12 border-slate-700 hover:bg-slate-800 rounded-xl">Submit Another Request</Button>
-          </div>
-        </CardContent>
-      </Card>
+        </motion.div>
+      </div>
+
+      <Footer />
     </div>
   );
 }
