@@ -79,9 +79,9 @@ const AnimatedVehicleIcons = () => {
 
 // Feature Badges
 const FeatureBadge = ({ icon: Icon, text }) => (
-  <div className="flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-gray-100 shadow-sm">
-    <Icon className="w-4 h-4 text-[#22EDA9]" />
-    <span className="text-xs font-medium text-gray-600">{text}</span>
+  <div className="flex items-center gap-2 px-4 py-2 bg-[#111820]/60 backdrop-blur-sm rounded-full border border-[rgba(200,255,0,0.15)] shadow-sm">
+    <Icon className="w-4 h-4 text-[#C8FF00]" />
+    <span className="text-xs font-medium text-[rgba(244,246,240,0.7)]">{text}</span>
   </div>
 );
 
