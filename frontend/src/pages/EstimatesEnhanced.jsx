@@ -724,6 +724,7 @@ export default function EstimatesEnhanced() {
       });
       if (res.ok) {
         toast.success("Estimate updated successfully");
+        editEstimatePersistence.onSuccessfulSave(); // Clear auto-saved draft
         setShowEditDialog(false);
         fetchEstimateDetail(editEstimate.estimate_id);
         fetchData();
