@@ -58,7 +58,7 @@
    - Global form state management
    - Cross-component communication
 
-#### Modules Updated with Auto-Save:
+#### Modules Updated with Auto-Save (Complete List):
 | Module | File | Features Added |
 |--------|------|----------------|
 | **Sales** | EstimatesEnhanced.jsx | Auto-save indicator, Draft recovery, Close confirm |
@@ -66,9 +66,12 @@
 | **Sales** | SalesOrdersEnhanced.jsx | Import added |
 | **Contacts** | ContactsEnhanced.jsx | Full integration with create/edit dialogs |
 | **HR** | Employees.jsx | Full integration with add/edit employee form |
+| **HR** | Attendance.jsx | ✅ Full integration on Clock Out dialog |
+| **HR** | LeaveManagement.jsx | ✅ Full integration on Apply Leave dialog |
 | **Finance** | Expenses.jsx | Import added |
 | **Finance** | Banking.jsx | Import added |
 | **Finance** | BillsEnhanced.jsx | Import added |
+| **Purchase** | PurchaseOrders.jsx | ✅ Full integration on Create PO dialog |
 | **Inventory** | ItemsEnhanced.jsx | Import added |
 | **Operations** | Tickets.jsx | Import added |
 | **HR** | Payroll.jsx | Import added |
