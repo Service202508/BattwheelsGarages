@@ -577,13 +577,13 @@ export default function Invoices() {
 
                             <div className="flex gap-2 justify-end pt-4">
                               {invoice.status === "draft" && (
-                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "sent")} className="bg-[rgba(59,158,255,0.08)]0 hover:bg-blue-600 text-white">
+                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "sent")} className="bg-[#3B9EFF] hover:bg-blue-600 text-[#080C0F]">
                                   <Send className="h-4 w-4 mr-2" />
                                   Mark as Sent
                                 </Button>
                               )}
                               {["draft", "sent", "partially_paid"].includes(invoice.status) && (
-                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "paid")} className="bg-[rgba(34,197,94,0.08)]0 hover:bg-green-600 text-white">
+                                <Button onClick={() => handleUpdateStatus(invoice.invoice_id, "paid")} className="bg-[#22C55E] hover:bg-green-600 text-[#080C0F]">
                                   <CheckCircle className="h-4 w-4 mr-2" />
                                   Mark as Paid
                                 </Button>

@@ -260,7 +260,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                 >
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
                     isActive ? "bg-[rgba(200,255,0,0.10)] ring-2 ring-emerald-500" :
-                    isComplete ? "bg-[rgba(200,255,0,0.08)]0 text-white" : "bg-[rgba(255,255,255,0.05)]"
+                    isComplete ? "bg-[#C8FF00] text-[#080C0F]" : "bg-[rgba(255,255,255,0.05)]"
                   }`}>
                     {isComplete ? <Check className="h-5 w-5" /> : <StepIcon className="h-5 w-5" />}
                   </div>
