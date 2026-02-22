@@ -530,6 +530,7 @@ export default function ItemsEnhanced() {
       const res = await fetch(`${API}/items-enhanced/`, { method: "POST", headers, body: JSON.stringify(newItem) });
       if (res.ok) {
         toast.success("Item created successfully");
+        itemPersistence.onSuccessfulSave();
         setShowItemDialog(false);
         resetItemForm();
         fetchData();
