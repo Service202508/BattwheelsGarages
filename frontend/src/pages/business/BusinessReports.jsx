@@ -134,7 +134,7 @@ export default function BusinessReports({ user }) {
                     <p className="text-sm text-slate-500">Total Tickets</p>
                     <p className="text-2xl font-bold text-slate-900">{reportData?.tickets?.total || 0}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-indigo-50">
+                  <div className="p-3 rounded bg-indigo-50">
                     <Ticket className="h-5 w-5 text-indigo-600" />
                   </div>
                 </div>
@@ -148,7 +148,7 @@ export default function BusinessReports({ user }) {
                     <p className="text-sm text-slate-500">Total Invoiced</p>
                     <p className="text-2xl font-bold text-slate-900">{formatCurrency(reportData?.financials?.total_invoiced)}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-[rgba(200,255,0,0.08)]">
+                  <div className="p-3 rounded bg-[rgba(200,255,0,0.08)]">
                     <IndianRupee className="h-5 w-5 text-[#C8FF00] text-600" />
                   </div>
                 </div>
@@ -162,7 +162,7 @@ export default function BusinessReports({ user }) {
                     <p className="text-sm text-slate-500">Paid</p>
                     <p className="text-2xl font-bold text-[#C8FF00] text-600">{formatCurrency(reportData?.financials?.total_paid)}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-[rgba(200,255,0,0.08)]">
+                  <div className="p-3 rounded bg-[rgba(200,255,0,0.08)]">
                     <TrendingUp className="h-5 w-5 text-[#C8FF00] text-600" />
                   </div>
                 </div>
@@ -176,7 +176,7 @@ export default function BusinessReports({ user }) {
                     <p className="text-sm text-slate-500">Outstanding</p>
                     <p className="text-2xl font-bold text-amber-600">{formatCurrency(reportData?.financials?.outstanding)}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-amber-50">
+                  <div className="p-3 rounded bg-amber-50">
                     <Clock className="h-5 w-5 text-amber-600" />
                   </div>
                 </div>
@@ -279,7 +279,7 @@ export default function BusinessReports({ user }) {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {Object.entries(reportData?.tickets?.by_vehicle || {}).slice(0, 10).map(([vehicle, count]) => (
-                  <div key={vehicle} className="p-4 rounded-xl bg-slate-50 text-center">
+                  <div key={vehicle} className="p-4 rounded bg-slate-50 text-center">
                     <Car className="h-6 w-6 text-slate-400 mx-auto mb-2" />
                     <p className="font-medium text-slate-900">{vehicle}</p>
                     <p className="text-2xl font-bold text-indigo-600">{count}</p>
@@ -291,7 +291,7 @@ export default function BusinessReports({ user }) {
           </Card>
 
           {/* Financial Summary */}
-          <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white border-0 shadow-xl">
+          <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white border border-[rgba(255,255,255,0.13)]">
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold text-indigo-100 mb-4">Financial Summary</h3>
               <div className="grid md:grid-cols-3 gap-6">
