@@ -26,9 +26,9 @@ import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 const contactTypeColors = {
-  customer: "bg-blue-100 text-blue-700",
-  vendor: "bg-orange-100 text-orange-700",
-  both: "bg-purple-100 text-purple-700"
+  customer: "bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]",
+  vendor: "bg-[rgba(255,140,0,0.10)] text-[#FF8C00] border border-[rgba(255,140,0,0.25)]",
+  both: "bg-[rgba(139,92,246,0.10)] text-[#8B5CF6] border border-[rgba(139,92,246,0.25)]"
 };
 
 const contactTypeLabels = {
