@@ -14,7 +14,7 @@ import time
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
-    BASE_URL = "https://service-form-2.preview.emergentagent.com"
+    BASE_URL = "https://multi-tenant-app-19.preview.emergentagent.com"
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
