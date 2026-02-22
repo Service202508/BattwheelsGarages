@@ -147,11 +147,12 @@ export default function OrganizationSettings({ user }) {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [orgRes, settingsRes, membersRes, rolesRes] = await Promise.all([
+      const [orgRes, settingsRes, membersRes, rolesRes, razorpayRes] = await Promise.all([
         fetch(`${API}/org`, { headers: getAuthHeaders() }),
         fetch(`${API}/org/settings`, { headers: getAuthHeaders() }),
         fetch(`${API}/org/users`, { headers: getAuthHeaders() }),
         fetch(`${API}/org/roles`, { headers: getAuthHeaders() }),
+        fetch(`${API}/payments/config`, { headers: getAuthHeaders() }),
       ]);
 
       if (orgRes.ok) {
@@ -174,6 +175,17 @@ export default function OrganizationSettings({ user }) {
       if (rolesRes.ok) {
         const rolesData = await rolesRes.json();
         setRoles(rolesData.roles || []);
+      }
+      
+      if (razorpayRes.ok) {
+        const rpData = await razorpayRes.json();
+        setRazorpayConfigured(rpData.configured || false);
+        if (rpData.configured) {
+          setRazorpayConfig(prev => ({
+            ...prev,
+            test_mode: rpData.test_mode ?? true
+          }));
+        }
       }
     } catch (error) {
       toast.error("Failed to load organization data");
