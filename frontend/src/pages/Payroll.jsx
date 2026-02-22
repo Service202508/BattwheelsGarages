@@ -10,9 +10,11 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { 
   DollarSign, Users, Calculator, TrendingUp, 
-  Download, Clock, AlertTriangle, CheckCircle2
+  Download, Clock, AlertTriangle, CheckCircle2, Save
 } from "lucide-react";
 import { API } from "@/App";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
+import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 export default function Payroll({ user }) {
   const [payrollRecords, setPayrollRecords] = useState([]);
