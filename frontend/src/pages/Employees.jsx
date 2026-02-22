@@ -588,14 +588,38 @@ export default function Employees({ user }) {
       </Card>
 
       {/* Add/Edit Employee Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={(open) => {
+        if (!open && employeePersistence.isDirty) {
+          employeePersistence.setShowCloseConfirm(true);
+        } else {
+          setDialogOpen(open);
+          if (!open) employeePersistence.clearSavedData();
+        }
+      }}>
         <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{isEditing ? "Edit Employee" : "Add New Employee"}</DialogTitle>
-            <DialogDescription>
-              {isEditing ? "Update employee information" : "Fill in all required details to create a new employee"}
-            </DialogDescription>
+            <div className="flex justify-between items-start">
+              <div>
+                <DialogTitle>{isEditing ? "Edit Employee" : "Add New Employee"}</DialogTitle>
+                <DialogDescription>
+                  {isEditing ? "Update employee information" : "Fill in all required details to create a new employee"}
+                </DialogDescription>
+              </div>
+              <AutoSaveIndicator 
+                lastSaved={employeePersistence.lastSaved} 
+                isSaving={employeePersistence.isSaving} 
+                isDirty={employeePersistence.isDirty} 
+              />
+            </div>
           </DialogHeader>
+          
+          {/* Draft Recovery Banner */}
+          <DraftRecoveryBanner
+            show={employeePersistence.showRecoveryBanner}
+            savedAt={employeePersistence.savedDraftInfo?.timestamp}
+            onRestore={employeePersistence.handleRestoreDraft}
+            onDiscard={employeePersistence.handleDiscardDraft}
+          />
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
             <TabsList className="grid grid-cols-5 w-full">
