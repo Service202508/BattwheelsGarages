@@ -520,7 +520,7 @@ export default function PublicTicketForm() {
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Category <span className="text-emerald-500">*</span></Label>
                     <Select value={formData.vehicle_category} onValueChange={(v) => setFormData(prev => ({ ...prev, vehicle_category: v, vehicle_model_id: "", vehicle_model_name: "", vehicle_oem: "" }))}>
-                      <SelectTrigger className="h-12 bg-slate-800/50 border-slate-700/50 rounded-xl" data-testid="vehicle-category-select">
+                      <SelectTrigger className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" data-testid="vehicle-category-select">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-800 border-slate-700">
@@ -534,7 +534,7 @@ export default function PublicTicketForm() {
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Model</Label>
                     <Select value={formData.vehicle_model_id} onValueChange={handleModelSelect} disabled={!formData.vehicle_category}>
-                      <SelectTrigger className="h-12 bg-slate-800/50 border-slate-700/50 rounded-xl disabled:opacity-50" data-testid="vehicle-model-select">
+                      <SelectTrigger className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50 disabled:opacity-50" data-testid="vehicle-model-select">
                         <SelectValue placeholder="Select model" />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
@@ -549,7 +549,7 @@ export default function PublicTicketForm() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Number <span className="text-emerald-500">*</span></Label>
-                    <Input placeholder="MH12AB1234" className="h-12 bg-slate-800/50 border-slate-700/50 rounded-xl uppercase tracking-wider" value={formData.vehicle_number} onChange={(e) => setFormData(prev => ({ ...prev, vehicle_number: e.target.value.toUpperCase() }))} data-testid="vehicle-number-input" />
+                    <Input placeholder="MH12AB1234" className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50 uppercase tracking-wider" value={formData.vehicle_number} onChange={(e) => setFormData(prev => ({ ...prev, vehicle_number: e.target.value.toUpperCase() }))} data-testid="vehicle-number-input" />
                   </div>
                 </div>
               </CardContent>
@@ -562,20 +562,20 @@ export default function PublicTicketForm() {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Name <span className="text-emerald-500">*</span></Label>
-                    <Input placeholder="Your name" className="h-12 bg-slate-800/50 border-slate-700/50 rounded-xl" value={formData.customer_name} onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))} data-testid="customer-name-input" />
+                    <Input placeholder="Your name" className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" value={formData.customer_name} onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))} data-testid="customer-name-input" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Phone <span className="text-emerald-500">*</span></Label>
                     <div className="flex">
                       <div className="flex items-center px-4 bg-slate-800 border border-r-0 border-slate-700/50 rounded-l-xl text-sm text-slate-400 font-medium">+91</div>
-                      <Input type="tel" placeholder="98765 43210" className="h-12 bg-slate-800/50 border-slate-700/50 rounded-l-none rounded-r-xl" value={formData.contact_number} onChange={(e) => setFormData(prev => ({ ...prev, contact_number: e.target.value }))} data-testid="contact-number-input" />
+                      <Input type="tel" placeholder="98765 43210" className="h-12 bg-slate-800/80 border-slate-700/50 rounded-l-none rounded-r-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" value={formData.contact_number} onChange={(e) => setFormData(prev => ({ ...prev, contact_number: e.target.value }))} data-testid="contact-number-input" />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Email <span className="text-slate-500 text-xs">(Optional)</span></Label>
                     <div className="relative">
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                      <Input type="email" placeholder="your@email.com" className="h-12 bg-slate-800/50 border-slate-700/50 pl-11 rounded-xl" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} data-testid="email-input" />
+                      <Input type="email" placeholder="your@email.com" className="h-12 bg-slate-800/80 border-slate-700/50 pl-11 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} data-testid="email-input" />
                     </div>
                   </div>
                 </div>
@@ -592,7 +592,7 @@ export default function PublicTicketForm() {
                       <Label className="text-slate-300 text-sm">Problem <span className="text-emerald-500">*</span></Label>
                       {aiLoading && <span className="text-xs text-emerald-400 flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" />AI...</span>}
                     </div>
-                    <Input placeholder="Describe briefly..." className="h-12 bg-slate-800/50 border-slate-700/50 rounded-xl" value={formData.title} onChange={(e) => handleTitleChange(e.target.value)} onFocus={() => { if (issueSuggestions.length > 0) setShowSuggestions(true); if (aiSuggestions.length > 0) setShowAiSuggestions(true); }} data-testid="issue-title-input" />
+                    <Input placeholder="Describe briefly..." className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" value={formData.title} onChange={(e) => handleTitleChange(e.target.value)} onFocus={() => { if (issueSuggestions.length > 0) setShowSuggestions(true); if (aiSuggestions.length > 0) setShowAiSuggestions(true); }} data-testid="issue-title-input" />
                     {showAiSuggestions && aiSuggestions.length > 0 && (
                       <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-emerald-500/30 rounded-xl shadow-xl overflow-hidden">
                         <div className="p-2.5 text-xs text-emerald-400 border-b border-slate-700/50 flex items-center gap-2 bg-emerald-500/5"><Brain className="h-3.5 w-3.5" /><span className="font-medium">AI Suggestions</span></div>
@@ -608,7 +608,7 @@ export default function PublicTicketForm() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Details <span className="text-emerald-500">*</span></Label>
-                    <Textarea placeholder="When did it start? Error codes?" className="min-h-[100px] bg-slate-800/50 border-slate-700/50 rounded-xl resize-none" value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} data-testid="description-input" />
+                    <Textarea placeholder="When did it start? Error codes?" className="min-h-[100px] bg-slate-800/80 border-slate-700/50 rounded-xl resize-none text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} data-testid="description-input" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Priority</Label>
@@ -972,7 +972,7 @@ export default function PublicTicketForm() {
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Priority Level</Label>
                     <Select value={formData.priority} onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value }))}>
-                      <SelectTrigger className="h-12 bg-slate-800/50 border-slate-700/50 rounded-xl" data-testid="priority-select"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" data-testid="priority-select"><SelectValue /></SelectTrigger>
                       <SelectContent className="bg-slate-800 border-slate-700">
                         {priorities.map((p) => <SelectItem key={p.value} value={p.value}><div className="flex items-center gap-2"><div className={`w-2 h-2 rounded-full ${p.color}`} />{p.label} - {p.sublabel}</div></SelectItem>)}
                       </SelectContent>
@@ -981,7 +981,7 @@ export default function PublicTicketForm() {
                   <div className="space-y-2">
                     <Label className="text-slate-300 text-sm">Service Type <span className="text-emerald-500">*</span></Label>
                     <Select value={formData.resolution_type} onValueChange={(value) => setFormData(prev => ({ ...prev, resolution_type: value }))}>
-                      <SelectTrigger className="h-12 bg-slate-800/50 border-slate-700/50 rounded-xl" data-testid="resolution-type-select"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-12 bg-slate-800/80 border-slate-700/50 rounded-xl text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-emerald-500/50" data-testid="resolution-type-select"><SelectValue /></SelectTrigger>
                       <SelectContent className="bg-slate-800 border-slate-700">
                         {resolutionTypes.map((r) => <SelectItem key={r.value} value={r.value}><div><p>{r.label}</p><p className="text-xs text-slate-400">{r.description}</p></div></SelectItem>)}
                       </SelectContent>
