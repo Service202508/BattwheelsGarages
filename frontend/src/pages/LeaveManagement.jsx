@@ -226,9 +226,9 @@ export default function LeaveManagement({ user }) {
 
   const getStatusBadge = (status) => {
     const styles = {
-      pending: "bg-[rgba(234,179,8,0.08)]0",
+      pending: "bg-[rgba(234,179,8,0.10)]",
       approved: "badge-success",
-      rejected: "bg-[rgba(255,59,47,0.08)]0",
+      rejected: "bg-[rgba(255,59,47,0.10)]",
       cancelled: "badge-muted",
     };
     return <Badge className={styles[status]}>{status}</Badge>;
@@ -402,7 +402,7 @@ export default function LeaveManagement({ user }) {
             <TabsTrigger value="approvals">
               Pending Approvals
               {pendingApprovals.length > 0 && (
-                <Badge className="ml-2 bg-[rgba(255,59,47,0.08)]0">{pendingApprovals.length}</Badge>
+                <Badge className="ml-2 bg-[rgba(255,59,47,0.10)]">{pendingApprovals.length}</Badge>
               )}
             </TabsTrigger>
           )}
