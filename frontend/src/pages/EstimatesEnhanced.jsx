@@ -67,6 +67,7 @@ export default function EstimatesEnhanced() {
   const [showCustomFieldsDialog, setShowCustomFieldsDialog] = useState(false);
   const [showTemplateDialog, setShowTemplateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showAddItemDialog, setShowAddItemDialog] = useState(false);
   const [selectedEstimate, setSelectedEstimate] = useState(null);
   
   // Edit form state
