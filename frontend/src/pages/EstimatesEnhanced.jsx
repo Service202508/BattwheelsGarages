@@ -2628,6 +2628,115 @@ export default function EstimatesEnhanced() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Quick Add Item Dialog */}
+      <Dialog open={showAddItemDialog} onOpenChange={setShowAddItemDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Package className="h-5 w-5" /> Quick Add Item</DialogTitle>
+            <DialogDescription>Add a new item to your inventory</DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Item Name *</Label>
+              <Input 
+                value={quickAddItem.name}
+                onChange={(e) => setQuickAddItem({...quickAddItem, name: e.target.value})}
+                placeholder="Enter item name"
+                autoFocus
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>SKU</Label>
+                <Input 
+                  value={quickAddItem.sku}
+                  onChange={(e) => setQuickAddItem({...quickAddItem, sku: e.target.value})}
+                  placeholder="Auto-generated if empty"
+                />
+              </div>
+              <div>
+                <Label>Type</Label>
+                <Select value={quickAddItem.item_type} onValueChange={(v) => setQuickAddItem({...quickAddItem, item_type: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="product">Product</SelectItem>
+                    <SelectItem value="service">Service</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Rate (₹)</Label>
+                <Input 
+                  type="number"
+                  value={quickAddItem.rate}
+                  onChange={(e) => setQuickAddItem({...quickAddItem, rate: parseFloat(e.target.value) || 0})}
+                  placeholder="0.00"
+                />
+              </div>
+              <div>
+                <Label>Unit</Label>
+                <Select value={quickAddItem.unit} onValueChange={(v) => setQuickAddItem({...quickAddItem, unit: v})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pcs">Pieces (pcs)</SelectItem>
+                    <SelectItem value="kg">Kilogram (kg)</SelectItem>
+                    <SelectItem value="ltr">Liter (ltr)</SelectItem>
+                    <SelectItem value="mtr">Meter (mtr)</SelectItem>
+                    <SelectItem value="box">Box</SelectItem>
+                    <SelectItem value="hrs">Hours (hrs)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>GST Rate</Label>
+                <Select value={String(quickAddItem.tax_percentage)} onValueChange={(v) => setQuickAddItem({...quickAddItem, tax_percentage: parseFloat(v)})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">GST 0%</SelectItem>
+                    <SelectItem value="5">GST 5%</SelectItem>
+                    <SelectItem value="12">GST 12%</SelectItem>
+                    <SelectItem value="18">GST 18%</SelectItem>
+                    <SelectItem value="28">GST 28%</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>HSN Code</Label>
+                <Input 
+                  value={quickAddItem.hsn_code}
+                  onChange={(e) => setQuickAddItem({...quickAddItem, hsn_code: e.target.value})}
+                  placeholder="Optional"
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea 
+                value={quickAddItem.description}
+                onChange={(e) => setQuickAddItem({...quickAddItem, description: e.target.value})}
+                placeholder="Item description (optional)"
+                rows={2}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowAddItemDialog(false);
+              setQuickAddItem({ name: newLineItem.name || "", sku: "", rate: 0, description: "", unit: "pcs", tax_percentage: 18, hsn_code: "", item_type: "product" });
+            }}>Cancel</Button>
+            <Button onClick={handleQuickAddItem} className="bg-[#22EDA9] text-black">
+              <Plus className="h-4 w-4 mr-2" /> Create & Add
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
