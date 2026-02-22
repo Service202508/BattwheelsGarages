@@ -182,7 +182,7 @@ export default function BusinessDashboard({ user }) {
 
       {/* Resolution TAT & AMC */}
       <div className="grid lg:grid-cols-3 gap-6">
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-slate-900 flex items-center gap-2">
               <Clock className="h-5 w-5 text-indigo-600" />
@@ -210,7 +210,7 @@ export default function BusinessDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-slate-900 flex items-center gap-2">
               <Shield className="h-5 w-5 text-[#C8FF00] text-600" />
@@ -233,7 +233,7 @@ export default function BusinessDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-slate-900 flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-[#3B9EFF]" />
@@ -260,7 +260,7 @@ export default function BusinessDashboard({ user }) {
       {/* Recent Tickets & Pending Invoices */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Tickets */}
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
               <CardTitle className="text-slate-900">Active Service Tickets</CardTitle>
@@ -307,7 +307,7 @@ export default function BusinessDashboard({ user }) {
         </Card>
 
         {/* Pending Invoices */}
-        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200 shadow-sm">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] border-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
               <CardTitle className="text-slate-900">Pending Invoices</CardTitle>
