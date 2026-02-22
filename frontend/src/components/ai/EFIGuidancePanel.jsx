@@ -230,7 +230,7 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
       <Button 
         onClick={() => onSubmit(answers)} 
         disabled={loading}
-        className="w-full bg-emerald-600 hover:bg-emerald-700"
+        className="w-full bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold"
       >
         {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
         Submit Answers & Get Guidance
@@ -242,7 +242,7 @@ const AskBackForm = ({ questions, onSubmit, loading }) => {
 // Diagnostic Step Component
 const DiagnosticStep = ({ step, index, onMarkDone, isDone }) => (
   <div className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
-    isDone ? 'bg-[rgba(200,255,0,0.08)]0/10 border border-[rgba(200,255,0,0.50)]/30' : 'bg-slate-800/50'
+    isDone ? 'bg-[rgba(200,255,0,0.08)] border border-[rgba(200,255,0,0.30)]' : 'bg-slate-800/50'
   }`}>
     <button
       onClick={() => onMarkDone(index)}
