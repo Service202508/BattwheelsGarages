@@ -174,7 +174,7 @@ export default function CustomerAMC({ user }) {
                   {/* Actions */}
                   {(sub.status === 'expiring' || sub.status === 'expired') && (
                     <div className="flex gap-3 pt-2">
-                      <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700">
+                      <Button className="flex-1 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold">
                         <RefreshCw className="h-4 w-4 mr-2" />
                         Renew Plan
                       </Button>
