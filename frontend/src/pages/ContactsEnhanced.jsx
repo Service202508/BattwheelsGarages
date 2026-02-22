@@ -975,56 +975,56 @@ export default function ContactsEnhanced() {
                   {/* Transaction History */}
                   {(contactTransactions.length > 0 || transactionSummary) && (
                     <>
-                      <Separator />
+                      <Separator className="bg-[rgba(255,255,255,0.07)]" />
                       <div>
-                        <h4 className="font-medium flex items-center gap-2 mb-3"><History className="h-4 w-4" /> Transaction History</h4>
+                        <h4 className="font-semibold flex items-center gap-2 mb-3 text-[#F4F6F0]"><History className="h-4 w-4 text-[rgba(244,246,240,0.45)]" /> Transaction History</h4>
                         
                         {transactionSummary && (
                           <div className="grid grid-cols-4 gap-3 mb-4">
-                            <div className="bg-blue-50 rounded-lg p-2 text-center">
-                              <p className="text-xs text-gray-500">Total Invoiced</p>
-                              <p className="font-bold text-blue-700">₹{transactionSummary.total_invoiced?.toLocaleString('en-IN') || 0}</p>
+                            <div className="bg-[rgba(59,158,255,0.08)] border border-[rgba(59,158,255,0.20)] rounded-lg p-2 text-center">
+                              <p className="font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.45)]">Total Invoiced</p>
+                              <p className="font-bold text-[#3B9EFF]">₹{transactionSummary.total_invoiced?.toLocaleString('en-IN') || 0}</p>
                             </div>
-                            <div className="bg-orange-50 rounded-lg p-2 text-center">
-                              <p className="text-xs text-gray-500">Total Billed</p>
-                              <p className="font-bold text-orange-700">₹{transactionSummary.total_billed?.toLocaleString('en-IN') || 0}</p>
+                            <div className="bg-[rgba(255,140,0,0.08)] border border-[rgba(255,140,0,0.20)] rounded-lg p-2 text-center">
+                              <p className="font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.45)]">Total Billed</p>
+                              <p className="font-bold text-[#FF8C00]">₹{transactionSummary.total_billed?.toLocaleString('en-IN') || 0}</p>
                             </div>
-                            <div className="bg-red-50 rounded-lg p-2 text-center">
-                              <p className="text-xs text-gray-500">Outstanding</p>
-                              <p className="font-bold text-red-700">₹{transactionSummary.total_outstanding?.toLocaleString('en-IN') || 0}</p>
+                            <div className="bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.20)] rounded-lg p-2 text-center">
+                              <p className="font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.45)]">Outstanding</p>
+                              <p className="font-bold text-[#FF3B2F]">₹{transactionSummary.total_outstanding?.toLocaleString('en-IN') || 0}</p>
                             </div>
-                            <div className="bg-gray-100 rounded-lg p-2 text-center">
-                              <p className="text-xs text-gray-500">Transactions</p>
-                              <p className="font-bold">{transactionSummary.transaction_count || 0}</p>
+                            <div className="bg-[#141E27] border border-[rgba(255,255,255,0.07)] rounded-lg p-2 text-center">
+                              <p className="font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.45)]">Transactions</p>
+                              <p className="font-bold text-[#F4F6F0]">{transactionSummary.transaction_count || 0}</p>
                             </div>
                           </div>
                         )}
 
                         {contactTransactions.length > 0 && (
-                          <div className="border rounded-lg overflow-hidden">
+                          <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
                             <table className="w-full text-xs">
-                              <thead className="bg-gray-50">
+                              <thead className="bg-[#111820]">
                                 <tr>
-                                  <th className="px-3 py-2 text-left">Type</th>
-                                  <th className="px-3 py-2 text-left">Number</th>
-                                  <th className="px-3 py-2 text-left">Date</th>
-                                  <th className="px-3 py-2 text-right">Amount</th>
-                                  <th className="px-3 py-2 text-center">Status</th>
+                                  <th className="px-3 py-2 text-left font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.25)]">Type</th>
+                                  <th className="px-3 py-2 text-left font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.25)]">Number</th>
+                                  <th className="px-3 py-2 text-left font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.25)]">Date</th>
+                                  <th className="px-3 py-2 text-right font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.25)]">Amount</th>
+                                  <th className="px-3 py-2 text-center font-mono text-[10px] tracking-[0.12em] uppercase text-[rgba(244,246,240,0.25)]">Status</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {contactTransactions.slice(0, 5).map((txn, idx) => (
-                                  <tr key={idx} className="border-t">
+                                  <tr key={idx} className="border-t border-[rgba(255,255,255,0.04)] hover:bg-[rgba(200,255,0,0.03)]">
                                     <td className="px-3 py-2">
-                                      <Badge variant="outline" className="text-xs capitalize">
+                                      <Badge className="text-xs capitalize bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.45)] border border-[rgba(255,255,255,0.08)]">
                                         {txn.type?.replace('_', ' ')}
                                       </Badge>
                                     </td>
-                                    <td className="px-3 py-2 font-mono">{txn.transaction_number || '-'}</td>
-                                    <td className="px-3 py-2">{txn.date ? new Date(txn.date).toLocaleDateString('en-IN') : '-'}</td>
-                                    <td className="px-3 py-2 text-right font-medium">₹{(txn.total || 0).toLocaleString('en-IN')}</td>
+                                    <td className="px-3 py-2 font-mono text-[#C8FF00] tracking-[0.04em]">{txn.transaction_number || '-'}</td>
+                                    <td className="px-3 py-2 text-[rgba(244,246,240,0.45)]">{txn.date ? new Date(txn.date).toLocaleDateString('en-IN') : '-'}</td>
+                                    <td className="px-3 py-2 text-right font-semibold text-[#F4F6F0]">₹{(txn.total || 0).toLocaleString('en-IN')}</td>
                                     <td className="px-3 py-2 text-center">
-                                      <Badge className={`text-xs ${txn.status === 'paid' ? 'bg-green-100 text-green-700' : txn.status === 'overdue' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'}`}>
+                                      <Badge className={`text-xs font-mono tracking-[0.08em] uppercase ${txn.status === 'paid' ? 'bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]' : txn.status === 'overdue' ? 'bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]' : 'bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]'}`}>
                                         {txn.status || 'N/A'}
                                       </Badge>
                                     </td>
@@ -1033,7 +1033,7 @@ export default function ContactsEnhanced() {
                               </tbody>
                             </table>
                             {contactTransactions.length > 5 && (
-                              <p className="text-xs text-gray-500 text-center py-2">+ {contactTransactions.length - 5} more transactions</p>
+                              <p className="text-xs text-[rgba(244,246,240,0.35)] text-center py-2 border-t border-[rgba(255,255,255,0.04)]">+ {contactTransactions.length - 5} more transactions</p>
                             )}
                           </div>
                         )}
