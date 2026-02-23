@@ -5911,7 +5911,7 @@ async def request_data_export(request: Request):
     """
     user = await require_auth(request)
     ctx = getattr(request.state, "tenant_context", None)
-    org_id = ctx.org_id if ctx else user.get("organization_id", "")
+    org_id = ctx.org_id if ctx else getattr(user, "organization_id", "")
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization context required")
 
@@ -5931,7 +5931,7 @@ async def request_data_export(request: Request):
     export_job = {
         "job_id": job_id,
         "organization_id": org_id,
-        "requested_by": user.get("user_id", ""),
+        "requested_by": getattr(user, "user_id", ""),
         "export_type": export_type,
         "format": fmt,
         "status": "pending",
