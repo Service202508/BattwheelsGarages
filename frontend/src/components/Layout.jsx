@@ -455,10 +455,18 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
 export default function Layout({ children, user, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+
+  // Mobile bottom tab items
+  const MOBILE_TABS = [
+    { name: "Home", icon: LayoutDashboard, path: "/dashboard" },
+    { name: "Tickets", icon: Ticket, path: "/tickets" },
+    { name: "Contacts", icon: Users, path: "/contacts" },
+    { name: "Inventory", icon: Package, path: "/items" },
+  ];
 
   return (
-    <div className="min-h-screen bg-[#0D1317] flex">
-      {/* Desktop Sidebar */}
+    <div className="min-h-screen bg-[#0D1317] flex">{/* Desktop Sidebar */}
       <aside 
         className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-[#080C0F] border-r border-[rgba(255,255,255,0.07)] transition-all duration-300 z-50 ${
           collapsed ? "w-[72px]" : "w-72"
