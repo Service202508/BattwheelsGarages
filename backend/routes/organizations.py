@@ -1240,6 +1240,105 @@ async def remove_email_settings(
     return {"success": True, "message": "Email settings removed, using platform defaults"}
 
 
+# ==================== WHATSAPP SETTINGS ====================
+
+class WhatsAppSettings(BaseModel):
+    phone_number_id: str = Field(..., min_length=1)
+    access_token: str = Field(..., min_length=10)
+
+
+@router.get("/me/whatsapp-settings")
+async def get_whatsapp_settings(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Get WhatsApp integration status (token masked)"""
+    from services.credential_service import get_credentials, WHATSAPP
+    creds = await get_credentials(ctx.org_id, WHATSAPP)
+    configured = bool(creds and creds.get("phone_number_id") and creds.get("access_token"))
+    return {
+        "configured": configured,
+        "phone_number_id": creds.get("phone_number_id", "") if creds else "",
+        "access_token_masked": ("***" + creds.get("access_token", "")[-6:]) if (creds and creds.get("access_token")) else None,
+    }
+
+
+@router.post("/me/whatsapp-settings")
+async def save_whatsapp_settings(
+    data: WhatsAppSettings,
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Save WhatsApp Business API credentials (admin only)"""
+    membership = await db.organization_users.find_one({
+        "organization_id": ctx.org_id, "user_id": ctx.user_id
+    })
+    if not membership or membership.get("role") not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Only admins can update WhatsApp settings")
+
+    from services.credential_service import save_credentials, WHATSAPP
+    await save_credentials(ctx.org_id, WHATSAPP, {
+        "phone_number_id": data.phone_number_id,
+        "access_token": data.access_token,
+    })
+    return {"success": True, "message": "WhatsApp settings saved"}
+
+
+@router.delete("/me/whatsapp-settings")
+async def remove_whatsapp_settings(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Remove WhatsApp credentials"""
+    membership = await db.organization_users.find_one({
+        "organization_id": ctx.org_id, "user_id": ctx.user_id
+    })
+    if not membership or membership.get("role") not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Only admins can update WhatsApp settings")
+
+    from services.credential_service import delete_credentials, WHATSAPP
+    await delete_credentials(ctx.org_id, WHATSAPP)
+    return {"success": True, "message": "WhatsApp settings removed"}
+
+
+@router.post("/me/whatsapp-test")
+async def test_whatsapp(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """
+    Send a test WhatsApp message to the org admin's phone.
+    Returns { delivered: bool, message_id: str }
+    """
+    # Get admin user's phone number
+    user = await db.users.find_one({"user_id": ctx.user_id}, {"_id": 0, "phone": 1, "name": 1})
+    admin_phone = user.get("phone") if user else None
+
+    if not admin_phone:
+        # Try org phone
+        org = await db.organizations.find_one({"organization_id": ctx.org_id}, {"_id": 0, "phone": 1})
+        admin_phone = org.get("phone") if org else None
+
+    if not admin_phone:
+        raise HTTPException(
+            status_code=400,
+            detail="No phone number found on your user profile or organisation. Add a phone number first."
+        )
+
+    from services.whatsapp_service import send_whatsapp_text, WhatsAppNotConfigured, WhatsAppError
+    try:
+        result = await send_whatsapp_text(
+            to_phone=admin_phone,
+            message="Battwheels OS WhatsApp test — your integration is working ✓",
+            org_id=ctx.org_id,
+        )
+        return {"delivered": True, "message_id": result.get("message_id")}
+    except WhatsAppNotConfigured as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except WhatsAppError as e:
+        return {"delivered": False, "error": str(e)}
+
+
 # ==================== INITIALIZATION ====================
 
 def init_organizations_router(app_db):
