@@ -134,6 +134,60 @@ async def get_org_id(request: Request) -> str:
 
 # ==================== EXPENSE ROUTES ====================
 
+# Static routes MUST come before dynamic routes ({expense_id})
+
+@router.get("/constants")
+async def get_constants():
+    """Get expense constants (statuses, payment modes, GST rates)"""
+    return {
+        "code": 0,
+        "statuses": EXPENSE_STATUSES,
+        "payment_modes": PAYMENT_MODES,
+        "gst_rates": GST_RATES
+    }
+
+
+@router.get("/categories")
+async def list_categories(request: Request):
+    """List all expense categories"""
+    service = get_service()
+    org_id = await get_org_id(request)
+    
+    categories = await service.list_categories(org_id)
+    
+    return {"code": 0, "categories": categories}
+
+
+@router.post("/categories")
+async def create_category(data: CategoryCreate, request: Request):
+    """Create a new expense category"""
+    service = get_service()
+    org_id = await get_org_id(request)
+    
+    category = await service.create_category(
+        org_id=org_id,
+        name=data.name,
+        default_account_code=data.default_account_code,
+        is_itc_eligible=data.is_itc_eligible
+    )
+    
+    return {"code": 0, "message": "Category created", "category": category}
+
+
+@router.put("/categories/{category_id}")
+async def update_category(category_id: str, data: CategoryUpdate, request: Request):
+    """Update an expense category"""
+    service = get_service()
+    
+    updates = {k: v for k, v in data.dict().items() if v is not None}
+    category = await service.update_category(category_id, updates)
+    
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    return {"code": 0, "message": "Category updated", "category": category}
+
+
 @router.get("")
 async def list_expenses(
     request: Request,
