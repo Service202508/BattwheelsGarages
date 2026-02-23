@@ -2427,7 +2427,7 @@ export default function EstimatesEnhanced() {
             <Button 
               onClick={handleBulkAction} 
               disabled={!bulkAction}
-              className={bulkAction === "delete" || bulkAction === "void" ? "bg-red-600 hover:bg-red-700" : "bg-[#C8FF00] text-[#080C0F] font-bold"}
+              className={bulkAction === "delete" || bulkAction === "void" ? "bg-[#FF3B2F] hover:bg-[rgba(255,59,47,0.85)]" : "bg-[#C8FF00] text-[#080C0F] font-bold"}
             >
               Apply to {selectedIds.length} Estimates
             </Button>
