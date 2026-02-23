@@ -5583,6 +5583,11 @@ try:
     app.add_middleware(TenantGuardMiddleware)
     logger.info("TenantGuardMiddleware added - Multi-tenant isolation ENFORCEMENT ACTIVE")
     
+    # Add RBAC middleware (ENFORCES role-based access on all requests)
+    from middleware.rbac import RBACMiddleware
+    app.add_middleware(RBACMiddleware)
+    logger.info("RBACMiddleware added - Role-based access control ENFORCEMENT ACTIVE")
+    
 except Exception as e:
     logger.error(f"Failed to initialize multi-tenant system: {e}")
     import traceback
