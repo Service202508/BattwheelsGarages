@@ -163,9 +163,16 @@ Battwheels OS is a multi-tenant SaaS platform for EV service management. It prov
 - ✅ SLA automation with breach UI + auto-reassignment
 - ✅ JWT secret hardened (256-bit)
 - ✅ CORS policy configurable
+- ✅ Estimate-to-invoice conversion (totals preserved correctly)
+- ✅ Survey QR code in invoice PDFs
+- ✅ contacts-enhanced API response key fixed (returns `contacts` + `data` both)
+- ✅ Comprehensive audit: 65/65 (100%) — Feb 2026
 - ⏳ Load testing (scripts ready, run before launch)
 - ⏳ API versioning `/api/v1/` (pre-OEM sprint)
 - ⏳ Keyset pagination for invoices/journal_entries (pre-OEM sprint)
+- ⏳ Configure Sentry DSN (production env var)
+- ⏳ Configure Resend API key (transactional emails)
+- ⏳ Configure Razorpay live keys (production payments)
 
 ### Remaining Gaps to 10/10
 - Configure Sentry DSN in production `.env`
