@@ -937,6 +937,170 @@ export default function Reports() {
             </CardContent>
           </Card>
         </TabsContent>
+        </TabsContent>
+
+        {/* Technician Performance Tab */}
+        <TabsContent value="technician-performance" className="space-y-4">
+          <Card>
+            <CardHeader className="pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-[#C8FF00]" />
+                    Technician Performance
+                  </CardTitle>
+                  <CardDescription>Ranking, resolution rates, and SLA compliance by technician</CardDescription>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Period selector */}
+                  <div className="flex rounded border border-[rgba(255,255,255,0.07)] overflow-hidden text-xs">
+                    {[["this_week","Week"],["this_month","Month"],["this_quarter","Quarter"],["custom","Custom"]].map(([val, label]) => (
+                      <button key={val} onClick={() => { setTechPeriod(val); }}
+                        className={`px-2.5 py-1.5 transition-colors ${techPeriod === val ? "bg-[rgba(200,255,0,0.15)] text-[#C8FF00]" : "text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0]"}`}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  {techPeriod === "custom" && (
+                    <>
+                      <Input type="date" value={dateRange.start_date} onChange={e => setDateRange(p => ({ ...p, start_date: e.target.value }))} className="w-32 text-xs h-7" />
+                      <span className="text-xs text-muted-foreground">to</span>
+                      <Input type="date" value={dateRange.end_date} onChange={e => setDateRange(p => ({ ...p, end_date: e.target.value }))} className="w-32 text-xs h-7" />
+                    </>
+                  )}
+                  <Button size="sm" variant="outline" onClick={() => fetchTechReport(techPeriod)} disabled={loading}>
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={exportTechReportCsv} data-testid="tech-export-csv-btn">
+                    <Download className="h-4 w-4 mr-1" /> CSV
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+                </div>
+              ) : techReport ? (
+                <div className="space-y-4">
+                  {techReport.technicians?.length > 0 ? (
+                    <>
+                      <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                              <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono w-12">Rank</TableHead>
+                              <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Technician</TableHead>
+                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Assigned</TableHead>
+                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Resolved</TableHead>
+                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Res. Rate</TableHead>
+                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Avg Resp.</TableHead>
+                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Avg Res.</TableHead>
+                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">SLA %</TableHead>
+                              <TableHead className="text-center text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Breaches</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {techReport.technicians.map((tech) => {
+                              const rankStyle = tech.rank === 1
+                                ? { background: "rgba(200,255,0,0.15)", color: "#C8FF00", border: "1px solid rgba(200,255,0,0.30)" }
+                                : tech.rank === 2
+                                ? { background: "rgba(244,246,240,0.08)", color: "#F4F6F0", border: "1px solid rgba(244,246,240,0.15)" }
+                                : tech.rank === 3
+                                ? { background: "rgba(255,140,0,0.10)", color: "#FF8C00", border: "1px solid rgba(255,140,0,0.20)" }
+                                : {};
+                              const resRateColor = tech.resolution_rate_pct >= 80 ? "#22C55E" : tech.resolution_rate_pct >= 60 ? "#EAB308" : "#FF3B2F";
+                              const slaColor = tech.sla_compliance_rate_pct >= 90 ? "#22C55E" : tech.sla_compliance_rate_pct >= 70 ? "#EAB308" : "#FF3B2F";
+                              const breachTotal = tech.sla_breaches_response + tech.sla_breaches_resolution;
+                              const breachColor = breachTotal === 0 ? "rgba(244,246,240,0.25)" : breachTotal <= 3 ? "#EAB308" : "#FF3B2F";
+                              const fmtTime = (mins) => !mins ? "N/A" : mins < 60 ? `${Math.round(mins)}m` : `${Math.round(mins/60)}h ${Math.round(mins%60)}m`;
+                              return (
+                                <TableRow
+                                  key={tech.technician_id}
+                                  className="border-b border-[rgba(255,255,255,0.05)] cursor-pointer hover:bg-[rgba(200,255,0,0.03)]"
+                                  onClick={() => setSelectedTech(selectedTech?.technician_id === tech.technician_id ? null : tech)}
+                                  data-testid={`tech-row-${tech.rank}`}
+                                >
+                                  <TableCell>
+                                    <span className="w-8 h-6 inline-flex items-center justify-center rounded text-xs font-mono font-bold" style={rankStyle}>#{tech.rank}</span>
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-7 h-7 rounded-full bg-[rgba(200,255,0,0.10)] border border-[rgba(200,255,0,0.20)] flex items-center justify-center flex-shrink-0">
+                                        <span className="text-[9px] font-bold text-[#C8FF00]">{tech.avatar_initials}</span>
+                                      </div>
+                                      <span className="font-medium text-[#F4F6F0] text-sm">{tech.technician_name}</span>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="text-center text-[rgba(244,246,240,0.65)] font-mono">{tech.total_tickets_assigned}</TableCell>
+                                  <TableCell className="text-center text-[rgba(244,246,240,0.65)] font-mono">{tech.total_tickets_resolved}</TableCell>
+                                  <TableCell className="text-center font-mono font-bold" style={{ color: resRateColor }}>{tech.resolution_rate_pct}%</TableCell>
+                                  <TableCell className="text-center text-[rgba(244,246,240,0.45)] font-mono text-xs">{fmtTime(tech.avg_response_time_minutes)}</TableCell>
+                                  <TableCell className="text-center text-[rgba(244,246,240,0.45)] font-mono text-xs">{fmtTime(tech.avg_resolution_time_minutes)}</TableCell>
+                                  <TableCell className="text-center font-mono font-bold" style={{ color: slaColor }}>{tech.sla_compliance_rate_pct}%</TableCell>
+                                  <TableCell className="text-center font-mono" style={{ color: breachColor }}>
+                                    {breachTotal === 0 ? <span className="text-xs">None</span> : breachTotal}
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
+                      </div>
+
+                      {/* Drill-down panel */}
+                      {selectedTech && (
+                        <Card className="bg-[#111820] border border-[rgba(200,255,0,0.15)]">
+                          <CardHeader className="pb-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-[rgba(200,255,0,0.12)] border border-[rgba(200,255,0,0.25)] flex items-center justify-center">
+                                <span className="text-sm font-bold text-[#C8FF00]">{selectedTech.avatar_initials}</span>
+                              </div>
+                              <div>
+                                <CardTitle className="text-base text-[#F4F6F0]">{selectedTech.technician_name}</CardTitle>
+                                <CardDescription className="text-xs">Rank #{selectedTech.rank} · {techPeriod.replace("_"," ")}</CardDescription>
+                              </div>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                              {[
+                                { label: "Assigned", val: selectedTech.total_tickets_assigned, color: "#F4F6F0" },
+                                { label: "Resolved", val: selectedTech.total_tickets_resolved, color: "#22C55E" },
+                                { label: "Res. Rate", val: `${selectedTech.resolution_rate_pct}%`, color: selectedTech.resolution_rate_pct >= 80 ? "#22C55E" : "#EAB308" },
+                                { label: "SLA Compliance", val: `${selectedTech.sla_compliance_rate_pct}%`, color: selectedTech.sla_compliance_rate_pct >= 90 ? "#22C55E" : selectedTech.sla_compliance_rate_pct >= 70 ? "#EAB308" : "#FF3B2F" },
+                                { label: "SLA Breaches (Resp)", val: selectedTech.sla_breaches_response, color: selectedTech.sla_breaches_response === 0 ? "rgba(244,246,240,0.25)" : "#EAB308" },
+                                { label: "SLA Breaches (Res)", val: selectedTech.sla_breaches_resolution, color: selectedTech.sla_breaches_resolution === 0 ? "rgba(244,246,240,0.25)" : "#FF3B2F" },
+                                { label: "Avg Response", val: selectedTech.avg_response_time_minutes ? (selectedTech.avg_response_time_minutes < 60 ? `${Math.round(selectedTech.avg_response_time_minutes)}m` : `${Math.round(selectedTech.avg_response_time_minutes/60)}h`) : "N/A", color: "#F4F6F0" },
+                                { label: "Avg Resolution", val: selectedTech.avg_resolution_time_minutes ? (selectedTech.avg_resolution_time_minutes < 60 ? `${Math.round(selectedTech.avg_resolution_time_minutes)}m` : `${Math.round(selectedTech.avg_resolution_time_minutes/60)}h`) : "N/A", color: "#F4F6F0" },
+                              ].map(({ label, val, color }) => (
+                                <div key={label} className="p-3 rounded bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)]">
+                                  <p className="text-[10px] text-[rgba(244,246,240,0.35)] uppercase tracking-wide mb-1">{label}</p>
+                                  <p className="text-xl font-bold font-mono" style={{ color }}>{val}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                      <Trophy className="h-10 w-10 mb-3 opacity-30" />
+                      <p className="text-sm">No technician data for selected period</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <Trophy className="h-10 w-10 mb-3 opacity-30" />
+                  <p className="text-sm">Click refresh to load technician performance data</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
