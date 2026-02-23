@@ -1673,6 +1673,155 @@ def _generate_form16_html(f16: dict) -> str:
 </html>"""
 
 
+@router.get("/payroll/form16/bulk/{fy}")
+async def download_bulk_form16_zip(fy: str, request: Request):
+    """
+    Generate Form 16 PDFs for ALL active employees and return as a ZIP file.
+    GET /api/hr/payroll/form16/bulk/{fy}
+    """
+    import io
+    import zipfile
+    from fastapi.responses import StreamingResponse
+
+    service = get_service()
+    org_id = await get_org_id(request, service.db)
+
+    try:
+        fy_start_year = int(fy.split("-")[0])
+        fy_end_year = fy_start_year + 1
+        assessment_year = f"{fy_end_year}-{str(fy_end_year + 1)[-2:]}"
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid FY format. Expected: 2024-25")
+
+    employees = await service.db.employees.find(
+        {"organization_id": org_id},
+        {"_id": 0, "employee_id": 1, "first_name": 1, "last_name": 1,
+         "salary_structure": 1, "tax_config": 1, "pan_number": 1, "designation": 1}
+    ).to_list(500)
+
+    if not employees:
+        raise HTTPException(status_code=404, detail="No employees found")
+
+    org = await service.db.organizations.find_one({"organization_id": org_id}, {"_id": 0}) or {}
+    org_name = org.get("company_name") or org.get("name") or "Organization"
+    challans = await service.db.tds_challans.find(
+        {"organization_id": org_id, "financial_year": fy}, {"_id": 0}
+    ).to_list(500)
+
+    from services.tds_service import init_tds_service, get_tds_calculator
+    try:
+        get_tds_calculator()
+    except Exception:
+        init_tds_service(service.db)
+
+    from weasyprint import HTML
+
+    zip_buffer = io.BytesIO()
+    generated_count = 0
+
+    with zipfile.ZipFile(zip_buffer, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
+        for employee in employees:
+            employee_id = employee.get("employee_id")
+            employee_name = f"{employee.get('first_name', '')} {employee.get('last_name', '')}".strip() or employee_id
+
+            try:
+                payroll_records = await service.db.payroll.find({
+                    "employee_id": employee_id,
+                    "$or": [
+                        {"year": fy_start_year, "month": {"$in": ["April", "May", "June", "July", "August", "September", "October", "November", "December"]}},
+                        {"year": fy_end_year, "month": {"$in": ["January", "February", "March"]}}
+                    ],
+                    "status": {"$in": ["processed", "paid"]}
+                }, {"_id": 0}).to_list(12)
+
+                if not payroll_records:
+                    continue
+
+                tax_config = employee.get("tax_config", {"pan_number": employee.get("pan_number"), "tax_regime": "new", "declarations": {}})
+                salary_structure = employee.get("salary_structure", {})
+                quarter_defs = [
+                    {"quarter": "Q1", "period": f"Apr-Jun {fy_start_year}", "months": ["April", "May", "June"], "year": fy_start_year},
+                    {"quarter": "Q2", "period": f"Jul-Sep {fy_start_year}", "months": ["July", "August", "September"], "year": fy_start_year},
+                    {"quarter": "Q3", "period": f"Oct-Dec {fy_start_year}", "months": ["October", "November", "December"], "year": fy_start_year},
+                    {"quarter": "Q4", "period": f"Jan-Mar {fy_end_year}", "months": ["January", "February", "March"], "year": fy_end_year}
+                ]
+                quarters = []
+                total_tds_deducted = 0
+                total_tds_deposited = 0
+                for q_def in quarter_defs:
+                    q_payroll = [p for p in payroll_records if p.get("month") in q_def["months"] and p.get("year") == q_def["year"]]
+                    q_tds = sum(p.get("deductions", {}).get("tds", 0) for p in q_payroll)
+                    total_tds_deducted += q_tds
+                    q_challans = [c for c in challans if c.get("quarter") == q_def["quarter"]]
+                    q_deposited = sum(c.get("amount", 0) for c in q_challans)
+                    total_tds_deposited += q_deposited
+                    quarters.append({"quarter": q_def["quarter"], "period": q_def["period"],
+                                     "tds_deducted": round(q_tds, 2), "tds_deposited": round(q_deposited, 2), "challans": q_challans})
+
+                try:
+                    tds_calc = get_tds_calculator()
+                    annual_calc = await tds_calc.calculate_annual_tax(
+                        employee_id=employee_id, financial_year=fy,
+                        salary_structure=salary_structure, tax_config=tax_config
+                    )
+                except Exception:
+                    annual_calc = {"gross_annual": 0, "taxable_income": 0, "total_tax_liability": 0, "breakdown": {}}
+
+                breakdown = annual_calc.get("breakdown", {})
+                chapter_via = breakdown.get("chapter_via", {})
+                tax_regime = (tax_config.get("tax_regime") or "new").upper()
+                f16 = {
+                    "employee": {"name": employee_name, "pan": tax_config.get("pan_number") or employee.get("pan_number"),
+                                 "designation": employee.get("designation"), "period_from": f"{fy_start_year}-04-01", "period_to": f"{fy_end_year}-03-31"},
+                    "employer": {"name": org.get("company_name", org.get("name")), "tan": org.get("tan_number"),
+                                 "pan": org.get("pan_number", org.get("gstin", "")[2:12] if org.get("gstin") else ""),
+                                 "address": f"{org.get('address', '')} {org.get('city', '')} {org.get('pincode', '')}".strip(),
+                                 "category": org.get("category", "Company")},
+                    "quarters": quarters, "total_tds_deducted": round(total_tds_deducted, 2),
+                    "total_tds_deposited": round(total_tds_deposited, 2),
+                    "gross_salary": round(annual_calc.get("gross_annual", 0), 2),
+                    "hra_exemption": round(breakdown.get("hra_exemption", 0), 2),
+                    "lta_exemption": round(breakdown.get("lta_exemption", 0), 2),
+                    "standard_deduction": round(annual_calc.get("standard_deduction", 50000), 2),
+                    "deduction_80c": round(chapter_via.get("80C", 0), 2),
+                    "deduction_80d": round(chapter_via.get("80D", 0), 2),
+                    "deduction_80ccd": round(chapter_via.get("80CCD_1B", 0), 2),
+                    "deduction_80e": round(chapter_via.get("80E", 0), 2),
+                    "deduction_80g": round(chapter_via.get("80G", 0), 2),
+                    "deduction_80tta": round(chapter_via.get("80TTA", 0), 2),
+                    "net_taxable_income": round(annual_calc.get("taxable_income", 0), 2),
+                    "tax_on_income": round(annual_calc.get("tax_before_rebate", 0), 2),
+                    "rebate_87a": round(annual_calc.get("rebate_87a", 0), 2),
+                    "surcharge": round(annual_calc.get("surcharge", 0), 2),
+                    "cess": round(annual_calc.get("cess", 0), 2),
+                    "total_tax_liability": round(annual_calc.get("total_tax_liability", 0), 2),
+                    "tds_deducted": round(total_tds_deducted, 2),
+                    "balance_tax_payable": round(annual_calc.get("total_tax_liability", 0) - total_tds_deducted, 2),
+                    "tax_regime": tax_regime, "assessment_year": assessment_year, "fy": fy
+                }
+                html_content = _generate_form16_html(f16)
+                pdf_buf = io.BytesIO()
+                HTML(string=html_content).write_pdf(pdf_buf)
+                pdf_buf.seek(0)
+                safe_name = employee_name.replace(" ", "_")[:30]
+                zf.writestr(f"Form16_{safe_name}_{fy}.pdf", pdf_buf.read())
+                generated_count += 1
+            except Exception as e:
+                logger.warning(f"Skipped Form 16 for {employee_id}: {e}")
+
+    if generated_count == 0:
+        raise HTTPException(status_code=404, detail=f"No Form 16 data available for FY {fy}")
+
+    zip_buffer.seek(0)
+    safe_org = org_name.replace(" ", "_")[:20]
+    zip_filename = f"Form16_Bulk_{safe_org}_{fy}.zip"
+    return StreamingResponse(
+        zip_buffer,
+        media_type="application/zip",
+        headers={"Content-Disposition": f"attachment; filename={zip_filename}"}
+    )
+
+
 async def get_org_id(request: Request, db) -> Optional[str]:
     """Extract organization ID from request"""
     try:
