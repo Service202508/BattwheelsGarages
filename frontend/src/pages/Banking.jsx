@@ -1,453 +1,817 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { 
-  Plus, Building, CreditCard, Wallet, ArrowUpRight, ArrowDownLeft,
-  Calendar, IndianRupee, TrendingUp, TrendingDown, Save
+  Plus, Building2, ArrowUpDown, Search, CreditCard, 
+  CheckCircle2, Clock, TrendingUp, TrendingDown,
+  Banknote, Eye, RefreshCw, ArrowRightLeft, Wallet,
+  IndianRupee, Filter, Check
 } from "lucide-react";
 import { API } from "@/App";
-import { useFormPersistence } from "@/hooks/useFormPersistence";
-import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
+
+const accountTypes = [
+  { value: "CURRENT", label: "Current Account" },
+  { value: "SAVINGS", label: "Savings Account" },
+  { value: "CASH", label: "Cash Account" },
+  { value: "CREDIT_CARD", label: "Credit Card" }
+];
+
+const transactionCategories = [
+  { value: "CUSTOMER_PAYMENT", label: "Customer Payment" },
+  { value: "VENDOR_PAYMENT", label: "Vendor Payment" },
+  { value: "EXPENSE", label: "Expense" },
+  { value: "SALARY", label: "Salary" },
+  { value: "TAX", label: "Tax" },
+  { value: "TRANSFER", label: "Transfer" },
+  { value: "OTHER", label: "Other" }
+];
+
+const getHeaders = () => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${localStorage.getItem("token")}`
+});
+
+const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val || 0);
 
 export default function Banking() {
-  const [accounts, setAccounts] = useState([]);
+  const [summary, setSummary] = useState({ accounts: [], total_balance: 0 });
+  const [selectedAccount, setSelectedAccount] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedAccount, setSelectedAccount] = useState(null);
-  const [showAccountDialog, setShowAccountDialog] = useState(false);
-  const [showTxnDialog, setShowTxnDialog] = useState(false);
-
-  const initialAccountData = {
+  
+  // Filters
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [reconciledFilter, setReconciledFilter] = useState("all");
+  
+  // Dialogs
+  const [showCreateAccount, setShowCreateAccount] = useState(false);
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
+  const [showTransferDialog, setShowTransferDialog] = useState(false);
+  
+  // Selected transactions for bulk reconciliation
+  const [selectedTxns, setSelectedTxns] = useState([]);
+  
+  // Account form
+  const [accountForm, setAccountForm] = useState({
     account_name: "",
-    account_type: "bank",
-    account_number: "",
     bank_name: "",
-    opening_balance: 0
-  };
-
-  const initialTxnData = {
-    account_id: "",
-    amount: 0,
-    transaction_type: "deposit",
-    reference_number: "",
+    account_number: "",
+    ifsc_code: "",
+    account_type: "CURRENT",
+    opening_balance: 0,
+    opening_balance_date: new Date().toISOString().split("T")[0],
+    upi_id: "",
+    is_default: false
+  });
+  
+  // Transaction form
+  const [txnForm, setTxnForm] = useState({
+    transaction_date: new Date().toISOString().split("T")[0],
     description: "",
-    payee: ""
-  };
+    transaction_type: "CREDIT",
+    amount: 0,
+    category: "OTHER",
+    reference_number: ""
+  });
+  
+  // Transfer form
+  const [transferForm, setTransferForm] = useState({
+    from_account_id: "",
+    to_account_id: "",
+    amount: 0,
+    transfer_date: new Date().toISOString().split("T")[0],
+    reference: "",
+    notes: ""
+  });
 
-  const [newAccount, setNewAccount] = useState(initialAccountData);
-  const [newTxn, setNewTxn] = useState(initialTxnData);
+  useEffect(() => {
+    fetchSummary();
+  }, []);
 
-  // Auto-save for Account form
-  const accountPersistence = useFormPersistence(
-    'banking_account_new',
-    newAccount,
-    initialAccountData,
-    {
-      enabled: showAccountDialog,
-      isDialogOpen: showAccountDialog,
-      setFormData: setNewAccount,
-      debounceMs: 2000,
-      entityName: 'Bank Account'
+  useEffect(() => {
+    if (selectedAccount) {
+      fetchTransactions();
     }
-  );
+  }, [selectedAccount, dateFrom, dateTo, categoryFilter, reconciledFilter]);
 
-  // Auto-save for Transaction form
-  const txnPersistence = useFormPersistence(
-    'banking_txn_new',
-    newTxn,
-    initialTxnData,
-    {
-      enabled: showTxnDialog,
-      isDialogOpen: showTxnDialog,
-      setFormData: setNewTxn,
-      debounceMs: 2000,
-      entityName: 'Transaction'
-    }
-  );
-
-  useEffect(() => { fetchData(); }, []);
-
-  const fetchData = async () => {
+  const fetchSummary = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const headers = { Authorization: `Bearer ${token}` };
-      const [accRes, txnRes] = await Promise.all([
-        fetch(`${API}/zoho/bankaccounts`, { headers }),
-        fetch(`${API}/zoho/banktransactions?per_page=100`, { headers })
-      ]);
-      const [accData, txnData] = await Promise.all([
-        accRes.json(), txnRes.json()
-      ]);
-      setAccounts(accData.bankaccounts || []);
-      setTransactions(txnData.transactions || []);
-    } catch (error) {
-      console.error("Failed to fetch:", error);
+      const res = await fetch(`${API}/banking/summary`, { headers: getHeaders() });
+      const data = await res.json();
+      if (data.summary) {
+        setSummary(data.summary);
+        // Auto-select first account if none selected
+        if (data.summary.accounts?.length > 0 && !selectedAccount) {
+          setSelectedAccount(data.summary.accounts[0]);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch banking summary:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreateAccount = async () => {
-    if (!newAccount.account_name) return toast.error("Enter account name");
+  const fetchTransactions = async () => {
+    if (!selectedAccount) return;
     
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/bankaccounts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(newAccount)
-      });
-      if (res.ok) {
-        toast.success("Account created");
-        accountPersistence.onSuccessfulSave();
-        setShowAccountDialog(false);
-        setNewAccount(initialAccountData);
-        fetchData();
-      }
-    } catch { toast.error("Error creating account"); }
+      let url = `${API}/banking/accounts/${selectedAccount.account_id}/transactions?limit=100`;
+      if (dateFrom) url += `&date_from=${dateFrom}`;
+      if (dateTo) url += `&date_to=${dateTo}`;
+      if (categoryFilter) url += `&category=${categoryFilter}`;
+      if (reconciledFilter === "yes") url += `&reconciled=true`;
+      if (reconciledFilter === "no") url += `&reconciled=false`;
+      
+      const res = await fetch(url, { headers: getHeaders() });
+      const data = await res.json();
+      setTransactions(data.transactions || []);
+      setSelectedTxns([]);
+    } catch (err) {
+      console.error("Failed to fetch transactions:", err);
+    }
   };
 
-  const handleCreateTransaction = async () => {
-    if (!newTxn.account_id || newTxn.amount <= 0) return toast.error("Select account and enter amount");
+  const handleCreateAccount = async () => {
+    if (!accountForm.account_name || !accountForm.bank_name || !accountForm.account_number) {
+      return toast.error("Fill required fields (Name, Bank, Account Number)");
+    }
     
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/banktransactions`, {
+      const res = await fetch(`${API}/banking/accounts`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(newTxn)
+        headers: getHeaders(),
+        body: JSON.stringify(accountForm)
       });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        toast.success(`Account "${data.account.account_name}" created`);
+        if (data.account.opening_journal_entry_id) {
+          toast.success("Opening balance journal entry posted");
+        }
+        setShowCreateAccount(false);
+        resetAccountForm();
+        fetchSummary();
+      } else {
+        toast.error(data.detail || "Failed to create account");
+      }
+    } catch (err) {
+      toast.error("Error creating account");
+    }
+  };
+
+  const handleAddTransaction = async () => {
+    if (!txnForm.description || txnForm.amount <= 0) {
+      return toast.error("Enter valid description and amount");
+    }
+    
+    try {
+      const res = await fetch(`${API}/banking/accounts/${selectedAccount.account_id}/transactions`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(txnForm)
+      });
+      
+      const data = await res.json();
+      
       if (res.ok) {
         toast.success("Transaction recorded");
-        txnPersistence.onSuccessfulSave();
-        setShowTxnDialog(false);
-        setNewTxn(initialTxnData);
-        fetchData();
+        setShowAddTransaction(false);
+        resetTxnForm();
+        fetchSummary();
+        fetchTransactions();
+      } else {
+        toast.error(data.detail || "Failed to record transaction");
       }
-    } catch { toast.error("Error recording transaction"); }
+    } catch (err) {
+      toast.error("Error recording transaction");
+    }
   };
 
-  const totalBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
-  const accountTxns = selectedAccount 
-    ? transactions.filter(t => t.account_id === selectedAccount.account_id)
-    : transactions;
-
-  const accountTypeIcons = {
-    bank: Building,
-    credit_card: CreditCard,
-    cash: Wallet,
-    payment_gateway: IndianRupee
+  const handleTransfer = async () => {
+    if (!transferForm.from_account_id || !transferForm.to_account_id || transferForm.amount <= 0) {
+      return toast.error("Select accounts and enter valid amount");
+    }
+    if (transferForm.from_account_id === transferForm.to_account_id) {
+      return toast.error("Cannot transfer to same account");
+    }
+    
+    try {
+      const res = await fetch(`${API}/banking/transfer`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(transferForm)
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        toast.success(`Transferred ${formatCurrency(transferForm.amount)}`);
+        setShowTransferDialog(false);
+        resetTransferForm();
+        fetchSummary();
+        if (selectedAccount) fetchTransactions();
+      } else {
+        toast.error(data.detail || "Transfer failed");
+      }
+    } catch (err) {
+      toast.error("Error processing transfer");
+    }
   };
+
+  const handleReconcile = async (txnId, reconciled) => {
+    try {
+      await fetch(`${API}/banking/reconcile/${txnId}?reconciled=${reconciled}`, {
+        method: "POST",
+        headers: getHeaders()
+      });
+      fetchTransactions();
+      toast.success(reconciled ? "Transaction reconciled" : "Reconciliation removed");
+    } catch (err) {
+      toast.error("Error updating reconciliation");
+    }
+  };
+
+  const handleBulkReconcile = async () => {
+    if (selectedTxns.length === 0) return;
+    
+    try {
+      const res = await fetch(`${API}/banking/reconcile`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify({ transaction_ids: selectedTxns, reconciled: true })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        toast.success(`${data.modified_count} transactions reconciled`);
+        setSelectedTxns([]);
+        fetchTransactions();
+      }
+    } catch (err) {
+      toast.error("Error reconciling transactions");
+    }
+  };
+
+  const toggleTxnSelection = (txnId) => {
+    setSelectedTxns(prev => 
+      prev.includes(txnId) 
+        ? prev.filter(id => id !== txnId)
+        : [...prev, txnId]
+    );
+  };
+
+  const selectAllUnreconciled = () => {
+    const unreconciledIds = transactions.filter(t => !t.reconciled).map(t => t.transaction_id);
+    setSelectedTxns(unreconciledIds);
+  };
+
+  const resetAccountForm = () => setAccountForm({
+    account_name: "", bank_name: "", account_number: "", ifsc_code: "",
+    account_type: "CURRENT", opening_balance: 0, opening_balance_date: new Date().toISOString().split("T")[0],
+    upi_id: "", is_default: false
+  });
+  
+  const resetTxnForm = () => setTxnForm({
+    transaction_date: new Date().toISOString().split("T")[0], description: "",
+    transaction_type: "CREDIT", amount: 0, category: "OTHER", reference_number: ""
+  });
+  
+  const resetTransferForm = () => setTransferForm({
+    from_account_id: "", to_account_id: "", amount: 0,
+    transfer_date: new Date().toISOString().split("T")[0], reference: "", notes: ""
+  });
 
   return (
-    <div className="space-y-6" data-testid="banking-page">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div data-testid="banking-page" className="min-h-screen bg-[#0B0B0F] text-[#F4F6F0] p-6 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Banking</h1>
-          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Bank accounts & transactions</p>
+          <h1 className="text-2xl font-bold">Banking</h1>
+          <p className="text-sm text-[rgba(244,246,240,0.65)]">Manage bank accounts and transactions</p>
         </div>
-        <div className="flex gap-2">
-          <Dialog 
-            open={showAccountDialog} 
-            onOpenChange={(open) => {
-              if (!open && accountPersistence.isDirty) {
-                accountPersistence.setShowCloseConfirm(true);
-              } else {
-                if (!open) accountPersistence.clearSavedData();
-                setShowAccountDialog(open);
-              }
-            }}
-          >
-            <DialogTrigger asChild>
-              <Button variant="outline" data-testid="add-account-btn">
-                <Building className="h-4 w-4 mr-2" /> Add Account
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <div className="flex items-center justify-between">
-                  <DialogTitle>Add Bank Account</DialogTitle>
-                  <AutoSaveIndicator 
-                    lastSaved={accountPersistence.lastSaved} 
-                    isSaving={accountPersistence.isSaving} 
-                    isDirty={accountPersistence.isDirty} 
-                  />
-                </div>
-              </DialogHeader>
-              
-              <DraftRecoveryBanner
-                show={accountPersistence.showRecoveryBanner}
-                savedAt={accountPersistence.savedDraftInfo?.timestamp}
-                onRestore={accountPersistence.handleRestoreDraft}
-                onDiscard={accountPersistence.handleDiscardDraft}
-              />
-              
-              <div className="space-y-4 py-4">
-                <div>
-                  <Label>Account Name *</Label>
-                  <Input value={newAccount.account_name} onChange={(e) => setNewAccount({ ...newAccount, account_name: e.target.value })} placeholder="Main Business Account" />
-                </div>
-                <div>
-                  <Label>Account Type</Label>
-                  <Select value={newAccount.account_type} onValueChange={(v) => setNewAccount({ ...newAccount, account_type: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="bank">Bank Account</SelectItem>
-                      <SelectItem value="credit_card">Credit Card</SelectItem>
-                      <SelectItem value="cash">Cash</SelectItem>
-                      <SelectItem value="payment_gateway">Payment Gateway</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Bank Name</Label>
-                  <Input value={newAccount.bank_name} onChange={(e) => setNewAccount({ ...newAccount, bank_name: e.target.value })} placeholder="HDFC Bank" />
-                </div>
-                <div>
-                  <Label>Account Number</Label>
-                  <Input value={newAccount.account_number} onChange={(e) => setNewAccount({ ...newAccount, account_number: e.target.value })} placeholder="XXXX1234" />
-                </div>
-                <div>
-                  <Label>Opening Balance</Label>
-                  <Input type="number" value={newAccount.opening_balance} onChange={(e) => setNewAccount({ ...newAccount, opening_balance: parseFloat(e.target.value) })} />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    if (accountPersistence.isDirty) {
-                      accountPersistence.setShowCloseConfirm(true);
-                    } else {
-                      setShowAccountDialog(false);
-                    }
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleCreateAccount} className="bg-[#C8FF00] text-[#080C0F] font-bold">Add Account</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          <Dialog 
-            open={showTxnDialog} 
-            onOpenChange={(open) => {
-              if (!open && txnPersistence.isDirty) {
-                txnPersistence.setShowCloseConfirm(true);
-              } else {
-                if (!open) txnPersistence.clearSavedData();
-                setShowTxnDialog(open);
-              }
-            }}
-          >
-            <DialogTrigger asChild>
-              <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="add-txn-btn">
-                <Plus className="h-4 w-4 mr-2" /> Add Transaction
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <div className="flex items-center justify-between">
-                  <DialogTitle>Record Transaction</DialogTitle>
-                  <AutoSaveIndicator 
-                    lastSaved={txnPersistence.lastSaved} 
-                    isSaving={txnPersistence.isSaving} 
-                    isDirty={txnPersistence.isDirty} 
-                  />
-                </div>
-              </DialogHeader>
-              
-              <DraftRecoveryBanner
-                show={txnPersistence.showRecoveryBanner}
-                savedAt={txnPersistence.savedDraftInfo?.timestamp}
-                onRestore={txnPersistence.handleRestoreDraft}
-                onDiscard={txnPersistence.handleDiscardDraft}
-              />
-              
-              <div className="space-y-4 py-4">
-                <div>
-                  <Label>Account *</Label>
-                  <Select value={newTxn.account_id} onValueChange={(v) => setNewTxn({ ...newTxn, account_id: v })}>
-                    <SelectTrigger><SelectValue placeholder="Select account" /></SelectTrigger>
-                    <SelectContent>
-                      {accounts.map(acc => <SelectItem key={acc.account_id} value={acc.account_id}>{acc.account_name}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Type</Label>
-                  <Select value={newTxn.transaction_type} onValueChange={(v) => setNewTxn({ ...newTxn, transaction_type: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="deposit">Deposit (Money In)</SelectItem>
-                      <SelectItem value="withdrawal">Withdrawal (Money Out)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Amount *</Label>
-                  <Input type="number" value={newTxn.amount} onChange={(e) => setNewTxn({ ...newTxn, amount: parseFloat(e.target.value) })} />
-                </div>
-                <div>
-                  <Label>Payee/Payer</Label>
-                  <Input value={newTxn.payee} onChange={(e) => setNewTxn({ ...newTxn, payee: e.target.value })} placeholder="Customer/Vendor name" />
-                </div>
-                <div>
-                  <Label>Reference Number</Label>
-                  <Input value={newTxn.reference_number} onChange={(e) => setNewTxn({ ...newTxn, reference_number: e.target.value })} placeholder="Transaction ID" />
-                </div>
-                <div>
-                  <Label>Description</Label>
-                  <Input value={newTxn.description} onChange={(e) => setNewTxn({ ...newTxn, description: e.target.value })} placeholder="Payment for..." />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    if (txnPersistence.isDirty) {
-                      txnPersistence.setShowCloseConfirm(true);
-                    } else {
-                      setShowTxnDialog(false);
-                    }
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleCreateTransaction} className="bg-[#C8FF00] text-[#080C0F] font-bold">Record Transaction</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" onClick={() => setShowTransferDialog(true)} className="border-[rgba(244,246,240,0.15)] text-[#F4F6F0] hover:bg-[rgba(244,246,240,0.05)]">
+            <ArrowRightLeft className="w-4 h-4 mr-2" />
+            Transfer
+          </Button>
+          <Button onClick={() => { resetAccountForm(); setShowCreateAccount(true); }} className="bg-[#C8FF00] text-black hover:bg-[#B8EF00]">
+            <Plus className="w-4 h-4 mr-2" />
+            New Account
+          </Button>
         </div>
       </div>
-      
-      {/* Unsaved Changes Confirmation Dialogs */}
-      <FormCloseConfirmDialog
-        open={accountPersistence.showCloseConfirm}
-        onClose={() => accountPersistence.setShowCloseConfirm(false)}
-        onSave={handleCreateAccount}
-        onDiscard={() => {
-          accountPersistence.clearSavedData();
-          setNewAccount(initialAccountData);
-          setShowAccountDialog(false);
-        }}
-        entityName="Bank Account"
-      />
-      
-      <FormCloseConfirmDialog
-        open={txnPersistence.showCloseConfirm}
-        onClose={() => txnPersistence.setShowCloseConfirm(false)}
-        onSave={handleCreateTransaction}
-        onDiscard={() => {
-          txnPersistence.clearSavedData();
-          setNewTxn(initialTxnData);
-          setShowTxnDialog(false);
-        }}
-        entityName="Transaction"
-      />
 
-      {/* Summary Card */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Balance</p>
-              <p className="text-3xl font-bold text-[#F4F6F0]">₹{totalBalance.toLocaleString('en-IN')}</p>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)]">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Total Balance</p>
+                <p className="text-xl font-bold text-[#C8FF00]">{formatCurrency(summary.total_balance)}</p>
+              </div>
+              <Wallet className="w-8 h-8 text-[#C8FF00]" />
             </div>
-            <div className="text-right">
-              <p className="text-sm text-[rgba(244,246,240,0.45)]">{accounts.length} Accounts</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)]">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Accounts</p>
+                <p className="text-xl font-bold text-[#F4F6F0]">{summary.total_accounts || summary.accounts?.length || 0}</p>
+              </div>
+              <Building2 className="w-8 h-8 text-[#3B9EFF]" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)]">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-[rgba(244,246,240,0.5)] uppercase tracking-wide">This Month Credits</p>
+                <p className="text-xl font-bold text-[#1AFFE4]">{formatCurrency(summary.this_month?.credits)}</p>
+              </div>
+              <TrendingUp className="w-8 h-8 text-[#1AFFE4]" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)]">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-[rgba(244,246,240,0.5)] uppercase tracking-wide">This Month Debits</p>
+                <p className="text-xl font-bold text-[#FF3B2F]">{formatCurrency(summary.this_month?.debits)}</p>
+              </div>
+              <TrendingDown className="w-8 h-8 text-[#FF3B2F]" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Account Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {summary.accounts?.map(acc => (
+          <Card 
+            key={acc.account_id}
+            className={`bg-[#14141B] border-[rgba(244,246,240,0.08)] cursor-pointer transition-all ${selectedAccount?.account_id === acc.account_id ? 'ring-2 ring-[#C8FF00]' : 'hover:border-[rgba(244,246,240,0.2)]'}`}
+            onClick={() => setSelectedAccount(acc)}
+          >
+            <CardContent className="pt-6">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  {acc.account_type === "CASH" ? <Banknote className="w-5 h-5 text-[#FFB300]" /> : <CreditCard className="w-5 h-5 text-[#3B9EFF]" />}
+                  <span className="text-xs text-[rgba(244,246,240,0.5)] uppercase">{acc.account_type}</span>
+                </div>
+                {acc.is_default && <Badge className="bg-[rgba(200,255,0,0.15)] text-[#C8FF00] border-0 text-[10px]">Default</Badge>}
+              </div>
+              <p className="font-medium text-[#F4F6F0] truncate">{acc.account_name}</p>
+              <p className="text-xs text-[rgba(244,246,240,0.5)]">{acc.bank_name} {acc.account_number_last4 && `****${acc.account_number_last4}`}</p>
+              <p className="text-xl font-bold mt-3 font-mono">{formatCurrency(acc.current_balance)}</p>
+            </CardContent>
+          </Card>
+        ))}
+        
+        {(summary.accounts?.length || 0) === 0 && !loading && (
+          <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)] border-dashed col-span-full">
+            <CardContent className="py-12 text-center">
+              <Building2 className="w-12 h-12 text-[rgba(244,246,240,0.2)] mx-auto mb-3" />
+              <p className="text-[rgba(244,246,240,0.5)]">No bank accounts yet</p>
+              <Button variant="link" onClick={() => setShowCreateAccount(true)} className="text-[#C8FF00]">
+                Add your first account
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Transactions Section */}
+      {selectedAccount && (
+        <Card className="bg-[#14141B] border-[rgba(244,246,240,0.08)]">
+          <CardHeader className="border-b border-[rgba(244,246,240,0.08)]">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <ArrowUpDown className="w-5 h-5 text-[#3B9EFF]" />
+                {selectedAccount.account_name} - Transactions
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                {selectedTxns.length > 0 && (
+                  <Button size="sm" onClick={handleBulkReconcile} className="bg-[#1AFFE4] text-black hover:bg-[#00E5CC]">
+                    <Check className="w-4 h-4 mr-1" />
+                    Reconcile ({selectedTxns.length})
+                  </Button>
+                )}
+                <Button variant="outline" size="sm" onClick={selectAllUnreconciled} className="border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+                  Select Unreconciled
+                </Button>
+                <Button size="sm" onClick={() => { resetTxnForm(); setShowAddTransaction(true); }} className="bg-[#C8FF00] text-black hover:bg-[#B8EF00]">
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add Transaction
+                </Button>
+              </div>
+            </div>
+            
+            {/* Filters */}
+            <div className="flex flex-wrap gap-3 mt-4">
+              <Input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="bg-[#0B0B0F] border-[rgba(244,246,240,0.08)] text-[#F4F6F0] w-36"
+                placeholder="From"
+              />
+              <Input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="bg-[#0B0B0F] border-[rgba(244,246,240,0.08)] text-[#F4F6F0] w-36"
+                placeholder="To"
+              />
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.08)] text-[#F4F6F0] w-40">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
+                  <SelectItem value="" className="text-[#F4F6F0]">All Categories</SelectItem>
+                  {transactionCategories.map(c => <SelectItem key={c.value} value={c.value} className="text-[#F4F6F0]">{c.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={reconciledFilter} onValueChange={setReconciledFilter}>
+                <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.08)] text-[#F4F6F0] w-36">
+                  <SelectValue placeholder="Reconciled" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
+                  <SelectItem value="all" className="text-[#F4F6F0]">All</SelectItem>
+                  <SelectItem value="yes" className="text-[#F4F6F0]">Reconciled</SelectItem>
+                  <SelectItem value="no" className="text-[#F4F6F0]">Unreconciled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[rgba(244,246,240,0.08)]">
+                    <th className="w-8 p-3"></th>
+                    <th className="text-left p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Date</th>
+                    <th className="text-left p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Description</th>
+                    <th className="text-left p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Category</th>
+                    <th className="text-left p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Reference</th>
+                    <th className="text-right p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Debit</th>
+                    <th className="text-right p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Credit</th>
+                    <th className="text-right p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Balance</th>
+                    <th className="text-center p-3 text-xs font-medium text-[rgba(244,246,240,0.5)] uppercase tracking-wide">Recon</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactions.length === 0 ? (
+                    <tr><td colSpan={9} className="text-center p-8 text-[rgba(244,246,240,0.5)]">No transactions found</td></tr>
+                  ) : (
+                    transactions.map(txn => (
+                      <tr key={txn.transaction_id} className="border-b border-[rgba(244,246,240,0.05)] hover:bg-[rgba(244,246,240,0.02)]">
+                        <td className="p-3">
+                          <Checkbox
+                            checked={selectedTxns.includes(txn.transaction_id)}
+                            onCheckedChange={() => toggleTxnSelection(txn.transaction_id)}
+                            className="border-[rgba(244,246,240,0.3)] data-[state=checked]:bg-[#C8FF00] data-[state=checked]:border-[#C8FF00]"
+                          />
+                        </td>
+                        <td className="p-3 text-sm">{txn.transaction_date}</td>
+                        <td className="p-3 text-sm">{txn.description}</td>
+                        <td className="p-3"><Badge variant="outline" className="border-[rgba(244,246,240,0.2)] text-[rgba(244,246,240,0.7)] text-xs">{txn.category}</Badge></td>
+                        <td className="p-3 text-sm text-[rgba(244,246,240,0.5)]">{txn.reference_number || "—"}</td>
+                        <td className="p-3 text-right font-mono text-[#FF3B2F]">{txn.transaction_type === "DEBIT" ? formatCurrency(txn.amount) : "—"}</td>
+                        <td className="p-3 text-right font-mono text-[#1AFFE4]">{txn.transaction_type === "CREDIT" ? formatCurrency(txn.amount) : "—"}</td>
+                        <td className="p-3 text-right font-mono">{formatCurrency(txn.balance_after)}</td>
+                        <td className="p-3 text-center">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleReconcile(txn.transaction_id, !txn.reconciled)}
+                            className={txn.reconciled ? "text-[#1AFFE4]" : "text-[rgba(244,246,240,0.3)]"}
+                          >
+                            {txn.reconciled ? <CheckCircle2 className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Create Account Dialog */}
+      <Dialog open={showCreateAccount} onOpenChange={setShowCreateAccount}>
+        <DialogContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)] text-[#F4F6F0] max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-[#C8FF00]" />
+              New Bank Account
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">Account Name *</Label>
+                <Input
+                  value={accountForm.account_name}
+                  onChange={(e) => setAccountForm(prev => ({ ...prev, account_name: e.target.value }))}
+                  placeholder="e.g., Main Business Account"
+                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                />
+              </div>
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">Bank Name *</Label>
+                <Input
+                  value={accountForm.bank_name}
+                  onChange={(e) => setAccountForm(prev => ({ ...prev, bank_name: e.target.value }))}
+                  placeholder="e.g., HDFC Bank"
+                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">Account Number *</Label>
+                <Input
+                  value={accountForm.account_number}
+                  onChange={(e) => setAccountForm(prev => ({ ...prev, account_number: e.target.value }))}
+                  placeholder="50100123456789"
+                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                />
+              </div>
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">IFSC Code</Label>
+                <Input
+                  value={accountForm.ifsc_code}
+                  onChange={(e) => setAccountForm(prev => ({ ...prev, ifsc_code: e.target.value.toUpperCase() }))}
+                  placeholder="HDFC0001234"
+                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">Account Type</Label>
+                <Select value={accountForm.account_type} onValueChange={(v) => setAccountForm(prev => ({ ...prev, account_type: v }))}>
+                  <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
+                    {accountTypes.map(t => <SelectItem key={t.value} value={t.value} className="text-[#F4F6F0]">{t.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">UPI ID</Label>
+                <Input
+                  value={accountForm.upi_id}
+                  onChange={(e) => setAccountForm(prev => ({ ...prev, upi_id: e.target.value }))}
+                  placeholder="business@hdfcbank"
+                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">Opening Balance</Label>
+                <Input
+                  type="number"
+                  value={accountForm.opening_balance}
+                  onChange={(e) => setAccountForm(prev => ({ ...prev, opening_balance: parseFloat(e.target.value) || 0 }))}
+                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                />
+              </div>
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">Balance Date</Label>
+                <Input
+                  type="date"
+                  value={accountForm.opening_balance_date}
+                  onChange={(e) => setAccountForm(prev => ({ ...prev, opening_balance_date: e.target.value }))}
+                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                />
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="is_default"
+                checked={accountForm.is_default}
+                onCheckedChange={(c) => setAccountForm(prev => ({ ...prev, is_default: !!c }))}
+                className="border-[rgba(244,246,240,0.3)]"
+              />
+              <Label htmlFor="is_default" className="text-sm text-[rgba(244,246,240,0.7)]">Set as default account</Label>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Accounts List */}
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-[#F4F6F0]">Accounts</h2>
-          <Button 
-            variant={selectedAccount === null ? "default" : "outline"} 
-            className={`w-full justify-start ${selectedAccount === null ? "bg-[#C8FF00] text-[#080C0F] font-bold" : ""}`}
-            onClick={() => setSelectedAccount(null)}
-          >
-            All Accounts
-          </Button>
-          {accounts.map(acc => {
-            const Icon = accountTypeIcons[acc.account_type] || Building;
-            return (
-              <Card 
-                key={acc.account_id} 
-                className={`cursor-pointer transition-colors ${selectedAccount?.account_id === acc.account_id ? "ring-2 ring-[#C8FF00]" : ""}`}
-                onClick={() => setSelectedAccount(acc)}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-[rgba(255,255,255,0.05)] rounded-lg">
-                      <Icon className="h-5 w-5 text-[rgba(244,246,240,0.35)]" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-medium">{acc.account_name}</h3>
-                      <p className="text-xs text-[rgba(244,246,240,0.45)]">{acc.bank_name || acc.account_type}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold">₹{acc.balance?.toLocaleString('en-IN')}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateAccount(false)} className="border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+              Cancel
+            </Button>
+            <Button onClick={handleCreateAccount} className="bg-[#C8FF00] text-black hover:bg-[#B8EF00]">
+              Create Account
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-        {/* Transactions */}
-        <div className="lg:col-span-2 space-y-3">
-          <h2 className="text-lg font-semibold text-[#F4F6F0]">
-            Transactions {selectedAccount && `- ${selectedAccount.account_name}`}
-          </h2>
-          {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
-            accountTxns.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No transactions found</CardContent></Card> :
-            <div className="space-y-2">
-              {accountTxns.map(txn => (
-                <Card key={txn.transaction_id} className="hover:shadow-sm transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-full ${txn.transaction_type === 'deposit' ? 'bg-green-100' : 'bg-red-100'}`}>
-                          {txn.transaction_type === 'deposit' 
-                            ? <ArrowDownLeft className="h-4 w-4 text-green-600" />
-                            : <ArrowUpRight className="h-4 w-4 text-red-600" />
-                          }
-                        </div>
-                        <div>
-                          <p className="font-medium">{txn.payee || txn.description || 'Transaction'}</p>
-                          <div className="flex gap-2 text-xs text-[rgba(244,246,240,0.45)]">
-                            <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{txn.date}</span>
-                            {txn.reference_number && <span>Ref: {txn.reference_number}</span>}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className={`font-bold ${txn.transaction_type === 'deposit' ? 'text-green-600' : 'text-red-600'}`}>
-                          {txn.transaction_type === 'deposit' ? '+' : '-'}₹{txn.amount?.toLocaleString('en-IN')}
-                        </p>
-                        <Badge variant="outline" className="text-xs">{txn.status}</Badge>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+      {/* Add Transaction Dialog */}
+      <Dialog open={showAddTransaction} onOpenChange={setShowAddTransaction}>
+        <DialogContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ArrowUpDown className="w-5 h-5 text-[#3B9EFF]" />
+              Add Transaction
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">Date</Label>
+                <Input
+                  type="date"
+                  value={txnForm.transaction_date}
+                  onChange={(e) => setTxnForm(prev => ({ ...prev, transaction_date: e.target.value }))}
+                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                />
+              </div>
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">Type</Label>
+                <Select value={txnForm.transaction_type} onValueChange={(v) => setTxnForm(prev => ({ ...prev, transaction_type: v }))}>
+                  <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
+                    <SelectItem value="CREDIT" className="text-[#1AFFE4]">Credit (Money In)</SelectItem>
+                    <SelectItem value="DEBIT" className="text-[#FF3B2F]">Debit (Money Out)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          }
-        </div>
-      </div>
+            
+            <div>
+              <Label className="text-[rgba(244,246,240,0.7)]">Description *</Label>
+              <Input
+                value={txnForm.description}
+                onChange={(e) => setTxnForm(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Transaction description"
+                className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">Amount *</Label>
+                <Input
+                  type="number"
+                  value={txnForm.amount}
+                  onChange={(e) => setTxnForm(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
+                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                />
+              </div>
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">Category</Label>
+                <Select value={txnForm.category} onValueChange={(v) => setTxnForm(prev => ({ ...prev, category: v }))}>
+                  <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
+                    {transactionCategories.map(c => <SelectItem key={c.value} value={c.value} className="text-[#F4F6F0]">{c.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div>
+              <Label className="text-[rgba(244,246,240,0.7)]">Reference Number</Label>
+              <Input
+                value={txnForm.reference_number}
+                onChange={(e) => setTxnForm(prev => ({ ...prev, reference_number: e.target.value }))}
+                placeholder="UTR/Cheque/Reference #"
+                className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddTransaction(false)} className="border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+              Cancel
+            </Button>
+            <Button onClick={handleAddTransaction} className="bg-[#C8FF00] text-black hover:bg-[#B8EF00]">
+              Add Transaction
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Transfer Dialog */}
+      <Dialog open={showTransferDialog} onOpenChange={setShowTransferDialog}>
+        <DialogContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ArrowRightLeft className="w-5 h-5 text-[#FFB300]" />
+              Transfer Between Accounts
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div>
+              <Label className="text-[rgba(244,246,240,0.7)]">From Account</Label>
+              <Select value={transferForm.from_account_id} onValueChange={(v) => setTransferForm(prev => ({ ...prev, from_account_id: v }))}>
+                <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+                  <SelectValue placeholder="Select source account" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
+                  {summary.accounts?.map(acc => (
+                    <SelectItem key={acc.account_id} value={acc.account_id} className="text-[#F4F6F0]">
+                      {acc.account_name} ({formatCurrency(acc.current_balance)})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label className="text-[rgba(244,246,240,0.7)]">To Account</Label>
+              <Select value={transferForm.to_account_id} onValueChange={(v) => setTransferForm(prev => ({ ...prev, to_account_id: v }))}>
+                <SelectTrigger className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+                  <SelectValue placeholder="Select destination account" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
+                  {summary.accounts?.filter(a => a.account_id !== transferForm.from_account_id).map(acc => (
+                    <SelectItem key={acc.account_id} value={acc.account_id} className="text-[#F4F6F0]">
+                      {acc.account_name} ({formatCurrency(acc.current_balance)})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">Amount</Label>
+                <Input
+                  type="number"
+                  value={transferForm.amount}
+                  onChange={(e) => setTransferForm(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
+                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                />
+              </div>
+              <div>
+                <Label className="text-[rgba(244,246,240,0.7)]">Date</Label>
+                <Input
+                  type="date"
+                  value={transferForm.transfer_date}
+                  onChange={(e) => setTransferForm(prev => ({ ...prev, transfer_date: e.target.value }))}
+                  className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label className="text-[rgba(244,246,240,0.7)]">Reference</Label>
+              <Input
+                value={transferForm.reference}
+                onChange={(e) => setTransferForm(prev => ({ ...prev, reference: e.target.value }))}
+                placeholder="Transfer reference"
+                className="bg-[#0B0B0F] border-[rgba(244,246,240,0.15)] text-[#F4F6F0]"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowTransferDialog(false)} className="border-[rgba(244,246,240,0.15)] text-[#F4F6F0]">
+              Cancel
+            </Button>
+            <Button onClick={handleTransfer} className="bg-[#FFB300] text-black hover:bg-[#E5A000]">
+              Transfer Funds
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
