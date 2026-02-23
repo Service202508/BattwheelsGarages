@@ -1498,12 +1498,18 @@ async def update_user(user_id: str, update: UserUpdate, request: Request):
     return user
 
 @api_router.get("/technicians")
-async def get_technicians(request: Request):
+async def get_technicians(request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     await require_auth(request)
+    # Return technicians belonging to this org only
+    memberships = await db.organization_users.find(
+        {"organization_id": ctx.org_id, "role": "technician", "status": "active"},
+        {"user_id": 1}
+    ).to_list(200)
+    tech_ids = [m["user_id"] for m in memberships]
     technicians = await db.users.find(
-        {"role": "technician", "is_active": True},
+        {"user_id": {"$in": tech_ids}, "is_active": True},
         {"_id": 0, "password_hash": 0}
-    ).to_list(100)
+    ).to_list(200)
     return technicians
 
 # ==================== SUPPLIER ROUTES ====================
