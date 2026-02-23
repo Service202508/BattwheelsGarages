@@ -1,6 +1,6 @@
 {
   "timestamp": "2026-02-17T13:02:51.071956",
-  "target": "https://feature-gating-4.preview.emergentagent.com",
+  "target": "https://upgrade-nudge.preview.emergentagent.com",
   "total_tests": 67,
   "passed": 67,
   "failed": 0,
