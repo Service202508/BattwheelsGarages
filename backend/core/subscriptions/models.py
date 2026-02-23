@@ -409,6 +409,9 @@ DEFAULT_PLANS = [
             advanced_audit_logs=FeatureLimit(enabled=True),
             advanced_white_label=FeatureLimit(enabled=True),
             advanced_sso=FeatureLimit(enabled=True),
+            project_management=FeatureLimit(enabled=True),
+            einvoice=FeatureLimit(enabled=True),
+            accounting_module=FeatureLimit(enabled=True),
         ),
         "limits": PlanLimits(
             max_users=-1,  # Unlimited
