@@ -1482,7 +1482,6 @@ async def get_inventory_valuation(
     GET /api/reports/inventory-valuation
     Returns per-item stock value summary and totals for the org's inventory.
     """
-    from fastapi import Request as FastAPIRequest
     db = get_db()
 
     # Get org from header
