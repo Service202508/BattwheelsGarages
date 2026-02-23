@@ -415,7 +415,10 @@ if INV_ID:
     if r.status_code == 200:
         d = r.json()
         inv = d.get("invoice", d)
-        record("T8.1", PASS, 200, f"invoice_number:{inv.get('invoice_number')} total:{inv.get('total')} status:{inv.get('status')}")
+        if inv.get("invoice_number") or inv.get("invoice_id"):
+            record("T8.1", PASS, 200, f"invoice_number:{inv.get('invoice_number')} total:{inv.get('total')} status:{inv.get('status')}")
+        else:
+            record("T8.1", PARTIAL, 200, f"200 but invoice fields empty: {list(inv.keys())[:5]}")
     else:
         record("T8.1", FAIL, r.status_code, r.text[:80])
 
@@ -448,10 +451,10 @@ if INV_ID:
     inv_status = inv_d.get("status", "")
 
     if inv_status != "paid":
-        r = post(f"/api/invoices-enhanced/{INV_ID}/record-payment", ADMIN_TOKEN, {
+        r = post(f"/api/invoices-enhanced/{INV_ID}/payments", ADMIN_TOKEN, {
             "amount": inv_total, "payment_method": "bank_transfer",
             "payment_date": datetime.now().strftime("%Y-%m-%d"),
-            "reference": "CTO-REAUDIT-PAY"
+            "notes": "CTO-REAUDIT-PAY"
         })
         if r.status_code == 200:
             d = r.json()
@@ -838,7 +841,7 @@ if r.status_code == 200:
     print(f"  [SETUP] AMC plans available: {len(plans) if isinstance(plans, list) else '?'}, using plan: {AMC_PLAN_ID}")
 
 r = post("/api/amc/subscriptions", ADMIN_TOKEN, {
-    "customer_id": CONTACT_ID, "vehicle_id": VEHICLE_ID if VEHICLE_ID else None,
+    "customer_id": TECH_ID if TECH_ID else "user_a194add87d03", "vehicle_id": VEHICLE_ID if VEHICLE_ID else None,
     "plan_id": AMC_PLAN_ID,
     "start_date": datetime.now().strftime("%Y-%m-%d"),
     "notes": "CTO ReAudit AMC Test"
