@@ -315,8 +315,8 @@ export default function Accountant() {
             <Card className="bg-gradient-to-br from-green-50 to-white">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <IndianRupee className="h-5 w-5 text-green-600" />
+                  <div className="p-2 bg-[rgba(34,197,94,0.10)] rounded-lg">
+                    <IndianRupee className="h-5 w-5 text-[#22C55E]" />
                   </div>
                   <div>
                     <p className="text-xs text-[rgba(244,246,240,0.45)]">Total Bank Balance</p>
@@ -354,12 +354,12 @@ export default function Accountant() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-red-100 rounded-lg">
-                    <ArrowUpRight className="h-5 w-5 text-red-600" />
+                  <div className="p-2 bg-[rgba(255,59,47,0.10)] rounded-lg">
+                    <ArrowUpRight className="h-5 w-5 text-[#FF3B2F]" />
                   </div>
                   <div>
                     <p className="text-xs text-[rgba(244,246,240,0.45)]">Monthly Withdrawals</p>
-                    <p className="text-xl font-bold text-red-600">{formatCurrency(dashboardStats?.monthly_withdrawals)}</p>
+                    <p className="text-xl font-bold text-[#FF3B2F]">{formatCurrency(dashboardStats?.monthly_withdrawals)}</p>
                   </div>
                 </div>
               </CardContent>
@@ -409,10 +409,10 @@ export default function Accountant() {
                       {transactions.slice(0, 10).map(txn => (
                         <div key={txn.transaction_id} className="p-4 flex items-center justify-between hover:bg-[#111820]">
                           <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-full ${txn.transaction_type === 'deposit' ? 'bg-green-100' : 'bg-red-100'}`}>
+                            <div className={`p-2 rounded-full ${txn.transaction_type === 'deposit' ? 'bg-[rgba(34,197,94,0.10)]' : 'bg-[rgba(255,59,47,0.10)]'}`}>
                               {txn.transaction_type === 'deposit' 
-                                ? <ArrowDownLeft className="h-4 w-4 text-green-600" />
-                                : <ArrowUpRight className="h-4 w-4 text-red-600" />
+                                ? <ArrowDownLeft className="h-4 w-4 text-[#22C55E]" />
+                                : <ArrowUpRight className="h-4 w-4 text-[#FF3B2F]" />
                               }
                             </div>
                             <div>
@@ -421,7 +421,7 @@ export default function Accountant() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className={`font-bold ${txn.transaction_type === 'deposit' ? 'text-green-600' : 'text-red-600'}`}>
+                            <p className={`font-bold ${txn.transaction_type === 'deposit' ? 'text-[#22C55E]' : 'text-[#FF3B2F]'}`}>
                               {txn.transaction_type === 'deposit' ? '+' : '-'}{formatCurrency(txn.amount)}
                             </p>
                             {txn.is_reconciled && <Badge variant="outline" className="text-xs">Reconciled</Badge>}
@@ -490,7 +490,7 @@ export default function Accountant() {
                       </div>
                       <div>
                         <p className="text-xs text-[rgba(244,246,240,0.45)]">Difference</p>
-                        <p className={`text-lg font-bold ${Math.abs(activeRecon.difference) < 0.01 ? 'text-green-600' : 'text-red-600'}`}>
+                        <p className={`text-lg font-bold ${Math.abs(activeRecon.difference) < 0.01 ? 'text-[#22C55E]' : 'text-[#FF3B2F]'}`}>
                           {formatCurrency(activeRecon.difference)}
                         </p>
                       </div>
@@ -506,7 +506,7 @@ export default function Accountant() {
                               <p className="text-xs text-[rgba(244,246,240,0.45)]">{txn.transaction_date}</p>
                             </div>
                             <div className="flex items-center gap-3">
-                              <p className={`font-bold ${txn.transaction_type === 'deposit' ? 'text-green-600' : 'text-red-600'}`}>
+                              <p className={`font-bold ${txn.transaction_type === 'deposit' ? 'text-[#22C55E]' : 'text-[#FF3B2F]'}`}>
                                 {formatCurrency(txn.amount)}
                               </p>
                               <Button size="sm" variant="outline" onClick={() => handleReconcileTransaction(txn.transaction_id)}>
@@ -520,7 +520,7 @@ export default function Accountant() {
                     
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" onClick={() => setActiveRecon(null)}>Cancel</Button>
-                      <Button onClick={handleCompleteReconciliation} className="bg-green-600 text-white">
+                      <Button onClick={handleCompleteReconciliation} className="bg-[#22C55E] text-white">
                         Complete Reconciliation
                       </Button>
                     </div>
@@ -692,7 +692,7 @@ export default function Accountant() {
                       </Table>
                     </div>
                     {Math.abs(journalForm.lines.reduce((s, l) => s + (parseFloat(l.debit) || 0), 0) - journalForm.lines.reduce((s, l) => s + (parseFloat(l.credit) || 0), 0)) > 0.01 && (
-                      <div className="flex items-center gap-2 text-red-600 text-sm">
+                      <div className="flex items-center gap-2 text-[#FF3B2F] text-sm">
                         <AlertCircle className="h-4 w-4" />
                         Entry is not balanced. Debits must equal credits.
                       </div>
@@ -800,12 +800,12 @@ export default function Accountant() {
                   <div className="flex items-center justify-center gap-2 p-4 bg-[#111820] rounded-lg">
                     {trialBalance.is_balanced ? (
                       <>
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        <CheckCircle2 className="h-5 w-5 text-[#22C55E]" />
                         <span className="text-green-700 font-medium">Trial Balance is Balanced</span>
                       </>
                     ) : (
                       <>
-                        <AlertCircle className="h-5 w-5 text-red-600" />
+                        <AlertCircle className="h-5 w-5 text-[#FF3B2F]" />
                         <span className="text-red-700 font-medium">Trial Balance is NOT Balanced - Difference: {formatCurrency(Math.abs(trialBalance.total_debit - trialBalance.total_credit))}</span>
                       </>
                     )}
@@ -830,7 +830,7 @@ export default function Accountant() {
               <Card>
                 <CardHeader className="bg-gradient-to-r from-green-50 to-white">
                   <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-green-600" />
+                    <TrendingUp className="h-5 w-5 text-[#22C55E]" />
                     Profit & Loss
                   </CardTitle>
                   <CardDescription>{profitLoss?.period?.start_date} to {profitLoss?.period?.end_date}</CardDescription>
@@ -838,11 +838,11 @@ export default function Accountant() {
                 <CardContent className="space-y-3 pt-4">
                   <div className="flex justify-between py-2 border-b">
                     <span className="text-[rgba(244,246,240,0.35)]">Total Income</span>
-                    <span className="font-bold text-green-600">{formatCurrency(profitLoss?.income?.total)}</span>
+                    <span className="font-bold text-[#22C55E]">{formatCurrency(profitLoss?.income?.total)}</span>
                   </div>
                   <div className="flex justify-between py-2 border-b">
                     <span className="text-[rgba(244,246,240,0.35)]">Total Expenses</span>
-                    <span className="font-bold text-red-600">{formatCurrency(profitLoss?.expenses?.total)}</span>
+                    <span className="font-bold text-[#FF3B2F]">{formatCurrency(profitLoss?.expenses?.total)}</span>
                   </div>
                   <div className="flex justify-between py-2 bg-[#C8FF00]/20 px-2 rounded">
                     <span className="font-bold">Net Profit</span>
@@ -868,11 +868,11 @@ export default function Accountant() {
                 <CardContent className="space-y-3 pt-4">
                   <div className="flex justify-between py-2 border-b">
                     <span className="text-[rgba(244,246,240,0.35)]">Total Assets</span>
-                    <span className="font-bold text-green-600">{formatCurrency(balanceSheet?.assets?.total)}</span>
+                    <span className="font-bold text-[#22C55E]">{formatCurrency(balanceSheet?.assets?.total)}</span>
                   </div>
                   <div className="flex justify-between py-2 border-b">
                     <span className="text-[rgba(244,246,240,0.35)]">Total Liabilities</span>
-                    <span className="font-bold text-red-600">{formatCurrency(balanceSheet?.liabilities?.total)}</span>
+                    <span className="font-bold text-[#FF3B2F]">{formatCurrency(balanceSheet?.liabilities?.total)}</span>
                   </div>
                   <div className="flex justify-between py-2 bg-blue-50 px-2 rounded">
                     <span className="font-bold">Total Equity</span>
@@ -880,11 +880,11 @@ export default function Accountant() {
                   </div>
                   <div className="text-sm text-center">
                     {balanceSheet?.is_balanced ? (
-                      <span className="text-green-600 flex items-center justify-center gap-1">
+                      <span className="text-[#22C55E] flex items-center justify-center gap-1">
                         <CheckCircle2 className="h-4 w-4" /> Balanced
                       </span>
                     ) : (
-                      <span className="text-red-600">Not Balanced</span>
+                      <span className="text-[#FF3B2F]">Not Balanced</span>
                     )}
                   </div>
                 </CardContent>
@@ -903,14 +903,14 @@ export default function Accountant() {
                   <div className="grid grid-cols-3 gap-4">
                     <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
                       <CardContent className="p-4 text-center">
-                        <ArrowDownLeft className="h-6 w-6 mx-auto text-green-600 mb-2" />
+                        <ArrowDownLeft className="h-6 w-6 mx-auto text-[#22C55E] mb-2" />
                         <p className="text-xs text-green-700">Cash Inflows</p>
-                        <p className="text-xl font-bold text-green-800">{formatCurrency(cashFlow?.cash_inflows)}</p>
+                        <p className="text-xl font-bold text-[#22C55E]">{formatCurrency(cashFlow?.cash_inflows)}</p>
                       </CardContent>
                     </Card>
                     <Card className="bg-[rgba(255,59,47,0.08)] border-red-200">
                       <CardContent className="p-4 text-center">
-                        <ArrowUpRight className="h-6 w-6 mx-auto text-red-600 mb-2" />
+                        <ArrowUpRight className="h-6 w-6 mx-auto text-[#FF3B2F] mb-2" />
                         <p className="text-xs text-red-700">Cash Outflows</p>
                         <p className="text-xl font-bold text-red-800">{formatCurrency(cashFlow?.cash_outflows)}</p>
                       </CardContent>

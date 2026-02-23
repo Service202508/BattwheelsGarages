@@ -46,7 +46,7 @@ const getDocIcon = (type, mimeType) => {
 
 // Document type colors
 const TYPE_COLORS = {
-  receipt: "bg-green-100 text-green-800",
+  receipt: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]",
   invoice: "bg-blue-100 text-blue-800",
   photo: "bg-purple-100 text-purple-800",
   contract: "bg-orange-100 text-orange-800",
@@ -578,8 +578,8 @@ export default function Documents({ user }) {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <Folder className="h-5 w-5 text-green-600" />
+              <div className="h-10 w-10 rounded-lg bg-[rgba(34,197,94,0.10)] flex items-center justify-center">
+                <Folder className="h-5 w-5 text-[#22C55E]" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{stats?.total_folders || 0}</p>

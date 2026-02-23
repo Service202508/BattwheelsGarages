@@ -264,14 +264,14 @@ const CashFlowWidget = ({ data, loading, period, onPeriodChange }) => {
               <p className="text-xs text-muted-foreground">Opening Balance</p>
               <p className="text-lg font-semibold">{formatCurrency(data?.opening_balance || 0)}</p>
             </div>
-            <div className="flex items-center gap-2 text-green-600">
+            <div className="flex items-center gap-2 text-[#22C55E]">
               <TrendingUp className="h-4 w-4" />
               <div>
                 <p className="text-xs text-muted-foreground">Incoming</p>
                 <p className="text-lg font-semibold">{formatCurrency(totalIncoming)}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-red-600">
+            <div className="flex items-center gap-2 text-[#FF3B2F]">
               <TrendingDown className="h-4 w-4" />
               <div>
                 <p className="text-xs text-muted-foreground">Outgoing</p>
@@ -859,14 +859,14 @@ export default function Home({ user }) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-4 p-4 rounded-lg border">
-                <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <span className="text-green-600 font-bold">✓</span>
+                <div className="h-10 w-10 rounded-full bg-[rgba(34,197,94,0.10)] flex items-center justify-center">
+                  <span className="text-[#22C55E] font-bold">✓</span>
                 </div>
                 <div className="flex-1">
                   <p className="font-medium">Connect Zoho Books</p>
                   <p className="text-sm text-muted-foreground">Sync your accounting data</p>
                 </div>
-                <Badge variant="outline" className="text-green-600">Complete</Badge>
+                <Badge variant="outline" className="text-[#22C55E]">Complete</Badge>
               </div>
               
               <div className="flex items-center gap-4 p-4 rounded-lg border">

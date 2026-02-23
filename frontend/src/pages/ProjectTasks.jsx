@@ -371,7 +371,7 @@ export default function ProjectTasks() {
                     </TableCell>
                     <TableCell>
                       {task.is_billable ? (
-                        <Badge className="bg-green-100 text-green-800">Yes</Badge>
+                        <Badge className="bg-[rgba(34,197,94,0.10)] text-[#22C55E]">Yes</Badge>
                       ) : (
                         <Badge className="bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.35)]">No</Badge>
                       )}
@@ -382,7 +382,7 @@ export default function ProjectTasks() {
                           <Edit className="h-4 w-4 text-[#3B9EFF]" />
                         </Button>
                         <Button variant="ghost" size="sm" onClick={() => handleDelete(task.task_id)} title="Delete">
-                          <Trash2 className="h-4 w-4 text-red-600" />
+                          <Trash2 className="h-4 w-4 text-[#FF3B2F]" />
                         </Button>
                       </div>
                     </TableCell>

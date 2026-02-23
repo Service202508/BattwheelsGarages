@@ -198,8 +198,8 @@ export default function ZohoSync() {
   const getStatusBadge = (status) => {
     const styles = {
       started: { class: "bg-blue-100 text-blue-800", icon: Loader2 },
-      completed: { class: "bg-green-100 text-green-800", icon: CheckCircle2 },
-      failed: { class: "bg-red-100 text-red-800", icon: XCircle }
+      completed: { class: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]", icon: CheckCircle2 },
+      failed: { class: "bg-[rgba(255,59,47,0.10)] text-red-800", icon: XCircle }
     };
     const config = styles[status] || { class: "bg-[rgba(255,255,255,0.05)]", icon: Clock };
     const Icon = config.icon;
@@ -259,11 +259,11 @@ export default function ZohoSync() {
       {connectionStatus && (
         <Alert className={connectionStatus.status === "connected" ? "border-green-500 bg-[rgba(34,197,94,0.08)]" : "border-red-500 bg-[rgba(255,59,47,0.08)]"}>
           {connectionStatus.status === "connected" ? (
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <CheckCircle2 className="h-4 w-4 text-[#22C55E]" />
           ) : (
-            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertCircle className="h-4 w-4 text-[#FF3B2F]" />
           )}
-          <AlertTitle className={connectionStatus.status === "connected" ? "text-green-800" : "text-red-800"}>
+          <AlertTitle className={connectionStatus.status === "connected" ? "text-[#22C55E]" : "text-red-800"}>
             {connectionStatus.status === "connected" ? "Connected to Zoho Books" : "Connection Failed"}
           </AlertTitle>
           <AlertDescription className={connectionStatus.status === "connected" ? "text-green-700" : "text-red-700"}>
@@ -311,12 +311,12 @@ export default function ZohoSync() {
                 <CardContent className="py-4">
                   <div className="flex items-center gap-3 mb-3">
                     <div className={`p-2 rounded-lg ${
-                      result?.status === "success" ? "bg-green-100" :
-                      result?.status === "error" ? "bg-red-100" : "bg-[rgba(255,255,255,0.05)]"
+                      result?.status === "success" ? "bg-[rgba(34,197,94,0.10)]" :
+                      result?.status === "error" ? "bg-[rgba(255,59,47,0.10)]" : "bg-[rgba(255,255,255,0.05)]"
                     }`}>
                       <Icon className={`h-5 w-5 ${
-                        result?.status === "success" ? "text-green-600" :
-                        result?.status === "error" ? "text-red-600" : "text-[rgba(244,246,240,0.35)]"
+                        result?.status === "success" ? "text-[#22C55E]" :
+                        result?.status === "error" ? "text-[#FF3B2F]" : "text-[rgba(244,246,240,0.35)]"
                       }`} />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -327,7 +327,7 @@ export default function ZohoSync() {
                   
                   {result && (
                     <p className={`text-xs mb-2 truncate ${
-                      result.status === "success" ? "text-green-600" : "text-red-600"
+                      result.status === "success" ? "text-[#22C55E]" : "text-[#FF3B2F]"
                     }`}>
                       {result.message}
                     </p>
@@ -431,7 +431,7 @@ export default function ZohoSync() {
       <Dialog open={showDisconnectDialog} onOpenChange={setShowDisconnectDialog}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-600">
+            <DialogTitle className="flex items-center gap-2 text-[#FF3B2F]">
               <AlertTriangle className="h-5 w-5" />
               Disconnect Zoho Books & Purge Data
             </DialogTitle>
@@ -496,7 +496,7 @@ export default function ZohoSync() {
         <Dialog open={!!purgeStats} onOpenChange={() => setPurgeStats(null)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-green-600">
+              <DialogTitle className="flex items-center gap-2 text-[#22C55E]">
                 <CheckCircle2 className="h-5 w-5" />
                 Data Purge Complete
               </DialogTitle>
