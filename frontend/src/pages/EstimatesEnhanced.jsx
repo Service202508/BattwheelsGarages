@@ -2145,7 +2145,7 @@ export default function EstimatesEnhanced() {
               </>
             ) : (
               <div className="space-y-4">
-                <div className="bg-[rgba(34,197,94,0.08)] border border-green-200 rounded-lg p-4">
+                <div className="bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.25)] rounded-lg p-4">
                   <p className="text-sm text-[#22C55E] font-medium mb-2">Share link created successfully!</p>
                   <div className="flex items-center gap-2">
                     <Input 
