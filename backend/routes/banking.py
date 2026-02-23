@@ -161,10 +161,21 @@ async def list_accounts(
 
 @router.post("/accounts")
 async def create_account(data: AccountCreate, request: Request):
-    """Create a new bank account"""
+    """Create a new bank account with opening balance journal entry"""
+    from services.double_entry_service import get_double_entry_service, init_double_entry_service
+    
     service = get_service()
     org_id = await get_org_id(request)
     user_id = await get_current_user_id(request)
+    
+    # Get double-entry service for opening balance journal
+    de_service = None
+    if data.opening_balance > 0:
+        try:
+            de_service = get_double_entry_service()
+        except:
+            init_double_entry_service(db_ref)
+            de_service = get_double_entry_service()
     
     account = await service.create_account(
         org_id=org_id,
@@ -177,7 +188,8 @@ async def create_account(data: AccountCreate, request: Request):
         opening_balance_date=data.opening_balance_date,
         upi_id=data.upi_id,
         is_default=data.is_default,
-        created_by=user_id
+        created_by=user_id,
+        de_service=de_service
     )
     
     return {"code": 0, "message": "Account created", "account": account}
