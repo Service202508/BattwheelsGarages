@@ -633,8 +633,40 @@ async def get_sla_breach_report(
 
 
 
-
 # ==================== BACKGROUND SCHEDULER ====================
+
+async def _send_sla_breach_notification(ticket: Dict, breach_type: str, org_id: str):
+    """Send SLA breach email to admins"""
+    try:
+        from services.email_service import EmailService
+        db = get_db()
+        admin_users = await db.users.find(
+            {"organization_id": org_id, "role": {"$in": ["admin", "manager"]}},
+            {"_id": 0, "email": 1, "name": 1}
+        ).to_list(10)
+        if not admin_users:
+            return
+        breach_label = "Response SLA" if breach_type == "response" else "Resolution SLA"
+        subject = f"SLA Breach — Ticket {ticket.get('ticket_id')}: {ticket.get('title', 'No Title')}"
+        body = (
+            f"SLA Breach Alert — {breach_label}\n\n"
+            f"Ticket ID: {ticket.get('ticket_id')}\n"
+            f"Title: {ticket.get('title', 'N/A')}\n"
+            f"Priority: {ticket.get('priority', 'N/A').upper()}\n"
+            f"Customer: {ticket.get('customer_name', 'N/A')}\n\n"
+            "Immediate attention required. Please log in to Battwheels OS."
+        )
+        for admin in admin_users:
+            if admin.get("email"):
+                try:
+                    await EmailService.send_generic_email(
+                        to_email=admin["email"], subject=subject, body=body
+                    )
+                except Exception:
+                    pass
+    except Exception as e:
+        logger.warning(f"SLA email error: {e}")
+
 
 import asyncio
 
