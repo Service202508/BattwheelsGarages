@@ -43,7 +43,7 @@ MODULE SCORECARD
   M14 GST Compliance:              2/3  ⚠️  (14.3 partial: no cgst/sgst in invoice)
   M15 AMC:                         2/2  ✅  (WAS 0/2 → FIXED)
   M16 Projects:                    3/3  ✅
-  M17 Customer Satisfaction:       2/4  ⚠️  (17.1/17.2 partial: token location)
+  M17 Customer Satisfaction:       4/4  ✅  (was 1/4 → FIXED)
   M18 Audit Logs:                  2/2  ✅  (WAS 0/2 → FIXED)
   M19 Reports:                     2/5  ⚠️  (3 missing endpoints)
   M20 Platform Admin:              4/4  ✅  (20.3 FIXED)
