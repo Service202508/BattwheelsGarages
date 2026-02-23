@@ -42,6 +42,27 @@ const priorityColors = {
   critical: "bg-[rgba(255,59,47,0.20)] text-red-400"
 };
 
+function getSLAIndicator(ticket) {
+  const now = new Date();
+  const due = ticket.sla_resolution_due_at ? new Date(ticket.sla_resolution_due_at) : null;
+  const breached = ticket.sla_resolution_breached;
+
+  if (!due) return null;
+  if (breached || ["resolved", "closed"].includes(ticket.status)) {
+    if (["resolved", "closed"].includes(ticket.status)) return null; // don't show on resolved
+    return { label: "SLA Breached", class: "bg-red-500/15 text-red-400 border border-red-500/20", dot: "bg-red-400" };
+  }
+
+  const remaining = (due - now) / 60000; // minutes
+  if (remaining <= 0) return { label: "SLA Breached", class: "bg-red-500/15 text-red-400 border border-red-500/20", dot: "bg-red-400" };
+  if (remaining <= 120) {
+    const hrs = Math.floor(remaining / 60);
+    const mins = Math.round(remaining % 60);
+    return { label: hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`, class: "bg-amber-500/15 text-amber-400 border border-amber-500/20", dot: "bg-amber-400" };
+  }
+  return { label: "On Track", class: "bg-green-500/10 text-green-400 border border-green-500/20", dot: "bg-green-400" };
+}
+
 export default function Tickets({ user }) {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
