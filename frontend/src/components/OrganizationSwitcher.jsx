@@ -161,8 +161,8 @@ const OrganizationSwitcher = ({ onSwitch }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-72 bg-slate-800 border border-[rgba(255,255,255,0.07)] border-700 rounded-xl shadow-xl z-50 overflow-hidden">
-          <div className="p-2 border-b border-[rgba(255,255,255,0.07)] border-700">
+        <div className="absolute top-full left-0 mt-2 w-72 bg-slate-800 border border-[rgba(255,255,255,0.07)] rounded-xl shadow-xl z-50 overflow-hidden">
+          <div className="p-2 border-b border-[rgba(255,255,255,0.07)]">
             <p className="text-xs font-medium text-slate-400 px-2 py-1">YOUR ORGANIZATIONS</p>
           </div>
 
@@ -176,11 +176,11 @@ const OrganizationSwitcher = ({ onSwitch }) => {
                   org.organization_id === currentOrg?.organization_id ? 'bg-slate-700/30' : ''
                 }`}
               >
-                <div className="w-10 h-10 bg-[rgba(200,255,0,0.08)]0/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-[rgba(200,255,0,0.08)] rounded-lg flex items-center justify-center flex-shrink-0">
                   {org.logo_url ? (
                     <img src={org.logo_url} alt="" className="w-8 h-8 rounded" />
                   ) : (
-                    <Building2 className="w-5 h-5 text-[#C8FF00] text-400" />
+                    <Building2 className="w-5 h-5 text-[#C8FF00]" />
                   )}
                 </div>
                 <div className="flex-1 text-left min-w-0">
@@ -189,17 +189,24 @@ const OrganizationSwitcher = ({ onSwitch }) => {
                     <span className={`text-xs px-2 py-0.5 rounded-full ${getRoleColor(org.role)}`}>
                       {org.role}
                     </span>
-                    <span className="text-xs text-slate-500 capitalize">{org.plan_type}</span>
+                    {(() => {
+                      const b = getPlanBadge(org.plan_type);
+                      return (
+                        <span className="text-[10px] font-semibold px-1.5 rounded" style={{ background: b.bg, color: b.text }}>
+                          {b.label}
+                        </span>
+                      );
+                    })()}
                   </div>
                 </div>
                 {org.organization_id === currentOrg?.organization_id && (
-                  <Check className="w-4 h-4 text-[#C8FF00] text-400 flex-shrink-0" />
+                  <Check className="w-4 h-4 text-[#C8FF00] flex-shrink-0" />
                 )}
               </button>
             ))}
           </div>
 
-          <div className="p-2 border-t border-[rgba(255,255,255,0.07)] border-700 space-y-1">
+          <div className="p-2 border-t border-[rgba(255,255,255,0.07)] space-y-1">
             <a
               href="/organization-settings"
               className="flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition"
@@ -216,7 +223,7 @@ const OrganizationSwitcher = ({ onSwitch }) => {
             </a>
             <a
               href="/subscription"
-              className="flex items-center gap-2 px-3 py-2 text-sm text-[#C8FF00] text-400 hover:text-[#C8FF00] text-300 hover:bg-[rgba(200,255,0,0.08)]0/10 rounded-lg transition"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-[#C8FF00] hover:text-[#C8FF00] hover:bg-[rgba(200,255,0,0.08)] rounded-lg transition"
             >
               <Plus className="w-4 h-4" />
               Upgrade Plan
