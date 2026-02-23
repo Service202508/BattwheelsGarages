@@ -768,8 +768,29 @@ async def open_bill(bill_id: str):
     await add_bill_history(bill_id, "opened", "Bill marked as open")
     await update_vendor_balance(bill["vendor_id"])
     
-    # Post journal entry for double-entry bookkeeping
     org_id = bill.get("organization_id", "")
+    
+    # Update inventory for line items (Fix 2: Bill → Inventory)
+    if org_id:
+        try:
+            line_items = await bill_line_items_collection.find(
+                {"bill_id": bill_id},
+                {"_id": 0}
+            ).to_list(100)
+            
+            inventory_service = get_inventory_service()
+            inventory_result = await inventory_service.receive_from_bill(
+                bill_id=bill_id,
+                bill_number=bill.get("bill_number", ""),
+                line_items=line_items,
+                organization_id=org_id,
+                user_id="system"  # Could be enhanced to pass actual user
+            )
+            logger.info(f"Inventory updated for bill {bill.get('bill_number')}: {inventory_result.get('items_updated', [])}")
+        except Exception as e:
+            logger.warning(f"Failed to update inventory for bill {bill.get('bill_number')}: {e}")
+    
+    # Post journal entry for double-entry bookkeeping
     if org_id:
         try:
             await post_bill_journal_entry(org_id, bill)
