@@ -450,6 +450,7 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         r"^/api/invoices/public/.*",
         r"^/api/estimates/public/.*",
         r"^/api/quotes/public/.*",
+        r"^/api/platform/.*",
         r"^/static/.*",
     ]
     
