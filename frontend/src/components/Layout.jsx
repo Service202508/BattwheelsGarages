@@ -539,12 +539,83 @@ export default function Layout({ children, user, onLogout }) {
         </header>
 
         {/* Page Content — wrapped in FeatureGateBanner for plan-gated routes */}
-        <div className="p-4 lg:p-8">
+        <div className="p-4 pb-[76px] lg:p-8 lg:pb-8">
           <FeatureGateBanner>
             {children}
           </FeatureGateBanner>
         </div>
       </main>
+
+      {/* ── MOBILE BOTTOM TAB BAR ── */}
+      <nav
+        data-testid="mobile-bottom-nav"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around"
+        style={{
+          height: "60px",
+          background: "#080C0F",
+          borderTop: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
+        {MOBILE_TABS.map((tab) => {
+          const isActive =
+            location.pathname === tab.path ||
+            location.pathname.startsWith(tab.path + "/");
+          const { icon: Icon } = tab;
+          return (
+            <Link
+              key={tab.path}
+              to={tab.path}
+              data-testid={`mobile-tab-${tab.name.toLowerCase()}`}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "3px",
+                flex: 1,
+                height: "60px",
+                textDecoration: "none",
+                color: isActive ? "#C8FF00" : "rgba(244,246,240,0.40)",
+                transition: "color 0.15s",
+              }}
+            >
+              <Icon style={{ width: "20px", height: "20px" }} />
+              <span
+                style={{
+                  fontSize: "10px",
+                  fontFamily: "Syne, sans-serif",
+                  fontWeight: isActive ? 600 : 400,
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {tab.name}
+              </span>
+            </Link>
+          );
+        })}
+        {/* More button opens sidebar sheet */}
+        <button
+          data-testid="mobile-tab-more"
+          onClick={() => setMobileOpen(true)}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "3px",
+            flex: 1,
+            height: "60px",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            color: "rgba(244,246,240,0.40)",
+            transition: "color 0.15s",
+          }}
+        >
+          <Menu style={{ width: "20px", height: "20px" }} />
+          <span style={{ fontSize: "10px", fontFamily: "Syne, sans-serif" }}>More</span>
+        </button>
+      </nav>
     </div>
   );
 }
