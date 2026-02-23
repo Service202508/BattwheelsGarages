@@ -313,7 +313,7 @@ DEGRADED FUNCTIONALITY (partial, not broken):
    Fix: Add survey_token field to ticket service's close_ticket() response
    (Token IS generated and stored in ticket_reviews collection)
 
-8. [VERY LOW] T21.3: Cross-tenant returns 307→200 instead of 403
+7. [VERY LOW] T21.3: Cross-tenant returns 307→200 instead of 403
    Impact: Wrong HTTP semantics. No actual data leakage confirmed.
    Fix: TenantGuardMiddleware should return 403 when header org ≠ JWT org
 
