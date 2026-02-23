@@ -32,6 +32,7 @@ export default function Reports() {
   const [arAging, setArAging] = useState(null);
   const [apAging, setApAging] = useState(null);
   const [salesByCustomer, setSalesByCustomer] = useState(null);
+  const [slaReport, setSlaReport] = useState(null);
 
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}` };
