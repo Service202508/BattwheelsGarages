@@ -2084,17 +2084,64 @@ export default function InvoicesEnhanced() {
                   <Button variant="destructive" size="sm" onClick={() => handleDeleteInvoice(selectedInvoice.invoice_id)}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
                 </div>
 
-                {/* History Section */}
+                {/* Activity Timeline (5D) */}
                 {selectedInvoice.history?.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="font-medium mb-2 flex items-center gap-2"><History className="h-4 w-4" /> Recent Activity</h4>
-                    <div className="space-y-1 text-sm max-h-32 overflow-y-auto">
-                      {selectedInvoice.history.slice(0, 5).map((h, idx) => (
-                        <div key={idx} className="flex justify-between text-[rgba(244,246,240,0.45)] py-1">
-                          <span>{h.action}: {h.details}</span>
-                          <span className="text-xs text-[rgba(244,246,240,0.25)]">{new Date(h.timestamp).toLocaleString("en-IN")}</span>
-                        </div>
-                      ))}
+                  <div className="mt-6 pt-4 border-t border-[rgba(244,246,240,0.1)]">
+                    <h4 className="font-medium mb-4 flex items-center gap-2">
+                      <History className="h-4 w-4" /> Activity Timeline
+                    </h4>
+                    <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
+                      {selectedInvoice.history.slice(0, 10).map((h, idx) => {
+                        // Activity color mapping (5D)
+                        const getActivityStyle = (action) => {
+                          const styles = {
+                            'created': { color: 'rgba(244,246,240,0.35)', label: 'Created' },
+                            'finalized': { color: '#3B82F6', label: 'Finalized' },
+                            'irn_generated': { color: '#22C55E', label: 'IRN Generated' },
+                            'irn_cancelled': { color: '#FF3B2F', label: 'IRN Cancelled' },
+                            'sent': { color: '#06B6D4', label: 'Sent' },
+                            'payment_recorded': { color: '#22C55E', label: 'Payment' },
+                            'payment': { color: '#22C55E', label: 'Payment' },
+                            'pdf_downloaded': { color: 'rgba(244,246,240,0.35)', label: 'PDF Downloaded' },
+                            'viewed': { color: 'rgba(244,246,240,0.35)', label: 'Viewed' },
+                            'updated': { color: '#F59E0B', label: 'Updated' },
+                            'voided': { color: '#FF3B2F', label: 'Voided' },
+                            'cancelled': { color: '#FF3B2F', label: 'Cancelled' }
+                          };
+                          return styles[action?.toLowerCase()] || { color: 'rgba(244,246,240,0.35)', label: action };
+                        };
+                        
+                        const style = getActivityStyle(h.action);
+                        
+                        return (
+                          <div key={idx} className="flex items-start gap-3">
+                            {/* Colored dot */}
+                            <div 
+                              className="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0"
+                              style={{ backgroundColor: style.color }}
+                            />
+                            {/* Event details */}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm text-[rgba(244,246,240,0.85)]">
+                                <span className="font-medium" style={{ color: style.color }}>{style.label}</span>
+                                {h.details && <span className="text-[rgba(244,246,240,0.55)]"> — {h.details}</span>}
+                              </p>
+                              {h.user && (
+                                <p className="text-xs text-[rgba(244,246,240,0.35)]">by {h.user}</p>
+                              )}
+                            </div>
+                            {/* Timestamp */}
+                            <span className="text-xs font-mono text-[rgba(244,246,240,0.3)] flex-shrink-0">
+                              {new Date(h.timestamp).toLocaleString("en-IN", {
+                                day: '2-digit',
+                                month: 'short',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
