@@ -524,7 +524,7 @@ class InventoryService:
         # Emit event
         if items_updated:
             await self.dispatcher.emit(
-                EventType.INVENTORY_UPDATED,
+                EventType.INVENTORY_USED,
                 {
                     "bill_id": bill_id,
                     "bill_number": bill_number,
