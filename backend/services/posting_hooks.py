@@ -205,13 +205,29 @@ async def post_payroll_journal_entry(
     created_by: str = ""
 ) -> Tuple[bool, str, Optional[Dict]]:
     """
-    Post journal entry when payroll is processed.
+    Post journal entry when individual payroll is processed.
+    For batch processing, use post_payroll_run_journal_entry() instead.
+    """
+    return await post_payroll_run_journal_entry(organization_id, [payroll], created_by)
+
+
+async def post_payroll_run_journal_entry(
+    organization_id: str,
+    payroll_records: list,
+    created_by: str = ""
+) -> Tuple[bool, str, Optional[Dict]]:
+    """
+    Post journal entry when payroll run is processed (batch of all employees).
     
-    DEBIT:  Salary Expense
-    CREDIT: Salary Payable
+    DEBIT:  Salary Expense (total gross salaries)
+    DEBIT:  Employer PF Contribution
+    DEBIT:  Employer ESI Contribution
+    CREDIT: Salary Payable (total net take-home)
     CREDIT: TDS Payable
-    CREDIT: PF Payable
-    CREDIT: ESI Payable
+    CREDIT: Employee PF Payable
+    CREDIT: Employer PF Payable
+    CREDIT: ESI Payable (employee + employer)
+    CREDIT: Professional Tax Payable
     """
     service = _get_service()
     if not service:
@@ -219,14 +235,15 @@ async def post_payroll_journal_entry(
         return False, "Double entry service not available", None
     
     try:
-        success, msg, entry = await service.post_payroll(
+        success, msg, entry = await service.post_payroll_run(
             organization_id=organization_id,
-            payroll=payroll,
+            payroll_records=payroll_records,
             created_by=created_by
         )
         
+        employee_count = len(payroll_records)
         if success:
-            logger.info(f"Posted journal entry for payroll {payroll.get('payroll_id', '')}")
+            logger.info(f"Posted journal entry for payroll run - {employee_count} employees")
         else:
             logger.error(f"Failed to post journal entry for payroll: {msg}")
         
