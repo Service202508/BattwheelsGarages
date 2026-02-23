@@ -1,6 +1,6 @@
 {
   "timestamp": "2026-02-23T17:49:24.598617",
-  "target": "https://self-serve-signup.preview.emergentagent.com",
+  "target": "https://preview-insights.preview.emergentagent.com",
   "total_tests": 65,
   "passed": 65,
   "failed": 0,
