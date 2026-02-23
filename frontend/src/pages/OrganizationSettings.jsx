@@ -197,7 +197,7 @@ export default function OrganizationSettings({ user }) {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [orgRes, settingsRes, membersRes, rolesRes, razorpayRes, einvoiceRes, slaRes] = await Promise.all([
+      const [orgRes, settingsRes, membersRes, rolesRes, razorpayRes, einvoiceRes, slaRes, emailRes] = await Promise.all([
         fetch(`${API}/org`, { headers: getAuthHeaders() }),
         fetch(`${API}/org/settings`, { headers: getAuthHeaders() }),
         fetch(`${API}/org/users`, { headers: getAuthHeaders() }),
@@ -205,6 +205,7 @@ export default function OrganizationSettings({ user }) {
         fetch(`${API}/payments/config`, { headers: getAuthHeaders() }),
         fetch(`${API}/einvoice/config`, { headers: getAuthHeaders() }),
         fetch(`${API}/sla/config`, { headers: getAuthHeaders() }),
+        fetch(`${API}/organizations/me/email-settings`, { headers: getAuthHeaders() }),
       ]);
 
       let orgData = null;
