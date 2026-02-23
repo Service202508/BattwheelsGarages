@@ -102,10 +102,14 @@ class TestRazorpayRefundEndpoints:
             pytest.skip("Could not create test credit note")
         
         cn_data = create_res.json()
-        cn_id = cn_data.get("creditnote_id") or cn_data.get("credit_note", {}).get("creditnote_id")
+        cn_id = (
+            cn_data.get("creditnote_id") or 
+            cn_data.get("credit_note", {}).get("creditnote_id") or
+            cn_data.get("creditnote", {}).get("creditnote_id")
+        )
         
         if not cn_id:
-            pytest.skip("No creditnote_id in response")
+            pytest.skip(f"No creditnote_id in response: {list(cn_data.keys())}")
         
         # Now initiate refund with MOCK payment ID
         res = requests.post(
