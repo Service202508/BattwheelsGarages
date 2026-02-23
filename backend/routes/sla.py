@@ -50,6 +50,8 @@ class SLAConfig(BaseModel):
     HIGH: SLATierConfig = SLATierConfig(response_hours=4, resolution_hours=8)
     MEDIUM: SLATierConfig = SLATierConfig(response_hours=8, resolution_hours=24)
     LOW: SLATierConfig = SLATierConfig(response_hours=24, resolution_hours=72)
+    auto_reassign_on_breach: bool = False
+    reassignment_delay_minutes: int = 30
 
 
 # ==================== HELPERS ====================
