@@ -5673,6 +5673,97 @@ try:
 except Exception as e:
     logger.error(f"Failed to load SLA routes: {e}")
 
+# ==================== AUDIT LOG API ROUTES ====================
+@api_router.get("/audit-logs")
+async def get_audit_logs(
+    request: Request,
+    resource_type: Optional[str] = None,
+    action: Optional[str] = None,
+    limit: int = 50,
+    page: int = 1
+):
+    """Fetch audit logs for the organization"""
+    user = await require_auth(request)
+    ctx = getattr(request.state, "tenant_context", None)
+    org_id = ctx.org_id if ctx else user.get("organization_id", "")
+    try:
+        from core.audit import get_audit_service
+        audit = get_audit_service()
+        logs = await audit.get_logs(
+            organization_id=org_id,
+            resource_type=resource_type,
+            limit=limit,
+            skip=(page - 1) * limit
+        )
+        return {"code": 0, "audit_logs": logs, "page": page, "limit": limit}
+    except Exception as e:
+        # Fallback: direct DB query
+        query = {"organization_id": org_id}
+        if resource_type:
+            query["resource_type"] = resource_type
+        if action:
+            query["action"] = action
+        logs = await db.audit_logs.find(query, {"_id": 0}).sort("timestamp", -1).skip((page-1)*limit).limit(limit).to_list(limit)
+        total = await db.audit_logs.count_documents(query)
+        return {"code": 0, "audit_logs": logs, "total": total, "page": page}
+
+@api_router.get("/audit-logs/{resource_type}/{resource_id}")
+async def get_audit_log_for_resource(
+    resource_type: str,
+    resource_id: str,
+    request: Request
+):
+    """Get audit log history for a specific resource"""
+    user = await require_auth(request)
+    ctx = getattr(request.state, "tenant_context", None)
+    org_id = ctx.org_id if ctx else user.get("organization_id", "")
+    query = {"organization_id": org_id, "resource_type": resource_type.upper(), "resource_id": resource_id}
+    logs = await db.audit_logs.find(query, {"_id": 0}).sort("timestamp", -1).limit(50).to_list(50)
+    return {"code": 0, "resource_type": resource_type, "resource_id": resource_id, "history": logs}
+
+# ==================== SATISFACTION SURVEY ROUTES ====================
+@api_router.post("/public/survey/{survey_token}")
+async def submit_satisfaction_survey(survey_token: str, request: Request):
+    """Public endpoint: customer submits satisfaction rating after ticket close"""
+    body = await request.json()
+    review = await db.ticket_reviews.find_one({"survey_token": survey_token}, {"_id": 0})
+    if not review:
+        raise HTTPException(status_code=404, detail="Survey not found or expired")
+    if review.get("completed"):
+        raise HTTPException(status_code=400, detail="Survey already completed")
+    rating = body.get("rating")
+    if not rating or not (1 <= int(rating) <= 5):
+        raise HTTPException(status_code=400, detail="Rating must be 1-5")
+    from datetime import datetime, timezone
+    await db.ticket_reviews.update_one(
+        {"survey_token": survey_token},
+        {"$set": {
+            "rating": int(rating),
+            "review_text": body.get("review_text", ""),
+            "would_recommend": body.get("would_recommend", True),
+            "completed": True,
+            "completed_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"code": 0, "message": "Thank you for your feedback!"}
+
+@api_router.get("/reports/satisfaction")
+async def get_satisfaction_report(request: Request):
+    """Get customer satisfaction report"""
+    user = await require_auth(request)
+    ctx = getattr(request.state, "tenant_context", None)
+    org_id = ctx.org_id if ctx else user.get("organization_id", "")
+    reviews = await db.ticket_reviews.find(
+        {"organization_id": org_id, "completed": True}, {"_id": 0}
+    ).to_list(1000)
+    if not reviews:
+        return {"code": 0, "total_reviews": 0, "avg_rating": 0, "reviews": []}
+    avg = sum(r.get("rating", 0) for r in reviews) / len(reviews)
+    dist = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+    for r in reviews:
+        dist[r.get("rating", 3)] = dist.get(r.get("rating", 3), 0) + 1
+    return {"code": 0, "total_reviews": len(reviews), "avg_rating": round(avg, 2), "rating_distribution": dist, "reviews": reviews[:20]}
+
 # Include main router
 app.include_router(api_router)
 
