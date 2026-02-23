@@ -68,8 +68,10 @@ SYSTEM_ACCOUNTS = {
     "GST_PAYABLE_IGST": {"name": "GST Payable - IGST", "type": AccountType.LIABILITY, "code": "2230"},
     "SALARY_PAYABLE": {"name": "Salary Payable", "type": AccountType.LIABILITY, "code": "2310"},
     "TDS_PAYABLE": {"name": "TDS Payable", "type": AccountType.LIABILITY, "code": "2320"},
-    "PF_PAYABLE": {"name": "Provident Fund Payable", "type": AccountType.LIABILITY, "code": "2330"},
+    "PF_EMPLOYEE_PAYABLE": {"name": "Employee PF Payable", "type": AccountType.LIABILITY, "code": "2330"},
+    "PF_EMPLOYER_PAYABLE": {"name": "Employer PF Payable", "type": AccountType.LIABILITY, "code": "2331"},
     "ESI_PAYABLE": {"name": "ESI Payable", "type": AccountType.LIABILITY, "code": "2340"},
+    "PROFESSIONAL_TAX_PAYABLE": {"name": "Professional Tax Payable", "type": AccountType.LIABILITY, "code": "2350"},
     
     # Equity
     "RETAINED_EARNINGS": {"name": "Retained Earnings", "type": AccountType.EQUITY, "code": "3100"},
@@ -84,6 +86,8 @@ SYSTEM_ACCOUNTS = {
     "PURCHASES": {"name": "Purchases", "type": AccountType.EXPENSE, "code": "5000"},
     "COST_OF_GOODS_SOLD": {"name": "Cost of Goods Sold", "type": AccountType.EXPENSE, "code": "5100"},
     "SALARY_EXPENSE": {"name": "Salary Expense", "type": AccountType.EXPENSE, "code": "6100"},
+    "EMPLOYER_PF_EXPENSE": {"name": "Employer PF Contribution", "type": AccountType.EXPENSE, "code": "6110"},
+    "EMPLOYER_ESI_EXPENSE": {"name": "Employer ESI Contribution", "type": AccountType.EXPENSE, "code": "6120"},
     "RENT_EXPENSE": {"name": "Rent Expense", "type": AccountType.EXPENSE, "code": "6200"},
     "UTILITIES_EXPENSE": {"name": "Utilities Expense", "type": AccountType.EXPENSE, "code": "6300"},
     "OFFICE_EXPENSE": {"name": "Office Supplies", "type": AccountType.EXPENSE, "code": "6400"},
