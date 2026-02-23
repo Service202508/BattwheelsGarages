@@ -352,12 +352,12 @@ class TestPlatformAdmin:
 
     def test_platform_admin_can_change_org_plan(self):
         """Platform admin can upgrade Org B to Professional, then revert."""
-        # Upgrade
-        r = api_post(PLATFORM_ADMIN, f"/platform/organizations/{ORG_B_ID}/plan",
-                     json={"plan_id": "professional"})
+        # Upgrade — endpoint is PUT /platform/organizations/{id}/plan with {"plan_type": "..."}
+        r = requests.put(f"{BASE}/platform/organizations/{ORG_B_ID}/plan",
+                         headers=hdrs(PLATFORM_ADMIN), json={"plan_type": "professional"}, timeout=15)
         assert r.status_code == 200, f"Upgrade failed: {r.status_code} {r.text[:200]}"
 
-        # Verify Org B now passes payroll check — invalidate token cache so new token uses new plan
+        # Verify Org B now passes payroll check — invalidate token cache for fresh token
         if ADMIN_B["email"] in _token_cache:
             del _token_cache[ADMIN_B["email"]]
         r2 = api_get(ADMIN_B, "/hr/payroll/records", ORG_B_ID)
@@ -367,8 +367,8 @@ class TestPlatformAdmin:
         )
 
         # Revert to Starter
-        r3 = api_post(PLATFORM_ADMIN, f"/platform/organizations/{ORG_B_ID}/plan",
-                      json={"plan_id": "starter"})
+        r3 = requests.put(f"{BASE}/platform/organizations/{ORG_B_ID}/plan",
+                          headers=hdrs(PLATFORM_ADMIN), json={"plan_type": "starter"}, timeout=15)
         assert r3.status_code == 200, f"Plan revert failed: {r3.status_code}"
 
     def test_platform_admin_can_suspend_and_reactivate_org(self):
