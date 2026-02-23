@@ -480,6 +480,9 @@ function AppRouter() {
         {/* Public Quote View - No Auth Required */}
         <Route path="/quote/:shareToken" element={<PublicQuoteView />} />
         
+        {/* Public Customer Survey - No Auth Required */}
+        <Route path="/survey/:token" element={<CustomerSurvey />} />
+        
         {/* Public Ticket Submission Form - No Auth Required */}
         <Route path="/submit-ticket" element={<PublicTicketForm />} />
         
