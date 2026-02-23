@@ -172,13 +172,18 @@ async def list_projects(
     request: Request,
     status: Optional[str] = Query(None),
     client_id: Optional[str] = Query(None),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=100)
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
-    """List all projects for the organization"""
+    """List all projects for the organization with standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     service = get_service()
     org_id = await get_org_id(request)
-    
+
+    skip = (page - 1) * limit
     projects = await service.list_projects(
         organization_id=org_id,
         status=status,
@@ -186,20 +191,39 @@ async def list_projects(
         skip=skip,
         limit=limit
     )
-    
+
+    # Get total count for pagination
+    from database import get_database
+    db = await get_database()
+    query = {}
+    if org_id:
+        query["organization_id"] = org_id
+    if status:
+        query["status"] = status
+    if client_id:
+        query["client_id"] = client_id
+    total = await db.projects.count_documents(query)
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
     # Get summary stats for each project
     for project in projects:
         tasks = await service.list_tasks(project["project_id"])
         time_logs = await service.get_time_logs(project["project_id"])
-        
+
         project["task_count"] = len(tasks)
         project["completed_tasks"] = len([t for t in tasks if t.get("status") == "DONE"])
         project["total_hours"] = sum(log.get("hours_logged", 0) for log in time_logs)
-    
+
     return {
-        "code": 0,
-        "projects": projects,
-        "total": len(projects)
+        "data": projects,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
     }
 
 
