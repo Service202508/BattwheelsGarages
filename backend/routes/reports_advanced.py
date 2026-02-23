@@ -1,12 +1,14 @@
 # Advanced Reports Module - Comprehensive Analytics with Chart Data
 # Provides data formatted for chart visualization in frontend
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
 from calendar import monthrange
 import motor.motor_asyncio
 import os
+
+from core.subscriptions.entitlement import require_feature
 
 router = APIRouter(prefix="/reports-advanced", tags=["Advanced Reports"])
 
