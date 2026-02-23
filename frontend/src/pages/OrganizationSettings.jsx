@@ -89,6 +89,13 @@ export default function OrganizationSettings({ user }) {
   const [showEmailKey, setShowEmailKey] = useState(false);
   const [savingEmail, setSavingEmail] = useState(false);
 
+  // WhatsApp settings state
+  const [waConfig, setWaConfig] = useState({ phone_number_id: "", access_token: "" });
+  const [waConfigured, setWaConfigured] = useState(false);
+  const [savingWa, setSavingWa] = useState(false);
+  const [testingWa, setTestingWa] = useState(false);
+  const [showWaToken, setShowWaToken] = useState(false);
+
   // E-Invoice state
   const [einvoiceConfig, setEinvoiceConfig] = useState({
     gstin: "",
