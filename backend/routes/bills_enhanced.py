@@ -524,6 +524,7 @@ async def create_bill(bill: BillCreate, background_tasks: BackgroundTasks):
     bill_doc = {
         "bill_id": bill_id,
         "bill_number": bill_number,
+        "organization_id": vendor.get("organization_id", ""),
         "vendor_id": bill.vendor_id,
         "vendor_name": vendor.get("name", ""),
         "vendor_gstin": vendor.get("gstin", ""),
