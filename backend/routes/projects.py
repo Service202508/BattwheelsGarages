@@ -193,16 +193,12 @@ async def list_projects(
     )
 
     # Get total count for pagination
-    from database import get_database
-    db = await get_database()
-    query = {}
-    if org_id:
-        query["organization_id"] = org_id
+    query = {"organization_id": org_id, "is_archived": {"$ne": True}}
     if status:
         query["status"] = status
     if client_id:
         query["client_id"] = client_id
-    total = await db.projects.count_documents(query)
+    total = await service.db.projects.count_documents(query)
     total_pages = math.ceil(total / limit) if total > 0 else 1
 
     # Get summary stats for each project
