@@ -21,6 +21,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 import logging
 import re
+import os
 
 from .context import TenantContext, get_tenant_context
 from .exceptions import (
