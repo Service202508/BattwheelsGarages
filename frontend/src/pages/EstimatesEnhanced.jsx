@@ -1887,60 +1887,24 @@ export default function EstimatesEnhanced() {
                 {/* Line Items */}
                 <div>
                   <h4 className="font-medium mb-2">Line Items ({selectedEstimate.line_items?.length || 0})</h4>
-                  {selectedEstimate.line_items?.length > 0 && (
-                    <div className="border rounded-lg overflow-hidden">
-                      <table className="w-full text-sm">
-                        <thead className="bg-[#111820]">
-                          <tr>
-                            <th className="px-3 py-2 text-left">Item</th>
-                            <th className="px-3 py-2 text-left">HSN</th>
-                            <th className="px-3 py-2 text-right">Qty</th>
-                            <th className="px-3 py-2 text-right">Rate</th>
-                            <th className="px-3 py-2 text-right">Tax</th>
-                            <th className="px-3 py-2 text-right">Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {selectedEstimate.line_items.map((item, idx) => (
-                            <tr key={idx} className="border-t">
-                              <td className="px-3 py-2">
-                                <p className="font-medium">{item.name}</p>
-                                {item.description && <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</p>}
-                                {item.price_list_applied && (
-                                  <span className="text-[10px] text-[#22C55E] bg-[rgba(34,197,94,0.08)] px-1 rounded">
-                                    {item.price_list_applied}
-                                  </span>
-                                )}
-                              </td>
-                              <td className="px-3 py-2 font-mono text-xs">{item.hsn_code || '-'}</td>
-                              <td className="px-3 py-2 text-right">{item.quantity} {item.unit}</td>
-                              <td className="px-3 py-2 text-right">
-                                ₹{item.rate?.toLocaleString('en-IN')}
-                                {item.base_rate && item.base_rate !== item.rate && (
-                                  <span className="text-[10px] text-[rgba(244,246,240,0.25)] line-through ml-1">₹{item.base_rate}</span>
-                                )}
-                              </td>
-                              <td className="px-3 py-2 text-right">{item.tax_percentage}%</td>
-                              <td className="px-3 py-2 text-right font-medium">₹{item.total?.toLocaleString('en-IN')}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
+                  <EstimateLineItemsTable 
+                    lineItems={selectedEstimate.line_items} 
+                    estimate={selectedEstimate} 
+                    readOnly={true} 
+                  />
                 </div>
 
                 {/* Totals */}
                 <div className="flex justify-end">
-                  <div className="w-64 space-y-1 text-sm">
-                    <div className="flex justify-between"><span>Subtotal:</span><span>₹{selectedEstimate.subtotal?.toLocaleString('en-IN')}</span></div>
-                    {selectedEstimate.total_discount > 0 && <div className="flex justify-between text-[#FF3B2F]"><span>Discount:</span><span>-₹{selectedEstimate.total_discount?.toLocaleString('en-IN')}</span></div>}
-                    <div className="flex justify-between"><span>Tax ({selectedEstimate.gst_type?.toUpperCase()}):</span><span>₹{selectedEstimate.total_tax?.toLocaleString('en-IN')}</span></div>
-                    {selectedEstimate.shipping_charge > 0 && <div className="flex justify-between"><span>Shipping:</span><span>₹{selectedEstimate.shipping_charge?.toLocaleString('en-IN')}</span></div>}
-                    {selectedEstimate.adjustment !== 0 && <div className="flex justify-between"><span>Adjustment:</span><span>₹{selectedEstimate.adjustment?.toLocaleString('en-IN')}</span></div>}
-                    <Separator />
-                    <div className="flex justify-between font-bold text-lg"><span>Grand Total:</span><span>₹{selectedEstimate.grand_total?.toLocaleString('en-IN')}</span></div>
-                  </div>
+                  <EstimateTotalsBlock
+                    subtotal={selectedEstimate.subtotal}
+                    discount={selectedEstimate.total_discount}
+                    taxAmount={selectedEstimate.total_tax}
+                    total={selectedEstimate.grand_total}
+                    shippingCharge={selectedEstimate.shipping_charge}
+                    adjustment={selectedEstimate.adjustment}
+                    gstType={selectedEstimate.gst_type}
+                  />
                 </div>
 
                 <Separator />
