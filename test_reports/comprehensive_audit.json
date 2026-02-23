@@ -1,20 +1,11 @@
 {
-  "timestamp": "2026-02-23T17:47:50.502017",
+  "timestamp": "2026-02-23T17:49:24.598617",
   "target": "https://beta-ready-1.preview.emergentagent.com",
   "total_tests": 65,
-  "passed": 63,
-  "failed": 2,
-  "pass_rate": 96.92307692307692,
-  "errors": [
-    {
-      "test": "Warehouses List",
-      "error": ""
-    },
-    {
-      "test": "Warehouse Create",
-      "error": ""
-    }
-  ],
+  "passed": 65,
+  "failed": 0,
+  "pass_rate": 100.0,
+  "errors": [],
   "details": [
     {
       "test": "Admin Login",
@@ -68,12 +59,12 @@
     },
     {
       "test": "Warehouses List",
-      "status": "FAIL",
+      "status": "PASS",
       "detail": ""
     },
     {
       "test": "Warehouse Create",
-      "status": "FAIL",
+      "status": "PASS",
       "detail": ""
     },
     {
