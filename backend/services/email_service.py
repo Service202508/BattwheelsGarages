@@ -45,8 +45,26 @@ class EmailService:
     """Service for sending transactional emails"""
     
     @staticmethod
-    def _get_base_template(content: str) -> str:
+    def _get_base_template(content: str, org_name: str = None, org_logo_url: str = None) -> str:
         """Wrap content in base email template"""
+        if org_logo_url:
+            header_html = f"""
+                <td style="padding: 20px; text-align: center; background-color: #080C0F; border-radius: 12px 12px 0 0;">
+                    <img src="{org_logo_url}" alt="{org_name or APP_NAME}" height="40" style="max-height:40px; max-width:160px; margin-bottom:10px; display:block; margin-left:auto; margin-right:auto;">
+                    <p style="margin:0; color:rgba(244,246,240,0.45); font-size:12px;">{APP_NAME}</p>
+                </td>"""
+        elif org_name:
+            header_html = f"""
+                <td style="padding: 20px; text-align: center; background-color: #080C0F; border-radius: 12px 12px 0 0;">
+                    <div style="font-size:20px; font-weight:700; color:#C8FF00;">{org_name}</div>
+                    <p style="margin:4px 0 0; color:rgba(244,246,240,0.45); font-size:12px;">{APP_NAME}</p>
+                </td>"""
+        else:
+            header_html = f"""
+                <td style="padding: 20px; text-align: center; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 12px 12px 0 0;">
+                    <h1 style="margin: 0; color: white; font-size: 24px; font-weight: 600;">{APP_NAME}</h1>
+                </td>"""
+
         return f"""
         <!DOCTYPE html>
         <html>
@@ -61,9 +79,7 @@ class EmailService:
                         <table role="presentation" style="width: 100%; max-width: 600px; border-collapse: collapse;">
                             <!-- Header -->
                             <tr>
-                                <td style="padding: 20px; text-align: center; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 12px 12px 0 0;">
-                                    <h1 style="margin: 0; color: white; font-size: 24px; font-weight: 600;">⚡ {APP_NAME}</h1>
-                                </td>
+                                {header_html}
                             </tr>
                             <!-- Content -->
                             <tr>
@@ -75,7 +91,7 @@ class EmailService:
                             <tr>
                                 <td style="padding: 20px; text-align: center; background-color: #f9fafb; border-radius: 0 0 12px 12px;">
                                     <p style="margin: 0; color: #6b7280; font-size: 12px;">
-                                        © 2026 Battwheels Services Private Limited. All rights reserved.
+                                        &copy; 2026 Battwheels Services Private Limited. All rights reserved.
                                     </p>
                                     <p style="margin: 8px 0 0; color: #9ca3af; font-size: 11px;">
                                         This email was sent by {APP_NAME}. If you didn't expect this email, you can ignore it.
