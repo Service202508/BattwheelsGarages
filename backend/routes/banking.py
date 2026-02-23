@@ -64,6 +64,15 @@ class ReconcileRequest(BaseModel):
     reconciled: bool = True
 
 
+class TransferRequest(BaseModel):
+    from_account_id: str
+    to_account_id: str
+    amount: float = Field(..., gt=0)
+    transfer_date: str
+    reference: Optional[str] = None
+    notes: Optional[str] = None
+
+
 # ==================== DEPENDENCIES ====================
 
 db_ref = None
