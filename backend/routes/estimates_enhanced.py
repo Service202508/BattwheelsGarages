@@ -2223,8 +2223,8 @@ async def convert_to_invoice(estimate_id: str, request: Request):
         "updated_time": datetime.now(timezone.utc).isoformat()
     }
     
-    # ← FIXED: insert into invoices_enhanced (not legacy invoices)
-    await db["invoices_enhanced"].insert_one(invoice_doc)
+    # ← FIXED: insert into invoices collection (same as invoices_enhanced.py reads from)
+    await db["invoices"].insert_one(invoice_doc)
     
     # Copy line items with org_id
     for item in line_items:
