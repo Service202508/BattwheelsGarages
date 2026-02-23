@@ -5606,6 +5606,17 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Platform Admin Routes (Battwheels SaaS operator layer)
+try:
+    from routes.platform_admin import router as platform_admin_router, init_platform_admin_router
+    init_platform_admin_router(db)
+    api_router.include_router(platform_admin_router)
+    logger.info("Platform Admin routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Platform Admin routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Expenses Module
 try:
     from routes.expenses import router as expenses_router, set_db as set_expenses_db
