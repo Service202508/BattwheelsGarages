@@ -411,16 +411,7 @@ export default function Tickets({ user }) {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {(() => {
-                        const sla = getSLAIndicator(ticket);
-                        if (!sla) return <span className="text-xs text-[rgba(244,246,240,0.2)]">—</span>;
-                        return (
-                          <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${sla.class}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${sla.dot}`}></span>
-                            {sla.label}
-                          </span>
-                        );
-                      })()}
+                      <SLABadge ticket={ticket} />
                     </TableCell>
                     <TableCell>{ticket.assigned_technician_name || "-"}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
