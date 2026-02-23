@@ -124,10 +124,23 @@ async def get_org_id(request: Request) -> str:
     if org_id:
         return org_id
     
-    # Try from user state
+    # Try from user state (set by auth middleware)
     user = getattr(request.state, "user", None)
     if user and user.get("org_id"):
         return user.get("org_id")
+    
+    # Try to decode from Authorization header directly
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        try:
+            import jwt
+            token = auth_header.split(" ")[1]
+            # Decode without verification to get org_id
+            payload = jwt.decode(token, options={"verify_signature": False})
+            if payload.get("org_id"):
+                return payload.get("org_id")
+        except Exception:
+            pass
     
     raise HTTPException(status_code=400, detail="Organization ID required")
 
