@@ -386,7 +386,7 @@ export default function RecurringBills() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
+              <div className="p-2 bg-[rgba(34,197,94,0.10)] rounded-lg">
                 <Play className="h-5 w-5 text-green-600" />
               </div>
               <div>

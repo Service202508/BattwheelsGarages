@@ -451,7 +451,7 @@ function UsersPanel({ onRefresh }) {
       admin: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
       manager: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
       dispatcher: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
-      technician: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+      technician: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]",
       accountant: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400",
       viewer: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0] dark:bg-[#080C0F]/30 dark:text-[rgba(244,246,240,0.45)]"
     };
@@ -1326,7 +1326,7 @@ function WorkflowRulesBuilderPanel({ settings, onRefresh }) {
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-4">
-                <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${rule.is_active ? "bg-green-100 text-green-600" : "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)]"}`}>
+                <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${rule.is_active ? "bg-[rgba(34,197,94,0.10)] text-[#22C55E]" : "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)]"}`}>
                   <Zap className="h-5 w-5" />
                 </div>
                 <div>
