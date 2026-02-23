@@ -10,11 +10,11 @@ import os
 
 from core.subscriptions.entitlement import require_feature
 
-router = APIRouter(prefix="/reports-advanced", tags=["Advanced Reports"])
-
-# ==================== ROUTER-LEVEL ENTITLEMENT ====================
-# All advanced report routes require the advanced_reports feature
-_adv_reports_dep = [Depends(require_feature("advanced_reports"))]
+router = APIRouter(
+    prefix="/reports-advanced",
+    tags=["Advanced Reports"],
+    dependencies=[Depends(require_feature("advanced_reports"))]
+)
 
 # MongoDB connection
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
