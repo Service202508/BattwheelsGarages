@@ -158,10 +158,39 @@ async def create_employee(data: EmployeeCreateRequest, request: Request):
 async def list_employees(
     request: Request,
     department: Optional[str] = None,
-    status: str = "active"
+    status: str = "active",
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
+    """List employees with standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     service = get_service()
-    return await service.list_employees(department=department, status=status)
+
+    # Build query for count
+    query = {"status": status}
+    if department:
+        query["department"] = department
+    total = await service.db.employees.count_documents(query)
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    # Get paginated data
+    skip = (page - 1) * limit
+    employees = await service.db.employees.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+
+    return {
+        "data": employees,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
 
 
 @router.get("/employees/{employee_id}")
@@ -427,17 +456,40 @@ async def generate_payroll(request: Request, month: str = None, year: int = None
 async def list_payroll_records(
     request: Request,
     month: Optional[str] = None,
-    year: Optional[int] = None
+    year: Optional[int] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
+    """List payroll records with standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     service = get_service()
-    
+
     query = {}
     if month:
         query["month"] = month
     if year:
         query["year"] = year
-    
-    return await service.db.payroll.find(query, {"_id": 0}).sort("generated_at", -1).to_list(500)
+
+    total = await service.db.payroll.count_documents(query)
+    skip = (page - 1) * limit
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    records = await service.db.payroll.find(query, {"_id": 0}).sort("generated_at", -1).skip(skip).limit(limit).to_list(limit)
+
+    return {
+        "data": records,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
 
 
 @router.get("/payroll/my-records")
