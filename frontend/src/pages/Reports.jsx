@@ -293,6 +293,10 @@ export default function Reports() {
             <Users className="h-4 w-4 mr-1 hidden sm:block" />
             Sales
           </TabsTrigger>
+          <TabsTrigger value="sla-performance" className="text-xs sm:text-sm py-2" data-testid="sla-report-tab">
+            <ShieldAlert className="h-4 w-4 mr-1 hidden sm:block" />
+            SLA
+          </TabsTrigger>
         </TabsList>
 
         {/* Profit & Loss Tab */}
