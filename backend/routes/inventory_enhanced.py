@@ -1,7 +1,7 @@
 # Inventory Enhanced Module - Variants, Bundles, Shipments, Returns
 # Full Zoho-style inventory management with advanced features
 
-from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Query, BackgroundTasks, Request, Depends
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
@@ -9,6 +9,8 @@ import motor.motor_asyncio
 import os
 import uuid
 import logging
+
+from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 
