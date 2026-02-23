@@ -40,12 +40,12 @@ class OrganizationCreate(BaseModel):
     # Organization details
     name: str = Field(..., min_length=2, max_length=100)
     industry_type: str = Field(default="ev_garage")
-    
+
     # Admin user details
     admin_name: str = Field(..., min_length=2, max_length=100)
     admin_email: EmailStr
     admin_password: str = Field(..., min_length=6)
-    
+
     # Optional details
     phone: Optional[str] = None
     website: Optional[str] = None
@@ -55,7 +55,10 @@ class OrganizationCreate(BaseModel):
     country: str = "India"
     pincode: Optional[str] = None
     gstin: Optional[str] = None
-    
+
+    # Self-serve signup extras
+    vehicle_types: Optional[List[str]] = None  # ["2W", "3W", "4W"]
+
     @validator('industry_type')
     def validate_industry(cls, v):
         valid = ['ev_garage', 'auto_repair', 'fleet_management', 'dealership', 'service_center', 'other']
