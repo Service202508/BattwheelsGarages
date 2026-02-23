@@ -98,6 +98,24 @@ export default function OrganizationSettings({ user }) {
   const [einvoiceTestResult, setEinvoiceTestResult] = useState(null);
   const [gstinValid, setGstinValid] = useState(null);
 
+  // SLA config state
+  const DEFAULT_SLA_TIERS = {
+    CRITICAL: { response_hours: 1, resolution_hours: 4 },
+    HIGH: { response_hours: 4, resolution_hours: 8 },
+    MEDIUM: { response_hours: 8, resolution_hours: 24 },
+    LOW: { response_hours: 24, resolution_hours: 72 },
+  };
+  const [slaConfig, setSlaConfig] = useState({
+    ...DEFAULT_SLA_TIERS,
+    auto_reassign_on_breach: false,
+    reassignment_delay_minutes: 30,
+  });
+  const [savingSla, setSavingSla] = useState(false);
+
+  // Logo upload state
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoPreview, setLogoPreview] = useState(null);
+
   const getAuthHeaders = useCallback(() => {
     const token = localStorage.getItem("token");
     return {
