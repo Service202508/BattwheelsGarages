@@ -15,6 +15,8 @@ Endpoints:
   POST /api/platform/organizations/:id/activate
   PUT  /api/platform/organizations/:id/plan
   GET  /api/platform/metrics           — Platform-wide KPIs
+  POST /api/platform/run-audit         — Run 103-test production audit
+  GET  /api/platform/audit-status      — Last audit result
   POST /api/platform/users/make-admin  — Grant platform admin
 """
 
@@ -24,6 +26,9 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 import os
 import logging
+import json
+import asyncio
+import time
 from motor.motor_asyncio import AsyncIOMotorClient
 
 logger = logging.getLogger(__name__)
