@@ -104,6 +104,9 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/users/.*$":                 ["org_admin", "admin", "owner"],
     r"^/api/technicians$":              ["org_admin", "admin", "owner", "manager", "dispatcher"],
     
+    # ============ PLATFORM ADMIN (Battwheels operator only) ============
+    r"^/api/platform/.*$":              ["org_admin", "admin", "owner", "manager", "accountant", "technician", "viewer"],
+    
     # ============ DOCUMENT MANAGEMENT ============
     r"^/api/documents/.*$":         ["org_admin", "admin", "owner", "manager", "technician"],
     r"^/api/uploads/.*$":           ["org_admin", "admin", "owner", "manager", "technician", "accountant"],
