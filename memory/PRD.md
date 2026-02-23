@@ -30,7 +30,9 @@ Battwheels OS is a multi-tenant SaaS platform for EV service management. It prov
 | ✅ Configurable SLA Tiers | Per-org SLA tiers + auto-reassign settings UI in Operations tab | `pages/OrganizationSettings.jsx` |
 | ✅ SLA Performance Report | Breach table, compliance %, CSV export in Reports page | `pages/Reports.jsx` |
 | ✅ Company Logos in Emails | Logo upload UI in General tab, branded email templates | `pages/OrganizationSettings.jsx`, `services/email_service.py` |
-| ✅ Bulk Form 16 ZIP | Download all employees' Form 16 PDFs as ZIP | `routes/hr.py`, `pages/Payroll.jsx` |
+| ✅ Technician Leaderboard | Dashboard widget + full Reports tab + drill-down + ranking formula | `routes/reports.py`, `pages/Dashboard.jsx`, `pages/Reports.jsx` |
+| ✅ Load Testing Scripts | 4 Locust scenarios with README and thresholds | `/app/load_tests/locustfile.py`, `/app/load_tests/README.md` |
+| ✅ EstimatesEnhanced Cleanup | Fixed 8 light-mode styles (blue/orange/green borders) → dark volt tokens | `pages/EstimatesEnhanced.jsx` |
 
 ### Score Progression
 
