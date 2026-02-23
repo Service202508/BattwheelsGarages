@@ -5799,6 +5799,14 @@ try:
     from routes.finance_dashboard import router as finance_dashboard_router, set_db as set_finance_dashboard_db
     set_finance_dashboard_db(db)
     api_router.include_router(finance_dashboard_router)
+
+    try:
+        from routes.tally_export import router as tally_export_router, init_tally_export_router
+        init_tally_export_router(db)
+        api_router.include_router(tally_export_router)
+        logger.info("Tally XML export router loaded")
+    except Exception as e:
+        logger.warning(f"Could not load Tally export router: {e}")
     logger.info("Finance Dashboard routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Finance Dashboard routes: {e}")
