@@ -24,7 +24,11 @@ DB_NAME = os.environ.get("DB_NAME")
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
-router = APIRouter(prefix="/stock-transfers", tags=["Stock Transfers"])
+router = APIRouter(
+    prefix="/stock-transfers",
+    tags=["Stock Transfers"],
+    dependencies=[Depends(require_feature("inventory_stock_transfers"))]
+)
 
 # Collections
 transfers_col = db["stock_transfers"]

@@ -28,7 +28,11 @@ from services.projects_service import (
 from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/projects", tags=["projects"])
+router = APIRouter(
+    prefix="/projects",
+    tags=["projects"],
+    dependencies=[Depends(require_feature("project_management"))]
+)
 
 
 # ==================== PYDANTIC MODELS ====================
