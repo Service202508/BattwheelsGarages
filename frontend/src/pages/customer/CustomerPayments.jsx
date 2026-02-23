@@ -60,7 +60,7 @@ export default function CustomerPayments({ user }) {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className={`p-4 rounded-2xl ${paymentsData.total_due > 0 ? 'bg-orange-100' : 'bg-green-100'}`}>
+              <div className={`p-4 rounded-2xl ${paymentsData.total_due > 0 ? 'bg-[rgba(255,140,0,0.10)]' : 'bg-[rgba(34,197,94,0.10)]'}`}>
                 <CreditCard className={`h-8 w-8 ${paymentsData.total_due > 0 ? 'text-[#FF8C00]' : 'text-green-600'}`} />
               </div>
               <div>

@@ -73,7 +73,7 @@ export default function CustomerServiceHistory({ user }) {
       technician_assigned: { color: "bg-blue-100 text-[#3B9EFF]", icon: User, label: "Assigned" },
       estimate_shared: { color: "bg-purple-100 text-[#8B5CF6]", icon: FileText, label: "Estimate Shared" },
       estimate_approved: { color: "bg-indigo-100 text-indigo-700", icon: CheckCircle, label: "Approved" },
-      in_progress: { color: "bg-orange-100 text-[#FF8C00]", icon: Clock, label: "In Progress" },
+      in_progress: { color: "bg-[rgba(255,140,0,0.10)] text-[#FF8C00]", icon: Clock, label: "In Progress" },
       resolved: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: CheckCircle, label: "Resolved" },
       closed: { color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]", icon: CheckCircle, label: "Closed" }
     };
