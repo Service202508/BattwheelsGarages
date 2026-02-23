@@ -241,10 +241,12 @@ class RBACMiddleware(BaseHTTPMiddleware):
         user_role = getattr(request.state, "tenant_user_role", None)
         user_id = getattr(request.state, "tenant_user_id", None)
         
+        logger.info(f"RBAC CHECK: path={path}, role={user_role}, user={user_id}")
+        
         if not user_role:
             # TenantGuardMiddleware should have set this
             # If not, it means the request wasn't properly authenticated
-            logger.debug(f"No role found for path {path} - letting through for auth check")
+            logger.info(f"RBAC: No role found for path {path} - letting through for auth check")
             return await call_next(request)  # Let other middleware handle auth
         
         # Check route permissions
@@ -252,7 +254,7 @@ class RBACMiddleware(BaseHTTPMiddleware):
         
         if allowed_roles is None:
             # Route not in permissions map - allow authenticated users
-            logger.debug(f"Route {path} not in RBAC map, allowing authenticated user with role {user_role}")
+            logger.info(f"RBAC: Route {path} not in map, allowing {user_role}")
             return await call_next(request)
         
         # Check if user's role is authorized
@@ -271,7 +273,7 @@ class RBACMiddleware(BaseHTTPMiddleware):
                 }
             )
         
-        logger.debug(f"RBAC ALLOWED: {user_role} accessing {path}")
+        logger.info(f"RBAC ALLOWED: {user_role} accessing {path}")
         return await call_next(request)
 
 
