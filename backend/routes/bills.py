@@ -221,12 +221,16 @@ async def list_bills(
     date_to: Optional[str] = Query(None),
     overdue_only: bool = Query(False),
     page: int = Query(1, ge=1),
-    limit: int = Query(50, ge=1, le=100)
+    limit: int = Query(25, ge=1)
 ):
-    """List bills with filters"""
+    """List bills with filters and standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     service = get_service()
     org_id = await get_org_id(request)
-    
+
     bills, total = await service.list_bills(
         org_id=org_id,
         status=status,
@@ -237,13 +241,18 @@ async def list_bills(
         page=page,
         limit=limit
     )
-    
+
+    total_pages = math.ceil(total / limit) if total > 0 else 1
     return {
-        "code": 0,
-        "bills": bills,
-        "total": total,
-        "page": page,
-        "limit": limit
+        "data": bills,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
     }
 
 
