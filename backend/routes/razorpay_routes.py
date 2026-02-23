@@ -195,6 +195,9 @@ async def remove_razorpay_config(request: Request):
     """Remove organization-specific Razorpay config (falls back to global)"""
     org_id = await get_org_id_from_request(request)
     
+    from services.credential_service import delete_credentials, RAZORPAY
+    await delete_credentials(org_id, RAZORPAY)
+    # Also clear legacy plaintext config from org document
     await organizations_collection.update_one(
         {"organization_id": org_id},
         {"$unset": {"razorpay_config": ""}}
