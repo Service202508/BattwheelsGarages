@@ -5659,3 +5659,15 @@ app.add_middleware(
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Application startup: initialize background jobs and monitoring"""
+    # Start SLA breach detection background job
+    try:
+        from routes.sla import start_sla_background_job
+        start_sla_background_job()
+        logger.info("SLA background breach detection job started")
+    except Exception as e:
+        logger.warning(f"SLA background job failed to start: {e}")
