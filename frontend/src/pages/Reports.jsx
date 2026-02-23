@@ -60,6 +60,9 @@ export default function Reports() {
         case "sales-by-customer":
           await fetchSalesByCustomer();
           break;
+        case "sla-performance":
+          await fetchSlaReport();
+          break;
       }
     } catch (error) {
       console.error("Failed to fetch report:", error);
