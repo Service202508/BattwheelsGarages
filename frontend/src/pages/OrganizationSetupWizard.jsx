@@ -239,7 +239,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-[#F4F6F0] mb-2">Welcome to Battwheels OS</h1>
-          <p className="text-gray-600">Let's set up your organization in just a few steps</p>
+          <p className="text-[rgba(244,246,240,0.35)]">Let's set up your organization in just a few steps</p>
         </div>
 
         {/* Progress */}
@@ -255,7 +255,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                 <div 
                   key={step.id}
                   className={`flex flex-col items-center ${
-                    isActive ? "text-[#C8FF00] text-600" : isComplete ? "text-[#C8FF00] text-500" : "text-gray-400"
+                    isActive ? "text-[#C8FF00] text-600" : isComplete ? "text-[#C8FF00] text-500" : "text-[rgba(244,246,240,0.45)]"
                   }`}
                 >
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
@@ -483,7 +483,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
             {/* Step 3: Invite Team */}
             {currentStep === 3 && (
               <div className="space-y-6">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-[rgba(244,246,240,0.35)]">
                   Invite your team members to get started. You can always add more later from Settings → Team Management.
                 </p>
 
@@ -531,7 +531,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                           </div>
                           <div>
                             <p className="font-medium">{invite.name}</p>
-                            <p className="text-sm text-gray-500">{invite.email}</p>
+                            <p className="text-sm text-[rgba(244,246,240,0.45)]">{invite.email}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -578,7 +578,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                   <Sparkles className="h-10 w-10 text-[#C8FF00] text-500" />
                 </div>
                 <h2 className="text-2xl font-bold text-[#F4F6F0] mb-2">You're All Set! 🎉</h2>
-                <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                <p className="text-[rgba(244,246,240,0.35)] mb-8 max-w-md mx-auto">
                   Your organization is ready to go. Start managing your EV workshop with AI-powered diagnostics, 
                   invoicing, inventory, and more.
                 </p>
@@ -587,17 +587,17 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                   <div className="p-4 border rounded-lg">
                     <Briefcase className="h-6 w-6 text-[#C8FF00] text-500 mb-2" />
                     <h3 className="font-medium">Create Tickets</h3>
-                    <p className="text-sm text-gray-500">Log service requests and track repairs</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Log service requests and track repairs</p>
                   </div>
                   <div className="p-4 border rounded-lg">
                     <IndianRupee className="h-6 w-6 text-[#C8FF00] text-500 mb-2" />
                     <h3 className="font-medium">Send Invoices</h3>
-                    <p className="text-sm text-gray-500">Generate GST-compliant invoices</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Generate GST-compliant invoices</p>
                   </div>
                   <div className="p-4 border rounded-lg">
                     <Sparkles className="h-6 w-6 text-[#C8FF00] text-500 mb-2" />
                     <h3 className="font-medium">AI Diagnostics</h3>
-                    <p className="text-sm text-gray-500">Get AI-powered repair guidance</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Get AI-powered repair guidance</p>
                   </div>
                 </div>
 

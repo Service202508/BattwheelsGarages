@@ -268,7 +268,7 @@ export default function CompositeItems() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold" data-testid="page-title">Composite Items</h1>
-          <p className="text-gray-500">Manage kits, assemblies, and product bundles</p>
+          <p className="text-[rgba(244,246,240,0.45)]">Manage kits, assemblies, and product bundles</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={fetchData} data-testid="refresh-btn">
@@ -285,7 +285,7 @@ export default function CompositeItems() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" data-testid="summary-cards">
           <Card>
             <CardContent className="p-4">
-              <p className="text-sm text-gray-500">Total Items</p>
+              <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Items</p>
               <p className="text-2xl font-bold" data-testid="total-items">{summary.total_items}</p>
             </CardContent>
           </Card>
@@ -325,7 +325,7 @@ export default function CompositeItems() {
       {/* Search & Filter */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
           <Input
             placeholder="Search by name or SKU..."
             className="pl-10"
@@ -351,12 +351,12 @@ export default function CompositeItems() {
       <Card>
         <CardContent className="p-0">
           {loading ? (
-            <p className="text-center py-12 text-gray-500">Loading composite items...</p>
+            <p className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading composite items...</p>
           ) : filteredItems.length === 0 ? (
             <div className="text-center py-12" data-testid="empty-state">
               <Layers className="h-12 w-12 mx-auto text-[rgba(244,246,240,0.20)] mb-3" />
-              <p className="text-gray-500 font-medium">No composite items yet</p>
-              <p className="text-sm text-gray-400 mb-4">Create kits, assemblies, or bundles from your inventory items</p>
+              <p className="text-[rgba(244,246,240,0.45)] font-medium">No composite items yet</p>
+              <p className="text-sm text-[rgba(244,246,240,0.45)] mb-4">Create kits, assemblies, or bundles from your inventory items</p>
               <Button onClick={() => setShowCreateDialog(true)}>
                 <Plus className="h-4 w-4 mr-2" /> Create First Composite Item
               </Button>
@@ -366,15 +366,15 @@ export default function CompositeItems() {
               <table className="w-full text-sm" data-testid="composite-items-table">
                 <thead className="bg-[#111820] border-b">
                   <tr>
-                    <th className="px-4 py-3 text-left font-medium text-gray-600">Name</th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-600">SKU</th>
-                    <th className="px-4 py-3 text-center font-medium text-gray-600">Type</th>
-                    <th className="px-4 py-3 text-center font-medium text-gray-600">Components</th>
-                    <th className="px-4 py-3 text-right font-medium text-gray-600">Cost</th>
-                    <th className="px-4 py-3 text-right font-medium text-gray-600">Selling Price</th>
-                    <th className="px-4 py-3 text-center font-medium text-gray-600">Stock</th>
-                    <th className="px-4 py-3 text-center font-medium text-gray-600">Available</th>
-                    <th className="px-4 py-3 text-right font-medium text-gray-600">Actions</th>
+                    <th className="px-4 py-3 text-left font-medium text-[rgba(244,246,240,0.35)]">Name</th>
+                    <th className="px-4 py-3 text-left font-medium text-[rgba(244,246,240,0.35)]">SKU</th>
+                    <th className="px-4 py-3 text-center font-medium text-[rgba(244,246,240,0.35)]">Type</th>
+                    <th className="px-4 py-3 text-center font-medium text-[rgba(244,246,240,0.35)]">Components</th>
+                    <th className="px-4 py-3 text-right font-medium text-[rgba(244,246,240,0.35)]">Cost</th>
+                    <th className="px-4 py-3 text-right font-medium text-[rgba(244,246,240,0.35)]">Selling Price</th>
+                    <th className="px-4 py-3 text-center font-medium text-[rgba(244,246,240,0.35)]">Stock</th>
+                    <th className="px-4 py-3 text-center font-medium text-[rgba(244,246,240,0.35)]">Available</th>
+                    <th className="px-4 py-3 text-right font-medium text-[rgba(244,246,240,0.35)]">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -384,16 +384,16 @@ export default function CompositeItems() {
                         <div>
                           <p className="font-medium">{item.name}</p>
                           {item.description && (
-                            <p className="text-xs text-gray-400 truncate max-w-[200px]">{item.description}</p>
+                            <p className="text-xs text-[rgba(244,246,240,0.45)] truncate max-w-[200px]">{item.description}</p>
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-gray-500">{item.sku}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-[rgba(244,246,240,0.45)]">{item.sku}</td>
                       <td className="px-4 py-3 text-center">
                         <Badge className={typeColors[item.type] || ""}>{typeLabels[item.type] || item.type}</Badge>
                       </td>
                       <td className="px-4 py-3 text-center">{item.components?.length || 0}</td>
-                      <td className="px-4 py-3 text-right text-gray-500">{formatCurrency(item.current_component_cost || item.component_cost)}</td>
+                      <td className="px-4 py-3 text-right text-[rgba(244,246,240,0.45)]">{formatCurrency(item.current_component_cost || item.component_cost)}</td>
                       <td className="px-4 py-3 text-right font-medium">{formatCurrency(item.selling_price)}</td>
                       <td className="px-4 py-3 text-center font-medium">{item.stock_on_hand || 0}</td>
                       <td className="px-4 py-3 text-center">
@@ -510,7 +510,7 @@ export default function CompositeItems() {
                   value={form.markup_percentage}
                   onChange={(e) => setForm({ ...form, markup_percentage: parseFloat(e.target.value) || 0 })}
                 />
-                <p className="text-xs text-gray-500 mt-1">Applied on top of component cost</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Applied on top of component cost</p>
               </div>
               <div>
                 <Label>Min Build Quantity</Label>
@@ -657,7 +657,7 @@ export default function CompositeItems() {
                 {/* Quick Stats */}
                 <div className="grid grid-cols-4 gap-3">
                   <div className="p-3 bg-[#111820] rounded-lg text-center">
-                    <p className="text-xs text-gray-500">Component Cost</p>
+                    <p className="text-xs text-[rgba(244,246,240,0.45)]">Component Cost</p>
                     <p className="font-bold">{formatCurrency(selectedItem.current_component_cost || selectedItem.component_cost)}</p>
                   </div>
                   <div className="p-3 bg-blue-50 rounded-lg text-center">
@@ -720,7 +720,7 @@ export default function CompositeItems() {
                             <Badge variant="outline">{build.type === "build" ? "Built" : "Unbuilt"}</Badge>
                             <span>Qty: {build.quantity_built || build.quantity_unbuilt}</span>
                           </div>
-                          <span className="text-gray-500 text-xs">{(build.built_at || build.unbuilt_at)?.split('T')[0]}</span>
+                          <span className="text-[rgba(244,246,240,0.45)] text-xs">{(build.built_at || build.unbuilt_at)?.split('T')[0]}</span>
                         </div>
                       ))}
                     </div>
@@ -779,8 +779,8 @@ export default function CompositeItems() {
                     {availability.can_build ? "Components available" : "Insufficient components"}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 mb-1">Max buildable: {availability.max_buildable}</p>
-                <p className="text-sm text-gray-600">Estimated cost: {formatCurrency(availability.estimated_cost)}</p>
+                <p className="text-sm text-[rgba(244,246,240,0.35)] mb-1">Max buildable: {availability.max_buildable}</p>
+                <p className="text-sm text-[rgba(244,246,240,0.35)]">Estimated cost: {formatCurrency(availability.estimated_cost)}</p>
 
                 {availability.shortages?.length > 0 && (
                   <div className="mt-2 space-y-1">

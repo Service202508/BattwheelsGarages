@@ -133,7 +133,7 @@ export default function Quotes() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Quotes / Estimates</h1>
-          <p className="text-gray-500 text-sm mt-1">{quotes.length} quotes</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">{quotes.length} quotes</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
@@ -252,8 +252,8 @@ export default function Quotes() {
         ))}
       </div>
 
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
-        quotes.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No quotes found</CardContent></Card> :
+      {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
+        quotes.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No quotes found</CardContent></Card> :
         <div className="space-y-3">
           {quotes.map(q => (
             <Card key={q.quote_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
@@ -264,7 +264,7 @@ export default function Quotes() {
                       <h3 className="font-semibold">{q.quote_number}</h3>
                       <Badge className={statusColors[q.status]}>{q.status}</Badge>
                     </div>
-                    <div className="flex gap-4 text-sm text-gray-500">
+                    <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                       <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{q.customer_name}</span>
                       <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{q.quote_date}</span>
                       <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />Expires: {q.expiry_date}</span>

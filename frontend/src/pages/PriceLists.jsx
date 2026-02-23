@@ -22,7 +22,7 @@ import { API } from "@/App";
 
 const statusColors = {
   active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  inactive: "bg-[rgba(255,255,255,0.05)] text-gray-600",
+  inactive: "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.35)]",
   deleted: "bg-red-100 text-red-600"
 };
 
@@ -290,7 +290,7 @@ export default function PriceLists() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Price Lists</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage custom pricing for items (Zoho Books compatible)</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Manage custom pricing for items (Zoho Books compatible)</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={fetchData}>
@@ -374,13 +374,13 @@ export default function PriceLists() {
 
       {/* Price Lists */}
       {loading ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
           Loading price lists...
         </div>
       ) : priceLists.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-gray-500">
+          <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
             <List className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
             <p>No price lists found</p>
             <p className="text-sm mt-1">Create a price list to set custom pricing for different customers</p>
@@ -401,7 +401,7 @@ export default function PriceLists() {
                         <CardTitle className="text-lg">{pl.price_list_name || pl.name}</CardTitle>
                         {expandedPriceLists[pl.price_list_id || pl.pricelist_id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                       </div>
-                      {pl.description && <p className="text-sm text-gray-500">{pl.description}</p>}
+                      {pl.description && <p className="text-sm text-[rgba(244,246,240,0.45)]">{pl.description}</p>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -457,14 +457,14 @@ export default function PriceLists() {
                         <tbody>
                           {pl.items.map(item => (
                             <tr key={item.item_id} className="border-t hover:bg-[#111820]">
-                              <td className="px-4 py-2 font-mono text-xs text-gray-500">{item.item_id}</td>
+                              <td className="px-4 py-2 font-mono text-xs text-[rgba(244,246,240,0.45)]">{item.item_id}</td>
                               <td className="px-4 py-2">
                                 <div className="flex items-center gap-2">
-                                  <Package className="h-4 w-4 text-gray-400" />
+                                  <Package className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
                                   <span>{item.item_name || item.synced_item_name || 'Unknown'}</span>
                                 </div>
                               </td>
-                              <td className="px-4 py-2 text-gray-600">{item.sku || item.synced_sku || '-'}</td>
+                              <td className="px-4 py-2 text-[rgba(244,246,240,0.35)]">{item.sku || item.synced_sku || '-'}</td>
                               <td className="px-4 py-2 text-center">
                                 <Badge className={statusColors[item.item_status || item.synced_status || 'active']}>
                                   {item.item_status || item.synced_status || 'active'}
@@ -476,7 +476,7 @@ export default function PriceLists() {
                                   <span className="text-[rgba(244,246,240,0.20)]">-</span>
                                 }
                               </td>
-                              <td className="px-4 py-2 text-right text-gray-500">
+                              <td className="px-4 py-2 text-right text-[rgba(244,246,240,0.45)]">
                                 {formatCurrency(item.item_price || item.synced_item_price || 0)}
                               </td>
                               <td className="px-4 py-2 text-right font-medium text-[#C8FF00]">
@@ -500,7 +500,7 @@ export default function PriceLists() {
                       </table>
                     </div>
                   ) : (
-                    <div className="text-center py-6 text-gray-400 text-sm border rounded-lg border-dashed">
+                    <div className="text-center py-6 text-[rgba(244,246,240,0.45)] text-sm border rounded-lg border-dashed">
                       No items added to this price list yet
                     </div>
                   )}
@@ -520,7 +520,7 @@ export default function PriceLists() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
               <Input 
                 placeholder="Search items..." 
                 value={searchQuery}
@@ -540,7 +540,7 @@ export default function PriceLists() {
                     <SelectItem key={item.item_id} value={item.item_id}>
                       <div className="flex justify-between w-full gap-4">
                         <span>{item.name}</span>
-                        <span className="text-gray-500">{formatCurrency(item.rate)}</span>
+                        <span className="text-[rgba(244,246,240,0.45)]">{formatCurrency(item.rate)}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -613,7 +613,7 @@ export default function PriceLists() {
             <Separator />
             
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
               <Input 
                 placeholder="Search items..." 
                 value={searchQuery}
@@ -637,7 +637,7 @@ export default function PriceLists() {
                   />
                   <div className="flex-1">
                     <div className="font-medium">{item.name}</div>
-                    <div className="text-xs text-gray-500">{item.sku || item.item_id}</div>
+                    <div className="text-xs text-[rgba(244,246,240,0.45)]">{item.sku || item.item_id}</div>
                   </div>
                   <div className="text-right">
                     <div className="font-medium">{formatCurrency(item.rate)}</div>
@@ -655,7 +655,7 @@ export default function PriceLists() {
               ))}
             </div>
             
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-[rgba(244,246,240,0.45)]">
               {bulkAddItems.length} items selected
             </div>
           </div>

@@ -59,7 +59,7 @@ export default function CustomerVehicles({ user }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">My Vehicles</h1>
-          <p className="text-gray-600">Manage your registered EVs and view service details</p>
+          <p className="text-[rgba(244,246,240,0.35)]">Manage your registered EVs and view service details</p>
         </div>
       </div>
 
@@ -69,7 +69,7 @@ export default function CustomerVehicles({ user }) {
           <CardContent className="py-12 text-center">
             <Car className="h-16 w-16 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
             <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Vehicles Registered</h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-[rgba(244,246,240,0.35)] mb-4">
               Your registered vehicles will appear here. Contact support to add your vehicle.
             </p>
             <Link to="/customer/request-callback">
@@ -107,30 +107,30 @@ export default function CustomerVehicles({ user }) {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-3 rounded-lg bg-[#111820]">
                     <p className="text-2xl font-bold text-[#F4F6F0]">{vehicle.total_services || 0}</p>
-                    <p className="text-xs text-gray-600">Total Services</p>
+                    <p className="text-xs text-[rgba(244,246,240,0.35)]">Total Services</p>
                   </div>
                   <div className="text-center p-3 rounded-lg bg-[#111820]">
                     <p className="text-2xl font-bold text-[#F4F6F0]">₹{(vehicle.total_service_cost || 0).toLocaleString()}</p>
-                    <p className="text-xs text-gray-600">Total Spent</p>
+                    <p className="text-xs text-[rgba(244,246,240,0.35)]">Total Spent</p>
                   </div>
                 </div>
 
                 {/* Vehicle Details */}
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600 flex items-center gap-2">
+                    <span className="text-[rgba(244,246,240,0.35)] flex items-center gap-2">
                       <Battery className="h-4 w-4" /> Battery
                     </span>
                     <span className="font-medium">{vehicle.battery_capacity || "N/A"} kWh</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600 flex items-center gap-2">
+                    <span className="text-[rgba(244,246,240,0.35)] flex items-center gap-2">
                       <Calendar className="h-4 w-4" /> Year
                     </span>
                     <span className="font-medium">{vehicle.year || "N/A"}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600 flex items-center gap-2">
+                    <span className="text-[rgba(244,246,240,0.35)] flex items-center gap-2">
                       <Wrench className="h-4 w-4" /> Last Service
                     </span>
                     <span className="font-medium">
@@ -154,7 +154,7 @@ export default function CustomerVehicles({ user }) {
                         }`} />
                         <span className="font-medium text-sm">{vehicle.amc_plan.plan_name}</span>
                       </div>
-                      <span className="text-xs text-gray-600">
+                      <span className="text-xs text-[rgba(244,246,240,0.35)]">
                         Expires: {new Date(vehicle.amc_plan.end_date).toLocaleDateString()}
                       </span>
                     </div>

@@ -194,7 +194,7 @@ export default function ProjectTasks() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Project Tasks</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage tasks within projects for time tracking</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Manage tasks within projects for time tracking</p>
         </div>
         <div className="flex items-center gap-3">
           <Select 
@@ -301,15 +301,15 @@ export default function ProjectTasks() {
               </div>
               <div className="flex gap-6 text-sm">
                 <div>
-                  <span className="text-gray-500">Status:</span>
+                  <span className="text-[rgba(244,246,240,0.45)]">Status:</span>
                   <Badge className="ml-2 bg-blue-100 text-blue-800">{selectedProject.status || "active"}</Badge>
                 </div>
                 <div>
-                  <span className="text-gray-500">Budget:</span>
+                  <span className="text-[rgba(244,246,240,0.45)]">Budget:</span>
                   <span className="ml-2 font-medium">{formatCurrency(selectedProject.budget_amount)}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500">Tasks:</span>
+                  <span className="text-[rgba(244,246,240,0.45)]">Tasks:</span>
                   <span className="ml-2 font-medium">{tasks.length}</span>
                 </div>
               </div>
@@ -325,13 +325,13 @@ export default function ProjectTasks() {
               <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
             </div>
           ) : !selectedProject ? (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
               <FolderKanban className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No project selected</p>
               <p className="text-sm">Select a project to view and manage its tasks</p>
             </div>
           ) : tasks.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
               <CheckCircle2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No tasks in this project</p>
               <p className="text-sm">Create tasks to track time and billing</p>
@@ -364,7 +364,7 @@ export default function ProjectTasks() {
                           value={getProgressPercent(task.logged_hours, task.budget_hours)} 
                           className="h-2"
                         />
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-[rgba(244,246,240,0.45)]">
                           {Math.round(getProgressPercent(task.logged_hours, task.budget_hours))}%
                         </span>
                       </div>
@@ -373,7 +373,7 @@ export default function ProjectTasks() {
                       {task.is_billable ? (
                         <Badge className="bg-green-100 text-green-800">Yes</Badge>
                       ) : (
-                        <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-600">No</Badge>
+                        <Badge className="bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.35)]">No</Badge>
                       )}
                     </TableCell>
                     <TableCell className="text-right">

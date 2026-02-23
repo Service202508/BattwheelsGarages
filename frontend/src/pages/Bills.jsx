@@ -137,7 +137,7 @@ export default function Bills() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Bills</h1>
-          <p className="text-gray-500 text-sm mt-1">Vendor invoices & payables</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Vendor invoices & payables</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
@@ -231,8 +231,8 @@ export default function Bills() {
         ))}
       </div>
 
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
-        bills.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No bills found</CardContent></Card> :
+      {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
+        bills.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No bills found</CardContent></Card> :
         <div className="space-y-3">
           {bills.map(bill => (
             <Card key={bill.bill_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
@@ -243,7 +243,7 @@ export default function Bills() {
                       <h3 className="font-semibold">{bill.bill_number}</h3>
                       <Badge className={statusColors[bill.status]}>{bill.status}</Badge>
                     </div>
-                    <div className="flex gap-4 text-sm text-gray-500">
+                    <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                       <span className="flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{bill.vendor_name}</span>
                       <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{bill.date}</span>
                       <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />Due: {bill.due_date}</span>

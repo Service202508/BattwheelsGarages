@@ -100,7 +100,7 @@ export default function CustomerServiceHistory({ user }) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Service History</h1>
-          <p className="text-gray-600">Track all your vehicle services and repairs</p>
+          <p className="text-[rgba(244,246,240,0.35)]">Track all your vehicle services and repairs</p>
         </div>
       </div>
 
@@ -109,7 +109,7 @@ export default function CustomerServiceHistory({ user }) {
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
               <Input
                 placeholder="Search by ticket ID, vehicle, or issue..."
                 value={searchTerm}
@@ -140,7 +140,7 @@ export default function CustomerServiceHistory({ user }) {
           <CardContent className="py-12 text-center">
             <ClipboardList className="h-16 w-16 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
             <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Services Found</h3>
-            <p className="text-gray-600">
+            <p className="text-[rgba(244,246,240,0.35)]">
               {searchTerm || statusFilter !== "all" 
                 ? "Try adjusting your filters"
                 : "Your service history will appear here"
@@ -171,8 +171,8 @@ export default function CustomerServiceHistory({ user }) {
                           <h3 className="font-semibold text-[#F4F6F0] truncate">{service.title}</h3>
                           <Badge className={statusConfig.color}>{statusConfig.label}</Badge>
                         </div>
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">{service.description}</p>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                        <p className="text-sm text-[rgba(244,246,240,0.35)] line-clamp-2 mb-2">{service.description}</p>
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                           <span className="flex items-center gap-1">
                             <Car className="h-4 w-4" />
                             {service.vehicle_number}
@@ -194,7 +194,7 @@ export default function CustomerServiceHistory({ user }) {
                       {service.total_cost > 0 && (
                         <p className="font-semibold text-[#F4F6F0]">₹{service.total_cost.toLocaleString()}</p>
                       )}
-                      <ChevronRight className="h-5 w-5 text-gray-400 mt-2 ml-auto" />
+                      <ChevronRight className="h-5 w-5 text-[rgba(244,246,240,0.45)] mt-2 ml-auto" />
                     </div>
                   </div>
                 </CardContent>
@@ -222,19 +222,19 @@ export default function CustomerServiceHistory({ user }) {
                 {/* Ticket Info */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">Ticket ID</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Ticket ID</p>
                     <p className="font-mono font-medium">{selectedService.ticket_id}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Vehicle</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Vehicle</p>
                     <p className="font-medium">{selectedService.vehicle_number}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Created</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Created</p>
                     <p className="font-medium">{new Date(selectedService.created_at).toLocaleString()}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Technician</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Technician</p>
                     <p className="font-medium">{selectedService.technician_name || "Not assigned"}</p>
                   </div>
                 </div>
@@ -242,9 +242,9 @@ export default function CustomerServiceHistory({ user }) {
                 {/* Issue */}
                 <div>
                   <h4 className="font-semibold text-[#F4F6F0] mb-2">Issue Reported</h4>
-                  <p className="text-gray-600">{selectedService.title}</p>
+                  <p className="text-[rgba(244,246,240,0.35)]">{selectedService.title}</p>
                   {selectedService.description && (
-                    <p className="text-gray-500 text-sm mt-1">{selectedService.description}</p>
+                    <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">{selectedService.description}</p>
                   )}
                 </div>
 
@@ -265,7 +265,7 @@ export default function CustomerServiceHistory({ user }) {
                             <p className="font-medium text-[#F4F6F0]">
                               {getStatusConfig(item.status).label}
                             </p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-[rgba(244,246,240,0.45)]">
                               {new Date(item.timestamp).toLocaleString()}
                               {item.updated_by && ` • ${item.updated_by}`}
                             </p>
@@ -280,7 +280,7 @@ export default function CustomerServiceHistory({ user }) {
                 {selectedService.total_cost > 0 && (
                   <div className="bg-[#111820] rounded-lg p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Total Cost</span>
+                      <span className="text-[rgba(244,246,240,0.35)]">Total Cost</span>
                       <span className="text-xl font-bold text-[#F4F6F0]">
                         ₹{selectedService.total_cost.toLocaleString()}
                       </span>

@@ -112,7 +112,7 @@ export default function Inventory() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Inventory</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">
             {totals.services} services, {totals.parts} parts
           </p>
         </div>
@@ -217,7 +217,7 @@ export default function Inventory() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Total Services</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Services</p>
                 <p className="text-2xl font-bold text-[#F4F6F0]">{totals.services}</p>
               </div>
               <Wrench className="h-8 w-8 text-[#C8FF00]" />
@@ -228,7 +228,7 @@ export default function Inventory() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Total Parts</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Parts</p>
                 <p className="text-2xl font-bold text-[#F4F6F0]">{totals.parts}</p>
               </div>
               <Package className="h-8 w-8 text-blue-500" />
@@ -239,7 +239,7 @@ export default function Inventory() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Low Stock Items</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Low Stock Items</p>
                 <p className="text-2xl font-bold text-[#FF8C00]">{lowStockParts.length}</p>
               </div>
               <AlertTriangle className="h-8 w-8 text-orange-500" />
@@ -250,7 +250,7 @@ export default function Inventory() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">In Stock</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">In Stock</p>
                 <p className="text-2xl font-bold text-green-600">{parts.length - lowStockParts.length}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-500" />
@@ -261,7 +261,7 @@ export default function Inventory() {
 
       {/* Search */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
         <Input
           placeholder="Search items..."
           value={search}
@@ -286,10 +286,10 @@ export default function Inventory() {
 
         <TabsContent value="services" className="mt-4">
           {loading ? (
-            <div className="text-center py-12 text-gray-500">Loading services...</div>
+            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading services...</div>
           ) : services.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center text-gray-500">
+              <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
                 No services found. Add your first service to get started.
               </CardContent>
             </Card>
@@ -308,7 +308,7 @@ export default function Inventory() {
                             </Badge>
                           )}
                         </div>
-                        <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                        <div className="flex flex-wrap gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                           {service.sku && (
                             <span className="flex items-center gap-1">
                               <Tag className="h-3.5 w-3.5" />
@@ -325,7 +325,7 @@ export default function Inventory() {
                       </div>
                       <div className="text-right">
                         <p className="text-lg font-bold text-[#F4F6F0]">₹{service.rate?.toLocaleString('en-IN')}</p>
-                        <p className="text-xs text-gray-400">+ {service.tax_rate || 18}% GST</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">+ {service.tax_rate || 18}% GST</p>
                       </div>
                     </div>
                   </CardContent>
@@ -337,10 +337,10 @@ export default function Inventory() {
 
         <TabsContent value="parts" className="mt-4">
           {loading ? (
-            <div className="text-center py-12 text-gray-500">Loading parts...</div>
+            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading parts...</div>
           ) : parts.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center text-gray-500">
+              <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
                 No parts found. Add your first part to get started.
               </CardContent>
             </Card>
@@ -367,7 +367,7 @@ export default function Inventory() {
                               </Badge>
                             )}
                           </div>
-                          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                          <div className="flex flex-wrap gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                             {part.sku && (
                               <span className="flex items-center gap-1">
                                 <Tag className="h-3.5 w-3.5" />
@@ -382,7 +382,7 @@ export default function Inventory() {
                         </div>
                         <div className="text-right">
                           <p className="text-lg font-bold text-[#F4F6F0]">₹{part.rate?.toLocaleString('en-IN')}</p>
-                          <p className="text-xs text-gray-400">+ {part.tax_rate || 18}% GST</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.45)]">+ {part.tax_rate || 18}% GST</p>
                         </div>
                       </div>
                     </CardContent>

@@ -74,7 +74,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
               </div>
               <div>
                 <h1 className="font-bold text-lg text-[#F4F6F0]">Battwheels OS</h1>
-                <p className="text-xs text-gray-500">Customer Portal</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)]">Customer Portal</p>
               </div>
             </div>
 
@@ -96,11 +96,11 @@ export default function CustomerLayout({ children, user, onLogout }) {
                         transition-colors duration-150
                         ${isActive 
                           ? 'bg-[rgba(200,255,0,0.08)] text-[#C8FF00] text-700' 
-                          : 'text-gray-600 hover:bg-[#111820] hover:text-[#F4F6F0]'
+                          : 'text-[rgba(244,246,240,0.35)] hover:bg-[#111820] hover:text-[#F4F6F0]'
                         }
                       `}
                     >
-                      <Icon className={`h-5 w-5 ${isActive ? 'text-[#C8FF00] text-600' : 'text-gray-400'}`} />
+                      <Icon className={`h-5 w-5 ${isActive ? 'text-[#C8FF00] text-600' : 'text-[rgba(244,246,240,0.45)]'}`} />
                       {item.label}
                     </Link>
                   );
@@ -109,23 +109,23 @@ export default function CustomerLayout({ children, user, onLogout }) {
 
               {/* Quick Actions */}
               <div className="mt-6 pt-6 border-t border-gray-200">
-                <p className="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <p className="px-3 mb-2 text-xs font-semibold text-[rgba(244,246,240,0.45)] uppercase tracking-wider">
                   Quick Actions
                 </p>
                 <Link
                   to="/customer/request-callback"
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-[#111820] hover:text-[#F4F6F0]"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[rgba(244,246,240,0.35)] hover:bg-[#111820] hover:text-[#F4F6F0]"
                 >
-                  <Phone className="h-5 w-5 text-gray-400" />
+                  <Phone className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
                   Request Callback
                 </Link>
                 <Link
                   to="/customer/book-appointment"
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-[#111820] hover:text-[#F4F6F0]"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[rgba(244,246,240,0.35)] hover:bg-[#111820] hover:text-[#F4F6F0]"
                 >
-                  <Calendar className="h-5 w-5 text-gray-400" />
+                  <Calendar className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
                   Book Appointment
                 </Link>
               </div>
@@ -142,12 +142,12 @@ export default function CustomerLayout({ children, user, onLogout }) {
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-[#F4F6F0] truncate">{user?.name}</p>
-                  <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)] truncate">{user?.email}</p>
                 </div>
               </div>
               <Button 
                 variant="outline" 
-                className="w-full justify-start text-gray-600 hover:text-red-600 hover:border-red-200"
+                className="w-full justify-start text-[rgba(244,246,240,0.35)] hover:text-red-600 hover:border-red-200"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />

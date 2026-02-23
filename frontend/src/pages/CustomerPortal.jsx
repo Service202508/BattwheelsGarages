@@ -378,7 +378,7 @@ export default function CustomerPortal() {
               <Building2 className="h-8 w-8 text-[#080C0F] font-bold" />
             </div>
             <CardTitle className="text-2xl text-white">Customer Portal</CardTitle>
-            <p className="text-gray-400 text-sm mt-2">Access your invoices, estimates, and statements</p>
+            <p className="text-[rgba(244,246,240,0.45)] text-sm mt-2">Access your invoices, estimates, and statements</p>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -388,10 +388,10 @@ export default function CustomerPortal() {
                 onChange={(e) => setPortalToken(e.target.value)}
                 onKeyUp={(e) => e.key === "Enter" && handleLogin()}
                 placeholder="Enter your portal token"
-                className="bg-[#111820]/10 border-white/20 text-white placeholder:text-gray-500"
+                className="bg-[#111820]/10 border-white/20 text-white placeholder:text-[rgba(244,246,240,0.45)]"
                 data-testid="portal-token-input"
               />
-              <p className="text-xs text-gray-500 mt-2">Your portal token was sent to your email</p>
+              <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">Your portal token was sent to your email</p>
             </div>
             <Button 
               onClick={handleLogin} 
@@ -420,7 +420,7 @@ export default function CustomerPortal() {
             </div>
             <div>
               <h1 className="font-bold text-lg">{contact?.contact_name || dashboard?.contact?.name}</h1>
-              <p className="text-xs text-gray-500">{contact?.company_name || dashboard?.contact?.company}</p>
+              <p className="text-xs text-[rgba(244,246,240,0.45)]">{contact?.company_name || dashboard?.contact?.company}</p>
             </div>
           </div>
           <Button variant="outline" size="sm" onClick={handleLogout}>
@@ -454,7 +454,7 @@ export default function CustomerPortal() {
                       <div className="flex items-center gap-3">
                         <Receipt className="h-8 w-8 text-blue-500" />
                         <div>
-                          <p className="text-xs text-gray-500">Total Invoiced</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.45)]">Total Invoiced</p>
                           <p className="text-xl font-bold text-[#3B9EFF]">{formatCurrency(dashboard.summary.total_invoiced)}</p>
                         </div>
                       </div>
@@ -465,7 +465,7 @@ export default function CustomerPortal() {
                       <div className="flex items-center gap-3">
                         <CheckCircle className="h-8 w-8 text-green-500" />
                         <div>
-                          <p className="text-xs text-gray-500">Total Paid</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.45)]">Total Paid</p>
                           <p className="text-xl font-bold text-green-700">{formatCurrency(dashboard.summary.total_paid)}</p>
                         </div>
                       </div>
@@ -476,7 +476,7 @@ export default function CustomerPortal() {
                       <div className="flex items-center gap-3">
                         <DollarSign className="h-8 w-8 text-orange-500" />
                         <div>
-                          <p className="text-xs text-gray-500">Outstanding</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.45)]">Outstanding</p>
                           <p className="text-xl font-bold text-[#FF8C00]">{formatCurrency(dashboard.summary.total_outstanding)}</p>
                         </div>
                       </div>
@@ -485,10 +485,10 @@ export default function CustomerPortal() {
                   <Card className={dashboard.summary.overdue_invoices > 0 ? "bg-[rgba(255,59,47,0.08)] border-red-200" : "bg-[#111820]"}>
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-3">
-                        <AlertTriangle className={`h-8 w-8 ${dashboard.summary.overdue_invoices > 0 ? "text-red-500" : "text-gray-400"}`} />
+                        <AlertTriangle className={`h-8 w-8 ${dashboard.summary.overdue_invoices > 0 ? "text-red-500" : "text-[rgba(244,246,240,0.45)]"}`} />
                         <div>
-                          <p className="text-xs text-gray-500">Overdue</p>
-                          <p className={`text-xl font-bold ${dashboard.summary.overdue_invoices > 0 ? "text-red-700" : "text-gray-500"}`}>{dashboard.summary.overdue_invoices}</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.45)]">Overdue</p>
+                          <p className={`text-xl font-bold ${dashboard.summary.overdue_invoices > 0 ? "text-red-700" : "text-[rgba(244,246,240,0.45)]"}`}>{dashboard.summary.overdue_invoices}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -513,14 +513,14 @@ export default function CustomerPortal() {
                           >
                             <div>
                               <p className="font-medium">{inv.invoice_number}</p>
-                              <p className="text-xs text-gray-500">{formatDate(inv.invoice_date)}</p>
+                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{formatDate(inv.invoice_date)}</p>
                             </div>
                             <div className="text-right flex items-center gap-3">
                               <div>
                                 <p className="font-medium">{formatCurrency(inv.grand_total)}</p>
                                 <Badge className={statusColors[inv.status] || "bg-[rgba(255,255,255,0.05)]"}>{inv.status}</Badge>
                               </div>
-                              <ChevronRight className="h-5 w-5 text-gray-400" />
+                              <ChevronRight className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
                             </div>
                           </div>
                         ))}
@@ -538,7 +538,7 @@ export default function CustomerPortal() {
                           <FileText className="h-8 w-8 text-[#EAB308]" />
                           <div>
                             <p className="font-medium">Pending Estimates</p>
-                            <p className="text-sm text-gray-600">You have {dashboard.summary.pending_estimates} estimate(s) awaiting your review</p>
+                            <p className="text-sm text-[rgba(244,246,240,0.35)]">You have {dashboard.summary.pending_estimates} estimate(s) awaiting your review</p>
                           </div>
                         </div>
                         <Button size="sm" onClick={() => setActiveTab("estimates")}>View <ChevronRight className="h-4 w-4 ml-1" /></Button>
@@ -558,7 +558,7 @@ export default function CustomerPortal() {
               </CardHeader>
               <CardContent>
                 {invoices.length === 0 ? (
-                  <p className="text-center text-gray-500 py-8">No invoices found</p>
+                  <p className="text-center text-[rgba(244,246,240,0.45)] py-8">No invoices found</p>
                 ) : (
                   <div className="space-y-2">
                     {invoices.map(inv => (
@@ -569,7 +569,7 @@ export default function CustomerPortal() {
                       >
                         <div>
                           <p className="font-medium text-[#3B9EFF]">{inv.invoice_number}</p>
-                          <p className="text-sm text-gray-500">Date: {formatDate(inv.invoice_date)} | Due: {formatDate(inv.due_date)}</p>
+                          <p className="text-sm text-[rgba(244,246,240,0.45)]">Date: {formatDate(inv.invoice_date)} | Due: {formatDate(inv.due_date)}</p>
                         </div>
                         <div className="text-right flex items-center gap-3">
                           <div>
@@ -594,7 +594,7 @@ export default function CustomerPortal() {
               </CardHeader>
               <CardContent>
                 {estimates.length === 0 ? (
-                  <p className="text-center text-gray-500 py-8">No estimates found</p>
+                  <p className="text-center text-[rgba(244,246,240,0.45)] py-8">No estimates found</p>
                 ) : (
                   <div className="space-y-2">
                     {estimates.map(est => (
@@ -605,7 +605,7 @@ export default function CustomerPortal() {
                       >
                         <div>
                           <p className="font-medium text-[#3B9EFF]">{est.estimate_number}</p>
-                          <p className="text-sm text-gray-500">Date: {formatDate(est.estimate_date)} | Expires: {formatDate(est.expiry_date)}</p>
+                          <p className="text-sm text-[rgba(244,246,240,0.45)]">Date: {formatDate(est.estimate_date)} | Expires: {formatDate(est.expiry_date)}</p>
                         </div>
                         <div className="text-right flex items-center gap-3">
                           <p className="font-bold">{formatCurrency(est.grand_total)}</p>
@@ -627,15 +627,15 @@ export default function CustomerPortal() {
               </CardHeader>
               <CardContent>
                 {payments.length === 0 ? (
-                  <p className="text-center text-gray-500 py-8">No payments found</p>
+                  <p className="text-center text-[rgba(244,246,240,0.45)] py-8">No payments found</p>
                 ) : (
                   <div className="space-y-2">
                     {payments.map(p => (
                       <div key={p.payment_id} className="flex justify-between items-center p-4 border rounded-lg">
                         <div>
                           <p className="font-medium">{formatCurrency(p.amount)}</p>
-                          <p className="text-sm text-gray-500">{formatDate(p.payment_date)} • {p.payment_mode}</p>
-                          {p.reference_number && <p className="text-xs text-gray-400">Ref: {p.reference_number}</p>}
+                          <p className="text-sm text-[rgba(244,246,240,0.45)]">{formatDate(p.payment_date)} • {p.payment_mode}</p>
+                          {p.reference_number && <p className="text-xs text-[rgba(244,246,240,0.45)]">Ref: {p.reference_number}</p>}
                         </div>
                         <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">Received</Badge>
                       </div>
@@ -658,15 +658,15 @@ export default function CustomerPortal() {
                     {/* Summary */}
                     <div className="grid grid-cols-3 gap-4 bg-[#111820] p-4 rounded-lg">
                       <div className="text-center">
-                        <p className="text-sm text-gray-500">Total Invoiced</p>
+                        <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Invoiced</p>
                         <p className="text-xl font-bold">{formatCurrency(statement.summary.total_invoiced)}</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-sm text-gray-500">Total Paid</p>
+                        <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Paid</p>
                         <p className="text-xl font-bold text-green-600">{formatCurrency(statement.summary.total_paid)}</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-sm text-gray-500">Balance Due</p>
+                        <p className="text-sm text-[rgba(244,246,240,0.45)]">Balance Due</p>
                         <p className="text-xl font-bold text-red-600">{formatCurrency(statement.summary.balance_due)}</p>
                       </div>
                     </div>
@@ -708,7 +708,7 @@ export default function CustomerPortal() {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-lg font-semibold">Support Requests</h2>
-                <p className="text-sm text-gray-500">View your service tickets and submit new requests</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">View your service tickets and submit new requests</p>
               </div>
               <Button onClick={() => setShowCreateTicket(true)} data-testid="create-ticket-btn">
                 <Plus className="h-4 w-4 mr-2" />
@@ -719,7 +719,7 @@ export default function CustomerPortal() {
             <Card>
               <CardContent className="p-0">
                 {tickets.length === 0 ? (
-                  <div className="p-8 text-center text-gray-500">
+                  <div className="p-8 text-center text-[rgba(244,246,240,0.45)]">
                     <Ticket className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
                     <p>No support requests found</p>
                     <Button variant="outline" className="mt-4" onClick={() => setShowCreateTicket(true)}>
@@ -737,14 +737,14 @@ export default function CustomerPortal() {
                       >
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-xs text-gray-400">{ticket.ticket_id}</span>
+                            <span className="font-mono text-xs text-[rgba(244,246,240,0.45)]">{ticket.ticket_id}</span>
                             <Badge className={statusColors[ticket.status]}>{ticket.status?.replace("_", " ")}</Badge>
                             <Badge variant="outline" className={priorityColors[ticket.priority]}>{ticket.priority}</Badge>
                           </div>
                           <p className="font-medium mt-1">{ticket.subject}</p>
-                          <p className="text-xs text-gray-500 mt-1">Created: {formatDate(ticket.created_at)}</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Created: {formatDate(ticket.created_at)}</p>
                         </div>
-                        <ChevronRight className="h-5 w-5 text-gray-400" />
+                        <ChevronRight className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
                       </div>
                     ))}
                   </div>
@@ -864,7 +864,7 @@ export default function CustomerPortal() {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <span className="font-mono text-sm text-gray-500">{selectedTicket.ticket_id}</span>
+                  <span className="font-mono text-sm text-[rgba(244,246,240,0.45)]">{selectedTicket.ticket_id}</span>
                   <Badge className={statusColors[selectedTicket.status]}>{selectedTicket.status?.replace("_", " ")}</Badge>
                 </DialogTitle>
                 <DialogDescription>{selectedTicket.subject}</DialogDescription>
@@ -872,17 +872,17 @@ export default function CustomerPortal() {
               
               <div className="space-y-4 py-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><span className="text-gray-500">Category:</span> {selectedTicket.category}</div>
-                  <div><span className="text-gray-500">Priority:</span> <Badge variant="outline" className={priorityColors[selectedTicket.priority]}>{selectedTicket.priority}</Badge></div>
-                  <div><span className="text-gray-500">Created:</span> {formatDate(selectedTicket.created_at)}</div>
-                  <div><span className="text-gray-500">Updated:</span> {formatDate(selectedTicket.updated_at)}</div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Category:</span> {selectedTicket.category}</div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Priority:</span> <Badge variant="outline" className={priorityColors[selectedTicket.priority]}>{selectedTicket.priority}</Badge></div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Created:</span> {formatDate(selectedTicket.created_at)}</div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Updated:</span> {formatDate(selectedTicket.updated_at)}</div>
                 </div>
                 
                 <Separator />
                 
                 <div>
                   <h4 className="font-medium mb-2">Description</h4>
-                  <p className="text-sm text-gray-600 whitespace-pre-wrap">{selectedTicket.description}</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.35)] whitespace-pre-wrap">{selectedTicket.description}</p>
                 </div>
                 
                 {selectedTicket.updates?.length > 0 && (
@@ -895,9 +895,9 @@ export default function CustomerPortal() {
                           <div key={idx} className={`p-3 rounded-lg text-sm ${update.author_type === "customer" ? "bg-blue-50 ml-8" : "bg-[#111820] mr-8"}`}>
                             <div className="flex justify-between mb-1">
                               <span className="font-medium">{update.author}</span>
-                              <span className="text-xs text-gray-400">{formatDate(update.created_at)}</span>
+                              <span className="text-xs text-[rgba(244,246,240,0.45)]">{formatDate(update.created_at)}</span>
                             </div>
-                            <p className="text-gray-600">{update.comment}</p>
+                            <p className="text-[rgba(244,246,240,0.35)]">{update.comment}</p>
                           </div>
                         ))}
                       </div>
@@ -944,8 +944,8 @@ export default function CustomerPortal() {
               
               <div className="space-y-4 py-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><span className="text-gray-500">Date:</span> {formatDate(selectedInvoice.invoice_date)}</div>
-                  <div><span className="text-gray-500">Due:</span> {formatDate(selectedInvoice.due_date)}</div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Date:</span> {formatDate(selectedInvoice.invoice_date)}</div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Due:</span> {formatDate(selectedInvoice.due_date)}</div>
                 </div>
                 
                 {selectedInvoice.line_items?.length > 0 && (
@@ -1002,8 +1002,8 @@ export default function CustomerPortal() {
               
               <div className="space-y-4 py-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><span className="text-gray-500">Date:</span> {formatDate(selectedEstimate.estimate_date)}</div>
-                  <div><span className="text-gray-500">Expires:</span> {formatDate(selectedEstimate.expiry_date)}</div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Date:</span> {formatDate(selectedEstimate.estimate_date)}</div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Expires:</span> {formatDate(selectedEstimate.expiry_date)}</div>
                 </div>
                 
                 {selectedEstimate.line_items?.length > 0 && (

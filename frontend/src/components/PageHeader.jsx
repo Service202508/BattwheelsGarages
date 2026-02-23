@@ -40,7 +40,7 @@ export default function PageHeader({
       {showBack && (
         <button
           onClick={handleBack}
-          className="flex items-center gap-1 text-sm text-gray-500 hover:text-[#F4F6F0] mb-3 transition-colors group"
+          className="flex items-center gap-1 text-sm text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] mb-3 transition-colors group"
         >
           <ChevronLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
           <span>Back</span>
@@ -71,7 +71,7 @@ export default function PageHeader({
               )}
             </div>
             {description && (
-              <p className="text-gray-500 mt-1 text-sm lg:text-base max-w-2xl">
+              <p className="text-[rgba(244,246,240,0.45)] mt-1 text-sm lg:text-base max-w-2xl">
                 {description}
               </p>
             )}
@@ -128,11 +128,11 @@ export function PageHeaderWithStats({
               <div className="flex items-center gap-3">
                 {stat.icon && (
                   <div className={`p-2 rounded-lg ${stat.iconBg || 'bg-[rgba(255,255,255,0.05)]'}`}>
-                    <stat.icon className={`h-5 w-5 ${stat.iconColor || 'text-gray-600'}`} />
+                    <stat.icon className={`h-5 w-5 ${stat.iconColor || 'text-[rgba(244,246,240,0.35)]'}`} />
                   </div>
                 )}
                 <div>
-                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">
+                  <p className="text-xs text-[rgba(244,246,240,0.45)] font-medium uppercase tracking-wide">
                     {stat.label}
                   </p>
                   <p className="text-xl font-bold text-[#F4F6F0]">
@@ -164,13 +164,13 @@ export function EmptyState({
     <div className="flex flex-col items-center justify-center py-16 px-4">
       {Icon && (
         <div className="w-16 h-16 rounded-2xl bg-[rgba(255,255,255,0.05)] flex items-center justify-center mb-4">
-          <Icon className="h-8 w-8 text-gray-400" strokeWidth={1.5} />
+          <Icon className="h-8 w-8 text-[rgba(244,246,240,0.45)]" strokeWidth={1.5} />
         </div>
       )}
       <h3 className="text-lg font-semibold text-[#F4F6F0] mb-1">
         {title || "No data found"}
       </h3>
-      <p className="text-gray-500 text-center max-w-sm mb-6">
+      <p className="text-[rgba(244,246,240,0.45)] text-center max-w-sm mb-6">
         {description || "Get started by creating your first item."}
       </p>
       {actionLabel && onAction && (
@@ -193,7 +193,7 @@ export function SectionHeader({ title, description, actions }) {
       <div>
         <h2 className="text-lg font-semibold text-[#F4F6F0]">{title}</h2>
         {description && (
-          <p className="text-sm text-gray-500">{description}</p>
+          <p className="text-sm text-[rgba(244,246,240,0.45)]">{description}</p>
         )}
       </div>
       {actions && (
