@@ -562,22 +562,31 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         
         # Try Authorization header
         auth_header = request.headers.get("Authorization", "")
+        logger.debug(f"Auth header: {auth_header[:50] if auth_header else 'NONE'}...")
+        
         if auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
+            logger.debug(f"Token from header: {token[:50] if token else 'NONE'}...")
         
         # Fallback to session cookie
         if not token:
             token = request.cookies.get("session_token")
+            if token:
+                logger.debug(f"Token from cookie: {token[:50] if token else 'NONE'}...")
         
         if not token:
+            logger.debug("No token found in request")
             return None, None, None
         
         try:
             payload = pyjwt.decode(token, self.JWT_SECRET, algorithms=[self.JWT_ALGORITHM])
+            logger.debug(f"JWT decoded: user_id={payload.get('user_id')}, org_id={payload.get('org_id')}")
             return payload.get("user_id"), payload.get("org_id"), payload.get("role")
         except pyjwt.ExpiredSignatureError:
+            logger.warning("JWT expired")
             raise HTTPException(status_code=401, detail="Token expired")
-        except pyjwt.InvalidTokenError:
+        except pyjwt.InvalidTokenError as e:
+            logger.warning(f"JWT invalid: {e}")
             return None, None, None
     
     async def _resolve_org_id(self, request: Request, user_id: str, token_org_id: str) -> str:
