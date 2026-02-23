@@ -24,28 +24,7 @@ import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
 import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
-
-const statusColors = {
-  draft: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
-  sent: "bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]",
-  customer_viewed: "bg-[rgba(26,255,228,0.10)] text-[#1AFFE4] border border-[rgba(26,255,228,0.25)]",
-  accepted: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  declined: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-  expired: "bg-[rgba(255,140,0,0.10)] text-[#FF8C00] border border-[rgba(255,140,0,0.25)]",
-  converted: "bg-[rgba(139,92,246,0.10)] text-[#8B5CF6] border border-[rgba(139,92,246,0.25)]",
-  void: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.25)] border border-[rgba(255,255,255,0.08)]"
-};
-
-const statusLabels = {
-  draft: "Draft",
-  sent: "Sent",
-  customer_viewed: "Viewed",
-  accepted: "Accepted",
-  declined: "Declined",
-  expired: "Expired",
-  converted: "Converted",
-  void: "Void"
-};
+import { EstimateStatusBadge, EstimateLineItemRow, EstimateTotalsBlock, EstimateLineItemsTable } from "@/components/estimates";
 
 export default function EstimatesEnhanced() {
   const [activeTab, setActiveTab] = useState("estimates");
@@ -1340,7 +1319,7 @@ export default function EstimatesEnhanced() {
                       <td className="px-4 py-3 text-[rgba(244,246,240,0.45)] text-sm">{est.expiry_date}</td>
                       <td className="px-4 py-3 text-right font-bold text-sm text-[#C8FF00]">₹{(est.grand_total || 0).toLocaleString('en-IN')}</td>
                       <td className="px-4 py-3 text-center">
-                        <Badge className={`font-mono text-[10px] tracking-[0.08em] uppercase ${statusColors[est.status]}`}>{statusLabels[est.status]}</Badge>
+                        <EstimateStatusBadge status={est.status} />
                       </td>
                       <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <Button size="icon" variant="ghost" onClick={() => fetchEstimateDetail(est.estimate_id)} className="text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0] hover:bg-[rgba(200,255,0,0.06)]"><Eye className="h-4 w-4" /></Button>
@@ -1834,7 +1813,7 @@ export default function EstimatesEnhanced() {
                   <div>
                     <DialogTitle className="flex items-center gap-2">
                       {selectedEstimate.estimate_number}
-                      <Badge className={statusColors[selectedEstimate.status]}>{statusLabels[selectedEstimate.status]}</Badge>
+                      <EstimateStatusBadge status={selectedEstimate.status} />
                       {selectedEstimate.is_expired && <Badge variant="destructive">Expired</Badge>}
                     </DialogTitle>
                     <DialogDescription>{selectedEstimate.customer_name}</DialogDescription>
@@ -2013,8 +1992,8 @@ export default function EstimatesEnhanced() {
 
                 {/* Customer Viewed Info */}
                 {selectedEstimate.status === "customer_viewed" && selectedEstimate.first_viewed_at && (
-                  <div className="bg-cyan-50 rounded-lg p-3">
-                    <p className="text-sm text-cyan-700 flex items-center gap-2">
+                  <div className="bg-[rgba(26,255,228,0.08)] border border-[rgba(26,255,228,0.20)] rounded-lg p-3">
+                    <p className="text-sm text-[#1AFFE4] flex items-center gap-2">
                       <Eye className="h-4 w-4" />
                       <strong>Customer viewed on:</strong> {new Date(selectedEstimate.first_viewed_at).toLocaleString('en-IN')}
                     </p>
