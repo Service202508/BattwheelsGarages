@@ -777,6 +777,126 @@ export default function Reports() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* SLA Performance Tab */}
+        <TabsContent value="sla-performance" className="space-y-4">
+          <Card>
+            <CardHeader className="pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <ShieldAlert className="h-5 w-5 text-red-400" />
+                    SLA Performance Report
+                  </CardTitle>
+                  <CardDescription>SLA breaches, compliance rate, and auto-reassignments</CardDescription>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Input type="date" value={dateRange.start_date} onChange={e => setDateRange(p => ({ ...p, start_date: e.target.value }))} className="w-36 text-sm" />
+                  <span className="text-muted-foreground text-xs">to</span>
+                  <Input type="date" value={dateRange.end_date} onChange={e => setDateRange(p => ({ ...p, end_date: e.target.value }))} className="w-36 text-sm" />
+                  <Button size="sm" variant="outline" onClick={fetchSlaReport} disabled={loading}>
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={exportSlaReportCsv} data-testid="sla-export-csv-btn">
+                    <Download className="h-4 w-4 mr-1" /> CSV
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+                </div>
+              ) : slaReport ? (
+                <div className="space-y-6">
+                  {/* Summary Stats */}
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    {[
+                      { label: "Total Tickets", value: slaReport.summary?.total_tickets_in_period ?? 0, color: "#F4F6F0" },
+                      { label: "Within SLA", value: slaReport.summary?.within_sla_count ?? 0, color: "#22C55E" },
+                      { label: "Response Breaches", value: slaReport.summary?.response_sla_breaches ?? 0, color: "#FF3B2F" },
+                      { label: "Resolution Breaches", value: slaReport.summary?.resolution_sla_breaches ?? 0, color: "#FF8C00" },
+                      { label: "Auto-Reassigned", value: slaReport.summary?.auto_reassignments_triggered ?? 0, color: "#C8FF00" },
+                    ].map(({ label, value, color }) => (
+                      <Card key={label} className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+                        <CardContent className="p-3">
+                          <p className="text-xs text-[rgba(244,246,240,0.45)] mb-1">{label}</p>
+                          <p className="text-2xl font-bold font-mono" style={{ color }}>{value}</p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* Compliance % */}
+                  <div className="flex items-center gap-3 p-4 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[#111820]">
+                    <div className="text-4xl font-mono font-bold text-[#C8FF00]">
+                      {slaReport.summary?.sla_compliance_pct ?? 100}%
+                    </div>
+                    <div>
+                      <p className="font-medium">SLA Compliance Rate</p>
+                      <p className="text-xs text-muted-foreground">Period: {slaReport.period?.start_date?.split("T")[0]} → {slaReport.period?.end_date?.split("T")[0]}</p>
+                    </div>
+                  </div>
+
+                  {/* Breach Table */}
+                  {slaReport.breaches?.length > 0 ? (
+                    <div className="border border-[rgba(255,255,255,0.07)] rounded overflow-hidden">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-[#111820] border-b border-[rgba(255,255,255,0.07)]">
+                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Ticket</TableHead>
+                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Customer</TableHead>
+                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Priority</TableHead>
+                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Technician</TableHead>
+                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Breach Type</TableHead>
+                            <TableHead className="text-[rgba(244,246,240,0.25)] uppercase text-[10px] tracking-wide font-mono">Reassigned?</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {slaReport.breaches.map((t) => (
+                            <TableRow key={t.ticket_id} className="border-b border-[rgba(255,255,255,0.05)]" data-testid={`sla-breach-row-${t.ticket_id}`}>
+                              <TableCell className="font-mono text-xs text-[#3B9EFF]">{t.ticket_id}</TableCell>
+                              <TableCell className="text-[#F4F6F0]">{t.customer_name || "N/A"}</TableCell>
+                              <TableCell>
+                                <span style={{
+                                  padding: "2px 6px", borderRadius: "2px", fontSize: "10px", fontFamily: "monospace",
+                                  background: t.priority === "critical" ? "rgba(255,59,47,0.15)" : t.priority === "high" ? "rgba(255,140,0,0.15)" : "rgba(234,179,8,0.15)",
+                                  color: t.priority === "critical" ? "#FF3B2F" : t.priority === "high" ? "#FF8C00" : "#EAB308"
+                                }}>{t.priority?.toUpperCase()}</span>
+                              </TableCell>
+                              <TableCell className="text-[rgba(244,246,240,0.65)]">{t.assigned_technician_name || "Unassigned"}</TableCell>
+                              <TableCell>
+                                {t.sla_resolution_breached && <span className="text-[#FF3B2F] text-xs">Resolution</span>}
+                                {!t.sla_resolution_breached && t.sla_response_breached && <span className="text-[#FF8C00] text-xs">Response</span>}
+                              </TableCell>
+                              <TableCell>
+                                {t.sla_auto_reassigned
+                                  ? <span className="text-[#C8FF00] text-xs">Yes → {t.assigned_technician_name}</span>
+                                  : <span className="text-[rgba(244,246,240,0.25)] text-xs">No</span>
+                                }
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                      <ShieldAlert className="h-10 w-10 mb-3 opacity-30" />
+                      <p className="text-sm">No SLA breaches in selected period</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <ShieldAlert className="h-10 w-10 mb-3 opacity-30" />
+                  <p className="text-sm">Select a date range and click refresh to load SLA report</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
