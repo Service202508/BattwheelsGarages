@@ -70,6 +70,12 @@ export default function PlatformAdmin({ user }) {
   const [page, setPage] = useState(1);
   const [actionLoading, setActionLoading] = useState({});
 
+  // Audit state
+  const [auditRunning, setAuditRunning] = useState(false);
+  const [auditResult, setAuditResult] = useState(null);
+  const [lastAudit, setLastAudit] = useState(null);
+  const [showAuditPanel, setShowAuditPanel] = useState(false);
+
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
