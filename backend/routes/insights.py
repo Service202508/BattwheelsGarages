@@ -506,7 +506,7 @@ async def get_efi_insights(
         {"$match": {
             **tkt_base,
             "vehicle_type": {"$ne": None, "$exists": True},
-            "category": {"$ne": None, "$ne": ""},
+            "category": {"$nin": [None, ""]},
         }},
         {"$group": {
             "_id": {"vehicle": "$vehicle_type", "fault": "$category"},
