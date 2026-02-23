@@ -52,7 +52,7 @@ const ActiveTimer = ({ timer, onStop }) => {
   }, []);
   
   return (
-    <Card className="border-green-500 bg-[rgba(34,197,94,0.08)] dark:bg-green-950/20">
+    <Card className="border-[rgba(34,197,94,0.25)] bg-[rgba(34,197,94,0.08)]">
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
