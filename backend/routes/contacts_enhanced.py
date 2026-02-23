@@ -984,14 +984,18 @@ async def list_contacts(
     has_outstanding: Optional[bool] = None,
     sort_by: str = "name",
     sort_order: str = "asc",
-    page: int = 1,
-    per_page: int = 50
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
-    """List contacts with filters"""
+    """List contacts with filters and standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     # Get org context for multi-tenant scoping
     org_id = await get_org_id(request)
     query = org_query(org_id, {})
-    
+
     if contact_type:
         if contact_type == "customer":
             query["contact_type"] = {"$in": ["customer", "both"]}
@@ -999,24 +1003,24 @@ async def list_contacts(
             query["contact_type"] = {"$in": ["vendor", "both"]}
         else:
             query["contact_type"] = contact_type
-    
+
     if status == "active":
         query["is_active"] = True
     elif status == "inactive":
         query["is_active"] = False
-    
+
     if gst_treatment:
         query["gst_treatment"] = gst_treatment
-    
+
     if tag:
         query["tags"] = tag
-    
+
     if has_outstanding is True:
         query["$or"] = [{"outstanding_receivable": {"$gt": 0}}, {"outstanding_payable": {"$gt": 0}}]
     elif has_outstanding is False:
         query["outstanding_receivable"] = {"$lte": 0}
         query["outstanding_payable"] = {"$lte": 0}
-    
+
     if search:
         query["$or"] = [
             {"name": {"$regex": search, "$options": "i"}},
@@ -1027,17 +1031,16 @@ async def list_contacts(
             {"gstin": {"$regex": search, "$options": "i"}},
             {"contact_number": {"$regex": search, "$options": "i"}}
         ]
-    
+
     total = await contacts_collection.count_documents(query)
-    skip = (page - 1) * per_page
-    
+    skip = (page - 1) * limit
     sort_dir = 1 if sort_order == "asc" else -1
-    
-    contacts = await contacts_collection.find(query, {"_id": 0}).sort(sort_by, sort_dir).skip(skip).limit(per_page).to_list(per_page)
-    
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    contacts = await contacts_collection.find(query, {"_id": 0}).sort(sort_by, sort_dir).skip(skip).limit(limit).to_list(limit)
+
     # Enrich with balance and counts
     for contact in contacts:
-        # Handle both Zoho-synced data (contact_id) and legacy data (may not have contact_id)
         contact_id = contact.get("contact_id") or contact.get("zoho_contact_id") or str(contact.get("_id", ""))
         if contact_id:
             contact["person_count"] = await contact_persons_collection.count_documents({"contact_id": contact_id})
@@ -1048,15 +1051,16 @@ async def list_contacts(
             contact["person_count"] = 0
             contact["address_count"] = 0
             contact["balance"] = {"total_receivable": 0, "total_payable": 0}
-    
+
     return {
-        "code": 0,
-        "contacts": contacts,
-        "page_context": {
+        "data": contacts,
+        "pagination": {
             "page": page,
-            "per_page": per_page,
-            "total": total,
-            "total_pages": (total + per_page - 1) // per_page
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
         }
     }
 

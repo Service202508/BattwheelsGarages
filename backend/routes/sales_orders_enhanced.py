@@ -589,28 +589,32 @@ async def list_sales_orders(
     search: Optional[str] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
-    page: int = 1,
-    per_page: int = 50
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
-    """List sales orders with filters"""
+    """List sales orders with standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     query = {}
-    
+
     if status:
         query["status"] = status
-    
+
     if fulfillment_status:
         query["fulfillment_status"] = fulfillment_status
-    
+
     if customer_id:
         query["customer_id"] = customer_id
-    
+
     if search:
         query["$or"] = [
             {"salesorder_number": {"$regex": search, "$options": "i"}},
             {"reference_number": {"$regex": search, "$options": "i"}},
             {"customer_name": {"$regex": search, "$options": "i"}}
         ]
-    
+
     if date_from:
         query["date"] = {"$gte": date_from}
     if date_to:
@@ -618,20 +622,22 @@ async def list_sales_orders(
             query["date"]["$lte"] = date_to
         else:
             query["date"] = {"$lte": date_to}
-    
+
     total = await salesorders_collection.count_documents(query)
-    skip = (page - 1) * per_page
-    
-    salesorders = await salesorders_collection.find(query, {"_id": 0}).sort("date", -1).skip(skip).limit(per_page).to_list(per_page)
-    
+    skip = (page - 1) * limit
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    salesorders = await salesorders_collection.find(query, {"_id": 0}).sort("date", -1).skip(skip).limit(limit).to_list(limit)
+
     return {
-        "code": 0,
-        "salesorders": salesorders,
-        "page_context": {
+        "data": salesorders,
+        "pagination": {
             "page": page,
-            "per_page": per_page,
-            "total": total,
-            "total_pages": (total + per_page - 1) // per_page
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
         }
     }
 
