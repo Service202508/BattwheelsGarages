@@ -587,28 +587,56 @@ export default function InventoryEnhanced() {
 
         {/* Warehouses Tab */}
         <TabsContent value="warehouses">
-          {loading ? (
-            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div>
-          ) : warehouses.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No warehouses. Create one to start tracking inventory by location.</CardContent></Card>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {warehouses.map(wh => (
-                <Card key={wh.warehouse_id} className={`cursor-pointer border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors ${wh.is_primary ? 'border-[#C8FF00] border-2' : ''}`} onClick={() => viewDetail('warehouse', wh.warehouse_id)}>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="font-semibold">{wh.name}</h3>
-                        {wh.code && <p className="text-xs text-[rgba(244,246,240,0.45)]">{wh.code}</p>}
-                      </div>
-                      {wh.is_primary && <Badge className="bg-[#C8FF00] text-[#080C0F] font-bold">Primary</Badge>}
-                    </div>
-                    <p className="text-sm text-[rgba(244,246,240,0.45)]">{wh.city}{wh.state ? `, ${wh.state}` : ''}</p>
-                  </CardContent>
-                </Card>
-              ))}
+          <div className="space-y-4">
+            <div className="flex justify-end">
+              <Button variant="outline" size="sm" onClick={() => setShowTransferDialog(true)} data-testid="transfer-stock-btn">
+                <ArrowRightLeft className="h-4 w-4 mr-2" /> Transfer Stock
+              </Button>
             </div>
-          )}
+            {loading ? (
+              <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div>
+            ) : warehouses.length === 0 ? (
+              <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No warehouses. Create one to start tracking inventory by location.</CardContent></Card>
+            ) : (
+              <>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {warehouses.map(wh => (
+                    <Card key={wh.warehouse_id} className={`cursor-pointer border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors ${wh.is_primary ? 'border-[#C8FF00] border-2' : ''}`} onClick={() => viewDetail('warehouse', wh.warehouse_id)}>
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h3 className="font-semibold">{wh.name}</h3>
+                            {wh.code && <p className="text-xs text-[rgba(244,246,240,0.45)]">{wh.code}</p>}
+                          </div>
+                          {wh.is_primary && <Badge className="bg-[#C8FF00] text-[#080C0F] font-bold">Primary</Badge>}
+                        </div>
+                        <p className="text-sm text-[rgba(244,246,240,0.45)]">{wh.city}{wh.state ? `, ${wh.state}` : ''}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+                {/* Recent Transfers */}
+                {stockTransfers.length > 0 && (
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm flex items-center gap-2"><ArrowRightLeft className="h-4 w-4" /> Recent Stock Transfers</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {stockTransfers.slice(0, 5).map(t => (
+                        <div key={t.transfer_id} className="flex justify-between items-center p-2 bg-[rgba(255,255,255,0.03)] rounded border border-[rgba(255,255,255,0.06)]">
+                          <div>
+                            <p className="text-sm font-medium">{t.from_warehouse_name} → {t.to_warehouse_name}</p>
+                            <p className="text-xs text-[rgba(244,246,240,0.45)]">{t.items?.length} item(s) · {t.created_at?.split("T")[0]}</p>
+                          </div>
+                          <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]">{t.status}</Badge>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            )}
+          </div>
         </TabsContent>
 
         {/* Variants Tab */}
