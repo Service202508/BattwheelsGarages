@@ -54,7 +54,23 @@ export const apiFetch = async (url, options = {}) => {
   // Remove custom option before passing to fetch
   delete mergedOptions.includeOrgId;
   
-  return fetch(url, mergedOptions);
+  const response = await fetch(url, mergedOptions);
+
+  // Intercept 403 feature_not_available globally
+  if (response.status === 403) {
+    try {
+      const cloned = response.clone();
+      const body = await cloned.json();
+      const detail = body?.detail;
+      if (detail && typeof detail === "object" && detail.error === "feature_not_available") {
+        window.dispatchEvent(new CustomEvent("feature_not_available", { detail }));
+      }
+    } catch (_) {
+      // JSON parse failed — not a feature_not_available response, pass through
+    }
+  }
+
+  return response;
 };
 
 // GET request helper
