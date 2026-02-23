@@ -1,0 +1,55 @@
+{
+  "summary": "Tested the new Data Insights module at /insights. Backend: all 6 API endpoints return HTTP 200 with correct response structures (34/34 tests pass). Frontend: page loads at /insights without redirect, all 6 sections visible, date range selector works, custom dates work, empty states render gracefully, mobile responsive. One bug found: EFI failure_patterns includes null-category tickets due to Python dict duplicate key issue in MongoDB query.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/insights/efi",
+        "issue": "failure_patterns includes entries with fault_type=null because Python dict `{'$ne': None, '$ne': ''}` only keeps last key, so null categories are not filtered. The query becomes `{$ne: ''}` which allows null through. Fix: use `{'$nin': [None, '']}` instead. As a result, most_diagnosed is always null (—) when there are null-category tickets, even if valid categories exist.",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Mobile (390px) KPI cards",
+        "issues": ["KPI card labels truncated with ellipsis on mobile: 'Revenue Thi...', 'Avg Invoice V...', 'Collection R...' — acceptable but noteworthy"]
+      },
+      {
+        "screen": "EFI section - Top Failure Patterns table",
+        "issues": ["HTML hydration warnings in console: span injected inside th/tr/tbody by a browser extension (x-dynamic spans). This is a browser environment issue, not a code bug — functional rendering is correct."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_insights.py",
+    "/app/test_reports/pytest/insights_results.xml"
+  ],
+  "action_items": [
+    "Fix EFI endpoint query: change `{'category': {'$exists': True, '$ne': None, '$ne': ''}}` to `{'category': {'$exists': True, '$nin': [None, '']}}` in /app/backend/routes/insights.py line ~483"
+  ],
+  "critical_code_review_comments": [
+    "insights.py line 483: Python dict with duplicate keys `{'$ne': None, '$ne': ''}` silently drops the first key — only `{'$ne': ''}` is applied. Fix with `{'$nin': [None, '']}`. Same pattern at line ~508 in vf_agg match. This causes null-category tickets to appear in EFI failure patterns and makes most_diagnosed always null."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_insights.py"
+  ],
+  "success_rate": {
+    "backend": "100% (34/34 tests pass)",
+    "frontend": "100% (all features working)"
+  },
+  "test_credentials": {
+    "email": "admin@battwheels.in",
+    "role": "admin",
+    "org_id": "6996dcf072ffd2a2395fee7b",
+    "jwt_token_used_for_testing": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidXNlcl9hMTk0YWRkODdkMDMiLCJlbWFpbCI6ImFkbWluQGJhdHR3aGVlbHMuaW4iLCJyb2xlIjoiYWRtaW4iLCJvcmdfaWQiOiI2OTk2ZGNmMDcyZmZkMmEyMzk1ZmVlN2IiLCJleHAiOjE3NzI0OTA0MDJ9.KVjJtV-HDmf3ezAEA-iXP3OOs-j8oV0JullV_dYK9y4"
+  },
+  "seed_data_creation": "Created user_sessions entry for admin user (test_session_insights_1771885529665). Not used for actual tests; JWT was used instead.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Data Insights module at /insights is fully functional. Backend: 6 endpoints at /api/insights/{revenue,operations,technicians,efi,customers,inventory} all return 200. Frontend: page loads, 6 sections render, date range selector works, empty states show correctly. One minor EFI bug: null-category tickets appear in failure_patterns. The existing seed data has 1 ticket resolved (Operations section shows real data), 1 ticket review with 5-star rating (Customer section), and some Ather vehicles. JWT auth approach works for testing (localStorage token).",
+  "rca_of_issue": "EFI failure_patterns bug: In Python, dictionary literals with duplicate keys like `{'$ne': None, '$ne': ''}` silently use the last value only. The resulting MongoDB query only has `{$ne: ''}` meaning null/None categories pass through. Fix in /app/backend/routes/insights.py: line ~483 change to `{'$exists': True, '$nin': [None, '']}` and line ~509 change `{'$ne': None, '$ne': ''}` to `{'$nin': [None, '']}`. This will make most_diagnosed show the actual top fault type."
+}
