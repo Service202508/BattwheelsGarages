@@ -250,6 +250,14 @@ export default function Dashboard({ user }) {
           >
             Receivables Overview
           </TabsTrigger>
+          <TabsTrigger 
+            value="technicians" 
+            className="data-[state=active]:bg-[rgba(200,255,0,0.12)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-t-2 data-[state=active]:border-t-[#C8FF00] rounded px-4 py-2 text-sm font-medium text-[rgba(244,246,240,0.45)]"
+            data-testid="technicians-tab"
+          >
+            <Trophy className="h-3.5 w-3.5 mr-1.5 inline" />
+            Leaderboard
+          </TabsTrigger>
         </TabsList>
 
         {/* ==================== WORKSHOP OVERVIEW TAB ==================== */}
