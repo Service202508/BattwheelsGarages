@@ -25,7 +25,11 @@ from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/efi-guided", tags=["EFI Guided Execution"])
+router = APIRouter(
+    prefix="/efi-guided",
+    tags=["EFI Guided Execution"],
+    dependencies=[Depends(require_feature("efi_ai_guidance"))]
+)
 
 # Service references
 _db = None
