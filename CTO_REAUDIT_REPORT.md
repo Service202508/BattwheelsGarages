@@ -376,11 +376,6 @@ Remaining 6 failures are all LOW severity missing-endpoint gaps:
 
 SIGN-OFF: ✅ APPROVED FOR CUSTOMER-FACING LAUNCH
 
-The platform is ready for paying customers. The 6 remaining gaps
-are backlog items (no customer-facing P0 workflow is broken).
-Core operations — tickets, EFI, estimates, invoices, payments,
-HR payroll, inventory, expenses, projects, AMC, GST — all functional.
-
 Before production cutover:
   1. Add libpangoft2 to Dockerfile/startup (WeasyPrint PDF dependency)
   2. Add survey_token to ticket response (minor — 1 line in ticket_service.py)
