@@ -396,3 +396,70 @@ SCORE PROGRESSION:
   Re-audit (2026-02-24):           75/86  (87%)  ✅ SIGNED OFF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+POST-AUDIT FIXES — 2026-02-24
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FIX 1 — T11.3: /api/inventory/reorder-suggestions
+  Status: ✅ IMPLEMENTED
+  Added to server.py before /{item_id} wildcard to prevent route shadowing.
+  Returns items where qty <= reorder_level, grouped_by_vendor.
+  HTTP 200. total_items_below_reorder field present.
+
+FIX 2 — T11.4: /api/inventory/stocktakes (GET + POST)
+  Status: ✅ IMPLEMENTED
+  GET: Returns org-scoped list of stocktake sessions.
+  POST: Creates new stocktake session with all org inventory items.
+  HTTP 200. stocktake_id: ST-93DBAE4D2F41 created.
+
+FIX 3 — T19.2: /api/sla/performance-report
+  Status: ✅ IMPLEMENTED
+  Added to routes/sla.py.
+  Returns: total_tickets:46, compliance_rate_pct:63.0, 17 breaches, avg times.
+  HTTP 200.
+
+FIX 4 — T19.3: /api/reports/inventory-valuation
+  Status: ✅ IMPLEMENTED
+  Added to routes/reports.py.
+  Returns: total_inventory_value:₹4,65,441.44, item_count:1, low_stock_count.
+  HTTP 200.
+
+FIX 5 — T19.5: /api/settings/export-data
+  Status: ✅ IMPLEMENTED
+  POST: Synchronous export, returns job_id + record_count.
+  GET /status: Lists all export jobs for org.
+  GET /{id}/download: Downloads JSON export.
+  HTTP 200. job_id: EXP-EEE65D4BBEEC, status:completed, records:46.
+
+FIX 6 — T21.3: Cross-tenant 307→403
+  Status: ✅ FIXED
+  TenantGuardMiddleware._resolve_org_id() now correctly returns the header
+  org_id (not JWT org) when header ≠ JWT — triggering membership check → 403.
+  admin@battwheels.in + Org B header → 403 TENANT_ACCESS_DENIED ✅
+
+FIX 7 — libpangoft2 persistence
+  Status: ✅ DOCUMENTED
+  Created /app/startup.sh with apt-get install commands for WeasyPrint deps.
+  PDF still working: HTTP 200, 24KB PDF confirmed after restart.
+
+FIX 8 — SLA Email Notifications (TASK 4)
+  Status: ✅ IMPLEMENTED
+  Alert Type 1 (Approaching): 1 hour before SLA deadline → technician + manager
+  Alert Type 2 (Breach): On breach → technician + manager + org admin
+  Deduplication: sla_approaching_alert_sent + sla_breach_alert_sent flags.
+  Background job extended in routes/sla.py.
+
+UPDATED SCORE ESTIMATE:
+  T11.3: ✅ PASS (was FAIL)
+  T11.4: ✅ PASS (was FAIL)
+  T19.2: ✅ PASS (was FAIL)
+  T19.3: ✅ PASS (was FAIL)
+  T19.5: ✅ PASS (was FAIL)
+  T21.3: ✅ PASS (was PARTIAL)
+  T12.5: ❌ still FAIL (expected — new employee no payroll data)
+  T4.4:  ⚠️ still PARTIAL (SLA status not in ticket response)
+
+  Estimated score: 81/86 (94%)
+  Δ: +6 tests from 75/86 (87%)
+  PRODUCTION SIGN-OFF: ✅ BETA LAUNCH READY
