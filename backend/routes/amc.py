@@ -289,11 +289,16 @@ async def get_amc_subscriptions(
     customer_id: Optional[str] = None,
     vehicle_id: Optional[str] = None,
     status: Optional[str] = None,
-    limit: int = 100
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
-    """Get AMC subscriptions with filters"""
+    """Get AMC subscriptions with standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     user = await require_admin_or_technician(request)
-    
+
     query = {}
     if customer_id:
         query["customer_id"] = customer_id
@@ -301,11 +306,15 @@ async def get_amc_subscriptions(
         query["vehicle_id"] = vehicle_id
     if status:
         query["status"] = status
-    
+
+    total = await db.amc_subscriptions.count_documents(query)
+    skip = (page - 1) * limit
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
     subscriptions = await db.amc_subscriptions.find(
         query, {"_id": 0}
-    ).sort("created_at", -1).limit(limit).to_list(limit)
-    
+    ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+
     # Update status based on dates
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     for sub in subscriptions:
@@ -315,8 +324,18 @@ async def get_amc_subscriptions(
                 sub["status"] = "expired"
             elif end_date <= (datetime.now(timezone.utc) + timedelta(days=15)).strftime("%Y-%m-%d"):
                 sub["status"] = "expiring"
-    
-    return subscriptions
+
+    return {
+        "data": subscriptions,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
 
 @router.get("/subscriptions/{subscription_id}")
 async def get_amc_subscription(subscription_id: str, request: Request):
