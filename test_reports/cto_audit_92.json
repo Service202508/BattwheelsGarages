@@ -1,0 +1,776 @@
+{
+  "timestamp": "2026-02-23T20:31:41.851500",
+  "target": "https://revenue-health-dash.preview.emergentagent.com",
+  "total_tests": 103,
+  "passed": 74,
+  "failed": 29,
+  "pass_rate": 71.8,
+  "market_ready": false,
+  "failures": [
+    {
+      "n": 8,
+      "test": "List Org Members",
+      "error": "HTTP 520"
+    },
+    {
+      "n": 9,
+      "test": "Org has at least 1 member",
+      "error": "Found 0"
+    },
+    {
+      "n": 33,
+      "test": "Vehicles List",
+      "error": "HTTP 401"
+    },
+    {
+      "n": 34,
+      "test": "Vehicle Create",
+      "error": "HTTP 401 {\"detail\":\"Authentication required\",\"code\":\"AUTH_REQUIRED\"}"
+    },
+    {
+      "n": 35,
+      "test": "Vehicle Read by ID",
+      "error": "skipped \u2014 create failed"
+    },
+    {
+      "n": 37,
+      "test": "Tickets List",
+      "error": "HTTP 401"
+    },
+    {
+      "n": 39,
+      "test": "Ticket Create",
+      "error": "HTTP 401 {\"detail\":\"Authentication required\",\"code\":\"AUTH_REQUIRED\"}"
+    },
+    {
+      "n": 40,
+      "test": "Ticket Read by ID",
+      "error": "skipped \u2014 create failed"
+    },
+    {
+      "n": 41,
+      "test": "Ticket Status Update",
+      "error": "skipped \u2014 create failed"
+    },
+    {
+      "n": 42,
+      "test": "Ticket Update/Comment",
+      "error": "skipped \u2014 create failed"
+    },
+    {
+      "n": 43,
+      "test": "Ticket Updates List",
+      "error": "skipped \u2014 create failed"
+    },
+    {
+      "n": 44,
+      "test": "Service Ticket Stats Report",
+      "error": "HTTP 404"
+    },
+    {
+      "n": 51,
+      "test": "Invoices List",
+      "error": "HTTP 200"
+    },
+    {
+      "n": 52,
+      "test": "Invoice Create",
+      "error": "HTTP 520 <!DOCTYPE html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if I"
+    },
+    {
+      "n": 53,
+      "test": "Invoice Read by ID",
+      "error": "skipped \u2014 create failed"
+    },
+    {
+      "n": 54,
+      "test": "Invoice total > 0",
+      "error": "skipped \u2014 create failed"
+    },
+    {
+      "n": 55,
+      "test": "Invoice has invoice_number",
+      "error": "skipped \u2014 create failed"
+    },
+    {
+      "n": 56,
+      "test": "Invoice Send (mark sent)",
+      "error": "skipped \u2014 create failed"
+    },
+    {
+      "n": 57,
+      "test": "Invoice Record Payment",
+      "error": "skipped \u2014 create failed"
+    },
+    {
+      "n": 72,
+      "test": "Service Ticket Stats Report",
+      "error": "HTTP 404"
+    },
+    {
+      "n": 73,
+      "test": "Journal Entries List",
+      "error": "HTTP 401"
+    },
+    {
+      "n": 75,
+      "test": "Banking Transactions",
+      "error": "HTTP 404"
+    },
+    {
+      "n": 80,
+      "test": "Attendance Records",
+      "error": "HTTP 404"
+    },
+    {
+      "n": 81,
+      "test": "Leave Management",
+      "error": "HTTP 404"
+    },
+    {
+      "n": 82,
+      "test": "Payroll List",
+      "error": "HTTP 404"
+    },
+    {
+      "n": 88,
+      "test": "Platform: Platform Stats",
+      "error": "HTTP 404"
+    },
+    {
+      "n": 92,
+      "test": "EFI Intelligence Summary",
+      "error": "HTTP 404"
+    },
+    {
+      "n": 95,
+      "test": "Notifications List",
+      "error": "HTTP 401"
+    },
+    {
+      "n": 101,
+      "test": "Invoice Settings",
+      "error": "HTTP 404"
+    }
+  ],
+  "all_results": [
+    {
+      "n": 1,
+      "test": "Admin Login",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 2,
+      "test": "Bad Password \u2192 401",
+      "status": "PASS",
+      "detail": "HTTP 401"
+    },
+    {
+      "n": 3,
+      "test": "Auth /me returns user data",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 4,
+      "test": "Auth /me includes is_platform_admin flag",
+      "status": "PASS",
+      "detail": "field missing from response"
+    },
+    {
+      "n": 5,
+      "test": "Platform Admin Login",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 6,
+      "test": "No token \u2192 401 on protected route",
+      "status": "PASS",
+      "detail": "HTTP 401"
+    },
+    {
+      "n": 7,
+      "test": "Get Current Org",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 8,
+      "test": "List Org Members",
+      "status": "FAIL",
+      "detail": "HTTP 520"
+    },
+    {
+      "n": 9,
+      "test": "Org has at least 1 member",
+      "status": "FAIL",
+      "detail": "Found 0"
+    },
+    {
+      "n": 10,
+      "test": "Org Branding Endpoint",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 11,
+      "test": "Onboarding Status \u2014 Battwheels (completed=true, show=false)",
+      "status": "PASS",
+      "detail": "HTTP 200 | completed=True show=False"
+    },
+    {
+      "n": 12,
+      "test": "Items Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 13,
+      "test": "Items List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 14,
+      "test": "Items Filter by Type",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 15,
+      "test": "Item Create",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Item created successfully\",\"item\":{\"item_id\":\"I-AC36F2538AF"
+    },
+    {
+      "n": 16,
+      "test": "Item Read by ID",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 17,
+      "test": "Item Update",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 18,
+      "test": "Low Stock Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 19,
+      "test": "Inventory Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 20,
+      "test": "Variants List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 21,
+      "test": "Bundles List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 22,
+      "test": "Serial/Batch Tracking List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 23,
+      "test": "Stock Summary Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 24,
+      "test": "Inventory Valuation Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 25,
+      "test": "Contacts Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 26,
+      "test": "Contacts List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 27,
+      "test": "Contacts Filter by Customer",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 28,
+      "test": "Contact Create",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Contact created\",\"contact\":{\"contact_id\":\"CON-C6371B4A7DB4\""
+    },
+    {
+      "n": 29,
+      "test": "Contact Read by ID",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 30,
+      "test": "Contact Update",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 31,
+      "test": "Contacts Filter by Vendor",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 32,
+      "test": "Contacts Search",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 33,
+      "test": "Vehicles List",
+      "status": "FAIL",
+      "detail": "HTTP 401"
+    },
+    {
+      "n": 34,
+      "test": "Vehicle Create",
+      "status": "FAIL",
+      "detail": "HTTP 401 {\"detail\":\"Authentication required\",\"code\":\"AUTH_REQUIRED\"}"
+    },
+    {
+      "n": 35,
+      "test": "Vehicle Read by ID",
+      "status": "FAIL",
+      "detail": "skipped \u2014 create failed"
+    },
+    {
+      "n": 36,
+      "test": "Vehicle Categories",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 37,
+      "test": "Tickets List",
+      "status": "FAIL",
+      "detail": "HTTP 401"
+    },
+    {
+      "n": 38,
+      "test": "Dashboard Stats",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 39,
+      "test": "Ticket Create",
+      "status": "FAIL",
+      "detail": "HTTP 401 {\"detail\":\"Authentication required\",\"code\":\"AUTH_REQUIRED\"}"
+    },
+    {
+      "n": 40,
+      "test": "Ticket Read by ID",
+      "status": "FAIL",
+      "detail": "skipped \u2014 create failed"
+    },
+    {
+      "n": 41,
+      "test": "Ticket Status Update",
+      "status": "FAIL",
+      "detail": "skipped \u2014 create failed"
+    },
+    {
+      "n": 42,
+      "test": "Ticket Update/Comment",
+      "status": "FAIL",
+      "detail": "skipped \u2014 create failed"
+    },
+    {
+      "n": 43,
+      "test": "Ticket Updates List",
+      "status": "FAIL",
+      "detail": "skipped \u2014 create failed"
+    },
+    {
+      "n": 44,
+      "test": "Service Ticket Stats Report",
+      "status": "FAIL",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 45,
+      "test": "Estimates Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 46,
+      "test": "Estimates List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 47,
+      "test": "Estimate Create",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Estimate created\",\"estimate\":{\"estimate_id\":\"EST-BD88FF9079"
+    },
+    {
+      "n": 48,
+      "test": "Estimate Read by ID",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 49,
+      "test": "Estimates Conversion Funnel",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 50,
+      "test": "Invoices Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 51,
+      "test": "Invoices List",
+      "status": "FAIL",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 52,
+      "test": "Invoice Create",
+      "status": "FAIL",
+      "detail": "HTTP 520 <!DOCTYPE html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if I"
+    },
+    {
+      "n": 53,
+      "test": "Invoice Read by ID",
+      "status": "FAIL",
+      "detail": "skipped \u2014 create failed"
+    },
+    {
+      "n": 54,
+      "test": "Invoice total > 0",
+      "status": "FAIL",
+      "detail": "skipped \u2014 create failed"
+    },
+    {
+      "n": 55,
+      "test": "Invoice has invoice_number",
+      "status": "FAIL",
+      "detail": "skipped \u2014 create failed"
+    },
+    {
+      "n": 56,
+      "test": "Invoice Send (mark sent)",
+      "status": "FAIL",
+      "detail": "skipped \u2014 create failed"
+    },
+    {
+      "n": 57,
+      "test": "Invoice Record Payment",
+      "status": "FAIL",
+      "detail": "skipped \u2014 create failed"
+    },
+    {
+      "n": 58,
+      "test": "Invoice Aging Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 59,
+      "test": "Bills Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 60,
+      "test": "Bills List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 61,
+      "test": "Purchase Orders Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 62,
+      "test": "Purchase Orders List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 63,
+      "test": "Bills Aging Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 64,
+      "test": "Sales Orders Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 65,
+      "test": "Sales Orders List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 66,
+      "test": "Sales Order Create",
+      "status": "PASS",
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Sales Order created\",\"salesorder\":{\"salesorder_id\":\"SO-F296"
+    },
+    {
+      "n": 67,
+      "test": "Advanced Dashboard Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 68,
+      "test": "Monthly Revenue Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 69,
+      "test": "Receivables Aging Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 70,
+      "test": "Top Customers by Revenue",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 71,
+      "test": "Technician Performance Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 72,
+      "test": "Service Ticket Stats Report",
+      "status": "FAIL",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 73,
+      "test": "Journal Entries List",
+      "status": "FAIL",
+      "detail": "HTTP 401"
+    },
+    {
+      "n": 74,
+      "test": "Chart of Accounts",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 75,
+      "test": "Banking Transactions",
+      "status": "FAIL",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 76,
+      "test": "Quarterly Revenue Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 77,
+      "test": "GST Summary",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 78,
+      "test": "GSTR-1 Report",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 79,
+      "test": "Employees List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 80,
+      "test": "Attendance Records",
+      "status": "FAIL",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 81,
+      "test": "Leave Management",
+      "status": "FAIL",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 82,
+      "test": "Payroll List",
+      "status": "FAIL",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 83,
+      "test": "HR Summary",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 84,
+      "test": "Customer Portal Auth Endpoint (reachable)",
+      "status": "PASS",
+      "detail": "HTTP 401"
+    },
+    {
+      "n": 85,
+      "test": "Public Track Ticket Page (reachable)",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 86,
+      "test": "Public Track API (graceful)",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 87,
+      "test": "Platform: List All Organizations",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 88,
+      "test": "Platform: Platform Stats",
+      "status": "FAIL",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 89,
+      "test": "Platform: Revenue & Health Tab",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 90,
+      "test": "Revenue & Health: has MRR field",
+      "status": "PASS",
+      "detail": "keys: ['total_mrr', 'mrr_by_plan', 'trial_pipeline', 'churn_risk', 'recent_signups']"
+    },
+    {
+      "n": 91,
+      "test": "Platform: Recent Activity",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 92,
+      "test": "EFI Intelligence Summary",
+      "status": "FAIL",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 93,
+      "test": "EFI Guided Faults",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 94,
+      "test": "Knowledge Brain Summary",
+      "status": "PASS",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 95,
+      "test": "Notifications List",
+      "status": "FAIL",
+      "detail": "HTTP 401"
+    },
+    {
+      "n": 96,
+      "test": "Cross-Tenant Contact Access Blocked",
+      "status": "PASS",
+      "detail": "HTTP 400 \u2014 platform admin should not see org contacts without org ctx"
+    },
+    {
+      "n": 97,
+      "test": "Invoice list scoped to org (200 OK)",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 98,
+      "test": "Invoices have org_id field",
+      "status": "PASS",
+      "detail": "missing org_id in invoice: empty"
+    },
+    {
+      "n": 99,
+      "test": "Invalid Token \u2192 401",
+      "status": "PASS",
+      "detail": "HTTP 401"
+    },
+    {
+      "n": 100,
+      "test": "Email Settings Status",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 101,
+      "test": "Invoice Settings",
+      "status": "FAIL",
+      "detail": "HTTP 404"
+    },
+    {
+      "n": 102,
+      "test": "Org Setup Status",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 103,
+      "test": "AMC Plans List",
+      "status": "PASS",
+      "detail": "HTTP 200"
+    }
+  ]
+}
