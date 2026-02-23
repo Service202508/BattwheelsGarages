@@ -603,6 +603,78 @@ export default function OrganizationSettings({ user }) {
     }
   };
 
+  // Save SLA configuration
+  const saveSlaConfig = async () => {
+    setSavingSla(true);
+    try {
+      const res = await fetch(`${API}/sla/config`, {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(slaConfig),
+      });
+      if (res.ok) {
+        toast.success("SLA configuration saved");
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || "Failed to save SLA config");
+      }
+    } catch {
+      toast.error("Failed to save SLA config");
+    } finally {
+      setSavingSla(false);
+    }
+  };
+
+  // Handle logo upload
+  const handleLogoUpload = async (file) => {
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Logo must be under 2MB");
+      return;
+    }
+    setLogoUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API}/settings/logo`, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLogoPreview(data.logo_url);
+        setOrganization(prev => ({ ...prev, logo_url: data.logo_url }));
+        toast.success("Logo uploaded successfully");
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || "Failed to upload logo");
+      }
+    } catch {
+      toast.error("Failed to upload logo");
+    } finally {
+      setLogoUploading(false);
+    }
+  };
+
+  // Remove logo
+  const handleLogoRemove = async () => {
+    try {
+      const res = await fetch(`${API}/settings/logo`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (res.ok) {
+        setLogoPreview(null);
+        setOrganization(prev => ({ ...prev, logo_url: null }));
+        toast.success("Logo removed");
+      }
+    } catch {
+      toast.error("Failed to remove logo");
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
