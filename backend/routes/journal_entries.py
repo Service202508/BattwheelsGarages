@@ -29,7 +29,11 @@ from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/journal-entries", tags=["Journal Entries"])
+router = APIRouter(
+    prefix="/journal-entries",
+    tags=["Journal Entries"],
+    dependencies=[Depends(require_feature("accounting_module"))]
+)
 
 # Service instance
 _service: Optional[DoubleEntryService] = None
