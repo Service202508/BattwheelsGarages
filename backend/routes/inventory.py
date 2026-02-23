@@ -185,8 +185,16 @@ async def use_allocation(allocation_id: str, data: UseAllocationRequest, request
     service = get_service()
     user = await get_current_user(request, service.db)
     
+    # Get org_id from tenant context (set by TenantGuardMiddleware)
+    org_id = getattr(request.state, "tenant_org_id", None)
+    
     try:
-        return await service.use_allocation(allocation_id, data.quantity_used, user.get("user_id"))
+        return await service.use_allocation(
+            allocation_id, 
+            data.quantity_used, 
+            user.get("user_id"),
+            organization_id=org_id
+        )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
