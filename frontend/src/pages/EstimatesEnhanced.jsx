@@ -1867,7 +1867,7 @@ export default function EstimatesEnhanced() {
 
                 {/* Lock Banner */}
                 {selectedEstimate.locked_at && (
-                  <div className="bg-[rgba(255,140,0,0.08)] border border-orange-200 rounded-lg px-4 py-3 flex items-center gap-2 text-orange-800">
+                  <div className="bg-[rgba(255,140,0,0.08)] border border-[rgba(255,140,0,0.25)] rounded-lg px-4 py-3 flex items-center gap-2 text-[#FF8C00]">
                     <AlertTriangle className="h-5 w-5" />
                     <div>
                       <p className="font-medium">Estimate Locked</p>
