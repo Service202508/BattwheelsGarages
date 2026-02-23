@@ -2,6 +2,7 @@
 
 ## Changelog
 - **Feb 2026**: Login page complete world-class redesign — split layout (55/45), DM Serif Display/JetBrains Mono/Syne fonts, volt-green (#C8FF00) brand identity, grid + ambient glow left panel, stats strip, animated form with inline error display, Google OAuth, mobile responsive. All auth logic preserved exactly.
+- **Feb 2026**: Data Insights module fully built — route `/insights` was redirecting to dashboard (no route existed). Created 6 backend endpoints (`/api/insights/{revenue,operations,technicians,efi,customers,inventory}`) with real MongoDB aggregations, and built comprehensive `DataInsights.jsx` page with 6 sections, recharts charts, date range selector, empty states, and mobile responsive layout.
 
 ## Original Problem Statement
 
