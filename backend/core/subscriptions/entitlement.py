@@ -138,14 +138,14 @@ class EntitlementService:
         # Inventory
         "inventory_tracking": PlanCode.STARTER,
         "inventory_serial_batch": PlanCode.PROFESSIONAL,
-        "inventory_multi_warehouse": PlanCode.PROFESSIONAL,
-        "inventory_stock_transfers": PlanCode.PROFESSIONAL,
+        "inventory_multi_warehouse": PlanCode.ENTERPRISE,
+        "inventory_stock_transfers": PlanCode.ENTERPRISE,
         
         # HR
         "hr_employees": PlanCode.PROFESSIONAL,
         "hr_attendance": PlanCode.PROFESSIONAL,
         "hr_leave": PlanCode.PROFESSIONAL,
-        "hr_payroll": PlanCode.ENTERPRISE,
+        "hr_payroll": PlanCode.PROFESSIONAL,
         
         # EFI/Intelligence
         "efi_failure_intelligence": PlanCode.STARTER,
@@ -164,13 +164,18 @@ class EntitlementService:
         "portal_technician": PlanCode.FREE,
         
         # Advanced
-        "advanced_reports": PlanCode.PROFESSIONAL,
+        "advanced_reports": PlanCode.STARTER,
         "advanced_custom_fields": PlanCode.PROFESSIONAL,
         "advanced_workflow_automation": PlanCode.ENTERPRISE,
         "advanced_pdf_templates": PlanCode.PROFESSIONAL,
         "advanced_audit_logs": PlanCode.PROFESSIONAL,
         "advanced_white_label": PlanCode.ENTERPRISE,
         "advanced_sso": PlanCode.ENTERPRISE,
+
+        # Module-level gates
+        "project_management": PlanCode.PROFESSIONAL,
+        "einvoice": PlanCode.PROFESSIONAL,
+        "accounting_module": PlanCode.PROFESSIONAL,
     }
     
     # Plan hierarchy for upgrade suggestions
