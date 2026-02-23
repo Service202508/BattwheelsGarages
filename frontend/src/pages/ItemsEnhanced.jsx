@@ -1290,7 +1290,7 @@ export default function ItemsEnhanced() {
                     <div className="border-t pt-2">
                       <p className="text-xs text-[rgba(244,246,240,0.45)] mb-2">Top Selling Items</p>
                       {(salesReport.items || []).slice(0, 5).map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-gray-100">
+                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-[rgba(255,255,255,0.07)]">
                           <span className="truncate flex-1">{item.item_name}</span>
                           <span className="text-green-600 font-medium">₹{item.total_revenue?.toLocaleString('en-IN')}</span>
                         </div>
@@ -1326,7 +1326,7 @@ export default function ItemsEnhanced() {
                     <div className="border-t pt-2">
                       <p className="text-xs text-[rgba(244,246,240,0.45)] mb-2">Most Purchased Items</p>
                       {(purchasesReport.items || []).slice(0, 5).map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-gray-100">
+                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-[rgba(255,255,255,0.07)]">
                           <span className="truncate flex-1">{item.item_name}</span>
                           <span className="text-[#FF8C00] font-medium">₹{item.total_cost?.toLocaleString('en-IN')}</span>
                         </div>
@@ -1362,7 +1362,7 @@ export default function ItemsEnhanced() {
                     <div className="border-t pt-2">
                       <p className="text-xs text-[rgba(244,246,240,0.45)] mb-2">Highest Value Items</p>
                       {(valuationReport.items || []).slice(0, 5).map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-gray-100">
+                        <div key={idx} className="flex justify-between text-sm py-1 border-b border-[rgba(255,255,255,0.07)]">
                           <span className="truncate flex-1">{item.item_name}</span>
                           <span className="text-[#3B9EFF] font-medium">₹{item.stock_value?.toLocaleString('en-IN')}</span>
                         </div>
