@@ -304,9 +304,9 @@ class TestEntitlements:
 
     def test_free_plan_blocked_from_projects(self):
         """Free plan is blocked from project management (requires Professional)."""
-        r = api_get(ADMIN_FREE, "/projects/", FREE_ORG_ID)
+        r = api_get(ADMIN_FREE, "/projects", FREE_ORG_ID)
         assert r.status_code == 403, (
-            f"Expected 403 for free plan on /projects/, got {r.status_code}: {r.text[:200]}"
+            f"Expected 403 for free plan on /projects, got {r.status_code}: {r.text[:200]}"
         )
         detail = r.json().get("detail", {})
         assert detail.get("error") == "feature_not_available"
