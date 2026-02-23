@@ -1248,6 +1248,7 @@ function App() {
       <BrowserRouter>
         <AppRouter />
         <CommandPalette />
+        <UpgradeModal />
       </BrowserRouter>
       <Toaster position="top-right" richColors />
     </div>
