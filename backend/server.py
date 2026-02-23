@@ -1482,13 +1482,16 @@ async def get_me(request: Request):
     user = await get_current_user(request)
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
+    # Fetch full user doc to include is_platform_admin
+    full_user = await db.users.find_one({"user_id": user.user_id}, {"_id": 0, "password_hash": 0})
     return {
         "user_id": user.user_id,
         "email": user.email,
         "name": user.name,
         "role": user.role,
         "designation": user.designation,
-        "picture": user.picture
+        "picture": user.picture,
+        "is_platform_admin": bool(full_user.get("is_platform_admin", False)) if full_user else False
     }
 
 @api_router.post("/auth/logout")
