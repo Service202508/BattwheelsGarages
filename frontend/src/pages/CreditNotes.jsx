@@ -9,13 +9,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { 
-  Plus, FileText, Calendar, User, ArrowRight, Trash2, Receipt
+  Plus, FileText, Calendar, User, ArrowRight, Trash2, Receipt, RefreshCw, AlertTriangle
 } from "lucide-react";
 import { API } from "@/App";
 
 const statusColors = {
   open: "bg-blue-100 text-[#3B9EFF]",
   closed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]"
+};
+
+const refundStatusConfig = {
+  INITIATED: { label: "Refund Initiated", class: "bg-amber-500/10 text-amber-400 border border-amber-500/20" },
+  PROCESSED: { label: "Refund Processed", class: "bg-green-500/10 text-green-400 border border-green-500/20" },
+  FAILED: { label: "Refund Failed", class: "bg-red-500/10 text-red-400 border border-red-500/20" }
 };
 
 export default function CreditNotes() {
@@ -25,7 +31,11 @@ export default function CreditNotes() {
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showApplyDialog, setShowApplyDialog] = useState(false);
+  const [showRefundDialog, setShowRefundDialog] = useState(false);
   const [selectedCN, setSelectedCN] = useState(null);
+  const [razorpayPayment, setRazorpayPayment] = useState(null);
+  const [refundLoading, setRefundLoading] = useState(false);
+  const [refundForm, setRefundForm] = useState({ amount: 0, reason: "" });
 
   const [newCN, setNewCN] = useState({
     customer_id: "",
