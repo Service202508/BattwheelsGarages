@@ -50,7 +50,7 @@ export default function Banking() {
   // Filters
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [reconciledFilter, setReconciledFilter] = useState("all");
   
   // Dialogs
