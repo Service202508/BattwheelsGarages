@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import FeatureGateBanner from "./FeatureGateBanner";
 import OrganizationSwitcher from "./OrganizationSwitcher";
 import { 
