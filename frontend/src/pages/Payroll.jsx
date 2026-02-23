@@ -70,7 +70,7 @@ export default function Payroll({ user }) {
         );
         if (allResponse.ok) {
           const data = await allResponse.json();
-          setPayrollRecords(data);
+          setPayrollRecords(Array.isArray(data) ? data : (data.data || []));
         }
         
         // Fetch TDS Summary
