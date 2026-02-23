@@ -2469,6 +2469,70 @@ export default function InvoicesEnhanced() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* IRN Cancellation Dialog */}
+      <Dialog open={showIrnCancelDialog} onOpenChange={setShowIrnCancelDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <XCircle className="h-5 w-5 text-[#FF3B2F]" />
+              Cancel IRN Registration
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {/* Warning */}
+            <div className="p-3 bg-[rgba(255,59,47,0.08)] border-l-[3px] border-l-[#FF3B2F] rounded">
+              <p className="text-sm text-[rgba(244,246,240,0.70)]">
+                Cancelling this IRN will invalidate the invoice. This action cannot be undone after submission to the IRP portal.
+              </p>
+            </div>
+            
+            {/* Cancellation Reason */}
+            <div className="space-y-2">
+              <Label className="text-sm">Cancellation Reason *</Label>
+              <Select value={irnCancelReason} onValueChange={setIrnCancelReason}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a reason" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Duplicate invoice</SelectItem>
+                  <SelectItem value="2">Invoice raised in error</SelectItem>
+                  <SelectItem value="3">Wrong GSTIN entered</SelectItem>
+                  <SelectItem value="4">Wrong invoice amount</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Remarks */}
+            <div className="space-y-2">
+              <Label className="text-sm">Additional Remarks (optional)</Label>
+              <Input 
+                value={irnCancelRemarks}
+                onChange={(e) => setIrnCancelRemarks(e.target.value)}
+                placeholder="Enter additional details..."
+                maxLength={100}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter className="gap-2">
+            <Button variant="ghost" onClick={() => setShowIrnCancelDialog(false)}>
+              Keep IRN
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleCancelIRN}
+              disabled={!irnCancelReason || irnLoading}
+              className="bg-[#FF3B2F] hover:bg-red-600"
+              data-testid="confirm-cancel-irn-btn"
+            >
+              {irnLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}
+              Cancel IRN
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
