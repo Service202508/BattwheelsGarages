@@ -96,10 +96,24 @@ class ExpenseCreate(BaseModel):
     category: str = "general"
 
 
+class ProjectInvoiceRequest(BaseModel):
+    """Enhanced invoice generation from project time logs"""
+    billing_period_from: str  # YYYY-MM-DD
+    billing_period_to: str    # YYYY-MM-DD
+    include_expenses: bool = False
+    line_item_grouping: str = "BY_TASK"  # BY_TASK, BY_EMPLOYEE, BY_DATE
+    notes: Optional[str] = None
+
+
 class InvoiceGenerateRequest(BaseModel):
     include_time_logs: bool = True
     include_expenses: bool = False
     group_by: str = "task"  # "task" or "time_log"
+
+
+class ExpenseApprovalRequest(BaseModel):
+    """Expense approval/rejection"""
+    approved: bool = True
 
 
 # ==================== DEPENDENCY ====================
