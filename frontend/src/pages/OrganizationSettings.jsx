@@ -196,10 +196,15 @@ export default function OrganizationSettings({ user }) {
         fetch(`${API}/sla/config`, { headers: getAuthHeaders() }),
       ]);
 
+      let orgData = null;
       if (orgRes.ok) {
-        const orgData = await orgRes.json();
+        orgData = await orgRes.json();
         setOrganization(orgData);
         setOrgForm(orgData);
+        // Set logo preview immediately
+        if (orgData.logo_url) {
+          setLogoPreview(orgData.logo_url);
+        }
       }
 
       if (settingsRes.ok) {
