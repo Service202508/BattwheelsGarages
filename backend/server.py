@@ -2247,6 +2247,7 @@ async def create_invoice(data: InvoiceCreate, request: Request, ctx: TenantConte
     doc['created_at'] = doc['created_at'].isoformat()
     doc['updated_at'] = doc['updated_at'].isoformat()
     doc['due_date'] = doc['due_date'].isoformat()
+    doc['organization_id'] = ctx.org_id   # tenant scope
     await db.invoices.insert_one(doc)
     
     # Update ticket
