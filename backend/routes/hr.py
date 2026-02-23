@@ -838,7 +838,8 @@ async def record_tds_challan(data: TDSChallanRequest, request: Request):
 
 
 @router.post("/payroll/tds/mark-deposited")
-async def mark_tds_deposited(data: TDSMarkDepositedRequest, request: Request):
+async def mark_tds_deposited(data: TDSMarkDepositedRequest, request: Request,
+                              _: None = Depends(require_feature("hr_payroll"))):
     """
     Mark TDS as deposited with journal entry posting
     
