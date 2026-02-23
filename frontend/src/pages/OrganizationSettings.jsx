@@ -1605,6 +1605,320 @@ export default function OrganizationSettings({ user }) {
               )}
             </CardContent>
           </Card>
+          
+          {/* E-Invoice (IRN) Settings Card */}
+          <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <FileCheck className="h-4 w-4 text-[#C8FF00]" />
+                    E-Invoice (IRN) Settings
+                  </CardTitle>
+                  <CardDescription className="mt-1">
+                    Mandatory for GST-registered businesses above ₹5 Crore annual turnover
+                  </CardDescription>
+                </div>
+                {/* Status Badge */}
+                {einvoiceConfigured && einvoiceEnabled ? (
+                  <Badge className="bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30">
+                    ACTIVE
+                  </Badge>
+                ) : einvoiceConfigured ? (
+                  <Badge className="bg-[rgba(128,128,128,0.20)] text-[rgba(244,246,240,0.45)] border-[rgba(255,255,255,0.15)]">
+                    DISABLED
+                  </Badge>
+                ) : (
+                  <Badge className="bg-[rgba(234,179,8,0.20)] text-yellow-400 border-yellow-500/30">
+                    NOT CONFIGURED
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Enable/Disable Toggle */}
+              <div className="flex items-center justify-between p-4 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[rgba(200,255,0,0.02)]">
+                <div>
+                  <Label className="text-sm font-medium">Enable E-Invoice Generation</Label>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">
+                    When enabled, finalized B2B invoices will require IRN registration before they can be sent to customers
+                  </p>
+                </div>
+                <Switch 
+                  checked={einvoiceEnabled}
+                  onCheckedChange={setEinvoiceEnabled}
+                  className="data-[state=checked]:bg-[#C8FF00]"
+                  data-testid="einvoice-enable-toggle"
+                />
+              </div>
+              
+              {/* Credentials Form - shown when enabled */}
+              {einvoiceEnabled && (
+                <>
+                  <Separator className="bg-[rgba(255,255,255,0.07)]" />
+                  
+                  {/* Row 1: GSTIN and Legal Name */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                        GSTIN *
+                      </Label>
+                      <div className="relative">
+                        <Input 
+                          placeholder="22AAAAA0000A1Z5"
+                          value={einvoiceConfig.gstin}
+                          onChange={(e) => handleGstinChange(e.target.value)}
+                          maxLength={15}
+                          className="bg-[#111820] border-[rgba(255,255,255,0.13)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)] font-mono uppercase"
+                          data-testid="einvoice-gstin-input"
+                        />
+                        {gstinValid !== null && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            {gstinValid ? (
+                              <CheckCircle className="h-4 w-4 text-green-400" />
+                            ) : (
+                              <AlertTriangle className="h-4 w-4 text-red-400" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {gstinValid === false && (
+                        <p className="text-xs text-red-400">Invalid GSTIN format</p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                        Legal Business Name
+                      </Label>
+                      <Input 
+                        placeholder="As registered on GST portal"
+                        value={einvoiceConfig.legal_name}
+                        onChange={(e) => setEinvoiceConfig({ ...einvoiceConfig, legal_name: e.target.value })}
+                        className="bg-[#111820] border-[rgba(255,255,255,0.13)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)]"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Row 2: IRP Username and Password */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                        IRP Username *
+                      </Label>
+                      <Input 
+                        placeholder="Your IRP portal username"
+                        value={einvoiceConfig.irp_username}
+                        onChange={(e) => setEinvoiceConfig({ ...einvoiceConfig, irp_username: e.target.value })}
+                        className="bg-[#111820] border-[rgba(255,255,255,0.13)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)]"
+                        data-testid="einvoice-username-input"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                        IRP Password *
+                      </Label>
+                      <div className="relative">
+                        <Input 
+                          type={showEinvoiceSecrets ? "text" : "password"}
+                          placeholder="Your IRP portal password"
+                          value={einvoiceConfig.irp_password}
+                          onChange={(e) => setEinvoiceConfig({ ...einvoiceConfig, irp_password: e.target.value })}
+                          className="bg-[#111820] border-[rgba(255,255,255,0.13)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)] pr-10"
+                          data-testid="einvoice-password-input"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-1 top-1 h-7 w-7 text-[rgba(244,246,240,0.45)]"
+                          onClick={() => setShowEinvoiceSecrets(!showEinvoiceSecrets)}
+                        >
+                          {showEinvoiceSecrets ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Row 3: Client ID and Secret */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                        Client ID *
+                      </Label>
+                      <Input 
+                        placeholder="IRP API Client ID"
+                        value={einvoiceConfig.client_id}
+                        onChange={(e) => setEinvoiceConfig({ ...einvoiceConfig, client_id: e.target.value })}
+                        className="bg-[#111820] border-[rgba(255,255,255,0.13)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)] font-mono"
+                        data-testid="einvoice-client-id-input"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                        Client Secret *
+                      </Label>
+                      <div className="relative">
+                        <Input 
+                          type={showEinvoiceSecrets ? "text" : "password"}
+                          placeholder="IRP API Client Secret"
+                          value={einvoiceConfig.client_secret}
+                          onChange={(e) => setEinvoiceConfig({ ...einvoiceConfig, client_secret: e.target.value })}
+                          className="bg-[#111820] border-[rgba(255,255,255,0.13)] focus:border-[#C8FF00] focus:ring-[rgba(200,255,0,0.08)] pr-10 font-mono"
+                          data-testid="einvoice-client-secret-input"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-1 top-1 h-7 w-7 text-[rgba(244,246,240,0.45)]"
+                          onClick={() => setShowEinvoiceSecrets(!showEinvoiceSecrets)}
+                        >
+                          {showEinvoiceSecrets ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Row 4: Environment Selector */}
+                  <div className="space-y-3">
+                    <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)] font-mono">
+                      Environment
+                    </Label>
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setEinvoiceConfig({ ...einvoiceConfig, is_sandbox: true })}
+                        className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                          einvoiceConfig.is_sandbox 
+                            ? "bg-[rgba(234,179,8,0.10)] text-[#EAB308] border border-[rgba(234,179,8,0.25)]" 
+                            : "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)] border border-[rgba(255,255,255,0.10)]"
+                        }`}
+                        data-testid="einvoice-sandbox-btn"
+                      >
+                        SANDBOX
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEinvoiceConfig({ ...einvoiceConfig, is_sandbox: false })}
+                        className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                          !einvoiceConfig.is_sandbox 
+                            ? "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]" 
+                            : "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)] border border-[rgba(255,255,255,0.10)]"
+                        }`}
+                        data-testid="einvoice-production-btn"
+                      >
+                        PRODUCTION
+                      </button>
+                    </div>
+                    
+                    {/* Production Warning */}
+                    {!einvoiceConfig.is_sandbox && (
+                      <div className="p-3 bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.20)] border-l-[3px] border-l-[#FF3B2F] rounded">
+                        <p className="text-sm text-[rgba(244,246,240,0.70)] flex items-start gap-2">
+                          <AlertTriangle className="h-4 w-4 text-[#FF3B2F] mt-0.5 flex-shrink-0" />
+                          <span>
+                            Production mode will submit real IRNs to the government IRP. Ensure all credentials are correct before enabling.
+                          </span>
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <Separator className="bg-[rgba(255,255,255,0.07)]" />
+                  
+                  {/* Connection Test Button */}
+                  <div className="space-y-3">
+                    <Button 
+                      variant="ghost"
+                      onClick={testEinvoiceConnection}
+                      disabled={testingEinvoice || !einvoiceConfigured}
+                      className="text-[rgba(244,246,240,0.65)] hover:text-[#F4F6F0] hover:bg-[rgba(255,255,255,0.05)]"
+                      data-testid="test-einvoice-btn"
+                    >
+                      {testingEinvoice ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                      )}
+                      Test IRP Connection
+                    </Button>
+                    
+                    {/* Test Result */}
+                    {einvoiceTestResult && (
+                      <div className={`p-3 rounded border ${
+                        einvoiceTestResult.success 
+                          ? "bg-[rgba(34,197,94,0.08)] border-[rgba(34,197,94,0.25)]" 
+                          : "bg-[rgba(255,59,47,0.08)] border-[rgba(255,59,47,0.25)]"
+                      }`}>
+                        <p className={`text-sm flex items-center gap-2 ${
+                          einvoiceTestResult.success ? "text-[#22C55E]" : "text-[#FF3B2F]"
+                        }`}>
+                          {einvoiceTestResult.success ? (
+                            <CheckCircle className="h-4 w-4" />
+                          ) : (
+                            <AlertTriangle className="h-4 w-4" />
+                          )}
+                          {einvoiceTestResult.success ? "✓ " : "✗ "}{einvoiceTestResult.message}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Save Button */}
+                  <div className="flex gap-3">
+                    <Button 
+                      onClick={saveEinvoiceConfig}
+                      disabled={savingEinvoice || gstinValid === false}
+                      className="bg-[#C8FF00] hover:bg-[#a8d900] text-[#080C0F]"
+                      data-testid="save-einvoice-btn"
+                    >
+                      {savingEinvoice ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4 mr-2" />
+                      )}
+                      Save E-Invoice Settings
+                    </Button>
+                    
+                    {einvoiceConfigured && (
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        onClick={removeEinvoiceConfig}
+                        className="bg-[rgba(255,59,47,0.15)] hover:bg-[rgba(255,59,47,0.25)] text-[#FF3B2F] border-none"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Remove Configuration
+                      </Button>
+                    )}
+                  </div>
+                </>
+              )}
+              
+              {/* E-Invoice Applicability Info Card */}
+              <div className="p-4 bg-[rgba(200,255,0,0.04)] border border-[rgba(200,255,0,0.12)] border-l-[3px] border-l-[rgba(200,255,0,0.30)] rounded">
+                <div className="flex items-start gap-3">
+                  <Info className="h-5 w-5 text-[#C8FF00] mt-0.5 flex-shrink-0" />
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-[#C8FF00] font-mono">E-Invoice Applicability</h4>
+                    <p className="text-xs text-[rgba(244,246,240,0.65)] leading-relaxed">
+                      E-invoicing is mandatory under GST for businesses with aggregate annual turnover exceeding ₹5 Crore (as per CBIC notification). Invoices issued without IRN to eligible businesses are not valid GST invoices.
+                    </p>
+                    <div className="grid grid-cols-2 gap-4 pt-2 text-xs">
+                      <div>
+                        <span className="text-[rgba(244,246,240,0.45)]">Applicable from:</span>
+                        <p className="text-[#F4F6F0] font-medium mt-0.5">₹5 Crore turnover</p>
+                      </div>
+                      <div>
+                        <span className="text-[rgba(244,246,240,0.45)]">Penalty for non-compliance:</span>
+                        <p className="text-[#FF3B2F] font-medium mt-0.5">Invoice invalid + ITC denial to buyer</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* EFI Tab */}
