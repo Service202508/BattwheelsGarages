@@ -220,10 +220,56 @@ export default function PlatformAdmin({ user }) {
               <p className="text-xs text-[rgba(244,246,240,0.35)]">Battwheels OS — Operator Dashboard</p>
             </div>
           </div>
-          <button onClick={load} className="flex items-center gap-2 text-xs text-[rgba(244,246,240,0.45)] hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-white/5">
-            <RefreshCw className="w-3.5 h-3.5" />
-            Refresh
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Run Audit button */}
+            <div className="flex flex-col items-end gap-0.5">
+              <button
+                data-testid="run-audit-btn"
+                onClick={runAudit}
+                disabled={auditRunning}
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(200,255,0,0.30)",
+                  color: "#C8FF00",
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: "11px",
+                  letterSpacing: "0.08em",
+                  padding: "6px 14px",
+                  borderRadius: "4px",
+                  cursor: auditRunning ? "not-allowed" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  opacity: auditRunning ? 0.7 : 1,
+                  transition: "border-color 0.15s, opacity 0.15s",
+                }}
+              >
+                {auditRunning ? (
+                  <Loader2 style={{ width: "11px", height: "11px", animation: "spin 1s linear infinite" }} />
+                ) : (
+                  <Play style={{ width: "11px", height: "11px" }} />
+                )}
+                {auditRunning ? "Running..." : "Run Audit"}
+              </button>
+              {lastAudit && !auditRunning && (
+                <span
+                  data-testid="audit-last-run"
+                  style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: "10px",
+                    color: "rgba(244,246,240,0.30)",
+                  }}
+                >
+                  Last audit: {fmtAgo(lastAudit.timestamp)} · {lastAudit.passed}/{lastAudit.total}
+                </span>
+              )}
+            </div>
+
+            <button onClick={load} className="flex items-center gap-2 text-xs text-[rgba(244,246,240,0.45)] hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-white/5">
+              <RefreshCw className="w-3.5 h-3.5" />
+              Refresh
+            </button>
+          </div>
         </div>
       </div>
 
