@@ -670,7 +670,7 @@ async def list_members(
         )
         if user:
             members.append({
-                "membership_id": m.get("membership_id", m.get("_id", "")),
+                "membership_id": m.get("membership_id") or f"mem_{m.get('user_id', '')}",
                 "user_id": m["user_id"],
                 "email": user.get("email"),
                 "name": user.get("name"),
