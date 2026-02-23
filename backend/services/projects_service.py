@@ -479,6 +479,176 @@ class ProjectsService:
     
     # ==================== INVOICE GENERATION ====================
     
+    async def generate_invoice_from_project(
+        self,
+        project_id: str,
+        billing_period_from: str,
+        billing_period_to: str,
+        include_expenses: bool = False,
+        line_item_grouping: str = "BY_TASK",  # BY_TASK, BY_EMPLOYEE, BY_DATE
+        notes: Optional[str] = None,
+        db = None  # Database reference for getting employee names
+    ) -> Dict[str, Any]:
+        """
+        Generate invoice from project time logs
+        
+        Args:
+            project_id: Project ID
+            billing_period_from: Start date (YYYY-MM-DD)
+            billing_period_to: End date (YYYY-MM-DD)
+            include_expenses: Whether to include approved expenses
+            line_item_grouping: BY_TASK, BY_EMPLOYEE, BY_DATE
+            notes: Optional invoice notes
+            db: Database reference for employee lookups
+        
+        Returns:
+            Invoice data with line items
+        """
+        project = await self.get_project(project_id)
+        if not project:
+            return {"error": "Project not found"}
+        
+        # Get time logs within billing period that are not yet invoiced
+        time_logs = await self.time_logs.find({
+            "project_id": project_id,
+            "log_date": {"$gte": billing_period_from, "$lte": billing_period_to},
+            "invoiced": {"$ne": True}
+        }, {"_id": 0}).to_list(500)
+        
+        if not time_logs and not include_expenses:
+            return {"error": "No uninvoiced time logs found in this period"}
+        
+        hourly_rate = project.get("hourly_rate", 0)
+        line_items = []
+        time_log_ids = []
+        
+        if line_item_grouping == "BY_TASK":
+            # Group by task
+            tasks = await self.list_tasks(project_id)
+            task_map = {t["task_id"]: t for t in tasks}
+            
+            task_hours = {}
+            for log in time_logs:
+                task_id = log.get("task_id") or "NO_TASK"
+                if task_id not in task_hours:
+                    task_hours[task_id] = {"hours": 0, "logs": []}
+                task_hours[task_id]["hours"] += log.get("hours_logged", 0)
+                task_hours[task_id]["logs"].append(log.get("log_id"))
+            
+            for task_id, data in task_hours.items():
+                task = task_map.get(task_id, {})
+                line_items.append({
+                    "name": task.get("title") or "General Work",
+                    "description": task.get("description", ""),
+                    "quantity": round(data["hours"], 2),
+                    "unit": "hours",
+                    "rate": hourly_rate,
+                    "amount": round(data["hours"] * hourly_rate, 2),
+                    "task_id": task_id if task_id != "NO_TASK" else None
+                })
+                time_log_ids.extend(data["logs"])
+        
+        elif line_item_grouping == "BY_EMPLOYEE":
+            # Group by employee
+            employee_hours = {}
+            for log in time_logs:
+                emp_id = log.get("employee_id", "UNKNOWN")
+                if emp_id not in employee_hours:
+                    employee_hours[emp_id] = {"hours": 0, "logs": []}
+                employee_hours[emp_id]["hours"] += log.get("hours_logged", 0)
+                employee_hours[emp_id]["logs"].append(log.get("log_id"))
+            
+            for emp_id, data in employee_hours.items():
+                # Try to get employee name
+                emp_name = emp_id
+                if db:
+                    emp = await db.employees.find_one({"employee_id": emp_id}, {"_id": 0, "first_name": 1, "last_name": 1})
+                    if emp:
+                        emp_name = f"{emp.get('first_name', '')} {emp.get('last_name', '')}".strip() or emp_id
+                
+                line_items.append({
+                    "name": emp_name,
+                    "description": "Professional services",
+                    "quantity": round(data["hours"], 2),
+                    "unit": "hours",
+                    "rate": hourly_rate,
+                    "amount": round(data["hours"] * hourly_rate, 2),
+                    "employee_id": emp_id
+                })
+                time_log_ids.extend(data["logs"])
+        
+        else:  # BY_DATE
+            # Group by date
+            date_hours = {}
+            for log in time_logs:
+                log_date = log.get("log_date", "UNKNOWN")
+                if log_date not in date_hours:
+                    date_hours[log_date] = {"hours": 0, "logs": []}
+                date_hours[log_date]["hours"] += log.get("hours_logged", 0)
+                date_hours[log_date]["logs"].append(log.get("log_id"))
+            
+            for log_date, data in sorted(date_hours.items()):
+                line_items.append({
+                    "name": f"Services on {log_date}",
+                    "description": "",
+                    "quantity": round(data["hours"], 2),
+                    "unit": "hours",
+                    "rate": hourly_rate,
+                    "amount": round(data["hours"] * hourly_rate, 2),
+                    "date": log_date
+                })
+                time_log_ids.extend(data["logs"])
+        
+        # Include approved expenses if requested
+        expense_ids = []
+        if include_expenses:
+            expenses = await self.get_expenses(project_id, status="APPROVED", only_uninvoiced=True)
+            for exp in expenses:
+                line_items.append({
+                    "name": f"Expense: {exp.get('description')}",
+                    "description": exp.get("category", ""),
+                    "quantity": 1,
+                    "unit": "nos",
+                    "rate": exp.get("amount", 0),
+                    "amount": exp.get("amount", 0),
+                    "expense_id": exp.get("project_expense_id")
+                })
+                expense_ids.append(exp.get("project_expense_id"))
+        
+        total_amount = sum(item.get("amount", 0) for item in line_items)
+        total_hours = sum(item.get("quantity", 0) for item in line_items if item.get("unit") == "hours")
+        
+        return {
+            "project_id": project_id,
+            "project_name": project.get("name"),
+            "client_id": project.get("client_id"),
+            "billing_type": project.get("billing_type"),
+            "billing_period": {"from": billing_period_from, "to": billing_period_to},
+            "hourly_rate": hourly_rate,
+            "total_hours": round(total_hours, 2),
+            "line_items": line_items,
+            "sub_total": round(total_amount, 2),
+            "notes": notes or f"Project: {project.get('name')} | Period: {billing_period_from} to {billing_period_to}",
+            "time_log_ids": time_log_ids,
+            "expense_ids": expense_ids
+        }
+    
+    async def mark_time_logs_invoiced(self, log_ids: List[str], invoice_id: str) -> int:
+        """Mark time logs as invoiced"""
+        result = await self.time_logs.update_many(
+            {"log_id": {"$in": log_ids}},
+            {"$set": {"invoiced": True, "invoice_id": invoice_id}}
+        )
+        return result.modified_count
+    
+    async def mark_expenses_invoiced(self, expense_ids: List[str], invoice_id: str) -> int:
+        """Mark expenses as invoiced"""
+        result = await self.expenses.update_many(
+            {"project_expense_id": {"$in": expense_ids}},
+            {"$set": {"invoiced": True, "invoice_id": invoice_id}}
+        )
+        return result.modified_count
+    
     async def generate_invoice_data(
         self,
         project_id: str,
@@ -487,7 +657,7 @@ class ProjectsService:
         group_by: str = "task"  # "task" or "time_log"
     ) -> Dict[str, Any]:
         """
-        Generate invoice data from project
+        Generate invoice data from project (legacy method)
         
         Returns line items based on:
         - Time logs grouped by task (or individual entries)
