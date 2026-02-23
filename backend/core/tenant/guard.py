@@ -614,7 +614,7 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
             return org_id
         
         # Priority 4: User's default organization
-        if self._db and user_id:
+        if self._db is not None and user_id:
             membership = await self._db.organization_users.find_one({
                 "user_id": user_id,
                 "status": "active"
