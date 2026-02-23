@@ -1476,7 +1476,6 @@ async def get_technician_performance(
 @router.get("/inventory-valuation")
 async def get_inventory_valuation(
     request: Request,
-    org_id: Optional[str] = None,
 ):
     """
     GET /api/reports/inventory-valuation
