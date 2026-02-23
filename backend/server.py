@@ -1296,10 +1296,21 @@ async def login(credentials: UserLogin):
     user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    if not verify_password(credentials.password, user.get("password_hash", "")):
+    
+    stored_hash = user.get("password_hash", "")
+    if not verify_password(credentials.password, stored_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     if not user.get("is_active", True):
         raise HTTPException(status_code=401, detail="Account is deactivated")
+    
+    # Transparent migration: if stored hash is SHA256 (64-char hex), re-hash to bcrypt
+    if stored_hash and not (stored_hash.startswith("$2b$") or stored_hash.startswith("$2a$")):
+        new_bcrypt_hash = hash_password(credentials.password)
+        await db.users.update_one(
+            {"user_id": user["user_id"]},
+            {"$set": {"password_hash": new_bcrypt_hash}}
+        )
+        logger.info(f"Migrated SHA256 password to bcrypt for user {user['user_id']}")
     
     # Get user's organizations
     memberships = await db.organization_users.find(
