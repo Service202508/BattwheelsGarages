@@ -867,32 +867,36 @@ async def list_invoices(
     overdue_only: bool = False,
     sort_by: str = "invoice_date",
     sort_order: str = "desc",
-    page: int = 1,
-    per_page: int = 50
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
-    """List invoices with filters"""
+    """List invoices with filters and standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     # Get org context for multi-tenant scoping
     org_id = await get_org_id(request)
     query = org_query(org_id, {})
-    
+
     if customer_id:
         query["customer_id"] = customer_id
-    
+
     if status:
         query["status"] = status
     elif not overdue_only:
         query["status"] = {"$ne": "void"}
-    
+
     if overdue_only:
         query["status"] = "overdue"
-    
+
     if search:
         query["$or"] = [
             {"invoice_number": {"$regex": search, "$options": "i"}},
             {"customer_name": {"$regex": search, "$options": "i"}},
             {"reference_number": {"$regex": search, "$options": "i"}}
         ]
-    
+
     if date_from:
         query["invoice_date"] = {"$gte": date_from}
     if date_to:
@@ -900,21 +904,23 @@ async def list_invoices(
             query["invoice_date"]["$lte"] = date_to
         else:
             query["invoice_date"] = {"$lte": date_to}
-    
+
     total = await invoices_collection.count_documents(query)
-    skip = (page - 1) * per_page
+    skip = (page - 1) * limit
     sort_dir = -1 if sort_order == "desc" else 1
-    
-    invoices = await invoices_collection.find(query, {"_id": 0}).sort(sort_by, sort_dir).skip(skip).limit(per_page).to_list(per_page)
-    
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    invoices = await invoices_collection.find(query, {"_id": 0}).sort(sort_by, sort_dir).skip(skip).limit(limit).to_list(limit)
+
     return {
-        "code": 0,
-        "invoices": invoices,
-        "page_context": {
+        "data": invoices,
+        "pagination": {
             "page": page,
-            "per_page": per_page,
-            "total": total,
-            "total_pages": (total + per_page - 1) // per_page
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
         }
     }
 
