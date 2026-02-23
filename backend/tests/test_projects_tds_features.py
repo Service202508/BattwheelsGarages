@@ -568,8 +568,9 @@ class TestEmployeeTaxConfig:
     
     def test_update_employee_tax_config(self, authenticated_session):
         """Test updating employee tax config with PAN validation"""
+        # Use valid PAN format: AAAPL1234C (fourth char must be A, B, C, F, G, H, L, J, P, T, E)
         payload = {
-            "pan_number": "ABCDE1234F",
+            "pan_number": "AAAPL1234C",  # Valid PAN format for individual
             "tax_regime": "new",
             "declarations": {}
         }
