@@ -449,5 +449,31 @@ class EmailService:
         )
 
 
+    @classmethod
+    async def send_generic_email(
+        cls,
+        to_email: str,
+        subject: str,
+        body: str,
+        org_name: str = None,
+        org_logo_url: str = None,
+    ) -> dict:
+        """
+        Send a simple text/HTML email.
+        body: plain text; will be wrapped in HTML template.
+        """
+        content_html = "".join(
+            f'<p style="margin: 0 0 12px; color: #374151; font-size: 15px; line-height: 1.6;">{line}</p>'
+            for line in body.splitlines()
+            if line.strip()
+        )
+        html = cls._get_base_template(content_html, org_name=org_name, org_logo_url=org_logo_url)
+        return await cls.send_email(
+            to=to_email,
+            subject=subject,
+            html_content=html,
+        )
+
+
 # Singleton instance
 email_service = EmailService()
