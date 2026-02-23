@@ -368,7 +368,7 @@ export default function Tickets({ user }) {
         </div>
       </div>
 
-      {/* Tickets Table */}
+      {/* Tickets — Table (desktop) / Cards (mobile) */}
       <Card>
         <CardContent className="p-0">
           {loading ? (
@@ -381,63 +381,154 @@ export default function Tickets({ user }) {
               <p>No tickets found</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Ticket ID</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Vehicle</TableHead>
-                  <TableHead>Issue</TableHead>
-                  <TableHead>Priority</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Technician</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead style={{ fontFamily: "JetBrains Mono, monospace" }}>SLA</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Ticket ID</TableHead>
+                      <TableHead>Customer</TableHead>
+                      <TableHead>Vehicle</TableHead>
+                      <TableHead>Issue</TableHead>
+                      <TableHead>Priority</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Technician</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead style={{ fontFamily: "JetBrains Mono, monospace" }}>SLA</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedTickets.map((ticket) => (
+                      <TableRow
+                        key={ticket.ticket_id}
+                        onClick={() => handleRowClick(ticket)}
+                        className="cursor-pointer hover:bg-muted/50"
+                        data-testid={`ticket-row-${ticket.ticket_id}`}
+                      >
+                        <TableCell className="font-mono text-sm">{ticket.ticket_id}</TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{ticket.customer_name || "N/A"}</p>
+                            <p className="text-xs text-muted-foreground">{ticket.contact_number || ""}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-mono">{ticket.vehicle_number || "N/A"}</p>
+                            <p className="text-xs text-muted-foreground capitalize">{ticket.vehicle_type?.replace("_", " ") || ""}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="max-w-[200px] truncate">{ticket.title}</TableCell>
+                        <TableCell>
+                          <Badge className={priorityColors[ticket.priority] || "bg-[#111820]"}>
+                            {ticket.priority}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={statusColors[ticket.status] || "bg-[#111820]"}>
+                            {statusLabels[ticket.status] || ticket.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{ticket.assigned_technician_name || "-"}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {ticket.created_at ? format(new Date(ticket.created_at), "MMM dd, HH:mm") : "N/A"}
+                        </TableCell>
+                        <TableCell data-testid={`sla-cell-${ticket.ticket_id}`}>
+                          <SLACell ticket={ticket} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden divide-y divide-[rgba(255,255,255,0.06)]">
                 {paginatedTickets.map((ticket) => (
-                  <TableRow 
-                    key={ticket.ticket_id} 
-                    onClick={() => handleRowClick(ticket)}
-                    className="cursor-pointer hover:bg-muted/50"
+                  <div
+                    key={ticket.ticket_id}
                     data-testid={`ticket-row-${ticket.ticket_id}`}
+                    className="p-4"
+                    style={{ background: "rgba(17,24,32,0.5)" }}
                   >
-                    <TableCell className="font-mono text-sm">{ticket.ticket_id}</TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{ticket.customer_name || "N/A"}</p>
-                        <p className="text-xs text-muted-foreground">{ticket.contact_number || ""}</p>
+                    {/* Top row: ID + Priority + Status */}
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-xs text-[rgba(244,246,240,0.40)]">
+                        {ticket.ticket_id}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Badge className={priorityColors[ticket.priority] || "bg-[#111820]"} style={{ fontSize: "10px", padding: "2px 6px" }}>
+                          {ticket.priority}
+                        </Badge>
+                        <Badge className={statusColors[ticket.status] || "bg-[#111820]"} style={{ fontSize: "10px", padding: "2px 6px" }}>
+                          {statusLabels[ticket.status] || ticket.status}
+                        </Badge>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-mono">{ticket.vehicle_number || "N/A"}</p>
-                        <p className="text-xs text-muted-foreground capitalize">{ticket.vehicle_type?.replace("_", " ") || ""}</p>
+                    </div>
+
+                    {/* Middle: Customer + Vehicle + Title */}
+                    <p className="font-semibold text-[#F4F6F0] text-sm mb-0.5">{ticket.customer_name || "N/A"}</p>
+                    <p className="text-xs text-[rgba(244,246,240,0.45)] mb-1">
+                      {ticket.vehicle_number || "—"} {ticket.vehicle_type ? `· ${ticket.vehicle_type.replace("_", " ")}` : ""}
+                    </p>
+                    <p className="text-sm text-[rgba(244,246,240,0.70)] truncate mb-3">{ticket.title}</p>
+
+                    {/* Bottom: SLA + Start Work button */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <SLACell ticket={ticket} data-testid={`sla-cell-${ticket.ticket_id}`} />
+                        {ticket.assigned_technician_name && (
+                          <span className="text-xs text-[rgba(244,246,240,0.35)]">· {ticket.assigned_technician_name}</span>
+                        )}
                       </div>
-                    </TableCell>
-                    <TableCell className="max-w-[200px] truncate">{ticket.title}</TableCell>
-                    <TableCell>
-                      <Badge className={priorityColors[ticket.priority] || "bg-[#111820]0"}>
-                        {ticket.priority}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={statusColors[ticket.status] || "bg-[#111820]0"}>
-                        {statusLabels[ticket.status] || ticket.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{ticket.assigned_technician_name || "-"}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {ticket.created_at ? format(new Date(ticket.created_at), "MMM dd, HH:mm") : "N/A"}
-                    </TableCell>
-                    <TableCell data-testid={`sla-cell-${ticket.ticket_id}`}>
-                      <SLACell ticket={ticket} />
-                    </TableCell>
-                  </TableRow>
+                      <div className="flex gap-2">
+                        {ticket.status === "open" || ticket.status === "technician_assigned" ? (
+                          <button
+                            data-testid={`start-work-${ticket.ticket_id}`}
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              try {
+                                const res = await fetch(`${API}/tickets/${ticket.ticket_id}/start-work`, {
+                                  method: "POST", headers: getAuthHeaders()
+                                });
+                                if (res.ok) {
+                                  toast.success("Status → In Progress");
+                                  fetchTickets();
+                                }
+                              } catch {}
+                            }}
+                            style={{
+                              minHeight: "44px", padding: "0 16px",
+                              background: "rgba(200,255,0,0.10)",
+                              border: "1px solid rgba(200,255,0,0.25)",
+                              borderRadius: "4px", color: "#C8FF00",
+                              fontSize: "12px", fontFamily: "Syne, sans-serif",
+                              cursor: "pointer", display: "flex", alignItems: "center", gap: "4px"
+                            }}
+                          >
+                            ▶ Start Work
+                          </button>
+                        ) : null}
+                        <button
+                          onClick={() => handleRowClick(ticket)}
+                          style={{
+                            minHeight: "44px", padding: "0 16px",
+                            background: "rgba(255,255,255,0.05)",
+                            border: "1px solid rgba(255,255,255,0.10)",
+                            borderRadius: "4px", color: "rgba(244,246,240,0.70)",
+                            fontSize: "12px", fontFamily: "Syne, sans-serif",
+                            cursor: "pointer"
+                          }}
+                        >
+                          View
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
