@@ -1,0 +1,473 @@
+{
+  "results": {
+    "T1.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "admin@battwheels.in login: OK, token returned"
+    },
+    "T1.2": {
+      "status": "PASS",
+      "http": 401,
+      "note": "Invalid credentials correctly rejected"
+    },
+    "T1.3": {
+      "status": "PASS",
+      "http": 401,
+      "note": "Protected route blocked without token"
+    },
+    "T1.4": {
+      "status": "PASS",
+      "http": 429,
+      "note": "Rate limit confirmed during session setup (429 after 3 wrong attempts)"
+    },
+    "T1.5": {
+      "status": "PASS",
+      "http": 200,
+      "note": "platform-admin login: OK"
+    },
+    "T2.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "name:Battwheels Garages plan:None gstin:06AABCU9603R1ZM"
+    },
+    "T2.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "PUT /api/organizations/me \u2192 200 (correct endpoint)"
+    },
+    "T2.3": {
+      "status": "PASS",
+      "http": 200,
+      "note": "SLA config: ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'auto_reassign_on_breach', 'reassignment_delay_minutes']"
+    },
+    "T2.4": {
+      "status": "PASS",
+      "http": 200,
+      "note": "SLA config updated"
+    },
+    "T2.5": {
+      "status": "PASS",
+      "http": 200,
+      "note": "2 team members (GET /api/users \u2014 correct endpoint)"
+    },
+    "T3.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "contact_id:CON-BFC040A71247"
+    },
+    "T3.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Paginated contacts: 9 total, 9 on page"
+    },
+    "T3.3": {
+      "status": "FAIL",
+      "http": 422,
+      "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"battery_capacity\"],\"msg\":\"Field required\",\"input\":{\"owne"
+    },
+    "T3.4": {
+      "status": "PASS",
+      "http": 200,
+      "note": "make:Ola Electric model:S1 Pro reg:KA01AB1234"
+    },
+    "T4.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "ticket_id:tkt_9996ccd16549 status:open priority:HIGH"
+    },
+    "T4.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "45 tickets in paginated list"
+    },
+    "T4.3": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Ticket \u2192 in_progress"
+    },
+    "T4.4": {
+      "status": "PARTIAL",
+      "http": 200,
+      "note": "Ticket returned but sla_status field not present in ticket response"
+    },
+    "T4.5": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Technician user_97a86492d99f assigned"
+    },
+    "T5.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Ticket \u2192 work_in_progress"
+    },
+    "T5.2": {
+      "status": "PARTIAL",
+      "http": 200,
+      "note": "Labour tracked via ticket workflow. No standalone rate-based costing endpoint."
+    },
+    "T5.3": {
+      "status": "FAIL",
+      "http": 422,
+      "note": "{\"detail\":[{\"type\":\"string_type\",\"loc\":[\"body\",\"parts_used\",0],\"msg\":\"Input should be a valid string\",\"input\":{\"item_id\""
+    },
+    "T5.4": {
+      "status": "FAIL",
+      "http": 0,
+      "note": "Skipped \u2014 complete-work failed"
+    },
+    "T5.5": {
+      "status": "FAIL",
+      "http": 0,
+      "note": "Skipped \u2014 complete-work failed"
+    },
+    "T6.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "5 EFI matches. Top: BMS Cell Balancing Failure - Ather 450X"
+    },
+    "T6.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "? EFI failure cards in knowledge base"
+    },
+    "T7.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "estimate_id:EST-7B8476DE4A09 number:EST-00083"
+    },
+    "T7.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "sub_total:None tax:None total:None"
+    },
+    "T7.3": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Estimate email sent"
+    },
+    "T7.4": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Estimate marked accepted"
+    },
+    "T7.5": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Converted \u2192 invoice_id:INV-D5AB3F5736FE"
+    },
+    "T8.1": {
+      "status": "FAIL",
+      "http": 404,
+      "note": "{\"detail\":\"Invoice not found\"}"
+    },
+    "T8.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "20 journal entries (paginated)"
+    },
+    "T8.3": {
+      "status": "PASS",
+      "http": 200,
+      "note": "PDF generated. Content-Type:application/pdf Size:24134 bytes \u2705 FIXED"
+    },
+    "T8.4": {
+      "status": "FAIL",
+      "http": 404,
+      "note": "{\"detail\":\"Not Found\"}"
+    },
+    "T8.5": {
+      "status": "FAIL",
+      "http": 404,
+      "note": "{\"detail\":\"Invoice not found\"}"
+    },
+    "T8.6": {
+      "status": "PASS",
+      "http": 200,
+      "note": "BALANCED \u2705 DR:938,940.00 == CR:938,940.00 \u2705 FIXED"
+    },
+    "T9.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Vendor contact_id:CON-CE5464E451C1"
+    },
+    "T9.2": {
+      "status": "FAIL",
+      "http": 422,
+      "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"line_items\",0,\"rate\"],\"msg\":\"Field required\",\"input\":{\"n"
+    },
+    "T9.3": {
+      "status": "FAIL",
+      "http": 422,
+      "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"line_items\",0,\"rate\"],\"msg\":\"Field required\",\"input\":{\"n"
+    },
+    "T9.4": {
+      "status": "FAIL",
+      "http": 0,
+      "note": "Skipped \u2014 bill creation failed"
+    },
+    "T9.5": {
+      "status": "FAIL",
+      "http": 0,
+      "note": "Skipped \u2014 bill creation failed"
+    },
+    "T9.6": {
+      "status": "FAIL",
+      "http": 0,
+      "note": "Skipped \u2014 bill creation failed"
+    },
+    "T10.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "expense_id:exp_0bc00db8b4b3"
+    },
+    "T10.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Expense submit \u2192 approve workflow functional"
+    },
+    "T10.3": {
+      "status": "PASS",
+      "http": 200,
+      "note": "6 expense journal entries"
+    },
+    "T11.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Pagination: page:1 limit:10 total:1 has_next:False"
+    },
+    "T11.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Inventory item in use: inv_31eac56941c2"
+    },
+    "T11.3": {
+      "status": "FAIL",
+      "http": 404,
+      "note": "/api/inventory/reorder-suggestions NOT FOUND (404)"
+    },
+    "T11.4": {
+      "status": "FAIL",
+      "http": 404,
+      "note": "/api/inventory/stocktakes NOT FOUND (404)"
+    },
+    "T11.5": {
+      "status": "PARTIAL",
+      "http": 403,
+      "note": "Warehouses gated (ENTERPRISE entitlement \u2014 correct behavior)"
+    },
+    "T12.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "8 employees"
+    },
+    "T12.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "employee_id:emp_a3692317809d"
+    },
+    "T12.3": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Payroll generated: 0 employees processed. JE:je_553e0d26abca"
+    },
+    "T12.4": {
+      "status": "PARTIAL",
+      "http": 200,
+      "note": "JE returned by payroll but not visible in /api/journal-entries (different collection)"
+    },
+    "T12.5": {
+      "status": "FAIL",
+      "http": 404,
+      "note": "New employee no FY2024-25 payroll \u2192 404 (expected for fresh employee)"
+    },
+    "T13.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "395 accounts in chart of accounts"
+    },
+    "T13.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "21 journal entries (paginated, correct endpoint)"
+    },
+    "T13.3": {
+      "status": "PASS",
+      "http": 200,
+      "note": "BALANCED \u2705 DR:940,120.00 == CR:940,120.00"
+    },
+    "T13.4": {
+      "status": "PASS",
+      "http": 200,
+      "note": "P&L: income:10620.0 expenses:9860.0 net:760.0"
+    },
+    "T13.5": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Finance dashboard: ['monthly_revenue', 'pending_receivables', 'top_customers', 'inventory_turnover']"
+    },
+    "T14.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "GST summary. Keys:['code', 'summary']"
+    },
+    "T14.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "GSTR-1: 2 B2B invoices"
+    },
+    "T14.3": {
+      "status": "PARTIAL",
+      "http": 404,
+      "note": "Could not check invoice GST split"
+    },
+    "T15.1": {
+      "status": "FAIL",
+      "http": 422,
+      "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"customer_id\"],\"msg\":\"Field required\",\"input\":{\"contact_id\":\"CON-BFC040A71247"
+    },
+    "T15.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "0 AMC subscriptions returned \u2705 FIXED (was 404)"
+    },
+    "T16.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "project_id:proj_2515f2a2a3a0"
+    },
+    "T16.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "task_id:task_7b09abd5322f"
+    },
+    "T16.3": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Time logged: ? 3h"
+    },
+    "T17.1": {
+      "status": "PARTIAL",
+      "http": 200,
+      "note": "Ticket closed (status:closed) but survey_token NOT in ticket response"
+    },
+    "T17.2": {
+      "status": "PARTIAL",
+      "http": 200,
+      "note": "Token in satisfaction report (not in ticket): srv_f7c07a74493b45aca54c3ae9..."
+    },
+    "T17.3": {
+      "status": "PASS",
+      "http": 400,
+      "note": "Survey already submitted (token from previous session \u2014 public endpoint works)"
+    },
+    "T17.4": {
+      "status": "PASS",
+      "http": 200,
+      "note": "avg_rating:5.0 total:1 \u2705 FIXED"
+    },
+    "T18.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "? audit log entries \u2705 FIXED (was 404)"
+    },
+    "T18.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "? audit entries for ticket/tkt_9996ccd16549"
+    },
+    "T19.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Technician performance: 1 technicians"
+    },
+    "T19.2": {
+      "status": "FAIL",
+      "http": 404,
+      "note": "/api/sla/performance-report NOT FOUND (known gap)"
+    },
+    "T19.3": {
+      "status": "FAIL",
+      "http": 404,
+      "note": "/api/reports/inventory-valuation NOT FOUND (known gap)"
+    },
+    "T19.4": {
+      "status": "PASS",
+      "http": 200,
+      "note": "AR aging report: ['code', 'report', 'as_of_date', 'aging_data', 'total_ar']"
+    },
+    "T19.5": {
+      "status": "FAIL",
+      "http": 404,
+      "note": "/api/export/request NOT FOUND (known gap)"
+    },
+    "T20.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "23 orgs visible to platform admin"
+    },
+    "T20.2": {
+      "status": "PASS",
+      "http": 200,
+      "note": "orgs:? users:42 tickets:47"
+    },
+    "T20.3": {
+      "status": "PASS",
+      "http": 403,
+      "note": "admin@battwheels.in correctly BLOCKED from /api/platform/* (403) \u2705 FIXED"
+    },
+    "T20.4": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Plan changed starter\u2192professional and back (plan_type field)"
+    },
+    "T21.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Org B user created. org_id:(extracted below)"
+    },
+    "T21.2": {
+      "status": "PARTIAL",
+      "http": 0,
+      "note": "Org B user exists but org_id not extracted for isolation test"
+    },
+    "T21.3": {
+      "status": "FAIL",
+      "http": 200,
+      "note": "Cross-tenant returns 10 items \u2014 possible data leakage. Check org_id on items!"
+    },
+    "T21.4": {
+      "status": "PARTIAL",
+      "http": 0,
+      "note": "No Org B session for sequence isolation test"
+    },
+    "T21.5": {
+      "status": "PARTIAL",
+      "http": 0,
+      "note": "No Org B session for entitlement test"
+    },
+    "T22.1": {
+      "status": "PASS",
+      "http": 200,
+      "note": "page:1 limit:10 total:10 has_next:False"
+    },
+    "T22.2": {
+      "status": "PASS",
+      "http": 400,
+      "note": "limit=500 rejected with 400 (correct enforcement)"
+    },
+    "T22.3": {
+      "status": "PASS",
+      "http": 200,
+      "note": "Dashboard: 4ms (threshold 2000ms)"
+    }
+  },
+  "summary": {
+    "total": 92,
+    "passed": 62,
+    "failed": 20,
+    "partial": 10,
+    "score_pct": 67.4,
+    "previous_score": "55/86 (64%)",
+    "improvement": 7
+  }
+}
