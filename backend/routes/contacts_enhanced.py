@@ -1063,6 +1063,7 @@ async def list_contacts(
             contact["balance"] = {"total_receivable": 0, "total_payable": 0}
 
     return {
+        "contacts": contacts,
         "data": contacts,
         "pagination": {
             "page": page,
