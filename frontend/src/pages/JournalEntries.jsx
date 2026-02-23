@@ -1200,6 +1200,44 @@ const JournalEntries = () => {
     window.open(url, '_blank');
   };
 
+  const [showTallyModal, setShowTallyModal] = useState(false);
+  const [tallyDateFrom, setTallyDateFrom] = useState(() => {
+    const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+  });
+  const [tallyDateTo, setTallyDateTo] = useState(() => {
+    const d = new Date(); return d.toISOString().split('T')[0];
+  });
+  const [exportingTally, setExportingTally] = useState(false);
+
+  const handleExportTally = async () => {
+    setExportingTally(true);
+    try {
+      const token = localStorage.getItem('token');
+      const orgId = localStorage.getItem('organization_id');
+      const res = await fetch(
+        `${API_URL}/api/finance/export/tally-xml?date_from=${tallyDateFrom}&date_to=${tallyDateTo}`,
+        { headers: { Authorization: `Bearer ${token}`, 'X-Organization-ID': orgId || '' } }
+      );
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.detail || 'Export failed');
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tally-${tallyDateFrom}-${tallyDateTo}.xml`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setShowTallyModal(false);
+    } catch (e) {
+      alert('Export failed: ' + e.message);
+    } finally {
+      setExportingTally(false);
+    }
+  };
+
   const entryTypes = [
     'SALES', 'PURCHASE', 'PAYMENT', 'RECEIPT', 
     'EXPENSE', 'PAYROLL', 'DEPRECIATION', 'JOURNAL'
