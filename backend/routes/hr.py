@@ -1353,7 +1353,8 @@ async def get_form16_data(
 async def download_form16_pdf(
     employee_id: str,
     fy: str,
-    request: Request
+    request: Request,
+    _: None = Depends(require_feature("hr_payroll"))
 ):
     """
     Generate and download Form 16 as PDF.
@@ -1682,7 +1683,8 @@ def _generate_form16_html(f16: dict) -> str:
 
 
 @router.get("/payroll/form16/bulk/{fy}")
-async def download_bulk_form16_zip(fy: str, request: Request):
+async def download_bulk_form16_zip(fy: str, request: Request,
+                                   _: None = Depends(require_feature("hr_payroll"))):
     """
     Generate Form 16 PDFs for ALL active employees and return as a ZIP file.
     GET /api/hr/payroll/form16/bulk/{fy}
