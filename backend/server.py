@@ -5090,6 +5090,14 @@ try:
 except Exception as e:
     logger.error(f"Failed to load Razorpay routes: {e}")
 
+# Include E-Invoice IRN routes
+try:
+    from routes.einvoice import router as einvoice_router
+    api_router.include_router(einvoice_router)
+    logger.info("E-Invoice IRN routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load E-Invoice routes: {e}")
+
 # Include Financial Reports routes
 try:
     from routes.reports import router as reports_router
