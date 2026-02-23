@@ -1914,7 +1914,7 @@ async def return_allocation(allocation_id: str, request: Request):
 # ==================== PURCHASE ORDER ROUTES ====================
 
 @api_router.post("/purchase-orders")
-async def create_purchase_order(data: PurchaseOrderCreate, request: Request):
+async def create_purchase_order(data: PurchaseOrderCreate, request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     user = await require_technician_or_admin(request)
     
     # Get supplier
