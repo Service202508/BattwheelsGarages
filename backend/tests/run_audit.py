@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 import os
 import sys
 
-BASE_URL = os.environ.get('API_BASE_URL', 'https://gst-irn-preview.preview.emergentagent.com')
+BASE_URL = os.environ.get('API_BASE_URL', 'https://tax-invoice-portal-1.preview.emergentagent.com')
 API_URL = f"{BASE_URL}/api"
 
 # Test credentials

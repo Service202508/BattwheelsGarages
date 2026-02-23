@@ -809,9 +809,9 @@ The Public Ticket Form (`/submit-ticket`) was redesigned from a rejected dark th
 3. **Real-time Sync:** Tickets submitted via public form are stored in the same `tickets` collection used by the admin panel - instant sync
 
 **Public URL for Domain Mapping:**
-- **Service Request Form:** `https://gst-irn-preview.preview.emergentagent.com/submit-ticket`
-- **Ticket Tracking:** `https://gst-irn-preview.preview.emergentagent.com/track-ticket`
-- **Admin Panel:** `https://gst-irn-preview.preview.emergentagent.com/login`
+- **Service Request Form:** `https://tax-invoice-portal-1.preview.emergentagent.com/submit-ticket`
+- **Ticket Tracking:** `https://tax-invoice-portal-1.preview.emergentagent.com/track-ticket`
+- **Admin Panel:** `https://tax-invoice-portal-1.preview.emergentagent.com/login`
 
 ---
 

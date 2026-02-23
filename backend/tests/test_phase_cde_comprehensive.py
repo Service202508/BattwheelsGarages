@@ -17,7 +17,7 @@ import pytest
 import httpx
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://gst-irn-preview.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://tax-invoice-portal-1.preview.emergentagent.com').rstrip('/')
 ADMIN_EMAIL = "admin@battwheels.in"
 ADMIN_PASSWORD = "admin123"
 TECH_EMAIL = "deepak@battwheelsgarages.in"
