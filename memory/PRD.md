@@ -37,7 +37,7 @@ Battwheels OS is a multi-tenant SaaS platform for EV service management. It prov
 - API versioning `/api/v1/`
 - Webhook delivery system (defined in models, not built)
 - Custom roles per org (hardcoded 7 roles)
-- Full entitlement enforcement at API level (model exists, rarely applied)
+- ~~Full entitlement enforcement at API level (model exists, rarely applied)~~ ✅ **DONE: Feb 2026**
 - Custom domain / subdomain routing
 - Data export + deletion per tenant (GDPR)
 - SSO/SAML
