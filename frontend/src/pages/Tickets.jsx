@@ -378,7 +378,9 @@ export default function Tickets({ user }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedTickets.map((ticket) => (
+                {paginatedTickets.map((ticket) => {
+                  const slaInfo = getSLAIndicator(ticket);
+                  return (
                   <TableRow 
                     key={ticket.ticket_id} 
                     onClick={() => handleRowClick(ticket)}
@@ -410,10 +412,10 @@ export default function Tickets({ user }) {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {getSLAIndicator(ticket) ? (
-                        <span className={"inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full " + getSLAIndicator(ticket).cls}>
-                          <span className={"w-1.5 h-1.5 rounded-full " + getSLAIndicator(ticket).dot}></span>
-                          {getSLAIndicator(ticket).label}
+                      {slaInfo ? (
+                        <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${slaInfo.cls}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${slaInfo.dot}`}></span>
+                          {slaInfo.label}
                         </span>
                       ) : (
                         <span className="text-xs text-[rgba(244,246,240,0.2)]">—</span>
