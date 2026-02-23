@@ -1142,19 +1142,23 @@ async def list_estimates(
     search: Optional[str] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
-    expiry_status: Optional[str] = None,  # active, expired
-    page: int = 1,
-    per_page: int = 50
+    expiry_status: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
-    """List estimates with filters"""
+    """List estimates with filters and standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     query = {}
-    
+
     if status:
         query["status"] = status
-    
+
     if customer_id:
         query["customer_id"] = customer_id
-    
+
     if search:
         query["$or"] = [
             {"estimate_number": {"$regex": search, "$options": "i"}},
@@ -1162,7 +1166,7 @@ async def list_estimates(
             {"customer_name": {"$regex": search, "$options": "i"}},
             {"subject": {"$regex": search, "$options": "i"}}
         ]
-    
+
     if date_from:
         query["date"] = {"$gte": date_from}
     if date_to:
@@ -1170,28 +1174,29 @@ async def list_estimates(
             query["date"]["$lte"] = date_to
         else:
             query["date"] = {"$lte": date_to}
-    
-    # Check expiry
+
     today = datetime.now(timezone.utc).date().isoformat()
     if expiry_status == "expired":
         query["expiry_date"] = {"$lt": today}
         query["status"] = {"$nin": ["accepted", "declined", "converted", "void"]}
     elif expiry_status == "active":
         query["expiry_date"] = {"$gte": today}
-    
+
     total = await estimates_collection.count_documents(query)
-    skip = (page - 1) * per_page
-    
-    estimates = await estimates_collection.find(query, {"_id": 0}).sort("date", -1).skip(skip).limit(per_page).to_list(per_page)
-    
+    skip = (page - 1) * limit
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    estimates = await estimates_collection.find(query, {"_id": 0}).sort("date", -1).skip(skip).limit(limit).to_list(limit)
+
     return {
-        "code": 0,
-        "estimates": estimates,
-        "page_context": {
+        "data": estimates,
+        "pagination": {
             "page": page,
-            "per_page": per_page,
-            "total": total,
-            "total_pages": (total + per_page - 1) // per_page
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
         }
     }
 
