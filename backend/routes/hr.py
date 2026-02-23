@@ -453,3 +453,407 @@ async def get_my_payroll(request: Request):
         {"employee_id": employee["employee_id"]},
         {"_id": 0}
     ).sort("generated_at", -1).to_list(24)
+
+
+# ==================== TDS ROUTES (P1) ====================
+
+class TaxConfigUpdateRequest(BaseModel):
+    """Employee tax configuration"""
+    pan_number: Optional[str] = None
+    tax_regime: str = "new"  # "new" or "old"
+    declarations: dict = {}  # Chapter VIA declarations
+
+
+class TDSChallanRequest(BaseModel):
+    """TDS Challan deposit record"""
+    quarter: str  # Q1, Q2, Q3, Q4
+    financial_year: str
+    challan_number: str
+    deposit_date: str
+    amount: float
+    bank_name: Optional[str] = None
+
+
+@router.put("/employees/{employee_id}/tax-config")
+async def update_employee_tax_config(
+    employee_id: str,
+    data: TaxConfigUpdateRequest,
+    request: Request
+):
+    """
+    Update employee tax configuration (Step 1)
+    - PAN number with validation
+    - Tax regime (New/Old)
+    - Old regime declarations (HRA, 80C, 80D, etc.)
+    """
+    from services.tds_service import validate_pan
+    
+    service = get_service()
+    
+    employee = await service.get_employee(employee_id)
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    # Validate PAN if provided
+    if data.pan_number:
+        is_valid, message = validate_pan(data.pan_number)
+        if not is_valid:
+            raise HTTPException(status_code=400, detail=message)
+    
+    tax_config = {
+        "pan_number": data.pan_number.upper() if data.pan_number else None,
+        "tax_regime": data.tax_regime,
+        "declarations": data.declarations,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await service.db.employees.update_one(
+        {"employee_id": employee_id},
+        {"$set": {
+            "tax_config": tax_config,
+            "pan_number": tax_config["pan_number"]
+        }}
+    )
+    
+    return {
+        "code": 0,
+        "message": "Tax configuration updated",
+        "tax_config": tax_config
+    }
+
+
+@router.get("/employees/{employee_id}/tax-config")
+async def get_employee_tax_config(employee_id: str, request: Request):
+    """Get employee tax configuration"""
+    service = get_service()
+    
+    employee = await service.get_employee(employee_id)
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    return {
+        "employee_id": employee_id,
+        "tax_config": employee.get("tax_config", {
+            "pan_number": employee.get("pan_number"),
+            "tax_regime": "new",
+            "declarations": {}
+        })
+    }
+
+
+@router.get("/tds/calculate/{employee_id}")
+async def calculate_employee_tds(
+    employee_id: str,
+    request: Request,
+    month: int = Query(None, ge=1, le=12),
+    year: int = Query(None)
+):
+    """
+    Calculate TDS for an employee (Step 2)
+    
+    Returns:
+    - Annual tax calculation breakdown
+    - Monthly TDS amount
+    - YTD TDS deducted
+    """
+    from services.tds_service import init_tds_service, get_tds_calculator
+    
+    service = get_service()
+    
+    # Initialize TDS service if not done
+    try:
+        tds_calc = get_tds_calculator()
+    except:
+        init_tds_service(service.db)
+        tds_calc = get_tds_calculator()
+    
+    employee = await service.get_employee(employee_id)
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    # Default to current month
+    now = datetime.now(timezone.utc)
+    month = month or now.month
+    year = year or now.year
+    
+    # Get tax config
+    tax_config = employee.get("tax_config", {
+        "pan_number": employee.get("pan_number"),
+        "tax_regime": "new",
+        "declarations": {}
+    })
+    
+    # Get salary structure
+    salary_structure = employee.get("salary_structure", {})
+    
+    # Determine financial year
+    fy_start_year = year if month >= 4 else year - 1
+    financial_year = f"{fy_start_year}-{str(fy_start_year + 1)[-2:]}"
+    
+    # Get YTD TDS
+    ytd_tds = await tds_calc.get_ytd_tds(employee_id, financial_year)
+    
+    # Calculate monthly TDS
+    result = await tds_calc.calculate_monthly_tds(
+        employee_id=employee_id,
+        month=month,
+        year=year,
+        salary_structure=salary_structure,
+        tax_config=tax_config,
+        ytd_tds_deducted=ytd_tds
+    )
+    
+    return {
+        "code": 0,
+        "employee_id": employee_id,
+        "employee_name": f"{employee.get('first_name', '')} {employee.get('last_name', '')}".strip(),
+        **result
+    }
+
+
+@router.get("/payroll/tds-summary")
+async def get_tds_summary(
+    request: Request,
+    month: int = Query(None, ge=1, le=12),
+    year: int = Query(None)
+):
+    """
+    Get TDS summary for all employees (Step 4)
+    
+    Shows:
+    - Per employee TDS breakdown
+    - Total TDS this month
+    - Total TDS YTD
+    - TDS due date alerts
+    """
+    from services.tds_service import init_tds_service, get_tds_calculator
+    
+    service = get_service()
+    
+    # Initialize TDS service if not done
+    try:
+        tds_calc = get_tds_calculator()
+    except:
+        init_tds_service(service.db)
+        tds_calc = get_tds_calculator()
+    
+    now = datetime.now(timezone.utc)
+    month = month or now.month
+    year = year or now.year
+    
+    # Get all active employees
+    employees = await service.list_employees(status="active")
+    
+    # Calculate TDS for each
+    summary = []
+    total_tds_month = 0
+    total_tds_ytd = 0
+    
+    fy_start_year = year if month >= 4 else year - 1
+    financial_year = f"{fy_start_year}-{str(fy_start_year + 1)[-2:]}"
+    
+    for emp in employees:
+        tax_config = emp.get("tax_config", {
+            "pan_number": emp.get("pan_number"),
+            "tax_regime": "new",
+            "declarations": {}
+        })
+        salary_structure = emp.get("salary_structure", {})
+        
+        ytd_tds = await tds_calc.get_ytd_tds(emp["employee_id"], financial_year)
+        
+        try:
+            result = await tds_calc.calculate_monthly_tds(
+                employee_id=emp["employee_id"],
+                month=month,
+                year=year,
+                salary_structure=salary_structure,
+                tax_config=tax_config,
+                ytd_tds_deducted=ytd_tds
+            )
+            
+            summary.append({
+                "employee_id": emp["employee_id"],
+                "employee_name": f"{emp.get('first_name', '')} {emp.get('last_name', '')}".strip(),
+                "pan_number": tax_config.get("pan_number"),
+                "tax_regime": tax_config.get("tax_regime", "new"),
+                "gross_monthly": salary_structure.get("basic", 0) + salary_structure.get("hra", 0) + 
+                                salary_structure.get("da", 0) + salary_structure.get("special_allowance", 0),
+                "annual_tax_liability": result["annual_tax_liability"],
+                "monthly_tds": result["monthly_tds"],
+                "ytd_tds": ytd_tds
+            })
+            
+            total_tds_month += result["monthly_tds"]
+            total_tds_ytd += ytd_tds
+            
+        except Exception as e:
+            logger.warning(f"Failed to calculate TDS for {emp['employee_id']}: {e}")
+    
+    # TDS due date calculation
+    # TDS due by 7th of next month
+    if month == 12:
+        due_month = 1
+        due_year = year + 1
+    else:
+        due_month = month + 1
+        due_year = year
+    
+    due_date = f"{due_year}-{str(due_month).zfill(2)}-07"
+    
+    # Check if overdue
+    is_overdue = False
+    is_due_soon = False
+    current_day = now.day
+    
+    if now.month == due_month and now.year == due_year:
+        if current_day <= 7:
+            is_due_soon = True
+        else:
+            is_overdue = True
+    elif (now.year > due_year) or (now.year == due_year and now.month > due_month):
+        is_overdue = True
+    
+    return {
+        "code": 0,
+        "month": month,
+        "year": year,
+        "financial_year": financial_year,
+        "employees": summary,
+        "total_tds_this_month": round(total_tds_month, 2),
+        "total_tds_ytd": round(total_tds_ytd, 2),
+        "tds_due_date": due_date,
+        "tds_due_alert": {
+            "is_due_soon": is_due_soon,
+            "is_overdue": is_overdue,
+            "message": (
+                f"TDS OVERDUE — ₹{total_tds_month:,.0f} was due on 7th. Interest @ 1.5% per month applies under Section 201(1A)."
+                if is_overdue else
+                f"TDS for last month due by 7th. Amount: ₹{total_tds_month:,.0f}. Mark as deposited after payment."
+                if is_due_soon else None
+            )
+        }
+    }
+
+
+@router.post("/tds/challan")
+async def record_tds_challan(data: TDSChallanRequest, request: Request):
+    """Record TDS challan deposit"""
+    import uuid
+    
+    service = get_service()
+    user = await get_current_user(request, service.db)
+    org_id = await get_org_id(request, service.db)
+    
+    challan_id = f"challan_{uuid.uuid4().hex[:12]}"
+    
+    challan = {
+        "challan_id": challan_id,
+        "organization_id": org_id,
+        "quarter": data.quarter,
+        "financial_year": data.financial_year,
+        "challan_number": data.challan_number,
+        "deposit_date": data.deposit_date,
+        "amount": data.amount,
+        "bank_name": data.bank_name,
+        "recorded_by": user.get("user_id"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await service.db.tds_challans.insert_one(challan)
+    
+    return {
+        "code": 0,
+        "message": "TDS challan recorded",
+        "challan": {k: v for k, v in challan.items() if k != "_id"}
+    }
+
+
+@router.get("/tds/challans")
+async def list_tds_challans(
+    request: Request,
+    financial_year: Optional[str] = None
+):
+    """List TDS challans"""
+    service = get_service()
+    org_id = await get_org_id(request, service.db)
+    
+    query = {"organization_id": org_id}
+    if financial_year:
+        query["financial_year"] = financial_year
+    
+    challans = await service.db.tds_challans.find(query, {"_id": 0}).sort("deposit_date", -1).to_list(100)
+    
+    return {"code": 0, "challans": challans}
+
+
+@router.get("/payroll/form16/{employee_id}/{assessment_year}")
+async def get_form16_data(
+    employee_id: str,
+    assessment_year: str,
+    request: Request
+):
+    """
+    Get Form 16 data for an employee (Step 5)
+    
+    Args:
+        employee_id: Employee ID
+        assessment_year: e.g., "2025-26" for FY 2024-25
+    """
+    from services.tds_service import init_tds_service, get_form16_generator
+    
+    service = get_service()
+    org_id = await get_org_id(request, service.db)
+    
+    # Initialize TDS service if not done
+    try:
+        form16_gen = get_form16_generator()
+    except:
+        init_tds_service(service.db)
+        form16_gen = get_form16_generator()
+    
+    # Get employer details
+    org = await service.db.organizations.find_one(
+        {"organization_id": org_id},
+        {"_id": 0}
+    ) or {}
+    
+    employer_details = {
+        "organization_id": org_id,
+        "tan": org.get("tan_number"),
+        "pan": org.get("pan_number", org.get("gstin", "")[2:12] if org.get("gstin") else None),
+        "name": org.get("company_name", org.get("name")),
+        "address": f"{org.get('address', '')} {org.get('city', '')} {org.get('pincode', '')}".strip()
+    }
+    
+    try:
+        form16_data = await form16_gen.generate_form16_data(
+            employee_id=employee_id,
+            assessment_year=assessment_year,
+            employer_details=employer_details
+        )
+        
+        return {"code": 0, "form16": form16_data}
+        
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(f"Form 16 generation failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Helper for org_id
+async def get_org_id(request: Request, db) -> Optional[str]:
+    """Extract organization ID from request"""
+    try:
+        auth_header = request.headers.get("authorization", "")
+        if auth_header.startswith("Bearer "):
+            import jwt
+            import os
+            token = auth_header.split(" ")[1]
+            payload = jwt.decode(token, os.environ.get("JWT_SECRET", "battwheels-secret"), algorithms=["HS256"])
+            return payload.get("org_id")
+    except:
+        pass
+    return None
+
