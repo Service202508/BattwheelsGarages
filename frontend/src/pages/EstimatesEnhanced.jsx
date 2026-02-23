@@ -1572,41 +1572,13 @@ export default function EstimatesEnhanced() {
                     <tbody>
                       {/* Existing Line Items */}
                       {newEstimate.line_items.map((item, idx) => (
-                        <tr key={idx} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#111820]">
-                          <td className="px-3 py-2">
-                            <div className="font-medium">{item.name}</div>
-                            {item.description && <div className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</div>}
-                            {item.hsn_code && <div className="text-xs text-[rgba(244,246,240,0.25)]">HSN: {item.hsn_code}</div>}
-                            {item.price_list_applied && (
-                              <span className="text-[10px] text-[#22C55E] bg-[rgba(34,197,94,0.08)] px-1 rounded">
-                                {item.price_list_applied}
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-3 py-2 text-center">{item.quantity} {item.unit}</td>
-                          <td className="px-3 py-2 text-center">
-                            ₹{item.rate?.toLocaleString('en-IN')}
-                            {item.base_rate && item.base_rate !== item.rate && (
-                              <div className="text-[10px] text-[rgba(244,246,240,0.25)] line-through">₹{item.base_rate}</div>
-                            )}
-                          </td>
-                          <td className="px-3 py-2 text-center">
-                            {item.discount_type === 'amount' ? (
-                              <span>₹{item.discount_value || 0}</span>
-                            ) : (
-                              <span>{item.discount_percent || 0}%</span>
-                            )}
-                          </td>
-                          <td className="px-3 py-2 text-center">
-                            <Badge variant="outline" className="text-xs">{item.tax_percentage}% GST</Badge>
-                          </td>
-                          <td className="px-3 py-2 text-right font-medium">₹{(item.total || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-                          <td className="px-3 py-2">
-                            <Button size="icon" variant="ghost" onClick={() => removeLineItem(idx)} className="h-7 w-7">
-                              <X className="h-4 w-4 text-red-500" />
-                            </Button>
-                          </td>
-                        </tr>
+                        <EstimateLineItemRow 
+                          key={idx}
+                          item={item}
+                          index={idx}
+                          onRemove={removeLineItem}
+                          readOnly={false}
+                        />
                       ))}
                       
                       {/* New Item Row - Searchable */}
