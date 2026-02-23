@@ -2049,7 +2049,7 @@ export default function InvoicesEnhanced() {
                   {selectedInvoice.status !== "draft" && selectedInvoice.status !== "cancelled" && selectedInvoice.balance_due > 0 && (
                     <Button 
                       size="sm" 
-                      className="bg-[#22C55E] hover:bg-green-600 text-[#080C0F]" 
+                      className="bg-[#22C55E] hover:bg-[#16a34a] text-[#080C0F]" 
                       onClick={() => { setNewPayment({ ...newPayment, amount: selectedInvoice.balance_due }); setShowPaymentDialog(true); }}
                       data-testid="record-payment-btn"
                     >
@@ -2612,7 +2612,7 @@ export default function InvoicesEnhanced() {
           
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPaymentDialog(false)}>Cancel</Button>
-            <Button onClick={handleRecordPayment} className="bg-[#22C55E] hover:bg-green-600 text-[#080C0F]" data-testid="submit-payment-btn">Record Payment</Button>
+            <Button onClick={handleRecordPayment} className="bg-[#22C55E] hover:bg-[#16a34a] text-[#080C0F]" data-testid="submit-payment-btn">Record Payment</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
