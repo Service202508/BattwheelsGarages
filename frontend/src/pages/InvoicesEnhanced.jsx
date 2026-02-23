@@ -664,7 +664,7 @@ export default function InvoicesEnhanced() {
     }
   };
   
-  // Cancel IRN
+  // Cancel IRN (5A)
   const handleCancelIRN = async () => {
     if (!selectedInvoice?.irn || !irnCancelReason) {
       toast.error("Please select a cancellation reason");
@@ -686,17 +686,28 @@ export default function InvoicesEnhanced() {
       const data = await res.json();
       
       if (data.code === 0 && data.success) {
-        toast.success("IRN cancelled successfully");
+        toast.success("IRN cancelled successfully. Raise a new invoice with a new invoice number.", {
+          duration: 5000
+        });
         setShowIrnCancelDialog(false);
         setIrnCancelReason("");
         setIrnCancelRemarks("");
         fetchInvoiceDetail(selectedInvoice.invoice_id);
         fetchData();
       } else {
-        toast.error(data.message || "Failed to cancel IRN");
+        // Enhanced error handling (5A)
+        const errorMsg = data.message || "Failed to cancel IRN";
+        if (errorMsg.toLowerCase().includes("24 hour") || errorMsg.toLowerCase().includes("window") || errorMsg.toLowerCase().includes("expired")) {
+          toast.error("IRN cancellation window has expired. Contact your CA or GST consultant for amendment procedures.", {
+            duration: 8000
+          });
+        } else {
+          // Display exact IRP error message for resolution
+          toast.error(errorMsg, { duration: 6000 });
+        }
       }
     } catch (e) {
-      toast.error("Failed to cancel IRN");
+      toast.error("Failed to cancel IRN. Please try again.");
     } finally {
       setIrnLoading(false);
     }
