@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-23T20:40:30.838489",
+  "timestamp": "2026-02-23T20:46:15.373516",
   "target": "https://revenue-health-dash.preview.emergentagent.com",
   "total_tests": 103,
   "passed": 103,
@@ -102,7 +102,7 @@
       "n": 16,
       "test": "Item Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"code\":0,\"message\":\"Item created successfully\",\"item\":{\"item_id\":\"I-93F16B70A0B"
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Item created successfully\",\"item\":{\"item_id\":\"I-C12CA1854D2"
     },
     {
       "n": 17,
@@ -168,7 +168,7 @@
       "n": 27,
       "test": "Contact Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"code\":0,\"message\":\"Contact created\",\"contact\":{\"contact_id\":\"CON-8E260E06CFAB\""
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Contact created\",\"contact\":{\"contact_id\":\"CON-D9415D806948\""
     },
     {
       "n": 28,
@@ -204,7 +204,7 @@
       "n": 33,
       "test": "Vehicle Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"vehicle_id\":\"veh_91df49c024c9\",\"owner_id\":\"user_a194add87d03\",\"owner_name\":\"Audit Customer 1771878"
+      "detail": "HTTP 200 {\"vehicle_id\":\"veh_2373fb13bd6a\",\"owner_id\":\"user_a194add87d03\",\"owner_name\":\"Audit Customer 1771878"
     },
     {
       "n": 34,
@@ -234,7 +234,7 @@
       "n": 38,
       "test": "Ticket Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"ticket_id\":\"tkt_bfb63c7eb1bb\",\"title\":\"Audit Ticket 1771879221\",\"description\":\"Battery drain issue"
+      "detail": "HTTP 200 {\"ticket_id\":\"tkt_ef83ad81be2a\",\"title\":\"Audit Ticket 1771879565\",\"description\":\"Battery drain issue"
     },
     {
       "n": 39,
@@ -246,13 +246,13 @@
       "n": 40,
       "test": "Ticket Status Update",
       "status": "PASS",
-      "detail": "HTTP 200 {\"ticket_id\":\"tkt_bfb63c7eb1bb\",\"title\":\"Audit Ticket 1771879221\",\"description\":"
+      "detail": "HTTP 200 {\"ticket_id\":\"tkt_ef83ad81be2a\",\"title\":\"Audit Ticket 1771879565\",\"description\":"
     },
     {
       "n": 41,
       "test": "Ticket Add Update/Comment",
       "status": "PASS",
-      "detail": "HTTP 200 {\"activity_id\":\"act_a12fc305a2dd\",\"ticket_id\":\"tkt_bfb63c7eb1bb\",\"action\":\"note\""
+      "detail": "HTTP 200 {\"activity_id\":\"act_16be32a05767\",\"ticket_id\":\"tkt_ef83ad81be2a\",\"action\":\"note\""
     },
     {
       "n": 42,
@@ -282,7 +282,7 @@
       "n": 46,
       "test": "Estimate Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"code\":0,\"message\":\"Estimate created\",\"estimate\":{\"estimate_id\":\"EST-389882A9AB"
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Estimate created\",\"estimate\":{\"estimate_id\":\"EST-201A1E5E1C"
     },
     {
       "n": 47,
@@ -312,7 +312,7 @@
       "n": 51,
       "test": "Invoice Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"code\":0,\"message\":\"Invoice created\",\"invoice\":{\"invoice_id\":\"INV-26625E9698E5\",\"invoice_number\":\"I"
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Invoice created\",\"invoice\":{\"invoice_id\":\"INV-DC1371563790\",\"invoice_number\":\"I"
     },
     {
       "n": 52,
@@ -396,7 +396,7 @@
       "n": 65,
       "test": "Sales Order Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"code\":0,\"message\":\"Sales Order created\",\"salesorder\":{\"salesorder_id\":\"SO-D6FD"
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Sales Order created\",\"salesorder\":{\"salesorder_id\":\"SO-1A8E"
     },
     {
       "n": 66,
