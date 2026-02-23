@@ -42,26 +42,6 @@ const priorityColors = {
   critical: "bg-[rgba(255,59,47,0.20)] text-red-400"
 };
 
-function getSLAIndicator(ticket) {
-  const now = new Date();
-  const due = ticket.sla_resolution_due_at ? new Date(ticket.sla_resolution_due_at) : null;
-  if (!due) return null;
-  if (ticket.sla_resolution_breached) {
-    if (["resolved", "closed"].includes(ticket.status)) return null;
-    return { label: "SLA Breached", cls: "bg-red-500/15 text-red-400 border border-red-500/20", dot: "bg-red-400" };
-  }
-  if (["resolved", "closed"].includes(ticket.status)) return null;
-  const remaining = (due - now) / 60000;
-  if (remaining <= 0) return { label: "SLA Breached", cls: "bg-red-500/15 text-red-400 border border-red-500/20", dot: "bg-red-400" };
-  if (remaining <= 120) {
-    const hrs = Math.floor(remaining / 60);
-    const mins = Math.round(remaining % 60);
-    const label = hrs > 0 ? hrs + "h " + mins + "m" : mins + "m";
-    return { label, cls: "bg-amber-500/15 text-amber-400 border border-amber-500/20", dot: "bg-amber-400" };
-  }
-  return { label: "On Track", cls: "bg-green-500/10 text-green-400 border border-green-500/20", dot: "bg-green-400" };
-}
-
 export default function Tickets({ user }) {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -372,15 +352,12 @@ export default function Tickets({ user }) {
                   <TableHead>Issue</TableHead>
                   <TableHead>Priority</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>SLA</TableHead>
                   <TableHead>Technician</TableHead>
                   <TableHead>Created</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedTickets.map((ticket) => {
-                  const slaInfo = getSLAIndicator(ticket);
-                  return (
+                {paginatedTickets.map((ticket) => (
                   <TableRow 
                     key={ticket.ticket_id} 
                     onClick={() => handleRowClick(ticket)}
@@ -411,23 +388,12 @@ export default function Tickets({ user }) {
                         {statusLabels[ticket.status] || ticket.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      {slaInfo ? (
-                        <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${slaInfo.cls}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${slaInfo.dot}`}></span>
-                          {slaInfo.label}
-                        </span>
-                      ) : (
-                        <span className="text-xs text-[rgba(244,246,240,0.2)]">—</span>
-                      )}
-                    </TableCell>
                     <TableCell>{ticket.assigned_technician_name || "-"}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {ticket.created_at ? format(new Date(ticket.created_at), "MMM dd, HH:mm") : "N/A"}
                     </TableCell>
                   </TableRow>
-                  );
-                })}
+                ))}
               </TableBody>
             </Table>
           )}
