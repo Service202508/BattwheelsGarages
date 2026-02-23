@@ -27,7 +27,11 @@ from services.banking_service import (
 from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/banking", tags=["Banking"])
+router = APIRouter(
+    prefix="/banking",
+    tags=["Banking"],
+    dependencies=[Depends(require_feature("accounting_module"))]
+)
 
 # ==================== MODELS ====================
 
