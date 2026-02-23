@@ -505,6 +505,46 @@ export default function OrganizationSettings({ user }) {
     }
   };
 
+  // Save email settings
+  const saveEmailSettings = async () => {
+    if (!emailConfig.api_key || !emailConfig.from_email || !emailConfig.from_name) {
+      toast.error("Please fill in all email fields");
+      return;
+    }
+    setSavingEmail(true);
+    try {
+      const res = await fetch(`${API}/organizations/me/email-settings`, {
+        method: "POST",
+        headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify(emailConfig),
+      });
+      if (res.ok) {
+        toast.success("Email settings saved successfully!");
+        setEmailConfigured(true);
+        setEmailConfig(prev => ({ ...prev, api_key: "" }));
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || "Failed to save email settings");
+      }
+    } catch {
+      toast.error("Failed to save email settings");
+    } finally {
+      setSavingEmail(false);
+    }
+  };
+
+  const removeEmailSettings = async () => {
+    if (!confirm("Remove org email settings? Platform default sender will be used.")) return;
+    const res = await fetch(`${API}/organizations/me/email-settings`, {
+      method: "DELETE", headers: getAuthHeaders()
+    });
+    if (res.ok) {
+      toast.success("Email settings removed");
+      setEmailConfigured(false);
+      setEmailConfig({ provider: "resend", api_key: "", from_email: "", from_name: "" });
+    }
+  };
+
   // E-Invoice GSTIN validation
   const validateGstin = (gstin) => {
     if (!gstin || gstin.length !== 15) return false;
