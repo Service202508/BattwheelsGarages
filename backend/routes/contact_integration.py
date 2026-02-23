@@ -448,9 +448,11 @@ async def get_contact_balance_summary(contact_id: str):
 # ========================= DATA MIGRATION ENDPOINTS =========================
 
 @router.post("/migrate/contacts-to-enhanced")
-async def migrate_contacts_to_enhanced(dry_run: bool = True):
-    """Migrate legacy contacts to enhanced contacts collection"""
-    legacy_contacts = await db["contacts"].find({}, {"_id": 0}).to_list(10000)
+async def migrate_contacts_to_enhanced(dry_run: bool = True, org_id: Optional[str] = None):
+    """Migrate legacy contacts to enhanced contacts collection (admin/migration tool, org-scoped)"""
+    # This is an admin migration tool. Scope to org_id if provided.
+    query = {"organization_id": org_id} if org_id else {}
+    legacy_contacts = await db["contacts"].find(query, {"_id": 0}).to_list(1000)
     
     migrated = []
     skipped = []
