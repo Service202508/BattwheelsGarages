@@ -226,7 +226,7 @@ const FaultTreeImport = () => {
             <Button 
               onClick={handleQuickImport} 
               disabled={uploading}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-[#22C55E] hover:bg-[#16a34a]"
             >
               {uploading ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

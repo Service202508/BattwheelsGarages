@@ -349,7 +349,7 @@ export default function TeamManagement({ user }) {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-green-100 rounded-lg">
+              <div className="p-3 bg-[rgba(34,197,94,0.10)] rounded-lg">
                 <Shield className="h-6 w-6 text-green-600" />
               </div>
               <div>

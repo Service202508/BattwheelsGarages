@@ -515,7 +515,7 @@ export default function LeaveManagement({ user }) {
                             <div className="flex gap-2">
                               <Button
                                 size="sm"
-                                className="bg-[#22C55E] hover:bg-green-600 text-[#080C0F]"
+                                className="bg-[#22C55E] hover:bg-[#16a34a] text-[#080C0F]"
                                 onClick={() => handleApproval(req.leave_id, "approved")}
                               >
                                 <CheckCircle2 className="h-4 w-4" />
