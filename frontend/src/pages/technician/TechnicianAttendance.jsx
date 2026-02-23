@@ -142,7 +142,7 @@ export default function TechnicianAttendance({ user }) {
           {canCheckIn && (
             <Button 
               onClick={() => { setCheckType('in'); setShowCheckDialog(true); }}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-[#22C55E] hover:bg-[#16a34a]"
               data-testid="check-in-btn"
             >
               <Play className="h-4 w-4 mr-2" />
@@ -383,7 +383,7 @@ export default function TechnicianAttendance({ user }) {
             <Button 
               onClick={() => handleCheckInOut(checkType)}
               disabled={checkingIn}
-              className={checkType === 'in' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}
+              className={checkType === 'in' ? 'bg-[#22C55E] hover:bg-[#16a34a]' : 'bg-red-600 hover:bg-red-700'}
             >
               {checkingIn ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               {checkType === 'in' ? 'Check In' : 'Check Out'}

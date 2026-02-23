@@ -210,7 +210,7 @@ export default function TechnicianPayroll({ user }) {
                   <p className="text-sm text-green-300">Net Pay</p>
                   <p className="text-3xl font-bold text-white">{formatCurrency(currentMonth.net_pay)}</p>
                 </div>
-                <Button className="bg-green-600 hover:bg-green-700">
+                <Button className="bg-[#22C55E] hover:bg-[#16a34a]">
                   <Download className="h-4 w-4 mr-2" />
                   Download Payslip
                 </Button>
