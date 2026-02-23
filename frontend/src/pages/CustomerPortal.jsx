@@ -1037,7 +1037,7 @@ export default function CustomerPortal() {
                 
                 {selectedEstimate.status === "sent" && (
                   <div className="flex gap-3 justify-center">
-                    <Button onClick={() => handleAcceptEstimate(selectedEstimate.estimate_id)} className="bg-[#22C55E] hover:bg-green-600 text-[#080C0F]">
+                    <Button onClick={() => handleAcceptEstimate(selectedEstimate.estimate_id)} className="bg-[#22C55E] hover:bg-[#16a34a] text-[#080C0F]">
                       <CheckCircle className="h-4 w-4 mr-2" /> Accept Estimate
                     </Button>
                     <Button variant="outline" onClick={() => handleDeclineEstimate(selectedEstimate.estimate_id)}>

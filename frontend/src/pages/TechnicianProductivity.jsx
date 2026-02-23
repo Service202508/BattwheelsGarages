@@ -174,7 +174,7 @@ export default function TechnicianProductivity({ user }) {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-100">
+              <div className="p-2 rounded-lg bg-[rgba(34,197,94,0.10)]">
                 <Ticket className="h-5 w-5 text-green-600" />
               </div>
               <div>
