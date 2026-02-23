@@ -352,24 +352,12 @@ export default function Tickets({ user }) {
                   <TableHead>Issue</TableHead>
                   <TableHead>Priority</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>SLA</TableHead>
                   <TableHead>Technician</TableHead>
                   <TableHead>Created</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedTickets.map((ticket) => {
-                  const slaDue = ticket.sla_resolution_due_at ? new Date(ticket.sla_resolution_due_at) : null;
-                  const slaBreached = ticket.sla_resolution_breached;
-                  const isResolved = ["resolved", "closed"].includes(ticket.status);
-                  let slaLabel = null, slaCls = "", slaDot = "";
-                  if (slaDue && !isResolved) {
-                    const remaining = (slaDue - new Date()) / 60000;
-                    if (slaBreached || remaining <= 0) { slaLabel = "Breached"; slaCls = "bg-red-500/15 text-red-400"; slaDot = "bg-red-400"; }
-                    else if (remaining <= 120) { slaLabel = remaining < 60 ? Math.round(remaining) + "m" : Math.floor(remaining/60) + "h " + Math.round(remaining%60) + "m"; slaCls = "bg-amber-500/15 text-amber-400"; slaDot = "bg-amber-400"; }
-                    else { slaLabel = "On Track"; slaCls = "bg-green-500/10 text-green-400"; slaDot = "bg-green-400"; }
-                  }
-                  return (
+                {paginatedTickets.map((ticket) => (
                   <TableRow 
                     key={ticket.ticket_id} 
                     onClick={() => handleRowClick(ticket)}
@@ -400,21 +388,12 @@ export default function Tickets({ user }) {
                         {statusLabels[ticket.status] || ticket.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      {slaLabel ? (
-                        <span className={"inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full " + slaCls}>
-                          <span className={"w-1.5 h-1.5 rounded-full " + slaDot}></span>
-                          {slaLabel}
-                        </span>
-                      ) : <span className="text-xs opacity-30">—</span>}
-                    </TableCell>
                     <TableCell>{ticket.assigned_technician_name || "-"}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {ticket.created_at ? format(new Date(ticket.created_at), "MMM dd, HH:mm") : "N/A"}
                     </TableCell>
                   </TableRow>
-                  );
-                })}
+                ))}
               </TableBody>
             </Table>
           )}
