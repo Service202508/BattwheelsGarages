@@ -299,3 +299,17 @@ customer / fleet_customer (portal access)
 ### Configuration
 - `/app/backend/.env.example` - Environment template
 - `/app/PRODUCTION_READINESS_REPORT.md` - Full audit report
+
+## CTO Production Readiness Audit — 2026-02-23
+**Initial Score:** 55/86 (64%) — 4 critical blockers
+**After Fixes:** 67/86 (78%) — All blockers resolved
+
+### Critical Bugs Fixed:
+1. Trial Balance unbalanced (double-counting bug in double_entry_service.py else-branch)
+2. Invoice PDF 500 error (missing libpangoft2 system library)
+3. AMC module 404 (module-level os.environ access at import time)
+4. admin@battwheels.in had is_platform_admin=True (DB fix)
+5. Ticket complete-work not deducting inventory stock
+6. Bill open not increasing inventory (EventType.INVENTORY_UPDATED typo + missing org_id on bill doc)
+7. Customer satisfaction survey system not implemented → added
+8. Audit log API not exposed → added /api/audit-logs route
