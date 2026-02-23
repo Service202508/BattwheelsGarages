@@ -564,25 +564,50 @@ async def get_profitability(
 # ==================== INVOICE GENERATION ====================
 
 @router.post("/{project_id}/invoice")
-async def generate_invoice(project_id: str, data: InvoiceGenerateRequest, request: Request):
-    """Generate invoice from project"""
-    service = get_service()
+async def generate_invoice(project_id: str, data: ProjectInvoiceRequest, request: Request):
+    """
+    Generate invoice from project time logs with billing period and line item grouping
     
-    invoice_data = await service.generate_invoice_data(
+    POST /api/projects/{id}/invoice
+    Payload:
+        billing_period_from (date)
+        billing_period_to (date)
+        include_expenses (boolean)
+        line_item_grouping: BY_TASK / BY_EMPLOYEE / BY_DATE
+        notes (optional)
+    
+    Actions:
+    1. Fetch all time_logs for project within billing period where invoiced = false
+    2. Group by selected grouping
+    3. If include_expenses = true, add approved expenses as line items
+    4. Create invoice via existing invoice service
+    5. Mark all included time_logs as invoiced = true
+    6. Post journal entry with project name and billing period
+    7. Return created invoice with redirect to invoice detail page
+    """
+    from services.double_entry_service import get_double_entry_service, init_double_entry_service
+    
+    service = get_service()
+    org_id = await get_org_id(request)
+    user_id = await get_current_user_id(request)
+    
+    # Generate invoice data using enhanced method
+    invoice_data = await service.generate_invoice_from_project(
         project_id=project_id,
-        include_time_logs=data.include_time_logs,
+        billing_period_from=data.billing_period_from,
+        billing_period_to=data.billing_period_to,
         include_expenses=data.include_expenses,
-        group_by=data.group_by
+        line_item_grouping=data.line_item_grouping,
+        notes=data.notes,
+        db=db_ref
     )
     
     if "error" in invoice_data:
-        raise HTTPException(status_code=404, detail=invoice_data["error"])
+        raise HTTPException(status_code=400, detail=invoice_data["error"])
     
     # Create actual invoice if we have line items
     if invoice_data.get("line_items"):
         try:
-            org_id = await get_org_id(request)
-            
             # Get client details
             client_id = invoice_data.get("client_id")
             client = None
@@ -603,14 +628,17 @@ async def generate_invoice(project_id: str, data: InvoiceGenerateRequest, reques
                 "customer_name": client.get("name") if client else "Project Client",
                 "customer_email": client.get("email") if client else "",
                 "customer_gstin": client.get("gstin") if client else "",
+                "billing_address": client.get("billing_address", "") if client else "",
                 "invoice_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-                "due_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                "due_date": (datetime.now(timezone.utc) + timedelta(days=30)).strftime("%Y-%m-%d"),
                 "sub_total": invoice_data["sub_total"],
                 "tax_total": 0,
                 "grand_total": invoice_data["sub_total"],
                 "balance_due": invoice_data["sub_total"],
                 "status": "draft",
                 "notes": invoice_data.get("notes", ""),
+                "billing_period": invoice_data.get("billing_period"),
+                "created_by": user_id,
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "updated_at": datetime.now(timezone.utc).isoformat()
             }
@@ -635,13 +663,99 @@ async def generate_invoice(project_id: str, data: InvoiceGenerateRequest, reques
                 }
                 await db_ref.invoice_line_items.insert_one(line_item)
             
+            # Mark time logs as invoiced
+            if invoice_data.get("time_log_ids"):
+                marked = await service.mark_time_logs_invoiced(
+                    invoice_data["time_log_ids"], 
+                    invoice_id
+                )
+                logger.info(f"Marked {marked} time logs as invoiced")
+            
+            # Mark expenses as invoiced
+            if invoice_data.get("expense_ids"):
+                marked = await service.mark_expenses_invoiced(
+                    invoice_data["expense_ids"],
+                    invoice_id
+                )
+                logger.info(f"Marked {marked} expenses as invoiced")
+            
+            # Post journal entry via double_entry_service
+            try:
+                try:
+                    de_service = get_double_entry_service()
+                except:
+                    init_double_entry_service(db_ref)
+                    de_service = get_double_entry_service()
+                
+                await de_service.ensure_system_accounts(org_id)
+                
+                # Get accounts
+                receivable = await de_service.get_account_by_code(org_id, "1300")  # Accounts Receivable
+                revenue = await de_service.get_account_by_code(org_id, "4100")  # Service Revenue
+                
+                if receivable and revenue:
+                    project = await service.get_project(project_id)
+                    billing_period = invoice_data.get("billing_period", {})
+                    narration = f"Project Invoice: {project.get('name', 'Project')} | Period: {billing_period.get('from', '')} to {billing_period.get('to', '')} | Invoice: {invoice_number}"
+                    
+                    success, msg, entry = await de_service.create_journal_entry(
+                        organization_id=org_id,
+                        entry_date=invoice["invoice_date"],
+                        description=narration,
+                        lines=[
+                            {
+                                "account_id": receivable["account_id"],
+                                "debit_amount": invoice_data["sub_total"],
+                                "credit_amount": 0,
+                                "description": f"Invoice {invoice_number}"
+                            },
+                            {
+                                "account_id": revenue["account_id"],
+                                "debit_amount": 0,
+                                "credit_amount": invoice_data["sub_total"],
+                                "description": "Project service revenue"
+                            }
+                        ],
+                        entry_type="INVOICE",
+                        source_document_id=invoice_id,
+                        source_document_type="PROJECT_INVOICE",
+                        created_by=user_id
+                    )
+                    
+                    if success:
+                        logger.info(f"Posted invoice journal entry: {entry.get('entry_id')}")
+                    else:
+                        logger.warning(f"Failed to post invoice journal entry: {msg}")
+            except Exception as e:
+                logger.warning(f"Failed to post invoice journal entry: {e}")
+            
             invoice_data["invoice_id"] = invoice_id
             invoice_data["invoice_number"] = invoice_number
             invoice_data["message"] = "Invoice created successfully"
+            invoice_data["redirect_url"] = f"/finance/invoices/{invoice_id}"
             
         except Exception as e:
             logger.error(f"Failed to create invoice: {e}")
             invoice_data["message"] = f"Invoice data generated but creation failed: {str(e)}"
+    
+    return {"code": 0, **invoice_data}
+
+
+# Legacy invoice generation endpoint
+@router.post("/{project_id}/invoice-legacy")
+async def generate_invoice_legacy(project_id: str, data: InvoiceGenerateRequest, request: Request):
+    """Generate invoice from project (legacy method)"""
+    service = get_service()
+    
+    invoice_data = await service.generate_invoice_data(
+        project_id=project_id,
+        include_time_logs=data.include_time_logs,
+        include_expenses=data.include_expenses,
+        group_by=data.group_by
+    )
+    
+    if "error" in invoice_data:
+        raise HTTPException(status_code=404, detail=invoice_data["error"])
     
     return {"code": 0, **invoice_data}
 
