@@ -254,10 +254,9 @@ export default function OrganizationSettings({ user }) {
         }
       }
 
-      // Set logo preview from org data
-      if (orgRes.ok) {
-        const orgData2 = await orgRes.json();
-        if (orgData2.logo_url) setLogoPreview(orgData2.logo_url);
+      // Set logo preview from org data (use already parsed orgData)
+      if (orgRes.ok && orgData && orgData.logo_url) {
+        setLogoPreview(orgData.logo_url);
       }
     } catch (error) {
       toast.error("Failed to load organization data");
