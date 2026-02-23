@@ -276,10 +276,12 @@ class EntitlementService:
         
         if not enabled:
             if raise_exception:
+                required_plan = self.get_minimum_plan_for_feature(feature)
                 upgrade_to = self._get_upgrade_suggestion(feature, subscription.plan_code)
                 raise FeatureNotAvailable(
                     feature=feature,
                     plan=subscription.plan_code.value,
+                    required_plan=required_plan.value if required_plan else None,
                     upgrade_to=upgrade_to
                 )
             return False
