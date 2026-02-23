@@ -1202,36 +1202,178 @@ async def delete_invoice(invoice_id: str, force: bool = False):
 # ========================= INVOICE ACTIONS =========================
 
 @router.post("/{invoice_id}/send")
-async def send_invoice(invoice_id: str, email_to: Optional[List[str]] = None, background_tasks: BackgroundTasks = None):
-    """Send invoice via email"""
-    invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
+async def send_invoice(
+    invoice_id: str, 
+    request: Request,
+    email_to: Optional[str] = Query(None),
+    message: Optional[str] = Query(None),
+    background_tasks: BackgroundTasks = None
+):
+    """
+    Send invoice via email with PDF attachment (5B)
+    
+    Pre-send checks:
+    1. If e-invoicing enabled and B2B: IRN must be REGISTERED
+    2. Customer must have email address
+    3. Invoice must be finalized (not draft for B2B with e-invoice)
+    """
+    from services.pdf_service import generate_gst_invoice_html
+    from services.email_service import EmailService
+    from weasyprint import HTML
+    
+    # Get org context
+    org_id = await get_org_id(request)
+    
+    invoice = await invoices_collection.find_one({"invoice_id": invoice_id}, {"_id": 0})
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
     if invoice.get("status") == "void":
         raise HTTPException(status_code=400, detail="Cannot send voided invoice")
     
-    recipients = email_to if email_to else [invoice.get("customer_email")]
-    if not recipients or not recipients[0]:
-        raise HTTPException(status_code=400, detail="No email address available")
+    if invoice.get("status") == "cancelled":
+        raise HTTPException(status_code=400, detail="Cannot send cancelled invoice")
     
-    # Generate PDF (mocked)
-    mock_generate_pdf(invoice)
+    # Determine recipient
+    recipient_email = email_to or invoice.get("customer_email")
+    if not recipient_email:
+        raise HTTPException(status_code=400, detail="No email address available. Add customer email first.")
     
-    # Send email
-    mock_send_email(
-        recipients,
-        f"Invoice {invoice['invoice_number']} from Battwheels",
-        f"Dear {invoice.get('customer_name')},\n\nPlease find attached Invoice {invoice['invoice_number']} for ₹{invoice['grand_total']:,.2f}.",
-        f"Invoice_{invoice['invoice_number']}.pdf"
-    )
+    # ==================== E-INVOICE PRE-SEND CHECK (5B) ====================
+    customer_gstin = invoice.get('customer_gstin', invoice.get('gst_no', ''))
+    is_b2b = bool(customer_gstin and customer_gstin not in ['', 'URP', None])
     
-    # Deduct stock if transitioning from draft to sent
+    einvoice_config = None
+    einvoice_enabled = False
+    if org_id:
+        einvoice_config = await db["einvoice_config"].find_one(
+            {"organization_id": org_id}, 
+            {"_id": 0}
+        )
+        einvoice_enabled = einvoice_config.get("enabled", False) if einvoice_config else False
+    
+    irn_status = invoice.get('irn_status', 'pending')
+    has_irn = invoice.get('irn') and irn_status == 'registered'
+    
+    # Rule: If e-invoicing enabled and B2B, IRN must be registered
+    if einvoice_enabled and is_b2b and not has_irn:
+        raise HTTPException(
+            status_code=400,
+            detail="IRN registration required before sending B2B invoice. Generate IRN first from the invoice detail page."
+        )
+    
+    # ==================== GENERATE PDF ====================
+    try:
+        # Get line items
+        line_items = await invoice_line_items_collection.find(
+            {"invoice_id": invoice_id},
+            {"_id": 0}
+        ).to_list(100)
+        
+        # Get organization settings
+        org_settings = await db["organizations"].find_one(
+            {"organization_id": org_id} if org_id else {},
+            {"_id": 0}
+        ) or {}
+        if not org_settings:
+            org_settings = await db["organization_settings"].find_one({}, {"_id": 0}) or {}
+        
+        # Prepare IRN data
+        irn_data = None
+        if has_irn:
+            irn_data = {
+                'irn': invoice.get('irn'),
+                'ack_no': invoice.get('irn_ack_no'),
+                'ack_date': invoice.get('irn_ack_date'),
+                'signed_qr_code': invoice.get('irn_signed_qr')
+            }
+        
+        # Get bank details
+        bank_details = None
+        if org_id:
+            bank_config = await db["organizations"].find_one(
+                {"organization_id": org_id},
+                {"_id": 0, "bank_name": 1, "bank_account_number": 1, "bank_ifsc": 1, 
+                 "bank_account_type": 1, "upi_id": 1}
+            )
+            if bank_config and bank_config.get("bank_account_number"):
+                bank_details = {
+                    "bank_name": bank_config.get("bank_name", ""),
+                    "account_number": bank_config.get("bank_account_number", ""),
+                    "ifsc_code": bank_config.get("bank_ifsc", ""),
+                    "account_type": bank_config.get("bank_account_type", "Current"),
+                    "upi_id": bank_config.get("upi_id", "")
+                }
+        
+        # Generate HTML and PDF
+        html_content = generate_gst_invoice_html(
+            invoice=invoice,
+            line_items=line_items,
+            org_settings=org_settings,
+            irn_data=irn_data,
+            bank_details=bank_details
+        )
+        
+        pdf_buffer = io.BytesIO()
+        HTML(string=html_content).write_pdf(pdf_buffer)
+        pdf_content = pdf_buffer.getvalue()
+        
+        # File naming
+        customer_name_safe = (invoice.get('customer_name', '') or 'Customer').replace(' ', '_')[:30]
+        pdf_filename = f"INV-{invoice.get('invoice_number', invoice_id)}-{customer_name_safe}.pdf"
+        
+    except Exception as e:
+        logger.error(f"PDF generation failed for invoice {invoice_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"PDF generation failed. Fix PDF issue before sending: {str(e)}")
+    
+    # ==================== GET PAYMENT LINK (if Razorpay configured) ====================
+    payment_link = None
+    if org_id:
+        razorpay_config = await db["razorpay_config"].find_one(
+            {"organization_id": org_id},
+            {"_id": 0, "enabled": 1}
+        )
+        if razorpay_config and razorpay_config.get("enabled"):
+            # Check for existing payment link or we can generate one
+            payment_link = invoice.get('razorpay_payment_link')
+    
+    # ==================== SEND EMAIL ====================
+    try:
+        email_result = await EmailService.send_invoice_email(
+            to_email=recipient_email,
+            customer_name=invoice.get('customer_name', 'Customer'),
+            invoice_number=invoice.get('invoice_number', invoice_id),
+            invoice_date=invoice.get('invoice_date', invoice.get('date', '')),
+            due_date=invoice.get('due_date', ''),
+            amount=invoice.get('sub_total', 0),
+            tax_amount=invoice.get('tax_total', 0),
+            total=invoice.get('grand_total', invoice.get('total', 0)),
+            org_name=org_settings.get('company_name', org_settings.get('name', 'Battwheels')),
+            org_address=f"{org_settings.get('address', '')} {org_settings.get('city', '')} {org_settings.get('pincode', '')}".strip(),
+            org_gstin=org_settings.get('gstin', ''),
+            org_logo_url=org_settings.get('logo_url'),
+            org_email=org_settings.get('email'),
+            irn=invoice.get('irn') if has_irn else None,
+            irn_ack_no=invoice.get('irn_ack_no') if has_irn else None,
+            payment_link=payment_link,
+            pdf_content=pdf_content,
+            pdf_filename=pdf_filename
+        )
+        
+        if email_result.get("status") == "error":
+            raise HTTPException(status_code=500, detail=f"Email sending failed: {email_result.get('message')}")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Email sending failed for invoice {invoice_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
+    
+    # ==================== UPDATE INVOICE STATUS ====================
     was_draft = invoice.get("status") == "draft"
     if was_draft:
         await update_item_stock_for_invoice(invoice_id, reverse=False)
     
-    # Update status
     new_status = "sent" if was_draft else invoice.get("status")
     await invoices_collection.update_one(
         {"invoice_id": invoice_id},
@@ -1239,6 +1381,7 @@ async def send_invoice(invoice_id: str, email_to: Optional[List[str]] = None, ba
             "status": new_status,
             "is_sent": True,
             "sent_date": datetime.now(timezone.utc).isoformat(),
+            "sent_to_email": recipient_email,
             "updated_time": datetime.now(timezone.utc).isoformat(),
             "stock_deducted": True
         }}
@@ -1246,7 +1389,6 @@ async def send_invoice(invoice_id: str, email_to: Optional[List[str]] = None, ba
     
     # Post journal entry for double-entry bookkeeping (only when transitioning from draft)
     if was_draft:
-        org_id = invoice.get("organization_id", "")
         if org_id:
             try:
                 await post_invoice_journal_entry(org_id, invoice)
@@ -1254,10 +1396,20 @@ async def send_invoice(invoice_id: str, email_to: Optional[List[str]] = None, ba
             except Exception as e:
                 logger.warning(f"Failed to post journal entry for invoice {invoice.get('invoice_number')}: {e}")
     
-    await add_invoice_history(invoice_id, "sent", f"Invoice emailed to {', '.join(recipients)}")
+    # Add to activity log
+    await add_invoice_history(
+        invoice_id, 
+        "sent", 
+        f"Invoice emailed to {recipient_email} with PDF attachment"
+    )
     await update_contact_balance(invoice["customer_id"])
     
-    return {"code": 0, "message": f"Invoice sent to {', '.join(recipients)}"}
+    return {
+        "code": 0, 
+        "message": f"Invoice sent to {recipient_email}",
+        "email_status": email_result.get("status"),
+        "email_id": email_result.get("email_id")
+    }
 
 @router.post("/{invoice_id}/mark-sent")
 async def mark_invoice_sent(invoice_id: str):
