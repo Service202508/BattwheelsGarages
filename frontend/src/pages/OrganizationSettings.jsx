@@ -448,6 +448,128 @@ export default function OrganizationSettings({ user }) {
     }
   };
 
+  // E-Invoice GSTIN validation
+  const validateGstin = (gstin) => {
+    if (!gstin || gstin.length !== 15) return false;
+    const pattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+    return pattern.test(gstin.toUpperCase());
+  };
+
+  const handleGstinChange = (value) => {
+    const upperValue = value.toUpperCase();
+    setEinvoiceConfig(prev => ({ ...prev, gstin: upperValue }));
+    if (upperValue.length === 15) {
+      setGstinValid(validateGstin(upperValue));
+    } else {
+      setGstinValid(null);
+    }
+  };
+
+  // Save E-Invoice configuration
+  const saveEinvoiceConfig = async () => {
+    if (!einvoiceConfig.gstin || !validateGstin(einvoiceConfig.gstin)) {
+      toast.error("Please enter a valid 15-character GSTIN");
+      return;
+    }
+    if (!einvoiceConfig.irp_username || !einvoiceConfig.irp_password) {
+      toast.error("IRP Username and Password are required");
+      return;
+    }
+    if (!einvoiceConfig.client_id || !einvoiceConfig.client_secret) {
+      toast.error("Client ID and Client Secret are required");
+      return;
+    }
+    
+    setSavingEinvoice(true);
+    try {
+      const res = await fetch(`${API}/einvoice/config`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          ...einvoiceConfig,
+          enabled: einvoiceEnabled
+        }),
+      });
+      
+      if (res.ok) {
+        toast.success("E-Invoice configuration saved successfully!");
+        setEinvoiceConfigured(true);
+        // Clear sensitive data from state after save
+        setEinvoiceConfig(prev => ({
+          ...prev,
+          irp_password: "",
+          client_secret: ""
+        }));
+      } else {
+        const error = await res.json();
+        toast.error(error.detail || "Failed to save E-Invoice configuration");
+      }
+    } catch (error) {
+      toast.error("Failed to save E-Invoice configuration");
+    } finally {
+      setSavingEinvoice(false);
+    }
+  };
+
+  // Test E-Invoice IRP connection
+  const testEinvoiceConnection = async () => {
+    setTestingEinvoice(true);
+    setEinvoiceTestResult(null);
+    try {
+      const res = await fetch(`${API}/einvoice/eligibility`, { headers: getAuthHeaders() });
+      const data = await res.json();
+      
+      if (data.eligible) {
+        setEinvoiceTestResult({ success: true, message: "Connected to IRP successfully" });
+      } else if (data.configured) {
+        setEinvoiceTestResult({ success: false, message: data.reason || "Connection test failed" });
+      } else {
+        setEinvoiceTestResult({ success: false, message: "E-Invoice not configured. Save settings first." });
+      }
+    } catch (error) {
+      setEinvoiceTestResult({ success: false, message: "Connection test failed: Network error" });
+    } finally {
+      setTestingEinvoice(false);
+    }
+  };
+
+  // Remove E-Invoice configuration
+  const removeEinvoiceConfig = async () => {
+    if (!confirm("Are you sure you want to remove E-Invoice configuration? IRN generation will be disabled.")) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`${API}/einvoice/config`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      
+      if (res.ok) {
+        toast.success("E-Invoice configuration removed");
+        setEinvoiceConfigured(false);
+        setEinvoiceEnabled(false);
+        setEinvoiceConfig({
+          gstin: "",
+          legal_name: "",
+          irp_username: "",
+          irp_password: "",
+          client_id: "",
+          client_secret: "",
+          is_sandbox: true,
+          enabled: false,
+          turnover_threshold_met: false
+        });
+        setGstinValid(null);
+        setEinvoiceTestResult(null);
+      } else {
+        toast.error("Failed to remove E-Invoice configuration");
+      }
+    } catch (error) {
+      toast.error("Failed to remove E-Invoice configuration");
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
