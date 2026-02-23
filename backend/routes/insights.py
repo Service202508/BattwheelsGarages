@@ -481,7 +481,7 @@ async def get_efi_insights(
 
     # Top failure patterns from ticket categories
     failure_agg = await db.tickets.aggregate([
-        {"$match": {**tkt_base, "category": {"$exists": True, "$ne": None, "$ne": ""}}},
+        {"$match": {**tkt_base, "category": {"$exists": True, "$nin": [None, ""]}}},
         {"$group": {
             "_id": "$category",
             "count": {"$sum": 1},
