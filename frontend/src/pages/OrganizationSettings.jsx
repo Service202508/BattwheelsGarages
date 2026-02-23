@@ -2498,6 +2498,100 @@ export default function OrganizationSettings({ user }) {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* ── INTEGRATIONS TAB ── */}
+        <TabsContent value="integrations" className="space-y-4">
+
+          {/* WhatsApp Business API */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Phone className="h-4 w-4 text-green-400" />
+                WhatsApp Business API
+                {waConfigured
+                  ? <Badge className="bg-[rgba(34,197,94,0.15)] text-green-400 border-green-500/25 ml-2">Connected</Badge>
+                  : <Badge className="bg-[rgba(234,179,8,0.15)] text-yellow-400 border-yellow-500/25 ml-2">Not configured</Badge>}
+              </CardTitle>
+              <CardDescription>Send invoices and estimates directly to customers on WhatsApp.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!waConfigured && (
+                <div className="flex items-start gap-3 p-3 rounded-lg border border-[rgba(234,179,8,0.25)] bg-[rgba(234,179,8,0.06)]">
+                  <AlertTriangle className="h-4 w-4 text-yellow-400 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-[rgba(244,246,240,0.70)]">
+                    WhatsApp delivery is not configured. Invoices and estimates will be sent by email only.
+                  </p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Phone Number ID</Label>
+                  <Input
+                    placeholder="e.g. 123456789012345"
+                    value={waConfig.phone_number_id}
+                    onChange={e => setWaConfig(prev => ({ ...prev, phone_number_id: e.target.value }))}
+                  />
+                  <p className="text-xs text-muted-foreground">Found in Meta Business Manager → WhatsApp API Setup</p>
+                </div>
+                <div className="space-y-2">
+                  <Label>Access Token</Label>
+                  <div className="relative">
+                    <Input
+                      type={showWaToken ? "text" : "password"}
+                      placeholder={waConfigured ? "••••••••• (saved)" : "Permanent system user token"}
+                      value={waConfig.access_token}
+                      onChange={e => setWaConfig(prev => ({ ...prev, access_token: e.target.value }))}
+                    />
+                    <Button
+                      variant="ghost" size="icon"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6"
+                      onClick={() => setShowWaToken(!showWaToken)}
+                    >
+                      {showWaToken ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Generate a permanent token via Business Settings → System Users</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <Button onClick={saveWhatsAppSettings} disabled={savingWa} size="sm">
+                  {savingWa ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                  Save Credentials
+                </Button>
+                {waConfigured && (
+                  <>
+                    <Button onClick={testWhatsApp} disabled={testingWa} variant="outline" size="sm">
+                      {testingWa ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-2" />}
+                      Test Connection
+                    </Button>
+                    <Button onClick={removeWhatsAppSettings} variant="ghost" size="sm" className="text-red-400 hover:text-red-300">
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Disconnect
+                    </Button>
+                  </>
+                )}
+              </div>
+
+              <Separator />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-[rgba(244,246,240,0.70)]">Requires WhatsApp Business API access from Meta.</p>
+                <p className="text-xs text-muted-foreground">
+                  Visit{" "}
+                  <a href="https://business.facebook.com" target="_blank" rel="noreferrer" className="text-[#C8FF00] hover:underline">
+                    business.facebook.com
+                  </a>{" "}
+                  to apply. See{" "}
+                  <a href="/WHATSAPP_TEMPLATES.md" target="_blank" className="text-[#C8FF00] hover:underline">
+                    WHATSAPP_TEMPLATES.md
+                  </a>{" "}
+                  for template submission guide.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
