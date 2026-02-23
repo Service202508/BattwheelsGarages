@@ -1461,9 +1461,18 @@ async def logout(request: Request, response: Response):
 # ==================== USER ROUTES ====================
 
 @api_router.get("/users")
-async def get_users(request: Request):
+async def get_users(request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     await require_admin(request)
-    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
+    # Return only users who are members of this organisation (not all platform users)
+    memberships = await db.organization_users.find(
+        {"organization_id": ctx.org_id, "status": "active"},
+        {"user_id": 1}
+    ).to_list(1000)
+    member_ids = [m["user_id"] for m in memberships]
+    users = await db.users.find(
+        {"user_id": {"$in": member_ids}},
+        {"_id": 0, "password_hash": 0}
+    ).to_list(1000)
     return users
 
 @api_router.get("/users/{user_id}")
