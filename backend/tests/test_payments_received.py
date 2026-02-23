@@ -9,7 +9,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://production-hardening-1.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://battwheels-beta.preview.emergentagent.com').rstrip('/')
 
 # Test data
 TEST_CUSTOMER_ID = "CUST-93AE14BE3618"  # Full Zoho Test Co
