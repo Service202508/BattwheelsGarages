@@ -373,6 +373,7 @@ export default function Tickets({ user }) {
                   <TableHead>Issue</TableHead>
                   <TableHead>Priority</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>SLA</TableHead>
                   <TableHead>Technician</TableHead>
                   <TableHead>Created</TableHead>
                 </TableRow>
