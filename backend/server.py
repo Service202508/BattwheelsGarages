@@ -2120,7 +2120,7 @@ async def create_sales_order(data: SalesOrderCreate, request: Request, ctx: Tena
     tax_amount = taxable_amount * 0.18  # 18% GST
     total_amount = taxable_amount + tax_amount
     
-    sales_number = await generate_sales_number()
+    sales_number = await generate_sales_number(ctx.org_id)
     
     sales_order = SalesOrder(
         ticket_id=data.ticket_id,
