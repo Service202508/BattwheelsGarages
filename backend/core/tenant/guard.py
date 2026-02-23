@@ -390,10 +390,17 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
     
     # Database reference
     _db = None
+    _jwt_secret = None
     
     # JWT settings
-    JWT_SECRET = os.environ.get('JWT_SECRET', 'battwheels-secret')
     JWT_ALGORITHM = "HS256"
+    
+    @classmethod
+    def get_jwt_secret(cls):
+        """Get JWT secret lazily to ensure .env is loaded first"""
+        if cls._jwt_secret is None:
+            cls._jwt_secret = os.environ.get('JWT_SECRET', 'battwheels-secret')
+        return cls._jwt_secret
     
     # Endpoints that don't require tenant context
     PUBLIC_ENDPOINTS = {
