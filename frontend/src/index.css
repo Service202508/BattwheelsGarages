@@ -88,6 +88,13 @@ code, .mono {
   }
 }
 
+/* Onboarding Banner - responsive steps grid */
+@media (max-width: 640px) {
+  .onboarding-steps-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* Custom scrollbar - Dark Theme */
 ::-webkit-scrollbar {
   width: 6px;
