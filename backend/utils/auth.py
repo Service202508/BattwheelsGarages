@@ -3,8 +3,7 @@ Battwheels OS - Authentication Utilities
 Shared auth helpers for all routes
 """
 import os
-import jwt
-import hashlib
+import bcrypt
 from datetime import datetime, timezone, timedelta
 from fastapi import HTTPException, Request
 from typing import Optional
@@ -17,18 +16,33 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
 
 # Get database connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "test_database")
+MONGO_URL = os.environ.get("MONGO_URL")
+DB_NAME = os.environ.get("DB_NAME")
 _client = AsyncIOMotorClient(MONGO_URL)
 _db = _client[DB_NAME]
 
 def hash_password(password: str) -> str:
-    """Hash password using SHA256"""
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Hash password using bcrypt (correct — not SHA256)"""
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify password against hash"""
-    return hash_password(plain_password) == hashed_password
+    """
+    Verify password against hash.
+    Supports bcrypt (new) and SHA256 (legacy migration path only).
+    On SHA256 match: caller should re-hash to bcrypt (transparent migration).
+    """
+    if not hashed_password:
+        return False
+    # Try bcrypt first (preferred)
+    try:
+        if hashed_password.startswith("$2b$") or hashed_password.startswith("$2a$"):
+            return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
+    except Exception:
+        pass
+    # Legacy SHA256 fallback (for migrating old users)
+    import hashlib
+    sha256_hash = hashlib.sha256(plain_password.encode()).hexdigest()
+    return sha256_hash == hashed_password
 
 def create_access_token(data: dict) -> str:
     """Create JWT access token"""
