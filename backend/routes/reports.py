@@ -1387,8 +1387,10 @@ async def get_technician_performance(
                 try:
                     c = datetime.fromisoformat(t["created_at"].replace("Z", "+00:00"))
                     r = datetime.fromisoformat(t["first_response_at"].replace("Z", "+00:00"))
-                    if c.tzinfo is None: c = c.replace(tzinfo=timezone.utc)
-                    if r.tzinfo is None: r = r.replace(tzinfo=timezone.utc)
+                    if c.tzinfo is None:
+                        c = c.replace(tzinfo=timezone.utc)
+                    if r.tzinfo is None:
+                        r = r.replace(tzinfo=timezone.utc)
                     response_times.append((r - c).total_seconds() / 60)
                 except Exception:
                     pass
