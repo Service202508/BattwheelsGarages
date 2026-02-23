@@ -431,6 +431,9 @@ export default function Tickets({ user }) {
                     <TableCell className="text-sm text-muted-foreground">
                       {ticket.created_at ? format(new Date(ticket.created_at), "MMM dd, HH:mm") : "N/A"}
                     </TableCell>
+                    <TableCell data-testid={`sla-cell-${ticket.ticket_id}`}>
+                      <SLACell ticket={ticket} />
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
