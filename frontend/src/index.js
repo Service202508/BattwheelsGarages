@@ -23,8 +23,10 @@ if (SENTRY_DSN) {
   });
 }
 
-// Register service worker for PWA support
-if ('serviceWorker' in navigator) {
+// Register service worker for PWA support — production only.
+// In development, the SW's cache-first strategy conflicts with
+// webpack HMR chunk fetching and causes intermittent full-page reloads.
+if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((reg) => console.log('SW registered:', reg.scope))
