@@ -21,7 +21,11 @@ from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/efi/intelligence", tags=["EFI Intelligence Engine"])
+router = APIRouter(
+    prefix="/efi/intelligence",
+    tags=["EFI Intelligence Engine"],
+    dependencies=[Depends(require_feature("efi_failure_intelligence"))]
+)
 
 
 def get_db():
