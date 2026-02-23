@@ -513,6 +513,20 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
                         "code": "TENANT_ACCESS_DENIED"
                     }
                 )
+
+            # Check org suspension status
+            org_doc = await self.db.organizations.find_one(
+                {"organization_id": org_id}, {"_id": 0, "is_active": 1}
+            )
+            if org_doc and not org_doc.get("is_active", True):
+                logger.warning(f"TENANT GUARD: Suspended org {org_id} access attempt by {user_id}")
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "detail": "Your organization has been suspended. Please contact support.",
+                        "code": "ORG_SUSPENDED"
+                    }
+                )
             
             # Set tenant context on request state for downstream handlers
             request.state.tenant_org_id = org_id
