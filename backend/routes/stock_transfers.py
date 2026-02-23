@@ -5,7 +5,7 @@ Transfer stock between warehouses with full audit trail
 Workflow: Create -> Draft -> In Transit -> Received -> Void
 """
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime, timezone
@@ -13,6 +13,8 @@ import motor.motor_asyncio
 import os
 import uuid
 import logging
+
+from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 
