@@ -897,6 +897,151 @@ async def get_setup_status(
     }
 
 
+# ==================== ONBOARDING CHECKLIST ====================
+
+@router.get("/onboarding/status")
+async def get_onboarding_status(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Get onboarding status with auto-detected completed steps"""
+    org = await db.organizations.find_one(
+        {"organization_id": ctx.org_id},
+        {"_id": 0, "onboarding_completed": 1, "onboarding_steps_completed": 1, "created_at": 1}
+    )
+    if not org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+
+    onboarding_completed = org.get("onboarding_completed", False)
+    created_at_str = org.get("created_at", "")
+
+    # Determine if banner should be shown (< 7 days old and not completed)
+    show_onboarding = False
+    if not onboarding_completed:
+        try:
+            from dateutil.parser import parse as parse_date
+            created_at = parse_date(created_at_str)
+            if created_at.tzinfo is None:
+                created_at = created_at.replace(tzinfo=timezone.utc)
+            age_days = (datetime.now(timezone.utc) - created_at).days
+            show_onboarding = age_days < 7
+        except Exception:
+            show_onboarding = True
+
+    # Auto-detect completed steps by querying actual data counts
+    auto_steps = []
+    contacts_count = await db.contacts.count_documents({"organization_id": ctx.org_id})
+    if contacts_count > 0:
+        auto_steps.append("add_first_contact")
+
+    vehicles_count = await db.vehicles.count_documents({"organization_id": ctx.org_id})
+    if vehicles_count > 0:
+        auto_steps.append("add_first_vehicle")
+
+    tickets_count = await db.tickets.count_documents({"organization_id": ctx.org_id})
+    if tickets_count > 0:
+        auto_steps.append("create_first_ticket")
+
+    items_count = await db.items.count_documents({"organization_id": ctx.org_id})
+    if items_count > 0:
+        auto_steps.append("add_inventory_item")
+
+    invoices_count = await db.invoices.count_documents({"organization_id": ctx.org_id})
+    if invoices_count > 0:
+        auto_steps.append("create_first_invoice")
+
+    members_count = await db.organization_users.count_documents(
+        {"organization_id": ctx.org_id, "status": "active"}
+    )
+    if members_count > 1:
+        auto_steps.append("invite_team_member")
+
+    stored_steps = org.get("onboarding_steps_completed", [])
+    all_completed = list(set(auto_steps + stored_steps))
+
+    # Persist if new steps were auto-detected
+    if set(auto_steps) - set(stored_steps):
+        all_done = all(s in all_completed for s in ONBOARDING_STEPS)
+        await db.organizations.update_one(
+            {"organization_id": ctx.org_id},
+            {"$set": {
+                "onboarding_steps_completed": all_completed,
+                "onboarding_completed": all_done or onboarding_completed,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        if all_done:
+            onboarding_completed = True
+
+    completed_count = len(all_completed)
+    total_steps = len(ONBOARDING_STEPS)
+    all_done_final = completed_count >= total_steps
+
+    return {
+        "onboarding_completed": onboarding_completed or all_done_final,
+        "onboarding_steps_completed": all_completed,
+        "show_onboarding": show_onboarding,
+        "total_steps": total_steps,
+        "completed_count": completed_count,
+        "org_created_at": created_at_str
+    }
+
+
+@router.post("/onboarding/complete-step")
+async def complete_onboarding_step(
+    data: CompleteStepRequest,
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Mark a specific onboarding step as complete"""
+    if data.step not in ONBOARDING_STEPS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid step. Must be one of: {ONBOARDING_STEPS}"
+        )
+
+    await db.organizations.update_one(
+        {"organization_id": ctx.org_id},
+        {"$addToSet": {"onboarding_steps_completed": data.step}}
+    )
+
+    org = await db.organizations.find_one(
+        {"organization_id": ctx.org_id},
+        {"_id": 0, "onboarding_steps_completed": 1}
+    )
+    steps = org.get("onboarding_steps_completed", [])
+    all_done = all(s in steps for s in ONBOARDING_STEPS)
+
+    if all_done:
+        await db.organizations.update_one(
+            {"organization_id": ctx.org_id},
+            {"$set": {"onboarding_completed": True, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+
+    return {
+        "success": True,
+        "step": data.step,
+        "all_completed": all_done,
+        "completed_steps": steps
+    }
+
+
+@router.post("/onboarding/skip")
+async def skip_onboarding(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Skip/dismiss the onboarding checklist"""
+    await db.organizations.update_one(
+        {"organization_id": ctx.org_id},
+        {"$set": {
+            "onboarding_completed": True,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"success": True, "message": "Onboarding skipped"}
+
+
 # ==================== BRANDING ====================
 
 DEFAULT_BRANDING = {
