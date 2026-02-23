@@ -335,6 +335,7 @@ DEFAULT_PLANS = [
             hr_employees=FeatureLimit(enabled=True),
             hr_attendance=FeatureLimit(enabled=True),
             hr_leave=FeatureLimit(enabled=True),
+            hr_payroll=FeatureLimit(enabled=True),
             efi_failure_intelligence=FeatureLimit(enabled=True),
             efi_ai_guidance=FeatureLimit(enabled=True, limit=500),
             efi_knowledge_brain=FeatureLimit(enabled=True),
@@ -347,6 +348,9 @@ DEFAULT_PLANS = [
             advanced_custom_fields=FeatureLimit(enabled=True),
             advanced_pdf_templates=FeatureLimit(enabled=True),
             advanced_audit_logs=FeatureLimit(enabled=True),
+            project_management=FeatureLimit(enabled=True),
+            einvoice=FeatureLimit(enabled=True),
+            accounting_module=FeatureLimit(enabled=True),
         ),
         "limits": PlanLimits(
             max_users=10,
