@@ -167,12 +167,13 @@ export default function OrganizationSettings({ user }) {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [orgRes, settingsRes, membersRes, rolesRes, razorpayRes] = await Promise.all([
+      const [orgRes, settingsRes, membersRes, rolesRes, razorpayRes, einvoiceRes] = await Promise.all([
         fetch(`${API}/org`, { headers: getAuthHeaders() }),
         fetch(`${API}/org/settings`, { headers: getAuthHeaders() }),
         fetch(`${API}/org/users`, { headers: getAuthHeaders() }),
         fetch(`${API}/org/roles`, { headers: getAuthHeaders() }),
         fetch(`${API}/payments/config`, { headers: getAuthHeaders() }),
+        fetch(`${API}/einvoice/config`, { headers: getAuthHeaders() }),
       ]);
 
       if (orgRes.ok) {
@@ -205,6 +206,24 @@ export default function OrganizationSettings({ user }) {
             ...prev,
             test_mode: rpData.test_mode ?? true
           }));
+        }
+      }
+      
+      if (einvoiceRes.ok) {
+        const eiData = await einvoiceRes.json();
+        setEinvoiceConfigured(eiData.configured || false);
+        setEinvoiceEnabled(eiData.enabled || false);
+        if (eiData.configured) {
+          setEinvoiceConfig(prev => ({
+            ...prev,
+            gstin: eiData.gstin || "",
+            irp_username: eiData.irp_username || "",
+            client_id: eiData.client_id || "",
+            is_sandbox: eiData.is_sandbox ?? true,
+            enabled: eiData.enabled || false,
+            turnover_threshold_met: eiData.turnover_threshold_met || false
+          }));
+          if (eiData.gstin) setGstinValid(true);
         }
       }
     } catch (error) {
