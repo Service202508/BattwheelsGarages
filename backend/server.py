@@ -5479,6 +5479,28 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Bills Module
+try:
+    from routes.bills import router as bills_router, set_db as set_bills_db
+    set_bills_db(db)
+    api_router.include_router(bills_router)
+    logger.info("Bills routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Bills routes: {e}")
+    import traceback
+    traceback.print_exc()
+
+# Banking Module
+try:
+    from routes.banking import router as banking_router, set_db as set_banking_db
+    set_banking_db(db)
+    api_router.include_router(banking_router)
+    logger.info("Banking routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Banking routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
