@@ -5591,8 +5591,13 @@ try:
     logger.info("TenantGuardMiddleware database reference set")
     
     # IMPORTANT: Middleware execution order is LIFO (last added = first to run)
-    # We want: Request -> RBAC -> TenantGuard -> Route
-    # So we add TenantGuard LAST (runs first), RBAC FIRST (runs second)
+    # We want: Request -> RateLimit -> RBAC -> TenantGuard -> Route
+    # So we add in reverse order: TenantGuard, RBAC, RateLimit
+    
+    # Add Rate Limiting middleware (runs LAST - after auth is established)
+    from middleware.rate_limit import RateLimitMiddleware
+    app.add_middleware(RateLimitMiddleware)
+    logger.info("RateLimitMiddleware added - API rate limiting ACTIVE")
     
     # Add RBAC middleware (ENFORCES role-based access on all requests)
     # This runs AFTER TenantGuardMiddleware sets the role
