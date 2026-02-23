@@ -78,22 +78,9 @@ class RefundRequest(BaseModel):
 # ==================== HELPER FUNCTIONS ====================
 
 async def get_org_razorpay_config(org_id: str) -> Dict:
-    """Get Razorpay configuration for an organization"""
-    org = await organizations_collection.find_one(
-        {"organization_id": org_id},
-        {"razorpay_config": 1, "_id": 0}
-    )
-    
-    if org and org.get("razorpay_config"):
-        return org["razorpay_config"]
-    
-    # Return global fallback if org doesn't have custom config
-    return {
-        "key_id": RAZORPAY_KEY_ID,
-        "key_secret": RAZORPAY_KEY_SECRET,
-        "webhook_secret": RAZORPAY_WEBHOOK_SECRET,
-        "test_mode": True
-    }
+    """Get Razorpay configuration for an organization (uses credential_service for encryption)"""
+    from services.credential_service import get_razorpay_credentials
+    return await get_razorpay_credentials(org_id)
 
 
 def get_razorpay_client(config: Dict):
