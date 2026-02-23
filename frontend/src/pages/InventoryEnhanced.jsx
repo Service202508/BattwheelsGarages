@@ -24,13 +24,13 @@ import { API } from "@/App";
 
 const statusColors = {
   available: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  sold: "bg-blue-100 text-[#3B9EFF]",
-  returned: "bg-yellow-100 text-[#EAB308]",
+  sold: "bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]",
+  returned: "bg-[rgba(234,179,8,0.10)] text-[#EAB308] border border-[rgba(234,179,8,0.25)]",
   damaged: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
-  packed: "bg-purple-100 text-[#8B5CF6]",
-  shipped: "bg-indigo-100 text-indigo-700",
+  packed: "bg-[rgba(139,92,246,0.10)] text-[#8B5CF6] border border-[rgba(139,92,246,0.25)]",
+  shipped: "bg-[rgba(99,102,241,0.10)] text-[#818CF8] border border-[rgba(99,102,241,0.25)]",
   delivered: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  pending: "bg-yellow-100 text-[#EAB308]",
+  pending: "bg-[rgba(234,179,8,0.10)] text-[#EAB308] border border-[rgba(234,179,8,0.25)]",
   processed: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]"
 };
 
