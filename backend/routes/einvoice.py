@@ -29,7 +29,11 @@ from services.einvoice_service import (
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/einvoice", tags=["E-Invoice"])
+router = APIRouter(
+    prefix="/einvoice",
+    tags=["E-Invoice"],
+    dependencies=[Depends(require_feature("einvoice"))]
+)
 
 # ==================== PYDANTIC MODELS ====================
 
