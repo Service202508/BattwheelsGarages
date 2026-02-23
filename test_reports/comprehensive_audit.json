@@ -1,11 +1,20 @@
 {
-  "timestamp": "2026-02-17T13:02:51.071956",
+  "timestamp": "2026-02-23T17:47:50.502017",
   "target": "https://beta-ready-1.preview.emergentagent.com",
-  "total_tests": 67,
-  "passed": 67,
-  "failed": 0,
-  "pass_rate": 100.0,
-  "errors": [],
+  "total_tests": 65,
+  "passed": 63,
+  "failed": 2,
+  "pass_rate": 96.92307692307692,
+  "errors": [
+    {
+      "test": "Warehouses List",
+      "error": ""
+    },
+    {
+      "test": "Warehouse Create",
+      "error": ""
+    }
+  ],
   "details": [
     {
       "test": "Admin Login",
@@ -59,12 +68,12 @@
     },
     {
       "test": "Warehouses List",
-      "status": "PASS",
+      "status": "FAIL",
       "detail": ""
     },
     {
       "test": "Warehouse Create",
-      "status": "PASS",
+      "status": "FAIL",
       "detail": ""
     },
     {
@@ -89,16 +98,6 @@
     },
     {
       "test": "Serial Create",
-      "status": "PASS",
-      "detail": ""
-    },
-    {
-      "test": "Stock Adjustment Add",
-      "status": "PASS",
-      "detail": ""
-    },
-    {
-      "test": "Stock Adjustment Subtract",
       "status": "PASS",
       "detail": ""
     },
