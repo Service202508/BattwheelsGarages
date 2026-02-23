@@ -636,19 +636,21 @@ export default function OrganizationSettings({ user }) {
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("logo_type", "main");
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/settings/logo`, {
+      const res = await fetch(`${API}/uploads/logo`, {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
       });
       if (res.ok) {
         const data = await res.json();
-        setLogoPreview(data.logo_url);
-        setOrganization(prev => ({ ...prev, logo_url: data.logo_url }));
+        const logoUrl = data.file_url || data.logo_url;
+        setLogoPreview(logoUrl);
+        setOrganization(prev => ({ ...prev, logo_url: logoUrl }));
         toast.success("Logo uploaded successfully");
       } else {
-        const err = await res.json();
+        const err = await res.json().catch(() => ({}));
         toast.error(err.detail || "Failed to upload logo");
       }
     } catch {
@@ -661,7 +663,7 @@ export default function OrganizationSettings({ user }) {
   // Remove logo
   const handleLogoRemove = async () => {
     try {
-      const res = await fetch(`${API}/settings/logo`, {
+      const res = await fetch(`${API}/uploads/logo/main`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
