@@ -1064,6 +1064,28 @@ async def get_invoice_pdf(invoice_id: str, request: Request):
                 "upi_id": bank_config.get("upi_id", "")
             }
     
+    # ==================== GET SURVEY QR CODE ====================
+    survey_qr_url = None
+    ticket_id = invoice.get("ticket_id")
+    if ticket_id:
+        ticket = await db["tickets"].find_one(
+            {"ticket_id": ticket_id},
+            {"_id": 0, "survey_token": 1}
+        )
+        if ticket and ticket.get("survey_token"):
+            # Check if survey not yet completed
+            review = await db["ticket_reviews"].find_one(
+                {"survey_token": ticket["survey_token"]},
+                {"_id": 0, "completed": 1}
+            )
+            if review and not review.get("completed"):
+                # Build frontend URL from CORS_ORIGINS env var
+                import os as _os
+                frontend_url = _os.environ.get("CORS_ORIGINS", "").split(",")[0].strip()
+                if not frontend_url:
+                    frontend_url = "https://production-ready-64.preview.emergentagent.com"
+                survey_qr_url = f"{frontend_url}/survey/{ticket['survey_token']}"
+
     # ==================== GENERATE PDF ====================
     try:
         # Generate comprehensive GST-compliant HTML
@@ -1073,7 +1095,8 @@ async def get_invoice_pdf(invoice_id: str, request: Request):
             org_settings=org_settings,
             irn_data=irn_data,
             bank_details=bank_details,
-            payment_qr_url=None  # Can be enhanced with Razorpay QR
+            payment_qr_url=None,        # Can be enhanced with Razorpay QR
+            survey_qr_url=survey_qr_url # Survey feedback QR code
         )
         
         # Generate PDF
