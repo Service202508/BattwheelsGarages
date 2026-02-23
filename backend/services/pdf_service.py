@@ -135,7 +135,8 @@ def generate_gst_invoice_html(
     org_settings: dict = None,
     irn_data: dict = None,
     bank_details: dict = None,
-    payment_qr_url: str = None
+    payment_qr_url: str = None,
+    survey_qr_url: str = None
 ) -> str:
     """
     Generate comprehensive GST-compliant invoice HTML with IRN block
@@ -147,6 +148,7 @@ def generate_gst_invoice_html(
         irn_data: IRN details (irn, ack_no, ack_date, signed_qr_code)
         bank_details: Bank account details for payment
         payment_qr_url: Razorpay payment QR code URL
+        survey_qr_url: Customer survey URL for QR code in footer
     """
     org = org_settings or {}
     
