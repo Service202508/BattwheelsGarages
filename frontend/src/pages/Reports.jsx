@@ -333,6 +333,10 @@ export default function Reports() {
             <ShieldAlert className="h-4 w-4 mr-1 hidden sm:block" />
             SLA
           </TabsTrigger>
+          <TabsTrigger value="technician-performance" className="text-xs sm:text-sm py-2" data-testid="tech-report-tab">
+            <Trophy className="h-4 w-4 mr-1 hidden sm:block" />
+            Technicians
+          </TabsTrigger>
         </TabsList>
 
         {/* Profit & Loss Tab */}
