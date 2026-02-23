@@ -312,23 +312,52 @@ export default function CreditNotes() {
                     <div className="flex items-center gap-3 mb-1">
                       <h3 className="font-semibold">{cn.creditnote_number}</h3>
                       <Badge className={statusColors[cn.status]}>{cn.status}</Badge>
+                      {cn.refund_status && refundStatusConfig[cn.refund_status] && (
+                        <Badge
+                          className={`${refundStatusConfig[cn.refund_status].class} cursor-pointer text-xs`}
+                          data-testid={`refund-status-${cn.creditnote_id}`}
+                          onClick={() => cn.razorpay_refund_id && handleCheckRefundStatus(cn.razorpay_refund_id)}
+                        >
+                          {cn.refund_status === "INITIATED" && <RefreshCw className="h-3 w-3 mr-1 animate-spin" />}
+                          {refundStatusConfig[cn.refund_status].label}
+                        </Badge>
+                      )}
                     </div>
                     <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                       <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{cn.customer_name}</span>
                       <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{cn.date}</span>
                       <span className="flex items-center gap-1"><FileText className="h-3.5 w-3.5" />{cn.reason}</span>
                     </div>
+                    {cn.refund_amount && (
+                      <p className="text-xs text-[rgba(244,246,240,0.4)] mt-1">
+                        Refund: ₹{cn.refund_amount?.toLocaleString('en-IN')}
+                        {cn.refund_initiated_at && ` on ${new Date(cn.refund_initiated_at).toLocaleDateString('en-IN')}`}
+                      </p>
+                    )}
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <p className="font-bold text-lg">₹{cn.total?.toLocaleString('en-IN')}</p>
                       {cn.credits_remaining > 0 && <p className="text-xs text-[#3B9EFF]">Available: ₹{cn.credits_remaining?.toLocaleString('en-IN')}</p>}
                     </div>
-                    {cn.credits_remaining > 0 && (
-                      <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => { setSelectedCN(cn); setApplyAmount(cn.credits_remaining); setShowApplyDialog(true); }}>
-                        <ArrowRight className="h-4 w-4 mr-1" /> Apply
-                      </Button>
-                    )}
+                    <div className="flex gap-2">
+                      {!cn.refund_status && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-[rgba(255,255,255,0.15)] hover:border-[#C8FF00] text-sm"
+                          data-testid={`process-refund-btn-${cn.creditnote_id}`}
+                          onClick={() => handleOpenRefundDialog(cn)}
+                        >
+                          <Receipt className="h-3.5 w-3.5 mr-1" /> Refund
+                        </Button>
+                      )}
+                      {cn.credits_remaining > 0 && (
+                        <Button size="sm" className="bg-[#C8FF00] text-[#080C0F] font-bold" onClick={() => { setSelectedCN(cn); setApplyAmount(cn.credits_remaining); setShowApplyDialog(true); }}>
+                          <ArrowRight className="h-4 w-4 mr-1" /> Apply
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -366,6 +395,80 @@ export default function CreditNotes() {
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowApplyDialog(false)}>Cancel</Button>
             <Button onClick={handleApplyToInvoice} className="bg-[#C8FF00] text-[#080C0F] font-bold">Apply Credit</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Razorpay Refund Dialog */}
+      <Dialog open={showRefundDialog} onOpenChange={setShowRefundDialog}>
+        <DialogContent data-testid="refund-dialog">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Receipt className="h-5 w-5 text-[#C8FF00]" />
+              Process Refund via Razorpay
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {razorpayPayment ? (
+              <>
+                <div className="bg-[#111820] rounded-lg p-3 border border-[rgba(200,255,0,0.15)]">
+                  <p className="text-xs text-[rgba(244,246,240,0.45)] mb-1">Original Razorpay Payment</p>
+                  <p className="font-semibold text-[#C8FF00]">₹{razorpayPayment.amount?.toLocaleString('en-IN')}</p>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)]">ID: {razorpayPayment.payment_id}</p>
+                </div>
+                <div>
+                  <Label>Refund Amount (₹) *</Label>
+                  <Input
+                    type="number"
+                    value={refundForm.amount}
+                    onChange={(e) => setRefundForm({ ...refundForm, amount: parseFloat(e.target.value) })}
+                    max={selectedCN?.total}
+                    data-testid="refund-amount-input"
+                  />
+                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">
+                    Credit note value: ₹{selectedCN?.total?.toLocaleString('en-IN')}
+                  </p>
+                </div>
+                <div>
+                  <Label>Reason for Refund</Label>
+                  <Input
+                    value={refundForm.reason}
+                    onChange={(e) => setRefundForm({ ...refundForm, reason: e.target.value })}
+                    placeholder="e.g. Customer request, defective product..."
+                    data-testid="refund-reason-input"
+                  />
+                </div>
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 flex gap-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-amber-300">
+                    Refunds take 5–7 business days to reflect in customer account depending on bank.
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-6">
+                <Receipt className="h-10 w-10 text-[rgba(244,246,240,0.2)] mx-auto mb-3" />
+                <p className="text-[rgba(244,246,240,0.45)] text-sm">
+                  No Razorpay payment found for this credit note's invoice.
+                </p>
+                <p className="text-xs text-[rgba(244,246,240,0.3)] mt-1">
+                  Refund is only available when the original invoice was paid via Razorpay.
+                </p>
+              </div>
+            )}
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowRefundDialog(false)}>Cancel</Button>
+            {razorpayPayment && (
+              <Button
+                onClick={handleInitiateRefund}
+                disabled={refundLoading || !refundForm.amount}
+                className="bg-[#C8FF00] text-[#080C0F] font-bold"
+                data-testid="confirm-refund-btn"
+              >
+                {refundLoading ? "Initiating..." : "Initiate Refund via Razorpay"}
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
