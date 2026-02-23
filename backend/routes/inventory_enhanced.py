@@ -748,22 +748,37 @@ async def create_shipment(shipment: ShipmentCreate):
 async def list_shipments(
     sales_order_id: Optional[str] = None,
     status: Optional[str] = None,
-    page: int = 1,
-    per_page: int = 50
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
-    """List shipments"""
+    """List shipments with standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     query = {}
     if sales_order_id:
         query["sales_order_id"] = sales_order_id
     if status:
         query["status"] = status
-    
+
     total = await shipments_collection.count_documents(query)
-    skip = (page - 1) * per_page
-    
-    shipments = await shipments_collection.find(query, {"_id": 0}).sort("created_time", -1).skip(skip).limit(per_page).to_list(per_page)
-    
-    return {"code": 0, "shipments": shipments, "page_context": {"page": page, "per_page": per_page, "total": total}}
+    skip = (page - 1) * limit
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    shipments = await shipments_collection.find(query, {"_id": 0}).sort("created_time", -1).skip(skip).limit(limit).to_list(limit)
+
+    return {
+        "data": shipments,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
 
 @router.get("/shipments/{shipment_id}")
 async def get_shipment(shipment_id: str):
@@ -889,18 +904,37 @@ async def create_return(ret: ReturnCreate):
     return {"code": 0, "message": "Return created", "return": return_doc, "credit_value": total_value}
 
 @router.get("/returns")
-async def list_returns(status: Optional[str] = None, page: int = 1, per_page: int = 50):
-    """List returns"""
+async def list_returns(
+    status: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
+):
+    """List returns with standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     query = {}
     if status:
         query["status"] = status
-    
+
     total = await returns_collection.count_documents(query)
-    skip = (page - 1) * per_page
-    
-    returns = await returns_collection.find(query, {"_id": 0}).sort("created_time", -1).skip(skip).limit(per_page).to_list(per_page)
-    
-    return {"code": 0, "returns": returns, "page_context": {"page": page, "per_page": per_page, "total": total}}
+    skip = (page - 1) * limit
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    returns = await returns_collection.find(query, {"_id": 0}).sort("created_time", -1).skip(skip).limit(limit).to_list(limit)
+
+    return {
+        "data": returns,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
 
 @router.get("/returns/{return_id}")
 async def get_return(return_id: str):
@@ -982,22 +1016,37 @@ async def create_adjustment(adjustment: StockAdjustmentCreate):
 async def list_adjustments(
     item_id: Optional[str] = None,
     warehouse_id: Optional[str] = None,
-    page: int = 1,
-    per_page: int = 50
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
-    """List stock adjustments"""
+    """List stock adjustments with standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     query = {}
     if item_id:
         query["item_id"] = item_id
     if warehouse_id:
         query["warehouse_id"] = warehouse_id
-    
+
     total = await adjustments_collection.count_documents(query)
-    skip = (page - 1) * per_page
-    
-    adjustments = await adjustments_collection.find(query, {"_id": 0}).sort("created_time", -1).skip(skip).limit(per_page).to_list(per_page)
-    
-    return {"code": 0, "adjustments": adjustments, "page_context": {"page": page, "per_page": per_page, "total": total}}
+    skip = (page - 1) * limit
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    adjustments = await adjustments_collection.find(query, {"_id": 0}).sort("created_time", -1).skip(skip).limit(limit).to_list(limit)
+
+    return {
+        "data": adjustments,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
 
 # ========================= REPORTS =========================
 
