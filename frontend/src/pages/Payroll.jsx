@@ -645,6 +645,30 @@ export default function Payroll({ user }) {
                   }} data-testid="download-form16-btn">
                     <FileText className="h-4 w-4 mr-2" /> Download Form 16 PDF
                   </Button>
+                  <Button variant="outline" onClick={async () => {
+                    toast.info(`Generating all Form 16 PDFs for FY ${selectedFY}...`);
+                    try {
+                      const token = localStorage.getItem("token");
+                      const res = await fetch(`${API}/hr/payroll/form16/bulk/${selectedFY}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                      });
+                      if (res.ok) {
+                        const blob = await res.blob();
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = `Form16_Bulk_${selectedFY}.zip`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        toast.success("Bulk Form 16 ZIP downloaded");
+                      } else {
+                        const data = await res.json().catch(() => ({}));
+                        toast.error(data.detail || "Failed to generate bulk Form 16");
+                      }
+                    } catch { toast.error("Error downloading bulk Form 16"); }
+                  }} data-testid="download-bulk-form16-btn">
+                    <Download className="h-4 w-4 mr-2" /> Download All Form 16s (ZIP)
+                  </Button>
                   <Button variant="outline" onClick={handleExportTdsData}>
                     <Download className="h-4 w-4 mr-2" /> Export TDS Data CSV
                   </Button>
