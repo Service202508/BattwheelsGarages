@@ -1003,6 +1003,95 @@ export default function InventoryEnhanced() {
 
       {/* ========== DIALOGS ========== */}
 
+      {/* Stock Transfer Dialog */}
+      <Dialog open={showTransferDialog} onOpenChange={setShowTransferDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>Transfer Stock Between Warehouses</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>From Warehouse *</Label>
+                <Select onValueChange={v => setNewTransfer(t => ({ ...t, from_warehouse_id: v }))}>
+                  <SelectTrigger><SelectValue placeholder="Source" /></SelectTrigger>
+                  <SelectContent>{warehouses.map(w => <SelectItem key={w.warehouse_id} value={w.warehouse_id}>{w.name}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>To Warehouse *</Label>
+                <Select onValueChange={v => setNewTransfer(t => ({ ...t, to_warehouse_id: v }))}>
+                  <SelectTrigger><SelectValue placeholder="Destination" /></SelectTrigger>
+                  <SelectContent>{warehouses.map(w => <SelectItem key={w.warehouse_id} value={w.warehouse_id}>{w.name}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            </div>
+            <Separator />
+            <div className="space-y-2">
+              <Label>Add Items</Label>
+              <div className="flex gap-2">
+                <Select onValueChange={v => setTransferLine(tl => ({ ...tl, item_id: v }))}>
+                  <SelectTrigger className="flex-1"><SelectValue placeholder="Select item" /></SelectTrigger>
+                  <SelectContent>{items.map(i => <SelectItem key={i.item_id} value={i.item_id}>{i.name}</SelectItem>)}</SelectContent>
+                </Select>
+                <Input type="number" min="1" value={transferLine.quantity} onChange={e => setTransferLine(tl => ({ ...tl, quantity: parseInt(e.target.value) || 1 }))} className="w-20" />
+                <Button variant="outline" size="sm" onClick={() => {
+                  if (!transferLine.item_id) return toast.error("Select an item");
+                  const item = items.find(i => i.item_id === transferLine.item_id);
+                  setNewTransfer(t => ({
+                    ...t,
+                    items: [...t.items, { item_id: transferLine.item_id, item_name: item?.name || "", quantity: transferLine.quantity }]
+                  }));
+                  setTransferLine({ item_id: "", quantity: 1 });
+                }}>Add</Button>
+              </div>
+              {newTransfer.items.length > 0 && (
+                <div className="space-y-1 mt-2">
+                  {newTransfer.items.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center p-2 bg-[rgba(255,255,255,0.03)] rounded text-sm">
+                      <span>{item.item_name}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono">{item.quantity} units</span>
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-[#FF3B2F]" onClick={() => setNewTransfer(t => ({ ...t, items: t.items.filter((_, i) => i !== idx) }))}>×</Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div><Label>Notes</Label><Input value={newTransfer.notes} onChange={e => setNewTransfer(t => ({ ...t, notes: e.target.value }))} placeholder="Optional notes" /></div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowTransferDialog(false)}>Cancel</Button>
+            <Button onClick={handleCreateTransfer} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="confirm-transfer-btn">Transfer</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* New Stocktake Dialog */}
+      <Dialog open={showStocktakeDialog} onOpenChange={setShowStocktakeDialog}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Start New Stocktake</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Warehouse *</Label>
+              <Select onValueChange={v => setNewStocktake(s => ({ ...s, warehouse_id: v }))}>
+                <SelectTrigger><SelectValue placeholder="Select warehouse to count" /></SelectTrigger>
+                <SelectContent>{warehouses.map(w => <SelectItem key={w.warehouse_id} value={w.warehouse_id}>{w.name}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div><Label>Session Name</Label><Input value={newStocktake.name} onChange={e => setNewStocktake(s => ({ ...s, name: e.target.value }))} placeholder={`Stocktake ${new Date().toLocaleDateString()}`} /></div>
+            <div><Label>Notes</Label><Input value={newStocktake.notes} onChange={e => setNewStocktake(s => ({ ...s, notes: e.target.value }))} placeholder="Optional notes" /></div>
+            <p className="text-xs text-[rgba(244,246,240,0.45)]">All items with stock in the selected warehouse will be included for counting.</p>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowStocktakeDialog(false)}>Cancel</Button>
+            <Button onClick={handleCreateStocktake} disabled={loadingStocktake} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="start-stocktake-btn">
+              {loadingStocktake ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Start Stocktake
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Create Warehouse Dialog */}
       <Dialog open={showWarehouseDialog} onOpenChange={setShowWarehouseDialog}>
         <DialogContent>
