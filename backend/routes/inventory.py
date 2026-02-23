@@ -123,10 +123,40 @@ async def create_inventory_item(data: InventoryCreateRequest, request: Request):
 async def list_inventory(
     request: Request,
     category: Optional[str] = None,
-    low_stock: bool = False
+    low_stock: bool = False,
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
+    """List inventory items with standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     service = get_service()
-    return await service.list_items(category=category, low_stock_only=low_stock)
+
+    query = {}
+    if category:
+        query["category"] = category
+    if low_stock:
+        query["$expr"] = {"$lte": ["$quantity", "$reorder_level"]}
+
+    total = await service.db.inventory.count_documents(query)
+    skip = (page - 1) * limit
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    items = await service.db.inventory.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+
+    return {
+        "data": items,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
 
 
 @router.get("/{item_id}")
