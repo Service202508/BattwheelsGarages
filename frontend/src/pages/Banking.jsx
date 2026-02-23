@@ -129,7 +129,7 @@ export default function Banking() {
       let url = `${API}/banking/accounts/${selectedAccount.account_id}/transactions?limit=100`;
       if (dateFrom) url += `&date_from=${dateFrom}`;
       if (dateTo) url += `&date_to=${dateTo}`;
-      if (categoryFilter) url += `&category=${categoryFilter}`;
+      if (categoryFilter && categoryFilter !== "all") url += `&category=${categoryFilter}`;
       if (reconciledFilter === "yes") url += `&reconciled=true`;
       if (reconciledFilter === "no") url += `&reconciled=false`;
       
