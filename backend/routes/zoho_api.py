@@ -253,7 +253,7 @@ async def export_contacts(contact_type: str = ""):
     if contact_type:
         query["contact_type"] = contact_type
     
-    contacts = await db.contacts.find(query, {"_id": 0}).to_list(None)
+    contacts = await db.contacts.find(query, {"_id": 0}).to_list(10000)
     
     output = io.StringIO()
     fieldnames = ["contact_name", "company_name", "contact_type", "email", "phone", "mobile", "website", "gst_no", "pan_no", "payment_terms"]
@@ -565,7 +565,7 @@ async def export_items(format: str = "csv"):
     import io
     
     db = get_db()
-    items = await db.items.find({"status": "active"}, {"_id": 0}).to_list(None)
+    items = await db.items.find({"status": "active"}, {"_id": 0}).to_list(10000)
     
     if format == "csv":
         output = io.StringIO()
