@@ -251,12 +251,12 @@ def run():
     if new_ticket_id:
         r = c.get(f"{API_URL}/tickets/{new_ticket_id}", headers=H)
         T("Ticket Read by ID", r.status_code == 200, f"HTTP {r.status_code}")
-        r = c.patch(f"{API_URL}/tickets/{new_ticket_id}", headers=H, json={"status": "in_progress"})
+        r = c.put(f"{API_URL}/tickets/{new_ticket_id}", headers=H, json={"status": "in_progress"})
         T("Ticket Status Update", r.status_code == 200, f"HTTP {r.status_code} {r.text[:80]}")
-        r = c.post(f"{API_URL}/tickets/{new_ticket_id}/updates", headers=H,
+        r = c.post(f"{API_URL}/tickets/{new_ticket_id}/activities", headers=H,
                    json={"update_type": "status_change", "description": "Started diagnosis"})
         T("Ticket Add Update/Comment", r.status_code in [200, 201], f"HTTP {r.status_code}")
-        r = c.get(f"{API_URL}/tickets/{new_ticket_id}/updates", headers=H)
+        r = c.get(f"{API_URL}/tickets/{new_ticket_id}/activities", headers=H)
         T("Ticket Updates List", r.status_code == 200, f"HTTP {r.status_code}")
     else:
         for lbl in ["Ticket Read by ID", "Ticket Status Update", "Ticket Add Update/Comment", "Ticket Updates List"]:
