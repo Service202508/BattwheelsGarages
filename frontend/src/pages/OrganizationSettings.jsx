@@ -270,6 +270,19 @@ export default function OrganizationSettings({ user }) {
           setSlaConfig(prev => ({ ...prev, ...slaData.sla_config }));
         }
       }
+
+      if (emailRes && emailRes.ok) {
+        const emData = await emailRes.json();
+        setEmailConfigured(emData.configured || false);
+        if (emData.configured) {
+          setEmailConfig(prev => ({
+            ...prev,
+            provider: emData.provider || "resend",
+            from_email: emData.from_email || "",
+            from_name: emData.from_name || "",
+          }));
+        }
+      }
     } catch (error) {
       toast.error("Failed to load organization data");
     } finally {
