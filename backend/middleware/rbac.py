@@ -20,8 +20,6 @@ from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from .tenant import is_public_route, get_tenant_user_role
-
 logger = logging.getLogger(__name__)
 
 # Role hierarchy (higher roles inherit lower role permissions)
