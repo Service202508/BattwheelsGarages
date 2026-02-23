@@ -65,6 +65,10 @@ PUBLIC_ROUTES: List[str] = [
     r"^/api/customer-portal/auth.*$",
     r"^/api/business-portal/register$",
     
+    # Public self-serve signup (no auth needed)
+    r"^/api/organizations/signup$",
+    r"^/api/organizations/accept-invite$",
+    
     # Webhook endpoints (use different auth)
     r"^/api/webhooks/.*$",
     r"^/api/razorpay/webhook$",
