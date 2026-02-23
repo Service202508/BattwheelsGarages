@@ -161,15 +161,37 @@ class EmailService:
         html_content: str,
         attachments: List[dict] = None,
         cc: List[str] = None,
-        reply_to: str = None
+        reply_to: str = None,
+        org_id: str = None
     ) -> dict:
-        """Send an email using Resend with optional attachments"""
-        if not EMAIL_ENABLED:
+        """Send an email using Resend with optional per-org credentials"""
+        # Resolve credentials — per-org if available, else global
+        from_email = SENDER_EMAIL
+        from_name = APP_NAME
+        api_key_to_use = RESEND_API_KEY
+        
+        if org_id:
+            try:
+                from services.credential_service import get_email_credentials
+                creds = await get_email_credentials(org_id)
+                if creds.get("api_key"):
+                    api_key_to_use = creds["api_key"]
+                if creds.get("from_email"):
+                    from_email = creds["from_email"]
+                if creds.get("from_name"):
+                    from_name = creds["from_name"]
+            except Exception as e:
+                logger.warning(f"Could not load org email creds for {org_id}: {e}")
+
+        if not RESEND_AVAILABLE or not api_key_to_use:
             logger.info(f"[EMAIL MOCK] To: {to}, Subject: {subject}, Attachments: {len(attachments) if attachments else 0}")
             return {"status": "mocked", "message": f"Email logged (Resend not configured): {to}"}
         
+        import resend as _resend
+        _resend.api_key = api_key_to_use
+        
         params = {
-            "from": f"{APP_NAME} <{SENDER_EMAIL}>",
+            "from": f"{from_name} <{from_email}>",
             "to": [to],
             "subject": subject,
             "html": html_content
@@ -185,7 +207,7 @@ class EmailService:
             params["attachments"] = attachments
         
         try:
-            email = await asyncio.to_thread(resend.Emails.send, params)
+            email = await asyncio.to_thread(_resend.Emails.send, params)
             logger.info(f"Email sent to {to}: {email.get('id')}")
             return {"status": "success", "email_id": email.get("id")}
         except Exception as e:
