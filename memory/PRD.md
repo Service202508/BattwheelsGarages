@@ -119,6 +119,11 @@ Battwheels OS is a multi-tenant SaaS platform for EV service management. It prov
 | ✅ EstimatesEnhanced Refactor | Extracted 4 UI components, reduced 3010→2925 lines, fixed light mode | `components/estimates/*`, `pages/EstimatesEnhanced.jsx` |
 | ✅ **Proactive Upgrade Banner** | FeatureGateBanner: amber sticky banner on gated routes, blur overlay on content, CTA to /subscription. 12/12 tests pass (Feb 2026) | `components/FeatureGateBanner.jsx` (new), `components/Layout.jsx` |
 | ✅ **EstimatesEnhanced Hook Extraction** | Extracted `useEstimateCalculations` + `useEstimateFilters` hooks. Line count: 2925→2917 | `hooks/useEstimateCalculations.js` (new), `hooks/useEstimateFilters.js` (new), `pages/EstimatesEnhanced.jsx` |
+| ✅ **Banner Feature Benefits Tooltip** | FEATURE_BENEFITS added to FeatureGateBanner: 4 value bullets per feature, desktop-only, amber checkmarks. Converts blocker into sales moment | `components/FeatureGateBanner.jsx` |
+| ✅ **OrganizationSwitcher Context Fix** | Reads org from useOrganization() context directly. Shows org name + color-coded plan badge (FREE/STARTER/PROFESSIONAL/ENTERPRISE) | `components/OrganizationSwitcher.jsx` |
+| ✅ **E2E Tenant Isolation Tests (23/23 PASS)** | Full multi-tenant test suite: data isolation (6 tests), credential isolation (1), RBAC (4), entitlements (6), platform admin (5). Fixed real invoice isolation breach + suspension enforcement gap | `tests/e2e/test_tenant_isolation.py` (new) |
+| ✅ **Invoice Isolation Bug Fix** | `/api/invoices` GET/GET-by-ID were missing org filter. Fixed + backfilled org_id on all existing invoices | `server.py` (GET/invoices endpoints) |
+| ✅ **Suspension Enforcement Gap Fix** | `TenantGuardMiddleware` now checks `is_active` on every authenticated request, returning 403 ORG_SUSPENDED | `core/tenant/guard.py` |
 
 | ✅ **Payroll → Accounting** | Journal entry on payroll run with full debit/credit breakdown | `services/hr_service.py`, `services/double_entry_service.py`, `services/posting_hooks.py` |
 | ✅ **Bill → Inventory** | Stock qty/WAC updated on bill approval + stock_movement record | `services/inventory_service.py`, `routes/bills_enhanced.py` |
