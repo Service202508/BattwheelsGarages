@@ -151,7 +151,7 @@ export default function Banking() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Banking</h1>
-          <p className="text-gray-500 text-sm mt-1">Bank accounts & transactions</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Bank accounts & transactions</p>
         </div>
         <div className="flex gap-2">
           <Dialog 
@@ -359,11 +359,11 @@ export default function Banking() {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Total Balance</p>
+              <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Balance</p>
               <p className="text-3xl font-bold text-[#F4F6F0]">₹{totalBalance.toLocaleString('en-IN')}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-500">{accounts.length} Accounts</p>
+              <p className="text-sm text-[rgba(244,246,240,0.45)]">{accounts.length} Accounts</p>
             </div>
           </div>
         </CardContent>
@@ -391,11 +391,11 @@ export default function Banking() {
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-[rgba(255,255,255,0.05)] rounded-lg">
-                      <Icon className="h-5 w-5 text-gray-600" />
+                      <Icon className="h-5 w-5 text-[rgba(244,246,240,0.35)]" />
                     </div>
                     <div className="flex-1">
                       <h3 className="font-medium">{acc.account_name}</h3>
-                      <p className="text-xs text-gray-500">{acc.bank_name || acc.account_type}</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.45)]">{acc.bank_name || acc.account_type}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-bold">₹{acc.balance?.toLocaleString('en-IN')}</p>
@@ -412,8 +412,8 @@ export default function Banking() {
           <h2 className="text-lg font-semibold text-[#F4F6F0]">
             Transactions {selectedAccount && `- ${selectedAccount.account_name}`}
           </h2>
-          {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
-            accountTxns.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No transactions found</CardContent></Card> :
+          {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
+            accountTxns.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No transactions found</CardContent></Card> :
             <div className="space-y-2">
               {accountTxns.map(txn => (
                 <Card key={txn.transaction_id} className="hover:shadow-sm transition-shadow">
@@ -428,7 +428,7 @@ export default function Banking() {
                         </div>
                         <div>
                           <p className="font-medium">{txn.payee || txn.description || 'Transaction'}</p>
-                          <div className="flex gap-2 text-xs text-gray-500">
+                          <div className="flex gap-2 text-xs text-[rgba(244,246,240,0.45)]">
                             <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{txn.date}</span>
                             {txn.reference_number && <span>Ref: {txn.reference_number}</span>}
                           </div>

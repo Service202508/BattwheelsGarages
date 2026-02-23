@@ -451,7 +451,7 @@ export default function InventoryAdjustments() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold" data-testid="page-title">Inventory Adjustments</h1>
-          <p className="text-gray-500">Adjust stock quantities and values with full audit trail</p>
+          <p className="text-[rgba(244,246,240,0.45)]">Adjust stock quantities and values with full audit trail</p>
         </div>
         <div className="flex gap-2 flex-wrap">
           <Button variant="outline" size="sm" onClick={loadAbcReport} data-testid="abc-report-btn">
@@ -490,7 +490,7 @@ export default function InventoryAdjustments() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3" data-testid="summary-cards">
           <Card>
             <CardContent className="p-3">
-              <p className="text-xs text-gray-500">Total</p>
+              <p className="text-xs text-[rgba(244,246,240,0.45)]">Total</p>
               <p className="text-xl font-bold">{summary.total}</p>
             </CardContent>
           </Card>
@@ -514,7 +514,7 @@ export default function InventoryAdjustments() {
           </Card>
           <Card>
             <CardContent className="p-3">
-              <p className="text-xs text-gray-500">This Month</p>
+              <p className="text-xs text-[rgba(244,246,240,0.45)]">This Month</p>
               <p className="text-xl font-bold">{summary.this_month}</p>
             </CardContent>
           </Card>
@@ -537,7 +537,7 @@ export default function InventoryAdjustments() {
       <div className="space-y-3">
         <div className="flex gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
             <Input
               placeholder="Search by reference, description, or reason..."
               className="pl-10"
@@ -612,12 +612,12 @@ export default function InventoryAdjustments() {
       <Card>
         <CardContent className="p-0">
           {loading ? (
-            <p className="text-center py-12 text-gray-500">Loading...</p>
+            <p className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</p>
           ) : adjustments.length === 0 ? (
             <div className="text-center py-12" data-testid="empty-state">
               <Package className="h-12 w-12 mx-auto text-[rgba(244,246,240,0.20)] mb-3" />
-              <p className="text-gray-500 font-medium">No inventory adjustments found</p>
-              <p className="text-sm text-gray-400 mb-4">Create an adjustment to correct stock levels or values</p>
+              <p className="text-[rgba(244,246,240,0.45)] font-medium">No inventory adjustments found</p>
+              <p className="text-sm text-[rgba(244,246,240,0.45)] mb-4">Create an adjustment to correct stock levels or values</p>
               <Button onClick={() => { resetForm(); setShowCreateDialog(true); }}>
                 <Plus className="h-4 w-4 mr-2" /> Create First Adjustment
               </Button>
@@ -628,21 +628,21 @@ export default function InventoryAdjustments() {
                 <table className="w-full text-sm" data-testid="adjustments-table">
                   <thead className="bg-[#111820] border-b">
                     <tr>
-                      <th className="px-4 py-3 text-left font-medium text-gray-600">Date</th>
-                      <th className="px-4 py-3 text-left font-medium text-gray-600">Reference #</th>
-                      <th className="px-4 py-3 text-left font-medium text-gray-600">Reason</th>
-                      <th className="px-4 py-3 text-center font-medium text-gray-600">Type</th>
-                      <th className="px-4 py-3 text-center font-medium text-gray-600">Items</th>
-                      <th className="px-4 py-3 text-center font-medium text-gray-600">Status</th>
-                      <th className="px-4 py-3 text-left font-medium text-gray-600">Description</th>
-                      <th className="px-4 py-3 text-left font-medium text-gray-600">Created By</th>
-                      <th className="px-4 py-3 text-right font-medium text-gray-600">Actions</th>
+                      <th className="px-4 py-3 text-left font-medium text-[rgba(244,246,240,0.35)]">Date</th>
+                      <th className="px-4 py-3 text-left font-medium text-[rgba(244,246,240,0.35)]">Reference #</th>
+                      <th className="px-4 py-3 text-left font-medium text-[rgba(244,246,240,0.35)]">Reason</th>
+                      <th className="px-4 py-3 text-center font-medium text-[rgba(244,246,240,0.35)]">Type</th>
+                      <th className="px-4 py-3 text-center font-medium text-[rgba(244,246,240,0.35)]">Items</th>
+                      <th className="px-4 py-3 text-center font-medium text-[rgba(244,246,240,0.35)]">Status</th>
+                      <th className="px-4 py-3 text-left font-medium text-[rgba(244,246,240,0.35)]">Description</th>
+                      <th className="px-4 py-3 text-left font-medium text-[rgba(244,246,240,0.35)]">Created By</th>
+                      <th className="px-4 py-3 text-right font-medium text-[rgba(244,246,240,0.35)]">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {adjustments.map((adj) => (
                       <tr key={adj.adjustment_id} className="hover:bg-[#111820]" data-testid={`row-${adj.adjustment_id}`}>
-                        <td className="px-4 py-3 text-gray-600">{adj.date}</td>
+                        <td className="px-4 py-3 text-[rgba(244,246,240,0.35)]">{adj.date}</td>
                         <td className="px-4 py-3">
                           <button className="text-[#3B9EFF] hover:underline font-medium" onClick={() => viewDetail(adj.adjustment_id)} data-testid={`ref-link-${adj.adjustment_id}`}>
                             {adj.reference_number}
@@ -656,8 +656,8 @@ export default function InventoryAdjustments() {
                         <td className="px-4 py-3 text-center">
                           <Badge className={STATUS_STYLES[adj.status] || ""}>{adj.status}</Badge>
                         </td>
-                        <td className="px-4 py-3 text-gray-500 truncate max-w-[200px]">{adj.description}</td>
-                        <td className="px-4 py-3 text-gray-500">{adj.created_by}</td>
+                        <td className="px-4 py-3 text-[rgba(244,246,240,0.45)] truncate max-w-[200px]">{adj.description}</td>
+                        <td className="px-4 py-3 text-[rgba(244,246,240,0.45)]">{adj.created_by}</td>
                         <td className="px-4 py-3 text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -700,7 +700,7 @@ export default function InventoryAdjustments() {
               {/* Pagination */}
               {pagination.total_pages > 1 && (
                 <div className="flex items-center justify-between px-4 py-3 border-t">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-[rgba(244,246,240,0.45)]">
                     Showing {(pagination.page - 1) * pagination.per_page + 1} to {Math.min(pagination.page * pagination.per_page, pagination.total)} of {pagination.total}
                   </p>
                   <div className="flex gap-2">
@@ -807,7 +807,7 @@ export default function InventoryAdjustments() {
                   onChange={(e) => setForm({ ...form, ticket_id: e.target.value })}
                   data-testid="form-ticket-id"
                 />
-                <p className="text-xs text-gray-400 mt-1">Optionally link this adjustment to a complaint/ticket</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Optionally link this adjustment to a complaint/ticket</p>
               </div>
             </div>
 
@@ -878,7 +878,7 @@ export default function InventoryAdjustments() {
                     <thead className="bg-[#111820]">
                       <tr>
                         <th className="px-3 py-2 text-left">Item</th>
-                        <th className="px-3 py-2 text-left text-xs text-gray-400">SKU</th>
+                        <th className="px-3 py-2 text-left text-xs text-[rgba(244,246,240,0.45)]">SKU</th>
                         {form.adjustment_type === "quantity" ? (
                           <>
                             <th className="px-3 py-2 text-right">Available</th>
@@ -899,7 +899,7 @@ export default function InventoryAdjustments() {
                       {form.line_items.map((line, idx) => (
                         <tr key={idx}>
                           <td className="px-3 py-2 font-medium">{line.item_name}</td>
-                          <td className="px-3 py-2 text-xs text-gray-400 font-mono">{line.sku}</td>
+                          <td className="px-3 py-2 text-xs text-[rgba(244,246,240,0.45)] font-mono">{line.sku}</td>
                           {form.adjustment_type === "quantity" ? (
                             <>
                               <td className="px-3 py-2 text-right">{line.quantity_available}</td>
@@ -1005,7 +1005,7 @@ export default function InventoryAdjustments() {
                             <td className="px-3 py-2">
                               <div>
                                 <p className="font-medium">{line.item_name}</p>
-                                <p className="text-xs text-gray-400 font-mono">{line.sku}</p>
+                                <p className="text-xs text-[rgba(244,246,240,0.45)] font-mono">{line.sku}</p>
                               </div>
                             </td>
                             {selectedAdj.adjustment_type === "quantity" ? (
@@ -1039,31 +1039,31 @@ export default function InventoryAdjustments() {
                 <TabsContent value="details">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="space-y-3">
-                      <div><span className="text-gray-500">Reference:</span> <span className="font-medium ml-2">{selectedAdj.reference_number}</span></div>
-                      <div><span className="text-gray-500">Date:</span> <span className="ml-2">{selectedAdj.date}</span></div>
-                      <div><span className="text-gray-500">Type:</span> <span className="ml-2 capitalize">{selectedAdj.adjustment_type}</span></div>
-                      <div><span className="text-gray-500">Account:</span> <span className="ml-2">{selectedAdj.account}</span></div>
-                      <div><span className="text-gray-500">Reason:</span> <span className="ml-2">{selectedAdj.reason}</span></div>
+                      <div><span className="text-[rgba(244,246,240,0.45)]">Reference:</span> <span className="font-medium ml-2">{selectedAdj.reference_number}</span></div>
+                      <div><span className="text-[rgba(244,246,240,0.45)]">Date:</span> <span className="ml-2">{selectedAdj.date}</span></div>
+                      <div><span className="text-[rgba(244,246,240,0.45)]">Type:</span> <span className="ml-2 capitalize">{selectedAdj.adjustment_type}</span></div>
+                      <div><span className="text-[rgba(244,246,240,0.45)]">Account:</span> <span className="ml-2">{selectedAdj.account}</span></div>
+                      <div><span className="text-[rgba(244,246,240,0.45)]">Reason:</span> <span className="ml-2">{selectedAdj.reason}</span></div>
                     </div>
                     <div className="space-y-3">
-                      <div><span className="text-gray-500">Warehouse:</span> <span className="ml-2">{selectedAdj.warehouse_name || "N/A"}</span></div>
-                      <div><span className="text-gray-500">Created By:</span> <span className="ml-2">{selectedAdj.created_by}</span></div>
-                      <div><span className="text-gray-500">Created At:</span> <span className="ml-2">{selectedAdj.created_at?.split("T")[0]}</span></div>
-                      {selectedAdj.converted_at && <div><span className="text-gray-500">Converted:</span> <span className="ml-2">{selectedAdj.converted_at?.split("T")[0]}</span></div>}
-                      {selectedAdj.voided_at && <div><span className="text-gray-500">Voided:</span> <span className="ml-2">{selectedAdj.voided_at?.split("T")[0]}</span></div>}
-                      {selectedAdj.ticket_id && <div><span className="text-gray-500">Linked Ticket:</span> <span className="ml-2 text-[#3B9EFF]">{selectedAdj.ticket_id}</span></div>}
+                      <div><span className="text-[rgba(244,246,240,0.45)]">Warehouse:</span> <span className="ml-2">{selectedAdj.warehouse_name || "N/A"}</span></div>
+                      <div><span className="text-[rgba(244,246,240,0.45)]">Created By:</span> <span className="ml-2">{selectedAdj.created_by}</span></div>
+                      <div><span className="text-[rgba(244,246,240,0.45)]">Created At:</span> <span className="ml-2">{selectedAdj.created_at?.split("T")[0]}</span></div>
+                      {selectedAdj.converted_at && <div><span className="text-[rgba(244,246,240,0.45)]">Converted:</span> <span className="ml-2">{selectedAdj.converted_at?.split("T")[0]}</span></div>}
+                      {selectedAdj.voided_at && <div><span className="text-[rgba(244,246,240,0.45)]">Voided:</span> <span className="ml-2">{selectedAdj.voided_at?.split("T")[0]}</span></div>}
+                      {selectedAdj.ticket_id && <div><span className="text-[rgba(244,246,240,0.45)]">Linked Ticket:</span> <span className="ml-2 text-[#3B9EFF]">{selectedAdj.ticket_id}</span></div>}
                     </div>
                   </div>
                   {selectedAdj.description && (
                     <div className="mt-4 p-3 bg-[#111820] rounded-lg">
-                      <p className="text-sm text-gray-500 mb-1">Description</p>
+                      <p className="text-sm text-[rgba(244,246,240,0.45)] mb-1">Description</p>
                       <p className="text-sm">{selectedAdj.description}</p>
                     </div>
                   )}
                   {/* Attachments */}
                   {selectedAdj.attachments?.length > 0 && (
                     <div className="mt-4">
-                      <p className="text-sm text-gray-500 mb-2 flex items-center gap-1"><Paperclip className="h-4 w-4" /> Attachments</p>
+                      <p className="text-sm text-[rgba(244,246,240,0.45)] mb-2 flex items-center gap-1"><Paperclip className="h-4 w-4" /> Attachments</p>
                       <div className="space-y-1">
                         {selectedAdj.attachments.map(att => (
                           <div key={att.attachment_id} className="flex items-center justify-between p-2 bg-[#111820] rounded">
@@ -1083,14 +1083,14 @@ export default function InventoryAdjustments() {
                           <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
                           <div>
                             <p className="font-medium">{entry.action}</p>
-                            <p className="text-gray-500">{entry.details}</p>
-                            <p className="text-xs text-gray-400 mt-1">{entry.timestamp?.replace("T", " ").split(".")[0]} by {entry.user}</p>
+                            <p className="text-[rgba(244,246,240,0.45)]">{entry.details}</p>
+                            <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">{entry.timestamp?.replace("T", " ").split(".")[0]} by {entry.user}</p>
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-center py-6 text-gray-400">No audit entries</p>
+                    <p className="text-center py-6 text-[rgba(244,246,240,0.45)]">No audit entries</p>
                   )}
                 </TabsContent>
               </Tabs>
@@ -1166,7 +1166,7 @@ export default function InventoryAdjustments() {
                 onChange={(e) => { setImportFile(e.target.files?.[0] || null); setImportPreview(null); }}
                 data-testid="import-file-input"
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">
                 Expected columns: Reference Number, Date, Type (quantity/value), Reason, Account, Item Name or Item ID, New Quantity, New Value, Description
               </p>
             </div>
@@ -1182,7 +1182,7 @@ export default function InventoryAdjustments() {
                 <div className="grid grid-cols-3 gap-3">
                   <Card>
                     <CardContent className="p-3 text-center">
-                      <p className="text-xs text-gray-500">Rows Found</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.45)]">Rows Found</p>
                       <p className="text-lg font-bold">{importPreview.row_count}</p>
                     </CardContent>
                   </Card>
@@ -1194,13 +1194,13 @@ export default function InventoryAdjustments() {
                   </Card>
                   <Card className={importPreview.items_not_found?.length > 0 ? "bg-[rgba(255,59,47,0.08)]" : ""}>
                     <CardContent className="p-3 text-center">
-                      <p className="text-xs text-gray-500">Unmatched Items</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.45)]">Unmatched Items</p>
                       <p className="text-lg font-bold">{importPreview.items_not_found?.length || 0}</p>
                     </CardContent>
                   </Card>
                 </div>
 
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-[rgba(244,246,240,0.45)]">
                   Detected fields: {importPreview.available_fields?.join(", ")}
                 </div>
 
@@ -1265,7 +1265,7 @@ export default function InventoryAdjustments() {
                 <Badge variant="outline">{abcDrillDown.item?.sku}</Badge>
               </div>
               <div className="grid grid-cols-3 gap-3">
-                <Card><CardContent className="p-3 text-center"><p className="text-xs text-gray-500">Adjustments</p><p className="text-lg font-bold">{abcDrillDown.total_adjustments}</p></CardContent></Card>
+                <Card><CardContent className="p-3 text-center"><p className="text-xs text-[rgba(244,246,240,0.45)]">Adjustments</p><p className="text-lg font-bold">{abcDrillDown.total_adjustments}</p></CardContent></Card>
                 <Card className="bg-[rgba(34,197,94,0.08)]"><CardContent className="p-3 text-center"><p className="text-xs text-green-600">Qty Change</p><p className="text-lg font-bold text-green-700">{abcDrillDown.total_qty_change}</p></CardContent></Card>
                 <Card className="bg-blue-50"><CardContent className="p-3 text-center"><p className="text-xs text-[#3B9EFF]">Value Change</p><p className="text-lg font-bold text-[#3B9EFF]">{fmt(abcDrillDown.total_value_change)}</p></CardContent></Card>
               </div>
@@ -1312,7 +1312,7 @@ export default function InventoryAdjustments() {
                     <CardContent className="p-3 text-center">
                       <p className="text-sm font-semibold">Class {cls}</p>
                       <p className="text-2xl font-bold">{abcReport.class_counts?.[cls] || 0}</p>
-                      <p className="text-xs text-gray-500">items</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.45)]">items</p>
                     </CardContent>
                   </Card>
                 ))}
@@ -1350,11 +1350,11 @@ export default function InventoryAdjustments() {
                 </table>
               </div>
               {(abcReport.items || []).length === 0 && (
-                <p className="text-center py-8 text-gray-400">No adjustment data in the last 90 days</p>
+                <p className="text-center py-8 text-[rgba(244,246,240,0.45)]">No adjustment data in the last 90 days</p>
               )}
             </div>
           ) : (
-            <p className="text-center py-8 text-gray-400">Loading report...</p>
+            <p className="text-center py-8 text-[rgba(244,246,240,0.45)]">Loading report...</p>
           )}
         </DialogContent>
       </Dialog>

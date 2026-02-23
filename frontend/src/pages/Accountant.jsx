@@ -284,7 +284,7 @@ export default function Accountant() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Accountant</h1>
-          <p className="text-gray-500 text-sm mt-1">Complete accounting module with reconciliation & reports</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Complete accounting module with reconciliation & reports</p>
         </div>
       </div>
 
@@ -319,7 +319,7 @@ export default function Accountant() {
                     <IndianRupee className="h-5 w-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Total Bank Balance</p>
+                    <p className="text-xs text-[rgba(244,246,240,0.45)]">Total Bank Balance</p>
                     <p className="text-xl font-bold">{formatCurrency(dashboardStats?.total_bank_balance)}</p>
                   </div>
                 </div>
@@ -332,7 +332,7 @@ export default function Accountant() {
                     <Building className="h-5 w-5 text-[#3B9EFF]" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Bank Accounts</p>
+                    <p className="text-xs text-[rgba(244,246,240,0.45)]">Bank Accounts</p>
                     <p className="text-xl font-bold">{dashboardStats?.bank_accounts_count || 0}</p>
                   </div>
                 </div>
@@ -345,7 +345,7 @@ export default function Accountant() {
                     <ArrowDownLeft className="h-5 w-5 text-[#C8FF00] text-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Monthly Deposits</p>
+                    <p className="text-xs text-[rgba(244,246,240,0.45)]">Monthly Deposits</p>
                     <p className="text-xl font-bold text-[#C8FF00] text-600">{formatCurrency(dashboardStats?.monthly_deposits)}</p>
                   </div>
                 </div>
@@ -358,7 +358,7 @@ export default function Accountant() {
                     <ArrowUpRight className="h-5 w-5 text-red-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Monthly Withdrawals</p>
+                    <p className="text-xs text-[rgba(244,246,240,0.45)]">Monthly Withdrawals</p>
                     <p className="text-xl font-bold text-red-600">{formatCurrency(dashboardStats?.monthly_withdrawals)}</p>
                   </div>
                 </div>
@@ -380,11 +380,11 @@ export default function Accountant() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-[rgba(255,255,255,0.05)] rounded-lg">
-                          <Building className="h-5 w-5 text-gray-600" />
+                          <Building className="h-5 w-5 text-[rgba(244,246,240,0.35)]" />
                         </div>
                         <div>
                           <p className="font-medium">{acc.account_name}</p>
-                          <p className="text-xs text-gray-500">{acc.bank_name}</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.45)]">{acc.bank_name}</p>
                         </div>
                       </div>
                       <p className="font-bold">{formatCurrency(acc.current_balance)}</p>
@@ -401,7 +401,7 @@ export default function Accountant() {
               <Card>
                 <CardContent className="p-0">
                   {transactions.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">
                       {selectedAccount ? "No transactions found" : "Select an account to view transactions"}
                     </div>
                   ) : (
@@ -417,7 +417,7 @@ export default function Accountant() {
                             </div>
                             <div>
                               <p className="font-medium">{txn.payee || txn.description || 'Transaction'}</p>
-                              <p className="text-xs text-gray-500">{txn.transaction_date}</p>
+                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{txn.transaction_date}</p>
                             </div>
                           </div>
                           <div className="text-right">
@@ -481,15 +481,15 @@ export default function Accountant() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4 p-4 bg-[#111820] rounded-lg">
                       <div>
-                        <p className="text-xs text-gray-500">Book Balance</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">Book Balance</p>
                         <p className="text-lg font-bold">{formatCurrency(activeRecon.book_balance)}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">Statement Balance</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">Statement Balance</p>
                         <p className="text-lg font-bold">{formatCurrency(activeRecon.statement_balance)}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">Difference</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">Difference</p>
                         <p className={`text-lg font-bold ${Math.abs(activeRecon.difference) < 0.01 ? 'text-green-600' : 'text-red-600'}`}>
                           {formatCurrency(activeRecon.difference)}
                         </p>
@@ -503,7 +503,7 @@ export default function Accountant() {
                           <div key={txn.transaction_id} className="p-3 flex items-center justify-between border-b last:border-0 hover:bg-[#111820]">
                             <div>
                               <p className="font-medium">{txn.payee || txn.description}</p>
-                              <p className="text-xs text-gray-500">{txn.transaction_date}</p>
+                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{txn.transaction_date}</p>
                             </div>
                             <div className="flex items-center gap-3">
                               <p className={`font-bold ${txn.transaction_type === 'deposit' ? 'text-green-600' : 'text-red-600'}`}>
@@ -550,7 +550,7 @@ export default function Accountant() {
                 <TableBody>
                   {reconciliations.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                      <TableCell colSpan={6} className="text-center py-8 text-[rgba(244,246,240,0.45)]">
                         No reconciliations yet
                       </TableCell>
                     </TableRow>
@@ -725,7 +725,7 @@ export default function Accountant() {
                 <TableBody>
                   {journalEntries.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                      <TableCell colSpan={6} className="text-center py-8 text-[rgba(244,246,240,0.45)]">
                         No journal entries yet
                       </TableCell>
                     </TableRow>
@@ -812,7 +812,7 @@ export default function Accountant() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">No data available</div>
+                <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">No data available</div>
               )}
             </CardContent>
           </Card>
@@ -837,11 +837,11 @@ export default function Accountant() {
                 </CardHeader>
                 <CardContent className="space-y-3 pt-4">
                   <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Total Income</span>
+                    <span className="text-[rgba(244,246,240,0.35)]">Total Income</span>
                     <span className="font-bold text-green-600">{formatCurrency(profitLoss?.income?.total)}</span>
                   </div>
                   <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Total Expenses</span>
+                    <span className="text-[rgba(244,246,240,0.35)]">Total Expenses</span>
                     <span className="font-bold text-red-600">{formatCurrency(profitLoss?.expenses?.total)}</span>
                   </div>
                   <div className="flex justify-between py-2 bg-[#C8FF00]/20 px-2 rounded">
@@ -850,7 +850,7 @@ export default function Accountant() {
                       {formatCurrency(profitLoss?.net_profit)}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-500 text-center">
+                  <div className="text-sm text-[rgba(244,246,240,0.45)] text-center">
                     Profit Margin: {profitLoss?.profit_margin || 0}%
                   </div>
                 </CardContent>
@@ -867,11 +867,11 @@ export default function Accountant() {
                 </CardHeader>
                 <CardContent className="space-y-3 pt-4">
                   <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Total Assets</span>
+                    <span className="text-[rgba(244,246,240,0.35)]">Total Assets</span>
                     <span className="font-bold text-green-600">{formatCurrency(balanceSheet?.assets?.total)}</span>
                   </div>
                   <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Total Liabilities</span>
+                    <span className="text-[rgba(244,246,240,0.35)]">Total Liabilities</span>
                     <span className="font-bold text-red-600">{formatCurrency(balanceSheet?.liabilities?.total)}</span>
                   </div>
                   <div className="flex justify-between py-2 bg-blue-50 px-2 rounded">

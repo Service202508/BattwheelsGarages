@@ -75,7 +75,7 @@ export default function CustomerInvoices({ user }) {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-[#F4F6F0]">Invoices</h1>
-        <p className="text-gray-600">View and download your service invoices</p>
+        <p className="text-[rgba(244,246,240,0.35)]">View and download your service invoices</p>
       </div>
 
       {/* Invoices List */}
@@ -84,7 +84,7 @@ export default function CustomerInvoices({ user }) {
           <CardContent className="py-12 text-center">
             <FileText className="h-16 w-16 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
             <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Invoices Yet</h3>
-            <p className="text-gray-600">Your invoices will appear here after services are completed</p>
+            <p className="text-[rgba(244,246,240,0.35)]">Your invoices will appear here after services are completed</p>
           </CardContent>
         </Card>
       ) : (
@@ -161,11 +161,11 @@ export default function CustomerInvoices({ user }) {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-bold text-xl text-[#F4F6F0]">Battwheels OS</h3>
-                    <p className="text-sm text-gray-600">EV Service & Repair Center</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.35)]">EV Service & Repair Center</p>
                   </div>
                   <div className="text-right">
                     <p className="font-mono text-lg font-bold">{selectedInvoice.invoice_number}</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-[rgba(244,246,240,0.35)]">
                       {new Date(selectedInvoice.created_at).toLocaleDateString()}
                     </p>
                   </div>
@@ -174,12 +174,12 @@ export default function CustomerInvoices({ user }) {
                 {/* Customer & Vehicle Info */}
                 <div className="grid grid-cols-2 gap-4 p-4 bg-[#111820] rounded-lg">
                   <div>
-                    <p className="text-sm text-gray-500">Customer</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Customer</p>
                     <p className="font-medium">{selectedInvoice.customer_name}</p>
-                    <p className="text-sm text-gray-600">{selectedInvoice.customer_email}</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.35)]">{selectedInvoice.customer_email}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Vehicle</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Vehicle</p>
                     <p className="font-medium font-mono">{selectedInvoice.vehicle_number}</p>
                   </div>
                 </div>
@@ -216,11 +216,11 @@ export default function CustomerInvoices({ user }) {
                 {/* Totals */}
                 <div className="border-t pt-4 space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal</span>
+                    <span className="text-[rgba(244,246,240,0.35)]">Subtotal</span>
                     <span>₹{(selectedInvoice.subtotal || 0).toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Tax (GST)</span>
+                    <span className="text-[rgba(244,246,240,0.35)]">Tax (GST)</span>
                     <span>₹{(selectedInvoice.tax_amount || 0).toLocaleString()}</span>
                   </div>
                   {selectedInvoice.discount_amount > 0 && (

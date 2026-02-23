@@ -17,7 +17,7 @@ import { API } from "@/App";
 const statusColors = {
   active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
   stopped: "bg-yellow-100 text-[#EAB308]",
-  expired: "bg-[rgba(255,255,255,0.05)] text-gray-600"
+  expired: "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.35)]"
 };
 
 const frequencyLabels = {
@@ -194,7 +194,7 @@ export default function RecurringBills() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Recurring Bills</h1>
-          <p className="text-gray-500">Automate your vendor payments</p>
+          <p className="text-[rgba(244,246,240,0.45)]">Automate your vendor payments</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleGenerateDue} data-testid="generate-due-btn">
@@ -377,7 +377,7 @@ export default function RecurringBills() {
                 <RefreshCw className="h-5 w-5 text-[#3B9EFF]" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Total Profiles</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Profiles</p>
                 <p className="text-2xl font-bold">{bills.length}</p>
               </div>
             </div>
@@ -390,7 +390,7 @@ export default function RecurringBills() {
                 <Play className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Active</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Active</p>
                 <p className="text-2xl font-bold">{activeBills.length}</p>
               </div>
             </div>
@@ -403,7 +403,7 @@ export default function RecurringBills() {
                 <Pause className="h-5 w-5 text-[#EAB308]" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Stopped</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Stopped</p>
                 <p className="text-2xl font-bold">{stoppedBills.length}</p>
               </div>
             </div>
@@ -416,7 +416,7 @@ export default function RecurringBills() {
                 <IndianRupee className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Monthly Estimate</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Monthly Estimate</p>
                 <p className="text-2xl font-bold">₹{totalMonthly.toLocaleString()}</p>
               </div>
             </div>
@@ -453,7 +453,7 @@ export default function RecurringBills() {
                       <tr key={bill.recurring_bill_id} className="border-b hover:bg-[#111820]">
                         <td className="p-4">
                           <div className="font-medium">{bill.recurrence_name}</div>
-                          <div className="text-sm text-gray-500">{bill.bills_generated} bills generated</div>
+                          <div className="text-sm text-[rgba(244,246,240,0.45)]">{bill.bills_generated} bills generated</div>
                         </td>
                         <td className="p-4">{bill.vendor_name}</td>
                         <td className="p-4">
@@ -484,7 +484,7 @@ export default function RecurringBills() {
                     ))}
                     {(tab === "all" ? bills : bills.filter(b => b.status === tab)).length === 0 && (
                       <tr>
-                        <td colSpan={7} className="p-8 text-center text-gray-500">
+                        <td colSpan={7} className="p-8 text-center text-[rgba(244,246,240,0.45)]">
                           No recurring bills found
                         </td>
                       </tr>

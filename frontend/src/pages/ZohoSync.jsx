@@ -216,7 +216,7 @@ export default function ZohoSync() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Zoho Books Sync</h1>
-          <p className="text-gray-500 text-sm mt-1">Sync data from your Zoho Books account</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Sync data from your Zoho Books account</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={testConnection} disabled={testingConnection} data-testid="test-connection-btn">
@@ -316,12 +316,12 @@ export default function ZohoSync() {
                     }`}>
                       <Icon className={`h-5 w-5 ${
                         result?.status === "success" ? "text-green-600" :
-                        result?.status === "error" ? "text-red-600" : "text-gray-600"
+                        result?.status === "error" ? "text-red-600" : "text-[rgba(244,246,240,0.35)]"
                       }`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-sm truncate">{module.name}</h3>
-                      <p className="text-xs text-gray-500 truncate">{module.description}</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.45)] truncate">{module.description}</p>
                     </div>
                   </div>
                   
@@ -379,10 +379,10 @@ export default function ZohoSync() {
         <CardContent>
           {loadingHistory ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+              <Loader2 className="h-6 w-6 animate-spin text-[rgba(244,246,240,0.45)]" />
             </div>
           ) : syncHistory.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">
               <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No sync history yet</p>
               <p className="text-sm">Run a sync to see activity here</p>
@@ -407,11 +407,11 @@ export default function ZohoSync() {
                       <Badge variant="outline">{log.type || "full_import"}</Badge>
                     </TableCell>
                     <TableCell>{getStatusBadge(log.status)}</TableCell>
-                    <TableCell className="text-sm text-gray-600">{formatTimestamp(log.started_at)}</TableCell>
-                    <TableCell className="text-sm text-gray-600">{formatTimestamp(log.completed_at)}</TableCell>
+                    <TableCell className="text-sm text-[rgba(244,246,240,0.35)]">{formatTimestamp(log.started_at)}</TableCell>
+                    <TableCell className="text-sm text-[rgba(244,246,240,0.35)]">{formatTimestamp(log.completed_at)}</TableCell>
                     <TableCell>
                       {log.results && (
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-[rgba(244,246,240,0.45)]">
                           {Object.keys(log.results).length} modules synced
                         </span>
                       )}
@@ -460,7 +460,7 @@ export default function ZohoSync() {
               </ul>
             </div>
             
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-[rgba(244,246,240,0.35)]">
               After this, you can start fresh with manual data entry or reconnect to Zoho Books later.
             </p>
           </div>
@@ -502,12 +502,12 @@ export default function ZohoSync() {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-2 py-4">
-              <p className="text-sm text-gray-600">The following data was removed:</p>
+              <p className="text-sm text-[rgba(244,246,240,0.35)]">The following data was removed:</p>
               <div className="bg-[#111820] rounded-lg p-4 text-sm">
                 {Object.entries(purgeStats).map(([key, value]) => (
                   <div key={key} className="flex justify-between py-1 border-b border-gray-200 last:border-0">
                     <span className="capitalize">{key.replace(/_/g, ' ')}</span>
-                    <span className="font-mono text-gray-600">{value} records</span>
+                    <span className="font-mono text-[rgba(244,246,240,0.35)]">{value} records</span>
                   </div>
                 ))}
               </div>

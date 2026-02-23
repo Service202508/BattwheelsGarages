@@ -31,7 +31,7 @@ const LEAVE_COLORS = {
   CL: "text-blue-500",
   SL: "text-red-500",
   EL: "text-green-500",
-  LWP: "text-gray-500",
+  LWP: "text-[rgba(244,246,240,0.45)]",
   CO: "text-purple-500",
 };
 
@@ -359,7 +359,7 @@ export default function LeaveManagement({ user }) {
         {leaveTypes.map((lt) => {
           const balance = leaveBalance?.balances?.[lt.code] || {};
           const Icon = LEAVE_ICONS[lt.code] || Calendar;
-          const color = LEAVE_COLORS[lt.code] || "text-gray-500";
+          const color = LEAVE_COLORS[lt.code] || "text-[rgba(244,246,240,0.45)]";
           const usedPct = balance.total ? (balance.used / balance.total) * 100 : 0;
           
           return (
@@ -434,7 +434,7 @@ export default function LeaveManagement({ user }) {
                   <TableBody>
                     {myRequests.map((req) => {
                       const Icon = LEAVE_ICONS[req.leave_type] || Calendar;
-                      const color = LEAVE_COLORS[req.leave_type] || "text-gray-500";
+                      const color = LEAVE_COLORS[req.leave_type] || "text-[rgba(244,246,240,0.45)]";
                       
                       return (
                         <TableRow key={req.leave_id}>

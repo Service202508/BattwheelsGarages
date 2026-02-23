@@ -337,7 +337,7 @@ export default function BrandingSettings({ user }) {
           className="flex-1 font-mono"
         />
       </div>
-      {description && <p className="text-xs text-gray-500">{description}</p>}
+      {description && <p className="text-xs text-[rgba(244,246,240,0.45)]">{description}</p>}
     </div>
   );
 
@@ -361,7 +361,7 @@ export default function BrandingSettings({ user }) {
             <div className="space-y-3">
               <RefreshCw className="h-8 w-8 mx-auto animate-spin text-[#C8FF00] text-500" />
               <Progress value={uploadProgress[logoType]} className="w-32 mx-auto" />
-              <p className="text-sm text-gray-500">Uploading...</p>
+              <p className="text-sm text-[rgba(244,246,240,0.45)]">Uploading...</p>
             </div>
           ) : currentUrl ? (
             <div className="space-y-3">
@@ -396,11 +396,11 @@ export default function BrandingSettings({ user }) {
               className="space-y-2 cursor-pointer" 
               onClick={() => inputRef.current?.click()}
             >
-              <Upload className={`h-10 w-10 mx-auto ${bgColor === "dark" ? "text-gray-400" : "text-[rgba(244,246,240,0.20)]"}`} />
-              <p className={`text-sm ${bgColor === "dark" ? "text-[rgba(244,246,240,0.20)]" : "text-gray-600"}`}>
+              <Upload className={`h-10 w-10 mx-auto ${bgColor === "dark" ? "text-[rgba(244,246,240,0.45)]" : "text-[rgba(244,246,240,0.20)]"}`} />
+              <p className={`text-sm ${bgColor === "dark" ? "text-[rgba(244,246,240,0.20)]" : "text-[rgba(244,246,240,0.35)]"}`}>
                 <span className="text-[#C8FF00] text-500 font-medium">Click to upload</span> or drag and drop
               </p>
-              <p className={`text-xs ${bgColor === "dark" ? "text-gray-500" : "text-gray-400"}`}>
+              <p className={`text-xs ${bgColor === "dark" ? "text-[rgba(244,246,240,0.45)]" : "text-[rgba(244,246,240,0.45)]"}`}>
                 {description}
               </p>
             </div>
@@ -420,7 +420,7 @@ export default function BrandingSettings({ user }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <RefreshCw className="h-8 w-8 animate-spin text-gray-400" />
+        <RefreshCw className="h-8 w-8 animate-spin text-[rgba(244,246,240,0.45)]" />
       </div>
     );
   }
@@ -431,7 +431,7 @@ export default function BrandingSettings({ user }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-[#F4F6F0]">Brand Settings</h1>
-          <p className="text-gray-500 mt-1">Customize your organization's appearance</p>
+          <p className="text-[rgba(244,246,240,0.45)] mt-1">Customize your organization's appearance</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleReset}>
@@ -558,7 +558,7 @@ export default function BrandingSettings({ user }) {
                         )}
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm text-gray-600 mb-2">
+                        <p className="text-sm text-[rgba(244,246,240,0.35)] mb-2">
                           Small icon shown in browser tabs. Recommended: 32x32 or 64x64 pixels.
                         </p>
                         <div className="flex gap-2">
@@ -680,7 +680,7 @@ export default function BrandingSettings({ user }) {
                   value={branding.company_tagline || ""}
                   onChange={(e) => setBranding(prev => ({ ...prev, company_tagline: e.target.value }))}
                 />
-                <p className="text-xs text-gray-500">Displayed below your logo in some areas</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)]">Displayed below your logo in some areas</p>
               </div>
 
               <div className="space-y-2">
@@ -692,13 +692,13 @@ export default function BrandingSettings({ user }) {
                   onChange={(e) => setBranding(prev => ({ ...prev, email_footer: e.target.value }))}
                   rows={3}
                 />
-                <p className="text-xs text-gray-500">Appears at the bottom of automated emails</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)]">Appears at the bottom of automated emails</p>
               </div>
 
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
                   <Label>Show "Powered by Battwheels"</Label>
-                  <p className="text-sm text-gray-500">Display our branding in your portal</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.45)]">Display our branding in your portal</p>
                 </div>
                 <Switch
                   checked={branding.show_powered_by}
@@ -725,7 +725,7 @@ export default function BrandingSettings({ user }) {
                   rows={5}
                   className="font-mono text-sm"
                 />
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[rgba(244,246,240,0.45)]">
                   Add custom CSS to override styles. Use with caution - may break layouts.
                 </p>
               </div>
@@ -762,12 +762,12 @@ export default function BrandingSettings({ user }) {
                       onError={(e) => { e.target.style.display = 'none'; }}
                     />
                   ) : (
-                    <div className="h-8 w-24 bg-[#111820] rounded flex items-center justify-center text-gray-400 text-xs">
+                    <div className="h-8 w-24 bg-[#111820] rounded flex items-center justify-center text-[rgba(244,246,240,0.45)] text-xs">
                       Logo
                     </div>
                   )}
                   {branding.company_tagline && (
-                    <span className="text-gray-400 text-sm">{branding.company_tagline}</span>
+                    <span className="text-[rgba(244,246,240,0.45)] text-sm">{branding.company_tagline}</span>
                   )}
                 </div>
 
@@ -814,7 +814,7 @@ export default function BrandingSettings({ user }) {
 
                 {/* Mock Footer */}
                 {branding.show_powered_by && (
-                  <div className="p-3 text-center text-xs text-gray-400 border-t">
+                  <div className="p-3 text-center text-xs text-[rgba(244,246,240,0.45)] border-t">
                     Powered by Battwheels OS
                   </div>
                 )}

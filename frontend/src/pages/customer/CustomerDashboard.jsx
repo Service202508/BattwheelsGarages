@@ -101,7 +101,7 @@ export default function CustomerDashboard({ user }) {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">My Vehicles</CardTitle>
+            <CardTitle className="text-sm font-medium text-[rgba(244,246,240,0.35)]">My Vehicles</CardTitle>
             <Car className="h-5 w-5 text-[#C8FF00] text-500" />
           </CardHeader>
           <CardContent>
@@ -114,7 +114,7 @@ export default function CustomerDashboard({ user }) {
 
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Active Services</CardTitle>
+            <CardTitle className="text-sm font-medium text-[rgba(244,246,240,0.35)]">Active Services</CardTitle>
             <Clock className="h-5 w-5 text-blue-500" />
           </CardHeader>
           <CardContent>
@@ -127,7 +127,7 @@ export default function CustomerDashboard({ user }) {
 
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Services</CardTitle>
+            <CardTitle className="text-sm font-medium text-[rgba(244,246,240,0.35)]">Total Services</CardTitle>
             <ClipboardList className="h-5 w-5 text-purple-500" />
           </CardHeader>
           <CardContent>
@@ -140,8 +140,8 @@ export default function CustomerDashboard({ user }) {
 
         <Card className={`hover:shadow-md transition-shadow ${dashboard?.pending_amount > 0 ? 'border-orange-200 bg-[rgba(255,140,0,0.08)]' : ''}`}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Pending Amount</CardTitle>
-            <CreditCard className={`h-5 w-5 ${dashboard?.pending_amount > 0 ? 'text-orange-500' : 'text-gray-400'}`} />
+            <CardTitle className="text-sm font-medium text-[rgba(244,246,240,0.35)]">Pending Amount</CardTitle>
+            <CreditCard className={`h-5 w-5 ${dashboard?.pending_amount > 0 ? 'text-orange-500' : 'text-[rgba(244,246,240,0.45)]'}`} />
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">₹{(dashboard?.pending_amount || 0).toLocaleString()}</p>
@@ -155,7 +155,7 @@ export default function CustomerDashboard({ user }) {
 
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Active AMC</CardTitle>
+            <CardTitle className="text-sm font-medium text-[rgba(244,246,240,0.35)]">Active AMC</CardTitle>
             <Shield className="h-5 w-5 text-[#C8FF00] text-500" />
           </CardHeader>
           <CardContent>
@@ -179,7 +179,7 @@ export default function CustomerDashboard({ user }) {
         </CardHeader>
         <CardContent>
           {recentServices.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">
               <ClipboardList className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
               <p>No service history yet</p>
               <p className="text-sm">Your service records will appear here</p>
@@ -204,7 +204,7 @@ export default function CustomerDashboard({ user }) {
                     </div>
                     <div>
                       <p className="font-medium text-[#F4F6F0]">{service.title}</p>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <div className="flex items-center gap-2 text-sm text-[rgba(244,246,240,0.45)]">
                         <span>{service.vehicle_number}</span>
                         <span>•</span>
                         <span>{new Date(service.created_at).toLocaleDateString()}</span>
@@ -239,7 +239,7 @@ export default function CustomerDashboard({ user }) {
               </div>
               <div>
                 <h3 className="font-semibold text-[#F4F6F0]">Need Help?</h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-[rgba(244,246,240,0.35)] mt-1">
                   Our support team is available 24/7 to assist you with any queries.
                 </p>
                 <div className="mt-3 space-y-1">
@@ -261,7 +261,7 @@ export default function CustomerDashboard({ user }) {
                 </div>
                 <div>
                   <h3 className="font-semibold text-[#F4F6F0]">Get AMC Protection</h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-[rgba(244,246,240,0.35)] mt-1">
                     Protect your EV with our Annual Maintenance Contract. Get priority service, discounts, and peace of mind.
                   </p>
                   <Link to="/customer/amc">

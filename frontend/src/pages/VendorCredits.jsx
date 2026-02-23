@@ -100,7 +100,7 @@ export default function VendorCredits() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Vendor Credits</h1>
-          <p className="text-gray-500 text-sm mt-1">Credits from vendors</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Credits from vendors</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
@@ -172,8 +172,8 @@ export default function VendorCredits() {
         </Dialog>
       </div>
 
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
-        credits.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No vendor credits found</CardContent></Card> :
+      {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
+        credits.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No vendor credits found</CardContent></Card> :
         <div className="space-y-3">
           {credits.map(vc => (
             <Card key={vc.vendorcredit_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
@@ -184,7 +184,7 @@ export default function VendorCredits() {
                       <h3 className="font-semibold">{vc.vendorcredit_number}</h3>
                       <Badge className={statusColors[vc.status]}>{vc.status}</Badge>
                     </div>
-                    <div className="flex gap-4 text-sm text-gray-500">
+                    <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                       <span className="flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{vc.vendor_name}</span>
                       <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{vc.date}</span>
                       <span className="flex items-center gap-1"><FileText className="h-3.5 w-3.5" />{vc.reason}</span>
@@ -224,7 +224,7 @@ export default function VendorCredits() {
             <div>
               <Label>Amount to Apply *</Label>
               <Input type="number" value={applyAmount} onChange={(e) => setApplyAmount(parseFloat(e.target.value))} max={selectedVC?.credits_remaining} />
-              <p className="text-xs text-gray-500 mt-1">Max: ₹{selectedVC?.credits_remaining?.toLocaleString('en-IN')}</p>
+              <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Max: ₹{selectedVC?.credits_remaining?.toLocaleString('en-IN')}</p>
             </div>
           </div>
           <div className="flex justify-end gap-2">

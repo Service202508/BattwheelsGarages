@@ -92,7 +92,7 @@ export default function TechnicianProductivity({ user }) {
       if (value >= 5) return "text-[#EAB308]";
       return "text-red-600";
     }
-    return "text-gray-600";
+    return "text-[rgba(244,246,240,0.35)]";
   };
 
   const getPerformanceBadge = (tickets, avgTime) => {
@@ -113,7 +113,7 @@ export default function TechnicianProductivity({ user }) {
               className="w-full bg-[#C8FF00] rounded-t transition-all duration-300 hover:bg-[#d4ff1a]"
               style={{ height: `${(item.value / max) * 100}%`, minHeight: item.value > 0 ? '4px' : '0' }}
             />
-            <span className="text-xs text-gray-500 mt-1 truncate w-full text-center">{item.label}</span>
+            <span className="text-xs text-[rgba(244,246,240,0.45)] mt-1 truncate w-full text-center">{item.label}</span>
           </div>
         ))}
       </div>
@@ -134,7 +134,7 @@ export default function TechnicianProductivity({ user }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Technician Productivity</h1>
-          <p className="text-gray-600">Monitor and analyze technician performance metrics.</p>
+          <p className="text-[rgba(244,246,240,0.35)]">Monitor and analyze technician performance metrics.</p>
         </div>
         <div className="flex gap-2">
           <Select value={period} onValueChange={setPeriod}>
@@ -164,7 +164,7 @@ export default function TechnicianProductivity({ user }) {
                 <Users className="h-5 w-5 text-[#3B9EFF]" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Active Technicians</p>
+                <p className="text-sm text-[rgba(244,246,240,0.35)]">Active Technicians</p>
                 <p className="text-2xl font-bold">{summary?.active_technicians || 0}</p>
               </div>
             </div>
@@ -178,7 +178,7 @@ export default function TechnicianProductivity({ user }) {
                 <Ticket className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total Tickets Resolved</p>
+                <p className="text-sm text-[rgba(244,246,240,0.35)]">Total Tickets Resolved</p>
                 <p className="text-2xl font-bold">{summary?.total_tickets_resolved || 0}</p>
               </div>
             </div>
@@ -192,7 +192,7 @@ export default function TechnicianProductivity({ user }) {
                 <Clock className="h-5 w-5 text-[#FF8C00]" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Overall Avg. Resolution Time</p>
+                <p className="text-sm text-[rgba(244,246,240,0.35)]">Overall Avg. Resolution Time</p>
                 <p className="text-2xl font-bold">{summary?.avg_resolution_time_hours || 0} hrs</p>
               </div>
             </div>
@@ -206,7 +206,7 @@ export default function TechnicianProductivity({ user }) {
                 <CheckCircle className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">SLA Compliance</p>
+                <p className="text-sm text-[rgba(244,246,240,0.35)]">SLA Compliance</p>
                 <p className="text-2xl font-bold">{kpis?.sla_compliance_percent || 0}%</p>
               </div>
             </div>
@@ -243,7 +243,7 @@ export default function TechnicianProductivity({ user }) {
             </CardHeader>
             <CardContent>
               {technicians.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">
                   <Users className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
                   <p>No technician data available</p>
                 </div>
@@ -267,7 +267,7 @@ export default function TechnicianProductivity({ user }) {
                           <TableCell>
                             <div>
                               <p className="font-medium">{tech.technician_name}</p>
-                              <p className="text-xs text-gray-500">{tech.email}</p>
+                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{tech.email}</p>
                             </div>
                           </TableCell>
                           <TableCell className="text-right">
@@ -327,7 +327,7 @@ export default function TechnicianProductivity({ user }) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{tech.technician_name}</p>
-                      <p className="text-xs text-gray-500">{tech.tickets_resolved} tickets</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.45)]">{tech.tickets_resolved} tickets</p>
                     </div>
                     <div className="flex items-center gap-1 text-yellow-500">
                       <Star className="h-4 w-4 fill-current" />
@@ -353,7 +353,7 @@ export default function TechnicianProductivity({ user }) {
                   data={trends.map(t => ({ label: t.week, value: t.tickets_resolved }))}
                 />
               ) : (
-                <div className="h-32 flex items-center justify-center text-gray-400">
+                <div className="h-32 flex items-center justify-center text-[rgba(244,246,240,0.45)]">
                   No trend data
                 </div>
               )}
@@ -367,11 +367,11 @@ export default function TechnicianProductivity({ user }) {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Resolved Today</span>
+                <span className="text-[rgba(244,246,240,0.35)]">Resolved Today</span>
                 <span className="font-bold text-green-600">{kpis?.tickets_resolved_today || 0}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Pending Assignment</span>
+                <span className="text-[rgba(244,246,240,0.35)]">Pending Assignment</span>
                 <span className="font-bold text-[#EAB308]">{kpis?.pending_tickets || 0}</span>
               </div>
               <div className="flex justify-between items-center">
@@ -402,7 +402,7 @@ export default function TechnicianProductivity({ user }) {
                   </div>
                   <div>
                     <p className="font-semibold">{technicianDetail.technician?.name}</p>
-                    <p className="text-sm text-gray-500">{technicianDetail.technician?.email}</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">{technicianDetail.technician?.email}</p>
                   </div>
                 </div>
 
@@ -413,7 +413,7 @@ export default function TechnicianProductivity({ user }) {
                     {Object.entries(technicianDetail.status_breakdown || {}).map(([status, count]) => (
                       <div key={status} className="text-center p-2 rounded-lg bg-[#111820]">
                         <p className="text-xl font-bold">{count}</p>
-                        <p className="text-xs text-gray-500 capitalize">{status.replace('_', ' ')}</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)] capitalize">{status.replace('_', ' ')}</p>
                       </div>
                     ))}
                   </div>
@@ -425,7 +425,7 @@ export default function TechnicianProductivity({ user }) {
                   <div className="space-y-2">
                     {Object.entries(technicianDetail.priority_breakdown || {}).map(([priority, count]) => (
                       <div key={priority} className="flex items-center gap-3">
-                        <span className="w-20 text-sm capitalize text-gray-600">{priority}</span>
+                        <span className="w-20 text-sm capitalize text-[rgba(244,246,240,0.35)]">{priority}</span>
                         <Progress value={(count / (Object.values(technicianDetail.priority_breakdown).reduce((a, b) => a + b, 0) || 1)) * 100} className="flex-1 h-2" />
                         <span className="w-8 text-right font-medium">{count}</span>
                       </div>
@@ -452,7 +452,7 @@ export default function TechnicianProductivity({ user }) {
                       <div key={ticket.ticket_id} className="flex items-center justify-between p-2 rounded border">
                         <div>
                           <p className="text-sm font-medium">{ticket.title}</p>
-                          <p className="text-xs text-gray-500">{ticket.vehicle_number}</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.45)]">{ticket.vehicle_number}</p>
                         </div>
                         <Badge className={
                           ticket.status === 'resolved' || ticket.status === 'closed' 

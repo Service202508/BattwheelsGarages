@@ -443,7 +443,7 @@ export default function BillsEnhanced() {
           </TabsList>
           <div className="flex gap-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
               <Input 
                 placeholder="Search..." 
                 value={searchQuery}
@@ -470,9 +470,9 @@ export default function BillsEnhanced() {
         {/* Bills Tab */}
         <TabsContent value="bills">
           {loading ? (
-            <div className="text-center py-12 text-gray-500">Loading...</div>
+            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div>
           ) : bills.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500">No bills found</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No bills found</CardContent></Card>
           ) : (
             <div className="space-y-3">
               {bills.map(bill => (
@@ -484,7 +484,7 @@ export default function BillsEnhanced() {
                           <h3 className="font-semibold">{bill.bill_number}</h3>
                           <Badge className={statusColors[bill.status]}>{bill.status?.replace('_', ' ')}</Badge>
                         </div>
-                        <div className="flex gap-4 text-sm text-gray-500">
+                        <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                           <span className="flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{bill.vendor_name}</span>
                           <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{bill.bill_date}</span>
                           <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />Due: {bill.due_date}</span>
@@ -523,9 +523,9 @@ export default function BillsEnhanced() {
         {/* Purchase Orders Tab */}
         <TabsContent value="purchase-orders">
           {loading ? (
-            <div className="text-center py-12 text-gray-500">Loading...</div>
+            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div>
           ) : purchaseOrders.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500">No purchase orders found</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No purchase orders found</CardContent></Card>
           ) : (
             <div className="space-y-3">
               {purchaseOrders.map(po => (
@@ -537,7 +537,7 @@ export default function BillsEnhanced() {
                           <h3 className="font-semibold">{po.po_number}</h3>
                           <Badge className={poStatusColors[po.status]}>{po.status}</Badge>
                         </div>
-                        <div className="flex gap-4 text-sm text-gray-500">
+                        <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                           <span className="flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{po.vendor_name}</span>
                           <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{po.order_date}</span>
                           {po.expected_delivery_date && (
@@ -577,11 +577,11 @@ export default function BillsEnhanced() {
         {/* Overdue Tab */}
         <TabsContent value="overdue">
           {loading ? (
-            <div className="text-center py-12 text-gray-500">Loading...</div>
+            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div>
           ) : (
             <div className="space-y-3">
               {bills.filter(b => b.status === "overdue").length === 0 ? (
-                <Card><CardContent className="py-12 text-center text-gray-500 flex flex-col items-center gap-2">
+                <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)] flex flex-col items-center gap-2">
                   <CheckCircle className="h-12 w-12 text-green-300" />
                   <p>No overdue bills!</p>
                 </CardContent></Card>
@@ -595,7 +595,7 @@ export default function BillsEnhanced() {
                             <h3 className="font-semibold">{bill.bill_number}</h3>
                             <Badge className="bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]">Overdue</Badge>
                           </div>
-                          <div className="flex gap-4 text-sm text-gray-500">
+                          <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                             <span><Building2 className="h-3.5 w-3.5 inline mr-1" />{bill.vendor_name}</span>
                             <span className="text-red-600"><AlertTriangle className="h-3.5 w-3.5 inline mr-1" />Due: {bill.due_date}</span>
                           </div>
@@ -949,12 +949,12 @@ export default function BillsEnhanced() {
                 {/* Header Info */}
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <p className="text-sm text-gray-500">Vendor</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Vendor</p>
                     <p className="font-medium">{billDetail.vendor_name}</p>
-                    {billDetail.vendor_gstin && <p className="text-xs text-gray-500">GSTIN: {billDetail.vendor_gstin}</p>}
+                    {billDetail.vendor_gstin && <p className="text-xs text-[rgba(244,246,240,0.45)]">GSTIN: {billDetail.vendor_gstin}</p>}
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-500">Amount</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Amount</p>
                     <p className="text-2xl font-bold">₹{(billDetail.grand_total || 0).toLocaleString('en-IN')}</p>
                     {billDetail.balance_due > 0 && (
                       <p className="text-sm text-[#FF8C00]">Balance Due: ₹{billDetail.balance_due.toLocaleString('en-IN')}</p>
@@ -963,10 +963,10 @@ export default function BillsEnhanced() {
                 </div>
 
                 <div className="grid grid-cols-4 gap-4 text-sm">
-                  <div><span className="text-gray-500">Bill Date:</span><br/><span className="font-medium">{billDetail.bill_date}</span></div>
-                  <div><span className="text-gray-500">Due Date:</span><br/><span className="font-medium">{billDetail.due_date}</span></div>
-                  <div><span className="text-gray-500">Reference:</span><br/><span className="font-medium">{billDetail.reference_number || '-'}</span></div>
-                  <div><span className="text-gray-500">Payment Terms:</span><br/><span className="font-medium">{billDetail.payment_terms} days</span></div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Bill Date:</span><br/><span className="font-medium">{billDetail.bill_date}</span></div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Due Date:</span><br/><span className="font-medium">{billDetail.due_date}</span></div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Reference:</span><br/><span className="font-medium">{billDetail.reference_number || '-'}</span></div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Payment Terms:</span><br/><span className="font-medium">{billDetail.payment_terms} days</span></div>
                 </div>
 
                 {/* Line Items */}
@@ -989,7 +989,7 @@ export default function BillsEnhanced() {
                             <tr key={idx} className="border-t">
                               <td className="px-3 py-2">
                                 <p className="font-medium">{item.name}</p>
-                                {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
+                                {item.description && <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.description}</p>}
                               </td>
                               <td className="px-3 py-2 text-right">{item.quantity} {item.unit}</td>
                               <td className="px-3 py-2 text-right">₹{(item.rate || 0).toLocaleString('en-IN')}</td>
@@ -1025,7 +1025,7 @@ export default function BillsEnhanced() {
                         <div key={pmt.payment_id} className="flex justify-between items-center p-3 bg-[rgba(34,197,94,0.08)] rounded-lg border border-green-100">
                           <div>
                             <p className="font-medium">₹{pmt.amount.toLocaleString('en-IN')}</p>
-                            <p className="text-xs text-gray-500">{pmt.payment_mode} - {pmt.payment_date}</p>
+                            <p className="text-xs text-[rgba(244,246,240,0.45)]">{pmt.payment_mode} - {pmt.payment_date}</p>
                           </div>
                           {pmt.reference_number && <span className="text-xs bg-[#111820] px-2 py-1 rounded">{pmt.reference_number}</span>}
                         </div>
@@ -1040,8 +1040,8 @@ export default function BillsEnhanced() {
                     <h4 className="font-medium mb-2">Activity</h4>
                     <div className="space-y-2 text-sm">
                       {billDetail.history.map(h => (
-                        <div key={h.history_id} className="flex gap-3 text-gray-600">
-                          <span className="text-gray-400 w-32">{new Date(h.timestamp).toLocaleDateString()}</span>
+                        <div key={h.history_id} className="flex gap-3 text-[rgba(244,246,240,0.35)]">
+                          <span className="text-[rgba(244,246,240,0.45)] w-32">{new Date(h.timestamp).toLocaleDateString()}</span>
                           <span>{h.details}</span>
                         </div>
                       ))}
@@ -1097,24 +1097,24 @@ export default function BillsEnhanced() {
               <div className="space-y-6 p-1">
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <p className="text-sm text-gray-500">Vendor</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Vendor</p>
                     <p className="font-medium">{poDetail.vendor_name}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-500">Total Amount</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Amount</p>
                     <p className="text-2xl font-bold">₹{(poDetail.grand_total || 0).toLocaleString('en-IN')}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div><span className="text-gray-500">Order Date:</span><br/><span className="font-medium">{poDetail.order_date}</span></div>
-                  <div><span className="text-gray-500">Expected Delivery:</span><br/><span className="font-medium">{poDetail.expected_delivery_date || '-'}</span></div>
-                  <div><span className="text-gray-500">Reference:</span><br/><span className="font-medium">{poDetail.reference_number || '-'}</span></div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Order Date:</span><br/><span className="font-medium">{poDetail.order_date}</span></div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Expected Delivery:</span><br/><span className="font-medium">{poDetail.expected_delivery_date || '-'}</span></div>
+                  <div><span className="text-[rgba(244,246,240,0.45)]">Reference:</span><br/><span className="font-medium">{poDetail.reference_number || '-'}</span></div>
                 </div>
 
                 {poDetail.delivery_address && (
                   <div>
-                    <p className="text-sm text-gray-500">Delivery Address</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">Delivery Address</p>
                     <p className="text-sm">{poDetail.delivery_address}</p>
                   </div>
                 )}
@@ -1189,7 +1189,7 @@ export default function BillsEnhanced() {
                 value={payment.amount} 
                 onChange={(e) => setPayment({ ...payment, amount: parseFloat(e.target.value) || 0 })} 
               />
-              <p className="text-xs text-gray-500 mt-1">Balance Due: ₹{(selectedBill?.balance_due || 0).toLocaleString('en-IN')}</p>
+              <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Balance Due: ₹{(selectedBill?.balance_due || 0).toLocaleString('en-IN')}</p>
             </div>
             <div>
               <Label>Payment Mode</Label>

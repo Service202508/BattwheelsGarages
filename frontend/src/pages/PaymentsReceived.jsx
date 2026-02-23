@@ -444,7 +444,7 @@ export default function PaymentsReceived() {
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-bold">Payments Received</h1>
-          <p className="text-gray-500">Record and manage customer payments</p>
+          <p className="text-[rgba(244,246,240,0.45)]">Record and manage customer payments</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={exportPayments}>
@@ -462,7 +462,7 @@ export default function PaymentsReceived() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">This Month</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">This Month</p>
                 <p className="text-2xl font-bold">₹{(summary.total_received || 0).toLocaleString('en-IN')}</p>
               </div>
               <IndianRupee className="h-8 w-8 text-green-500" />
@@ -473,7 +473,7 @@ export default function PaymentsReceived() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Invoice Payments</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Invoice Payments</p>
                 <p className="text-2xl font-bold">₹{(summary.invoice_payments || 0).toLocaleString('en-IN')}</p>
               </div>
               <FileText className="h-8 w-8 text-blue-500" />
@@ -484,7 +484,7 @@ export default function PaymentsReceived() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Retainer Payments</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Retainer Payments</p>
                 <p className="text-2xl font-bold">₹{(summary.retainer_payments || 0).toLocaleString('en-IN')}</p>
               </div>
               <Wallet className="h-8 w-8 text-purple-500" />
@@ -495,7 +495,7 @@ export default function PaymentsReceived() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Unused Credits</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Unused Credits</p>
                 <p className="text-2xl font-bold">₹{(summary.unused_credits || 0).toLocaleString('en-IN')}</p>
               </div>
               <CreditCard className="h-8 w-8 text-orange-500" />
@@ -516,7 +516,7 @@ export default function PaymentsReceived() {
           
           <div className="flex gap-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
               <Input
                 className="pl-9 w-64"
                 placeholder="Search payments..."
@@ -578,24 +578,24 @@ export default function PaymentsReceived() {
                           }}
                         />
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment #</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Invoice #</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mode</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Date</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Payment #</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Customer</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Invoice #</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Mode</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Amount</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Status</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {loading ? (
                       <tr>
-                        <td colSpan={9} className="px-4 py-8 text-center text-gray-500">Loading...</td>
+                        <td colSpan={9} className="px-4 py-8 text-center text-[rgba(244,246,240,0.45)]">Loading...</td>
                       </tr>
                     ) : payments.length === 0 ? (
                       <tr>
-                        <td colSpan={9} className="px-4 py-8 text-center text-gray-500">No payments found</td>
+                        <td colSpan={9} className="px-4 py-8 text-center text-[rgba(244,246,240,0.45)]">No payments found</td>
                       </tr>
                     ) : (
                       payments.map((payment) => (
@@ -626,7 +626,7 @@ export default function PaymentsReceived() {
                             {payment.invoice_numbers?.length > 0 ? (
                               payment.invoice_numbers.join(", ")
                             ) : (
-                              <span className="text-gray-400">—</span>
+                              <span className="text-[rgba(244,246,240,0.45)]">—</span>
                             )}
                           </td>
                           <td className="px-4 py-3">
@@ -681,7 +681,7 @@ export default function PaymentsReceived() {
               {/* Pagination */}
               {pagination.total > pagination.per_page && (
                 <div className="p-4 border-t flex justify-between items-center">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-[rgba(244,246,240,0.45)]">
                     Showing {((pagination.page - 1) * pagination.per_page) + 1} to {Math.min(pagination.page * pagination.per_page, pagination.total)} of {pagination.total}
                   </p>
                   <div className="flex gap-2">
@@ -712,7 +712,7 @@ export default function PaymentsReceived() {
         <TabsContent value="invoice">
           <Card>
             <CardContent className="p-4">
-              <p className="text-gray-500">Payments applied to specific invoices</p>
+              <p className="text-[rgba(244,246,240,0.45)]">Payments applied to specific invoices</p>
               {/* Reuse similar table structure with filtered data */}
             </CardContent>
           </Card>
@@ -722,7 +722,7 @@ export default function PaymentsReceived() {
         <TabsContent value="retainer">
           <Card>
             <CardContent className="p-4">
-              <p className="text-gray-500">Advance payments and retainers</p>
+              <p className="text-[rgba(244,246,240,0.45)]">Advance payments and retainers</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -739,17 +739,17 @@ export default function PaymentsReceived() {
                 <table className="w-full">
                   <thead className="bg-[#111820] border-b">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Source</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Customer</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Source</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Type</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Amount</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-[rgba(244,246,240,0.45)] uppercase">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {allCredits.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="px-4 py-8 text-center text-gray-500">No available credits</td>
+                        <td colSpan={5} className="px-4 py-8 text-center text-[rgba(244,246,240,0.45)]">No available credits</td>
                       </tr>
                     ) : (
                       allCredits.map((credit) => (
@@ -805,7 +805,7 @@ export default function PaymentsReceived() {
                           onClick={() => selectCustomer(c)}
                         >
                           <p className="font-medium">{c.name}</p>
-                          <p className="text-xs text-gray-500">{c.company_name}</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.45)]">{c.company_name}</p>
                         </div>
                       ))}
                     </div>
@@ -814,7 +814,7 @@ export default function PaymentsReceived() {
                 {selectedCustomer && (
                   <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
                     <p className="font-medium">{selectedCustomer.name}</p>
-                    <p className="text-xs text-gray-600">{selectedCustomer.email}</p>
+                    <p className="text-xs text-[rgba(244,246,240,0.35)]">{selectedCustomer.email}</p>
                   </div>
                 )}
               </div>
@@ -1003,7 +1003,7 @@ export default function PaymentsReceived() {
                   <span className="font-medium">₹{paymentForm.amount.toLocaleString('en-IN')}</span>
                 </div>
                 {paymentForm.bank_charges > 0 && (
-                  <div className="flex justify-between text-sm mb-2 text-gray-600">
+                  <div className="flex justify-between text-sm mb-2 text-[rgba(244,246,240,0.35)]">
                     <span>Bank Charges:</span>
                     <span>-₹{paymentForm.bank_charges.toLocaleString('en-IN')}</span>
                   </div>
@@ -1067,7 +1067,7 @@ export default function PaymentsReceived() {
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-xl font-bold">{selectedPayment.payment_number}</h3>
-                  <p className="text-gray-500">{selectedPayment.customer_name}</p>
+                  <p className="text-[rgba(244,246,240,0.45)]">{selectedPayment.customer_name}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold text-green-600">₹{selectedPayment.amount?.toLocaleString('en-IN')}</p>
@@ -1080,22 +1080,22 @@ export default function PaymentsReceived() {
               {/* Details Grid */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-gray-500">Payment Date</p>
+                  <p className="text-[rgba(244,246,240,0.45)]">Payment Date</p>
                   <p className="font-medium">{selectedPayment.payment_date}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Payment Mode</p>
+                  <p className="text-[rgba(244,246,240,0.45)]">Payment Mode</p>
                   <p className="font-medium capitalize flex items-center gap-1">
                     {getPaymentModeIcon(selectedPayment.payment_mode)}
                     {selectedPayment.payment_mode?.replace("_", " ")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Deposit Account</p>
+                  <p className="text-[rgba(244,246,240,0.45)]">Deposit Account</p>
                   <p className="font-medium">{selectedPayment.deposit_to_account}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Reference #</p>
+                  <p className="text-[rgba(244,246,240,0.45)]">Reference #</p>
                   <p className="font-medium">{selectedPayment.reference_number || "—"}</p>
                 </div>
               </div>
@@ -1144,7 +1144,7 @@ export default function PaymentsReceived() {
               {selectedPayment.notes && (
                 <div>
                   <h4 className="font-medium mb-1">Notes</h4>
-                  <p className="text-sm text-gray-600">{selectedPayment.notes}</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.35)]">{selectedPayment.notes}</p>
                 </div>
               )}
 

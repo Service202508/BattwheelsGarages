@@ -365,16 +365,16 @@ export default function InventoryEnhanced() {
                     <div key={item.item_id} className="flex justify-between items-center p-2 bg-[rgba(255,59,47,0.08)] rounded">
                       <div>
                         <p className="font-medium">{item.name}</p>
-                        <p className="text-xs text-gray-500">{item.sku}</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.sku}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-red-600 font-bold">{item.total_stock} in stock</p>
-                        <p className="text-xs text-gray-500">Reorder at: {item.reorder_level}</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">Reorder at: {item.reorder_level}</p>
                       </div>
                     </div>
                   ))}
                   {lowStockItems.length > 5 && (
-                    <p className="text-sm text-gray-500 text-center">+{lowStockItems.length - 5} more items</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)] text-center">+{lowStockItems.length - 5} more items</p>
                   )}
                 </div>
               </CardContent>
@@ -392,14 +392,14 @@ export default function InventoryEnhanced() {
               </CardHeader>
               <CardContent>
                 {shipments.filter(s => s.status !== 'delivered').length === 0 ? (
-                  <p className="text-gray-500 text-center py-4">No pending shipments</p>
+                  <p className="text-[rgba(244,246,240,0.45)] text-center py-4">No pending shipments</p>
                 ) : (
                   <div className="space-y-2">
                     {shipments.filter(s => s.status !== 'delivered').slice(0, 5).map(s => (
                       <div key={s.shipment_id} className="flex justify-between items-center p-2 bg-[#111820] rounded cursor-pointer hover:bg-[rgba(255,255,255,0.05)]" onClick={() => viewDetail('shipment', s.shipment_id)}>
                         <div>
                           <p className="font-medium">{s.package_number}</p>
-                          <p className="text-xs text-gray-500">{s.customer_name}</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.45)]">{s.customer_name}</p>
                         </div>
                         <Badge className={statusColors[s.status]}>{s.status}</Badge>
                       </div>
@@ -418,14 +418,14 @@ export default function InventoryEnhanced() {
               </CardHeader>
               <CardContent>
                 {returns.filter(r => r.status === 'pending').length === 0 ? (
-                  <p className="text-gray-500 text-center py-4">No pending returns</p>
+                  <p className="text-[rgba(244,246,240,0.45)] text-center py-4">No pending returns</p>
                 ) : (
                   <div className="space-y-2">
                     {returns.filter(r => r.status === 'pending').slice(0, 5).map(r => (
                       <div key={r.return_id} className="flex justify-between items-center p-2 bg-[rgba(234,179,8,0.08)] rounded cursor-pointer hover:bg-yellow-100" onClick={() => viewDetail('return', r.return_id)}>
                         <div>
                           <p className="font-medium">{r.customer_name}</p>
-                          <p className="text-xs text-gray-500">{r.reason}</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.45)]">{r.reason}</p>
                         </div>
                         <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); handleProcessReturn(r.return_id); }}>
                           Process
@@ -442,9 +442,9 @@ export default function InventoryEnhanced() {
         {/* Warehouses Tab */}
         <TabsContent value="warehouses">
           {loading ? (
-            <div className="text-center py-12 text-gray-500">Loading...</div>
+            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div>
           ) : warehouses.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500">No warehouses. Create one to start tracking inventory by location.</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No warehouses. Create one to start tracking inventory by location.</CardContent></Card>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {warehouses.map(wh => (
@@ -453,11 +453,11 @@ export default function InventoryEnhanced() {
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h3 className="font-semibold">{wh.name}</h3>
-                        {wh.code && <p className="text-xs text-gray-500">{wh.code}</p>}
+                        {wh.code && <p className="text-xs text-[rgba(244,246,240,0.45)]">{wh.code}</p>}
                       </div>
                       {wh.is_primary && <Badge className="bg-[#C8FF00] text-[#080C0F] font-bold">Primary</Badge>}
                     </div>
-                    <p className="text-sm text-gray-500">{wh.city}{wh.state ? `, ${wh.state}` : ''}</p>
+                    <p className="text-sm text-[rgba(244,246,240,0.45)]">{wh.city}{wh.state ? `, ${wh.state}` : ''}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -468,7 +468,7 @@ export default function InventoryEnhanced() {
         {/* Variants Tab */}
         <TabsContent value="variants">
           {variants.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500">No variants. Create variants for items with multiple options (size, color, etc.)</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No variants. Create variants for items with multiple options (size, color, etc.)</CardContent></Card>
           ) : (
             <div className="space-y-3">
               {variants.map(v => (
@@ -477,11 +477,11 @@ export default function InventoryEnhanced() {
                     <div className="flex justify-between items-center">
                       <div>
                         <h3 className="font-semibold">{v.variant_name}</h3>
-                        <p className="text-sm text-gray-500">Base: {v.item_name} | SKU: {v.sku}</p>
+                        <p className="text-sm text-[rgba(244,246,240,0.45)]">Base: {v.item_name} | SKU: {v.sku}</p>
                       </div>
                       <div className="text-right">
                         <p className="font-bold">₹{(v.effective_rate || 0).toLocaleString('en-IN')}</p>
-                        <p className="text-sm text-gray-500">Stock: {v.available_stock || 0}</p>
+                        <p className="text-sm text-[rgba(244,246,240,0.45)]">Stock: {v.available_stock || 0}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -494,7 +494,7 @@ export default function InventoryEnhanced() {
         {/* Bundles Tab */}
         <TabsContent value="bundles">
           {bundles.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500">No bundles. Create bundles/kits to sell composite items.</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No bundles. Create bundles/kits to sell composite items.</CardContent></Card>
           ) : (
             <div className="space-y-3">
               {bundles.map(b => (
@@ -503,7 +503,7 @@ export default function InventoryEnhanced() {
                     <div className="flex justify-between items-center">
                       <div>
                         <h3 className="font-semibold">{b.name}</h3>
-                        <p className="text-sm text-gray-500">SKU: {b.sku} | {b.component_count} components</p>
+                        <p className="text-sm text-[rgba(244,246,240,0.45)]">SKU: {b.sku} | {b.component_count} components</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="text-right">
@@ -524,7 +524,7 @@ export default function InventoryEnhanced() {
         {/* Serial/Batch Tab */}
         <TabsContent value="serial-batch">
           {serialBatches.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500">No serial numbers or batches. Track individual units or lot numbers for traceability.</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No serial numbers or batches. Track individual units or lot numbers for traceability.</CardContent></Card>
           ) : (
             <div className="space-y-3">
               {serialBatches.map(sb => (
@@ -532,10 +532,10 @@ export default function InventoryEnhanced() {
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-3">
-                        <Barcode className="h-8 w-8 text-gray-400" />
+                        <Barcode className="h-8 w-8 text-[rgba(244,246,240,0.45)]" />
                         <div>
                           <h3 className="font-semibold">{sb.number}</h3>
-                          <p className="text-sm text-gray-500">{sb.tracking_type === 'serial' ? 'Serial Number' : `Batch (Qty: ${sb.quantity})`}</p>
+                          <p className="text-sm text-[rgba(244,246,240,0.45)]">{sb.tracking_type === 'serial' ? 'Serial Number' : `Batch (Qty: ${sb.quantity})`}</p>
                         </div>
                       </div>
                       <Badge className={statusColors[sb.status]}>{sb.status}</Badge>
@@ -550,7 +550,7 @@ export default function InventoryEnhanced() {
         {/* Shipments Tab */}
         <TabsContent value="shipments">
           {shipments.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500">No shipments yet. Shipments are created from Sales Orders.</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No shipments yet. Shipments are created from Sales Orders.</CardContent></Card>
           ) : (
             <div className="space-y-3">
               {shipments.map(s => (
@@ -562,8 +562,8 @@ export default function InventoryEnhanced() {
                           <h3 className="font-semibold">{s.package_number}</h3>
                           <Badge className={statusColors[s.status]}>{s.status}</Badge>
                         </div>
-                        <p className="text-sm text-gray-500">{s.customer_name} | {s.carrier || 'No carrier'}</p>
-                        {s.tracking_number && <p className="text-xs text-gray-400">Tracking: {s.tracking_number}</p>}
+                        <p className="text-sm text-[rgba(244,246,240,0.45)]">{s.customer_name} | {s.carrier || 'No carrier'}</p>
+                        {s.tracking_number && <p className="text-xs text-[rgba(244,246,240,0.45)]">Tracking: {s.tracking_number}</p>}
                       </div>
                       <div className="flex gap-2">
                         {s.status === 'packed' && (
@@ -588,7 +588,7 @@ export default function InventoryEnhanced() {
         {/* Returns Tab */}
         <TabsContent value="returns">
           {returns.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-gray-500">No returns recorded.</CardContent></Card>
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No returns recorded.</CardContent></Card>
           ) : (
             <div className="space-y-3">
               {returns.map(r => (
@@ -600,8 +600,8 @@ export default function InventoryEnhanced() {
                           <h3 className="font-semibold">{r.customer_name}</h3>
                           <Badge className={statusColors[r.status]}>{r.status}</Badge>
                         </div>
-                        <p className="text-sm text-gray-500">{r.reason}</p>
-                        <p className="text-xs text-gray-400">{r.restock ? 'Restocked' : 'Not restocked'} | Value: ₹{(r.restocked_value || 0).toLocaleString('en-IN')}</p>
+                        <p className="text-sm text-[rgba(244,246,240,0.45)]">{r.reason}</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{r.restock ? 'Restocked' : 'Not restocked'} | Value: ₹{(r.restocked_value || 0).toLocaleString('en-IN')}</p>
                       </div>
                       {r.status === 'pending' && (
                         <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); handleProcessReturn(r.return_id); }}>
@@ -717,7 +717,7 @@ export default function InventoryEnhanced() {
                     <div key={idx} className="flex justify-between items-center p-2 bg-[#111820] rounded border">
                       <span>{c.item_name || c.item_id}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-500">x{c.quantity}</span>
+                        <span className="text-[rgba(244,246,240,0.45)]">x{c.quantity}</span>
                         <Button variant="ghost" size="icon" onClick={() => setNewBundle({...newBundle, components: newBundle.components.filter((_, i) => i !== idx)})}>
                           <Trash2 className="h-4 w-4 text-red-500" />
                         </Button>
@@ -850,13 +850,13 @@ export default function InventoryEnhanced() {
                 {detailType === 'warehouse' && (
                   <>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-gray-500">Name</p><p className="font-medium">{detailData.name}</p></div>
-                      <div><p className="text-sm text-gray-500">Code</p><p className="font-medium">{detailData.code || '-'}</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Name</p><p className="font-medium">{detailData.name}</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Code</p><p className="font-medium">{detailData.code || '-'}</p></div>
                     </div>
-                    <div><p className="text-sm text-gray-500">Address</p><p>{detailData.address} {detailData.city} {detailData.state} {detailData.pincode}</p></div>
+                    <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Address</p><p>{detailData.address} {detailData.city} {detailData.state} {detailData.pincode}</p></div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-gray-500">Items</p><p className="font-medium">{detailData.item_count || 0}</p></div>
-                      <div><p className="text-sm text-gray-500">Total Units</p><p className="font-medium">{detailData.total_units || 0}</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Items</p><p className="font-medium">{detailData.item_count || 0}</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Total Units</p><p className="font-medium">{detailData.total_units || 0}</p></div>
                     </div>
                     {detailData.stock_items?.length > 0 && (
                       <div>
@@ -878,13 +878,13 @@ export default function InventoryEnhanced() {
                 {detailType === 'bundle' && (
                   <>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-gray-500">Name</p><p className="font-medium">{detailData.name}</p></div>
-                      <div><p className="text-sm text-gray-500">SKU</p><p className="font-medium">{detailData.sku}</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Name</p><p className="font-medium">{detailData.name}</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">SKU</p><p className="font-medium">{detailData.sku}</p></div>
                     </div>
-                    <div><p className="text-sm text-gray-500">Description</p><p>{detailData.description || '-'}</p></div>
+                    <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Description</p><p>{detailData.description || '-'}</p></div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-gray-500">Rate</p><p className="font-bold text-lg">₹{(detailData.rate || 0).toLocaleString('en-IN')}</p></div>
-                      <div><p className="text-sm text-gray-500">Max Assemblable</p><p className="font-medium">{detailData.max_assemblable || 0} units</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Rate</p><p className="font-bold text-lg">₹{(detailData.rate || 0).toLocaleString('en-IN')}</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Max Assemblable</p><p className="font-medium">{detailData.max_assemblable || 0} units</p></div>
                     </div>
                     {detailData.components?.length > 0 && (
                       <div>
@@ -895,7 +895,7 @@ export default function InventoryEnhanced() {
                               <span>{c.item_name}</span>
                               <div className="text-right">
                                 <span className="font-medium">x{c.quantity}</span>
-                                <span className="text-xs text-gray-500 ml-2">(Stock: {c.available_stock})</span>
+                                <span className="text-xs text-[rgba(244,246,240,0.45)] ml-2">(Stock: {c.available_stock})</span>
                               </div>
                             </div>
                           ))}
@@ -907,16 +907,16 @@ export default function InventoryEnhanced() {
                 {detailType === 'shipment' && (
                   <>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-gray-500">Package #</p><p className="font-medium">{detailData.package_number}</p></div>
-                      <div><p className="text-sm text-gray-500">Status</p><Badge className={statusColors[detailData.status]}>{detailData.status}</Badge></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Package #</p><p className="font-medium">{detailData.package_number}</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Status</p><Badge className={statusColors[detailData.status]}>{detailData.status}</Badge></div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-gray-500">Customer</p><p>{detailData.customer_name}</p></div>
-                      <div><p className="text-sm text-gray-500">Sales Order</p><p>{detailData.sales_order_number}</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Customer</p><p>{detailData.customer_name}</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Sales Order</p><p>{detailData.sales_order_number}</p></div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div><p className="text-sm text-gray-500">Carrier</p><p>{detailData.carrier || '-'}</p></div>
-                      <div><p className="text-sm text-gray-500">Tracking #</p><p>{detailData.tracking_number || '-'}</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Carrier</p><p>{detailData.carrier || '-'}</p></div>
+                      <div><p className="text-sm text-[rgba(244,246,240,0.45)]">Tracking #</p><p>{detailData.tracking_number || '-'}</p></div>
                     </div>
                     {detailData.items?.length > 0 && (
                       <div>

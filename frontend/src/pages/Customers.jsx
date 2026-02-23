@@ -96,7 +96,7 @@ export default function Customers() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Customers</h1>
-          <p className="text-gray-500 text-sm mt-1">{total} customers in database</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">{total} customers in database</p>
         </div>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
@@ -211,7 +211,7 @@ export default function Customers() {
 
       {/* Search */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
         <Input
           placeholder="Search customers by name, phone, company..."
           value={search}
@@ -223,10 +223,10 @@ export default function Customers() {
 
       {/* Customer List */}
       {loading ? (
-        <div className="text-center py-12 text-gray-500">Loading customers...</div>
+        <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading customers...</div>
       ) : customers.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-gray-500">
+          <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
             No customers found. Add your first customer to get started.
           </CardContent>
         </Card>
@@ -246,7 +246,7 @@ export default function Customers() {
                         </Badge>
                       )}
                     </div>
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                    <div className="flex flex-wrap gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                       {customer.phone && (
                         <span className="flex items-center gap-1">
                           <Phone className="h-3.5 w-3.5" />
@@ -267,14 +267,14 @@ export default function Customers() {
                       )}
                     </div>
                     {customer.gstin && (
-                      <div className="mt-2 text-xs text-gray-400">
+                      <div className="mt-2 text-xs text-[rgba(244,246,240,0.45)]">
                         GSTIN: {customer.gstin}
                       </div>
                     )}
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="text-xs text-gray-400">Outstanding</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.45)]">Outstanding</p>
                       <p className={`font-semibold ${customer.outstanding_balance > 0 ? 'text-[#FF8C00]' : 'text-green-600'}`}>
                         ₹{(customer.outstanding_balance || 0).toLocaleString('en-IN')}
                       </p>
@@ -292,31 +292,31 @@ export default function Customers() {
                         <div className="space-y-4 py-4">
                           <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                              <p className="text-gray-400">Customer ID</p>
+                              <p className="text-[rgba(244,246,240,0.45)]">Customer ID</p>
                               <p className="font-medium">{customer.customer_id}</p>
                             </div>
                             <div>
-                              <p className="text-gray-400">Company</p>
+                              <p className="text-[rgba(244,246,240,0.45)]">Company</p>
                               <p className="font-medium">{customer.company_name || '-'}</p>
                             </div>
                             <div>
-                              <p className="text-gray-400">Phone</p>
+                              <p className="text-[rgba(244,246,240,0.45)]">Phone</p>
                               <p className="font-medium">{customer.phone || '-'}</p>
                             </div>
                             <div>
-                              <p className="text-gray-400">Email</p>
+                              <p className="text-[rgba(244,246,240,0.45)]">Email</p>
                               <p className="font-medium">{customer.email || '-'}</p>
                             </div>
                             <div>
-                              <p className="text-gray-400">GSTIN</p>
+                              <p className="text-[rgba(244,246,240,0.45)]">GSTIN</p>
                               <p className="font-medium">{customer.gstin || '-'}</p>
                             </div>
                             <div>
-                              <p className="text-gray-400">Payment Terms</p>
+                              <p className="text-[rgba(244,246,240,0.45)]">Payment Terms</p>
                               <p className="font-medium">{customer.payment_terms || 15} days</p>
                             </div>
                             <div className="col-span-2">
-                              <p className="text-gray-400">Billing Address</p>
+                              <p className="text-[rgba(244,246,240,0.45)]">Billing Address</p>
                               <p className="font-medium">
                                 {customer.billing_address || '-'}
                                 {customer.billing_city && `, ${customer.billing_city}`}
@@ -325,7 +325,7 @@ export default function Customers() {
                               </p>
                             </div>
                             <div>
-                              <p className="text-gray-400">Outstanding Balance</p>
+                              <p className="text-[rgba(244,246,240,0.45)]">Outstanding Balance</p>
                               <p className={`font-semibold text-lg ${customer.outstanding_balance > 0 ? 'text-[#FF8C00]' : 'text-green-600'}`}>
                                 ₹{(customer.outstanding_balance || 0).toLocaleString('en-IN')}
                               </p>

@@ -291,7 +291,7 @@ export default function CustomModules() {
         return (
           <div className="flex items-center gap-2">
             <Switch checked={value || false} onCheckedChange={onChange} />
-            <span className="text-sm text-gray-500">{value ? "Yes" : "No"}</span>
+            <span className="text-sm text-[rgba(244,246,240,0.45)]">{value ? "Yes" : "No"}</span>
           </div>
         );
       default:
@@ -316,7 +316,7 @@ export default function CustomModules() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Custom Modules</h1>
-          <p className="text-gray-500">Create and manage your own data modules</p>
+          <p className="text-[rgba(244,246,240,0.45)]">Create and manage your own data modules</p>
         </div>
         <Dialog open={showCreateModuleDialog} onOpenChange={setShowCreateModuleDialog}>
           <DialogTrigger asChild>
@@ -346,7 +346,7 @@ export default function CustomModules() {
                     onChange={e => setNewModule({ ...newModule, module_name: e.target.value })}
                     placeholder="e.g., equipment_maintenance"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Auto-generated if left blank</p>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Auto-generated if left blank</p>
                 </div>
               </div>
 
@@ -414,10 +414,10 @@ export default function CustomModules() {
                       return (
                         <div key={idx} className="flex justify-between items-center bg-[#111820] p-3 rounded">
                           <div className="flex items-center gap-3">
-                            <Icon className="h-4 w-4 text-gray-500" />
+                            <Icon className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
                             <div>
                               <span className="font-medium">{field.label}</span>
-                              <span className="text-sm text-gray-500 ml-2">({field.name})</span>
+                              <span className="text-sm text-[rgba(244,246,240,0.45)] ml-2">({field.name})</span>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -432,7 +432,7 @@ export default function CustomModules() {
                     })}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-center py-4">No fields added yet</p>
+                  <p className="text-[rgba(244,246,240,0.45)] text-center py-4">No fields added yet</p>
                 )}
               </div>
 
@@ -460,17 +460,17 @@ export default function CustomModules() {
                       onClick={() => setSelectedModule(module)}
                     >
                       <div className="flex items-center gap-3">
-                        <Folder className="h-5 w-5 text-gray-500" />
+                        <Folder className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
                         <div>
                           <p className="font-medium">{module.module_label}</p>
-                          <p className="text-sm text-gray-500">{module.records_count || 0} records</p>
+                          <p className="text-sm text-[rgba(244,246,240,0.45)]">{module.records_count || 0} records</p>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="p-6 text-center text-gray-500">
+                <div className="p-6 text-center text-[rgba(244,246,240,0.45)]">
                   <Database className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
                   <p>No custom modules yet</p>
                   <p className="text-sm">Create your first module to get started</p>
@@ -487,7 +487,7 @@ export default function CustomModules() {
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle>{selectedModule.module_label}</CardTitle>
-                  <p className="text-sm text-gray-500 mt-1">{selectedModule.description || "No description"}</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.45)] mt-1">{selectedModule.description || "No description"}</p>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => handleDeleteModule(selectedModule.module_id)}>
@@ -532,7 +532,7 @@ export default function CustomModules() {
                 {/* Search */}
                 <div className="mb-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
                     <Input
                       placeholder="Search records..."
                       value={searchQuery}
@@ -604,7 +604,7 @@ export default function CustomModules() {
                     </table>
                   </div>
                 ) : (
-                  <div className="text-center py-12 text-gray-500">
+                  <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
                     <FileText className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
                     <p>No records yet</p>
                     <p className="text-sm">Click "Add Record" to create the first one</p>
@@ -614,7 +614,7 @@ export default function CustomModules() {
             </Card>
           ) : (
             <Card>
-              <CardContent className="py-12 text-center text-gray-500">
+              <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
                 <Settings className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
                 <p className="text-lg font-medium">Select a Module</p>
                 <p className="text-sm">Choose a custom module from the list to view its records</p>
@@ -634,7 +634,7 @@ export default function CustomModules() {
             <div className="space-y-4">
               {selectedModule.fields.map(field => (
                 <div key={field.name}>
-                  <Label className="text-gray-500">{field.label}</Label>
+                  <Label className="text-[rgba(244,246,240,0.45)]">{field.label}</Label>
                   <p className="font-medium">
                     {field.type === "checkbox" 
                       ? (selectedRecord[field.name] ? "Yes" : "No")

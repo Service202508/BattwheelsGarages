@@ -127,7 +127,7 @@ export default function ActivityLogs() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Activity Logs</h1>
-          <p className="text-gray-500 text-sm mt-1">Audit trail of all system activities</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Audit trail of all system activities</p>
         </div>
         <div className="flex items-center gap-3">
           <Select value={entityTypeFilter || "all"} onValueChange={(v) => { setEntityTypeFilter(v === "all" ? "" : v); setPage(1); }}>
@@ -216,7 +216,7 @@ export default function ActivityLogs() {
               <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
             </div>
           ) : logs.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
               <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No activity logs found</p>
               <p className="text-sm">Activities will appear here as users interact with the system</p>
@@ -239,30 +239,30 @@ export default function ActivityLogs() {
                     <TableRow key={log.log_id}>
                       <TableCell>
                         <div className="flex items-center gap-2 text-sm">
-                          <Clock className="h-4 w-4 text-gray-400" />
-                          <span className="text-gray-600">{formatTimestamp(log.timestamp)}</span>
+                          <Clock className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                          <span className="text-[rgba(244,246,240,0.35)]">{formatTimestamp(log.timestamp)}</span>
                         </div>
                       </TableCell>
                       <TableCell>{getEntityTypeBadge(log.entity_type)}</TableCell>
                       <TableCell>
-                        <span className="font-mono text-sm text-gray-600">
+                        <span className="font-mono text-sm text-[rgba(244,246,240,0.35)]">
                           {log.entity_id?.slice(0, 20) || "-"}
                         </span>
                       </TableCell>
                       <TableCell>{getActionBadge(log.action)}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-gray-400" />
+                          <User className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
                           <span className="text-sm">{log.user_name || log.user_id || "System"}</span>
                         </div>
                       </TableCell>
                       <TableCell className="max-w-[200px]">
                         {log.details && Object.keys(log.details).length > 0 ? (
-                          <span className="text-xs text-gray-500 truncate block">
+                          <span className="text-xs text-[rgba(244,246,240,0.45)] truncate block">
                             {JSON.stringify(log.details).slice(0, 50)}...
                           </span>
                         ) : (
-                          <span className="text-gray-400">-</span>
+                          <span className="text-[rgba(244,246,240,0.45)]">-</span>
                         )}
                       </TableCell>
                     </TableRow>
@@ -273,7 +273,7 @@ export default function ActivityLogs() {
               {/* Pagination */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-between px-4 py-3 border-t">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-[rgba(244,246,240,0.45)]">
                     Showing {((page - 1) * pageContext.per_page) + 1} to {Math.min(page * pageContext.per_page, pageContext.total)} of {pageContext.total} entries
                   </p>
                   <div className="flex items-center gap-2">
@@ -285,7 +285,7 @@ export default function ActivityLogs() {
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-[rgba(244,246,240,0.35)]">
                       Page {page} of {totalPages}
                     </span>
                     <Button

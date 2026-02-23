@@ -25,7 +25,7 @@ const statusColors = {
   damaged: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
   reserved: "bg-purple-100 text-[#8B5CF6]",
   active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  depleted: "bg-[rgba(255,255,255,0.05)] text-gray-600",
+  depleted: "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.35)]",
   expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"
 };
 
@@ -257,7 +257,7 @@ export default function SerialBatchTracking() {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">Serial Numbers</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)] uppercase tracking-wide">Serial Numbers</p>
                 <p className="text-2xl font-bold text-[#3B9EFF]">{serialSummary?.total_serials || 0}</p>
                 <p className="text-xs text-green-600">{serialSummary?.available || 0} available</p>
               </div>
@@ -270,7 +270,7 @@ export default function SerialBatchTracking() {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">Batch Numbers</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)] uppercase tracking-wide">Batch Numbers</p>
                 <p className="text-2xl font-bold text-[#8B5CF6]">{batchSummary?.total_batches || 0}</p>
                 <p className="text-xs text-green-600">{batchSummary?.active_batches || 0} active</p>
               </div>
@@ -283,9 +283,9 @@ export default function SerialBatchTracking() {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">Expiring Soon</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)] uppercase tracking-wide">Expiring Soon</p>
                 <p className="text-2xl font-bold text-[#FF8C00]">{batchSummary?.expiring_soon || 0}</p>
-                <p className="text-xs text-gray-500">within 30 days</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)]">within 30 days</p>
               </div>
               <AlertTriangle className="h-10 w-10 text-orange-300" />
             </div>
@@ -296,9 +296,9 @@ export default function SerialBatchTracking() {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">Tracked Items</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)] uppercase tracking-wide">Tracked Items</p>
                 <p className="text-2xl font-bold text-green-700">{trackingItems.length}</p>
-                <p className="text-xs text-gray-500">with tracking enabled</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)]">with tracking enabled</p>
               </div>
               <Settings className="h-10 w-10 text-green-300" />
             </div>
@@ -376,7 +376,7 @@ export default function SerialBatchTracking() {
         {/* Filters */}
         <div className="flex items-center gap-4 mb-4">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
             <Input
               placeholder={activeTab === "serials" ? "Search serial numbers..." : "Search batch numbers..."}
               value={searchTerm}
@@ -416,10 +416,10 @@ export default function SerialBatchTracking() {
             <CardContent className="p-0">
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <RefreshCw className="h-6 w-6 animate-spin text-gray-400" />
+                  <RefreshCw className="h-6 w-6 animate-spin text-[rgba(244,246,240,0.45)]" />
                 </div>
               ) : serials.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
                   <Hash className="h-12 w-12 mx-auto mb-3 opacity-50" />
                   <p>No serial numbers found</p>
                   <p className="text-sm mt-1">Create serial numbers to track individual units</p>
@@ -438,18 +438,18 @@ export default function SerialBatchTracking() {
                         </div>
                         <div>
                           <p className="font-medium">{serial.serial_number}</p>
-                          <p className="text-sm text-gray-500">{serial.item_name}</p>
+                          <p className="text-sm text-[rgba(244,246,240,0.45)]">{serial.item_name}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
                         {serial.warranty_expiry && (
                           <div className="text-right text-sm">
-                            <p className="text-gray-500">Warranty</p>
+                            <p className="text-[rgba(244,246,240,0.45)]">Warranty</p>
                             <p>{formatDate(serial.warranty_expiry)}</p>
                           </div>
                         )}
                         <Badge className={statusColors[serial.status]}>{serial.status}</Badge>
-                        <ChevronRight className="h-5 w-5 text-gray-400" />
+                        <ChevronRight className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
                       </div>
                     </div>
                   ))}
@@ -465,10 +465,10 @@ export default function SerialBatchTracking() {
             <CardContent className="p-0">
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <RefreshCw className="h-6 w-6 animate-spin text-gray-400" />
+                  <RefreshCw className="h-6 w-6 animate-spin text-[rgba(244,246,240,0.45)]" />
                 </div>
               ) : batches.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
                   <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
                   <p>No batch numbers found</p>
                   <p className="text-sm mt-1">Create batch/lot numbers to track inventory batches</p>
@@ -491,24 +491,24 @@ export default function SerialBatchTracking() {
                         </div>
                         <div>
                           <p className="font-medium">{batch.batch_number}</p>
-                          <p className="text-sm text-gray-500">{batch.item_name}</p>
+                          <p className="text-sm text-[rgba(244,246,240,0.45)]">{batch.item_name}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-6">
                         <div className="text-right">
                           <p className="font-medium">{batch.available_quantity} / {batch.quantity}</p>
-                          <p className="text-xs text-gray-500">available / total</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.45)]">available / total</p>
                         </div>
                         {batch.expiry_date && (
                           <div className="text-right text-sm">
-                            <p className={batch.is_expired ? "text-red-600" : batch.days_to_expiry < 30 ? "text-[#FF8C00]" : "text-gray-500"}>
+                            <p className={batch.is_expired ? "text-red-600" : batch.days_to_expiry < 30 ? "text-[#FF8C00]" : "text-[rgba(244,246,240,0.45)]"}>
                               {batch.is_expired ? "Expired" : `${batch.days_to_expiry}d left`}
                             </p>
-                            <p className="text-xs text-gray-400">{formatDate(batch.expiry_date)}</p>
+                            <p className="text-xs text-[rgba(244,246,240,0.45)]">{formatDate(batch.expiry_date)}</p>
                           </div>
                         )}
                         <Badge className={statusColors[batch.status]}>{batch.status}</Badge>
-                        <ChevronRight className="h-5 w-5 text-gray-400" />
+                        <ChevronRight className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
                       </div>
                     </div>
                   ))}
@@ -527,7 +527,7 @@ export default function SerialBatchTracking() {
             </CardHeader>
             <CardContent className="p-0">
               {trackingItems.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
                   <Settings className="h-12 w-12 mx-auto mb-3 opacity-50" />
                   <p>No items with tracking enabled</p>
                   <p className="text-sm mt-1">Configure tracking from the Items module</p>
@@ -538,7 +538,7 @@ export default function SerialBatchTracking() {
                     <div key={item.item_id} className="flex items-center justify-between p-4 hover:bg-[#111820]">
                       <div>
                         <p className="font-medium">{item.name}</p>
-                        <p className="text-sm text-gray-500">{item.sku || "No SKU"}</p>
+                        <p className="text-sm text-[rgba(244,246,240,0.45)]">{item.sku || "No SKU"}</p>
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="flex gap-2">
@@ -696,7 +696,7 @@ export default function SerialBatchTracking() {
             </div>
             <div className="bg-[#111820] p-3 rounded-lg text-sm">
               <p className="font-medium">Preview:</p>
-              <p className="text-gray-600">
+              <p className="text-[rgba(244,246,240,0.35)]">
                 {bulkSerial.prefix}{String(bulkSerial.start_number).padStart(6, '0')} to {bulkSerial.prefix}{String(bulkSerial.start_number + bulkSerial.count - 1).padStart(6, '0')}
               </p>
             </div>
@@ -798,7 +798,7 @@ export default function SerialBatchTracking() {
             <div className="flex items-center justify-between">
               <div>
                 <Label>Enable Serial Tracking</Label>
-                <p className="text-sm text-gray-500">Track individual units with unique serial numbers</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Track individual units with unique serial numbers</p>
               </div>
               <Switch
                 checked={itemConfig.enable_serial}
@@ -831,7 +831,7 @@ export default function SerialBatchTracking() {
             <div className="flex items-center justify-between">
               <div>
                 <Label>Enable Batch Tracking</Label>
-                <p className="text-sm text-gray-500">Track inventory in batches with expiry dates</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Track inventory in batches with expiry dates</p>
               </div>
               <Switch
                 checked={itemConfig.enable_batch}

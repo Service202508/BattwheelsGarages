@@ -14,7 +14,7 @@ import { API } from "@/App";
 
 const statusColors = {
   active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  stopped: "bg-[#141E27] text-gray-600",
+  stopped: "bg-[#141E27] text-[rgba(244,246,240,0.35)]",
   expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"
 };
 
@@ -109,7 +109,7 @@ export default function RecurringTransactions() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Recurring Transactions</h1>
-          <p className="text-gray-500 text-sm mt-1">Auto-generate invoices on schedule</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Auto-generate invoices on schedule</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleGenerateNow}>
@@ -204,8 +204,8 @@ export default function RecurringTransactions() {
         </div>
       </div>
 
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
-        recurringInvoices.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No recurring invoices found</CardContent></Card> :
+      {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
+        recurringInvoices.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No recurring invoices found</CardContent></Card> :
         <div className="space-y-3">
           {recurringInvoices.map(ri => (
             <Card key={ri.recurring_invoice_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
@@ -217,7 +217,7 @@ export default function RecurringTransactions() {
                       <h3 className="font-semibold">{ri.recurrence_name}</h3>
                       <Badge className={statusColors[ri.status]}>{ri.status}</Badge>
                     </div>
-                    <div className="flex gap-4 text-sm text-gray-500">
+                    <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                       <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{ri.customer_name}</span>
                       <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />Next: {ri.next_invoice_date}</span>
                       <span className="capitalize">{ri.recurrence_frequency}</span>
@@ -227,7 +227,7 @@ export default function RecurringTransactions() {
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <p className="font-bold text-lg">₹{ri.total?.toLocaleString('en-IN')}</p>
-                      <p className="text-xs text-gray-500">per invoice</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.45)]">per invoice</p>
                     </div>
                     {ri.status === "active" ? (
                       <Button size="sm" variant="outline" onClick={() => handleStop(ri.recurring_invoice_id)}>

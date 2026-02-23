@@ -120,7 +120,7 @@ export default function DeliveryChallans() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Delivery Challans</h1>
-          <p className="text-gray-500 text-sm mt-1">Track goods dispatched to customers</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Track goods dispatched to customers</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
@@ -172,7 +172,7 @@ export default function DeliveryChallans() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="col-span-2 text-sm text-gray-500 flex items-center">Or enter manually below</div>
+                  <div className="col-span-2 text-sm text-[rgba(244,246,240,0.45)] flex items-center">Or enter manually below</div>
                 </div>
                 <div className="grid grid-cols-4 gap-3">
                   <Input value={newLineItem.name} onChange={(e) => setNewLineItem({ ...newLineItem, name: e.target.value })} placeholder="Item name" />
@@ -233,10 +233,10 @@ export default function DeliveryChallans() {
         </Dialog>
       </div>
 
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
+      {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
         challans.length === 0 ? (
           <Card>
-            <CardContent className="py-12 text-center text-gray-500">
+            <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
               <Truck className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
               <p>No delivery challans found</p>
               <p className="text-sm mt-1">Create your first delivery challan to track goods dispatched</p>
@@ -255,7 +255,7 @@ export default function DeliveryChallans() {
                         <Badge className={statusColors[dc.status]}>{dc.status}</Badge>
                         <Badge variant="outline">{challanTypes[dc.challan_type] || dc.challan_type}</Badge>
                       </div>
-                      <div className="flex gap-4 text-sm text-gray-500">
+                      <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                         <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{dc.customer_name}</span>
                         <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{dc.date}</span>
                         {dc.reference_number && <span className="flex items-center gap-1"><FileText className="h-3.5 w-3.5" />Ref: {dc.reference_number}</span>}
@@ -264,7 +264,7 @@ export default function DeliveryChallans() {
                     <div className="flex items-center gap-3">
                       <div className="text-right">
                         <p className="font-bold text-lg">₹{dc.sub_total?.toLocaleString('en-IN')}</p>
-                        <p className="text-xs text-gray-500">{dc.line_items?.length || 0} items</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{dc.line_items?.length || 0} items</p>
                       </div>
                       <div className="flex flex-col gap-1">
                         {dc.status === "draft" && (

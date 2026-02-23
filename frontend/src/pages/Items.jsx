@@ -173,7 +173,7 @@ export default function Items() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Items</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage products and services</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Manage products and services</p>
         </div>
         <div className="flex gap-2 flex-wrap">
           <Button variant="outline" onClick={handleDownloadTemplate} data-testid="download-template-btn">
@@ -192,9 +192,9 @@ export default function Items() {
               <DialogHeader><DialogTitle>Bulk Import Items</DialogTitle></DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="border-2 border-dashed rounded-lg p-6 text-center bg-[#111820]">
-                  <Upload className="h-10 w-10 mx-auto mb-3 text-gray-400" />
-                  <p className="text-sm text-gray-600 mb-2">Upload a CSV file with your items</p>
-                  <p className="text-xs text-gray-500 mb-4">Columns: name, sku, description, rate, purchase_rate, item_type, unit, hsn_or_sac, tax_percentage, stock_on_hand, reorder_level</p>
+                  <Upload className="h-10 w-10 mx-auto mb-3 text-[rgba(244,246,240,0.45)]" />
+                  <p className="text-sm text-[rgba(244,246,240,0.35)] mb-2">Upload a CSV file with your items</p>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)] mb-4">Columns: name, sku, description, rate, purchase_rate, item_type, unit, hsn_or_sac, tax_percentage, stock_on_hand, reorder_level</p>
                   <input ref={fileInputRef} type="file" accept=".csv" onChange={handleImport} className="hidden" id="import-file" />
                   <div className="flex gap-2 justify-center">
                     <Button onClick={() => fileInputRef.current?.click()} disabled={importing} className="bg-[#C8FF00] text-[#080C0F] font-bold">
@@ -310,14 +310,14 @@ export default function Items() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card><CardContent className="pt-6"><div className="flex items-center justify-between"><div><p className="text-sm text-gray-500">Total Items</p><p className="text-2xl font-bold">{items.length}</p></div><Package className="h-8 w-8 text-[#C8FF00]" /></div></CardContent></Card>
-        <Card><CardContent className="pt-6"><div className="flex items-center justify-between"><div><p className="text-sm text-gray-500">Goods</p><p className="text-2xl font-bold">{goodsCount}</p></div><Package className="h-8 w-8 text-blue-500" /></div></CardContent></Card>
-        <Card><CardContent className="pt-6"><div className="flex items-center justify-between"><div><p className="text-sm text-gray-500">Services</p><p className="text-2xl font-bold">{servicesCount}</p></div><Wrench className="h-8 w-8 text-green-500" /></div></CardContent></Card>
+        <Card><CardContent className="pt-6"><div className="flex items-center justify-between"><div><p className="text-sm text-[rgba(244,246,240,0.45)]">Total Items</p><p className="text-2xl font-bold">{items.length}</p></div><Package className="h-8 w-8 text-[#C8FF00]" /></div></CardContent></Card>
+        <Card><CardContent className="pt-6"><div className="flex items-center justify-between"><div><p className="text-sm text-[rgba(244,246,240,0.45)]">Goods</p><p className="text-2xl font-bold">{goodsCount}</p></div><Package className="h-8 w-8 text-blue-500" /></div></CardContent></Card>
+        <Card><CardContent className="pt-6"><div className="flex items-center justify-between"><div><p className="text-sm text-[rgba(244,246,240,0.45)]">Services</p><p className="text-2xl font-bold">{servicesCount}</p></div><Wrench className="h-8 w-8 text-green-500" /></div></CardContent></Card>
       </div>
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
         <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search items..." className="pl-10 max-w-md" />
       </div>
 
@@ -329,9 +329,9 @@ export default function Items() {
           <TabsTrigger value="service">Services</TabsTrigger>
         </TabsList>
         <TabsContent value={activeTab} className="mt-6">
-          {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
+          {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
             filteredItems.length === 0 ? (
-              <Card><CardContent className="py-12 text-center text-gray-500"><Package className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No items found</p></CardContent></Card>
+              <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]"><Package className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" /><p>No items found</p></CardContent></Card>
             ) : (
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
@@ -351,10 +351,10 @@ export default function Items() {
                         <td className="px-4 py-3">
                           <div>
                             <p className="font-medium">{item.name}</p>
-                            {item.description && <p className="text-xs text-gray-500 truncate max-w-xs">{item.description}</p>}
+                            {item.description && <p className="text-xs text-[rgba(244,246,240,0.45)] truncate max-w-xs">{item.description}</p>}
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-gray-600">{item.sku || '-'}</td>
+                        <td className="px-4 py-3 text-[rgba(244,246,240,0.35)]">{item.sku || '-'}</td>
                         <td className="px-4 py-3"><Badge className={itemTypeColors[item.item_type] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"}>{item.item_type}</Badge></td>
                         <td className="px-4 py-3 text-right font-medium">₹{item.rate?.toLocaleString('en-IN')}</td>
                         <td className="px-4 py-3 text-right">

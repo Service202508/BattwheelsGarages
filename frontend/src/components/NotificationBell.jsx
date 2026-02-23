@@ -131,7 +131,7 @@ export default function NotificationBell({ user }) {
               variant="ghost" 
               size="sm" 
               onClick={markAllRead}
-              className="text-xs text-gray-500 hover:text-[#F4F6F0]"
+              className="text-xs text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0]"
             >
               <CheckCheck className="h-4 w-4 mr-1" />
               Mark all read
@@ -141,9 +141,9 @@ export default function NotificationBell({ user }) {
         
         <ScrollArea className="h-96">
           {loading ? (
-            <div className="p-8 text-center text-gray-500">Loading...</div>
+            <div className="p-8 text-center text-[rgba(244,246,240,0.45)]">Loading...</div>
           ) : notifications.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-[rgba(244,246,240,0.45)]">
               <Bell className="h-8 w-8 mx-auto mb-2 opacity-30" />
               <p>No notifications</p>
             </div>
@@ -172,10 +172,10 @@ export default function NotificationBell({ user }) {
                             <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 mt-1.5" />
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 line-clamp-2 mt-0.5">
+                        <p className="text-sm text-[rgba(244,246,240,0.35)] line-clamp-2 mt-0.5">
                           {notif.message}
                         </p>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">
                           {formatTime(notif.created_at)}
                         </p>
                       </div>
@@ -189,7 +189,7 @@ export default function NotificationBell({ user }) {
         
         {notifications.length > 0 && (
           <div className="p-3 border-t text-center">
-            <Button variant="ghost" size="sm" className="text-xs text-gray-500">
+            <Button variant="ghost" size="sm" className="text-xs text-[rgba(244,246,240,0.45)]">
               View all notifications
             </Button>
           </div>

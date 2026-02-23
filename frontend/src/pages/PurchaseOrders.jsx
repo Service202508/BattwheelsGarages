@@ -346,7 +346,7 @@ export default function PurchaseOrders() {
         ))}
       </div>
 
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
+      {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
         orders.length === 0 ? (
           <Card>
             <EmptyState
@@ -369,7 +369,7 @@ export default function PurchaseOrders() {
                       <h3 className="font-semibold">{po.po_number}</h3>
                       <Badge className={statusColors[po.status]}>{po.status?.replace('_', ' ')}</Badge>
                     </div>
-                    <div className="flex gap-4 text-sm text-gray-500">
+                    <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                       <span className="flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{po.vendor_name}</span>
                       <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{po.order_date}</span>
                       <span className="flex items-center gap-1"><Package className="h-3.5 w-3.5" />{po.line_items?.length || 0} items</span>

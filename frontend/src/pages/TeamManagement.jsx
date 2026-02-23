@@ -213,7 +213,7 @@ export default function TeamManagement({ user }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <RefreshCw className="h-8 w-8 animate-spin text-gray-400" />
+        <RefreshCw className="h-8 w-8 animate-spin text-[rgba(244,246,240,0.45)]" />
       </div>
     );
   }
@@ -224,7 +224,7 @@ export default function TeamManagement({ user }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-[#F4F6F0]">Team Management</h1>
-          <p className="text-gray-500 mt-1">Manage your organization's team members and invitations</p>
+          <p className="text-[rgba(244,246,240,0.45)] mt-1">Manage your organization's team members and invitations</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={fetchTeamData} variant="outline" size="sm">
@@ -286,7 +286,7 @@ export default function TeamManagement({ user }) {
                       <SelectItem value="viewer">Viewer</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-[rgba(244,246,240,0.45)]">
                     {inviteForm.role === "admin" && "Full access to all features and settings"}
                     {inviteForm.role === "manager" && "Manage operations, no billing access"}
                     {inviteForm.role === "technician" && "Access to assigned tickets and tasks"}
@@ -327,7 +327,7 @@ export default function TeamManagement({ user }) {
                 <Users className="h-6 w-6 text-[#3B9EFF]" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Team Members</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Team Members</p>
                 <p className="text-2xl font-bold">{members.length}</p>
               </div>
             </div>
@@ -340,7 +340,7 @@ export default function TeamManagement({ user }) {
                 <Clock className="h-6 w-6 text-[#EAB308]" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Pending Invites</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Pending Invites</p>
                 <p className="text-2xl font-bold">{pendingInvites.length}</p>
               </div>
             </div>
@@ -353,7 +353,7 @@ export default function TeamManagement({ user }) {
                 <Shield className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Admins</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Admins</p>
                 <p className="text-2xl font-bold">
                   {members.filter(m => m.role === "admin" || m.role === "owner").length}
                 </p>
@@ -384,7 +384,7 @@ export default function TeamManagement({ user }) {
             </CardHeader>
             <CardContent>
               {members.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">
                   <Users className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
                   <p>No team members yet</p>
                   <p className="text-sm">Invite your first team member to get started</p>
@@ -420,7 +420,7 @@ export default function TeamManagement({ user }) {
                                   <Badge variant="outline" className="text-xs">You</Badge>
                                 )}
                               </div>
-                              <p className="text-sm text-gray-500">{member.email}</p>
+                              <p className="text-sm text-[rgba(244,246,240,0.45)]">{member.email}</p>
                             </div>
                           </div>
                         </TableCell>
@@ -449,7 +449,7 @@ export default function TeamManagement({ user }) {
                             </Select>
                           )}
                         </TableCell>
-                        <TableCell className="text-sm text-gray-500">
+                        <TableCell className="text-sm text-[rgba(244,246,240,0.45)]">
                           {member.joined_at 
                             ? new Date(member.joined_at).toLocaleDateString()
                             : "N/A"
@@ -490,7 +490,7 @@ export default function TeamManagement({ user }) {
             </CardHeader>
             <CardContent>
               {invites.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">
                   <Mail className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
                   <p>No invitations sent yet</p>
                   <p className="text-sm">Invite team members using the button above</p>
@@ -517,7 +517,7 @@ export default function TeamManagement({ user }) {
                           <TableCell>
                             <div>
                               <p className="font-medium">{invite.name}</p>
-                              <p className="text-sm text-gray-500">{invite.email}</p>
+                              <p className="text-sm text-[rgba(244,246,240,0.45)]">{invite.email}</p>
                             </div>
                           </TableCell>
                           <TableCell>
@@ -533,10 +533,10 @@ export default function TeamManagement({ user }) {
                               {status}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-sm text-gray-500">
+                          <TableCell className="text-sm text-[rgba(244,246,240,0.45)]">
                             {new Date(invite.invited_at).toLocaleDateString()}
                           </TableCell>
-                          <TableCell className="text-sm text-gray-500">
+                          <TableCell className="text-sm text-[rgba(244,246,240,0.45)]">
                             {new Date(invite.expires_at).toLocaleDateString()}
                           </TableCell>
                           <TableCell className="text-right">

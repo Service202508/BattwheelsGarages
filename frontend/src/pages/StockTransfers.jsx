@@ -265,7 +265,7 @@ export default function StockTransfers() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Stock Transfers</h1>
-          <p className="text-gray-500 text-sm mt-1">Transfer inventory between warehouses</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Transfer inventory between warehouses</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={fetchData} disabled={loading}>
@@ -330,7 +330,7 @@ export default function StockTransfers() {
                 {newTransfer.source_warehouse_id && newTransfer.destination_warehouse_id && (
                   <div className="flex items-center justify-center gap-4 py-2">
                     <div className="flex items-center gap-2 px-3 py-2 bg-[rgba(255,255,255,0.05)] rounded-lg">
-                      <Warehouse className="h-4 w-4 text-gray-600" />
+                      <Warehouse className="h-4 w-4 text-[rgba(244,246,240,0.35)]" />
                       <span className="text-sm font-medium">
                         {warehouses.find(w => w.warehouse_id === newTransfer.source_warehouse_id)?.name}
                       </span>
@@ -391,7 +391,7 @@ export default function StockTransfers() {
                               <TableRow key={idx}>
                                 <TableCell>
                                   <div className="font-medium">{item.item_name}</div>
-                                  <div className="text-xs text-gray-500">{item.sku}</div>
+                                  <div className="text-xs text-[rgba(244,246,240,0.45)]">{item.sku}</div>
                                 </TableCell>
                                 <TableCell className="text-right">{item.quantity}</TableCell>
                                 <TableCell>
@@ -446,10 +446,10 @@ export default function StockTransfers() {
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-[rgba(255,255,255,0.05)] rounded-lg">
-                  <Package className="h-5 w-5 text-gray-600" />
+                  <Package className="h-5 w-5 text-[rgba(244,246,240,0.35)]" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Total Transfers</p>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Total Transfers</p>
                   <p className="text-xl font-bold">{stats.total_transfers || 0}</p>
                 </div>
               </div>
@@ -462,7 +462,7 @@ export default function StockTransfers() {
                   <Clock className="h-5 w-5 text-[#EAB308]" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Pending</p>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Pending</p>
                   <p className="text-xl font-bold">{stats.by_status?.draft || 0}</p>
                 </div>
               </div>
@@ -475,7 +475,7 @@ export default function StockTransfers() {
                   <Truck className="h-5 w-5 text-[#3B9EFF]" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">In Transit</p>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)]">In Transit</p>
                   <p className="text-xl font-bold">{stats.by_status?.in_transit || 0}</p>
                 </div>
               </div>
@@ -488,7 +488,7 @@ export default function StockTransfers() {
                   <CheckCircle2 className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Received</p>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Received</p>
                   <p className="text-xl font-bold">{stats.by_status?.received || 0}</p>
                 </div>
               </div>
@@ -508,7 +508,7 @@ export default function StockTransfers() {
           </TabsList>
         </Tabs>
         <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
           <Input 
             placeholder="Search transfers..." 
             value={searchQuery}
@@ -526,7 +526,7 @@ export default function StockTransfers() {
               <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
             </div>
           ) : filteredTransfers.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">
               <ArrowLeftRight className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
               <p>No transfers found</p>
               <p className="text-sm">Create a new transfer to move stock between warehouses</p>
@@ -555,13 +555,13 @@ export default function StockTransfers() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Building2 className="h-4 w-4 text-gray-400" />
+                          <Building2 className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
                           {transfer.source_warehouse_name}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Building2 className="h-4 w-4 text-gray-400" />
+                          <Building2 className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
                           {transfer.destination_warehouse_name}
                         </div>
                       </TableCell>
@@ -635,15 +635,15 @@ export default function StockTransfers() {
               
               <div className="flex items-center justify-center gap-4 py-4 bg-[#111820] rounded-lg">
                 <div className="text-center">
-                  <Building2 className="h-6 w-6 mx-auto text-gray-500 mb-1" />
+                  <Building2 className="h-6 w-6 mx-auto text-[rgba(244,246,240,0.45)] mb-1" />
                   <p className="text-sm font-medium">{selectedTransfer.source_warehouse_name}</p>
-                  <p className="text-xs text-gray-500">Source</p>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Source</p>
                 </div>
                 <ArrowRight className="h-6 w-6 text-[#C8FF00]" />
                 <div className="text-center">
                   <Building2 className="h-6 w-6 mx-auto text-[#C8FF00] mb-1" />
                   <p className="text-sm font-medium">{selectedTransfer.destination_warehouse_name}</p>
-                  <p className="text-xs text-gray-500">Destination</p>
+                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Destination</p>
                 </div>
               </div>
 
@@ -654,7 +654,7 @@ export default function StockTransfers() {
                     <div key={idx} className="p-3 flex justify-between">
                       <div>
                         <p className="font-medium">{item.item_name}</p>
-                        <p className="text-xs text-gray-500">{item.sku}</p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.sku}</p>
                       </div>
                       <Badge variant="outline">{item.quantity} units</Badge>
                     </div>
@@ -665,7 +665,7 @@ export default function StockTransfers() {
               {selectedTransfer.notes && (
                 <div>
                   <h4 className="font-medium mb-1">Notes</h4>
-                  <p className="text-sm text-gray-600">{selectedTransfer.notes}</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.35)]">{selectedTransfer.notes}</p>
                 </div>
               )}
 

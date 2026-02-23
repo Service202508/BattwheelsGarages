@@ -138,7 +138,7 @@ export default function Expenses() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Expenses</h1>
-          <p className="text-gray-500 text-sm mt-1">{total} expense records</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">{total} expense records</p>
         </div>
         <Dialog 
           open={showAddDialog} 
@@ -257,7 +257,7 @@ export default function Expenses() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Total Expenses</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Total Expenses</p>
                 <p className="text-2xl font-bold text-red-600">₹{expenseTotal.toLocaleString('en-IN')}</p>
               </div>
               <TrendingDown className="h-8 w-8 text-red-500" />
@@ -268,7 +268,7 @@ export default function Expenses() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Records</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Records</p>
                 <p className="text-2xl font-bold text-[#F4F6F0]">{total}</p>
               </div>
               <Receipt className="h-8 w-8 text-blue-500" />
@@ -279,7 +279,7 @@ export default function Expenses() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Categories</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Categories</p>
                 <p className="text-2xl font-bold text-[#F4F6F0]">{Object.keys(expensesByCategory).length}</p>
               </div>
               <Wallet className="h-8 w-8 text-purple-500" />
@@ -290,7 +290,7 @@ export default function Expenses() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Avg per Record</p>
+                <p className="text-sm text-[rgba(244,246,240,0.45)]">Avg per Record</p>
                 <p className="text-2xl font-bold text-[#F4F6F0]">₹{total > 0 ? Math.round(expenseTotal / total).toLocaleString('en-IN') : 0}</p>
               </div>
               <IndianRupee className="h-8 w-8 text-green-500" />
@@ -306,9 +306,9 @@ export default function Expenses() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {Object.entries(expensesByCategory).slice(0, 8).map(([cat, data]) => (
               <div key={cat} className="p-3 bg-[#111820] rounded-lg">
-                <p className="text-xs text-gray-500 truncate">{cat}</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)] truncate">{cat}</p>
                 <p className="font-semibold text-red-600">₹{data.total.toLocaleString('en-IN')}</p>
-                <p className="text-xs text-gray-400">{data.count} records</p>
+                <p className="text-xs text-[rgba(244,246,240,0.45)]">{data.count} records</p>
               </div>
             ))}
           </div>
@@ -317,14 +317,14 @@ export default function Expenses() {
 
       {/* Search */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
         <Input placeholder="Search by category..." value={search}
           onChange={(e) => setSearch(e.target.value)} className="pl-10" />
       </div>
 
       {/* Expense List */}
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
-        expenses.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No expenses found</CardContent></Card> :
+      {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
+        expenses.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No expenses found</CardContent></Card> :
         <div className="space-y-3">
           {expenses.map(exp => (
             <Card key={exp.expense_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
@@ -335,12 +335,12 @@ export default function Expenses() {
                       <h3 className="font-semibold">{exp.expense_number}</h3>
                       <Badge variant="outline" className="text-xs">{exp.expense_account}</Badge>
                     </div>
-                    <div className="flex gap-4 text-sm text-gray-500">
+                    <div className="flex gap-4 text-sm text-[rgba(244,246,240,0.45)]">
                       <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{exp.expense_date}</span>
                       {exp.vendor_name && <span className="flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{exp.vendor_name}</span>}
                       <span className="flex items-center gap-1"><CreditCard className="h-3.5 w-3.5" />{exp.paid_through}</span>
                     </div>
-                    {exp.description && <p className="text-xs text-gray-400 mt-1">{exp.description}</p>}
+                    {exp.description && <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">{exp.description}</p>}
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-lg text-red-600">₹{exp.amount?.toLocaleString('en-IN')}</p>

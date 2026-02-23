@@ -87,7 +87,7 @@ export default function CustomerAMC({ user }) {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-[#F4F6F0]">AMC Plans</h1>
-        <p className="text-gray-600">Manage your Annual Maintenance Contracts</p>
+        <p className="text-[rgba(244,246,240,0.35)]">Manage your Annual Maintenance Contracts</p>
       </div>
 
       {/* Active Subscriptions */}
@@ -123,9 +123,9 @@ export default function CustomerAMC({ user }) {
                   {/* Validity & Usage */}
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <p className="text-sm text-gray-500 mb-1">Validity Period</p>
+                      <p className="text-sm text-[rgba(244,246,240,0.45)] mb-1">Validity Period</p>
                       <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-gray-400" />
+                        <Calendar className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
                         <span className="font-medium">
                           {new Date(sub.start_date).toLocaleDateString()} - {new Date(sub.end_date).toLocaleDateString()}
                         </span>
@@ -139,7 +139,7 @@ export default function CustomerAMC({ user }) {
                     </div>
                     
                     <div>
-                      <p className="text-sm text-gray-500 mb-1">Service Usage</p>
+                      <p className="text-sm text-[rgba(244,246,240,0.45)] mb-1">Service Usage</p>
                       <div className="flex items-center gap-3">
                         <Progress value={usagePercent} className="flex-1 h-2" />
                         <span className="font-medium text-sm whitespace-nowrap">
@@ -200,7 +200,7 @@ export default function CustomerAMC({ user }) {
           <Card>
             <CardContent className="py-8 text-center">
               <Shield className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
-              <p className="text-gray-600">No plans available at the moment</p>
+              <p className="text-[rgba(244,246,240,0.35)]">No plans available at the moment</p>
             </CardContent>
           </Card>
         ) : (
@@ -230,7 +230,7 @@ export default function CustomerAMC({ user }) {
                     <p className="text-4xl font-bold text-[#F4F6F0]">
                       ₹{plan.price.toLocaleString()}
                     </p>
-                    <p className="text-gray-500">for {plan.duration_months} months</p>
+                    <p className="text-[rgba(244,246,240,0.45)]">for {plan.duration_months} months</p>
                   </div>
 
                   <ul className="space-y-3 mb-6">
@@ -292,15 +292,15 @@ export default function CustomerAMC({ user }) {
                 <h4 className="font-semibold mb-2">Plan Summary</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Plan</span>
+                    <span className="text-[rgba(244,246,240,0.35)]">Plan</span>
                     <span className="font-medium">{selectedPlan.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Duration</span>
+                    <span className="text-[rgba(244,246,240,0.35)]">Duration</span>
                     <span className="font-medium">{selectedPlan.duration_months} months</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Services Included</span>
+                    <span className="text-[rgba(244,246,240,0.35)]">Services Included</span>
                     <span className="font-medium">{selectedPlan.max_service_visits}</span>
                   </div>
                   <div className="flex justify-between border-t pt-2 mt-2">

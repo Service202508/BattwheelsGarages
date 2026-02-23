@@ -170,7 +170,7 @@ const EmptyState = React.forwardRef(({
   const variantStyles = {
     default: {
       iconBg: "bg-[rgba(255,255,255,0.05)]",
-      iconColor: "text-gray-400"
+      iconColor: "text-[rgba(244,246,240,0.45)]"
     },
     success: {
       iconBg: "bg-green-100",
@@ -202,7 +202,7 @@ const EmptyState = React.forwardRef(({
       <h3 className="text-base sm:text-lg font-semibold text-[#F4F6F0] mb-1 text-center">
         {title}
       </h3>
-      <p className="text-sm text-gray-500 text-center max-w-sm mb-6">
+      <p className="text-sm text-[rgba(244,246,240,0.45)] text-center max-w-sm mb-6">
         {description}
       </p>
       {actionLabel && onAction && (

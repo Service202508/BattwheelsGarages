@@ -296,7 +296,7 @@ export default function AMCManagement({ user }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Annual Maintenance Contracts (AMC)</h1>
-          <p className="text-gray-600">Manage subscription plans from battwheelsgarages.in</p>
+          <p className="text-[rgba(244,246,240,0.35)]">Manage subscription plans from battwheelsgarages.in</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setShowSeedDialog(true)}>
@@ -316,42 +316,42 @@ export default function AMCManagement({ user }) {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <Bike className="h-5 w-5 text-blue-500" />
-              <span className="text-gray-600">2-Wheeler AMCs</span>
+              <span className="text-[rgba(244,246,240,0.35)]">2-Wheeler AMCs</span>
             </div>
             <p className="text-3xl font-bold mt-2">{twoWheelerCount}</p>
-            <p className="text-xs text-gray-500">Ather, Ola, TVS, Hero</p>
+            <p className="text-xs text-[rgba(244,246,240,0.45)]">Ather, Ola, TVS, Hero</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <Truck className="h-5 w-5 text-orange-500" />
-              <span className="text-gray-600">3-Wheeler AMCs</span>
+              <span className="text-[rgba(244,246,240,0.35)]">3-Wheeler AMCs</span>
             </div>
             <p className="text-3xl font-bold mt-2">{threeWheelerCount}</p>
-            <p className="text-xs text-gray-500">E-Rickshaws, Cargo</p>
+            <p className="text-xs text-[rgba(244,246,240,0.45)]">E-Rickshaws, Cargo</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <Car className="h-5 w-5 text-purple-500" />
-              <span className="text-gray-600">4-Wheeler AMCs</span>
+              <span className="text-[rgba(244,246,240,0.35)]">4-Wheeler AMCs</span>
             </div>
             <p className="text-3xl font-bold mt-2">{fourWheelerCount}</p>
-            <p className="text-xs text-gray-500">Tata, MG, Hyundai</p>
+            <p className="text-xs text-[rgba(244,246,240,0.45)]">Tata, MG, Hyundai</p>
           </CardContent>
         </Card>
         <Card className="bg-[rgba(200,255,0,0.08)] border-[rgba(200,255,0,0.20)]">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <IndianRupee className="h-5 w-5 text-[#C8FF00] text-600" />
-              <span className="text-gray-600">Total Revenue</span>
+              <span className="text-[rgba(244,246,240,0.35)]">Total Revenue</span>
             </div>
             <p className="text-3xl font-bold mt-2 text-[#C8FF00] text-700">
               ₹{(analytics?.total_revenue || 0).toLocaleString()}
             </p>
-            <p className="text-xs text-gray-500">{analytics?.total_active || 0} active subscriptions</p>
+            <p className="text-xs text-[rgba(244,246,240,0.45)]">{analytics?.total_active || 0} active subscriptions</p>
           </CardContent>
         </Card>
       </div>
@@ -369,7 +369,7 @@ export default function AMCManagement({ user }) {
           {/* Filters */}
           <div className="flex gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
               <Input
                 placeholder="Search by customer, vehicle, or plan..."
                 value={searchTerm}
@@ -400,7 +400,7 @@ export default function AMCManagement({ user }) {
             </CardHeader>
             <CardContent>
               {filteredSubscriptions.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-[rgba(244,246,240,0.45)]">
                   <Shield className="h-12 w-12 mx-auto mb-3 text-[rgba(244,246,240,0.20)]" />
                   <p>No AMCs found.</p>
                 </div>
@@ -482,7 +482,7 @@ export default function AMCManagement({ user }) {
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                       vehicleCategory === cat 
                         ? "bg-[#111820] text-[#F4F6F0] shadow-sm" 
-                        : "text-gray-600 hover:text-[#F4F6F0]"
+                        : "text-[rgba(244,246,240,0.35)] hover:text-[#F4F6F0]"
                     }`}
                   >
                     {cat === "2W" && <Bike className="h-4 w-4 inline mr-1" />}
@@ -499,7 +499,7 @@ export default function AMCManagement({ user }) {
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     billingFrequency === "monthly" 
                       ? "bg-[#111820] text-[#F4F6F0] shadow-sm" 
-                      : "text-gray-600 hover:text-[#F4F6F0]"
+                      : "text-[rgba(244,246,240,0.35)] hover:text-[#F4F6F0]"
                   }`}
                 >
                   Monthly
@@ -530,7 +530,7 @@ export default function AMCManagement({ user }) {
               <CardContent className="py-12 text-center">
                 <Shield className="h-16 w-16 mx-auto mb-4 text-[rgba(244,246,240,0.20)]" />
                 <h3 className="text-lg font-semibold text-[#F4F6F0] mb-2">No Plans Found</h3>
-                <p className="text-gray-600 mb-4">
+                <p className="text-[rgba(244,246,240,0.35)] mb-4">
                   Import official Battwheels plans to get started.
                 </p>
                 <Button onClick={() => setShowSeedDialog(true)}>
@@ -563,10 +563,10 @@ export default function AMCManagement({ user }) {
                     {/* Pricing */}
                     <div className="text-center">
                       <div className="flex items-baseline justify-center gap-1">
-                        <span className="text-sm text-gray-500">₹</span>
+                        <span className="text-sm text-[rgba(244,246,240,0.45)]">₹</span>
                         <span className="text-4xl font-bold">{plan.price.toLocaleString()}</span>
                       </div>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-[rgba(244,246,240,0.45)]">
                         /{billingFrequency === "monthly" ? "month" : "year"}/vehicle
                       </p>
                       {billingFrequency === "monthly" && plan.annual_price && (
@@ -631,7 +631,7 @@ export default function AMCManagement({ user }) {
                     
                     {/* Stats */}
                     <div className="pt-3 border-t">
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-[rgba(244,246,240,0.45)]">
                         {plan.active_subscriptions || 0} active subscriptions
                       </p>
                     </div>
@@ -722,7 +722,7 @@ export default function AMCManagement({ user }) {
               </p>
             </div>
             
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-[rgba(244,246,240,0.35)]">
               <Zap className="h-4 w-4 text-[#C8FF00] text-500" />
               <span>Source: battwheelsgarages.in/plans</span>
             </div>

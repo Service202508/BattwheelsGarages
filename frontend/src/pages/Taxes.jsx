@@ -91,7 +91,7 @@ export default function Taxes() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#F4F6F0]">Taxes</h1>
-          <p className="text-gray-500 text-sm mt-1">Configure tax rates & groups</p>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">Configure tax rates & groups</p>
         </div>
         <div className="flex gap-2">
           <Dialog open={showGroupDialog} onOpenChange={setShowGroupDialog}>
@@ -189,8 +189,8 @@ export default function Taxes() {
         </TabsList>
 
         <TabsContent value="taxes" className="mt-6">
-          {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
-            taxes.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No taxes configured</CardContent></Card> :
+          {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
+            taxes.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No taxes configured</CardContent></Card> :
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {taxes.map(tax => (
                 <Card key={tax.tax_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
@@ -202,7 +202,7 @@ export default function Taxes() {
                         </div>
                         <div>
                           <h3 className="font-semibold">{tax.tax_name}</h3>
-                          <p className="text-sm text-gray-500">{tax.tax_type}</p>
+                          <p className="text-sm text-[rgba(244,246,240,0.45)]">{tax.tax_type}</p>
                         </div>
                       </div>
                       <div className="text-right">
@@ -210,7 +210,7 @@ export default function Taxes() {
                         {tax.is_default && <Badge className="bg-blue-100 text-[#3B9EFF]">Default</Badge>}
                       </div>
                     </div>
-                    {tax.description && <p className="text-sm text-gray-500 mt-3">{tax.description}</p>}
+                    {tax.description && <p className="text-sm text-[rgba(244,246,240,0.45)] mt-3">{tax.description}</p>}
                   </CardContent>
                 </Card>
               ))}
@@ -219,8 +219,8 @@ export default function Taxes() {
         </TabsContent>
 
         <TabsContent value="groups" className="mt-6">
-          {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
-            taxGroups.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No tax groups configured</CardContent></Card> :
+          {loading ? <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading...</div> :
+            taxGroups.length === 0 ? <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No tax groups configured</CardContent></Card> :
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {taxGroups.map(group => (
                 <Card key={group.tax_group_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
@@ -232,7 +232,7 @@ export default function Taxes() {
                         </div>
                         <div>
                           <h3 className="font-semibold">{group.group_name}</h3>
-                          {group.description && <p className="text-sm text-gray-500">{group.description}</p>}
+                          {group.description && <p className="text-sm text-[rgba(244,246,240,0.45)]">{group.description}</p>}
                         </div>
                       </div>
                       <p className="text-2xl font-bold text-[#C8FF00]">{group.combined_rate}%</p>
