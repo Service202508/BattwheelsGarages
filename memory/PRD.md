@@ -12,6 +12,50 @@
 
 ## Session 105 Updates (February 2026)
 
+### P1: TDS Calculation Engine in Payroll ✅ (BACKEND COMPLETE)
+**Status:** ✅ Steps 1-3, 5 Backend Complete
+
+Implemented comprehensive TDS (Tax Deducted at Source) calculation engine:
+
+**Backend Implementation:**
+- `/backend/services/tds_service.py` - Core TDS engine (700+ lines)
+  - `validate_pan()` - PAN format validation (AAAAA0000A)
+  - `calculate_hra_exemption()` - HRA exemption (metro/non-metro)
+  - `calculate_chapter_via_deductions()` - 80C, 80D, 80CCD, 80E, 80G, 80TTA
+  - `TDSCalculator.calculate_annual_tax()` - Full annual tax calculation
+  - `TDSCalculator.calculate_monthly_tds()` - Monthly TDS with YTD adjustment
+  - `Form16Generator.generate_form16_data()` - Form 16 Part A & B data
+  - `generate_payroll_journal_entries()` - Double-entry for payroll
+
+**Tax Slabs Implemented (FY 2024-25):**
+- **New Regime:**
+  - 0-3L: NIL, 3-7L: 5%, 7-10L: 10%, 10-12L: 15%, 12-15L: 20%, >15L: 30%
+  - Rebate u/s 87A if income ≤ ₹7,00,000
+- **Old Regime:**
+  - 0-2.5L: NIL, 2.5-5L: 5%, 5-10L: 20%, >10L: 30%
+  - Rebate u/s 87A if income ≤ ₹5,00,000
+- 4% Health & Education Cess on tax
+- Surcharge for high earners (50L-1Cr: 10%, etc.)
+
+**API Endpoints:**
+- `PUT /api/hr/employees/{id}/tax-config` - Update PAN, regime, declarations
+- `GET /api/hr/employees/{id}/tax-config` - Get tax configuration
+- `GET /api/hr/tds/calculate/{id}` - Calculate TDS for employee
+- `GET /api/hr/payroll/tds-summary` - TDS summary with due date alerts
+- `POST /api/hr/tds/challan` - Record TDS challan deposit
+- `GET /api/hr/tds/challans` - List TDS challans
+- `GET /api/hr/payroll/form16/{id}/{year}` - Get Form 16 data
+
+**Verified:**
+- PAN validation working (rejects invalid format)
+- TDS calculation correct: ₹12L CTC → ₹75,400 annual tax
+- Monthly TDS with remaining months adjustment working
+- TDS Summary endpoint showing per-employee breakdown
+
+**Pending:** Step 4 Frontend UI (TDS Summary section in Payroll UI)
+
+---
+
 ### GST E-Invoice IRN Integration ✅ (P0 COMPLETE)
 **Status:** ✅ ALL STEPS COMPLETE (Steps 1-5)
 
