@@ -130,23 +130,32 @@ const OrganizationSwitcher = ({ onSwitch }) => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg border border-[rgba(255,255,255,0.07)] border-700 transition"
+        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 hover:bg-slate-700/50 rounded-lg border border-[rgba(255,255,255,0.07)] transition"
         data-testid="org-switcher-btn"
       >
-        <div className="w-8 h-8 bg-[rgba(200,255,0,0.08)]0/20 rounded-lg flex items-center justify-center">
+        <div className="w-8 h-8 bg-[rgba(200,255,0,0.08)] rounded-lg flex items-center justify-center">
           {currentOrg?.logo_url ? (
             <img src={currentOrg.logo_url} alt="" className="w-6 h-6 rounded" />
           ) : (
-            <Building2 className="w-4 h-4 text-[#C8FF00] text-400" />
+            <Building2 className="w-4 h-4 text-[#C8FF00]" />
           )}
         </div>
         <div className="hidden sm:block text-left">
-          <p className="text-sm font-medium text-white truncate max-w-[150px]">
+          <p className="text-sm font-medium text-white truncate max-w-[150px]" data-testid="org-switcher-name">
             {currentOrg?.name || 'Select Organization'}
           </p>
-          <p className="text-xs text-slate-400 capitalize">
-            {currentOrg?.plan_type || 'Free'}
-          </p>
+          {(() => {
+            const badge = getPlanBadge(currentOrg?.plan_type);
+            return (
+              <span
+                className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+                style={{ background: badge.bg, color: badge.text }}
+                data-testid="org-switcher-plan-badge"
+              >
+                {badge.label}
+              </span>
+            );
+          })()}
         </div>
         <ChevronDown className={`w-4 h-4 text-slate-400 transition ${isOpen ? 'rotate-180' : ''}`} />
       </button>
