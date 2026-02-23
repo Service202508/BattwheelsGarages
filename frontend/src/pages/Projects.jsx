@@ -1,271 +1,1150 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, FolderKanban, Clock, User, Calendar, Play, Pause, CheckCircle } from "lucide-react";
+import { 
+  Plus, FolderKanban, Clock, User, Calendar, DollarSign, 
+  TrendingUp, FileText, CheckCircle2, AlertCircle, ArrowRight,
+  Timer, Receipt, BarChart3, GripVertical, MoreHorizontal,
+  ChevronRight, Download
+} from "lucide-react";
 import { API } from "@/App";
+import { useNavigate, useParams } from "react-router-dom";
 
-const statusColors = {
-  active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  on_hold: "bg-yellow-100 text-[#EAB308]",
-  completed: "bg-blue-100 text-[#3B9EFF]",
-  cancelled: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"
+const statusConfig = {
+  PLANNING: { label: "Planning", bg: "bg-[rgba(59,158,255,0.10)]", text: "text-[#3B9EFF]", border: "border-[rgba(59,158,255,0.25)]" },
+  ACTIVE: { label: "Active", bg: "bg-[rgba(200,255,0,0.10)]", text: "text-[#C8FF00]", border: "border-[rgba(200,255,0,0.25)]" },
+  ON_HOLD: { label: "On Hold", bg: "bg-[rgba(234,179,8,0.10)]", text: "text-[#EAB308]", border: "border-[rgba(234,179,8,0.25)]" },
+  COMPLETED: { label: "Completed", bg: "bg-[rgba(26,255,228,0.10)]", text: "text-[#1AFFE4]", border: "border-[rgba(26,255,228,0.25)]" },
+  CANCELLED: { label: "Cancelled", bg: "bg-[rgba(255,59,47,0.10)]", text: "text-[#FF3B2F]", border: "border-[rgba(255,59,47,0.25)]" }
 };
 
+const taskStatusConfig = {
+  TODO: { label: "To Do", bg: "bg-[rgba(244,246,240,0.10)]", text: "text-[rgba(244,246,240,0.65)]" },
+  IN_PROGRESS: { label: "In Progress", bg: "bg-[rgba(59,158,255,0.10)]", text: "text-[#3B9EFF]" },
+  REVIEW: { label: "Review", bg: "bg-[rgba(234,179,8,0.10)]", text: "text-[#EAB308]" },
+  DONE: { label: "Done", bg: "bg-[rgba(200,255,0,0.10)]", text: "text-[#C8FF00]" }
+};
+
+const priorityConfig = {
+  LOW: { label: "Low", text: "text-[rgba(244,246,240,0.45)]" },
+  MEDIUM: { label: "Medium", text: "text-[#3B9EFF]" },
+  HIGH: { label: "High", text: "text-[#FF8C00]" },
+  URGENT: { label: "Urgent", text: "text-[#FF3B2F]" }
+};
+
+const expenseStatusConfig = {
+  PENDING: { label: "Pending", bg: "bg-[rgba(234,179,8,0.10)]", text: "text-[#EAB308]" },
+  APPROVED: { label: "Approved", bg: "bg-[rgba(200,255,0,0.10)]", text: "text-[#C8FF00]" },
+  REJECTED: { label: "Rejected", bg: "bg-[rgba(255,59,47,0.10)]", text: "text-[#FF3B2F]" },
+  PAID: { label: "Paid", bg: "bg-[rgba(244,246,240,0.10)]", text: "text-[rgba(244,246,240,0.45)]" }
+};
+
+// Shared state and headers
+const getHeaders = () => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${localStorage.getItem("token")}`
+});
+
+// ====================== PROJECT LIST PAGE ======================
 export default function Projects() {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [customers, setCustomers] = useState([]);
-  const [timeEntries, setTimeEntries] = useState([]);
+  const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [showTimeDialog, setShowTimeDialog] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
-
+  
   const [newProject, setNewProject] = useState({
-    project_name: "", customer_id: "", customer_name: "", description: "",
-    billing_type: "fixed_cost", rate: 0, budget_type: "no_budget", budget_hours: 0
+    name: "", description: "", client_id: "", status: "PLANNING",
+    start_date: new Date().toISOString().split("T")[0], end_date: "",
+    budget_amount: 0, billing_type: "HOURLY", hourly_rate: 2000
   });
 
-  const [newTimeEntry, setNewTimeEntry] = useState({
-    project_id: "", project_name: "", task_name: "", hours: 0, is_billable: true, description: "", rate: 0
-  });
+  useEffect(() => { fetchProjects(); fetchCustomers(); }, []);
 
-  useEffect(() => { fetchData(); }, []);
-
-  const fetchData = async () => {
+  const fetchProjects = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const headers = { Authorization: `Bearer ${token}` };
-      const [projRes, custRes, timeRes] = await Promise.all([
-        fetch(`${API}/zoho/projects`, { headers }),
-        fetch(`${API}/zoho/contacts?contact_type=customer&per_page=200`, { headers }),
-        fetch(`${API}/zoho/time-entries`, { headers })
-      ]);
-      const [projData, custData, timeData] = await Promise.all([projRes.json(), custRes.json(), timeRes.json()]);
-      setProjects(projData.projects || []);
-      setCustomers(custData.contacts || []);
-      setTimeEntries(timeData.time_entries || []);
-    } catch (error) { console.error("Failed to fetch:", error); }
-    finally { setLoading(false); }
+      const res = await fetch(`${API}/projects`, { headers: getHeaders() });
+      const data = await res.json();
+      setProjects(data.projects || []);
+      
+      // Fetch stats
+      const statsRes = await fetch(`${API}/projects/stats/dashboard`, { headers: getHeaders() });
+      const statsData = await statsRes.json();
+      setStats(statsData.stats || {});
+    } catch (err) {
+      console.error("Failed to fetch projects:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    try {
+      const res = await fetch(`${API}/contacts?type=customer`, { headers: getHeaders() });
+      const data = await res.json();
+      setCustomers(data.contacts || []);
+    } catch (err) {
+      console.error("Failed to fetch customers:", err);
+    }
   };
 
   const handleCreateProject = async () => {
-    if (!newProject.project_name) return toast.error("Enter project name");
-    if (!newProject.customer_id) return toast.error("Select a customer");
+    if (!newProject.name) return toast.error("Enter project name");
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/projects`, {
+      const res = await fetch(`${API}/projects`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: getHeaders(),
         body: JSON.stringify(newProject)
       });
       if (res.ok) {
         toast.success("Project created");
         setShowCreateDialog(false);
-        setNewProject({ project_name: "", customer_id: "", customer_name: "", description: "", billing_type: "fixed_cost", rate: 0, budget_type: "no_budget", budget_hours: 0 });
-        fetchData();
+        setNewProject({ name: "", description: "", client_id: "", status: "PLANNING", start_date: new Date().toISOString().split("T")[0], end_date: "", budget_amount: 0, billing_type: "HOURLY", hourly_rate: 2000 });
+        fetchProjects();
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || "Failed to create project");
       }
-    } catch { toast.error("Error creating project"); }
+    } catch (err) {
+      toast.error("Error creating project");
+    }
   };
 
-  const handleLogTime = async () => {
-    if (!newTimeEntry.project_id) return toast.error("Select a project");
-    if (newTimeEntry.hours <= 0) return toast.error("Enter hours");
+  // Calculate aggregate stats
+  const aggregateStats = useMemo(() => {
+    const active = projects.filter(p => p.status === "ACTIVE").length;
+    const totalBudget = projects.reduce((sum, p) => sum + (p.budget_amount || 0), 0);
+    return { active, totalBudget, ...stats };
+  }, [projects, stats]);
+
+  return (
+    <div className="space-y-6" data-testid="projects-page">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]" style={{ fontFamily: "'DM Serif Display', serif" }}>
+            Projects
+          </h1>
+          <p className="text-[rgba(244,246,240,0.45)] text-sm mt-1">
+            Track project delivery, time, expenses and billing
+          </p>
+        </div>
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogTrigger asChild>
+            <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="new-project-btn">
+              <Plus className="h-4 w-4 mr-2" /> New Project
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Create New Project</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <Label>Project Name *</Label>
+                <Input 
+                  value={newProject.name} 
+                  onChange={(e) => setNewProject({ ...newProject, name: e.target.value })} 
+                  placeholder="e.g., EV Charging Station Setup"
+                  data-testid="project-name-input"
+                />
+              </div>
+              <div>
+                <Label>Client</Label>
+                <Select onValueChange={(v) => setNewProject({ ...newProject, client_id: v })}>
+                  <SelectTrigger><SelectValue placeholder="Select client (optional)" /></SelectTrigger>
+                  <SelectContent>
+                    {customers.map(c => (
+                      <SelectItem key={c.contact_id} value={c.contact_id}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea 
+                  value={newProject.description} 
+                  onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} 
+                  placeholder="Project scope and deliverables..."
+                  rows={3}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Start Date</Label>
+                  <Input 
+                    type="date" 
+                    value={newProject.start_date} 
+                    onChange={(e) => setNewProject({ ...newProject, start_date: e.target.value })} 
+                  />
+                </div>
+                <div>
+                  <Label>End Date</Label>
+                  <Input 
+                    type="date" 
+                    value={newProject.end_date} 
+                    onChange={(e) => setNewProject({ ...newProject, end_date: e.target.value })} 
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Billing Type</Label>
+                  <Select value={newProject.billing_type} onValueChange={(v) => setNewProject({ ...newProject, billing_type: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="HOURLY">Hourly</SelectItem>
+                      <SelectItem value="FIXED">Fixed Cost</SelectItem>
+                      <SelectItem value="RETAINER">Retainer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Hourly Rate (₹)</Label>
+                  <Input 
+                    type="number" 
+                    value={newProject.hourly_rate} 
+                    onChange={(e) => setNewProject({ ...newProject, hourly_rate: parseFloat(e.target.value) || 0 })} 
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>Budget Amount (₹)</Label>
+                <Input 
+                  type="number" 
+                  value={newProject.budget_amount} 
+                  onChange={(e) => setNewProject({ ...newProject, budget_amount: parseFloat(e.target.value) || 0 })} 
+                  placeholder="0 for no budget"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
+              <Button onClick={handleCreateProject} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="create-project-submit">
+                Create Project
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Stats Strip */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+          <CardContent className="p-4">
+            <div className="text-xs text-[rgba(244,246,240,0.45)] mb-1">Active Projects</div>
+            <div className="text-2xl font-bold text-[#C8FF00]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              {aggregateStats.active_projects || 0}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+          <CardContent className="p-4">
+            <div className="text-xs text-[rgba(244,246,240,0.45)] mb-1">Total Budget</div>
+            <div className="text-2xl font-bold text-[#C8FF00]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              ₹{(aggregateStats.total_budget || 0).toLocaleString('en-IN')}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+          <CardContent className="p-4">
+            <div className="text-xs text-[rgba(244,246,240,0.45)] mb-1">Hours This Month</div>
+            <div className="text-2xl font-bold text-[#C8FF00]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              {stats.hours_this_month || 0}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+          <CardContent className="p-4">
+            <div className="text-xs text-[rgba(244,246,240,0.45)] mb-1">Revenue Billed</div>
+            <div className="text-2xl font-bold text-[#1AFFE4]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              ₹{(stats.revenue_billed || 0).toLocaleString('en-IN')}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+          <CardContent className="p-4">
+            <div className="text-xs text-[rgba(244,246,240,0.45)] mb-1">Pending Invoicing</div>
+            <div className="text-2xl font-bold text-[#FF8C00]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              ₹{(stats.pending_invoicing || 0).toLocaleString('en-IN')}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Project Cards Grid */}
+      {loading ? (
+        <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Loading projects...</div>
+      ) : projects.length === 0 ? (
+        <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+          <CardContent className="py-12 text-center">
+            <FolderKanban className="h-12 w-12 mx-auto mb-4 text-[rgba(244,246,240,0.25)]" />
+            <p className="text-[rgba(244,246,240,0.45)]">No projects yet. Create your first project!</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {projects.map(project => (
+            <ProjectCard key={project.project_id} project={project} onClick={() => navigate(`/projects/${project.project_id}`)} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ====================== PROJECT CARD COMPONENT ======================
+function ProjectCard({ project, onClick }) {
+  const status = statusConfig[project.status] || statusConfig.PLANNING;
+  const completion = project.completion_pct || 0;
+  const hasUnbilledHours = (project.unbilled_hours || 0) > 0;
+  
+  return (
+    <Card 
+      className="bg-[#111820] border border-[rgba(255,255,255,0.07)] hover:border-t-[#C8FF00] hover:border-t-2 transition-all cursor-pointer group"
+      onClick={onClick}
+      data-testid={`project-card-${project.project_id}`}
+    >
+      <CardContent className="p-4">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-[#F4F6F0] truncate" style={{ fontFamily: "'DM Serif Display', serif", fontSize: "18px" }}>
+              {project.name}
+            </h3>
+            <Badge className={`${status.bg} ${status.text} ${status.border} border mt-1`}>
+              {status.label}
+            </Badge>
+          </div>
+          <ChevronRight className="h-5 w-5 text-[rgba(244,246,240,0.25)] group-hover:text-[#C8FF00] transition-colors" />
+        </div>
+        
+        {/* Client */}
+        {project.client_name && (
+          <p className="text-xs text-[rgba(244,246,240,0.45)] mb-3">{project.client_name}</p>
+        )}
+        
+        {/* Progress Bar */}
+        <div className="mb-3">
+          <div className="flex justify-between text-xs mb-1">
+            <span className="text-[rgba(244,246,240,0.45)]">Completion</span>
+            <span className="text-[#F4F6F0]">{Math.round(completion)}%</span>
+          </div>
+          <div className="h-1.5 bg-[rgba(255,255,255,0.07)] rounded-full overflow-hidden">
+            <div 
+              className="h-full rounded-full" 
+              style={{ 
+                width: `${Math.min(completion, 100)}%`,
+                background: 'linear-gradient(90deg, #C8FF00, #1AFFE4)'
+              }}
+            />
+          </div>
+        </div>
+        
+        {/* Stats Row */}
+        <div className="flex items-center gap-4 text-xs text-[rgba(244,246,240,0.65)] mb-3">
+          <span>Budget: ₹{(project.budget_amount || 0).toLocaleString('en-IN')}</span>
+          <span>Hours: {project.total_hours || 0}</span>
+          <span>Tasks: {project.completed_tasks || 0}/{project.total_tasks || 0}</span>
+        </div>
+        
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-3 border-t border-[rgba(255,255,255,0.07)]">
+          <span className="text-xs text-[rgba(244,246,240,0.45)]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            {project.end_date || project.deadline || 'No deadline'}
+          </span>
+          {hasUnbilledHours && (
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="text-xs h-7 text-[rgba(244,246,240,0.65)] hover:text-[#C8FF00]"
+              onClick={(e) => { e.stopPropagation(); }}
+            >
+              Generate Invoice
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ====================== PROJECT DETAIL PAGE ======================
+export function ProjectDetail() {
+  const { projectId } = useParams();
+  const navigate = useNavigate();
+  const [project, setProject] = useState(null);
+  const [tasks, setTasks] = useState([]);
+  const [timeLogs, setTimeLogs] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+  const [profitability, setProfitability] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("overview");
+  
+  // Dialogs
+  const [showTaskDialog, setShowTaskDialog] = useState(false);
+  const [showTimeLogDialog, setShowTimeLogDialog] = useState(false);
+  const [showExpenseDialog, setShowExpenseDialog] = useState(false);
+  const [showInvoiceDialog, setShowInvoiceDialog] = useState(false);
+  
+  // Forms
+  const [newTask, setNewTask] = useState({ title: "", description: "", estimated_hours: 0, priority: "MEDIUM", due_date: "" });
+  const [newTimeLog, setNewTimeLog] = useState({ hours_logged: 0, description: "", task_id: "", log_date: new Date().toISOString().split("T")[0] });
+  const [newExpense, setNewExpense] = useState({ amount: 0, description: "", category: "general", expense_date: new Date().toISOString().split("T")[0] });
+  const [invoiceConfig, setInvoiceConfig] = useState({
+    billing_period_from: new Date(new Date().setDate(1)).toISOString().split("T")[0],
+    billing_period_to: new Date().toISOString().split("T")[0],
+    include_expenses: true,
+    line_item_grouping: "BY_TASK",
+    notes: ""
+  });
+
+  useEffect(() => {
+    if (projectId) fetchProjectData();
+  }, [projectId]);
+
+  const fetchProjectData = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/zoho/time-entries`, {
+      const [projRes, tasksRes, logsRes, expRes, profRes] = await Promise.all([
+        fetch(`${API}/projects/${projectId}`, { headers: getHeaders() }),
+        fetch(`${API}/projects/${projectId}/tasks`, { headers: getHeaders() }),
+        fetch(`${API}/projects/${projectId}/time-logs`, { headers: getHeaders() }),
+        fetch(`${API}/projects/${projectId}/expenses`, { headers: getHeaders() }),
+        fetch(`${API}/projects/${projectId}/profitability`, { headers: getHeaders() })
+      ]);
+      
+      const projData = await projRes.json();
+      const tasksData = await tasksRes.json();
+      const logsData = await logsRes.json();
+      const expData = await expRes.json();
+      const profData = await profRes.json();
+      
+      setProject(projData.project);
+      setTasks(tasksData.tasks || []);
+      setTimeLogs(logsData.time_logs || []);
+      setExpenses(expData.expenses || []);
+      setProfitability(profData.profitability);
+    } catch (err) {
+      console.error("Failed to fetch project data:", err);
+      toast.error("Failed to load project");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Task handlers
+  const handleCreateTask = async () => {
+    if (!newTask.title) return toast.error("Enter task title");
+    try {
+      const res = await fetch(`${API}/projects/${projectId}/tasks`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(newTimeEntry)
+        headers: getHeaders(),
+        body: JSON.stringify(newTask)
+      });
+      if (res.ok) {
+        toast.success("Task created");
+        setShowTaskDialog(false);
+        setNewTask({ title: "", description: "", estimated_hours: 0, priority: "MEDIUM", due_date: "" });
+        fetchProjectData();
+      }
+    } catch { toast.error("Error creating task"); }
+  };
+
+  const handleUpdateTaskStatus = async (taskId, status) => {
+    try {
+      await fetch(`${API}/projects/${projectId}/tasks/${taskId}`, {
+        method: "PUT",
+        headers: getHeaders(),
+        body: JSON.stringify({ status })
+      });
+      fetchProjectData();
+    } catch { toast.error("Error updating task"); }
+  };
+
+  // Time log handlers
+  const handleLogTime = async () => {
+    if (newTimeLog.hours_logged <= 0) return toast.error("Enter hours");
+    try {
+      const res = await fetch(`${API}/projects/${projectId}/time-log`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(newTimeLog)
       });
       if (res.ok) {
         toast.success("Time logged");
-        setShowTimeDialog(false);
-        setNewTimeEntry({ project_id: "", project_name: "", task_name: "", hours: 0, is_billable: true, description: "", rate: 0 });
-        fetchData();
+        setShowTimeLogDialog(false);
+        setNewTimeLog({ hours_logged: 0, description: "", task_id: "", log_date: new Date().toISOString().split("T")[0] });
+        fetchProjectData();
       }
     } catch { toast.error("Error logging time"); }
   };
 
-  const handleUpdateStatus = async (projectId, status) => {
+  // Expense handlers
+  const handleAddExpense = async () => {
+    if (newExpense.amount <= 0) return toast.error("Enter amount");
     try {
-      const token = localStorage.getItem("token");
-      await fetch(`${API}/zoho/projects/${projectId}/status/${status}`, {
-        method: "POST", headers: { Authorization: `Bearer ${token}` }
+      const res = await fetch(`${API}/projects/${projectId}/expenses`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(newExpense)
       });
-      toast.success(`Project marked as ${status}`);
-      fetchData();
-    } catch { toast.error("Error updating status"); }
+      if (res.ok) {
+        toast.success("Expense added");
+        setShowExpenseDialog(false);
+        setNewExpense({ amount: 0, description: "", category: "general", expense_date: new Date().toISOString().split("T")[0] });
+        fetchProjectData();
+      }
+    } catch { toast.error("Error adding expense"); }
   };
 
+  const handleApproveExpense = async (expenseId, approved) => {
+    try {
+      const res = await fetch(`${API}/projects/${projectId}/expenses/${expenseId}/approve`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify({ approved })
+      });
+      if (res.ok) {
+        toast.success(approved ? "Expense approved" : "Expense rejected");
+        fetchProjectData();
+      }
+    } catch { toast.error("Error updating expense"); }
+  };
+
+  // Invoice generation
+  const handleGenerateInvoice = async () => {
+    try {
+      const res = await fetch(`${API}/projects/${projectId}/invoice`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(invoiceConfig)
+      });
+      const data = await res.json();
+      if (res.ok && data.invoice_id) {
+        toast.success("Invoice created successfully");
+        setShowInvoiceDialog(false);
+        navigate(data.redirect_url || `/finance/invoices/${data.invoice_id}`);
+      } else {
+        toast.error(data.error || data.detail || "Failed to generate invoice");
+      }
+    } catch { toast.error("Error generating invoice"); }
+  };
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-64 text-[rgba(244,246,240,0.45)]">Loading project...</div>;
+  }
+
+  if (!project) {
+    return <div className="text-center py-12 text-[rgba(244,246,240,0.45)]">Project not found</div>;
+  }
+
+  const status = statusConfig[project.status] || statusConfig.PLANNING;
+  const uninvoicedLogs = timeLogs.filter(l => !l.invoiced);
+  const approvedExpenses = expenses.filter(e => e.status === "APPROVED" && !e.invoiced);
+
   return (
-    <div className="space-y-6" data-testid="projects-page">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-6" data-testid="project-detail-page">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#F4F6F0]">Projects</h1>
-          <p className="text-gray-500 text-sm mt-1">Track projects & time</p>
+          <div className="flex items-center gap-2 text-sm text-[rgba(244,246,240,0.45)] mb-2">
+            <span className="cursor-pointer hover:text-[#C8FF00]" onClick={() => navigate('/projects')}>Projects</span>
+            <ChevronRight className="h-4 w-4" />
+            <span>{project.name}</span>
+          </div>
+          <h1 className="text-2xl font-bold text-[#F4F6F0]" style={{ fontFamily: "'DM Serif Display', serif" }}>
+            {project.name}
+          </h1>
+          <div className="flex items-center gap-3 mt-2">
+            <Badge className={`${status.bg} ${status.text} ${status.border} border`}>{status.label}</Badge>
+            {project.client_name && <span className="text-sm text-[rgba(244,246,240,0.45)]">{project.client_name}</span>}
+          </div>
         </div>
         <div className="flex gap-2">
-          <Dialog open={showTimeDialog} onOpenChange={setShowTimeDialog}>
+          <Dialog open={showInvoiceDialog} onOpenChange={setShowInvoiceDialog}>
             <DialogTrigger asChild>
-              <Button variant="outline">
-                <Clock className="h-4 w-4 mr-2" /> Log Time
+              <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" disabled={uninvoicedLogs.length === 0 && approvedExpenses.length === 0}>
+                <Receipt className="h-4 w-4 mr-2" /> Generate Invoice
               </Button>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle>Log Time Entry</DialogTitle></DialogHeader>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Generate Invoice from Project</DialogTitle>
+              </DialogHeader>
               <div className="space-y-4 py-4">
-                <div>
-                  <Label>Project *</Label>
-                  <Select onValueChange={(v) => {
-                    const proj = projects.find(p => p.project_id === v);
-                    if (proj) setNewTimeEntry({ ...newTimeEntry, project_id: proj.project_id, project_name: proj.project_name, rate: proj.rate || 0 });
-                  }}>
-                    <SelectTrigger><SelectValue placeholder="Select project" /></SelectTrigger>
-                    <SelectContent>{projects.filter(p => p.status === "active").map(p => <SelectItem key={p.project_id} value={p.project_id}>{p.project_name}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Task</Label>
-                  <Input value={newTimeEntry.task_name} onChange={(e) => setNewTimeEntry({ ...newTimeEntry, task_name: e.target.value })} placeholder="e.g., Development" />
-                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Hours *</Label>
-                    <Input type="number" value={newTimeEntry.hours} onChange={(e) => setNewTimeEntry({ ...newTimeEntry, hours: parseFloat(e.target.value) })} step={0.25} min={0.25} />
+                    <Label>Period From</Label>
+                    <Input type="date" value={invoiceConfig.billing_period_from} onChange={(e) => setInvoiceConfig({...invoiceConfig, billing_period_from: e.target.value})} />
                   </div>
                   <div>
-                    <Label>Rate (per hour)</Label>
-                    <Input type="number" value={newTimeEntry.rate} onChange={(e) => setNewTimeEntry({ ...newTimeEntry, rate: parseFloat(e.target.value) })} />
+                    <Label>Period To</Label>
+                    <Input type="date" value={invoiceConfig.billing_period_to} onChange={(e) => setInvoiceConfig({...invoiceConfig, billing_period_to: e.target.value})} />
                   </div>
                 </div>
                 <div>
-                  <Label>Description</Label>
-                  <Textarea value={newTimeEntry.description} onChange={(e) => setNewTimeEntry({ ...newTimeEntry, description: e.target.value })} placeholder="Work done..." />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setShowTimeDialog(false)}>Cancel</Button>
-                <Button onClick={handleLogTime} className="bg-[#C8FF00] text-[#080C0F] font-bold">Log Time</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-            <DialogTrigger asChild>
-              <Button className="bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold" data-testid="create-project-btn">
-                <Plus className="h-4 w-4 mr-2" /> New Project
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle>Create Project</DialogTitle></DialogHeader>
-              <div className="space-y-4 py-4">
-                <div>
-                  <Label>Project Name *</Label>
-                  <Input value={newProject.project_name} onChange={(e) => setNewProject({ ...newProject, project_name: e.target.value })} placeholder="e.g., Website Redesign" />
-                </div>
-                <div>
-                  <Label>Customer *</Label>
-                  <Select onValueChange={(v) => {
-                    const cust = customers.find(c => c.contact_id === v);
-                    if (cust) setNewProject({ ...newProject, customer_id: cust.contact_id, customer_name: cust.contact_name });
-                  }}>
-                    <SelectTrigger><SelectValue placeholder="Select customer" /></SelectTrigger>
-                    <SelectContent>{customers.map(c => <SelectItem key={c.contact_id} value={c.contact_id}>{c.contact_name}</SelectItem>)}</SelectContent>
+                  <Label>Line Item Grouping</Label>
+                  <Select value={invoiceConfig.line_item_grouping} onValueChange={(v) => setInvoiceConfig({...invoiceConfig, line_item_grouping: v})}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="BY_TASK">By Task</SelectItem>
+                      <SelectItem value="BY_EMPLOYEE">By Employee</SelectItem>
+                      <SelectItem value="BY_DATE">By Date</SelectItem>
+                    </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label>Description</Label>
-                  <Textarea value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Billing Type</Label>
-                    <Select value={newProject.billing_type} onValueChange={(v) => setNewProject({ ...newProject, billing_type: v })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="fixed_cost">Fixed Cost</SelectItem>
-                        <SelectItem value="based_on_project_hours">Based on Hours</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>Hourly Rate</Label>
-                    <Input type="number" value={newProject.rate} onChange={(e) => setNewProject({ ...newProject, rate: parseFloat(e.target.value) })} />
-                  </div>
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    id="include-expenses" 
+                    checked={invoiceConfig.include_expenses}
+                    onChange={(e) => setInvoiceConfig({...invoiceConfig, include_expenses: e.target.checked})}
+                    className="rounded"
+                  />
+                  <Label htmlFor="include-expenses">Include approved expenses ({approvedExpenses.length} items)</Label>
                 </div>
                 <div>
-                  <Label>Budget Hours</Label>
-                  <Input type="number" value={newProject.budget_hours} onChange={(e) => setNewProject({ ...newProject, budget_hours: parseFloat(e.target.value) })} />
+                  <Label>Notes</Label>
+                  <Textarea 
+                    value={invoiceConfig.notes} 
+                    onChange={(e) => setInvoiceConfig({...invoiceConfig, notes: e.target.value})}
+                    placeholder="Additional notes for invoice..."
+                    rows={2}
+                  />
+                </div>
+                <div className="bg-[#141E27] p-3 rounded text-sm">
+                  <div className="flex justify-between mb-1">
+                    <span className="text-[rgba(244,246,240,0.45)]">Uninvoiced time logs:</span>
+                    <span>{uninvoicedLogs.length} entries ({uninvoicedLogs.reduce((s,l) => s + l.hours_logged, 0).toFixed(1)} hrs)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[rgba(244,246,240,0.45)]">Hourly rate:</span>
+                    <span>₹{project.hourly_rate?.toLocaleString('en-IN')}</span>
+                  </div>
                 </div>
               </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-                <Button onClick={handleCreateProject} className="bg-[#C8FF00] text-[#080C0F] font-bold">Create Project</Button>
-              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setShowInvoiceDialog(false)}>Cancel</Button>
+                <Button onClick={handleGenerateInvoice} className="bg-[#C8FF00] text-[#080C0F] font-bold">
+                  Generate Invoice
+                </Button>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
       </div>
 
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> :
-        projects.length === 0 ? <Card><CardContent className="py-12 text-center text-gray-500">No projects found</CardContent></Card> :
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {projects.map(project => {
-            const progress = project.budget_hours > 0 ? (project.total_hours / project.budget_hours) * 100 : 0;
-            return (
-              <Card key={project.project_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <FolderKanban className="h-5 w-5 text-[#C8FF00]" />
-                        <h3 className="font-semibold">{project.project_name}</h3>
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+          <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
+          <TabsTrigger value="tasks" data-testid="tab-tasks">Tasks</TabsTrigger>
+          <TabsTrigger value="time-logs" data-testid="tab-time-logs">Time Logs</TabsTrigger>
+          <TabsTrigger value="expenses" data-testid="tab-expenses">Expenses</TabsTrigger>
+          <TabsTrigger value="financials" data-testid="tab-financials">Financials</TabsTrigger>
+        </TabsList>
+
+        {/* OVERVIEW TAB */}
+        <TabsContent value="overview" className="mt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Project Details */}
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+              <CardHeader>
+                <CardTitle className="text-lg">Project Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-[rgba(244,246,240,0.45)]">Status</span>
+                    <div className="mt-1"><Badge className={`${status.bg} ${status.text}`}>{status.label}</Badge></div>
+                  </div>
+                  <div>
+                    <span className="text-[rgba(244,246,240,0.45)]">Billing Type</span>
+                    <div className="mt-1 font-medium">{project.billing_type}</div>
+                  </div>
+                  <div>
+                    <span className="text-[rgba(244,246,240,0.45)]">Start Date</span>
+                    <div className="mt-1 font-medium">{project.start_date || '-'}</div>
+                  </div>
+                  <div>
+                    <span className="text-[rgba(244,246,240,0.45)]">End Date</span>
+                    <div className="mt-1 font-medium">{project.end_date || '-'}</div>
+                  </div>
+                  <div>
+                    <span className="text-[rgba(244,246,240,0.45)]">Budget</span>
+                    <div className="mt-1 font-medium">₹{(project.budget_amount || 0).toLocaleString('en-IN')}</div>
+                  </div>
+                  <div>
+                    <span className="text-[rgba(244,246,240,0.45)]">Hourly Rate</span>
+                    <div className="mt-1 font-medium">₹{(project.hourly_rate || 0).toLocaleString('en-IN')}/hr</div>
+                  </div>
+                </div>
+                {project.description && (
+                  <div>
+                    <span className="text-sm text-[rgba(244,246,240,0.45)]">Description</span>
+                    <p className="mt-1 text-sm">{project.description}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Profitability Summary */}
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-[#C8FF00]" /> Profitability Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {profitability ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-[#141E27] p-3 rounded">
+                        <div className="text-xs text-[rgba(244,246,240,0.45)]">Budget</div>
+                        <div className="text-xl font-bold">₹{(profitability.budget || 0).toLocaleString('en-IN')}</div>
                       </div>
-                      <Badge className={statusColors[project.status]}>{project.status}</Badge>
+                      <div className="bg-[#141E27] p-3 rounded">
+                        <div className="text-xs text-[rgba(244,246,240,0.45)]">Revenue</div>
+                        <div className="text-xl font-bold text-[#1AFFE4]">₹{(profitability.revenue || 0).toLocaleString('en-IN')}</div>
+                      </div>
                     </div>
-                    <div className="flex gap-1">
-                      {project.status === "active" && (
-                        <>
-                          <Button size="icon" variant="ghost" onClick={() => handleUpdateStatus(project.project_id, "on_hold")}><Pause className="h-4 w-4" /></Button>
-                          <Button size="icon" variant="ghost" onClick={() => handleUpdateStatus(project.project_id, "completed")}><CheckCircle className="h-4 w-4" /></Button>
-                        </>
-                      )}
-                      {project.status === "on_hold" && (
-                        <Button size="icon" variant="ghost" onClick={() => handleUpdateStatus(project.project_id, "active")}><Play className="h-4 w-4" /></Button>
-                      )}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-[#141E27] p-3 rounded">
+                        <div className="text-xs text-[rgba(244,246,240,0.45)]">Total Cost</div>
+                        <div className="text-xl font-bold text-[#FF8C00]">₹{(profitability.costs?.total || 0).toLocaleString('en-IN')}</div>
+                      </div>
+                      <div className="bg-[#141E27] p-3 rounded">
+                        <div className="text-xs text-[rgba(244,246,240,0.45)]">Gross Profit</div>
+                        <div className={`text-xl font-bold ${profitability.is_profitable ? 'text-[#C8FF00]' : 'text-[#FF3B2F]'}`}>
+                          ₹{(profitability.gross_profit || 0).toLocaleString('en-IN')}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between bg-[#141E27] p-3 rounded">
+                      <span className="text-sm">Margin</span>
+                      <span className={`text-2xl font-bold ${profitability.is_profitable ? 'text-[#C8FF00]' : 'text-[#FF3B2F]'}`}>
+                        {profitability.margin_pct?.toFixed(1) || 0}%
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-[rgba(244,246,240,0.45)]">Hours Estimated</span>
+                        <div className="font-medium">{profitability.hours?.estimated || 0} hrs</div>
+                      </div>
+                      <div>
+                        <span className="text-[rgba(244,246,240,0.45)]">Hours Logged</span>
+                        <div className="font-medium">{profitability.hours?.logged || 0} hrs</div>
+                      </div>
                     </div>
                   </div>
-                  <div className="text-sm text-gray-500 mb-3">
-                    <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{project.customer_name}</span>
+                ) : (
+                  <p className="text-[rgba(244,246,240,0.45)]">No profitability data</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* TASKS TAB - Kanban Board */}
+        <TabsContent value="tasks" className="mt-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold">Tasks ({tasks.length})</h3>
+            <Dialog open={showTaskDialog} onOpenChange={setShowTaskDialog}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="bg-[#C8FF00] text-[#080C0F]">
+                  <Plus className="h-4 w-4 mr-1" /> Add Task
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader><DialogTitle>Create Task</DialogTitle></DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div>
+                    <Label>Title *</Label>
+                    <Input value={newTask.title} onChange={(e) => setNewTask({...newTask, title: e.target.value})} placeholder="Task title" />
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Hours Logged</span>
-                      <span className="font-medium">{project.total_hours?.toFixed(1)} / {project.budget_hours || '∞'} hrs</span>
+                  <div>
+                    <Label>Description</Label>
+                    <Textarea value={newTask.description} onChange={(e) => setNewTask({...newTask, description: e.target.value})} rows={2} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Estimated Hours</Label>
+                      <Input type="number" value={newTask.estimated_hours} onChange={(e) => setNewTask({...newTask, estimated_hours: parseFloat(e.target.value) || 0})} />
                     </div>
-                    {project.budget_hours > 0 && <Progress value={Math.min(progress, 100)} className="h-2" />}
-                    <div className="flex justify-between text-sm">
-                      <span>Unbilled Hours</span>
-                      <span className="font-medium text-[#FF8C00]">{project.unbilled_hours?.toFixed(1)} hrs</span>
+                    <div>
+                      <Label>Priority</Label>
+                      <Select value={newTask.priority} onValueChange={(v) => setNewTask({...newTask, priority: v})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="LOW">Low</SelectItem>
+                          <SelectItem value="MEDIUM">Medium</SelectItem>
+                          <SelectItem value="HIGH">High</SelectItem>
+                          <SelectItem value="URGENT">Urgent</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Total Cost</span>
-                      <span className="font-bold">₹{project.total_cost?.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div>
+                    <Label>Due Date</Label>
+                    <Input type="date" value={newTask.due_date} onChange={(e) => setNewTask({...newTask, due_date: e.target.value})} />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowTaskDialog(false)}>Cancel</Button>
+                  <Button onClick={handleCreateTask} className="bg-[#C8FF00] text-[#080C0F]">Create Task</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {/* Kanban Columns */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'].map(status => {
+              const config = taskStatusConfig[status];
+              const statusTasks = tasks.filter(t => t.status === status);
+              return (
+                <div key={status} className="bg-[#111820] rounded-lg p-3 border border-[rgba(255,255,255,0.07)]">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`text-sm font-medium ${config.text}`}>{config.label}</span>
+                    <span className="text-xs text-[rgba(244,246,240,0.45)]">{statusTasks.length}</span>
+                  </div>
+                  <div className="space-y-2 min-h-[200px]">
+                    {statusTasks.map(task => (
+                      <TaskCard 
+                        key={task.task_id} 
+                        task={task} 
+                        onStatusChange={(newStatus) => handleUpdateTaskStatus(task.task_id, newStatus)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </TabsContent>
+
+        {/* TIME LOGS TAB */}
+        <TabsContent value="time-logs" className="mt-4">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-semibold">Time Logs</h3>
+              <p className="text-sm text-[rgba(244,246,240,0.45)]">Total: {timeLogs.reduce((s,l) => s + l.hours_logged, 0).toFixed(1)} hours</p>
+            </div>
+            <Dialog open={showTimeLogDialog} onOpenChange={setShowTimeLogDialog}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="bg-[#C8FF00] text-[#080C0F]">
+                  <Clock className="h-4 w-4 mr-1" /> Log Time
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader><DialogTitle>Log Time</DialogTitle></DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div>
+                    <Label>Task (optional)</Label>
+                    <Select onValueChange={(v) => setNewTimeLog({...newTimeLog, task_id: v})}>
+                      <SelectTrigger><SelectValue placeholder="Select task" /></SelectTrigger>
+                      <SelectContent>
+                        {tasks.map(t => <SelectItem key={t.task_id} value={t.task_id}>{t.title}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Hours *</Label>
+                      <Input type="number" step="0.25" min="0.25" value={newTimeLog.hours_logged} onChange={(e) => setNewTimeLog({...newTimeLog, hours_logged: parseFloat(e.target.value) || 0})} />
                     </div>
+                    <div>
+                      <Label>Date</Label>
+                      <Input type="date" value={newTimeLog.log_date} onChange={(e) => setNewTimeLog({...newTimeLog, log_date: e.target.value})} />
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Description</Label>
+                    <Textarea value={newTimeLog.description} onChange={(e) => setNewTimeLog({...newTimeLog, description: e.target.value})} rows={2} placeholder="Work done..." />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowTimeLogDialog(false)}>Cancel</Button>
+                  <Button onClick={handleLogTime} className="bg-[#C8FF00] text-[#080C0F]">Log Time</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+            <CardContent className="p-0">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[rgba(255,255,255,0.07)]">
+                    <th className="text-left p-3 text-xs text-[rgba(244,246,240,0.45)]">Date</th>
+                    <th className="text-left p-3 text-xs text-[rgba(244,246,240,0.45)]">Employee</th>
+                    <th className="text-left p-3 text-xs text-[rgba(244,246,240,0.45)]">Task</th>
+                    <th className="text-right p-3 text-xs text-[rgba(244,246,240,0.45)]">Hours</th>
+                    <th className="text-left p-3 text-xs text-[rgba(244,246,240,0.45)]">Description</th>
+                    <th className="text-center p-3 text-xs text-[rgba(244,246,240,0.45)]">Invoiced</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {timeLogs.length === 0 ? (
+                    <tr><td colSpan={6} className="text-center py-8 text-[rgba(244,246,240,0.45)]">No time logs yet</td></tr>
+                  ) : timeLogs.map(log => {
+                    const task = tasks.find(t => t.task_id === log.task_id);
+                    return (
+                      <tr key={log.log_id} className={`border-b border-[rgba(255,255,255,0.07)] ${log.invoiced ? 'text-[rgba(244,246,240,0.35)]' : ''}`}>
+                        <td className="p-3 text-sm font-mono">{log.log_date}</td>
+                        <td className="p-3 text-sm">{log.employee_name || log.employee_id}</td>
+                        <td className="p-3 text-sm">{task?.title || '-'}</td>
+                        <td className="p-3 text-sm text-right font-mono">{log.hours_logged}</td>
+                        <td className="p-3 text-sm truncate max-w-[200px]">{log.description || '-'}</td>
+                        <td className="p-3 text-center">
+                          {log.invoiced ? (
+                            <Badge className="bg-[rgba(200,255,0,0.10)] text-[#C8FF00]">Invoiced</Badge>
+                          ) : (
+                            <span className="text-xs text-[rgba(244,246,240,0.45)]">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* EXPENSES TAB */}
+        <TabsContent value="expenses" className="mt-4">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-semibold">Expenses</h3>
+              <p className="text-sm text-[rgba(244,246,240,0.45)]">
+                Approved: ₹{expenses.filter(e => e.status === 'APPROVED').reduce((s,e) => s + e.amount, 0).toLocaleString('en-IN')}
+              </p>
+            </div>
+            <Dialog open={showExpenseDialog} onOpenChange={setShowExpenseDialog}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="bg-[#C8FF00] text-[#080C0F]">
+                  <Receipt className="h-4 w-4 mr-1" /> Add Expense
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader><DialogTitle>Add Expense</DialogTitle></DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div>
+                    <Label>Amount (₹) *</Label>
+                    <Input type="number" value={newExpense.amount} onChange={(e) => setNewExpense({...newExpense, amount: parseFloat(e.target.value) || 0})} />
+                  </div>
+                  <div>
+                    <Label>Description *</Label>
+                    <Input value={newExpense.description} onChange={(e) => setNewExpense({...newExpense, description: e.target.value})} placeholder="Expense description" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Category</Label>
+                      <Select value={newExpense.category} onValueChange={(v) => setNewExpense({...newExpense, category: v})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="general">General</SelectItem>
+                          <SelectItem value="travel">Travel</SelectItem>
+                          <SelectItem value="materials">Materials</SelectItem>
+                          <SelectItem value="software">Software</SelectItem>
+                          <SelectItem value="equipment">Equipment</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Date</Label>
+                      <Input type="date" value={newExpense.expense_date} onChange={(e) => setNewExpense({...newExpense, expense_date: e.target.value})} />
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowExpenseDialog(false)}>Cancel</Button>
+                  <Button onClick={handleAddExpense} className="bg-[#C8FF00] text-[#080C0F]">Add Expense</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+            <CardContent className="p-0">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[rgba(255,255,255,0.07)]">
+                    <th className="text-left p-3 text-xs text-[rgba(244,246,240,0.45)]">Date</th>
+                    <th className="text-left p-3 text-xs text-[rgba(244,246,240,0.45)]">Description</th>
+                    <th className="text-right p-3 text-xs text-[rgba(244,246,240,0.45)]">Amount</th>
+                    <th className="text-left p-3 text-xs text-[rgba(244,246,240,0.45)]">Category</th>
+                    <th className="text-center p-3 text-xs text-[rgba(244,246,240,0.45)]">Status</th>
+                    <th className="text-right p-3 text-xs text-[rgba(244,246,240,0.45)]">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {expenses.length === 0 ? (
+                    <tr><td colSpan={6} className="text-center py-8 text-[rgba(244,246,240,0.45)]">No expenses yet</td></tr>
+                  ) : expenses.map(exp => {
+                    const expStatus = expenseStatusConfig[exp.status] || expenseStatusConfig.PENDING;
+                    return (
+                      <tr key={exp.project_expense_id} className="border-b border-[rgba(255,255,255,0.07)]">
+                        <td className="p-3 text-sm font-mono">{exp.expense_date}</td>
+                        <td className="p-3 text-sm">{exp.description}</td>
+                        <td className="p-3 text-sm text-right font-mono">₹{exp.amount.toLocaleString('en-IN')}</td>
+                        <td className="p-3 text-sm capitalize">{exp.category}</td>
+                        <td className="p-3 text-center">
+                          <Badge className={`${expStatus.bg} ${expStatus.text}`}>{expStatus.label}</Badge>
+                        </td>
+                        <td className="p-3 text-right">
+                          {exp.status === 'PENDING' && (
+                            <div className="flex justify-end gap-1">
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-[#C8FF00]" onClick={() => handleApproveExpense(exp.project_expense_id, true)}>
+                                Approve
+                              </Button>
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-[#FF3B2F]" onClick={() => handleApproveExpense(exp.project_expense_id, false)}>
+                                Reject
+                              </Button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* FINANCIALS TAB */}
+        <TabsContent value="financials" className="mt-4">
+          {profitability ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Revenue Section */}
+              <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+                <CardHeader>
+                  <CardTitle className="text-lg text-[#1AFFE4]">Revenue</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-[rgba(244,246,240,0.45)]">Contract Value / Budget</span>
+                    <span className="font-medium">₹{(profitability.budget || 0).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[rgba(244,246,240,0.45)]">Hourly Projection</span>
+                    <span className="font-medium">₹{(profitability.revenue || 0).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between border-t border-[rgba(255,255,255,0.07)] pt-3">
+                    <span className="text-[rgba(244,246,240,0.45)]">Amount Outstanding</span>
+                    <span className="font-bold text-[#FF8C00]">₹{(profitability.revenue || 0).toLocaleString('en-IN')}</span>
                   </div>
                 </CardContent>
               </Card>
-            );
-          })}
-        </div>
-      }
+
+              {/* Cost Section */}
+              <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+                <CardHeader>
+                  <CardTitle className="text-lg text-[#FF8C00]">Costs</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-[rgba(244,246,240,0.45)]">Employee Cost ({profitability.hours?.logged || 0} hrs)</span>
+                    <span className="font-medium">₹{(profitability.costs?.employee_cost || 0).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[rgba(244,246,240,0.45)]">Approved Expenses</span>
+                    <span className="font-medium">₹{(profitability.costs?.expenses || 0).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between border-t border-[rgba(255,255,255,0.07)] pt-3">
+                    <span className="font-medium">Total Cost</span>
+                    <span className="font-bold">₹{(profitability.costs?.total || 0).toLocaleString('en-IN')}</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Profit Section */}
+              <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)] lg:col-span-2">
+                <CardHeader>
+                  <CardTitle className={`text-lg ${profitability.is_profitable ? 'text-[#C8FF00]' : 'text-[#FF3B2F]'}`}>
+                    Profit Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-6">
+                    <div className="text-center">
+                      <div className="text-sm text-[rgba(244,246,240,0.45)] mb-1">Revenue</div>
+                      <div className="text-2xl font-bold text-[#1AFFE4]">₹{(profitability.revenue || 0).toLocaleString('en-IN')}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm text-[rgba(244,246,240,0.45)] mb-1">Cost</div>
+                      <div className="text-2xl font-bold text-[#FF8C00]">₹{(profitability.costs?.total || 0).toLocaleString('en-IN')}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm text-[rgba(244,246,240,0.45)] mb-1">Gross Profit</div>
+                      <div className={`text-2xl font-bold ${profitability.is_profitable ? 'text-[#C8FF00]' : 'text-[#FF3B2F]'}`}>
+                        ₹{(profitability.gross_profit || 0).toLocaleString('en-IN')}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-6 flex items-center justify-center">
+                    <div className={`text-4xl font-bold ${profitability.is_profitable ? 'text-[#C8FF00]' : 'text-[#FF3B2F]'}`}>
+                      {profitability.margin_pct?.toFixed(1) || 0}%
+                    </div>
+                    <span className="ml-2 text-[rgba(244,246,240,0.45)]">Margin</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+              <CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
+                No financial data available
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+// ====================== TASK CARD COMPONENT ======================
+function TaskCard({ task, onStatusChange }) {
+  const priority = priorityConfig[task.priority] || priorityConfig.MEDIUM;
+  
+  return (
+    <div className="bg-[#141E27] p-3 rounded border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors">
+      <div className="flex items-start justify-between mb-2">
+        <h4 className="text-sm font-medium text-[#F4F6F0] line-clamp-2">{task.title}</h4>
+        <Select value={task.status} onValueChange={onStatusChange}>
+          <SelectTrigger className="h-6 w-6 p-0 border-0 bg-transparent">
+            <MoreHorizontal className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="TODO">To Do</SelectItem>
+            <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+            <SelectItem value="REVIEW">Review</SelectItem>
+            <SelectItem value="DONE">Done</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex items-center gap-2 text-xs">
+        <span className={priority.text}>{priority.label}</span>
+        {task.estimated_hours > 0 && (
+          <span className="text-[rgba(244,246,240,0.45)]">{task.estimated_hours}h est</span>
+        )}
+        {task.due_date && (
+          <span className="text-[rgba(244,246,240,0.45)] font-mono">{task.due_date}</span>
+        )}
+      </div>
     </div>
   );
 }
