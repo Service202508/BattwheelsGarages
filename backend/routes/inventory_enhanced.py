@@ -1229,3 +1229,454 @@ async def stock_movement_report(
         by_action[action]["quantity"] += m.get("quantity_change", 0)
     
     return {"code": 0, "report": {"movements": movements, "by_action": by_action, "period_days": days}}
+
+
+# ========================= STOCK TRANSFER BETWEEN WAREHOUSES =========================
+
+class StockTransferCreate(BaseModel):
+    from_warehouse_id: str
+    to_warehouse_id: str
+    items: List[Dict[str, Any]]  # [{"item_id": ..., "quantity": ..., "serial_batch_id": ...optional}]
+    notes: str = ""
+    reference_number: str = ""
+
+
+@router.post("/stock-transfers")
+async def create_stock_transfer(data: StockTransferCreate):
+    """Transfer stock between two warehouses"""
+    if data.from_warehouse_id == data.to_warehouse_id:
+        raise HTTPException(status_code=400, detail="Source and destination warehouses must differ")
+
+    from_wh = await warehouses_collection.find_one({"warehouse_id": data.from_warehouse_id}, {"_id": 0, "name": 1})
+    to_wh = await warehouses_collection.find_one({"warehouse_id": data.to_warehouse_id}, {"_id": 0, "name": 1})
+    if not from_wh:
+        raise HTTPException(status_code=404, detail="Source warehouse not found")
+    if not to_wh:
+        raise HTTPException(status_code=404, detail="Destination warehouse not found")
+
+    transfer_id = generate_id("TRF")
+    now_iso = datetime.now(timezone.utc).isoformat()
+    errors = []
+    transferred_items = []
+
+    for item_data in data.items:
+        item_id = item_data.get("item_id")
+        qty = float(item_data.get("quantity", 0))
+        serial_batch_id = item_data.get("serial_batch_id")
+
+        if not item_id or qty <= 0:
+            continue
+
+        # Check source stock
+        from_stock = await get_item_stock(item_id, data.from_warehouse_id)
+        if from_stock < qty:
+            item = await items_collection.find_one({"item_id": item_id}, {"_id": 0, "name": 1})
+            errors.append(f"Insufficient stock for {item.get('name', item_id)}: available {from_stock}, requested {qty}")
+            continue
+
+        # Deduct from source
+        await adjust_stock(item_id, None, data.from_warehouse_id, "subtract", qty,
+                           f"Transfer to {to_wh['name']} | Ref: {transfer_id}", "system")
+        # Add to destination
+        await adjust_stock(item_id, None, data.to_warehouse_id, "add", qty,
+                           f"Transfer from {from_wh['name']} | Ref: {transfer_id}", "system")
+
+        # Update serial/batch warehouse if provided
+        if serial_batch_id:
+            await serial_batches_collection.update_one(
+                {"serial_batch_id": serial_batch_id},
+                {"$set": {"warehouse_id": data.to_warehouse_id, "updated_at": now_iso}}
+            )
+
+        item_doc = await items_collection.find_one({"item_id": item_id}, {"_id": 0, "name": 1, "sku": 1})
+        transferred_items.append({
+            "item_id": item_id,
+            "item_name": item_doc.get("name") if item_doc else item_id,
+            "quantity": qty,
+            "serial_batch_id": serial_batch_id
+        })
+
+    if not transferred_items and errors:
+        raise HTTPException(status_code=400, detail=f"Transfer failed: {'; '.join(errors)}")
+
+    # Record transfer
+    transfer_doc = {
+        "transfer_id": transfer_id,
+        "from_warehouse_id": data.from_warehouse_id,
+        "from_warehouse_name": from_wh["name"],
+        "to_warehouse_id": data.to_warehouse_id,
+        "to_warehouse_name": to_wh["name"],
+        "items": transferred_items,
+        "notes": data.notes,
+        "reference_number": data.reference_number,
+        "status": "completed",
+        "created_at": now_iso,
+        "errors": errors
+    }
+    await db["stock_transfers"].insert_one(transfer_doc)
+    transfer_doc.pop("_id", None)
+
+    return {"code": 0, "message": "Stock transfer completed", "transfer": transfer_doc, "warnings": errors}
+
+
+@router.get("/stock-transfers")
+async def list_stock_transfers(limit: int = 50):
+    """List recent stock transfers"""
+    transfers = await db["stock_transfers"].find(
+        {}, {"_id": 0}
+    ).sort("created_at", -1).to_list(limit)
+    return {"code": 0, "transfers": transfers}
+
+
+# ========================= REORDER SUGGESTIONS & AUTO-PO =========================
+
+@router.get("/reorder-suggestions")
+async def get_reorder_suggestions():
+    """
+    Get items below reorder point with suggested PO quantities.
+    Returns grouped-by-supplier suggestions ready for PO creation.
+    """
+    pipeline = [
+        {"$match": {"status": "active", "track_inventory": {"$ne": False}}},
+        {"$lookup": {
+            "from": "item_stock_locations",
+            "localField": "item_id",
+            "foreignField": "item_id",
+            "as": "stock_locs"
+        }},
+        {"$addFields": {
+            "total_stock": {"$sum": "$stock_locs.available_stock"},
+            "reorder_lvl": {
+                "$cond": {
+                    "if": {"$or": [{"$eq": ["$reorder_level", ""]}, {"$eq": ["$reorder_level", None]},
+                                   {"$not": {"$isNumber": "$reorder_level"}}]},
+                    "then": 0,
+                    "else": {"$toDouble": "$reorder_level"}
+                }
+            }
+        }},
+        {"$match": {"$expr": {"$and": [{"$gt": ["$reorder_lvl", 0]}, {"$lt": ["$total_stock", "$reorder_lvl"]}]}}},
+        {"$project": {
+            "_id": 0, "item_id": 1, "name": 1, "sku": 1,
+            "total_stock": 1, "reorder_level": "$reorder_lvl",
+            "unit_price": 1, "purchase_rate": 1,
+            "preferred_vendor_id": 1, "preferred_vendor_name": 1,
+            "reorder_quantity": 1,
+        }},
+        {"$sort": {"name": 1}}
+    ]
+
+    items = await items_collection.aggregate(pipeline).to_list(500)
+
+    suggestions = []
+    for item in items:
+        shortage = max(0, float(item.get("reorder_level", 0)) - float(item.get("total_stock", 0)))
+        suggested_qty = item.get("reorder_quantity") or max(int(shortage * 1.5), 1)
+        unit_cost = float(item.get("purchase_rate") or item.get("unit_price") or 0)
+        suggestions.append({
+            "item_id": item["item_id"],
+            "item_name": item["name"],
+            "sku": item.get("sku", ""),
+            "current_stock": round_qty(item["total_stock"]),
+            "reorder_level": round_qty(item["reorder_level"]),
+            "shortage": round_qty(shortage),
+            "suggested_order_qty": suggested_qty,
+            "unit_cost": unit_cost,
+            "estimated_cost": round(suggested_qty * unit_cost, 2),
+            "vendor_id": item.get("preferred_vendor_id"),
+            "vendor_name": item.get("preferred_vendor_name", "No preferred vendor"),
+        })
+
+    # Group by vendor
+    by_vendor = {}
+    for s in suggestions:
+        vendor_key = s.get("vendor_id") or "no_vendor"
+        if vendor_key not in by_vendor:
+            by_vendor[vendor_key] = {
+                "vendor_id": s.get("vendor_id"),
+                "vendor_name": s.get("vendor_name", "No preferred vendor"),
+                "items": [],
+                "total_estimated_cost": 0,
+            }
+        by_vendor[vendor_key]["items"].append(s)
+        by_vendor[vendor_key]["total_estimated_cost"] += s["estimated_cost"]
+
+    return {
+        "code": 0,
+        "total_items_below_reorder": len(suggestions),
+        "suggestions": suggestions,
+        "grouped_by_vendor": list(by_vendor.values()),
+    }
+
+
+@router.post("/reorder-suggestions/create-po")
+async def create_po_from_suggestions(data: dict):
+    """
+    Create a purchase order from reorder suggestions.
+    Body: {"vendor_id": "...", "items": [{"item_id": ..., "quantity": ..., "unit_cost": ...}]}
+    Returns the created PO.
+    """
+    vendor_id = data.get("vendor_id")
+    items = data.get("items", [])
+    notes = data.get("notes", "Auto-generated from reorder suggestions")
+
+    if not items:
+        raise HTTPException(status_code=400, detail="No items provided")
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    po_id = generate_id("PO")
+
+    # Resolve vendor name
+    vendor_name = "Unknown Vendor"
+    if vendor_id:
+        vendor = await db["contacts_enhanced"].find_one(
+            {"contact_id": vendor_id},
+            {"_id": 0, "display_name": 1, "contact_name": 1}
+        )
+        if vendor:
+            vendor_name = vendor.get("display_name") or vendor.get("contact_name", vendor_name)
+
+    line_items = []
+    subtotal = 0.0
+    for item_data in items:
+        item_id = item_data.get("item_id")
+        qty = float(item_data.get("quantity", 0))
+        unit_cost = float(item_data.get("unit_cost", 0))
+        item = await items_collection.find_one({"item_id": item_id}, {"_id": 0, "name": 1, "sku": 1})
+        if not item or qty <= 0:
+            continue
+        line_total = qty * unit_cost
+        subtotal += line_total
+        line_items.append({
+            "item_id": item_id,
+            "item_name": item.get("name", ""),
+            "sku": item.get("sku", ""),
+            "quantity": qty,
+            "unit_cost": unit_cost,
+            "line_total": round(line_total, 2)
+        })
+
+    po_doc = {
+        "po_id": po_id,
+        "po_number": f"PO-AUTO-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M')}",
+        "vendor_id": vendor_id,
+        "vendor_name": vendor_name,
+        "status": "draft",
+        "source": "reorder_suggestion",
+        "line_items": line_items,
+        "subtotal": round(subtotal, 2),
+        "total": round(subtotal, 2),
+        "notes": notes,
+        "created_at": now_iso,
+        "updated_at": now_iso,
+    }
+
+    await db["purchase_orders"].insert_one(po_doc)
+    po_doc.pop("_id", None)
+
+    return {"code": 0, "message": "Purchase order created", "purchase_order": po_doc}
+
+
+# ========================= STOCKTAKE / INVENTORY COUNT =========================
+
+class StocktakeCreate(BaseModel):
+    warehouse_id: str
+    name: str = ""
+    notes: str = ""
+    item_ids: List[str] = []  # Specific items to count; empty = all items in warehouse
+
+
+class StocktakeCountUpdate(BaseModel):
+    counted_quantity: float
+    notes: str = ""
+
+
+@router.post("/stocktakes")
+async def create_stocktake(data: StocktakeCreate):
+    """
+    Create a new stocktake (inventory count session) for a warehouse.
+    If item_ids is empty, includes ALL items in that warehouse.
+    """
+    wh = await warehouses_collection.find_one({"warehouse_id": data.warehouse_id}, {"_id": 0, "name": 1})
+    if not wh:
+        raise HTTPException(status_code=404, detail="Warehouse not found")
+
+    stocktake_id = generate_id("ST")
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    # Get items to count
+    if data.item_ids:
+        item_query = {"item_id": {"$in": data.item_ids}, "status": "active"}
+    else:
+        # All items in the warehouse (have stock_location records)
+        locs = await stock_locations_collection.find(
+            {"warehouse_id": data.warehouse_id},
+            {"_id": 0, "item_id": 1}
+        ).to_list(2000)
+        item_ids_in_wh = list({loc["item_id"] for loc in locs})
+        item_query = {"item_id": {"$in": item_ids_in_wh}, "status": "active"} if item_ids_in_wh else {"status": "active", "track_inventory": True}
+
+    items = await items_collection.find(item_query, {"_id": 0, "item_id": 1, "name": 1, "sku": 1}).to_list(2000)
+
+    # Build count lines with current system stock
+    lines = []
+    for item in items:
+        system_qty = await get_item_stock(item["item_id"], data.warehouse_id)
+        lines.append({
+            "item_id": item["item_id"],
+            "item_name": item["name"],
+            "item_sku": item.get("sku", ""),
+            "system_quantity": round_qty(system_qty),
+            "counted_quantity": None,  # to be filled
+            "variance": None,
+            "notes": "",
+            "counted": False,
+        })
+
+    stocktake_doc = {
+        "stocktake_id": stocktake_id,
+        "name": data.name or f"Stocktake {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')}",
+        "warehouse_id": data.warehouse_id,
+        "warehouse_name": wh["name"],
+        "status": "in_progress",  # in_progress → finalized
+        "lines": lines,
+        "total_lines": len(lines),
+        "counted_lines": 0,
+        "total_variance": 0,
+        "notes": data.notes,
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "finalized_at": None,
+    }
+
+    await db["stocktakes"].insert_one(stocktake_doc)
+    stocktake_doc.pop("_id", None)
+
+    return {"code": 0, "message": "Stocktake created", "stocktake": stocktake_doc}
+
+
+@router.get("/stocktakes")
+async def list_stocktakes(status: Optional[str] = None):
+    """List all stocktakes"""
+    query = {}
+    if status:
+        query["status"] = status
+    stocktakes = await db["stocktakes"].find(query, {
+        "_id": 0, "stocktake_id": 1, "name": 1, "warehouse_name": 1,
+        "status": 1, "total_lines": 1, "counted_lines": 1,
+        "total_variance": 1, "created_at": 1, "finalized_at": 1
+    }).sort("created_at", -1).to_list(100)
+    return {"code": 0, "stocktakes": stocktakes}
+
+
+@router.get("/stocktakes/{stocktake_id}")
+async def get_stocktake(stocktake_id: str):
+    """Get stocktake details with all count lines"""
+    st = await db["stocktakes"].find_one({"stocktake_id": stocktake_id}, {"_id": 0})
+    if not st:
+        raise HTTPException(status_code=404, detail="Stocktake not found")
+    return {"code": 0, "stocktake": st}
+
+
+@router.put("/stocktakes/{stocktake_id}/lines/{item_id}")
+async def update_stocktake_line(stocktake_id: str, item_id: str, data: StocktakeCountUpdate):
+    """Submit a count for a specific item in the stocktake"""
+    st = await db["stocktakes"].find_one({"stocktake_id": stocktake_id}, {"_id": 0})
+    if not st:
+        raise HTTPException(status_code=404, detail="Stocktake not found")
+    if st["status"] != "in_progress":
+        raise HTTPException(status_code=400, detail="Stocktake is not in progress")
+
+    lines = st.get("lines", [])
+    line_idx = next((i for i, l in enumerate(lines) if l["item_id"] == item_id), None)
+    if line_idx is None:
+        raise HTTPException(status_code=404, detail="Item not in this stocktake")
+
+    system_qty = float(lines[line_idx]["system_quantity"])
+    counted_qty = float(data.counted_quantity)
+    variance = round_qty(counted_qty - system_qty)
+
+    lines[line_idx]["counted_quantity"] = counted_qty
+    lines[line_idx]["variance"] = variance
+    lines[line_idx]["notes"] = data.notes
+    lines[line_idx]["counted"] = True
+
+    counted_count = sum(1 for l in lines if l["counted"])
+    total_variance = round_qty(sum(l["variance"] or 0 for l in lines if l["counted"]))
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    await db["stocktakes"].update_one(
+        {"stocktake_id": stocktake_id},
+        {"$set": {
+            "lines": lines,
+            "counted_lines": counted_count,
+            "total_variance": total_variance,
+            "updated_at": now_iso,
+        }}
+    )
+    return {"code": 0, "message": "Count updated", "variance": variance}
+
+
+@router.post("/stocktakes/{stocktake_id}/finalize")
+async def finalize_stocktake(stocktake_id: str):
+    """
+    Finalize stocktake: apply all variances as stock adjustments.
+    Only lines with variance != 0 are adjusted.
+    """
+    st = await db["stocktakes"].find_one({"stocktake_id": stocktake_id}, {"_id": 0})
+    if not st:
+        raise HTTPException(status_code=404, detail="Stocktake not found")
+    if st["status"] != "in_progress":
+        raise HTTPException(status_code=400, detail="Stocktake already finalized or not in progress")
+
+    counted_lines = [l for l in st.get("lines", []) if l["counted"]]
+    if not counted_lines:
+        raise HTTPException(status_code=400, detail="No items have been counted yet")
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    adjustments_made = 0
+    adjustment_ids = []
+
+    for line in counted_lines:
+        variance = float(line.get("variance") or 0)
+        if abs(variance) < 0.0001:
+            continue  # No change needed
+
+        adj_type = "add" if variance > 0 else "subtract"
+        qty = abs(variance)
+        reason = f"Stocktake {st['name']} — variance of {variance:+.2f} for {line['item_name']}"
+        await adjust_stock(line["item_id"], None, st["warehouse_id"], adj_type, qty, reason, "system")
+
+        adj_id = generate_id("ADJ")
+        adj_doc = {
+            "adjustment_id": adj_id,
+            "item_id": line["item_id"],
+            "item_name": line["item_name"],
+            "warehouse_id": st["warehouse_id"],
+            "adjustment_type": adj_type,
+            "quantity": qty,
+            "reason": reason,
+            "source": "stocktake",
+            "stocktake_id": stocktake_id,
+            "created_at": now_iso
+        }
+        await adjustments_collection.insert_one(adj_doc)
+        adjustment_ids.append(adj_id)
+        adjustments_made += 1
+
+    await db["stocktakes"].update_one(
+        {"stocktake_id": stocktake_id},
+        {"$set": {
+            "status": "finalized",
+            "finalized_at": now_iso,
+            "adjustments_applied": adjustments_made,
+            "adjustment_ids": adjustment_ids,
+        }}
+    )
+
+    return {
+        "code": 0,
+        "message": f"Stocktake finalized. {adjustments_made} stock adjustments applied.",
+        "adjustments_made": adjustments_made,
+    }
+
