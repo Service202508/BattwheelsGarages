@@ -24,7 +24,46 @@ Battwheels OS is a multi-tenant SaaS platform for EV service management. It prov
 | ✅ **FIX 4: Platform Admin Layer** | `/api/platform/*` routes + `/platform-admin` frontend. List/suspend/activate orgs, change plans, platform KPIs. | `routes/platform_admin.py` (new), `pages/PlatformAdmin.jsx` (new), `App.js`, `middleware/tenant.py` |
 | ✅ **FIX 5: Password Hashing** | Removed SHA256 from `utils/auth.py`. Standardized to bcrypt. Transparent migration on login (SHA256 → bcrypt re-hash). | `utils/auth.py` |
 
-### Architecture Review Findings (Reference: `/app/SAAS_ARCHITECTURE_REVIEW.md`)
+### FIX 6: Entitlement Enforcement (February 2026)
+
+**Status:** ✅ COMPLETE | **Test Result:** 27/27 PASSED
+
+**What was done:**
+- Wired `require_feature()` FastAPI dependency to **9 route groups** covering TIER 1 (revenue-critical) and TIER 2 (module access gates)
+- Updated `FEATURE_PLAN_REQUIREMENTS` in `entitlement.py`: hr_payroll → PROFESSIONAL (was ENTERPRISE), advanced_reports → STARTER (was PROFESSIONAL), multi_warehouse → ENTERPRISE (was PROFESSIONAL)
+- Added 3 new feature keys to `PlanFeatures` model: `project_management`, `einvoice`, `accounting_module` (all PROFESSIONAL minimum)
+- Fixed `FeatureNotAvailable` exception: now returns `required_plan` and `upgrade_url` fields
+- Fixed `require_feature()` to fall back to `request.state.tenant_org_id` when tenant context var not set
+- Created Battwheels Garages PROFESSIONAL subscription (previously had NO subscription record)
+- Added `/api/platform/*` to `TenantGuardMiddleware` PUBLIC_PATTERNS (was missing)
+- **Frontend:** Created `UpgradeModal.jsx` + `apiFetch` global 403 interceptor that fires `CustomEvent("feature_not_available")`
+- DB migration script: `migrate_entitlements.py`
+
+**Routes protected:**
+
+| Route | Feature Key | Min Plan |
+|-------|-------------|----------|
+| `/api/hr/payroll/*` | `hr_payroll` | PROFESSIONAL |
+| `/api/reports/profit-loss`, `/api/reports/technician-performance` | `advanced_reports` | STARTER |
+| `/api/reports-advanced/*` | `advanced_reports` | STARTER |
+| `/api/projects/*` | `project_management` | PROFESSIONAL |
+| `/api/inventory-enhanced/warehouses/*` | `inventory_multi_warehouse` | ENTERPRISE |
+| `/api/stock-transfers/*` | `inventory_stock_transfers` | ENTERPRISE |
+| `/api/einvoice/*` | `einvoice` | PROFESSIONAL |
+| `/api/journal-entries/*` | `accounting_module` | PROFESSIONAL |
+| `/api/banking/*` | `accounting_module` | PROFESSIONAL |
+| `/api/efi/*` | `efi_failure_intelligence` | STARTER |
+| `/api/efi/intelligence/*` | `efi_failure_intelligence` | STARTER |
+| `/api/efi-guided/*` | `efi_ai_guidance` | STARTER |
+
+**Verification Tests (all PASS):**
+1. Starter org → payroll → 403 feature_not_available ✅
+2. Professional org → payroll → 200 ✅
+3. Frontend UpgradeModal fires on 403 ✅
+4. Platform admin changes plan → access granted → reverts → access blocked ✅
+
+**Updated SaaS Maturity: 4/5 (was 3/5)**
+**Subscription model is now REAL and ENFORCED: YES**
 
 **What blocks Customer #2 onboarding (resolved by above fixes):**
 - ~~Per-org credentials~~ ✅ Fixed
