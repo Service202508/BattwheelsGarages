@@ -101,6 +101,7 @@ import CustomerInvoices from "@/pages/customer/CustomerInvoices";
 import CustomerPayments from "@/pages/customer/CustomerPayments";
 import CustomerAMC from "@/pages/customer/CustomerAMC";
 import CommandPalette from "@/components/CommandPalette";
+import UpgradeModal from "@/components/UpgradeModal";
 
 // Technician Portal Pages
 import TechnicianLayout from "@/components/TechnicianLayout";
