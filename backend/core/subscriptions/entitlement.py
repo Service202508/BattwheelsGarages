@@ -431,26 +431,34 @@ def require_feature(feature: str):
     """
     FastAPI dependency that requires a specific feature.
     
+    Works for both routes that use tenant_context_required and routes
+    that authenticate directly via the TenantIsolationMiddleware.
+
     Usage:
-        @router.get("/ai-guidance")
-        async def get_guidance(
-            ctx: TenantContext = Depends(tenant_context_required),
-            _: None = Depends(require_feature("efi_ai_guidance"))
+        @router.get("/payroll")
+        async def get_payroll(
+            request: Request,
+            _: None = Depends(require_feature("hr_payroll"))
         ):
             ...
     """
     async def dependency(request: Request):
-        from core.tenant.context import get_tenant_context
-        
+        # Prefer context var (set by tenant_context_required dependency)
         ctx = get_tenant_context()
-        if not ctx:
+        if ctx:
+            org_id = ctx.org_id
+        else:
+            # Fallback: middleware sets tenant_org_id on request.state for all authenticated routes
+            org_id = getattr(request.state, "tenant_org_id", None)
+
+        if not org_id:
             raise HTTPException(status_code=401, detail="Authentication required")
-        
+
         entitlement = get_entitlement_service()
-        await entitlement.check_feature_access(ctx.org_id, feature)
-        
+        await entitlement.check_feature_access(org_id, feature)
+
         return None
-    
+
     return dependency
 
 
