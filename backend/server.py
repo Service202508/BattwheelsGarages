@@ -5813,6 +5813,17 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# ==================== DATA INSIGHTS ROUTES ====================
+try:
+    from routes.insights import router as insights_router, init_insights_router
+    init_insights_router(db)
+    api_router.include_router(insights_router)
+    logger.info("Data Insights routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Data Insights routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # ==================== SLA ROUTES ====================
 try:
     from routes.sla import router as sla_router
