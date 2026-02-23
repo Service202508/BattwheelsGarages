@@ -11,6 +11,7 @@ import logging
 
 # Import tenant context
 from core.tenant.context import TenantContext, tenant_context_required
+from core.subscriptions.entitlement import require_feature
 
 # Import E-Invoice service
 from services.einvoice_service import (

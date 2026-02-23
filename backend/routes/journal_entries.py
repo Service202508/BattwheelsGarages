@@ -8,7 +8,7 @@ API endpoints for double-entry bookkeeping:
 - P&L and Balance Sheet from journal entries
 """
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
@@ -25,6 +25,7 @@ from services.double_entry_service import (
     EntryType,
     AccountType
 )
+from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 
