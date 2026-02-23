@@ -1,7 +1,7 @@
 # Battwheels OS - Product Requirements Document
 
 ## SaaS Status: FULL SAAS PLATFORM COMPLETE ✅
-**Last Updated:** February 2026 (Session 105)
+**Last Updated:** February 2026 (Session 106)
 
 ---
 
@@ -10,66 +10,130 @@
 
 ---
 
+## Session 106 Updates (February 2026)
+
+### TASK 1: TDS Calculation Engine - ENHANCED ✅ (100% COMPLETE)
+**Status:** ✅ Full Implementation Complete
+
+**New Backend Endpoints:**
+- `POST /api/hr/payroll/tds/mark-deposited` - Mark TDS as deposited with journal entry
+  - Validates duplicate challan numbers
+  - Posts journal entry: DEBIT TDS Payable, CREDIT Bank
+  - Updates payroll records with deposit status
+  - Returns updated TDS summary
+- `GET /api/hr/payroll/tds/export?month={m}&year={y}` - Server-side CSV export
+  - Complete CSV with 16 columns including all deductions
+  - Proper Content-Disposition header for download
+- `GET /api/hr/payroll/form16/{employee_id}/{fy}` - Structured Form 16 data
+  - Employee info (name, PAN, designation, period)
+  - Employer info (name, TAN, PAN, address)
+  - Part A: Quarter-wise TDS deducted/deposited with challan details
+  - Part B: Full tax computation breakdown
+
+**Frontend Updates (`/pages/Payroll.jsx`):**
+- TDS mark-deposited modal wired to new endpoint
+- Server-side CSV export with full data
+- Toast notifications on success/error
+- Modal stays open on error for correction
+
+### TASK 2: Projects Module Backend - ENHANCED ✅ (100% COMPLETE)
+**Status:** ✅ Full Implementation Complete
+
+**Enhanced Invoice Generation (`POST /api/projects/{id}/invoice`):**
+- Billing period filtering (from/to dates)
+- Line item grouping options: BY_TASK, BY_EMPLOYEE, BY_DATE
+- Include approved expenses option
+- Marks time logs and expenses as invoiced
+- Posts journal entry with project name and billing period
+- Returns redirect URL to invoice detail
+
+**Expense Approval Workflow:**
+- Expenses start as PENDING
+- `POST /api/projects/{id}/expenses/{expenseId}/approve` endpoint
+- Posts journal entry on approval: DEBIT Project Expense, CREDIT Accounts Payable
+- Approver name captured in narration
+- Status flow: PENDING → APPROVED → PAID or REJECTED
+
+**Service Enhancements (`/services/projects_service.py`):**
+- `generate_invoice_from_project()` - Full invoice generation with grouping
+- `approve_expense()` - Expense approval with status update
+- `mark_time_logs_invoiced()` - Mark logs after invoice creation
+- `mark_expenses_invoiced()` - Mark expenses after invoice creation
+
+### TASK 3: Projects Module Frontend ✅ (100% COMPLETE)
+**Status:** ✅ Full UI Implementation
+
+**Projects List Page (`/projects`):**
+- Stats strip: Active Projects, Total Budget, Hours This Month, Revenue Billed, Pending Invoicing
+- Project cards grid (3 columns on desktop)
+- Card design: project name, status badge, client name, completion progress bar, budget/hours/tasks stats, deadline
+- "Generate Invoice" ghost button on cards with unbilled hours
+- "+ New Project" volt button with create dialog
+
+**Project Detail Page (`/projects/{projectId}`):**
+- Breadcrumb navigation
+- 5 Tabs: Overview, Tasks, Time Logs, Expenses, Financials
+
+**Overview Tab:**
+- Project details (status, billing type, dates, budget, hourly rate, description)
+- Profitability summary card (budget vs actual, revenue, costs, gross profit, margin %)
+- Hours estimated vs logged
+
+**Tasks Tab:**
+- Kanban board with 4 columns: TODO, IN_PROGRESS, REVIEW, DONE
+- Task cards with title, priority badge, estimated hours, due date
+- Drag status change via dropdown menu
+- "+ Add Task" button with dialog
+
+**Time Logs Tab:**
+- Table: Date, Employee, Task, Hours, Description, Invoiced status
+- Invoiced rows dimmed with green "Invoiced" badge
+- "Log Time" button with dialog
+- Total hours footer
+
+**Expenses Tab:**
+- Table: Date, Description, Amount, Category, Status, Actions
+- Status pills: PENDING (amber), APPROVED (green), REJECTED (red), PAID (dim)
+- Approve/Reject buttons for PENDING expenses
+- "Add Expense" button with dialog
+- Total approved expenses footer
+
+**Financials Tab:**
+- Revenue section: Contract value, hourly projection, amount outstanding
+- Cost section: Employee cost (hours × rate), approved expenses, total
+- Profit section: Gross profit, margin % (green if positive, red if negative)
+- "Generate Invoice" volt button with billing modal
+
+**Invoice Generation Modal:**
+- Period from/to date pickers
+- Line item grouping selector (BY_TASK, BY_EMPLOYEE, BY_DATE)
+- Include approved expenses checkbox
+- Notes field
+- Preview of uninvoiced time logs count and hours
+
+### TASK 4: Final Visual Sweep ✅ (100% COMPLETE)
+**Status:** ✅ All Legacy Gray Styles Replaced
+
+**Replacements Applied (905 occurrences across all internal pages):**
+- `bg-gray-50/100` → `bg-[#111820]`
+- `bg-gray-200/300` → `bg-[#141E27]`
+- `bg-gray-700` → `bg-[#111820]`
+- `bg-gray-800` → `bg-[#0D1317]`
+- `bg-gray-900` → `bg-[#080C0F]`
+- `text-gray-400/500` → `text-[rgba(244,246,240,0.45)]`
+- `text-gray-600/700` → `text-[rgba(244,246,240,0.35)]`
+- `text-gray-900` → `text-[#F4F6F0]`
+- `border-gray-*` → `border-[rgba(255,255,255,0.07)]`
+
+**Exceptions Preserved (Public-facing light-mode pages):**
+- `pages/PublicQuoteView.jsx` (32 gray classes)
+- `pages/PublicTicketForm.jsx` (55 gray classes)
+- `pages/TrackTicket.jsx`
+- `pages/business/*.jsx`
+
+---
+
 ## Session 105 Updates (February 2026)
-
-### P1: Projects Module ✅ (BACKEND COMPLETE)
-**Status:** ✅ Backend 100% Complete
-
-Implemented full project management backend:
-
-**Data Models:**
-- `projects` - Project with status, budget, billing type, hourly rate
-- `project_tasks` - Tasks with status, priority, estimated/actual hours
-- `project_time_logs` - Time tracking by employee
-- `project_expenses` - Expense tracking by project
-
-**API Endpoints:**
-- `GET/POST /api/projects` - List/Create projects
-- `GET/PUT/DELETE /api/projects/{id}` - Project CRUD
-- `GET/POST /api/projects/{id}/tasks` - Task management
-- `PUT/DELETE /api/projects/{id}/tasks/{task_id}` - Task updates
-- `POST /api/projects/{id}/time-log` - Time logging
-- `GET/POST /api/projects/{id}/expenses` - Expense tracking
-- `GET /api/projects/{id}/profitability` - Profitability analysis
-- `POST /api/projects/{id}/invoice` - Invoice generation from project
-- `GET /api/projects/stats/dashboard` - Dashboard statistics
-
-**Profitability Calculation:**
-- Revenue: Fixed (budget) or Hourly (hours × rate)
-- Costs: Expenses + Employee cost (hours × cost rate)
-- Gross Profit & Margin %
-- Completion % based on tasks and hours
-
-**Verified:** Project created, task added, time logged, profitability returned 99.2% margin
-
----
-
-### P1: TDS Calculation Engine ✅ (COMPLETE)
-**Status:** ✅ Backend + Frontend Complete
-
-**Backend (`/backend/services/tds_service.py`):**
-- PAN validation (AAAAA0000A format)
-- HRA exemption calculation (metro/non-metro)
-- Chapter VIA deductions (80C, 80D, 80CCD, 80E, 80G, 80TTA)
-- New/Old Regime tax slabs FY 2024-25
-- Monthly TDS with YTD adjustment
-- Form 16 data generation
-- Payroll journal entries
-
-**Frontend (`/frontend/src/pages/Payroll.jsx`):**
-- TDS Summary Tab with stat cards
-- Employee TDS table with PAN, Regime, Tax breakdown
-- PAN MISSING badges with 20% rate warning
-- TDS Due Date alerts (orange warning, red overdue)
-- Mark TDS Deposited modal (Challan, BSR Code)
-- Export CSV functionality
-- Form 16 section
-
-**Verified:** TDS calculation ₹37,700/month for ₹12L annual salary
-
----
-
-### GST E-Invoice IRN Integration ✅ (P0 COMPLETE)
 **Status:** ✅ ALL STEPS COMPLETE (Steps 1-5)
 
 #### Step 5A: IRN Cancellation Flow ✅
