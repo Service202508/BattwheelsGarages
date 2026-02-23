@@ -62,8 +62,8 @@ function useLoginStyles() {
         @media (max-width: 767px) {
           .bw-left-panel  { display: none !important; }
           .bw-mobile-bar  { display: flex !important; }
-          .bw-right-panel { width: 100% !important; padding-top: 56px !important; }
-          .bw-form-wrap   { padding: 0 24px !important; }
+          .bw-right-panel { width: 100% !important; padding: 72px 24px 80px !important; }
+          .bw-form-wrap   { max-width: 100% !important; }
         }
         @media (min-width: 768px) and (max-width: 1023px) {
           .bw-left-panel  { width: 45% !important; }
