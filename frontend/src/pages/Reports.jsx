@@ -272,7 +272,7 @@ export default function Reports() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5 h-auto">
+        <TabsList className="grid w-full grid-cols-6 h-auto">
           <TabsTrigger value="profit-loss" className="text-xs sm:text-sm py-2">
             <TrendingUp className="h-4 w-4 mr-1 hidden sm:block" />
             P&L
