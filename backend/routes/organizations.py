@@ -95,6 +95,20 @@ class BrandingSettings(BaseModel):
     show_powered_by: bool = True  # Show "Powered by Battwheels"
 
 
+class CompleteStepRequest(BaseModel):
+    step: str
+
+
+ONBOARDING_STEPS = [
+    "add_first_contact",
+    "add_first_vehicle",
+    "create_first_ticket",
+    "add_inventory_item",
+    "create_first_invoice",
+    "invite_team_member",
+]
+
+
 class UserInvite(BaseModel):
     """Invite a user to organization"""
     email: EmailStr
