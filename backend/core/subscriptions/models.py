@@ -330,7 +330,6 @@ DEFAULT_PLANS = [
             finance_gst=FeatureLimit(enabled=True),
             inventory_tracking=FeatureLimit(enabled=True),
             inventory_serial_batch=FeatureLimit(enabled=True),
-            inventory_multi_warehouse=FeatureLimit(enabled=True),
             inventory_stock_transfers=FeatureLimit(enabled=True),
             hr_employees=FeatureLimit(enabled=True),
             hr_attendance=FeatureLimit(enabled=True),
