@@ -49,18 +49,30 @@ function getSLAIndicator(ticket) {
 
   if (!due) return null;
   if (breached || ["resolved", "closed"].includes(ticket.status)) {
-    if (["resolved", "closed"].includes(ticket.status)) return null; // don't show on resolved
-    return { label: "SLA Breached", class: "bg-red-500/15 text-red-400 border border-red-500/20", dot: "bg-red-400" };
+    if (["resolved", "closed"].includes(ticket.status)) return null;
+    return { label: "SLA Breached", cls: "bg-red-500/15 text-red-400 border border-red-500/20", dot: "bg-red-400" };
   }
 
-  const remaining = (due - now) / 60000; // minutes
-  if (remaining <= 0) return { label: "SLA Breached", class: "bg-red-500/15 text-red-400 border border-red-500/20", dot: "bg-red-400" };
+  const remaining = (due - now) / 60000;
+  if (remaining <= 0) return { label: "SLA Breached", cls: "bg-red-500/15 text-red-400 border border-red-500/20", dot: "bg-red-400" };
   if (remaining <= 120) {
     const hrs = Math.floor(remaining / 60);
     const mins = Math.round(remaining % 60);
-    return { label: hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`, class: "bg-amber-500/15 text-amber-400 border border-amber-500/20", dot: "bg-amber-400" };
+    const label = hrs > 0 ? hrs + "h " + mins + "m" : mins + "m";
+    return { label, cls: "bg-amber-500/15 text-amber-400 border border-amber-500/20", dot: "bg-amber-400" };
   }
-  return { label: "On Track", class: "bg-green-500/10 text-green-400 border border-green-500/20", dot: "bg-green-400" };
+  return { label: "On Track", cls: "bg-green-500/10 text-green-400 border border-green-500/20", dot: "bg-green-400" };
+}
+
+function SLABadge({ ticket }) {
+  const sla = getSLAIndicator(ticket);
+  if (!sla) return <span className="text-xs text-[rgba(244,246,240,0.2)]">—</span>;
+  return (
+    <span className={"inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full " + sla.cls}>
+      <span className={"w-1.5 h-1.5 rounded-full " + sla.dot}></span>
+      {sla.label}
+    </span>
+  );
 }
 
 export default function Tickets({ user }) {
