@@ -6,11 +6,53 @@ Battwheels OS is a multi-tenant SaaS platform for EV service management. It prov
 
 ## Production Readiness Status - February 2026
 
-### Updated After Sprint 6 (Integration Fixes) — Score: 10/10
+## Production Readiness Status - February 2026
 
-**Overall Score: 10/10 (A+) — Final Production Ready**
+### Architecture Review — SaaS Maturity Assessment
 
-### All Fixes & Features Completed
+**A comprehensive Principal Architect audit (February 2026) scored the platform:**
+- **Before 5 critical fixes: 44/100 (D+) — SaaS Maturity: 2.5/5**
+- **After 5 critical fixes: ~58/100 (C+) — SaaS Maturity: 3/5**
+
+### 5 Critical Fixes Applied (February 2026)
+
+| Fix | Status | Files Modified |
+|-----|--------|---------------|
+| ✅ **FIX 1: Per-Tenant Credentials** | Encrypted (Fernet) per-org Razorpay + email in `tenant_credentials` collection. Fallback to global .env for Battwheels Garages. | `services/credential_service.py` (new), `routes/razorpay.py`, `routes/organizations.py`, `services/email_service.py`, `pages/OrganizationSettings.jsx` |
+| ✅ **FIX 2: Unscoped Routes** | `get_users`, `get_allocations`, `create_allocation`, `get_technicians`, `contact_integration.py` migration — all org-scoped via TenantContext | `server.py`, `routes/contact_integration.py` |
+| ✅ **FIX 3: Per-Org Sequential Numbering** | Invoice/PO/SO numbers use atomic `find_one_and_update` on `sequences` collection per org. No more global counting. | `server.py` |
+| ✅ **FIX 4: Platform Admin Layer** | `/api/platform/*` routes + `/platform-admin` frontend. List/suspend/activate orgs, change plans, platform KPIs. | `routes/platform_admin.py` (new), `pages/PlatformAdmin.jsx` (new), `App.js`, `middleware/tenant.py` |
+| ✅ **FIX 5: Password Hashing** | Removed SHA256 from `utils/auth.py`. Standardized to bcrypt. Transparent migration on login (SHA256 → bcrypt re-hash). | `utils/auth.py` |
+
+### Architecture Review Findings (Reference: `/app/SAAS_ARCHITECTURE_REVIEW.md`)
+
+**What blocks Customer #2 onboarding (resolved by above fixes):**
+- ~~Per-org credentials~~ ✅ Fixed
+- ~~Unscoped routes~~ ✅ Fixed
+- ~~Global invoice numbering~~ ✅ Fixed
+- ~~No platform admin~~ ✅ Fixed
+- ~~Dual password hashing~~ ✅ Fixed
+
+**What still needs work for true enterprise SaaS (backlog):**
+- API versioning `/api/v1/`
+- Webhook delivery system (defined in models, not built)
+- Custom roles per org (hardcoded 7 roles)
+- Full entitlement enforcement at API level (model exists, rarely applied)
+- Custom domain / subdomain routing
+- Data export + deletion per tenant (GDPR)
+- SSO/SAML
+
+### Platform Admin
+
+**First Platform Admin User:** `admin@battwheels.in` (is_platform_admin: true)
+**Dashboard URL:** `/platform-admin`
+**Key Capabilities:**
+- View all 21+ registered organisations with plan/status/member count
+- Suspend/activate organisations
+- Change subscription plans
+- Platform-wide KPIs (total orgs, users, tickets, signups by month)
+
+### Score Progression
 
 | Fix/Feature | Status | Files Modified |
 |-------------|--------|----------------|
