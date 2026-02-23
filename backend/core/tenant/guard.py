@@ -373,69 +373,256 @@ def get_tenant_guard() -> TenantGuard:
 
 class TenantGuardMiddleware(BaseHTTPMiddleware):
     """
-    FastAPI middleware that enforces tenant context on all requests.
+    FastAPI middleware that ENFORCES tenant context on ALL requests.
     
-    Exceptions:
-    - Public endpoints (listed below)
+    CRITICAL SECURITY COMPONENT:
+    - Blocks ALL non-public requests without valid tenant context
+    - Validates user membership in organization
+    - Sets tenant context for downstream handlers
+    
+    Exceptions (Public routes):
     - Health checks
-    - Auth endpoints
+    - Auth endpoints (login/register)
+    - Public ticket/invoice views
+    - Webhook endpoints
     """
+    
+    # Database reference
+    _db = None
+    
+    # JWT settings
+    JWT_SECRET = os.environ.get('JWT_SECRET', 'battwheels-secret')
+    JWT_ALGORITHM = "HS256"
     
     # Endpoints that don't require tenant context
     PUBLIC_ENDPOINTS = {
+        # Health
         "/api/health",
+        "/api/",
+        "/",
+        "/docs",
+        "/redoc",
+        "/openapi.json",
+        
+        # Auth
         "/api/auth/login",
         "/api/auth/register",
         "/api/auth/session",
         "/api/auth/logout",
+        "/api/auth/me",
+        "/api/auth/google",
+        "/api/auth/forgot-password",
+        "/api/auth/reset-password",
+        
+        # Public forms
         "/api/public/tickets/submit",
         "/api/public/tickets/lookup",
         "/api/public/tickets/verify-payment",
+        "/api/public/track",
+        "/api/track-ticket",
+        
+        # Master data (read-only public)
         "/api/master-data/vehicle-categories",
         "/api/master-data/vehicle-models",
         "/api/master-data/issue-suggestions",
-        "/api/track-ticket",
         "/api/org/roles",
-        "/docs",
-        "/redoc",
-        "/openapi.json",
+        
+        # Portal registration
+        "/api/customer-portal/login",
+        "/api/customer-portal/auth",
+        "/api/business-portal/register",
     }
     
     # Patterns for public endpoints
     PUBLIC_PATTERNS = [
         r"^/api/public/.*",
-        r"^/api/customer-portal/login",
+        r"^/api/webhooks/.*",
+        r"^/api/razorpay/webhook$",
+        r"^/api/stripe/webhook$",
+        r"^/api/invoices/public/.*",
+        r"^/api/estimates/public/.*",
+        r"^/api/quotes/public/.*",
+        r"^/static/.*",
     ]
+    
+    @classmethod
+    def set_db(cls, db):
+        """Set database reference"""
+        cls._db = db
     
     async def dispatch(self, request: Request, call_next):
         path = request.url.path
+        method = request.method
+        
+        # Skip OPTIONS requests (CORS preflight)
+        if method == "OPTIONS":
+            return await call_next(request)
         
         # Skip public endpoints
         if self._is_public(path):
+            logger.debug(f"Public route, skipping tenant check: {path}")
             return await call_next(request)
         
-        # Skip OPTIONS requests (CORS preflight)
-        if request.method == "OPTIONS":
-            return await call_next(request)
+        # === ENFORCEMENT MODE: All other routes MUST have tenant context ===
         
-        # For protected endpoints, we just let them through here
-        # The actual context resolution happens in the dependency
-        # This middleware logs and monitors but doesn't block
+        try:
+            # Extract JWT claims
+            user_id, token_org_id, user_role = await self._extract_jwt_claims(request)
+            
+            if not user_id:
+                logger.warning(f"TENANT GUARD: No auth for protected route {path}")
+                return JSONResponse(
+                    status_code=401,
+                    content={"detail": "Authentication required", "code": "AUTH_REQUIRED"}
+                )
+            
+            # Resolve organization_id
+            org_id = await self._resolve_org_id(request, user_id, token_org_id)
+            
+            if not org_id:
+                logger.warning(f"TENANT GUARD: No org context for user {user_id} on {path}")
+                return JSONResponse(
+                    status_code=400,
+                    content={
+                        "detail": "Organization context required. Use X-Organization-ID header or select an organization.",
+                        "code": "TENANT_CONTEXT_MISSING"
+                    }
+                )
+            
+            # CRITICAL: Validate user is member of this organization
+            is_member = await self._validate_membership(user_id, org_id)
+            
+            if not is_member:
+                logger.error(
+                    f"SECURITY ALERT: Cross-tenant access attempt! "
+                    f"User {user_id} tried to access org {org_id} on {path}"
+                )
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "detail": "Access denied. You are not a member of this organization.",
+                        "code": "TENANT_ACCESS_DENIED"
+                    }
+                )
+            
+            # Set tenant context on request state for downstream handlers
+            request.state.tenant_org_id = org_id
+            request.state.tenant_user_id = user_id
+            request.state.tenant_user_role = user_role or "viewer"
+            
+            # Also try to build full TenantContext for routes that use it
+            try:
+                from .context import TenantContext, TenantPlan, TenantStatus
+                from core.org.models import ROLE_PERMISSIONS, OrgUserRole
+                
+                # Get permissions for role
+                try:
+                    role_enum = OrgUserRole(user_role) if user_role else OrgUserRole.VIEWER
+                    permissions = ROLE_PERMISSIONS.get(role_enum, [])
+                except ValueError:
+                    permissions = ROLE_PERMISSIONS.get(OrgUserRole.VIEWER, [])
+                
+                ctx = TenantContext(
+                    org_id=org_id,
+                    user_id=user_id,
+                    user_role=user_role or "viewer",
+                    permissions=frozenset(permissions),
+                    plan=TenantPlan.STARTER,
+                    status=TenantStatus.ACTIVE,
+                )
+                request.state.tenant_context = ctx
+            except Exception as e:
+                logger.debug(f"Could not build full TenantContext: {e}")
+            
+            logger.debug(f"TENANT GUARD: Authorized - org={org_id}, user={user_id}, path={path}")
+            
+            # Continue to route handler
+            response = await call_next(request)
+            
+            # Add tenant headers for debugging
+            response.headers["X-Tenant-ID"] = org_id
+            
+            return response
+            
+        except HTTPException as e:
+            return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
+        except Exception as e:
+            logger.exception(f"TENANT GUARD ERROR: {e}")
+            return JSONResponse(
+                status_code=500,
+                content={"detail": "Internal server error during tenant validation"}
+            )
+    
+    async def _extract_jwt_claims(self, request: Request) -> tuple:
+        """Extract user_id, org_id, role from JWT"""
+        import jwt as pyjwt
         
-        response = await call_next(request)
+        token = None
         
-        # Log if tenant context was not resolved
-        if hasattr(request.state, "tenant_context"):
-            ctx = request.state.tenant_context
-            if ctx:
-                # Add org_id to response headers for debugging
-                response.headers["X-Tenant-ID"] = ctx.org_id
-                response.headers["X-Request-ID"] = ctx.request_id
+        # Try Authorization header
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
         
-        return response
+        # Fallback to session cookie
+        if not token:
+            token = request.cookies.get("session_token")
+        
+        if not token:
+            return None, None, None
+        
+        try:
+            payload = pyjwt.decode(token, self.JWT_SECRET, algorithms=[self.JWT_ALGORITHM])
+            return payload.get("user_id"), payload.get("org_id"), payload.get("role")
+        except pyjwt.ExpiredSignatureError:
+            raise HTTPException(status_code=401, detail="Token expired")
+        except pyjwt.InvalidTokenError:
+            return None, None, None
+    
+    async def _resolve_org_id(self, request: Request, user_id: str, token_org_id: str) -> str:
+        """Resolve org_id from multiple sources"""
+        # Priority 1: Token (most secure)
+        if token_org_id:
+            return token_org_id
+        
+        # Priority 2: Header
+        org_id = request.headers.get("X-Organization-ID")
+        if org_id:
+            return org_id
+        
+        # Priority 3: Query param
+        org_id = request.query_params.get("org_id")
+        if org_id:
+            return org_id
+        
+        # Priority 4: User's default organization
+        if self._db and user_id:
+            membership = await self._db.organization_users.find_one({
+                "user_id": user_id,
+                "status": "active"
+            }, {"organization_id": 1})
+            
+            if membership:
+                return membership.get("organization_id")
+        
+        return None
+    
+    async def _validate_membership(self, user_id: str, org_id: str) -> bool:
+        """CRITICAL: Validate user is member of organization"""
+        if not self._db:
+            logger.error("Database not initialized in TenantGuardMiddleware")
+            return False
+        
+        membership = await self._db.organization_users.find_one({
+            "user_id": user_id,
+            "organization_id": org_id,
+            "status": "active"
+        })
+        
+        return membership is not None
     
     def _is_public(self, path: str) -> bool:
-        """Check if path is a public endpoint"""
+        """Check if path is public"""
         if path in self.PUBLIC_ENDPOINTS:
             return True
         
