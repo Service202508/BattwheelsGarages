@@ -322,7 +322,8 @@ def run():
             r = c.get(f"{API_URL}/invoices-enhanced/{inv_id}", headers=H)
             T("Invoice Read by ID", r.status_code == 200, f"HTTP {r.status_code}")
             inv_detail = r.json().get("invoice", {}) if r.status_code == 200 else {}
-            T("Invoice total > 0", inv_detail.get("total", 0) > 0, f"total={inv_detail.get('total',0)}")
+            T("Invoice total > 0", inv_detail.get("grand_total", inv_detail.get("total", 0)) > 0,
+              f"grand_total={inv_detail.get('grand_total')} total={inv_detail.get('total')}")
             T("Invoice has invoice_number", bool(inv_detail.get("invoice_number")), f"invoice_number missing")
 
             r = c.post(f"{API_URL}/invoices-enhanced/{inv_id}/send", headers=H, json={})
