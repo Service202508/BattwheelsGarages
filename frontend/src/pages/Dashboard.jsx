@@ -118,6 +118,9 @@ export default function Dashboard({ user }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("service-tickets");
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [leaderboardPeriod, setLeaderboardPeriod] = useState("this_month");
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
