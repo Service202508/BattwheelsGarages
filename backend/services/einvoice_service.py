@@ -884,15 +884,86 @@ class IRNGenerator:
                     }}
                 )
                 
-                # Update invoice
+                # Get reason text
+                reason_texts = {
+                    "1": "Duplicate",
+                    "2": "Data Entry Mistake",
+                    "3": "Order Cancelled",
+                    "4": "Other"
+                }
+                reason_text = reason_texts.get(reason, "Other")
+                
+                invoice_id = irn_record.get("invoice_id")
+                
+                # Update invoice status to CANCELLED (5A)
                 await db.invoices.update_one(
-                    {"invoice_id": irn_record.get("invoice_id")},
+                    {"invoice_id": invoice_id},
                     {"$set": {
+                        "status": "cancelled",
                         "irn_status": "cancelled",
-                        "irn_cancelled_at": datetime.now(timezone.utc),
-                        "irn_cancel_reason": reason
+                        "irn_cancelled_at": datetime.now(timezone.utc).isoformat(),
+                        "irn_cancel_reason": reason,
+                        "irn_cancel_remarks": cancel_remarks,
+                        "updated_time": datetime.now(timezone.utc).isoformat()
                     }}
                 )
+                
+                # Post reversal journal entry (5A)
+                invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+                if invoice:
+                    try:
+                        # Create reversal journal entry
+                        reversal_entry = {
+                            "entry_type": "IRN_CANCELLATION",
+                            "organization_id": self.org_id,
+                            "reference_type": "INVOICE",
+                            "reference_id": invoice_id,
+                            "date": datetime.now(timezone.utc).isoformat(),
+                            "narration": f"IRN Cancelled: Reason: {reason_text} | Original IRN: {irn}",
+                            "total_debit": invoice.get("grand_total", 0),
+                            "total_credit": invoice.get("grand_total", 0),
+                            "created_at": datetime.now(timezone.utc),
+                            "lines": [
+                                # Reverse: Credit Accounts Receivable (was debit)
+                                {
+                                    "account_type": "ACCOUNTS_RECEIVABLE",
+                                    "debit": 0,
+                                    "credit": invoice.get("grand_total", 0),
+                                    "description": f"IRN Cancelled - Reversal for {invoice.get('invoice_number')}"
+                                },
+                                # Reverse: Debit Sales Revenue (was credit)
+                                {
+                                    "account_type": "SALES_REVENUE",
+                                    "debit": invoice.get("sub_total", 0),
+                                    "credit": 0,
+                                    "description": f"IRN Cancelled - Sales Reversal"
+                                },
+                                # Reverse: Debit Tax Payable (was credit)
+                                {
+                                    "account_type": "TAX_PAYABLE",
+                                    "debit": invoice.get("tax_total", 0),
+                                    "credit": 0,
+                                    "description": f"IRN Cancelled - Tax Reversal"
+                                }
+                            ]
+                        }
+                        await db.journal_entries.insert_one(reversal_entry)
+                        logger.info(f"Posted IRN cancellation reversal journal entry for invoice {invoice.get('invoice_number')}")
+                    except Exception as je:
+                        logger.warning(f"Failed to post reversal journal entry: {je}")
+                    
+                    # Add to invoice history (5A)
+                    try:
+                        history_entry = {
+                            "invoice_id": invoice_id,
+                            "action": "irn_cancelled",
+                            "details": f"IRN cancelled: {reason_text}. Original IRN: {irn}",
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                            "user": "system"
+                        }
+                        await db.invoice_history.insert_one(history_entry)
+                    except Exception as he:
+                        logger.warning(f"Failed to add history entry: {he}")
                 
                 logger.info(f"IRN cancelled successfully: {irn}")
                 
