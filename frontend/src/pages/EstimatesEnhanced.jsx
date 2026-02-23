@@ -35,8 +35,7 @@ export default function EstimatesEnhanced() {
   const [summary, setSummary] = useState(null);
   const [funnel, setFunnel] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const { search, setSearch, statusFilter, setStatusFilter } = useEstimateFilters();
 
   // Dialogs
   const [showCreateDialog, setShowCreateDialog] = useState(false);
