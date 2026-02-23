@@ -1,12 +1,66 @@
 # Battwheels OS - Product Requirements Document
 
 ## SaaS Status: FULL SAAS PLATFORM COMPLETE ✅
-**Last Updated:** February 2026 (Session 104)
+**Last Updated:** February 2026 (Session 105)
 
 ---
 
 ## Design Philosophy
 **Dark-First Enterprise Platform** - Battwheels OS uses a single, excellent dark volt theme. No light mode toggle. This eliminates doubled design maintenance, ensures a consistent premium experience, and establishes clear product identity.
+
+---
+
+## Session 105 Updates (February 2026)
+
+### GST E-Invoice IRN Integration - Step 4 ✅ (P0 IN PROGRESS)
+**Status:** ✅ Step 4 (PDF Generation) COMPLETE
+
+Implemented comprehensive GST-compliant invoice PDF generation with IRN block support:
+
+**Backend Implementation:**
+- `/backend/services/pdf_service.py` - Enhanced PDF service (1600+ lines)
+  - `generate_gst_invoice_html()` - Full GST-compliant invoice PDF generator
+  - `generate_credit_note_html()` - Credit Note PDF generator (4F)
+  - `number_to_words_indian()` - Indian number system conversion (Lakhs, Crores)
+  - IRN block with 64-char IRN, Ack No/Date, and signed QR code
+  - GST Summary table for B2B invoices
+  - Bank details and payment QR sections
+  - Signature block and terms/conditions
+
+- `/backend/routes/invoices_enhanced.py` - Updated PDF endpoint
+  - Business rule 4A enforcement:
+    - Blocks PDF download if E-Invoice enabled + B2B + IRN pending
+    - Generates full PDF with IRN block if IRN registered
+    - Standard PDF without IRN for B2C or E-Invoice disabled
+  - File naming: `INV-{number}-{customer}.pdf`
+
+**PDF Layout (4B, 4C):**
+1. **Header Section** - Company logo, "TAX INVOICE" title
+2. **Supplier Block** - Legal name, address, GSTIN, State Code, PAN
+3. **Buyer Block** - Customer details, billing address, GSTIN
+4. **Invoice Details Row** - Number, Date, Due Date, Place of Supply, Reverse Charge
+5. **IRN Block** (if registered):
+   - 64-char IRN (Courier New, 7.5pt)
+   - Acknowledgement Number & Date
+   - Signed QR Code (80x80px) with "Scan to verify" label
+6. **Line Items Table** - Description, HSN/SAC, Qty, Rate, GST%, CGST/SGST/IGST, Total
+7. **Totals Section** - Subtotal, Tax breakdown, Grand Total
+8. **Amount in Words** - Indian format (Lakhs, Crores)
+9. **GST Summary Table** - HSN-wise tax breakdown (for B2B > ₹50,000)
+10. **Bank Details** - Account info for payment
+11. **Signature Block** - "For {Company Name}" + Authorized Signatory
+12. **Footer** - Computer generated notice + timestamp
+
+**Technical Specs (4E):**
+- Library: WeasyPrint (HTML to PDF)
+- Paper: A4, 15mm margins
+- Fonts: Helvetica (body), Courier New (codes)
+- Required dependencies: `libpangoft2-1.0-0`, `libgdk-pixbuf-2.0-0`
+
+**Testing:**
+- PDF generation verified via curl (25KB valid PDF 1.7)
+- UI screenshot verification complete
+- E-Invoice business rules (4A) functioning correctly
 
 ---
 
@@ -27,6 +81,7 @@ Implemented full Razorpay payment gateway integration with multi-tenant support:
   - `POST /api/payments/verify` - Verifies payment signature
   - `POST /api/payments/webhook` - Handles Razorpay webhooks with signature verification
   - `POST /api/payments/refund` - Initiates refunds from credit notes
+
 
 **Frontend Implementation:**
 - `/frontend/src/pages/OrganizationSettings.jsx` - Added Razorpay configuration card to Finance tab
