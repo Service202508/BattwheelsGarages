@@ -209,8 +209,9 @@ def run():
     vehicles = r.json() if r.status_code == 200 and isinstance(r.json(), list) else []
 
     cust_id = customers[0].get("contact_id") if customers else new_contact_id
+    cust_name = customers[0].get("name", "Workshop Customer") if customers else "Workshop Customer"
     if cust_id:
-        veh_data = {"customer_id": cust_id, "make": "Ather", "model": "450X",
+        veh_data = {"customer_id": cust_id, "owner_name": cust_name, "make": "Ather", "model": "450X",
                     "registration_number": f"MH01AB{ts%10000:04d}", "year": 2024, "vehicle_type": "2W"}
         r = c.post(f"{API_URL}/vehicles", headers=H, json=veh_data)
         T("Vehicle Create", r.status_code == 200, f"HTTP {r.status_code} {r.text[:100]}")
