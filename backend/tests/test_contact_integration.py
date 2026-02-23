@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://battwheels-saas.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://feature-gating-4.preview.emergentagent.com')
 
 class TestContactIntegrationModule:
     """Test suite for Contact Integration API endpoints"""
