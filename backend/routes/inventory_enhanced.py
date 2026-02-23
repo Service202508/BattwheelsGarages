@@ -1629,7 +1629,7 @@ async def finalize_stocktake(stocktake_id: str):
     if st["status"] != "in_progress":
         raise HTTPException(status_code=400, detail="Stocktake already finalized or not in progress")
 
-    counted_lines = [l for l in st.get("lines", []) if l["counted"]]
+    counted_lines = [ln for ln in st.get("lines", []) if ln["counted"]]
     if not counted_lines:
         raise HTTPException(status_code=400, detail="No items have been counted yet")
 
