@@ -1615,12 +1615,36 @@ async def create_inventory_item(
 @api_router.get("/inventory")
 async def get_inventory(
     request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+    ctx: TenantContext = Depends(tenant_context_required),
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1),
+    category: Optional[str] = Query(None),
+    low_stock: bool = Query(False)
 ):
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
     await require_auth(request)
     query = {"organization_id": ctx.org_id}
-    items = await db.inventory.find(query, {"_id": 0}).to_list(1000)
-    return items
+    if category:
+        query["category"] = category
+    if low_stock:
+        query["$expr"] = {"$lte": ["$quantity", "$reorder_level"]}
+    total = await db.inventory.count_documents(query)
+    skip = (page - 1) * limit
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+    items = await db.inventory.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    return {
+        "data": items,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
 
 @api_router.get("/inventory/{item_id}")
 async def get_inventory_item(
