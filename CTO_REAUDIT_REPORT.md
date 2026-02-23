@@ -229,11 +229,12 @@ T16.2 | Add task to project            | ✅ PASS | 200 | task_7b09abd5322f
 T16.3 | Log time on project            | ✅ PASS | 200 | 3h logged
 
 MODULE 17 — CUSTOMER SATISFACTION (2/4)
-T17.1 | Close ticket (triggers survey) | ⚠️ PARTIAL | 200 | Ticket closes to status:closed.
-      survey_token NOT in ticket GET response. Stored in ticket_reviews collection.
-      The token IS generated but not surfaced in ticket document.
-T17.2 | Survey token from ticket       | ⚠️ PARTIAL | 200 | Token visible via GET /api/reports/satisfaction
-      but not in individual ticket GET response. Missing field in ticket schema.
+T17.1 | Close ticket (triggers survey) | ✅ PASS | 200 | POST /api/tickets/{id}/close with
+      {"resolution":"...", "resolution_outcome":"success"} → survey_token in response ✅ FIXED
+      NOTE: close endpoint requires "resolution" field (required, not optional)
+T17.2 | Survey token from ticket       | ✅ PASS | 200 | survey_token present in GET /api/tickets/{id}
+      response for properly closed tickets ✅ FIXED
+      Verified: tkt_0ee47b7e5f7a has survey_token:srv_f7c07a74493b45aca54c3ae9
 T17.3 | Submit customer review         | ✅ PASS | 200/400 | POST /api/public/survey/{token} works
       (400 = already completed, which confirms endpoint is live and working) ✅ FIXED
 T17.4 | Satisfaction report            | ✅ PASS | 200 | avg_rating:5.0 total:1 ✅ FIXED
