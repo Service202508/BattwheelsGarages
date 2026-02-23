@@ -395,6 +395,28 @@ def generate_gst_invoice_html(
             <div class="qr-label">Scan to pay online</div>
         </div>
         '''
+
+    # Survey QR Code Block
+    survey_qr_block = ""
+    if survey_qr_url:
+        qr_b64 = generate_qr_base64(survey_qr_url)
+        if qr_b64:
+            survey_qr_block = f'''
+        <div style="margin-top:16px; padding:12px 16px; border-top:1px solid #e5e7eb;
+                    display:flex; align-items:center; gap:16px; page-break-inside:avoid;">
+            <img src="data:image/png;base64,{qr_b64}" width="72" height="72"
+                 alt="Survey QR" style="flex-shrink:0; border:1px solid #e5e7eb;" />
+            <div>
+                <div style="font-size:9pt; font-weight:600; color:#111; margin-bottom:3px;">
+                    Rate your service
+                </div>
+                <div style="font-size:7.5pt; color:#6b7280; line-height:1.4;">
+                    Scan to share feedback<br>
+                    Your response helps us improve.
+                </div>
+            </div>
+        </div>
+            '''
     
     # Terms and Conditions
     terms = invoice.get('terms_conditions', invoice.get('terms', org.get('default_terms', '')))
