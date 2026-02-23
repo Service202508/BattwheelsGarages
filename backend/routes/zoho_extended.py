@@ -3,7 +3,7 @@ Zoho Books Extended Features
 Recurring Transactions, Delivery Challans, Retainer Invoices, Projects, Taxes, etc.
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Request, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional, List, Dict

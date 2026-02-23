@@ -4,7 +4,7 @@ AMC (Annual Maintenance Contract) Routes
 Admin routes for managing AMC plans and subscriptions.
 Based on official Battwheels Garages subscription plans.
 """
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, HTTPException, Depends, Request, Query
 from motor.motor_asyncio import AsyncIOMotorClient
 from typing import Optional, List
 from pydantic import BaseModel, Field
