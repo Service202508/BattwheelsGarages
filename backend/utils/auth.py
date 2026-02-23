@@ -3,6 +3,7 @@ Battwheels OS - Authentication Utilities
 Shared auth helpers for all routes
 """
 import os
+import jwt
 import bcrypt
 from datetime import datetime, timezone, timedelta
 from fastapi import HTTPException, Request
