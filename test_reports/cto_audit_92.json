@@ -1,28 +1,12 @@
 {
-  "timestamp": "2026-02-23T20:39:43.765585",
+  "timestamp": "2026-02-23T20:40:30.838489",
   "target": "https://revenue-health-dash.preview.emergentagent.com",
   "total_tests": 103,
-  "passed": 100,
-  "failed": 3,
-  "pass_rate": 97.1,
+  "passed": 103,
+  "failed": 0,
+  "pass_rate": 100.0,
   "market_ready": true,
-  "failures": [
-    {
-      "n": 33,
-      "test": "Vehicle Create",
-      "error": "HTTP 422 {\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"battery_capacity\"],\"msg\":\"Field required\",\"input\":{\"cust"
-    },
-    {
-      "n": 34,
-      "test": "Vehicle Read by ID",
-      "error": "skipped \u2014 create failed"
-    },
-    {
-      "n": 41,
-      "test": "Ticket Add Update/Comment",
-      "error": "HTTP 422"
-    }
-  ],
+  "failures": [],
   "all_results": [
     {
       "n": 1,
@@ -118,7 +102,7 @@
       "n": 16,
       "test": "Item Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"code\":0,\"message\":\"Item created successfully\",\"item\":{\"item_id\":\"I-4FA5602966C"
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Item created successfully\",\"item\":{\"item_id\":\"I-93F16B70A0B"
     },
     {
       "n": 17,
@@ -184,7 +168,7 @@
       "n": 27,
       "test": "Contact Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"code\":0,\"message\":\"Contact created\",\"contact\":{\"contact_id\":\"CON-78105553C225\""
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Contact created\",\"contact\":{\"contact_id\":\"CON-8E260E06CFAB\""
     },
     {
       "n": 28,
@@ -219,14 +203,14 @@
     {
       "n": 33,
       "test": "Vehicle Create",
-      "status": "FAIL",
-      "detail": "HTTP 422 {\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"battery_capacity\"],\"msg\":\"Field required\",\"input\":{\"cust"
+      "status": "PASS",
+      "detail": "HTTP 200 {\"vehicle_id\":\"veh_91df49c024c9\",\"owner_id\":\"user_a194add87d03\",\"owner_name\":\"Audit Customer 1771878"
     },
     {
       "n": 34,
       "test": "Vehicle Read by ID",
-      "status": "FAIL",
-      "detail": "skipped \u2014 create failed"
+      "status": "PASS",
+      "detail": "HTTP 200"
     },
     {
       "n": 35,
@@ -250,7 +234,7 @@
       "n": 38,
       "test": "Ticket Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"ticket_id\":\"tkt_e36af59addde\",\"title\":\"Audit Ticket 1771879173\",\"description\":\"Battery drain issue"
+      "detail": "HTTP 200 {\"ticket_id\":\"tkt_bfb63c7eb1bb\",\"title\":\"Audit Ticket 1771879221\",\"description\":\"Battery drain issue"
     },
     {
       "n": 39,
@@ -262,13 +246,13 @@
       "n": 40,
       "test": "Ticket Status Update",
       "status": "PASS",
-      "detail": "HTTP 200 {\"ticket_id\":\"tkt_e36af59addde\",\"title\":\"Audit Ticket 1771879173\",\"description\":"
+      "detail": "HTTP 200 {\"ticket_id\":\"tkt_bfb63c7eb1bb\",\"title\":\"Audit Ticket 1771879221\",\"description\":"
     },
     {
       "n": 41,
       "test": "Ticket Add Update/Comment",
-      "status": "FAIL",
-      "detail": "HTTP 422"
+      "status": "PASS",
+      "detail": "HTTP 200 {\"activity_id\":\"act_a12fc305a2dd\",\"ticket_id\":\"tkt_bfb63c7eb1bb\",\"action\":\"note\""
     },
     {
       "n": 42,
@@ -298,7 +282,7 @@
       "n": 46,
       "test": "Estimate Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"code\":0,\"message\":\"Estimate created\",\"estimate\":{\"estimate_id\":\"EST-E30EEAB4AA"
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Estimate created\",\"estimate\":{\"estimate_id\":\"EST-389882A9AB"
     },
     {
       "n": 47,
@@ -328,7 +312,7 @@
       "n": 51,
       "test": "Invoice Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"code\":0,\"message\":\"Invoice created\",\"invoice\":{\"invoice_id\":\"INV-6902A5BFF3AF\",\"invoice_number\":\"I"
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Invoice created\",\"invoice\":{\"invoice_id\":\"INV-26625E9698E5\",\"invoice_number\":\"I"
     },
     {
       "n": 52,
@@ -412,7 +396,7 @@
       "n": 65,
       "test": "Sales Order Create",
       "status": "PASS",
-      "detail": "HTTP 200 {\"code\":0,\"message\":\"Sales Order created\",\"salesorder\":{\"salesorder_id\":\"SO-824C"
+      "detail": "HTTP 200 {\"code\":0,\"message\":\"Sales Order created\",\"salesorder\":{\"salesorder_id\":\"SO-D6FD"
     },
     {
       "n": 66,
