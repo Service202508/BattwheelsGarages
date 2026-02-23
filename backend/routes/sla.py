@@ -299,10 +299,12 @@ async def run_sla_breach_check(org_id: str = None) -> Dict:
     db = get_db()
     now = datetime.now(timezone.utc)
     now_iso = now.isoformat()
+    one_hour_from_now = (now + timedelta(hours=1)).isoformat()
 
     response_breaches = 0
     resolution_breaches = 0
     auto_reassignments = 0
+    approaching_alerts_sent = 0
 
     # Build base query
     base_query = {
@@ -311,7 +313,43 @@ async def run_sla_breach_check(org_id: str = None) -> Dict:
     if org_id:
         base_query["organization_id"] = org_id
 
-    # Check response SLA breaches (first response not given, deadline passed)
+    # ── ALERT TYPE 1: Approaching breach (within 1 hour, not yet sent) ──────
+    approaching_query = {
+        **base_query,
+        "sla_approaching_alert_sent": {"$ne": True},
+        "$or": [
+            {
+                "first_response_at": None,
+                "sla_response_due_at": {"$lte": one_hour_from_now, "$gt": now_iso}
+            },
+            {
+                "resolved_at": None,
+                "sla_resolution_due_at": {"$lte": one_hour_from_now, "$gt": now_iso}
+            }
+        ]
+    }
+    approaching_tickets = await db.tickets.find(
+        approaching_query,
+        {"_id": 0, "ticket_id": 1, "title": 1, "priority": 1, "organization_id": 1,
+         "customer_name": 1, "vehicle_make": 1, "vehicle_model": 1,
+         "assigned_technician_id": 1, "assigned_technician_name": 1,
+         "sla_response_due_at": 1, "sla_resolution_due_at": 1, "status": 1}
+    ).to_list(200)
+
+    for ticket in approaching_tickets:
+        t_org_id = ticket.get("organization_id", org_id)
+        deadline = ticket.get("sla_resolution_due_at") or ticket.get("sla_response_due_at", "")
+        try:
+            await _send_sla_approaching_alert(ticket, deadline, t_org_id)
+            await db.tickets.update_one(
+                {"ticket_id": ticket["ticket_id"]},
+                {"$set": {"sla_approaching_alert_sent": True}}
+            )
+            approaching_alerts_sent += 1
+        except Exception as e:
+            logger.warning(f"SLA approaching alert failed for {ticket['ticket_id']}: {e}")
+
+    # ── Check response SLA breaches ──────────────────────────────────────────
     response_breach_query = {
         **base_query,
         "sla_response_breached": {"$ne": True},
@@ -320,7 +358,10 @@ async def run_sla_breach_check(org_id: str = None) -> Dict:
     }
     response_breached_tickets = await db.tickets.find(
         response_breach_query,
-        {"_id": 0, "ticket_id": 1, "title": 1, "priority": 1, "organization_id": 1, "customer_name": 1, "assigned_technician_id": 1, "assigned_technician_name": 1}
+        {"_id": 0, "ticket_id": 1, "title": 1, "priority": 1, "organization_id": 1,
+         "customer_name": 1, "vehicle_make": 1, "vehicle_model": 1,
+         "assigned_technician_id": 1, "assigned_technician_name": 1,
+         "sla_response_due_at": 1}
     ).to_list(500)
 
     for ticket in response_breached_tickets:
@@ -328,16 +369,17 @@ async def run_sla_breach_check(org_id: str = None) -> Dict:
             {"ticket_id": ticket["ticket_id"]},
             {"$set": {
                 "sla_response_breached": True,
-                "sla_response_breached_at": now_iso
+                "sla_response_breached_at": now_iso,
+                "sla_breach_alert_sent": True,
             }}
         )
         response_breaches += 1
         try:
-            await _send_sla_breach_notification(ticket, "response", ticket.get("organization_id", org_id))
+            await _send_sla_breach_alert(ticket, "response", ticket.get("organization_id", org_id), now)
         except Exception as e:
             logger.warning(f"SLA notification failed for {ticket['ticket_id']}: {e}")
 
-    # Check resolution SLA breaches (not resolved, deadline passed)
+    # ── Check resolution SLA breaches ────────────────────────────────────────
     resolution_breach_query = {
         **base_query,
         "sla_resolution_breached": {"$ne": True},
@@ -346,8 +388,10 @@ async def run_sla_breach_check(org_id: str = None) -> Dict:
     }
     resolution_breached_tickets = await db.tickets.find(
         resolution_breach_query,
-        {"_id": 0, "ticket_id": 1, "title": 1, "priority": 1, "organization_id": 1, "customer_name": 1,
-         "assigned_technician_id": 1, "assigned_technician_name": 1, "sla_resolution_breached_at": 1}
+        {"_id": 0, "ticket_id": 1, "title": 1, "priority": 1, "organization_id": 1,
+         "customer_name": 1, "vehicle_make": 1, "vehicle_model": 1,
+         "assigned_technician_id": 1, "assigned_technician_name": 1,
+         "sla_resolution_due_at": 1, "sla_resolution_breached_at": 1}
     ).to_list(500)
 
     for ticket in resolution_breached_tickets:
@@ -356,12 +400,13 @@ async def run_sla_breach_check(org_id: str = None) -> Dict:
             {"ticket_id": ticket["ticket_id"]},
             {"$set": {
                 "sla_resolution_breached": True,
-                "sla_resolution_breached_at": now_iso
+                "sla_resolution_breached_at": now_iso,
+                "sla_breach_alert_sent": True,
             }}
         )
         resolution_breaches += 1
         try:
-            await _send_sla_breach_notification(ticket, "resolution", ticket_org_id)
+            await _send_sla_breach_alert(ticket, "resolution", ticket_org_id, now)
         except Exception as e:
             logger.warning(f"SLA notification failed for {ticket['ticket_id']}: {e}")
 
@@ -398,10 +443,14 @@ async def run_sla_breach_check(org_id: str = None) -> Dict:
         except Exception as e:
             logger.warning(f"Auto-reassignment failed for {ticket['ticket_id']}: {e}")
 
-    logger.info(f"SLA breach check: {response_breaches} response, {resolution_breaches} resolution, {auto_reassignments} auto-reassigned")
+    logger.info(
+        f"SLA check: {response_breaches} resp-breach, {resolution_breaches} res-breach, "
+        f"{approaching_alerts_sent} approaching, {auto_reassignments} auto-reassigned"
+    )
     return {
         "response_breaches_found": response_breaches,
         "resolution_breaches_found": resolution_breaches,
+        "approaching_alerts_sent": approaching_alerts_sent,
         "auto_reassignments": auto_reassignments,
         "checked_at": now_iso
     }
