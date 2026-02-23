@@ -212,6 +212,9 @@ class RBACMiddleware(BaseHTTPMiddleware):
         r"^/api/public/.*",
         r"^/api/webhooks/.*",
         r"^/api/customer-portal/auth.*",
+        r"^/api/organizations/signup$",
+        r"^/api/organizations/accept-invite$",
+        r"^/api/platform/.*",
     ]
     
     def __init__(self, app):
