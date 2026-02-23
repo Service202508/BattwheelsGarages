@@ -468,6 +468,144 @@ class BankingService:
             }
             for r in results
         ]
+    
+    # ==================== INTER-ACCOUNT TRANSFERS ====================
+    
+    async def transfer_between_accounts(
+        self,
+        from_account_id: str,
+        to_account_id: str,
+        amount: float,
+        transfer_date: str,
+        reference: Optional[str] = None,
+        notes: Optional[str] = None,
+        created_by: str = "system",
+        de_service = None
+    ) -> Tuple[Dict[str, Any], Optional[str]]:
+        """Transfer funds between two bank accounts"""
+        from_account = await self.get_account(from_account_id)
+        to_account = await self.get_account(to_account_id)
+        
+        if not from_account:
+            raise ValueError("Source account not found")
+        if not to_account:
+            raise ValueError("Destination account not found")
+        
+        if from_account["organization_id"] != to_account["organization_id"]:
+            raise ValueError("Cannot transfer between different organizations")
+        
+        # Check sufficient balance (for non-credit card accounts)
+        if from_account["account_type"] != "CREDIT_CARD":
+            if from_account["current_balance"] < amount:
+                raise ValueError(f"Insufficient balance in {from_account['account_name']}")
+        
+        transfer_id = f"transfer_{uuid.uuid4().hex[:12]}"
+        
+        # Record debit transaction (from account)
+        debit_txn = await self.record_transaction(
+            account_id=from_account_id,
+            transaction_date=transfer_date,
+            description=f"Transfer to {to_account['account_name']}",
+            transaction_type="DEBIT",
+            amount=amount,
+            category="TRANSFER",
+            reference_number=reference or transfer_id,
+            created_by=created_by
+        )
+        
+        # Record credit transaction (to account)
+        credit_txn = await self.record_transaction(
+            account_id=to_account_id,
+            transaction_date=transfer_date,
+            description=f"Transfer from {from_account['account_name']}",
+            transaction_type="CREDIT",
+            amount=amount,
+            category="TRANSFER",
+            reference_number=reference or transfer_id,
+            created_by=created_by
+        )
+        
+        # Post journal entry
+        journal_entry_id = None
+        if de_service:
+            journal_entry_id = await self._post_transfer_journal(
+                from_account, to_account, amount, transfer_date, created_by, de_service
+            )
+        
+        transfer = {
+            "transfer_id": transfer_id,
+            "from_account_id": from_account_id,
+            "from_account_name": from_account["account_name"],
+            "to_account_id": to_account_id,
+            "to_account_name": to_account["account_name"],
+            "amount": amount,
+            "transfer_date": transfer_date,
+            "reference": reference,
+            "notes": notes,
+            "debit_transaction_id": debit_txn["transaction_id"],
+            "credit_transaction_id": credit_txn["transaction_id"],
+            "journal_entry_id": journal_entry_id,
+            "created_by": created_by,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        logger.info(f"Transferred ₹{amount} from {from_account['account_name']} to {to_account['account_name']}")
+        
+        return transfer, journal_entry_id
+    
+    async def _post_transfer_journal(
+        self,
+        from_account: Dict,
+        to_account: Dict,
+        amount: float,
+        transfer_date: str,
+        created_by: str,
+        de_service
+    ) -> Optional[str]:
+        """Post journal entry for inter-account transfer"""
+        try:
+            org_id = from_account["organization_id"]
+            await de_service.ensure_system_accounts(org_id)
+            
+            # Both accounts use Bank A/C (1200) in double-entry
+            bank_account = await de_service.get_account_by_code(org_id, "1200")
+            
+            if not bank_account:
+                return None
+            
+            narration = f"Bank transfer: {from_account['account_name']} → {to_account['account_name']}"
+            
+            success, msg, entry = await de_service.create_journal_entry(
+                organization_id=org_id,
+                entry_date=transfer_date,
+                description=narration,
+                lines=[
+                    {
+                        "account_id": bank_account["account_id"],
+                        "debit_amount": amount,
+                        "credit_amount": 0,
+                        "description": f"Transfer to {to_account['account_name']}"
+                    },
+                    {
+                        "account_id": bank_account["account_id"],
+                        "debit_amount": 0,
+                        "credit_amount": amount,
+                        "description": f"Transfer from {from_account['account_name']}"
+                    }
+                ],
+                entry_type="JOURNAL",
+                source_document_id=f"{from_account['account_id']}_to_{to_account['account_id']}",
+                source_document_type="BANK_TRANSFER",
+                created_by=created_by
+            )
+            
+            if success:
+                return entry.get("entry_id")
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error posting transfer journal: {e}")
+            return None
 
 
 # ==================== SERVICE FACTORY ====================
