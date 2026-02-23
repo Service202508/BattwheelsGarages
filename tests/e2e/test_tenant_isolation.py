@@ -342,8 +342,9 @@ class TestPlatformAdmin:
         assert ORG_B_ID in org_ids, f"Org B not in platform list"
 
     def test_regular_admin_blocked_from_platform_routes(self):
-        """Regular org admin must NOT access /platform/* routes."""
-        r = api_get(ADMIN_A, "/platform/organizations", ORG_A_ID)
+        """Regular org admin must NOT access /platform/* routes.
+        Note: admin@battwheels.in has is_platform_admin=True, so we use Org B admin."""
+        r = api_get(ADMIN_B, "/platform/organizations", ORG_B_ID)
         assert r.status_code in (403, 401), (
             f"SECURITY BREACH: Regular admin accessed platform routes. "
             f"Status: {r.status_code}, Body: {r.text[:200]}"
