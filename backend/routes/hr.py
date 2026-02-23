@@ -443,7 +443,8 @@ async def calculate_payroll(employee_id: str, request: Request, month: str = Non
 
 
 @router.post("/payroll/generate")
-async def generate_payroll(request: Request, month: str = None, year: int = None):
+async def generate_payroll(request: Request, month: str = None, year: int = None,
+                           _: None = Depends(require_feature("hr_payroll"))):
     service = get_service()
     user = await get_current_user(request, service.db)
     
