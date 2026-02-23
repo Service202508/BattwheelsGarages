@@ -1273,3 +1273,209 @@ def generate_ap_aging_excel(data: dict) -> bytes:
     wb.save(buffer)
     buffer.seek(0)
     return buffer.getvalue()
+
+
+# ============== TECHNICIAN PERFORMANCE REPORT ==============
+
+@router.get("/technician-performance")
+async def get_technician_performance(
+    period: str = Query("this_month", description="this_week | this_month | this_quarter | custom"),
+    date_from: str = Query(None),
+    date_to: str = Query(None),
+    request=None,
+):
+    """
+    GET /api/reports/technician-performance
+    Returns per-technician performance metrics for the specified period,
+    ranked by a composite score: resolution_rate(0.4) + sla_compliance(0.4) + speed(0.2).
+    """
+    from fastapi import Request as FastAPIRequest
+    import jwt as pyjwt
+    import math
+
+    # Extract org_id from JWT
+    org_id = None
+    if request is not None:
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            try:
+                payload = pyjwt.decode(
+                    auth_header.split(" ")[1],
+                    os.environ.get("JWT_SECRET", "battwheels-secret"),
+                    algorithms=["HS256"]
+                )
+                org_id = payload.get("org_id")
+            except Exception:
+                pass
+
+    db = get_db()
+    now = datetime.now(timezone.utc)
+
+    # Determine date range
+    if period == "this_week":
+        start_dt = now - timedelta(days=7)
+    elif period == "this_month":
+        start_dt = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    elif period == "this_quarter":
+        quarter_month = ((now.month - 1) // 3) * 3 + 1
+        start_dt = now.replace(month=quarter_month, day=1, hour=0, minute=0, second=0, microsecond=0)
+    elif period == "custom" and date_from:
+        try:
+            start_dt = datetime.fromisoformat(date_from.replace("Z", "+00:00"))
+            if start_dt.tzinfo is None:
+                start_dt = start_dt.replace(tzinfo=timezone.utc)
+        except Exception:
+            start_dt = now - timedelta(days=30)
+    else:
+        start_dt = now - timedelta(days=30)
+
+    if period == "custom" and date_to:
+        try:
+            end_dt = datetime.fromisoformat(date_to.replace("Z", "+00:00"))
+            if end_dt.tzinfo is None:
+                end_dt = end_dt.replace(tzinfo=timezone.utc)
+        except Exception:
+            end_dt = now
+    else:
+        end_dt = now
+
+    start_iso = start_dt.isoformat()
+    end_iso = end_dt.isoformat()
+
+    # Build query
+    query = {
+        "assigned_technician_id": {"$exists": True, "$ne": None},
+        "created_at": {"$gte": start_iso, "$lte": end_iso}
+    }
+    if org_id:
+        query["organization_id"] = org_id
+
+    tickets = await db.tickets.find(query, {
+        "_id": 0,
+        "ticket_id": 1,
+        "assigned_technician_id": 1,
+        "assigned_technician_name": 1,
+        "status": 1,
+        "priority": 1,
+        "created_at": 1,
+        "resolved_at": 1,
+        "first_response_at": 1,
+        "sla_response_due_at": 1,
+        "sla_resolution_due_at": 1,
+        "sla_response_breached": 1,
+        "sla_resolution_breached": 1,
+    }).to_list(5000)
+
+    # Group by technician
+    tech_map = {}
+    for t in tickets:
+        tid = t.get("assigned_technician_id")
+        if not tid:
+            continue
+        if tid not in tech_map:
+            tech_map[tid] = {
+                "technician_id": tid,
+                "technician_name": t.get("assigned_technician_name") or "Unknown",
+                "tickets": []
+            }
+        tech_map[tid]["tickets"].append(t)
+
+    # Also fetch technician names from users collection
+    if tech_map:
+        tech_users = await db.users.find(
+            {"user_id": {"$in": list(tech_map.keys())}},
+            {"_id": 0, "user_id": 1, "name": 1}
+        ).to_list(200)
+        for u in tech_users:
+            if u["user_id"] in tech_map:
+                tech_map[u["user_id"]]["technician_name"] = u.get("name") or tech_map[u["user_id"]]["technician_name"]
+
+    resolved_statuses = {"resolved", "closed"}
+
+    results = []
+    for tid, data in tech_map.items():
+        tkts = data["tickets"]
+        total = len(tkts)
+        resolved = [t for t in tkts if t.get("status") in resolved_statuses]
+        total_resolved = len(resolved)
+        resolution_rate = round((total_resolved / total * 100), 1) if total > 0 else 0.0
+
+        # Response time (minutes)
+        response_times = []
+        for t in tkts:
+            if t.get("first_response_at") and t.get("created_at"):
+                try:
+                    c = datetime.fromisoformat(t["created_at"].replace("Z", "+00:00"))
+                    r = datetime.fromisoformat(t["first_response_at"].replace("Z", "+00:00"))
+                    if c.tzinfo is None: c = c.replace(tzinfo=timezone.utc)
+                    if r.tzinfo is None: r = r.replace(tzinfo=timezone.utc)
+                    response_times.append((r - c).total_seconds() / 60)
+                except Exception:
+                    pass
+
+        # Resolution time (minutes)
+        resolution_times = []
+        for t in resolved:
+            if t.get("resolved_at") and t.get("created_at"):
+                try:
+                    c = datetime.fromisoformat(t["created_at"].replace("Z", "+00:00"))
+                    r = datetime.fromisoformat(t["resolved_at"].replace("Z", "+00:00"))
+                    if c.tzinfo is None: c = c.replace(tzinfo=timezone.utc)
+                    if r.tzinfo is None: r = r.replace(tzinfo=timezone.utc)
+                    resolution_times.append((r - c).total_seconds() / 60)
+                except Exception:
+                    pass
+
+        avg_response = round(sum(response_times) / len(response_times), 1) if response_times else None
+        avg_resolution = round(sum(resolution_times) / len(resolution_times), 1) if resolution_times else None
+
+        # SLA metrics
+        sla_breach_response = sum(1 for t in tkts if t.get("sla_response_breached"))
+        sla_breach_resolution = sum(1 for t in tkts if t.get("sla_resolution_breached"))
+        total_with_sla = sum(1 for t in tkts if t.get("sla_resolution_due_at"))
+        sla_breached_total = sum(1 for t in tkts if t.get("sla_response_breached") or t.get("sla_resolution_breached"))
+        within_sla = total_with_sla - sla_breached_total
+        sla_compliance = round((within_sla / total_with_sla * 100), 1) if total_with_sla > 0 else 100.0
+
+        # Ranking score: resolution_rate(0.4) + sla_compliance(0.4) + speed(0.2)
+        speed_score = 0.0
+        if avg_resolution and avg_resolution > 0:
+            # Normalize: 1/time (lower time = higher score), capped at reasonable max
+            speed_score = min(1.0, 480 / avg_resolution)  # 480 min = 8h benchmark
+        score = (resolution_rate / 100 * 0.4) + (sla_compliance / 100 * 0.4) + (speed_score * 0.2)
+
+        name = data["technician_name"]
+        initials = "".join(w[0].upper() for w in name.split() if w)[:2]
+
+        results.append({
+            "technician_id": tid,
+            "technician_name": name,
+            "avatar_initials": initials,
+            "total_tickets_assigned": total,
+            "total_tickets_resolved": total_resolved,
+            "resolution_rate_pct": resolution_rate,
+            "avg_response_time_minutes": avg_response,
+            "avg_resolution_time_minutes": avg_resolution,
+            "sla_breaches_response": sla_breach_response,
+            "sla_breaches_resolution": sla_breach_resolution,
+            "sla_compliance_rate_pct": sla_compliance,
+            "tickets_within_sla": within_sla,
+            "customer_satisfaction_score": None,
+            "_score": round(score, 4),
+        })
+
+    # Sort by score descending, assign rank
+    results.sort(key=lambda x: x["_score"], reverse=True)
+    for i, r in enumerate(results):
+        r["rank"] = i + 1
+        del r["_score"]
+
+    return {
+        "code": 0,
+        "technicians": results,
+        "period": period,
+        "date_from": start_iso,
+        "date_to": end_iso,
+        "total_technicians": len(results),
+    }
+
