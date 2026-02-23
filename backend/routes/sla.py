@@ -302,10 +302,11 @@ async def run_sla_breach_check(org_id: str = None) -> Dict:
 
     response_breaches = 0
     resolution_breaches = 0
+    auto_reassignments = 0
 
     # Build base query
     base_query = {
-        "status": {"$in": ["open", "assigned", "work_in_progress"]}
+        "status": {"$in": ["open", "assigned", "work_in_progress", "technician_assigned", "in_progress"]}
     }
     if org_id:
         base_query["organization_id"] = org_id
@@ -319,7 +320,7 @@ async def run_sla_breach_check(org_id: str = None) -> Dict:
     }
     response_breached_tickets = await db.tickets.find(
         response_breach_query,
-        {"_id": 0, "ticket_id": 1, "title": 1, "priority": 1, "organization_id": 1, "customer_name": 1, "assigned_technician_id": 1}
+        {"_id": 0, "ticket_id": 1, "title": 1, "priority": 1, "organization_id": 1, "customer_name": 1, "assigned_technician_id": 1, "assigned_technician_name": 1}
     ).to_list(500)
 
     for ticket in response_breached_tickets:
@@ -331,7 +332,6 @@ async def run_sla_breach_check(org_id: str = None) -> Dict:
             }}
         )
         response_breaches += 1
-        # Queue escalation notification (fire and forget)
         try:
             await _send_sla_breach_notification(ticket, "response", ticket.get("organization_id", org_id))
         except Exception as e:
@@ -346,10 +346,12 @@ async def run_sla_breach_check(org_id: str = None) -> Dict:
     }
     resolution_breached_tickets = await db.tickets.find(
         resolution_breach_query,
-        {"_id": 0, "ticket_id": 1, "title": 1, "priority": 1, "organization_id": 1, "customer_name": 1, "assigned_technician_id": 1}
+        {"_id": 0, "ticket_id": 1, "title": 1, "priority": 1, "organization_id": 1, "customer_name": 1,
+         "assigned_technician_id": 1, "assigned_technician_name": 1, "sla_resolution_breached_at": 1}
     ).to_list(500)
 
     for ticket in resolution_breached_tickets:
+        ticket_org_id = ticket.get("organization_id", org_id)
         await db.tickets.update_one(
             {"ticket_id": ticket["ticket_id"]},
             {"$set": {
@@ -359,59 +361,277 @@ async def run_sla_breach_check(org_id: str = None) -> Dict:
         )
         resolution_breaches += 1
         try:
-            await _send_sla_breach_notification(ticket, "resolution", ticket.get("organization_id", org_id))
+            await _send_sla_breach_notification(ticket, "resolution", ticket_org_id)
         except Exception as e:
             logger.warning(f"SLA notification failed for {ticket['ticket_id']}: {e}")
 
-    logger.info(f"SLA breach check complete: {response_breaches} response, {resolution_breaches} resolution breaches")
+        # Auto-reassignment check
+        try:
+            reassigned = await _maybe_auto_reassign(ticket, now, ticket_org_id)
+            if reassigned:
+                auto_reassignments += 1
+        except Exception as e:
+            logger.warning(f"Auto-reassignment failed for {ticket['ticket_id']}: {e}")
+
+    # Also check already-breached tickets that weren't reassigned yet (from previous cycles)
+    pending_reassign_query = {
+        **base_query,
+        "sla_resolution_breached": True,
+        "sla_auto_reassigned": {"$ne": True},
+        "sla_resolution_breached_at": {"$exists": True}
+    }
+    if org_id:
+        pending_reassign_query["organization_id"] = org_id
+
+    pending_tickets = await db.tickets.find(
+        pending_reassign_query,
+        {"_id": 0, "ticket_id": 1, "title": 1, "priority": 1, "organization_id": 1, "customer_name": 1,
+         "assigned_technician_id": 1, "assigned_technician_name": 1, "sla_resolution_breached_at": 1}
+    ).to_list(200)
+
+    for ticket in pending_tickets:
+        ticket_org_id = ticket.get("organization_id", org_id)
+        try:
+            reassigned = await _maybe_auto_reassign(ticket, now, ticket_org_id)
+            if reassigned:
+                auto_reassignments += 1
+        except Exception as e:
+            logger.warning(f"Auto-reassignment failed for {ticket['ticket_id']}: {e}")
+
+    logger.info(f"SLA breach check: {response_breaches} response, {resolution_breaches} resolution, {auto_reassignments} auto-reassigned")
     return {
         "response_breaches_found": response_breaches,
         "resolution_breaches_found": resolution_breaches,
+        "auto_reassignments": auto_reassignments,
         "checked_at": now_iso
     }
 
 
-async def _send_sla_breach_notification(ticket: Dict, breach_type: str, org_id: str):
-    """Send SLA breach email to admins"""
+async def _maybe_auto_reassign(ticket: Dict, now: datetime, org_id: str) -> bool:
+    """Check if a breached ticket should be auto-reassigned, and do it if so. Returns True if reassigned."""
+    db = get_db()
+
+    # Load org SLA config
+    sla_config = await get_sla_config_for_org(org_id)
+    if not sla_config.get("auto_reassign_on_breach", False):
+        return False
+
+    delay_minutes = int(sla_config.get("reassignment_delay_minutes", 30))
+
+    # Check breach time
+    breach_at_str = ticket.get("sla_resolution_breached_at")
+    if not breach_at_str:
+        return False
     try:
-        from services.email_service import EmailService
-        db = get_db()
+        breach_at = datetime.fromisoformat(breach_at_str.replace("Z", "+00:00"))
+        if breach_at.tzinfo is None:
+            breach_at = breach_at.replace(tzinfo=timezone.utc)
+    except Exception:
+        return False
 
-        # Get admin emails for org
-        admin_users = await db.users.find(
-            {"organization_id": org_id, "role": {"$in": ["admin", "manager"]}},
-            {"_id": 0, "email": 1, "name": 1}
-        ).to_list(10)
+    if (now - breach_at).total_seconds() / 60 < delay_minutes:
+        return False
 
-        if not admin_users:
-            return
+    # Find available technicians (role=technician, active, not current assignee)
+    current_assignee_id = ticket.get("assigned_technician_id")
+    technicians = await db.users.find(
+        {"organization_id": org_id, "role": "technician", "is_active": True},
+        {"_id": 0, "user_id": 1, "name": 1, "email": 1}
+    ).to_list(50)
 
-        breach_label = "Response SLA" if breach_type == "response" else "Resolution SLA"
-        subject = f"SLA Breach — Ticket {ticket.get('ticket_id')}: {ticket.get('title', 'No Title')}"
-        body = f"""
-SLA Breach Alert — {breach_label}
+    # Exclude current assignee
+    technicians = [t for t in technicians if t.get("user_id") != current_assignee_id]
+    if not technicians:
+        return False
 
-Ticket ID: {ticket.get('ticket_id')}
-Title: {ticket.get('title', 'N/A')}
-Priority: {ticket.get('priority', 'N/A').upper()}
-Customer: {ticket.get('customer_name', 'N/A')}
-SLA Breached: {breach_label}
+    # Calculate workload per technician
+    workloads = []
+    for tech in technicians:
+        open_tickets = await db.tickets.count_documents({
+            "organization_id": org_id,
+            "assigned_technician_id": tech["user_id"],
+            "status": {"$in": ["open", "assigned", "technician_assigned", "in_progress", "work_in_progress"]}
+        })
+        open_jobs = await db.job_cards.count_documents({
+            "organization_id": org_id,
+            "assigned_technician_id": tech["user_id"],
+            "status": {"$in": ["open", "in_progress"]}
+        }) if hasattr(db, "job_cards") else 0
+        workloads.append((open_tickets + open_jobs, tech))
 
-Immediate attention required. Please log in to Battwheels OS to take action.
-        """.strip()
+    workloads.sort(key=lambda x: x[0])
+    _, new_tech = workloads[0]
 
-        for admin in admin_users:
-            if admin.get("email"):
-                try:
-                    await EmailService.send_generic_email(
-                        to_email=admin["email"],
-                        subject=subject,
-                        body=body
-                    )
-                except Exception:
-                    pass
+    old_name = ticket.get("assigned_technician_name") or "Unassigned"
+    new_name = new_tech.get("name", "Unknown")
+    breach_time_str = breach_at.strftime("%Y-%m-%d %H:%M UTC")
+    history_note = (
+        f"Auto-reassigned due to SLA breach. "
+        f"Previous technician: {old_name}. "
+        f"New technician: {new_name}. "
+        f"Breach time: {breach_time_str}"
+    )
+
+    # Update ticket
+    await db.tickets.update_one(
+        {"ticket_id": ticket["ticket_id"]},
+        {"$set": {
+            "assigned_technician_id": new_tech["user_id"],
+            "assigned_technician_name": new_name,
+            "sla_auto_reassigned": True,
+            "sla_auto_reassigned_at": now.isoformat(),
+            "sla_previous_assignee_id": current_assignee_id,
+            "sla_previous_assignee_name": old_name,
+        }, "$push": {
+            "history": {
+                "action": "auto_reassigned",
+                "note": history_note,
+                "timestamp": now.isoformat(),
+                "actor": "system"
+            }
+        }}
+    )
+
+    # Send notifications
+    try:
+        await _send_reassignment_notifications(ticket, old_name, new_tech, org_id, breach_time_str)
     except Exception as e:
-        logger.warning(f"SLA email error: {e}")
+        logger.warning(f"Reassignment notification failed: {e}")
+
+    logger.info(f"Auto-reassigned ticket {ticket['ticket_id']} from {old_name} to {new_name}")
+    return True
+
+
+async def _send_reassignment_notifications(ticket: Dict, old_name: str, new_tech: Dict, org_id: str, breach_time_str: str):
+    """Send reassignment notifications to new tech, old tech, and admins."""
+    from services.email_service import EmailService
+    db = get_db()
+
+    ticket_id = ticket.get("ticket_id", "")
+    title = ticket.get("title", "No Title")
+    new_name = new_tech.get("name", "")
+    new_email = new_tech.get("email", "")
+
+    # Notify new technician
+    if new_email:
+        await EmailService.send_generic_email(
+            to_email=new_email,
+            subject=f"Ticket {ticket_id} auto-assigned to you — SLA Breach",
+            body=f"Ticket {ticket_id} has been auto-assigned to you.\nSLA breached at {breach_time_str}.\nTitle: {title}\nImmediate attention required."
+        )
+
+    # Notify old technician (if assigned)
+    if ticket.get("assigned_technician_id"):
+        old_tech = await db.users.find_one(
+            {"user_id": ticket["assigned_technician_id"]},
+            {"_id": 0, "email": 1}
+        )
+        if old_tech and old_tech.get("email"):
+            await EmailService.send_generic_email(
+                to_email=old_tech["email"],
+                subject=f"Ticket {ticket_id} reassigned due to SLA breach",
+                body=f"Ticket {ticket_id} has been reassigned from you to {new_name} due to an SLA breach.\nPlease review your ticket response times."
+            )
+
+    # Notify admins/managers
+    admins = await db.users.find(
+        {"organization_id": org_id, "role": {"$in": ["admin", "manager"]}},
+        {"_id": 0, "email": 1}
+    ).to_list(10)
+    for admin in admins:
+        if admin.get("email"):
+            await EmailService.send_generic_email(
+                to_email=admin["email"],
+                subject=f"SLA Auto-Reassignment: Ticket {ticket_id}",
+                body=f"Ticket {ticket_id} was auto-reassigned due to SLA breach.\nFrom: {old_name}\nTo: {new_name}\nBreach time: {breach_time_str}"
+            )
+
+
+# ==================== BREACH REPORT ENDPOINT ====================
+
+@router.get("/breach-report")
+async def get_sla_breach_report(
+    request: Request,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    technician_id: Optional[str] = None,
+    priority: Optional[str] = None,
+):
+    """
+    GET /api/sla/breach-report
+    Returns all SLA breaches within a date range.
+    Query params: start_date, end_date, technician_id, priority
+    """
+    org_id = await get_org_id_from_request(request)
+    db = get_db()
+    now = datetime.now(timezone.utc)
+
+    # Default to last 30 days
+    if not end_date:
+        end_date = now.isoformat()
+    if not start_date:
+        start_date = (now - timedelta(days=30)).isoformat()
+
+    query: Dict[str, Any] = {
+        "organization_id": org_id,
+        "$or": [
+            {"sla_response_breached": True},
+            {"sla_resolution_breached": True}
+        ]
+    }
+    if technician_id:
+        query["assigned_technician_id"] = technician_id
+    if priority:
+        query["priority"] = priority.lower()
+
+    tickets = await db.tickets.find(
+        query,
+        {"_id": 0, "ticket_id": 1, "title": 1, "priority": 1,
+         "customer_name": 1, "assigned_technician_name": 1,
+         "sla_response_breached": 1, "sla_response_breached_at": 1,
+         "sla_resolution_breached": 1, "sla_resolution_breached_at": 1,
+         "sla_auto_reassigned": 1, "sla_previous_assignee_name": 1,
+         "first_response_at": 1, "resolved_at": 1, "created_at": 1,
+         "status": 1}
+    ).sort("created_at", -1).to_list(500)
+
+    # Filter by date range
+    filtered = []
+    for t in tickets:
+        breach_at = t.get("sla_resolution_breached_at") or t.get("sla_response_breached_at") or t.get("created_at", "")
+        if breach_at >= start_date and breach_at <= end_date:
+            filtered.append(t)
+
+    # Compute summary stats
+    total = len(filtered)
+    response_breaches = sum(1 for t in filtered if t.get("sla_response_breached"))
+    resolution_breaches = sum(1 for t in filtered if t.get("sla_resolution_breached"))
+    auto_reassigned = sum(1 for t in filtered if t.get("sla_auto_reassigned"))
+
+    # Get total tickets in period for compliance %
+    total_in_period = await db.tickets.count_documents({
+        "organization_id": org_id,
+        "created_at": {"$gte": start_date, "$lte": end_date}
+    })
+    within_sla = max(0, total_in_period - total)
+    compliance_pct = round((within_sla / total_in_period * 100), 1) if total_in_period > 0 else 100.0
+
+    return {
+        "code": 0,
+        "summary": {
+            "total_breaches": total,
+            "response_sla_breaches": response_breaches,
+            "resolution_sla_breaches": resolution_breaches,
+            "auto_reassignments_triggered": auto_reassigned,
+            "total_tickets_in_period": total_in_period,
+            "within_sla_count": within_sla,
+            "sla_compliance_pct": compliance_pct,
+        },
+        "breaches": filtered,
+        "period": {"start_date": start_date, "end_date": end_date}
+    }
+
+
 
 
 # ==================== BACKGROUND SCHEDULER ====================
