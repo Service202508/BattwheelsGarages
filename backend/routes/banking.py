@@ -10,7 +10,7 @@ RESTful API for bank account management:
 Author: Battwheels OS
 """
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime, timezone
@@ -24,6 +24,7 @@ from services.banking_service import (
     TRANSACTION_TYPES,
     TRANSACTION_CATEGORIES
 )
+from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/banking", tags=["Banking"])
