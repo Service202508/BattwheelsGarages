@@ -1532,7 +1532,7 @@ export default function EstimatesEnhanced() {
                       {selectedContact.gstin && <p>GSTIN: {selectedContact.gstin}</p>}
                       {customerPricing?.sales_price_list && (
                         <div className="mt-1 flex items-center gap-1">
-                          <Badge variant="outline" className="text-xs bg-[rgba(34,197,94,0.08)] text-[#22C55E] border-green-200">
+                          <Badge variant="outline" className="text-xs bg-[rgba(34,197,94,0.08)] text-[#22C55E] border-[rgba(34,197,94,0.25)]">
                             <IndianRupee className="h-3 w-3 mr-1" />
                             {customerPricing.sales_price_list.name}
                             {customerPricing.sales_price_list.discount_percentage > 0 && ` (-${customerPricing.sales_price_list.discount_percentage}%)`}
