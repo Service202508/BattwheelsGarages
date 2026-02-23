@@ -1352,7 +1352,8 @@ async def login(credentials: UserLogin):
             "name": user["name"],
             "role": user["role"],
             "designation": user.get("designation"),
-            "picture": user.get("picture")
+            "picture": user.get("picture"),
+            "is_platform_admin": bool(user.get("is_platform_admin", False))
         },
         "organizations": organizations,
         "organization": single_org,  # Include full org object for single org users
