@@ -252,6 +252,24 @@ class TicketService:
         # Add organization_id for multi-tenant scoping
         if data.organization_id:
             ticket_doc["organization_id"] = data.organization_id
+
+        # ── SLA FIELDS: Calculate deadlines based on priority ──
+        try:
+            from routes.sla import get_sla_config_for_org, calculate_sla_deadlines
+            if data.organization_id:
+                sla_config = await get_sla_config_for_org(data.organization_id)
+            else:
+                from routes.sla import DEFAULT_SLA_CONFIG
+                sla_config = DEFAULT_SLA_CONFIG
+            sla_fields = calculate_sla_deadlines(
+                created_at=now.isoformat(),
+                priority=data.priority or "medium",
+                sla_config=sla_config
+            )
+            ticket_doc.update(sla_fields)
+        except Exception as _sla_err:
+            # SLA is non-critical — ticket creation must not fail
+            logger.warning(f"SLA deadline calculation failed: {_sla_err}")
         
         # Enrich with vehicle data if vehicle_id provided
         if data.vehicle_id:
