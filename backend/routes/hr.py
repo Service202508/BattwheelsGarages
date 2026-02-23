@@ -497,7 +497,7 @@ async def list_payroll_records(
 
 
 @router.get("/payroll/my-records")
-async def get_my_payroll(request: Request):
+async def get_my_payroll(request: Request, _: None = Depends(require_feature("hr_payroll"))):
     service = get_service()
     user = await get_current_user(request, service.db)
     
