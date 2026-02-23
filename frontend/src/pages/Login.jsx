@@ -1,260 +1,211 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Mail, Lock, User, Zap, ChevronRight, Eye, EyeOff, Sparkles, Brain, Truck, BarChart3, Building2, Wrench } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, Zap } from "lucide-react";
 import { API } from "@/App";
 
-// 3D Vehicle Image URLs
-const VEHICLE_ICONS = {
-  twoWheeler: "https://static.prod-images.emergentagent.com/jobs/b6660fe1-f682-4808-9bae-a4692d3851e2/images/78da35e1e893d4a802576a6efe5889c4f534d1eae0f830c137d048a6a08e20eb.png",
-  threeWheeler: "https://static.prod-images.emergentagent.com/jobs/b6660fe1-f682-4808-9bae-a4692d3851e2/images/77bb650e73e4c6a25549a17eda5ee9649e16abfb1cefbb4fa9deb30a665e894e.png",
-  car: "https://static.prod-images.emergentagent.com/jobs/b6660fe1-f682-4808-9bae-a4692d3851e2/images/34b2bb260cf90d1adbdad96cd56731da36e34bd8d070754a390e89d0df18647f.png",
-  commercial: "https://static.prod-images.emergentagent.com/jobs/b6660fe1-f682-4808-9bae-a4692d3851e2/images/c8bef73afa11c68ce24af82cf634323d61f438023db3236559e15769386057ef.png"
-};
-
-// Animated 3D Vehicle Icons Component
-const AnimatedVehicleIcons = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  
+// ─── Inject fonts + keyframes once ───────────────────────────────────────────
+function useLoginStyles() {
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex(prev => (prev + 1) % 4);
-    }, 2000);
-    return () => clearInterval(interval);
+    if (!document.getElementById("bw-font")) {
+      const link = document.createElement("link");
+      link.id = "bw-font";
+      link.rel = "stylesheet";
+      link.href =
+        "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Serif+Display&family=Syne:wght@400;500;600;700&display=swap";
+      document.head.appendChild(link);
+    }
+    if (!document.getElementById("bw-css")) {
+      const s = document.createElement("style");
+      s.id = "bw-css";
+      s.textContent = `
+        @keyframes bwFadeUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bwPulse {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.4; }
+        }
+        @keyframes bwSpin {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+        .bw-input::placeholder { color: rgba(244,246,240,0.25) !important; }
+        .bw-input { caret-color: #C8FF00; }
+        .bw-input:-webkit-autofill,
+        .bw-input:-webkit-autofill:hover,
+        .bw-input:-webkit-autofill:focus {
+          -webkit-box-shadow: 0 0 0 1000px #080C0F inset !important;
+          -webkit-text-fill-color: #F4F6F0 !important;
+        }
+        .bw-forgot { transition: color 0.15s; }
+        .bw-forgot:hover { color: #C8FF00 !important; }
+        .bw-footer-link {
+          color: rgba(244,246,240,0.35);
+          text-decoration: none;
+          font-family: 'Syne', sans-serif;
+          font-size: 11px;
+          transition: color 0.15s;
+        }
+        .bw-footer-link:hover { color: rgba(200,255,0,0.60); }
+        .bw-google-btn:hover {
+          background: rgba(255,255,255,0.07) !important;
+          border-color: rgba(255,255,255,0.18) !important;
+          color: #F4F6F0 !important;
+        }
+        .bw-cta-btn:not(:disabled):hover {
+          background: rgba(200,255,0,0.88) !important;
+          transform: translateY(-1px) !important;
+          box-shadow: 0 4px 20px rgba(200,255,0,0.20) !important;
+        }
+        @media (max-width: 767px) {
+          .bw-left-panel  { display: none !important; }
+          .bw-mobile-bar  { display: flex !important; }
+          .bw-right-panel { width: 100% !important; padding-top: 56px !important; }
+          .bw-form-wrap   { padding: 0 24px !important; }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .bw-left-panel  { width: 45% !important; }
+          .bw-right-panel { width: 55% !important; }
+          .bw-headline    { font-size: 40px !important; }
+          .bw-stats-strip { display: none !important; }
+        }
+      `;
+      document.head.appendChild(s);
+    }
   }, []);
+}
 
-  const vehicles = [
-    { src: VEHICLE_ICONS.twoWheeler, label: "2-Wheeler", size: "w-20 h-20" },
-    { src: VEHICLE_ICONS.threeWheeler, label: "3-Wheeler", size: "w-24 h-24" },
-    { src: VEHICLE_ICONS.car, label: "Electric Car", size: "w-28 h-28" },
-    { src: VEHICLE_ICONS.commercial, label: "Commercial", size: "w-24 h-24" },
-  ];
+// ─── Animation helper ─────────────────────────────────────────────────────────
+const anim = (delay) => ({
+  animation: `bwFadeUp 0.45s ease ${delay}ms both`,
+});
 
-  return (
-    <div className="flex justify-center items-end gap-4 sm:gap-6 mb-12">
-      {vehicles.map((vehicle, index) => (
-        <div 
-          key={vehicle.label}
-          className={`flex flex-col items-center transition-all duration-700 ease-out cursor-pointer ${
-            activeIndex === index 
-              ? 'scale-110 opacity-100 -translate-y-2' 
-              : 'scale-90 opacity-50'
-          }`}
-          onClick={() => setActiveIndex(index)}
-        >
-          <div className={`relative transition-all duration-700 ${vehicle.size} flex items-center justify-center`}>
-            {activeIndex === index && (
-              <div className="absolute inset-0 bg-[#C8FF00]/20 blur-2xl rounded-full animate-pulse" />
-            )}
-            <img 
-              src={vehicle.src} 
-              alt={vehicle.label}
-              className={`relative z-10 object-contain transition-all duration-500 drop-shadow-lg ${
-                activeIndex === index ? 'drop-shadow-2xl' : ''
-              }`}
-              style={{ 
-                filter: activeIndex === index 
-                  ? 'drop-shadow(0 10px 20px rgba(200, 255, 0, 0.3))' 
-                  : 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
-              }}
-            />
-          </div>
-          <span className={`text-xs font-semibold mt-3 transition-all duration-500 tracking-wide ${
-            activeIndex === index 
-              ? 'text-[#C8FF00]' 
-              : 'text-[rgba(244,246,240,0.4)]'
-          }`}>
-            {vehicle.label}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-// Feature Badges
-const FeatureBadge = ({ icon: Icon, text }) => (
-  <div className="flex items-center gap-2 px-4 py-2 bg-[#111820]/60 backdrop-blur-sm rounded-full border border-[rgba(200,255,0,0.15)]">
-    <Icon className="w-4 h-4 text-[#C8FF00]" />
-    <span className="text-xs font-medium text-[rgba(244,246,240,0.7)]">{text}</span>
-  </div>
+// ─── Google G icon ────────────────────────────────────────────────────────────
+const GoogleIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+  </svg>
 );
 
-// Auto-Scrolling Feature Cards
-const FEATURE_CARDS = [
-  { 
-    icon: Brain, 
-    title: "AI Diagnostics & Resolutions", 
-    description: "Intelligent fault detection with ML-powered root cause analysis and step-by-step repair guidance" 
-  },
-  { 
-    icon: Truck, 
-    title: "Fleet Service & Uptime Management", 
-    description: "Maximize fleet availability with predictive maintenance and real-time service scheduling" 
-  },
-  { 
-    icon: BarChart3, 
-    title: "Realtime Fleet Insights", 
-    description: "Live dashboards with vehicle health metrics, usage patterns, and performance analytics" 
-  },
-  { 
-    icon: Building2, 
-    title: "Dealer Management System", 
-    description: "Streamline dealer operations with inventory tracking, order management, and performance metrics" 
-  },
-  { 
-    icon: Wrench, 
-    title: "Service Center Management", 
-    description: "End-to-end workshop operations including job cards, technician allocation, and parts tracking" 
-  },
-];
+// ─── Spinner ──────────────────────────────────────────────────────────────────
+const Spinner = () => (
+  <svg
+    style={{ width: 16, height: 16, animation: "bwSpin 0.8s linear infinite" }}
+    viewBox="0 0 24 24"
+    fill="none"
+  >
+    <circle cx="12" cy="12" r="10" stroke="rgba(8,12,15,0.3)" strokeWidth="3" />
+    <path d="M12 2a10 10 0 0 1 10 10" stroke="#080C0F" strokeWidth="3" strokeLinecap="round" />
+  </svg>
+);
 
-const AutoScrollFeatureCards = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const scrollRef = useRef(null);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex(prev => (prev + 1) % FEATURE_CARDS.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      const cardWidth = 280;
-      const scrollPosition = activeIndex * cardWidth;
-      scrollRef.current.scrollTo({
-        left: scrollPosition,
-        behavior: 'smooth'
-      });
-    }
-  }, [activeIndex]);
+// ─── FormInput ────────────────────────────────────────────────────────────────
+const FormInput = ({
+  icon: Icon,
+  type,
+  id,
+  label,
+  placeholder,
+  value,
+  onChange,
+  required,
+  showToggle,
+  dataTestId,
+}) => {
+  const [show, setShow] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const inputType = showToggle ? (show ? "text" : "password") : type;
 
   return (
-    <div className="w-full mt-8">
-      {/* Scrolling Container */}
-      <div 
-        ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+    <div>
+      <label
+        htmlFor={id}
+        style={{
+          display: "block",
+          marginBottom: 6,
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 10,
+          fontWeight: 500,
+          letterSpacing: "0.10em",
+          color: "rgba(244,246,240,0.40)",
+          textTransform: "uppercase",
+        }}
       >
-        {FEATURE_CARDS.map((feature, index) => {
-          const Icon = feature.icon;
-          const isActive = index === activeIndex;
-          return (
-            <div
-              key={feature.title}
-              onClick={() => setActiveIndex(index)}
-              className={`flex-shrink-0 w-[260px] p-4 rounded cursor-pointer transition-all duration-500 snap-start ${
-                isActive 
-                  ? 'bg-[rgba(200,255,0,0.08)] border-2 border-[rgba(200,255,0,0.25)] scale-105' 
-                  : 'bg-[#111820]/50 border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.15)] hover:bg-[rgba(200,255,0,0.04)]'
-              }`}
-            >
-              <div className={`w-10 h-10 rounded flex items-center justify-center mb-3 transition-all duration-500 ${
-                isActive 
-                  ? 'bg-[#C8FF00]' 
-                  : 'bg-[#111820]'
-              }`}>
-                <Icon className={`w-5 h-5 transition-colors duration-500 ${isActive ? 'text-[#080C0F]' : 'text-[rgba(244,246,240,0.5)]'}`} />
-              </div>
-              <h3 className={`font-semibold text-sm mb-1.5 transition-colors duration-500 ${
-                isActive ? 'text-[#C8FF00]' : 'text-[rgba(244,246,240,0.7)]'
-              }`}>
-                {feature.title}
-              </h3>
-              <p className="text-xs text-[rgba(244,246,240,0.4)] leading-relaxed line-clamp-2">
-                {feature.description}
-              </p>
-            </div>
-          );
-        })}
-      </div>
-      
-      {/* Progress Indicators */}
-      <div className="flex justify-center gap-2 mt-4">
-        {FEATURE_CARDS.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setActiveIndex(index)}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              index === activeIndex 
-                ? 'w-6 bg-[#C8FF00]' 
-                : 'w-1.5 bg-[rgba(255,255,255,0.2)] hover:bg-[rgba(255,255,255,0.3)]'
-            }`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// Premium Input Component with 3D styling
-const PremiumInput = ({ icon: Icon, type, id, placeholder, value, onChange, required, showPasswordToggle, dataTestId }) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
-  
-  const inputType = showPasswordToggle ? (showPassword ? "text" : "password") : type;
-  
-  return (
-    <div className={`relative group transition-all duration-300 ${isFocused ? 'transform scale-[1.02]' : ''}`}>
-      {/* 3D Shadow Effect */}
-      <div className={`absolute inset-0 rounded-lg transition-all duration-300 ${
-        isFocused 
-          ? 'bg-[rgba(200,255,0,0.1)] blur-xl opacity-100' 
-          : 'opacity-0'
-      }`} />
-      
-      {/* Input Container */}
-      <div className={`relative rounded transition-all duration-300 ${
-        isFocused 
-          ? 'ring-2 ring-[rgba(200,255,0,0.4)]' 
-          : 'border border-[rgba(255,255,255,0.07)]'
-      }`}>
-        {/* Icon */}
-        <div className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded transition-all duration-300 ${
-          isFocused 
-            ? 'bg-[#C8FF00]' 
-            : 'bg-[#111820]'
-        }`}>
-          <Icon className={`h-4 w-4 transition-colors duration-300 ${
-            isFocused ? 'text-[#080C0F]' : 'text-[rgba(244,246,240,0.5)]'
-          }`} />
+        {label}
+      </label>
+      <div style={{ position: "relative" }}>
+        {/* Left icon */}
+        <div
+          style={{
+            position: "absolute",
+            left: 14,
+            top: "50%",
+            transform: "translateY(-50%)",
+            color: focused ? "rgba(200,255,0,0.50)" : "rgba(244,246,240,0.25)",
+            transition: "color 0.15s",
+            pointerEvents: "none",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <Icon size={16} />
         </div>
-        
-        <Input
+
+        <input
           id={id}
+          className="bw-input"
           type={inputType}
           placeholder={placeholder}
-          className={`pl-16 pr-${showPasswordToggle ? '14' : '4'} h-14 bg-[#111820] border-2 rounded text-base font-medium text-[#F4F6F0] transition-all duration-300 ${
-            isFocused 
-              ? 'border-[#C8FF00] bg-[#111820]' 
-              : 'border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]'
-          }`}
           value={value}
           onChange={onChange}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
           required={required}
           data-testid={dataTestId}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            width: "100%",
+            height: 44,
+            background: focused ? "rgba(200,255,0,0.03)" : "rgba(255,255,255,0.04)",
+            border: `1px solid ${focused ? "rgba(200,255,0,0.50)" : "rgba(255,255,255,0.10)"}`,
+            borderRadius: 4,
+            padding: `0 ${showToggle ? 44 : 14}px 0 40px`,
+            fontFamily: "'Syne', sans-serif",
+            fontSize: 14,
+            color: "#F4F6F0",
+            outline: "none",
+            boxShadow: focused ? "0 0 0 3px rgba(200,255,0,0.08)" : "none",
+            transition: "border-color 0.15s, box-shadow 0.15s, background 0.15s",
+          }}
         />
-        
-        {/* Password Toggle */}
-        {showPasswordToggle && (
+
+        {/* Eye toggle */}
+        {showToggle && (
           <button
             type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className={`absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded transition-all duration-300 hover:bg-[rgba(255,255,255,0.1)] ${
-              isFocused ? 'text-[#C8FF00]' : 'text-[rgba(244,246,240,0.4)]'
-            }`}
+            onClick={() => setShow((v) => !v)}
+            style={{
+              position: "absolute",
+              right: 14,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "rgba(244,246,240,0.25)",
+              display: "flex",
+              alignItems: "center",
+              padding: 0,
+              transition: "color 0.15s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(244,246,240,0.60)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(244,246,240,0.25)")}
           >
-            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {show ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>
         )}
       </div>
@@ -262,102 +213,399 @@ const PremiumInput = ({ icon: Icon, type, id, placeholder, value, onChange, requ
   );
 };
 
-// Premium Button Component
-const PremiumButton = ({ children, onClick, type, disabled, variant = "primary", className = "", dataTestId }) => {
-  const [isPressed, setIsPressed] = useState(false);
-  
-  const baseStyles = "relative w-full h-14 font-bold rounded transition-all duration-300 overflow-hidden";
-  
-  const variants = {
-    primary: `bg-[#C8FF00] text-[#080C0F] 
-      hover:bg-[#d4ff1a] hover:-translate-y-0.5
-      hover:shadow-[0_0_20px_rgba(200,255,0,0.30)]
-      active:translate-y-0
-      disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0`,
-    outline: `bg-[#111820] border-2 border-[rgba(255,255,255,0.15)] text-[rgba(244,246,240,0.7)] 
-      hover:border-[rgba(200,255,0,0.3)] hover:text-[#F4F6F0] hover:-translate-y-0.5
-      hover:shadow-[0_0_20px_rgba(200,255,0,0.30)]
-      active:translate-y-0`
-  };
-  
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      onMouseDown={() => setIsPressed(true)}
-      onMouseUp={() => setIsPressed(false)}
-      onMouseLeave={() => setIsPressed(false)}
-      className={`${baseStyles} ${variants[variant]} ${className}`}
-      data-testid={dataTestId}
-    >
-      {/* Shine Effect */}
-      {variant === "primary" && (
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-      )}
-      
-      {/* Content */}
-      <span className="relative flex items-center justify-center gap-2">
-        {children}
-      </span>
-    </button>
-  );
-};
+// ─── CTA Button ───────────────────────────────────────────────────────────────
+const CTAButton = ({ isLoading, children, dataTestId }) => (
+  <button
+    type="submit"
+    disabled={isLoading}
+    data-testid={dataTestId}
+    className="bw-cta-btn"
+    style={{
+      width: "100%",
+      height: 44,
+      background: "#C8FF00",
+      color: "#080C0F",
+      border: "none",
+      borderRadius: 4,
+      fontFamily: "'JetBrains Mono', monospace",
+      fontSize: 13,
+      fontWeight: 700,
+      letterSpacing: "0.08em",
+      textTransform: "uppercase",
+      cursor: isLoading ? "not-allowed" : "pointer",
+      opacity: isLoading ? 0.6 : 1,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      transition: "all 0.15s ease",
+      pointerEvents: isLoading ? "none" : "auto",
+    }}
+  >
+    {isLoading ? (
+      <>
+        <Spinner />
+        Authenticating...
+      </>
+    ) : (
+      children
+    )}
+  </button>
+);
 
+// ─── Inline error ─────────────────────────────────────────────────────────────
+const InlineError = ({ msg }) =>
+  msg ? (
+    <div
+      style={{
+        marginTop: 10,
+        background: "rgba(255,59,47,0.08)",
+        border: "1px solid rgba(255,59,47,0.25)",
+        borderLeft: "3px solid #FF3B2F",
+        borderRadius: 4,
+        padding: "10px 14px",
+        fontFamily: "'Syne', sans-serif",
+        fontSize: 13,
+        color: "#FF3B2F",
+      }}
+    >
+      {msg}
+    </div>
+  ) : null;
+
+// ─── OR Divider ───────────────────────────────────────────────────────────────
+const OrDivider = () => (
+  <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "24px 0 0" }}>
+    <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
+    <span
+      style={{
+        fontFamily: "'Syne', sans-serif",
+        fontSize: 12,
+        color: "rgba(244,246,240,0.30)",
+        whiteSpace: "nowrap",
+      }}
+    >
+      or
+    </span>
+    <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
+  </div>
+);
+
+// ─── Grain SVG data URL ───────────────────────────────────────────────────────
+const GRAIN = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E")`;
+
+// ─── Left Panel ───────────────────────────────────────────────────────────────
+const LeftPanel = () => (
+  <div
+    className="bw-left-panel"
+    style={{
+      width: "55%",
+      position: "relative",
+      overflow: "hidden",
+      background: "#080C0F",
+      borderRight: "1px solid rgba(255,255,255,0.06)",
+      flexShrink: 0,
+    }}
+  >
+    {/* Layer 1 — grid */}
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        backgroundImage: `
+          linear-gradient(rgba(200,255,0,0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(200,255,0,0.03) 1px, transparent 1px)`,
+        backgroundSize: "40px 40px",
+      }}
+    />
+
+    {/* Layer 2 — ambient glows */}
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        background: `
+          radial-gradient(ellipse 600px 400px at 20% 30%, rgba(200,255,0,0.07) 0%, transparent 70%),
+          radial-gradient(ellipse 400px 400px at 80% 80%, rgba(26,255,228,0.04) 0%, transparent 70%)`,
+      }}
+    />
+
+    {/* Layer 3 — grain */}
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        backgroundImage: GRAIN,
+        opacity: 0.025,
+        mixBlendMode: "overlay",
+        pointerEvents: "none",
+      }}
+    />
+
+    {/* Content */}
+    <div
+      style={{
+        position: "relative",
+        zIndex: 10,
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "64px 64px 140px",
+      }}
+    >
+      {/* Logo mark */}
+      <div style={anim(0)}>
+        <div
+          style={{
+            width: 48,
+            height: 48,
+            background: "rgba(200,255,0,0.08)",
+            border: "1px solid rgba(200,255,0,0.25)",
+            borderRadius: 4,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 0 20px rgba(200,255,0,0.15), inset 0 0 20px rgba(200,255,0,0.05)",
+          }}
+        >
+          <Zap size={24} color="#C8FF00" />
+        </div>
+      </div>
+
+      {/* Product name */}
+      <div style={{ marginTop: 12, ...anim(80) }}>
+        <span
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 11,
+            fontWeight: 600,
+            letterSpacing: "0.20em",
+            color: "rgba(244,246,240,0.40)",
+            textTransform: "uppercase",
+          }}
+        >
+          BATTWHEELS OS
+        </span>
+      </div>
+
+      {/* Eyebrow */}
+      <div style={{ marginTop: 48, ...anim(120) }}>
+        <span
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 10,
+            fontWeight: 500,
+            letterSpacing: "0.16em",
+            color: "#C8FF00",
+            textTransform: "uppercase",
+          }}
+        >
+          EV FAILURE INTELLIGENCE
+        </span>
+      </div>
+
+      {/* Headline */}
+      <div style={{ marginTop: 16, ...anim(180) }}>
+        <h1
+          className="bw-headline"
+          style={{
+            fontFamily: "'DM Serif Display', serif",
+            fontSize: 52,
+            fontWeight: 400,
+            lineHeight: 1.1,
+            color: "#F4F6F0",
+            letterSpacing: "-0.02em",
+            margin: 0,
+          }}
+        >
+          Every breakdown.
+          <br />
+          Resolved{" "}
+          <span style={{ color: "#C8FF00" }}>smarter.</span>
+        </h1>
+      </div>
+
+      {/* Sub-headline */}
+      <div style={{ marginTop: 20, ...anim(240) }}>
+        <p
+          style={{
+            fontFamily: "'Syne', sans-serif",
+            fontSize: 15,
+            fontWeight: 400,
+            lineHeight: 1.65,
+            color: "rgba(244,246,240,0.50)",
+            maxWidth: 380,
+            margin: 0,
+          }}
+        >
+          AI-powered diagnostics for Electric 2W, 3W &amp; 4W vehicles —
+          turning every failure into reusable enterprise intelligence.
+        </p>
+      </div>
+    </div>
+
+    {/* Stats strip */}
+    <div
+      className="bw-stats-strip"
+      style={{
+        position: "absolute",
+        bottom: 48,
+        left: 64,
+        right: 64,
+        display: "flex",
+        alignItems: "center",
+        zIndex: 10,
+        ...anim(320),
+      }}
+    >
+      {/* Stat 1 */}
+      <div style={{ flex: 1 }}>
+        <div
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 14,
+            color: "#C8FF00",
+            marginBottom: 4,
+          }}
+        >
+          2W · 3W · 4W
+        </div>
+        <div
+          style={{
+            fontFamily: "'Syne', sans-serif",
+            fontSize: 11,
+            color: "rgba(244,246,240,0.40)",
+          }}
+        >
+          Vehicle Categories
+        </div>
+      </div>
+
+      <div
+        style={{
+          width: 1,
+          height: 36,
+          background: "rgba(255,255,255,0.08)",
+          margin: "0 24px",
+          flexShrink: 0,
+        }}
+      />
+
+      {/* Stat 2 */}
+      <div style={{ flex: 1 }}>
+        <div
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 14,
+            color: "#C8FF00",
+            marginBottom: 4,
+          }}
+        >
+          EFI
+        </div>
+        <div
+          style={{
+            fontFamily: "'Syne', sans-serif",
+            fontSize: 11,
+            color: "rgba(244,246,240,0.40)",
+          }}
+        >
+          Failure Intelligence
+        </div>
+      </div>
+
+      <div
+        style={{
+          width: 1,
+          height: 36,
+          background: "rgba(255,255,255,0.08)",
+          margin: "0 24px",
+          flexShrink: 0,
+        }}
+      />
+
+      {/* Stat 3 — live indicator */}
+      <div style={{ flex: 1 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              background: "#22C55E",
+              boxShadow: "0 0 8px #22C55E",
+              animation: "bwPulse 2s infinite",
+              flexShrink: 0,
+            }}
+          />
+          <span
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 11,
+              color: "rgba(244,246,240,0.40)",
+            }}
+          >
+            System Operational
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// ─── Main export ──────────────────────────────────────────────────────────────
 export default function Login({ onLogin }) {
+  useLoginStyles();
+
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("login");
+  const [loginError, setLoginError] = useState("");
+  const [registerError, setRegisterError] = useState("");
   const [loginData, setLoginData] = useState({ email: "", password: "" });
-  const [registerData, setRegisterData] = useState({ 
-    name: "", 
-    email: "", 
-    password: "", 
-    confirmPassword: "" 
+  const [registerData, setRegisterData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
+  // ── Auth handlers (logic unchanged) ────────────────────────────────────────
   const handleGoogleLogin = () => {
-    const redirectUrl = window.location.origin + '/dashboard';
+    const redirectUrl = window.location.origin + "/dashboard";
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
+    setLoginError("");
     try {
       const response = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
       });
-
       const data = await response.json();
-
       if (response.ok) {
-        // Check if login returns organizations list (multi-org support)
         const orgs = data.organizations || [];
-        
-        // If single org returned in response, store it
         if (data.organization) {
           localStorage.setItem("organization_id", data.organization.organization_id);
           localStorage.setItem("organization", JSON.stringify(data.organization));
         }
-        
-        // Pass organizations to login handler
         await onLogin(data.user, data.token, orgs);
-        
         toast.success("Welcome back!");
-        
-        // Navigate based on orgs - if multiple, App.js will show org selection
-        if (orgs.length <= 1) {
-          navigate("/dashboard", { replace: true });
-        }
-        // If multiple orgs, let App.js handle the org selection screen
+        if (orgs.length <= 1) navigate("/dashboard", { replace: true });
       } else {
-        toast.error(data.detail || "Login failed");
+        const msg = data.detail || "Login failed";
+        setLoginError(msg);
+        toast.error(msg);
       }
-    } catch (error) {
-      toast.error("Network error. Please try again.");
+    } catch {
+      const msg = "Network error. Please try again.";
+      setLoginError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -365,14 +613,14 @@ export default function Login({ onLogin }) {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    
     if (registerData.password !== registerData.confirmPassword) {
-      toast.error("Passwords do not match");
+      const msg = "Passwords do not match";
+      setRegisterError(msg);
+      toast.error(msg);
       return;
     }
-
     setIsLoading(true);
-
+    setRegisterError("");
     try {
       const response = await fetch(`${API}/auth/register`, {
         method: "POST",
@@ -381,377 +629,372 @@ export default function Login({ onLogin }) {
           name: registerData.name,
           email: registerData.email,
           password: registerData.password,
-          role: "customer"
+          role: "customer",
         }),
       });
-
       const data = await response.json();
-
       if (response.ok) {
         toast.success("Account created! Please login.");
         setRegisterData({ name: "", email: "", password: "", confirmPassword: "" });
+        setActiveTab("login");
       } else {
-        toast.error(data.detail || "Registration failed");
+        const msg = data.detail || "Registration failed";
+        setRegisterError(msg);
+        toast.error(msg);
       }
-    } catch (error) {
-      toast.error("Network error. Please try again.");
+    } catch {
+      const msg = "Network error. Please try again.";
+      setRegisterError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // ── Tab switcher ────────────────────────────────────────────────────────────
+  const switchTab = (tab) => {
+    setActiveTab(tab);
+    setLoginError("");
+    setRegisterError("");
+  };
+
   return (
-    <div className="min-h-screen flex bg-[#080C0F]">
-      {/* Left Panel - Premium Hero */}
-      <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden">
-        {/* Animated gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#080C0F] via-[#0D1317] to-[#111820]" />
-        
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-                           linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)`,
-          backgroundSize: '40px 40px'
-        }} />
-        
-        {/* Decorative circles */}
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[rgba(200,255,0,0.08)] rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[rgba(200,255,0,0.04)] rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[rgba(200,255,0,0.05)] to-transparent rounded-full blur-3xl" />
+    <div style={{ display: "flex", minHeight: "100vh", background: "#080C0F", overflow: "hidden" }}>
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center items-center w-full px-16">
-          <div className="text-center max-w-lg">
-            {/* Animated 3D Vehicle Icons */}
-            <AnimatedVehicleIcons />
-
-            {/* Main Heading with gradient */}
-            <h1 className="text-4xl xl:text-5xl font-bold text-[#F4F6F0] mb-4 leading-tight">
-              EV Failure
-              <span className="block text-[#C8FF00]">
-                Intelligence
-              </span>
-            </h1>
-            
-            <p className="text-lg xl:text-xl text-[#C8FF00] font-semibold mb-6 tracking-wide">
-              Your Onsite EV Resolution Partner
-            </p>
-            
-            <p className="text-[rgba(244,246,240,0.5)] text-base leading-relaxed mb-10 max-w-md mx-auto">
-              AI-powered diagnostics for Electric 2W, 3W & 4W Vehicles—turning every breakdown into structured, reusable enterprise intelligence.
-            </p>
-
-            {/* Tagline with glowing icons */}
-            <div className="flex flex-wrap justify-center items-center gap-6">
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-[rgba(200,255,0,0.4)] rounded-full blur-md animate-pulse" />
-                  <div className="relative w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center">
-                    <Zap className="w-4 h-4 text-[#080C0F]" />
-                  </div>
-                </div>
-                <span className="text-sm font-semibold text-[rgba(244,246,240,0.6)]">Diagnose faster.</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-[rgba(200,255,0,0.4)] rounded-full blur-md animate-pulse" style={{ animationDelay: '0.3s' }} />
-                  <div className="relative w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-[#080C0F]" />
-                  </div>
-                </div>
-                <span className="text-sm font-semibold text-[rgba(244,246,240,0.6)]">Resolve smarter.</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-[rgba(200,255,0,0.4)] rounded-full blur-md animate-pulse" style={{ animationDelay: '0.6s' }} />
-                  <div className="relative w-8 h-8 rounded-full bg-[#C8FF00] flex items-center justify-center">
-                    <Brain className="w-4 h-4 text-[#080C0F]" />
-                  </div>
-                </div>
-                <span className="text-sm font-semibold text-[rgba(244,246,240,0.6)]">Learn forever.</span>
-              </div>
-            </div>
-
-            {/* Auto-Scrolling Feature Cards */}
-            <AutoScrollFeatureCards />
-          </div>
+      {/* Mobile top bar */}
+      <div
+        className="bw-mobile-bar"
+        style={{
+          display: "none",
+          position: "fixed",
+          top: 0, left: 0, right: 0,
+          height: 56,
+          background: "#080C0F",
+          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 10,
+          zIndex: 100,
+        }}
+      >
+        <div
+          style={{
+            width: 28, height: 28,
+            background: "rgba(200,255,0,0.08)",
+            border: "1px solid rgba(200,255,0,0.25)",
+            borderRadius: 4,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}
+        >
+          <Zap size={14} color="#C8FF00" />
         </div>
-        
-        {/* Copyright Footer - Left Panel */}
-        <div className="absolute bottom-6 left-0 right-0 text-center z-10">
-          <p className="text-xs text-[rgba(244,246,240,0.3)] font-medium tracking-wide">
-            © 2026 BATTWHEELS SERVICES PRIVATE LIMITED. All rights reserved.
-          </p>
-        </div>
+        <span
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 11, fontWeight: 600,
+            letterSpacing: "0.20em",
+            color: "rgba(244,246,240,0.40)",
+            textTransform: "uppercase",
+          }}
+        >
+          BATTWHEELS OS
+        </span>
       </div>
 
-      {/* Right Panel - Premium Auth Form */}
-      <div className="flex-1 flex flex-col relative overflow-hidden min-h-screen">
-        {/* Premium Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0D1317] via-[#111820] to-[#0D1317]" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[rgba(200,255,0,0.05)] rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[rgba(200,255,0,0.03)] rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-        
-        {/* Top Header with Logo */}
-        <div className="relative z-10 flex justify-between items-center px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
-          {/* Spacer for mobile/tablet to push logo to right */}
-          <div className="flex-1" />
-          
-          {/* Logo with Volt Glow - Compact */}
-          <div className="relative group">
-            {/* Outer volt glow */}
-            <div className="absolute -inset-3 sm:-inset-4 bg-gradient-to-br from-[rgba(200,255,0,0.3)] via-[rgba(200,255,0,0.15)] to-transparent rounded blur-xl opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
-            {/* Inner glow ring */}
-            <div className="absolute -inset-2 sm:-inset-2.5 bg-gradient-to-r from-[rgba(200,255,0,0.2)] to-[rgba(200,255,0,0.15)] rounded blur-lg opacity-60" />
-            {/* Subtle pulse animation */}
-            <div className="absolute -inset-2.5 sm:-inset-3 bg-[rgba(200,255,0,0.1)] rounded blur-md animate-pulse opacity-40" style={{ animationDuration: '3s' }} />
-            <img 
-              src="https://customer-assets.emergentagent.com/job_accounting-os-1/artifacts/0f7szaub_89882536.png" 
-              alt="Battwheels" 
-              className="relative h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
-            />
+      {/* Left panel */}
+      <LeftPanel />
+
+      {/* Right panel */}
+      <div
+        className="bw-right-panel"
+        style={{
+          width: "45%",
+          position: "relative",
+          background: "#080C0F",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+        }}
+      >
+        {/* Form wrapper */}
+        <div
+          className="bw-form-wrap"
+          style={{
+            width: "100%",
+            maxWidth: 360,
+            padding: "0 56px",
+          }}
+        >
+          {/* Header */}
+          <div style={anim(100)}>
+            <h2
+              style={{
+                fontFamily: "'DM Serif Display', serif",
+                fontSize: 28,
+                fontWeight: 400,
+                color: "#F4F6F0",
+                letterSpacing: "-0.01em",
+                margin: 0,
+                lineHeight: 1.2,
+              }}
+            >
+              {activeTab === "login" ? "Welcome back" : "Create your account"}
+            </h2>
+            <p
+              style={{
+                fontFamily: "'Syne', sans-serif",
+                fontSize: 14,
+                color: "rgba(244,246,240,0.45)",
+                marginTop: 4,
+                marginBottom: 0,
+              }}
+            >
+              {activeTab === "login"
+                ? "Sign in to your workspace"
+                : "Start your free trial today"}
+            </p>
           </div>
+
+          {/* Tabs */}
+          <div style={{ marginTop: 32, ...anim(180) }}>
+            <div
+              style={{
+                display: "flex",
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.07)",
+                borderRadius: 4,
+                padding: 3,
+                gap: 3,
+              }}
+            >
+              {["login", "register"].map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  data-testid={`${tab}-tab`}
+                  onClick={() => switchTab(tab)}
+                  style={{
+                    flex: 1,
+                    height: 34,
+                    border: activeTab === tab
+                      ? "1px solid rgba(200,255,0,0.25)"
+                      : "1px solid transparent",
+                    borderRadius: 2,
+                    background: activeTab === tab ? "rgba(200,255,0,0.10)" : "transparent",
+                    color: activeTab === tab ? "#C8FF00" : "rgba(244,246,240,0.40)",
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: 12,
+                    fontWeight: activeTab === tab ? 600 : 400,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  {tab === "login" ? "LOGIN" : "REGISTER"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* ── LOGIN FORM ─────────────────────────────────────────────── */}
+          {activeTab === "login" && (
+            <form onSubmit={handleLogin}>
+              <div
+                style={{
+                  marginTop: 28,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 14,
+                }}
+              >
+                <div style={anim(240)}>
+                  <FormInput
+                    icon={Mail}
+                    type="email"
+                    id="login-email"
+                    label="Email"
+                    placeholder="you@example.com"
+                    value={loginData.email}
+                    onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                    required
+                    dataTestId="login-email-input"
+                  />
+                </div>
+                <div style={anim(290)}>
+                  <FormInput
+                    icon={Lock}
+                    type="password"
+                    id="login-password"
+                    label="Password"
+                    placeholder="••••••••"
+                    value={loginData.password}
+                    onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                    required
+                    showToggle
+                    dataTestId="login-password-input"
+                  />
+                </div>
+              </div>
+
+              {/* Forgot password */}
+              <div style={{ textAlign: "right", marginTop: 8, ...anim(320) }}>
+                <span
+                  className="bw-forgot"
+                  style={{
+                    fontFamily: "'Syne', sans-serif",
+                    fontSize: 12,
+                    color: "rgba(200,255,0,0.60)",
+                    cursor: "pointer",
+                  }}
+                >
+                  Forgot password?
+                </span>
+              </div>
+
+              {/* CTA */}
+              <div style={{ marginTop: 24, ...anim(360) }}>
+                <CTAButton isLoading={isLoading} dataTestId="login-submit-btn">
+                  SIGN IN →
+                </CTAButton>
+                <InlineError msg={loginError} />
+              </div>
+
+              {/* Divider + Google */}
+              <div style={anim(400)}>
+                <OrDivider />
+                <div style={{ marginTop: 16 }}>
+                  <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    data-testid="google-login-btn"
+                    className="bw-google-btn"
+                    style={{
+                      width: "100%",
+                      height: 44,
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.10)",
+                      borderRadius: 4,
+                      fontFamily: "'Syne', sans-serif",
+                      fontSize: 14,
+                      color: "rgba(244,246,240,0.70)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 10,
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    <GoogleIcon />
+                    Continue with Google
+                  </button>
+                </div>
+              </div>
+            </form>
+          )}
+
+          {/* ── REGISTER FORM ───────────────────────────────────────────── */}
+          {activeTab === "register" && (
+            <form onSubmit={handleRegister}>
+              <div
+                style={{
+                  marginTop: 28,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 14,
+                }}
+              >
+                <FormInput
+                  icon={User}
+                  type="text"
+                  id="register-name"
+                  label="Full Name"
+                  placeholder="John Doe"
+                  value={registerData.name}
+                  onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
+                  required
+                  dataTestId="register-name-input"
+                />
+                <FormInput
+                  icon={Mail}
+                  type="email"
+                  id="register-email"
+                  label="Email"
+                  placeholder="you@example.com"
+                  value={registerData.email}
+                  onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                  required
+                  dataTestId="register-email-input"
+                />
+                <FormInput
+                  icon={Lock}
+                  type="password"
+                  id="register-password"
+                  label="Password"
+                  placeholder="••••••••"
+                  value={registerData.password}
+                  onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
+                  required
+                  showToggle
+                  dataTestId="register-password-input"
+                />
+                <FormInput
+                  icon={Lock}
+                  type="password"
+                  id="register-confirm"
+                  label="Confirm Password"
+                  placeholder="••••••••"
+                  value={registerData.confirmPassword}
+                  onChange={(e) =>
+                    setRegisterData({ ...registerData, confirmPassword: e.target.value })
+                  }
+                  required
+                  showToggle
+                  dataTestId="register-confirm-input"
+                />
+              </div>
+
+              <div style={{ marginTop: 24 }}>
+                <CTAButton isLoading={isLoading} dataTestId="register-submit-btn">
+                  CREATE ACCOUNT →
+                </CTAButton>
+                <InlineError msg={registerError} />
+              </div>
+            </form>
+          )}
         </div>
 
-        <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-4 sm:py-6 lg:py-0">
-          <div className="w-full max-w-md">
-            {/* Mobile/Tablet 3D Icons - Hidden on desktop */}
-            <div className="lg:hidden flex flex-col items-center mb-6">
-              <div className="flex gap-3 items-end">
-                <img src={VEHICLE_ICONS.twoWheeler} alt="2W" className="w-10 h-10 sm:w-12 sm:h-12 object-contain opacity-80 hover:opacity-100 transition-opacity" />
-                <img src={VEHICLE_ICONS.threeWheeler} alt="3W" className="w-12 h-12 sm:w-14 sm:h-14 object-contain opacity-80 hover:opacity-100 transition-opacity" />
-                <img src={VEHICLE_ICONS.car} alt="4W" className="w-14 h-14 sm:w-16 sm:h-16 object-contain" />
-                <img src={VEHICLE_ICONS.commercial} alt="Truck" className="w-12 h-12 sm:w-14 sm:h-14 object-contain opacity-80 hover:opacity-100 transition-opacity" />
-              </div>
-              {/* Mobile tagline */}
-              <p className="text-sm text-[#C8FF00] font-medium mt-3 tracking-wide">EV Failure Intelligence</p>
-            </div>
-
-            {/* Premium Glass Card */}
-            <div className="relative">
-              {/* Card Glow */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[rgba(200,255,0,0.15)] via-transparent to-[rgba(200,255,0,0.15)] rounded blur-xl opacity-60" />
-              
-              {/* Main Card */}
-              <Card className="relative border border-[rgba(255,255,255,0.07)] rounded overflow-hidden bg-[#111820]/95 backdrop-blur-xl" style={{ borderRadius: '4px' }}>
-                {/* Top Accent Line */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C8FF00] to-transparent" />
-                
-                <CardHeader className="text-center pt-8 pb-4 px-6 sm:px-8">
-                  {/* Decorative Icon */}
-                  <div className="mx-auto mb-3 w-12 h-12 rounded-lg bg-[rgba(200,255,0,0.1)] border border-[rgba(200,255,0,0.2)] flex items-center justify-center shadow-inner">
-                    <Zap className="w-6 h-6 text-[#C8FF00]" />
-                  </div>
-                  <CardTitle className="text-2xl sm:text-3xl font-bold text-[#F4F6F0] tracking-tight">Battwheels OS</CardTitle>
-                  <CardDescription className="text-[rgba(244,246,240,0.5)] mt-1.5 text-sm sm:text-base">Sign in to your account</CardDescription>
-                </CardHeader>
-                
-                <CardContent className="px-6 sm:px-8 pb-8">
-                  <Tabs defaultValue="login" className="w-full">
-                    {/* Premium Tab List */}
-                    <TabsList className="grid w-full grid-cols-2 mb-6 bg-[#080C0F] rounded p-1 h-12 border border-[rgba(255,255,255,0.07)]">
-                      <TabsTrigger 
-                        value="login" 
-                        data-testid="login-tab" 
-                        className="rounded font-semibold text-sm transition-all duration-300
-                          data-[state=active]:bg-[#C8FF00]
-                          data-[state=active]:text-[#080C0F]
-                          data-[state=inactive]:text-[rgba(244,246,240,0.5)] data-[state=inactive]:hover:text-[#F4F6F0]
-                          h-10"
-                      >
-                        Login
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="register" 
-                        data-testid="register-tab" 
-                        className="rounded font-semibold text-sm transition-all duration-300
-                          data-[state=active]:bg-[#C8FF00]
-                          data-[state=active]:text-[#080C0F]
-                          data-[state=inactive]:text-[rgba(244,246,240,0.5)] data-[state=inactive]:hover:text-[#F4F6F0]
-                          h-10"
-                      >
-                        Register
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="login" className="mt-0">
-                      <form onSubmit={handleLogin} className="space-y-4">
-                        <div className="space-y-1.5">
-                          <Label htmlFor="login-email" className="text-[rgba(244,246,240,0.7)] text-sm font-semibold ml-1">Email</Label>
-                          <PremiumInput
-                            icon={Mail}
-                            type="email"
-                            id="login-email"
-                            placeholder="you@example.com"
-                            value={loginData.email}
-                            onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                            required
-                            dataTestId="login-email-input"
-                          />
-                        </div>
-                        
-                        <div className="space-y-1.5">
-                          <Label htmlFor="login-password" className="text-[rgba(244,246,240,0.7)] text-sm font-semibold ml-1">Password</Label>
-                          <PremiumInput
-                            icon={Lock}
-                            type="password"
-                            id="login-password"
-                            placeholder="••••••••"
-                            value={loginData.password}
-                            onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                            required
-                            showPasswordToggle
-                            dataTestId="login-password-input"
-                          />
-                        </div>
-                        
-                        <div className="pt-1">
-                          <PremiumButton 
-                            type="submit" 
-                            disabled={isLoading}
-                            dataTestId="login-submit-btn"
-                          >
-                            {isLoading ? (
-                              <>
-                                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                </svg>
-                                <span>Signing in...</span>
-                              </>
-                            ) : (
-                              <>
-                                <span>Sign In</span>
-                                <ChevronRight className="w-5 h-5" />
-                              </>
-                            )}
-                          </PremiumButton>
-                        </div>
-                      </form>
-
-                      {/* Divider */}
-                      <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                          <div className="w-full border-t border-[rgba(255,255,255,0.1)]" />
-                        </div>
-                        <div className="relative flex justify-center">
-                          <span className="bg-[#111820] px-3 text-xs text-[rgba(244,246,240,0.4)] font-medium">
-                            or continue with
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Google Button */}
-                      <PremiumButton 
-                        variant="outline"
-                        onClick={handleGoogleLogin}
-                        dataTestId="google-login-btn"
-                      >
-                        <svg className="h-5 w-5" viewBox="0 0 24 24">
-                          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                        </svg>
-                        <span>Continue with Google</span>
-                      </PremiumButton>
-                    </TabsContent>
-
-                    <TabsContent value="register" className="mt-0">
-                      <form onSubmit={handleRegister} className="space-y-4">
-                        <div className="space-y-1.5">
-                          <Label htmlFor="register-name" className="text-[rgba(244,246,240,0.7)] text-sm font-semibold ml-1">Full Name</Label>
-                          <PremiumInput
-                            icon={User}
-                            type="text"
-                            id="register-name"
-                            placeholder="John Doe"
-                            value={registerData.name}
-                            onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
-                            required
-                            dataTestId="register-name-input"
-                          />
-                        </div>
-                        
-                        <div className="space-y-1.5">
-                          <Label htmlFor="register-email" className="text-[rgba(244,246,240,0.7)] text-sm font-semibold ml-1">Email</Label>
-                          <PremiumInput
-                            icon={Mail}
-                            type="email"
-                            id="register-email"
-                            placeholder="you@example.com"
-                            value={registerData.email}
-                            onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
-                            required
-                            dataTestId="register-email-input"
-                          />
-                        </div>
-                        
-                        <div className="space-y-1.5">
-                          <Label htmlFor="register-password" className="text-[rgba(244,246,240,0.7)] text-sm font-semibold ml-1">Password</Label>
-                          <PremiumInput
-                            icon={Lock}
-                            type="password"
-                            id="register-password"
-                            placeholder="••••••••"
-                            value={registerData.password}
-                            onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                            required
-                            showPasswordToggle
-                            dataTestId="register-password-input"
-                          />
-                        </div>
-                        
-                        <div className="space-y-1.5">
-                          <Label htmlFor="register-confirm" className="text-[rgba(244,246,240,0.7)] text-sm font-semibold ml-1">Confirm Password</Label>
-                          <PremiumInput
-                            icon={Lock}
-                            type="password"
-                            id="register-confirm"
-                            placeholder="••••••••"
-                            value={registerData.confirmPassword}
-                            onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
-                            required
-                            showPasswordToggle
-                            dataTestId="register-confirm-input"
-                          />
-                        </div>
-                        
-                        <div className="pt-1">
-                          <PremiumButton 
-                            type="submit" 
-                            disabled={isLoading}
-                            dataTestId="register-submit-btn"
-                          >
-                            {isLoading ? (
-                              <>
-                                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                </svg>
-                                <span>Creating Account...</span>
-                              </>
-                            ) : (
-                              <>
-                                <span>Create Account</span>
-                                <ChevronRight className="w-5 h-5" />
-                              </>
-                            )}
-                          </PremiumButton>
-                        </div>
-                      </form>
-                    </TabsContent>
-                  </Tabs>
-                </CardContent>
-              </Card>
-            </div>
-            
-            {/* Copyright Footer - Mobile/Tablet (shown below card) */}
-            <div className="lg:hidden mt-6 text-center">
-              <p className="text-xs text-[rgba(244,246,240,0.45)] font-medium tracking-wide">
-                © 2026 BATTWHEELS SERVICES PRIVATE LIMITED. All rights reserved.
-              </p>
-            </div>
+        {/* Footer */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 32,
+            left: 0,
+            right: 0,
+            textAlign: "center",
+            padding: "0 56px",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "'Syne', sans-serif",
+              fontSize: 11,
+              color: "rgba(244,246,240,0.25)",
+              margin: "0 0 6px",
+            }}
+          >
+            © 2026 Battwheels Services Pvt. Ltd.
+          </p>
+          <div style={{ display: "flex", justifyContent: "center", gap: 12, alignItems: "center" }}>
+            <a href="#" className="bw-footer-link">
+              Privacy Policy
+            </a>
+            <span style={{ color: "rgba(244,246,240,0.15)", fontSize: 11 }}>·</span>
+            <a href="#" className="bw-footer-link">
+              Terms of Service
+            </a>
           </div>
         </div>
       </div>
