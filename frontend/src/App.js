@@ -1227,6 +1227,13 @@ function AppRouter() {
         </ProtectedRoute>
       } />
       
+      {/* Platform Admin — operator-only, bypasses org context */}
+      <Route path="/platform-admin" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading}>
+          <PlatformAdmin user={auth.user} />
+        </ProtectedRoute>
+      } />
+      
       {/* Catch-all: redirect to SaaS landing or dashboard */}
       <Route path="*" element={auth.user ? <RoleBasedRedirect user={auth.user} /> : <Navigate to="/" replace />} />
     </Routes>
