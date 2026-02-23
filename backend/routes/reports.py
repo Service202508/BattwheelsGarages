@@ -1282,33 +1282,14 @@ async def get_technician_performance(
     period: str = Query("this_month", description="this_week | this_month | this_quarter | custom"),
     date_from: str = Query(None),
     date_to: str = Query(None),
-    request=None,
 ):
     """
     GET /api/reports/technician-performance
     Returns per-technician performance metrics for the specified period,
     ranked by a composite score: resolution_rate(0.4) + sla_compliance(0.4) + speed(0.2).
     """
-    from fastapi import Request as FastAPIRequest
-    import jwt as pyjwt
+    from fastapi import Request as _Req
     import math
-
-    # Extract org_id from JWT
-    org_id = None
-    if request is not None:
-        auth_header = request.headers.get("Authorization", "")
-        if auth_header.startswith("Bearer "):
-            try:
-                payload = pyjwt.decode(
-                    auth_header.split(" ")[1],
-                    os.environ.get("JWT_SECRET", "battwheels-secret"),
-                    algorithms=["HS256"]
-                )
-                org_id = payload.get("org_id")
-            except Exception:
-                pass
-
-    db = get_db()
     now = datetime.now(timezone.utc)
 
     # Determine date range
