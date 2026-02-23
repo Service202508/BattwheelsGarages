@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 // Pages
 import Login from "@/pages/Login";
+import Register from "@/pages/Register";
 import SaaSLanding from "@/pages/SaaSLanding";
 import Dashboard from "@/pages/Dashboard";
 import Tickets from "@/pages/Tickets";
