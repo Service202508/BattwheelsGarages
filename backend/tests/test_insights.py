@@ -9,7 +9,7 @@ import requests
 import os
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
-SESSION_TOKEN = "test_session_insights_1771885529665"
+SESSION_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidXNlcl9hMTk0YWRkODdkMDMiLCJlbWFpbCI6ImFkbWluQGJhdHR3aGVlbHMuaW4iLCJyb2xlIjoiYWRtaW4iLCJvcmdfaWQiOiI2OTk2ZGNmMDcyZmZkMmEyMzk1ZmVlN2IiLCJleHAiOjE3NzI0OTA0MDJ9.KVjJtV-HDmf3ezAEA-iXP3OOs-j8oV0JullV_dYK9y4"
 
 HEADERS = {
     "Authorization": f"Bearer {SESSION_TOKEN}",
