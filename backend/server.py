@@ -2189,7 +2189,7 @@ async def update_sales_order(sales_id: str, update: SalesOrderUpdate, request: R
 # ==================== INVOICE ROUTES ====================
 
 @api_router.post("/invoices")
-async def create_invoice(data: InvoiceCreate, request: Request):
+async def create_invoice(data: InvoiceCreate, request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     user = await require_technician_or_admin(request)
     
     # Get ticket details
