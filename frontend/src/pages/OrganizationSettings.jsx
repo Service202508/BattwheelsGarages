@@ -78,6 +78,17 @@ export default function OrganizationSettings({ user }) {
   const [savingRazorpay, setSavingRazorpay] = useState(false);
   const [testingRazorpay, setTestingRazorpay] = useState(false);
 
+  // Email settings state
+  const [emailConfig, setEmailConfig] = useState({
+    provider: "resend",
+    api_key: "",
+    from_email: "",
+    from_name: ""
+  });
+  const [emailConfigured, setEmailConfigured] = useState(false);
+  const [showEmailKey, setShowEmailKey] = useState(false);
+  const [savingEmail, setSavingEmail] = useState(false);
+
   // E-Invoice state
   const [einvoiceConfig, setEinvoiceConfig] = useState({
     gstin: "",
