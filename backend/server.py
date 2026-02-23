@@ -5858,6 +5858,44 @@ async def get_audit_log_for_resource(
     return {"code": 0, "resource_type": resource_type, "resource_id": resource_id, "history": logs}
 
 # ==================== SATISFACTION SURVEY ROUTES ====================
+@api_router.get("/public/survey/{survey_token}")
+async def get_survey_info(survey_token: str):
+    """Public endpoint: get survey metadata for display before submission (no auth)"""
+    review = await db.ticket_reviews.find_one({"survey_token": survey_token}, {"_id": 0})
+    if not review:
+        raise HTTPException(status_code=404, detail="Survey not found or expired")
+    if review.get("completed"):
+        raise HTTPException(status_code=409, detail="Survey already completed")
+
+    # Get ticket details for display
+    ticket = await db.tickets.find_one(
+        {"ticket_id": review.get("ticket_id")},
+        {"_id": 0, "title": 1, "vehicle_make": 1, "vehicle_model": 1,
+         "vehicle_number": 1, "customer_name": 1, "updated_at": 1,
+         "work_completed_at": 1, "closed_at": 1}
+    )
+
+    # Get org name
+    org = await db.organizations.find_one(
+        {"organization_id": review.get("organization_id")},
+        {"_id": 0, "name": 1, "logo_url": 1, "google_maps_url": 1}
+    )
+
+    return {
+        "code": 0,
+        "survey_token": survey_token,
+        "customer_name": review.get("customer_name", ""),
+        "ticket_title": ticket.get("title", "Service") if ticket else "Service",
+        "vehicle_make": ticket.get("vehicle_make", "") if ticket else "",
+        "vehicle_model": ticket.get("vehicle_model", "") if ticket else "",
+        "vehicle_number": ticket.get("vehicle_number", "") if ticket else "",
+        "completed_date": (ticket.get("closed_at") or ticket.get("work_completed_at") or review.get("created_at", ""))[:10] if ticket else review.get("created_at", "")[:10],
+        "org_name": org.get("name", "Your Service Center") if org else "Your Service Center",
+        "org_logo_url": org.get("logo_url") if org else None,
+        "google_maps_url": org.get("google_maps_url") if org else None,
+    }
+
+
 @api_router.post("/public/survey/{survey_token}")
 async def submit_satisfaction_survey(survey_token: str, request: Request):
     """Public endpoint: customer submits satisfaction rating after ticket close"""
