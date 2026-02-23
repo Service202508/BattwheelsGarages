@@ -1478,6 +1478,74 @@ const JournalEntries = () => {
               <Download size={14} />
               Export CSV
             </button>
+
+            <button
+              onClick={() => setShowTallyModal(true)}
+              data-testid="export-tally-btn"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 16px',
+                background: 'rgba(200,255,0,0.06)',
+                border: '1px solid rgba(200,255,0,0.25)',
+                borderRadius: '4px',
+                color: colors.volt,
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: '11px',
+                cursor: 'pointer',
+                letterSpacing: '0.05em'
+              }}
+            >
+              <Download size={14} />
+              Export to Tally
+            </button>
+
+            {/* Tally Export Modal */}
+            {showTallyModal && (
+              <div style={{
+                position: 'fixed', inset: 0, zIndex: 1000,
+                background: 'rgba(0,0,0,0.65)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <div style={{
+                  background: colors.cardBg,
+                  border: `1px solid ${colors.border}`,
+                  borderRadius: '8px',
+                  padding: '24px',
+                  width: '400px',
+                  maxWidth: '90vw',
+                }}>
+                  <h3 style={{ fontFamily: 'Syne, sans-serif', fontSize: '16px', color: colors.white, margin: '0 0 16px 0' }}>
+                    Export to Tally XML
+                  </h3>
+                  <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+                    <div style={{ flex: 1 }}>
+                      <label style={{ fontSize: '11px', color: colors.muted, display: 'block', marginBottom: '4px' }}>FROM</label>
+                      <input type="date" value={tallyDateFrom} onChange={e => setTallyDateFrom(e.target.value)}
+                        style={{ width: '100%', padding: '8px', background: colors.pageBg, border: `1px solid ${colors.border}`, borderRadius: '4px', color: colors.white, fontSize: '12px' }}
+                      />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <label style={{ fontSize: '11px', color: colors.muted, display: 'block', marginBottom: '4px' }}>TO</label>
+                      <input type="date" value={tallyDateTo} onChange={e => setTallyDateTo(e.target.value)}
+                        style={{ width: '100%', padding: '8px', background: colors.pageBg, border: `1px solid ${colors.border}`, borderRadius: '4px', color: colors.white, fontSize: '12px' }}
+                      />
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                    <button onClick={() => setShowTallyModal(false)}
+                      style={{ padding: '8px 16px', background: 'transparent', border: `1px solid ${colors.border}`, borderRadius: '4px', color: colors.muted, fontSize: '12px', cursor: 'pointer' }}>
+                      Cancel
+                    </button>
+                    <button onClick={handleExportTally} disabled={exportingTally}
+                      style={{ padding: '8px 16px', background: colors.volt, border: 'none', borderRadius: '4px', color: colors.pageBg, fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
+                      {exportingTally ? 'Generating…' : 'Download XML'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Entries Table */}
