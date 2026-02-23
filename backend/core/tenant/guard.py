@@ -615,14 +615,20 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
     
     async def _resolve_org_id(self, request: Request, user_id: str, token_org_id: str) -> str:
         """Resolve org_id from multiple sources"""
+        # Check if caller explicitly specified a different org via header
+        header_org_id = request.headers.get("X-Organization-ID")
+        
+        # If header org differs from token org, use the header org (will fail membership check → 403)
+        if header_org_id and token_org_id and header_org_id != token_org_id:
+            return header_org_id
+        
         # Priority 1: Token (most secure)
         if token_org_id:
             return token_org_id
         
         # Priority 2: Header
-        org_id = request.headers.get("X-Organization-ID")
-        if org_id:
-            return org_id
+        if header_org_id:
+            return header_org_id
         
         # Priority 3: Query param
         org_id = request.query_params.get("org_id")
