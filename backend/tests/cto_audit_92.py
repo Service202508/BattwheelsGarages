@@ -254,8 +254,8 @@ def run():
         r = c.put(f"{API_URL}/tickets/{new_ticket_id}", headers=H, json={"status": "in_progress"})
         T("Ticket Status Update", r.status_code == 200, f"HTTP {r.status_code} {r.text[:80]}")
         r = c.post(f"{API_URL}/tickets/{new_ticket_id}/activities", headers=H,
-                   json={"update_type": "status_change", "description": "Started diagnosis"})
-        T("Ticket Add Update/Comment", r.status_code in [200, 201], f"HTTP {r.status_code}")
+                   json={"action": "note", "description": "Diagnosis started — battery pack checked"})
+        T("Ticket Add Update/Comment", r.status_code in [200, 201], f"HTTP {r.status_code} {r.text[:80]}")
         r = c.get(f"{API_URL}/tickets/{new_ticket_id}/activities", headers=H)
         T("Ticket Updates List", r.status_code == 200, f"HTTP {r.status_code}")
     else:
