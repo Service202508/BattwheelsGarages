@@ -9,7 +9,7 @@ import os
 import uuid
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://tax-invoice-portal-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://erp-expenses-bills.preview.emergentagent.com')
 
 # Test data tracking
 created_ids = {

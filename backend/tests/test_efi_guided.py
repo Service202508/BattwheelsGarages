@@ -7,7 +7,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://tax-invoice-portal-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://erp-expenses-bills.preview.emergentagent.com')
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
