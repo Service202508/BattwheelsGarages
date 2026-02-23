@@ -1411,9 +1411,9 @@ export default function EstimatesEnhanced() {
                             <Badge 
                               variant="outline" 
                               className={
-                                est.status === 'approved' ? 'bg-green-100 text-[#22C55E]' :
-                                est.status === 'sent' ? 'bg-blue-100 text-[#3B9EFF]' :
-                                est.locked_at ? 'bg-orange-100 text-[#FF8C00]' :
+                                est.status === 'approved' ? 'bg-[rgba(34,197,94,0.12)] text-[#22C55E] border-[rgba(34,197,94,0.25)]' :
+                                est.status === 'sent' ? 'bg-[rgba(59,158,255,0.12)] text-[#3B9EFF] border-[rgba(59,158,255,0.25)]' :
+                                est.locked_at ? 'bg-[rgba(255,140,0,0.12)] text-[#FF8C00] border-[rgba(255,140,0,0.25)]' :
                                 'bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]'
                               }
                             >
