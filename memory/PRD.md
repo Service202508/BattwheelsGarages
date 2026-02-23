@@ -304,6 +304,17 @@ customer / fleet_customer (portal access)
 **Initial Score:** 55/86 (64%) — 4 critical blockers
 **After Fixes:** 67/86 (78%) — All blockers resolved
 **Re-Audit (2026-02-24):** 75/86 (87%) — ✅ SIGNED OFF for customer-facing launch
+**Post-Audit Fixes (2026-02-24):** ~81/86 (94%) — ✅ BETA LAUNCH READY
+
+### Post-Audit Fixes Applied:
+- ✅ GET /api/inventory/reorder-suggestions (T11.3)
+- ✅ GET+POST /api/inventory/stocktakes (T11.4)
+- ✅ GET /api/sla/performance-report (T19.2)
+- ✅ GET /api/reports/inventory-valuation (T19.3)
+- ✅ POST /api/settings/export-data + GET status (T19.5)
+- ✅ Cross-tenant 307→403 (TenantGuardMiddleware._resolve_org_id fix)
+- ✅ /app/startup.sh created for libpangoft2 persistence
+- ✅ SLA email notifications (approaching + breach alerts with deduplication)
 
 ### Critical Bugs Fixed:
 1. Trial Balance unbalanced (double-counting bug in double_entry_service.py else-branch)
