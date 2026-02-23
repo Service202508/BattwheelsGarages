@@ -147,6 +147,30 @@ export default function Dashboard({ user }) {
     return () => clearInterval(interval);
   }, []);
 
+  const fetchLeaderboard = async (period = leaderboardPeriod) => {
+    setLeaderboardLoading(true);
+    try {
+      const response = await fetch(`${API}/reports/technician-performance?period=${period}`, {
+        credentials: "include",
+        headers: getAuthHeaders(),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setLeaderboard(data.technicians || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch leaderboard:", err);
+    } finally {
+      setLeaderboardLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "technicians") {
+      fetchLeaderboard(leaderboardPeriod);
+    }
+  }, [activeTab, leaderboardPeriod]);
+
   if (loading) {
     return (
       <div className="space-y-6 p-1">
