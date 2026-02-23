@@ -682,6 +682,118 @@ export default function Dashboard({ user }) {
             />
           </div>
         </TabsContent>
+        </TabsContent>
+
+        {/* ==================== TECHNICIAN LEADERBOARD TAB ==================== */}
+        <TabsContent value="technicians" className="mt-6">
+          <Card className="bg-[#111820] border border-[rgba(255,255,255,0.07)]">
+            <CardHeader className="pb-4 flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-semibold text-[#F4F6F0] flex items-center gap-2">
+                  <Trophy className="h-4 w-4 text-[#C8FF00]" />
+                  Technician Performance
+                </CardTitle>
+                <CardDescription className="text-xs text-[rgba(244,246,240,0.45)] mt-0.5">
+                  {leaderboardPeriod === "this_week" ? "This week" : leaderboardPeriod === "this_month" ? "This month" : "This quarter"} · Updated live
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                {/* Period selector */}
+                <div className="flex rounded border border-[rgba(255,255,255,0.07)] overflow-hidden text-xs">
+                  {[["this_week","Week"],["this_month","Month"],["this_quarter","Quarter"]].map(([val, label]) => (
+                    <button
+                      key={val}
+                      onClick={() => setLeaderboardPeriod(val)}
+                      className={`px-3 py-1.5 transition-colors ${leaderboardPeriod === val ? "bg-[rgba(200,255,0,0.15)] text-[#C8FF00]" : "text-[rgba(244,246,240,0.45)] hover:text-[#F4F6F0]"}`}
+                      data-testid={`leaderboard-period-${val}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <Link to="/reports?tab=technician-performance">
+                  <button className="flex items-center gap-1 text-xs text-[#C8FF00] hover:text-[#d4ff1a] transition-colors">
+                    View Full Report <ChevronRight className="h-3 w-3" />
+                  </button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {leaderboardLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="h-5 w-5 border-2 border-[#C8FF00] border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : leaderboard.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-[rgba(244,246,240,0.35)]">
+                  <Trophy className="h-10 w-10 mb-3 opacity-30" />
+                  <p className="text-sm">No ticket data available for this period</p>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {leaderboard.slice(0, 5).map((tech) => {
+                    const rankStyle = tech.rank === 1
+                      ? { background: "rgba(200,255,0,0.15)", color: "#C8FF00", border: "1px solid rgba(200,255,0,0.30)" }
+                      : tech.rank === 2
+                      ? { background: "rgba(244,246,240,0.08)", color: "#F4F6F0", border: "1px solid rgba(244,246,240,0.15)" }
+                      : tech.rank === 3
+                      ? { background: "rgba(255,140,0,0.10)", color: "#FF8C00", border: "1px solid rgba(255,140,0,0.20)" }
+                      : { background: "transparent", color: "rgba(244,246,240,0.35)", border: "1px solid transparent" };
+
+                    const slaColor = tech.sla_compliance_rate_pct >= 90 ? "#22C55E" : tech.sla_compliance_rate_pct >= 70 ? "#EAB308" : "#FF3B2F";
+                    const avgResDisplay = tech.avg_resolution_time_minutes
+                      ? tech.avg_resolution_time_minutes < 60
+                        ? `${Math.round(tech.avg_resolution_time_minutes)}m`
+                        : `${Math.round(tech.avg_resolution_time_minutes / 60)}h ${Math.round(tech.avg_resolution_time_minutes % 60)}m`
+                      : "N/A";
+
+                    return (
+                      <div
+                        key={tech.technician_id}
+                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-[rgba(200,255,0,0.04)] transition-colors cursor-pointer"
+                        data-testid={`leaderboard-row-${tech.rank}`}
+                      >
+                        {/* Rank */}
+                        <div className="w-8 h-8 flex items-center justify-center rounded text-xs font-mono font-bold flex-shrink-0"
+                          style={rankStyle}>
+                          #{tech.rank}
+                        </div>
+
+                        {/* Avatar */}
+                        <div className="w-8 h-8 rounded-full bg-[rgba(200,255,0,0.12)] border border-[rgba(200,255,0,0.25)] flex items-center justify-center flex-shrink-0">
+                          <span className="text-[10px] font-bold text-[#C8FF00]">{tech.avatar_initials}</span>
+                        </div>
+
+                        {/* Name + stats */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <div>
+                              <p className="text-sm font-semibold text-[#F4F6F0] leading-none">{tech.technician_name}</p>
+                              <p style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px" }} className="text-[rgba(244,246,240,0.35)] mt-0.5">Technician</p>
+                            </div>
+                            <span className="text-xs font-mono" style={{ color: slaColor }}>{tech.sla_compliance_rate_pct}%</span>
+                          </div>
+                          {/* Stats */}
+                          <div className="flex items-center gap-3 text-[10px] text-[rgba(244,246,240,0.45)] mb-1.5">
+                            <span>Resolved: <span className="text-[#F4F6F0]">{tech.total_tickets_resolved}</span></span>
+                            <span>Avg: <span className="text-[#F4F6F0]">{avgResDisplay}</span></span>
+                            <span>SLA: <span style={{ color: slaColor }}>{tech.sla_compliance_rate_pct}%</span></span>
+                          </div>
+                          {/* SLA bar */}
+                          <div className="h-1 rounded-full bg-[rgba(255,255,255,0.07)] overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{ width: `${tech.sla_compliance_rate_pct}%`, backgroundColor: slaColor }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
