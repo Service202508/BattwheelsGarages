@@ -93,6 +93,7 @@ import TeamManagement from "@/pages/TeamManagement";
 import OrganizationSetupWizard from "@/pages/OrganizationSetupWizard";
 import BrandingSettings from "@/pages/BrandingSettings";
 import PlatformAdmin from "@/pages/PlatformAdmin";
+import DataInsights from "@/pages/DataInsights";
 
 // Customer Portal Pages
 import CustomerLayout from "@/components/CustomerLayout";
