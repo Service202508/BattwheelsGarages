@@ -42,6 +42,52 @@ const FEATURE_NAMES = {
   EFI_INTELLIGENCE:   "EFI Intelligence",
 };
 
+// Feature benefit bullets — shown in the center of the banner
+const FEATURE_BENEFITS = {
+  PAYROLL: [
+    "TDS calculation (new & old regime)",
+    "Form 16 PDF generation",
+    "PF and ESI compliance",
+    "Payslip generation",
+  ],
+  PROJECT_MANAGEMENT: [
+    "Project profitability tracking",
+    "Time logging and billing",
+    "Kanban task management",
+    "Invoice from time logs",
+  ],
+  ADVANCED_REPORTS: [
+    "P&L and Balance Sheet",
+    "GST returns data (GSTR-1)",
+    "Technician performance report",
+    "SLA breach analytics",
+  ],
+  MULTI_WAREHOUSE: [
+    "Stock across multiple locations",
+    "Inter-warehouse transfers",
+    "Location-wise valuation",
+    "Per-location reorder alerts",
+  ],
+  EINVOICE: [
+    "IRN registration with NIC IRP",
+    "QR code on invoice PDF",
+    "Legal compliance above \u20b95Cr",
+    "Automatic IRN in narration",
+  ],
+  ACCOUNTING_MODULE: [
+    "Double-entry journal ledger",
+    "Trial balance verification",
+    "Bank reconciliation",
+    "Multi-account banking",
+  ],
+  EFI_INTELLIGENCE: [
+    "AI-powered fault diagnosis",
+    "Historical failure matching",
+    "Diagnostic workflow guidance",
+    "Root cause probability ranking",
+  ],
+};
+
 const PLAN_HIERARCHY = ["free", "starter", "professional", "enterprise"];
 
 function planCovers(currentPlan, requiredPlan) {
@@ -57,6 +103,8 @@ function capitalize(s) {
 /**
  * Wraps page content. When the current route requires a higher plan,
  * renders an amber banner above a blurred/disabled content area.
+ * The banner includes a center column with feature benefit bullets
+ * (hidden on mobile/narrow screens).
  */
 export default function FeatureGateBanner({ children }) {
   const location = useLocation();
@@ -93,27 +141,28 @@ export default function FeatureGateBanner({ children }) {
   const featureLabel = FEATURE_NAMES[matchedFeature] || matchedFeature;
   const requiredLabel = capitalize(requiredPlan);
   const currentLabel = capitalize(planType);
+  const benefits = (FEATURE_BENEFITS[matchedFeature] || []).slice(0, 4);
 
   return (
     <div className="relative" data-testid="feature-gate-wrapper">
       {/* ── Banner ── */}
       <div
-        className="sticky top-0 z-30 w-full flex items-center justify-between px-6 py-3 border-b-2"
+        className="sticky top-0 z-30 w-full flex items-center justify-between gap-4 px-6 py-3 border-b-2"
         style={{
           background: "rgba(234,179,8,0.08)",
           borderBottomColor: "#EAB308",
         }}
         data-testid="feature-gate-banner"
       >
-        {/* Left */}
-        <div className="flex items-center gap-3 min-w-0">
+        {/* Left — lock icon + plan requirement */}
+        <div className="flex items-center gap-3 min-w-0 flex-shrink-0">
           <Lock
             size={16}
             className="flex-shrink-0"
             style={{ color: "#EAB308" }}
           />
           <div className="min-w-0">
-            <p className="text-sm font-medium text-[#F4F6F0] leading-tight">
+            <p className="text-sm font-medium text-[#F4F6F0] leading-tight whitespace-nowrap">
               <span style={{ color: "#EAB308" }}>{featureLabel}</span>
               {" "}is available on{" "}
               <span className="font-semibold">{requiredLabel} plan</span>
@@ -126,10 +175,29 @@ export default function FeatureGateBanner({ children }) {
           </div>
         </div>
 
-        {/* Right */}
+        {/* Center — feature benefit bullets (desktop only) */}
+        {benefits.length > 0 && (
+          <div
+            className="hidden lg:flex flex-1 items-center justify-center gap-x-5"
+            data-testid="feature-gate-benefits"
+          >
+            {benefits.map((benefit) => (
+              <span
+                key={benefit}
+                className="flex items-center gap-1 whitespace-nowrap"
+                style={{ fontSize: "11px", color: "rgba(244,246,240,0.60)" }}
+              >
+                <span style={{ color: "#EAB308", fontWeight: 600 }}>&#10003;</span>
+                {benefit}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Right — upgrade button */}
         <button
           onClick={() => navigate("/subscription")}
-          className="flex-shrink-0 ml-4 text-sm font-semibold px-4 py-2 rounded transition-opacity hover:opacity-90 active:opacity-80"
+          className="flex-shrink-0 text-sm font-semibold px-4 py-2 rounded transition-opacity hover:opacity-90 active:opacity-80"
           style={{
             background: "#EAB308",
             color: "#080C0F",
