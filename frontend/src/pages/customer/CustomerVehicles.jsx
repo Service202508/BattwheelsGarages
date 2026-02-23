@@ -39,7 +39,7 @@ export default function CustomerVehicles({ user }) {
     if (!status) return "";
     const colors = {
       active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] border-green-200",
-      expiring: "bg-orange-100 text-[#FF8C00] border-orange-200",
+      expiring: "bg-[rgba(255,140,0,0.10)] text-[#FF8C00] border-orange-200",
       expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)] border-red-200"
     };
     return colors[status] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]";

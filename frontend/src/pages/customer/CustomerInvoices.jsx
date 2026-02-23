@@ -56,7 +56,7 @@ export default function CustomerInvoices({ user }) {
   const getPaymentStatusConfig = (status) => {
     const configs = {
       paid: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]", icon: CheckCircle, label: "Paid" },
-      partial: { color: "bg-orange-100 text-[#FF8C00]", icon: Clock, label: "Partial" },
+      partial: { color: "bg-[rgba(255,140,0,0.10)] text-[#FF8C00]", icon: Clock, label: "Partial" },
       pending: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]", icon: AlertCircle, label: "Pending" }
     };
     return configs[status] || configs.pending;

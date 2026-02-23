@@ -194,7 +194,7 @@ export default function CustomerDashboard({ user }) {
                   <div className="flex items-center gap-4">
                     <div className={`p-2 rounded-lg ${
                       service.status === 'resolved' || service.status === 'closed' 
-                        ? 'bg-green-100' 
+                        ? 'bg-[rgba(34,197,94,0.10)]' 
                         : 'bg-blue-100'
                     }`}>
                       {service.status === 'resolved' || service.status === 'closed' 
