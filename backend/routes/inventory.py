@@ -2,10 +2,10 @@
 Battwheels OS - Inventory Routes
 Thin controller layer for inventory management
 """
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, HTTPException, Request, Query, Depends
+from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
-from pydantic import BaseModel
 import logging
 
 from services.inventory_service import (
@@ -13,6 +13,7 @@ from services.inventory_service import (
     get_inventory_service,
     init_inventory_service
 )
+from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 
