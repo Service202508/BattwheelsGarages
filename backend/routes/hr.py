@@ -1098,23 +1098,36 @@ async def list_tds_challans(
     return {"code": 0, "challans": challans}
 
 
-@router.get("/payroll/form16/{employee_id}/{assessment_year}")
+@router.get("/payroll/form16/{employee_id}/{fy}")
 async def get_form16_data(
     employee_id: str,
-    assessment_year: str,
+    fy: str,
     request: Request
 ):
     """
-    Get Form 16 data for an employee (Step 5)
+    Get Form 16 data for an employee
     
-    Args:
-        employee_id: Employee ID
-        assessment_year: e.g., "2025-26" for FY 2024-25
+    GET /api/payroll/form16/{employee_id}/{fy}
+    FY format: "2024-25"
+    
+    Returns structured JSON with:
+    - employee: name, pan, designation, period_from, period_to
+    - employer: name, tan, pan, address, category
+    - part_a: quarters with TDS deducted/deposited, challan_details
+    - part_b: Full tax computation breakdown
     """
     from services.tds_service import init_tds_service, get_form16_generator
     
     service = get_service()
     org_id = await get_org_id(request, service.db)
+    
+    # Parse FY (format: "2024-25")
+    try:
+        fy_start_year = int(fy.split("-")[0])
+        fy_end_year = fy_start_year + 1
+        assessment_year = f"{fy_end_year}-{str(fy_end_year + 1)[-2:]}"
+    except:
+        raise HTTPException(status_code=400, detail="Invalid FY format. Expected: 2024-25")
     
     # Initialize TDS service if not done
     try:
@@ -1122,6 +1135,27 @@ async def get_form16_data(
     except:
         init_tds_service(service.db)
         form16_gen = get_form16_generator()
+    
+    # Get employee
+    employee = await service.get_employee(employee_id)
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    # Check if employee has payroll data for this FY
+    payroll_records = await service.db.payroll.find({
+        "employee_id": employee_id,
+        "$or": [
+            {"year": fy_start_year, "month": {"$in": ["April", "May", "June", "July", "August", "September", "October", "November", "December"]}},
+            {"year": fy_end_year, "month": {"$in": ["January", "February", "March"]}}
+        ],
+        "status": {"$in": ["processed", "paid"]}
+    }, {"_id": 0}).to_list(12)
+    
+    if not payroll_records:
+        raise HTTPException(
+            status_code=404, 
+            detail=f"No payroll data found for this employee in FY {fy}"
+        )
     
     # Get employer details
     org = await service.db.organizations.find_one(
@@ -1134,23 +1168,125 @@ async def get_form16_data(
         "tan": org.get("tan_number"),
         "pan": org.get("pan_number", org.get("gstin", "")[2:12] if org.get("gstin") else None),
         "name": org.get("company_name", org.get("name")),
-        "address": f"{org.get('address', '')} {org.get('city', '')} {org.get('pincode', '')}".strip()
+        "address": f"{org.get('address', '')} {org.get('city', '')} {org.get('pincode', '')}".strip(),
+        "category": org.get("category", "Company")
     }
     
+    # Get TDS challans for quarters
+    challans = await service.db.tds_challans.find({
+        "organization_id": org_id,
+        "financial_year": fy
+    }, {"_id": 0}).to_list(100)
+    
+    tax_config = employee.get("tax_config", {
+        "pan_number": employee.get("pan_number"),
+        "tax_regime": "new",
+        "declarations": {}
+    })
+    
+    # Build quarters data
+    quarters = []
+    quarter_defs = [
+        {"quarter": "Q1", "period": f"Apr-Jun {fy_start_year}", "months": ["April", "May", "June"], "year": fy_start_year},
+        {"quarter": "Q2", "period": f"Jul-Sep {fy_start_year}", "months": ["July", "August", "September"], "year": fy_start_year},
+        {"quarter": "Q3", "period": f"Oct-Dec {fy_start_year}", "months": ["October", "November", "December"], "year": fy_start_year},
+        {"quarter": "Q4", "period": f"Jan-Mar {fy_end_year}", "months": ["January", "February", "March"], "year": fy_end_year}
+    ]
+    
+    total_tds_deducted = 0
+    total_tds_deposited = 0
+    
+    for q_def in quarter_defs:
+        # TDS deducted in quarter
+        q_payroll = [p for p in payroll_records if p.get("month") in q_def["months"] and p.get("year") == q_def["year"]]
+        q_tds_deducted = sum(p.get("deductions", {}).get("tds", 0) for p in q_payroll)
+        total_tds_deducted += q_tds_deducted
+        
+        # TDS deposited (from challans)
+        q_challans = [c for c in challans if c.get("quarter") == q_def["quarter"]]
+        q_tds_deposited = sum(c.get("amount", 0) for c in q_challans)
+        total_tds_deposited += q_tds_deposited
+        
+        quarters.append({
+            "quarter": q_def["quarter"],
+            "period": q_def["period"],
+            "tds_deducted": round(q_tds_deducted, 2),
+            "tds_deposited": round(q_tds_deposited, 2),
+            "challan_details": [
+                {
+                    "challan_number": c.get("challan_number"),
+                    "bsr_code": c.get("bsr_code"),
+                    "date": c.get("deposit_date"),
+                    "amount": c.get("amount", 0)
+                } for c in q_challans
+            ]
+        })
+    
+    # Calculate tax computation using TDS service
+    salary_structure = employee.get("salary_structure", {})
+    
     try:
-        form16_data = await form16_gen.generate_form16_data(
+        from services.tds_service import get_tds_calculator
+        tds_calc = get_tds_calculator()
+        
+        annual_calc = await tds_calc.calculate_annual_tax(
             employee_id=employee_id,
-            assessment_year=assessment_year,
-            employer_details=employer_details
+            financial_year=fy,
+            salary_structure=salary_structure,
+            tax_config=tax_config
         )
-        
-        return {"code": 0, "form16": form16_data}
-        
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        logger.error(f"Form 16 generation failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.warning(f"Tax calculation failed: {e}")
+        annual_calc = {"gross_annual": 0, "taxable_income": 0, "total_tax_liability": 0, "breakdown": {}}
+    
+    breakdown = annual_calc.get("breakdown", {})
+    chapter_via = breakdown.get("chapter_via", {})
+    
+    # Build Form 16 response
+    form16_data = {
+        "employee": {
+            "name": f"{employee.get('first_name', '')} {employee.get('last_name', '')}".strip(),
+            "pan": tax_config.get("pan_number") or employee.get("pan_number"),
+            "designation": employee.get("designation"),
+            "period_from": f"{fy_start_year}-04-01",
+            "period_to": f"{fy_end_year}-03-31"
+        },
+        "employer": {
+            "name": employer_details.get("name"),
+            "tan": employer_details.get("tan"),
+            "pan": employer_details.get("pan"),
+            "address": employer_details.get("address"),
+            "category": employer_details.get("category")
+        },
+        "part_a": {
+            "quarters": quarters,
+            "total_tds_deducted": round(total_tds_deducted, 2),
+            "total_tds_deposited": round(total_tds_deposited, 2)
+        },
+        "part_b": {
+            "gross_salary": round(annual_calc.get("gross_annual", 0), 2),
+            "hra_exemption": round(breakdown.get("hra_exemption", 0), 2),
+            "standard_deduction": round(annual_calc.get("standard_deduction", 50000), 2),
+            "deduction_80c": round(chapter_via.get("80C", 0), 2),
+            "deduction_80d": round(chapter_via.get("80D", 0), 2),
+            "deduction_80ccd": round(chapter_via.get("80CCD_1B", 0), 2),
+            "other_deductions": round(
+                chapter_via.get("80E", 0) + chapter_via.get("80G", 0) + chapter_via.get("80TTA", 0), 2
+            ),
+            "net_taxable_income": round(annual_calc.get("taxable_income", 0), 2),
+            "tax_on_income": round(annual_calc.get("tax_before_rebate", 0), 2),
+            "rebate_87a": round(annual_calc.get("rebate_87a", 0), 2),
+            "surcharge": round(annual_calc.get("surcharge", 0), 2),
+            "cess": round(annual_calc.get("cess", 0), 2),
+            "total_tax_liability": round(annual_calc.get("total_tax_liability", 0), 2),
+            "tds_deducted": round(total_tds_deducted, 2),
+            "balance_tax_payable": round(
+                annual_calc.get("total_tax_liability", 0) - total_tds_deducted, 2
+            )
+        }
+    }
+    
+    return {"code": 0, "form16": form16_data}
 
 
 # Helper for org_id
