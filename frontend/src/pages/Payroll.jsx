@@ -155,67 +155,63 @@ export default function Payroll({ user }) {
     }
     
     try {
-      const quarter = selectedMonth <= 3 ? "Q4" : 
-                     selectedMonth <= 6 ? "Q1" : 
-                     selectedMonth <= 9 ? "Q2" : "Q3";
-      
-      const fy = selectedMonth >= 4 
-        ? `${selectedYear}-${String(selectedYear + 1).slice(-2)}`
-        : `${selectedYear - 1}-${String(selectedYear).slice(-2)}`;
-      
-      const response = await fetch(`${API}/hr/tds/challan`, {
+      // Use the new mark-deposited endpoint which posts journal entries
+      const response = await fetch(`${API}/hr/payroll/tds/mark-deposited`, {
         method: "POST",
         credentials: "include",
         headers,
         body: JSON.stringify({
-          quarter,
-          financial_year: fy,
+          month: selectedMonth,
+          year: selectedYear,
           challan_number: challanForm.challan_number,
+          bsr_code: challanForm.bsr_code,
           deposit_date: challanForm.deposit_date,
           amount: challanForm.amount,
-          bank_name: challanForm.bsr_code
+          payment_mode: challanForm.payment_mode
         })
       });
       
+      const data = await response.json();
+      
       if (response.ok) {
-        toast.success("TDS challan recorded successfully");
+        toast.success(`TDS deposited — Challan ${challanForm.challan_number} recorded`);
         setShowChallanModal(false);
         setChallanForm({ challan_number: "", bsr_code: "", deposit_date: new Date().toISOString().split("T")[0], amount: 0, payment_mode: "net_banking" });
         fetchTdsChallans();
         fetchTdsSummary();
       } else {
-        toast.error("Failed to record challan");
+        // Show inline error - do not close modal
+        toast.error(data.detail || "Failed to record challan");
       }
     } catch (error) {
       toast.error("Error recording challan");
     }
   };
 
-  const handleExportTdsData = () => {
-    if (!tdsSummary?.employees) return;
-    
-    const csvData = [
-      ["Employee Name", "PAN", "Regime", "Gross Salary", "Taxable Income", "Annual Tax", "Monthly TDS", "YTD Deducted"],
-      ...tdsSummary.employees.map(emp => [
-        emp.employee_name,
-        emp.pan_number || "PAN MISSING",
-        emp.tax_regime?.toUpperCase() || "NEW",
-        emp.gross_monthly * 12,
-        emp.annual_tax_liability / 0.04 || 0, // Approximate taxable from tax
-        emp.annual_tax_liability,
-        emp.monthly_tds,
-        emp.ytd_tds
-      ])
-    ];
-    
-    const csv = csvData.map(row => row.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `tds_data_${selectedMonth}_${selectedYear}.csv`;
-    a.click();
-    toast.success("TDS data exported");
+  const handleExportTdsData = async () => {
+    // Use server-side CSV export with complete data
+    try {
+      const response = await fetch(
+        `${API}/hr/payroll/tds/export?month=${selectedMonth}&year=${selectedYear}`,
+        { credentials: "include", headers }
+      );
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        const monthNames = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        a.download = `TDS_Summary_${monthNames[selectedMonth]}_${selectedYear}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        toast.success("TDS data exported");
+      } else {
+        toast.error("Failed to export TDS data");
+      }
+    } catch (error) {
+      toast.error("Error exporting TDS data");
+    }
   };
 
   const formatCurrency = (amount) => {
