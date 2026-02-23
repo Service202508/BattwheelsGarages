@@ -542,6 +542,71 @@ class BillsService:
             "grand_total": grand_total,
             "as_of_date": today
         }
+    
+    async def get_vendor_aging_report(self, org_id: str) -> Dict[str, Any]:
+        """Get bills aging report grouped by vendor"""
+        today = datetime.now().strftime("%Y-%m-%d")
+        
+        # Get all unpaid bills
+        bills = await self.bills.find({
+            "organization_id": org_id,
+            "status": {"$nin": ["PAID", "CANCELLED"]},
+            "balance_due": {"$gt": 0}
+        }, {"_id": 0}).to_list(500)
+        
+        vendor_aging = {}
+        
+        for bill in bills:
+            vendor_id = bill.get("vendor_id", "unknown")
+            vendor_name = bill.get("vendor_name", "Unknown Vendor")
+            due_date = bill.get("due_date", today)
+            days_overdue = (datetime.strptime(today, "%Y-%m-%d") - datetime.strptime(due_date, "%Y-%m-%d")).days
+            balance = bill.get("balance_due", 0)
+            
+            if vendor_id not in vendor_aging:
+                vendor_aging[vendor_id] = {
+                    "vendor_id": vendor_id,
+                    "vendor_name": vendor_name,
+                    "current": 0,
+                    "days_1_30": 0,
+                    "days_31_60": 0,
+                    "days_61_90": 0,
+                    "days_over_90": 0,
+                    "total": 0
+                }
+            
+            # Categorize by aging bucket
+            if days_overdue <= 0:
+                vendor_aging[vendor_id]["current"] += balance
+            elif days_overdue <= 30:
+                vendor_aging[vendor_id]["days_1_30"] += balance
+            elif days_overdue <= 60:
+                vendor_aging[vendor_id]["days_31_60"] += balance
+            elif days_overdue <= 90:
+                vendor_aging[vendor_id]["days_61_90"] += balance
+            else:
+                vendor_aging[vendor_id]["days_over_90"] += balance
+            
+            vendor_aging[vendor_id]["total"] += balance
+        
+        # Convert to list sorted by total descending
+        vendors = sorted(vendor_aging.values(), key=lambda x: x["total"], reverse=True)
+        
+        # Calculate totals
+        totals = {
+            "current": sum(v["current"] for v in vendors),
+            "days_1_30": sum(v["days_1_30"] for v in vendors),
+            "days_31_60": sum(v["days_31_60"] for v in vendors),
+            "days_61_90": sum(v["days_61_90"] for v in vendors),
+            "days_over_90": sum(v["days_over_90"] for v in vendors),
+            "grand_total": sum(v["total"] for v in vendors)
+        }
+        
+        return {
+            "vendors": vendors,
+            "totals": totals,
+            "as_of_date": today
+        }
 
 
 # ==================== SERVICE FACTORY ====================
