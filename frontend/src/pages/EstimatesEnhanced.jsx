@@ -1895,7 +1895,7 @@ export default function EstimatesEnhanced() {
 
                 {/* Price List Info */}
                 {selectedEstimate.price_list_name && (
-                  <div className="bg-[rgba(34,197,94,0.08)] border border-green-200 rounded-lg px-3 py-2 text-sm flex items-center gap-2">
+                  <div className="bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.25)] rounded-lg px-3 py-2 text-sm flex items-center gap-2">
                     <IndianRupee className="h-4 w-4 text-[#22C55E]" />
                     <span className="text-[#22C55E]">
                       Price List Applied: <strong>{selectedEstimate.price_list_name}</strong>
