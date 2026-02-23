@@ -5579,14 +5579,20 @@ try:
     TenantGuardMiddleware.set_db(db)
     logger.info("TenantGuardMiddleware database reference set")
     
-    # Add tenant guard middleware (ENFORCES tenant context on all requests)
-    app.add_middleware(TenantGuardMiddleware)
-    logger.info("TenantGuardMiddleware added - Multi-tenant isolation ENFORCEMENT ACTIVE")
+    # IMPORTANT: Middleware execution order is LIFO (last added = first to run)
+    # We want: Request -> RBAC -> TenantGuard -> Route
+    # So we add TenantGuard LAST (runs first), RBAC FIRST (runs second)
     
     # Add RBAC middleware (ENFORCES role-based access on all requests)
+    # This runs AFTER TenantGuardMiddleware sets the role
     from middleware.rbac import RBACMiddleware
     app.add_middleware(RBACMiddleware)
     logger.info("RBACMiddleware added - Role-based access control ENFORCEMENT ACTIVE")
+    
+    # Add tenant guard middleware (ENFORCES tenant context on all requests)
+    # This runs FIRST, sets tenant context and role on request.state
+    app.add_middleware(TenantGuardMiddleware)
+    logger.info("TenantGuardMiddleware added - Multi-tenant isolation ENFORCEMENT ACTIVE")
     
 except Exception as e:
     logger.error(f"Failed to initialize multi-tenant system: {e}")
