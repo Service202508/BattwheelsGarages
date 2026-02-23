@@ -11,11 +11,13 @@ Note: Technicians see simplified guidance.
 Complex analytics visible only to Supervisor/Admin.
 """
 
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, HTTPException, Request, Query, Depends
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 import logging
+
+from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 

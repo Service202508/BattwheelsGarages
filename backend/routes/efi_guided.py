@@ -2,7 +2,7 @@
 EFI Guided Execution API Routes
 Integrates with Job Card workflow for step-by-step diagnostics
 """
-from fastapi import APIRouter, HTTPException, Request, Query, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, Request, Query, UploadFile, File, Form, Depends
 from fastapi.responses import StreamingResponse
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
@@ -21,6 +21,7 @@ from services.efi_decision_engine import (
     DiagnosticStep,
     ResolutionNode
 )
+from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 

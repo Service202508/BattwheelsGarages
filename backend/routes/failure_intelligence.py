@@ -9,7 +9,7 @@ Routes are thin:
 
 All events are emitted from the service layer, not routes.
 """
-from fastapi import APIRouter, HTTPException, Request, BackgroundTasks, Query
+from fastapi import APIRouter, HTTPException, Request, BackgroundTasks, Query, Depends
 from typing import Optional, List
 from datetime import datetime, timezone
 import logging
@@ -27,6 +27,7 @@ from services.failure_intelligence_service import (
     get_efi_service,
     init_efi_service
 )
+from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 
