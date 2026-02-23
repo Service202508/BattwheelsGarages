@@ -137,7 +137,9 @@ async def update_sla_config(config: SLAConfig, request: Request):
         "CRITICAL": config.CRITICAL.dict(),
         "HIGH": config.HIGH.dict(),
         "MEDIUM": config.MEDIUM.dict(),
-        "LOW": config.LOW.dict()
+        "LOW": config.LOW.dict(),
+        "auto_reassign_on_breach": config.auto_reassign_on_breach,
+        "reassignment_delay_minutes": config.reassignment_delay_minutes,
     }
 
     await db.organizations.update_one(
