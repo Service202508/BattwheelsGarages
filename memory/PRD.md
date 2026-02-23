@@ -12,47 +12,60 @@
 
 ## Session 105 Updates (February 2026)
 
-### P1: TDS Calculation Engine in Payroll ✅ (BACKEND COMPLETE)
-**Status:** ✅ Steps 1-3, 5 Backend Complete
+### P1: Projects Module ✅ (BACKEND COMPLETE)
+**Status:** ✅ Backend 100% Complete
 
-Implemented comprehensive TDS (Tax Deducted at Source) calculation engine:
+Implemented full project management backend:
 
-**Backend Implementation:**
-- `/backend/services/tds_service.py` - Core TDS engine (700+ lines)
-  - `validate_pan()` - PAN format validation (AAAAA0000A)
-  - `calculate_hra_exemption()` - HRA exemption (metro/non-metro)
-  - `calculate_chapter_via_deductions()` - 80C, 80D, 80CCD, 80E, 80G, 80TTA
-  - `TDSCalculator.calculate_annual_tax()` - Full annual tax calculation
-  - `TDSCalculator.calculate_monthly_tds()` - Monthly TDS with YTD adjustment
-  - `Form16Generator.generate_form16_data()` - Form 16 Part A & B data
-  - `generate_payroll_journal_entries()` - Double-entry for payroll
-
-**Tax Slabs Implemented (FY 2024-25):**
-- **New Regime:**
-  - 0-3L: NIL, 3-7L: 5%, 7-10L: 10%, 10-12L: 15%, 12-15L: 20%, >15L: 30%
-  - Rebate u/s 87A if income ≤ ₹7,00,000
-- **Old Regime:**
-  - 0-2.5L: NIL, 2.5-5L: 5%, 5-10L: 20%, >10L: 30%
-  - Rebate u/s 87A if income ≤ ₹5,00,000
-- 4% Health & Education Cess on tax
-- Surcharge for high earners (50L-1Cr: 10%, etc.)
+**Data Models:**
+- `projects` - Project with status, budget, billing type, hourly rate
+- `project_tasks` - Tasks with status, priority, estimated/actual hours
+- `project_time_logs` - Time tracking by employee
+- `project_expenses` - Expense tracking by project
 
 **API Endpoints:**
-- `PUT /api/hr/employees/{id}/tax-config` - Update PAN, regime, declarations
-- `GET /api/hr/employees/{id}/tax-config` - Get tax configuration
-- `GET /api/hr/tds/calculate/{id}` - Calculate TDS for employee
-- `GET /api/hr/payroll/tds-summary` - TDS summary with due date alerts
-- `POST /api/hr/tds/challan` - Record TDS challan deposit
-- `GET /api/hr/tds/challans` - List TDS challans
-- `GET /api/hr/payroll/form16/{id}/{year}` - Get Form 16 data
+- `GET/POST /api/projects` - List/Create projects
+- `GET/PUT/DELETE /api/projects/{id}` - Project CRUD
+- `GET/POST /api/projects/{id}/tasks` - Task management
+- `PUT/DELETE /api/projects/{id}/tasks/{task_id}` - Task updates
+- `POST /api/projects/{id}/time-log` - Time logging
+- `GET/POST /api/projects/{id}/expenses` - Expense tracking
+- `GET /api/projects/{id}/profitability` - Profitability analysis
+- `POST /api/projects/{id}/invoice` - Invoice generation from project
+- `GET /api/projects/stats/dashboard` - Dashboard statistics
 
-**Verified:**
-- PAN validation working (rejects invalid format)
-- TDS calculation correct: ₹12L CTC → ₹75,400 annual tax
-- Monthly TDS with remaining months adjustment working
-- TDS Summary endpoint showing per-employee breakdown
+**Profitability Calculation:**
+- Revenue: Fixed (budget) or Hourly (hours × rate)
+- Costs: Expenses + Employee cost (hours × cost rate)
+- Gross Profit & Margin %
+- Completion % based on tasks and hours
 
-**Pending:** Step 4 Frontend UI (TDS Summary section in Payroll UI)
+**Verified:** Project created, task added, time logged, profitability returned 99.2% margin
+
+---
+
+### P1: TDS Calculation Engine ✅ (COMPLETE)
+**Status:** ✅ Backend + Frontend Complete
+
+**Backend (`/backend/services/tds_service.py`):**
+- PAN validation (AAAAA0000A format)
+- HRA exemption calculation (metro/non-metro)
+- Chapter VIA deductions (80C, 80D, 80CCD, 80E, 80G, 80TTA)
+- New/Old Regime tax slabs FY 2024-25
+- Monthly TDS with YTD adjustment
+- Form 16 data generation
+- Payroll journal entries
+
+**Frontend (`/frontend/src/pages/Payroll.jsx`):**
+- TDS Summary Tab with stat cards
+- Employee TDS table with PAN, Regime, Tax breakdown
+- PAN MISSING badges with 20% rate warning
+- TDS Due Date alerts (orange warning, red overdue)
+- Mark TDS Deposited modal (Challan, BSR Code)
+- Export CSV functionality
+- Form 16 section
+
+**Verified:** TDS calculation ₹37,700/month for ₹12L annual salary
 
 ---
 
