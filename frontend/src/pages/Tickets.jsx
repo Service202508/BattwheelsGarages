@@ -229,6 +229,36 @@ export default function Tickets({ user }) {
 
   const paginatedTickets = tickets.slice((page - 1) * 10, page * 10);
 
+  // SLA cell — defined inside component to avoid babel-metadata-plugin issues
+  const SLACell = ({ ticket }) => {
+    if (!ticket.sla_resolution_due_at) return <span style={{ color: "rgba(244,246,240,0.25)" }}>—</span>;
+    const now = new Date();
+    const resDue = new Date(ticket.sla_resolution_due_at);
+    const minsRemaining = (resDue - now) / 60000;
+
+    if (ticket.sla_resolution_breached) {
+      return (
+        <span style={{
+          background: "rgba(255,59,47,0.10)",
+          color: "#FF3B2F",
+          border: "1px solid rgba(255,59,47,0.25)",
+          fontFamily: "monospace",
+          fontSize: "10px",
+          padding: "3px 8px",
+          borderRadius: "2px"
+        }}>BREACHED</span>
+      );
+    }
+    if (minsRemaining < 120) {
+      return <span style={{ color: "#FF8C00" }}>{Math.floor(minsRemaining)}m left</span>;
+    }
+    if (minsRemaining < 1440) {
+      const hrs = Math.floor(minsRemaining / 60);
+      return <span style={{ color: "#F4F6F0" }}>{hrs}h left</span>;
+    }
+    return <span style={{ color: "rgba(244,246,240,0.35)" }}>On track</span>;
+  };
+
   return (
     <div className="space-y-4" data-testid="complaint-dashboard">
       {/* Header */}
