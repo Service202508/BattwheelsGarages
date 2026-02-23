@@ -966,7 +966,7 @@ export default function ItemsEnhanced() {
             </div>
           )}
 
-          {/* Items Table */}
+          {/* Items — Table (desktop) / Cards (mobile) */}
           {loading ? (
             <div className="text-center py-8">Loading...</div>
           ) : items.length === 0 ? (
@@ -978,106 +978,192 @@ export default function ItemsEnhanced() {
               </CardContent>
             </Card>
           ) : (
-            <div className="border rounded-lg overflow-hidden bg-[#111820]">
-              <table className="w-full text-sm">
-                <thead className="bg-[#111820] border-b">
-                  <tr>
-                    <th className="px-4 py-3 text-left w-10">
-                      <Checkbox checked={selectAll} onCheckedChange={toggleSelectAll} />
-                    </th>
-                    <th className="px-4 py-3 text-left font-medium">Item</th>
-                    <th className="px-4 py-3 text-left font-medium">SKU</th>
-                    <th className="px-4 py-3 text-left font-medium">Type</th>
-                    <th className="px-4 py-3 text-left font-medium">Group</th>
-                    <th className="px-4 py-3 text-right font-medium">Purchase Rate</th>
-                    <th className="px-4 py-3 text-right font-medium">Selling Rate</th>
-                    <th className="px-4 py-3 text-right font-medium">Stock</th>
-                    <th className="px-4 py-3 text-center font-medium">Status</th>
-                    <th className="px-4 py-3 text-right font-medium w-20">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map(item => (
-                    <tr key={item.item_id} className="border-t hover:bg-[#111820]" data-testid={`item-row-${item.item_id}`}>
-                      <td className="px-4 py-3">
-                        <Checkbox 
-                          checked={selectedItems.includes(item.item_id)} 
-                          onCheckedChange={() => toggleItemSelection(item.item_id)} 
-                        />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          {item.image_url ? (
-                            <img src={item.image_url} alt="" className="w-10 h-10 rounded object-cover" />
-                          ) : (
-                            <div className="w-10 h-10 rounded bg-[rgba(255,255,255,0.05)] flex items-center justify-center">
-                              <Package className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
-                            </div>
-                          )}
-                          <div>
-                            <p className="font-medium hover:text-[#3B9EFF] cursor-pointer" onClick={() => setViewItem(item)}>{item.name}</p>
-                            {item.hsn_code && <p className="text-xs text-[rgba(244,246,240,0.45)]">HSN: {item.hsn_code}</p>}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-[rgba(244,246,240,0.35)]">{item.sku || '-'}</td>
-                      <td className="px-4 py-3">
-                        <Badge className={itemTypeColors[item.item_type] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"}>
-                          {itemTypeLabels[item.item_type] || item.item_type}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 text-[rgba(244,246,240,0.35)]">{item.group_name || '-'}</td>
-                      <td className="px-4 py-3 text-right text-[rgba(244,246,240,0.35)]">₹{(item.purchase_rate || 0).toLocaleString('en-IN')}</td>
-                      <td className="px-4 py-3 text-right font-medium">₹{(item.sales_rate || item.rate || 0).toLocaleString('en-IN')}</td>
-                      <td className="px-4 py-3 text-right">
-                        {(item.item_type === "inventory" || item.item_type === "sales_and_purchases") ? (
-                          <span className={(item.total_stock || item.stock_on_hand || 0) <= (item.reorder_level || 0) ? "text-[#FF3B2F] font-medium" : ""}>
-                            {item.total_stock ?? item.stock_on_hand ?? 0} {item.unit}
-                          </span>
-                        ) : '-'}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <Badge className={item.is_active !== false ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)]"}>
-                          {item.is_active !== false ? "Active" : "Inactive"}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button size="icon" variant="ghost">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setEditItem(item)}>
-                              <Edit className="h-4 w-4 mr-2" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleCloneItem(item)}>
-                              <Copy className="h-4 w-4 mr-2" /> Clone
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => { setViewItem(item); fetchItemHistory(item.item_id); }}>
-                              <History className="h-4 w-4 mr-2" /> History
-                            </DropdownMenuItem>
-                            {(item.item_type === "inventory" || item.item_type === "sales_and_purchases") && (
-                              <DropdownMenuItem onClick={() => {
-                                const adjUrl = `/inventory-adjustments?quick_adjust=${item.item_id}&item_name=${encodeURIComponent(item.name)}&stock=${item.stock_on_hand || item.quantity || 0}`;
-                                window.location.href = adjUrl;
-                              }}>
-                                <ArrowUpDown className="h-4 w-4 mr-2" /> Adjust Stock
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-[#FF3B2F]" onClick={() => handleDeleteItem(item.item_id)}>
-                              <Trash2 className="h-4 w-4 mr-2" /> Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden md:block border rounded-lg overflow-hidden bg-[#111820]">
+                <table className="w-full text-sm">
+                  <thead className="bg-[#111820] border-b">
+                    <tr>
+                      <th className="px-4 py-3 text-left w-10">
+                        <Checkbox checked={selectAll} onCheckedChange={toggleSelectAll} />
+                      </th>
+                      <th className="px-4 py-3 text-left font-medium">Item</th>
+                      <th className="px-4 py-3 text-left font-medium">SKU</th>
+                      <th className="px-4 py-3 text-left font-medium">Type</th>
+                      <th className="px-4 py-3 text-left font-medium">Group</th>
+                      <th className="px-4 py-3 text-right font-medium">Purchase Rate</th>
+                      <th className="px-4 py-3 text-right font-medium">Selling Rate</th>
+                      <th className="px-4 py-3 text-right font-medium">Stock</th>
+                      <th className="px-4 py-3 text-center font-medium">Status</th>
+                      <th className="px-4 py-3 text-right font-medium w-20">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {items.map(item => (
+                      <tr key={item.item_id} className="border-t hover:bg-[#111820]" data-testid={`item-row-${item.item_id}`}>
+                        <td className="px-4 py-3">
+                          <Checkbox
+                            checked={selectedItems.includes(item.item_id)}
+                            onCheckedChange={() => toggleItemSelection(item.item_id)}
+                          />
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            {item.image_url ? (
+                              <img src={item.image_url} alt="" className="w-10 h-10 rounded object-cover" />
+                            ) : (
+                              <div className="w-10 h-10 rounded bg-[rgba(255,255,255,0.05)] flex items-center justify-center">
+                                <Package className="h-5 w-5 text-[rgba(244,246,240,0.45)]" />
+                              </div>
+                            )}
+                            <div>
+                              <p className="font-medium hover:text-[#3B9EFF] cursor-pointer" onClick={() => setViewItem(item)}>{item.name}</p>
+                              {item.hsn_code && <p className="text-xs text-[rgba(244,246,240,0.45)]">HSN: {item.hsn_code}</p>}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-[rgba(244,246,240,0.35)]">{item.sku || '-'}</td>
+                        <td className="px-4 py-3">
+                          <Badge className={itemTypeColors[item.item_type] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"}>
+                            {itemTypeLabels[item.item_type] || item.item_type}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3 text-[rgba(244,246,240,0.35)]">{item.group_name || '-'}</td>
+                        <td className="px-4 py-3 text-right text-[rgba(244,246,240,0.35)]">₹{(item.purchase_rate || 0).toLocaleString('en-IN')}</td>
+                        <td className="px-4 py-3 text-right font-medium">₹{(item.sales_rate || item.rate || 0).toLocaleString('en-IN')}</td>
+                        <td className="px-4 py-3 text-right">
+                          {(item.item_type === "inventory" || item.item_type === "sales_and_purchases") ? (
+                            <span className={(item.total_stock || item.stock_on_hand || 0) <= (item.reorder_level || 0) ? "text-[#FF3B2F] font-medium" : ""}>
+                              {item.total_stock ?? item.stock_on_hand ?? 0} {item.unit}
+                            </span>
+                          ) : '-'}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <Badge className={item.is_active !== false ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)]"}>
+                            {item.is_active !== false ? "Active" : "Inactive"}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="icon" variant="ghost">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => setEditItem(item)}>
+                                <Edit className="h-4 w-4 mr-2" /> Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleCloneItem(item)}>
+                                <Copy className="h-4 w-4 mr-2" /> Clone
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => { setViewItem(item); fetchItemHistory(item.item_id); }}>
+                                <History className="h-4 w-4 mr-2" /> History
+                              </DropdownMenuItem>
+                              {(item.item_type === "inventory" || item.item_type === "sales_and_purchases") && (
+                                <DropdownMenuItem onClick={() => {
+                                  const adjUrl = `/inventory-adjustments?quick_adjust=${item.item_id}&item_name=${encodeURIComponent(item.name)}&stock=${item.stock_on_hand || item.quantity || 0}`;
+                                  window.location.href = adjUrl;
+                                }}>
+                                  <ArrowUpDown className="h-4 w-4 mr-2" /> Adjust Stock
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem className="text-[#FF3B2F]" onClick={() => handleDeleteItem(item.item_id)}>
+                                <Trash2 className="h-4 w-4 mr-2" /> Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden border rounded-lg overflow-hidden bg-[#111820] divide-y divide-[rgba(255,255,255,0.06)]">
+                {items.map(item => {
+                  const stock = item.total_stock ?? item.stock_on_hand ?? 0;
+                  const isLowStock = stock <= (item.reorder_level || 0);
+                  const isInventory = item.item_type === "inventory" || item.item_type === "sales_and_purchases";
+                  return (
+                    <div
+                      key={item.item_id}
+                      data-testid={`item-row-${item.item_id}`}
+                      className="p-4"
+                    >
+                      {/* Top: Icon + Name + Type badge */}
+                      <div className="flex items-start gap-3 mb-2">
+                        <div className="w-9 h-9 rounded bg-[rgba(255,255,255,0.05)] flex items-center justify-center flex-shrink-0">
+                          <Package className="h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-medium text-[#F4F6F0] text-sm truncate">{item.name}</p>
+                            <Badge className={itemTypeColors[item.item_type] || "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]"} style={{ fontSize: "10px", padding: "1px 5px" }}>
+                              {itemTypeLabels[item.item_type] || item.item_type}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-[rgba(244,246,240,0.35)] font-mono mt-0.5">{item.sku || '—'}</p>
+                        </div>
+                      </div>
+
+                      {/* Middle: Price + Stock */}
+                      <div className="flex items-center gap-4 mb-3">
+                        <div>
+                          <p className="text-[10px] text-[rgba(244,246,240,0.35)] uppercase tracking-wide">Sell Price</p>
+                          <p className="text-sm font-semibold text-[#F4F6F0]">₹{(item.sales_rate || item.rate || 0).toLocaleString('en-IN')}</p>
+                        </div>
+                        {isInventory && (
+                          <div>
+                            <p className="text-[10px] text-[rgba(244,246,240,0.35)] uppercase tracking-wide">Stock</p>
+                            <p className={`text-sm font-semibold ${isLowStock ? "text-[#FF3B2F]" : "text-[#C8FF00]"}`}>
+                              {stock} {item.unit || ""}
+                            </p>
+                          </div>
+                        )}
+                        <div className="ml-auto">
+                          <Badge className={item.is_active !== false ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)]"} style={{ fontSize: "10px" }}>
+                            {item.is_active !== false ? "Active" : "Inactive"}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      {/* Bottom: Actions */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setViewItem(item)}
+                          style={{
+                            flex: 1, minHeight: "44px",
+                            background: "rgba(255,255,255,0.05)",
+                            border: "1px solid rgba(255,255,255,0.10)",
+                            borderRadius: "4px", color: "rgba(244,246,240,0.70)",
+                            fontSize: "12px", fontFamily: "Syne, sans-serif",
+                            cursor: "pointer"
+                          }}
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={() => setEditItem(item)}
+                          style={{
+                            flex: 1, minHeight: "44px",
+                            background: "rgba(200,255,0,0.08)",
+                            border: "1px solid rgba(200,255,0,0.20)",
+                            borderRadius: "4px", color: "#C8FF00",
+                            fontSize: "12px", fontFamily: "Syne, sans-serif",
+                            cursor: "pointer"
+                          }}
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </TabsContent>
 
