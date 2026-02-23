@@ -399,24 +399,30 @@ async def log_time(project_id: str, data: TimeLogCreate, request: Request):
 # ==================== EXPENSE ROUTES ====================
 
 @router.get("/{project_id}/expenses")
-async def get_expenses(project_id: str, request: Request):
+async def get_expenses(
+    project_id: str, 
+    request: Request,
+    status: Optional[str] = Query(None, description="Filter by status: PENDING, APPROVED, REJECTED, PAID")
+):
     """Get expenses for a project"""
     service = get_service()
     
-    expenses = await service.get_expenses(project_id)
+    expenses = await service.get_expenses(project_id, status=status)
     total = sum(exp.get("amount", 0) for exp in expenses)
+    approved_total = sum(exp.get("amount", 0) for exp in expenses if exp.get("status") == "APPROVED")
     
     return {
         "code": 0,
         "expenses": expenses,
         "total": len(expenses),
-        "total_amount": round(total, 2)
+        "total_amount": round(total, 2),
+        "approved_amount": round(approved_total, 2)
     }
 
 
 @router.post("/{project_id}/expenses")
 async def add_expense(project_id: str, data: ExpenseCreate, request: Request):
-    """Add expense to a project"""
+    """Add expense to a project (status: PENDING by default)"""
     service = get_service()
     user_id = await get_current_user_id(request)
     
@@ -432,42 +438,108 @@ async def add_expense(project_id: str, data: ExpenseCreate, request: Request):
         expense_date=data.expense_date,
         expense_id=data.expense_id,
         category=data.category,
-        approved_by=user_id
+        status="PENDING"  # Always start as pending
     )
     
-    # Post journal entry for project expense
-    try:
-        org_id = await get_org_id(request)
-        journal_entry = {
-            "entry_type": "PROJECT_EXPENSE",
-            "organization_id": org_id,
-            "reference_type": "PROJECT",
-            "reference_id": project_id,
-            "date": datetime.now(timezone.utc).isoformat(),
-            "narration": f"Project expense: {data.description} | Project: {project.get('name')}",
-            "total_debit": data.amount,
-            "total_credit": data.amount,
-            "lines": [
-                {
-                    "account_type": "PROJECT_EXPENSE",
-                    "debit": data.amount,
-                    "credit": 0,
-                    "description": data.description
-                },
-                {
-                    "account_type": "ACCOUNTS_PAYABLE",
-                    "debit": 0,
-                    "credit": data.amount,
-                    "description": "Project expense payable"
-                }
-            ],
-            "created_at": datetime.now(timezone.utc)
-        }
-        await db_ref.journal_entries.insert_one(journal_entry)
-    except Exception as e:
-        logger.warning(f"Failed to post journal entry for project expense: {e}")
+    return {"code": 0, "message": "Expense added (pending approval)", "expense": expense}
+
+
+@router.post("/{project_id}/expenses/{expense_id}/approve")
+async def approve_expense(
+    project_id: str,
+    expense_id: str,
+    data: ExpenseApprovalRequest,
+    request: Request
+):
+    """
+    Approve or reject a project expense
     
-    return {"code": 0, "message": "Expense added", "expense": expense}
+    When approved:
+    - Posts journal entry via double_entry_service
+    - DEBIT: Project Expense A/C
+    - CREDIT: Accounts Payable or Bank A/C
+    """
+    from services.double_entry_service import get_double_entry_service, init_double_entry_service
+    
+    service = get_service()
+    user_id = await get_current_user_id(request)
+    org_id = await get_org_id(request)
+    
+    # Get project for narration
+    project = await service.get_project(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Get expense details before approval
+    expenses = await service.get_expenses(project_id)
+    expense_detail = next((e for e in expenses if e.get("project_expense_id") == expense_id), None)
+    if not expense_detail:
+        raise HTTPException(status_code=404, detail="Expense not found")
+    
+    # Update expense status
+    result = await service.approve_expense(expense_id, user_id, data.approved)
+    if not result:
+        raise HTTPException(status_code=404, detail="Expense not found")
+    
+    # If approved, post journal entry
+    if data.approved:
+        try:
+            try:
+                de_service = get_double_entry_service()
+            except:
+                init_double_entry_service(db_ref)
+                de_service = get_double_entry_service()
+            
+            await de_service.ensure_system_accounts(org_id)
+            
+            # Get accounts
+            expense_account = await de_service.get_account_by_code(org_id, "5200")  # Project Expense
+            if not expense_account:
+                expense_account = await de_service.get_account_by_code(org_id, "5000")  # Operating Expenses
+            
+            payable_account = await de_service.get_account_by_code(org_id, "2100")  # Accounts Payable
+            
+            if expense_account and payable_account:
+                # Get approver name
+                approver = await db_ref.users.find_one({"user_id": user_id}, {"_id": 0, "full_name": 1, "email": 1})
+                approver_name = approver.get("full_name") or approver.get("email", user_id) if approver else user_id
+                
+                narration = f"Project expense: {project.get('name')} | {expense_detail.get('description')} | Approved by: {approver_name}"
+                
+                success, msg, entry = await de_service.create_journal_entry(
+                    organization_id=org_id,
+                    entry_date=expense_detail.get("expense_date"),
+                    description=narration,
+                    lines=[
+                        {
+                            "account_id": expense_account["account_id"],
+                            "debit_amount": expense_detail.get("amount", 0),
+                            "credit_amount": 0,
+                            "description": expense_detail.get("description")
+                        },
+                        {
+                            "account_id": payable_account["account_id"],
+                            "debit_amount": 0,
+                            "credit_amount": expense_detail.get("amount", 0),
+                            "description": "Project expense payable"
+                        }
+                    ],
+                    entry_type="EXPENSE",
+                    source_document_id=expense_id,
+                    source_document_type="PROJECT_EXPENSE",
+                    created_by=user_id
+                )
+                
+                if success:
+                    logger.info(f"Posted project expense journal entry: {entry.get('entry_id')}")
+                    result["journal_entry_id"] = entry.get("entry_id")
+                else:
+                    logger.warning(f"Failed to post expense journal entry: {msg}")
+        except Exception as e:
+            logger.warning(f"Failed to post expense journal entry: {e}")
+    
+    status_msg = "approved" if data.approved else "rejected"
+    return {"code": 0, "message": f"Expense {status_msg}", "expense": result}
 
 
 # ==================== PROFITABILITY ====================
