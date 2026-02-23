@@ -428,7 +428,8 @@ async def cancel_leave(leave_id: str, request: Request):
 # ==================== PAYROLL ROUTES ====================
 
 @router.get("/payroll/calculate/{employee_id}")
-async def calculate_payroll(employee_id: str, request: Request, month: str = None, year: int = None):
+async def calculate_payroll(employee_id: str, request: Request, month: str = None, year: int = None,
+                            _: None = Depends(require_feature("hr_payroll"))):
     service = get_service()
     
     now = datetime.now(timezone.utc)
