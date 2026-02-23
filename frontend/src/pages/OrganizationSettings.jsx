@@ -1401,6 +1401,107 @@ export default function OrganizationSettings({ user }) {
               </div>
             </CardContent>
           </Card>
+
+          {/* SLA Configuration Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <BarChart2 className="h-4 w-4" />
+                SLA Configuration
+              </CardTitle>
+              <CardDescription>Define response and resolution SLA targets per ticket priority</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Tiers Table */}
+              <div>
+                <div className="grid grid-cols-3 gap-2 mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <span>Priority</span>
+                  <span>Response (hrs)</span>
+                  <span>Resolution (hrs)</span>
+                </div>
+                {[
+                  { key: "CRITICAL", label: "Critical", color: "text-red-400" },
+                  { key: "HIGH", label: "High", color: "text-orange-400" },
+                  { key: "MEDIUM", label: "Medium", color: "text-yellow-400" },
+                  { key: "LOW", label: "Low", color: "text-green-400" },
+                ].map(({ key, label, color }) => (
+                  <div key={key} className="grid grid-cols-3 gap-2 mb-2 items-center">
+                    <span className={`text-sm font-medium ${color}`}>{label}</span>
+                    <Input
+                      type="number"
+                      min="0.5"
+                      step="0.5"
+                      value={slaConfig[key]?.response_hours ?? ""}
+                      onChange={(e) => setSlaConfig(prev => ({
+                        ...prev,
+                        [key]: { ...(prev[key] || {}), response_hours: parseFloat(e.target.value) || 0 }
+                      }))}
+                      className="h-8 text-sm"
+                      data-testid={`sla-response-${key.toLowerCase()}`}
+                    />
+                    <Input
+                      type="number"
+                      min="0.5"
+                      step="0.5"
+                      value={slaConfig[key]?.resolution_hours ?? ""}
+                      onChange={(e) => setSlaConfig(prev => ({
+                        ...prev,
+                        [key]: { ...(prev[key] || {}), resolution_hours: parseFloat(e.target.value) || 0 }
+                      }))}
+                      className="h-8 text-sm"
+                      data-testid={`sla-resolution-${key.toLowerCase()}`}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <Separator />
+
+              {/* Auto-reassignment toggle */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 rounded-lg border">
+                  <div>
+                    <Label className="font-medium">Auto-reassign on SLA breach</Label>
+                    <p className="text-xs text-muted-foreground">Automatically move tickets to the least-busy technician after breach</p>
+                  </div>
+                  <Switch
+                    checked={slaConfig.auto_reassign_on_breach ?? false}
+                    onCheckedChange={(v) => setSlaConfig(prev => ({ ...prev, auto_reassign_on_breach: v }))}
+                    data-testid="sla-auto-reassign-toggle"
+                  />
+                </div>
+
+                {slaConfig.auto_reassign_on_breach && (
+                  <>
+                    {/* Warning banner */}
+                    <div style={{ background: "rgba(234,179,8,0.08)", borderLeft: "3px solid #EAB308" }} className="p-3 rounded-r-lg">
+                      <p className="text-xs text-yellow-300">
+                        <strong>Warning:</strong> Auto-reassignment will move tickets without manual approval. Ensure all technicians are properly onboarded before enabling this feature.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-sm whitespace-nowrap">Reassign after</Label>
+                      <Input
+                        type="number"
+                        min="5"
+                        step="5"
+                        value={slaConfig.reassignment_delay_minutes ?? 30}
+                        onChange={(e) => setSlaConfig(prev => ({ ...prev, reassignment_delay_minutes: parseInt(e.target.value) || 30 }))}
+                        className="w-24 h-8 text-sm"
+                        data-testid="sla-reassign-delay-input"
+                      />
+                      <Label className="text-sm text-muted-foreground">minutes past breach</Label>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <Button onClick={saveSlaConfig} disabled={savingSla} size="sm" data-testid="save-sla-config-btn">
+                {savingSla ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                Save SLA Configuration
+              </Button>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Finance Tab */}
