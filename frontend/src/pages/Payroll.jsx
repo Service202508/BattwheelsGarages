@@ -617,8 +617,33 @@ export default function Payroll({ user }) {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button variant="outline" onClick={() => toast.info("Form 16 PDF generation coming in P2")}>
-                    <FileText className="h-4 w-4 mr-2" /> Generate Form 16 Data
+                  <Button variant="outline" onClick={async () => {
+                    if (selectedEmployeeForForm16 === "all") {
+                      toast.info("Select a specific employee for PDF download");
+                      return;
+                    }
+                    try {
+                      const token = localStorage.getItem("token");
+                      const res = await fetch(`${API}/hr/payroll/form16/${selectedEmployeeForForm16}/${selectedFY}/pdf`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                      });
+                      if (res.ok) {
+                        const blob = await res.blob();
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        const empName = (tdsSummary?.employees || []).find(e => e.employee_id === selectedEmployeeForForm16)?.employee_name?.replace(/ /g, "_") || "Employee";
+                        a.download = `Form16_${empName}_${selectedFY}.pdf`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        toast.success("Form 16 PDF downloaded");
+                      } else {
+                        const data = await res.json();
+                        toast.error(data.detail || "Failed to generate Form 16 PDF");
+                      }
+                    } catch { toast.error("Error downloading Form 16"); }
+                  }} data-testid="download-form16-btn">
+                    <FileText className="h-4 w-4 mr-2" /> Download Form 16 PDF
                   </Button>
                   <Button variant="outline" onClick={handleExportTdsData}>
                     <Download className="h-4 w-4 mr-2" /> Export TDS Data CSV
