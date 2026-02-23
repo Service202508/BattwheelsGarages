@@ -1341,7 +1341,338 @@ async def get_form16_data(
     return {"code": 0, "form16": form16_data}
 
 
-# Helper for org_id
+@router.get("/payroll/form16/{employee_id}/{fy}/pdf")
+async def download_form16_pdf(
+    employee_id: str,
+    fy: str,
+    request: Request
+):
+    """
+    Generate and download Form 16 as PDF.
+    
+    GET /api/hr/payroll/form16/{employee_id}/{fy}/pdf
+    FY format: "2024-25"
+    Returns: PDF file download
+    Filename: Form16_{employee_name}_{fy}.pdf
+    """
+    from fastapi.responses import StreamingResponse
+    import io
+
+    # Get Form 16 data from existing endpoint logic
+    service = get_service()
+    org_id = await get_org_id(request, service.db)
+
+    # Parse FY
+    try:
+        fy_start_year = int(fy.split("-")[0])
+        fy_end_year = fy_start_year + 1
+        assessment_year = f"{fy_end_year}-{str(fy_end_year + 1)[-2:]}"
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid FY format. Expected: 2024-25")
+
+    # Get employee
+    employee = await service.get_employee(employee_id)
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    employee_name = f"{employee.get('first_name', '')} {employee.get('last_name', '')}".strip()
+
+    # Fetch form16 data via the existing data endpoint
+    try:
+        from services.tds_service import init_tds_service, get_form16_generator, get_tds_calculator
+        try:
+            form16_gen = get_form16_generator()
+        except Exception:
+            init_tds_service(service.db)
+
+        payroll_records = await service.db.payroll.find({
+            "employee_id": employee_id,
+            "$or": [
+                {"year": fy_start_year, "month": {"$in": ["April", "May", "June", "July", "August", "September", "October", "November", "December"]}},
+                {"year": fy_end_year, "month": {"$in": ["January", "February", "March"]}}
+            ],
+            "status": {"$in": ["processed", "paid"]}
+        }, {"_id": 0}).to_list(12)
+
+        if not payroll_records:
+            raise HTTPException(status_code=404, detail=f"No payroll data found for FY {fy}")
+
+        org = await service.db.organizations.find_one({"organization_id": org_id}, {"_id": 0}) or {}
+        challans = await service.db.tds_challans.find({"organization_id": org_id, "financial_year": fy}, {"_id": 0}).to_list(100)
+        tax_config = employee.get("tax_config", {"pan_number": employee.get("pan_number"), "tax_regime": "new", "declarations": {}})
+        salary_structure = employee.get("salary_structure", {})
+
+        quarter_defs = [
+            {"quarter": "Q1", "period": f"Apr-Jun {fy_start_year}", "months": ["April", "May", "June"], "year": fy_start_year},
+            {"quarter": "Q2", "period": f"Jul-Sep {fy_start_year}", "months": ["July", "August", "September"], "year": fy_start_year},
+            {"quarter": "Q3", "period": f"Oct-Dec {fy_start_year}", "months": ["October", "November", "December"], "year": fy_start_year},
+            {"quarter": "Q4", "period": f"Jan-Mar {fy_end_year}", "months": ["January", "February", "March"], "year": fy_end_year}
+        ]
+        quarters = []
+        total_tds_deducted = 0
+        total_tds_deposited = 0
+        for q_def in quarter_defs:
+            q_payroll = [p for p in payroll_records if p.get("month") in q_def["months"] and p.get("year") == q_def["year"]]
+            q_tds = sum(p.get("deductions", {}).get("tds", 0) for p in q_payroll)
+            total_tds_deducted += q_tds
+            q_challans = [c for c in challans if c.get("quarter") == q_def["quarter"]]
+            q_deposited = sum(c.get("amount", 0) for c in q_challans)
+            total_tds_deposited += q_deposited
+            quarters.append({"quarter": q_def["quarter"], "period": q_def["period"], "tds_deducted": round(q_tds, 2), "tds_deposited": round(q_deposited, 2), "challans": q_challans})
+
+        try:
+            tds_calc = get_tds_calculator()
+            annual_calc = await tds_calc.calculate_annual_tax(
+                employee_id=employee_id, financial_year=fy,
+                salary_structure=salary_structure, tax_config=tax_config
+            )
+        except Exception:
+            annual_calc = {"gross_annual": 0, "taxable_income": 0, "total_tax_liability": 0, "breakdown": {}}
+
+        breakdown = annual_calc.get("breakdown", {})
+        chapter_via = breakdown.get("chapter_via", {})
+        tax_regime = (tax_config.get("tax_regime") or "new").upper()
+
+        f16 = {
+            "employee": {"name": employee_name, "pan": tax_config.get("pan_number") or employee.get("pan_number"), "designation": employee.get("designation"), "period_from": f"{fy_start_year}-04-01", "period_to": f"{fy_end_year}-03-31"},
+            "employer": {"name": org.get("company_name", org.get("name")), "tan": org.get("tan_number"), "pan": org.get("pan_number", org.get("gstin", "")[2:12] if org.get("gstin") else ""), "address": f"{org.get('address', '')} {org.get('city', '')} {org.get('pincode', '')}".strip(), "category": org.get("category", "Company")},
+            "quarters": quarters,
+            "total_tds_deducted": round(total_tds_deducted, 2),
+            "total_tds_deposited": round(total_tds_deposited, 2),
+            "gross_salary": round(annual_calc.get("gross_annual", 0), 2),
+            "hra_exemption": round(breakdown.get("hra_exemption", 0), 2),
+            "lta_exemption": round(breakdown.get("lta_exemption", 0), 2),
+            "standard_deduction": round(annual_calc.get("standard_deduction", 50000), 2),
+            "deduction_80c": round(chapter_via.get("80C", 0), 2),
+            "deduction_80d": round(chapter_via.get("80D", 0), 2),
+            "deduction_80ccd": round(chapter_via.get("80CCD_1B", 0), 2),
+            "deduction_80e": round(chapter_via.get("80E", 0), 2),
+            "deduction_80g": round(chapter_via.get("80G", 0), 2),
+            "deduction_80tta": round(chapter_via.get("80TTA", 0), 2),
+            "net_taxable_income": round(annual_calc.get("taxable_income", 0), 2),
+            "tax_on_income": round(annual_calc.get("tax_before_rebate", 0), 2),
+            "rebate_87a": round(annual_calc.get("rebate_87a", 0), 2),
+            "surcharge": round(annual_calc.get("surcharge", 0), 2),
+            "cess": round(annual_calc.get("cess", 0), 2),
+            "total_tax_liability": round(annual_calc.get("total_tax_liability", 0), 2),
+            "tds_deducted": round(total_tds_deducted, 2),
+            "balance_tax_payable": round(annual_calc.get("total_tax_liability", 0) - total_tds_deducted, 2),
+            "tax_regime": tax_regime,
+            "assessment_year": assessment_year,
+            "fy": fy
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate Form 16 data: {str(e)}")
+
+    # Generate HTML for PDF
+    html_content = _generate_form16_html(f16)
+
+    try:
+        from weasyprint import HTML
+        pdf_buffer = io.BytesIO()
+        HTML(string=html_content).write_pdf(pdf_buffer)
+        pdf_buffer.seek(0)
+        safe_name = employee_name.replace(" ", "_")[:30]
+        filename = f"Form16_{safe_name}_{fy}.pdf"
+        return StreamingResponse(
+            pdf_buffer,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
+
+
+def _generate_form16_html(f16: dict) -> str:
+    """Generate Form 16 HTML for WeasyPrint PDF rendering"""
+    emp = f16.get("employee", {})
+    empr = f16.get("employer", {})
+    quarters = f16.get("quarters", [])
+
+    quarter_rows = ""
+    for q in quarters:
+        challans_html = ""
+        for c in q.get("challans", []):
+            challans_html += f"<tr><td colspan='2' style='padding:2px 6px;color:#666;font-size:10px;'>Challan: {c.get('challan_number','—')} | BSR: {c.get('bsr_code','—')} | Date: {c.get('deposit_date','—')} | ₹{c.get('amount',0):,.2f}</td></tr>"
+        quarter_rows += f"""
+        <tr>
+            <td class="tbl-cell">{q.get('quarter')}</td>
+            <td class="tbl-cell">{q.get('period')}</td>
+            <td class="tbl-cell num">₹{q.get('tds_deducted',0):,.2f}</td>
+            <td class="tbl-cell num">₹{q.get('tds_deposited',0):,.2f}</td>
+        </tr>"""
+
+    total_deductions = (
+        f16.get("deduction_80c", 0) + f16.get("deduction_80d", 0) +
+        f16.get("deduction_80ccd", 0) + f16.get("deduction_80e", 0) +
+        f16.get("deduction_80g", 0) + f16.get("deduction_80tta", 0)
+    )
+    net_salary = (
+        f16.get("gross_salary", 0) - f16.get("hra_exemption", 0) -
+        f16.get("lta_exemption", 0) - f16.get("standard_deduction", 50000)
+    )
+    balance_tax = f16.get("balance_tax_payable", 0)
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+  body {{ font-family: 'Times New Roman', serif; font-size: 11px; color: #000; background: #fff; margin: 20px; }}
+  .page {{ max-width: 750px; margin: 0 auto; }}
+  .center {{ text-align: center; }}
+  .bold {{ font-weight: bold; }}
+  .header-box {{ border: 2px solid #000; padding: 8px; text-align: center; margin-bottom: 8px; }}
+  .section-title {{ background: #000; color: #fff; padding: 4px 8px; font-weight: bold; font-size: 11px; margin: 10px 0 5px; }}
+  .info-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 8px; }}
+  .info-row {{ display: flex; gap: 4px; margin-bottom: 3px; }}
+  .info-label {{ color: #555; min-width: 130px; font-size: 10px; }}
+  .info-value {{ font-weight: bold; font-size: 10px; }}
+  table {{ width: 100%; border-collapse: collapse; margin-bottom: 8px; }}
+  .tbl-cell {{ border: 1px solid #999; padding: 4px 6px; font-size: 10px; }}
+  .tbl-head {{ background: #f0f0f0; font-weight: bold; }}
+  .num {{ text-align: right; }}
+  .amount-row {{ display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dotted #ccc; font-size: 10px; }}
+  .amount-total {{ display: flex; justify-content: space-between; padding: 4px 0; border-top: 2px solid #000; border-bottom: 2px solid #000; font-weight: bold; font-size: 11px; }}
+  .page-break {{ page-break-before: always; margin-top: 20px; }}
+  .verification-box {{ border: 1px solid #999; padding: 10px; margin-top: 15px; font-size: 10px; }}
+  .sig-block {{ margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }}
+  .sig-line {{ border-top: 1px solid #000; padding-top: 4px; text-align: center; font-size: 10px; }}
+  .refund {{ color: green; }} .payable {{ color: red; }}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- PART A -->
+<div class="header-box">
+  <div class="bold" style="font-size:14px;">FORM NO. 16</div>
+  <div style="font-size:10px;margin-top:2px;">Certificate under section 203 of the Income-tax Act, 1961</div>
+  <div style="font-size:10px;">For Tax Deducted at Source from Income chargeable under the head "Salaries"</div>
+  <div class="bold" style="margin-top:4px;">Assessment Year: {f16.get('assessment_year')} &nbsp;|&nbsp; Financial Year: {f16.get('fy')}</div>
+</div>
+
+<div class="section-title">PART A — TDS CERTIFICATE</div>
+
+<div class="info-grid">
+  <div>
+    <div class="info-row"><span class="info-label">Employer Name:</span><span class="info-value">{empr.get('name','—')}</span></div>
+    <div class="info-row"><span class="info-label">TAN:</span><span class="info-value">{empr.get('tan','—')}</span></div>
+    <div class="info-row"><span class="info-label">PAN of Deductor:</span><span class="info-value">{empr.get('pan','—')}</span></div>
+    <div class="info-row"><span class="info-label">Category:</span><span class="info-value">{empr.get('category','Company')}</span></div>
+    <div class="info-row"><span class="info-label">Address:</span><span class="info-value">{empr.get('address','—')}</span></div>
+  </div>
+  <div>
+    <div class="info-row"><span class="info-label">Employee Name:</span><span class="info-value">{emp.get('name','—')}</span></div>
+    <div class="info-row"><span class="info-label">PAN of Employee:</span><span class="info-value">{emp.get('pan','—')}</span></div>
+    <div class="info-row"><span class="info-label">Designation:</span><span class="info-value">{emp.get('designation','—')}</span></div>
+    <div class="info-row"><span class="info-label">Period of Employment:</span><span class="info-value">{emp.get('period_from','—')} to {emp.get('period_to','—')}</span></div>
+    <div class="info-row"><span class="info-label">Tax Regime:</span><span class="info-value">{f16.get('tax_regime','NEW')}</span></div>
+  </div>
+</div>
+
+<div class="section-title">QUARTER-WISE TDS DETAILS</div>
+<table>
+  <tr>
+    <th class="tbl-cell tbl-head">Quarter</th>
+    <th class="tbl-cell tbl-head">Period</th>
+    <th class="tbl-cell tbl-head num">TDS Deducted (₹)</th>
+    <th class="tbl-cell tbl-head num">TDS Deposited (₹)</th>
+  </tr>
+  {quarter_rows}
+  <tr>
+    <td class="tbl-cell bold" colspan="2">Total</td>
+    <td class="tbl-cell bold num">₹{f16.get('total_tds_deducted',0):,.2f}</td>
+    <td class="tbl-cell bold num">₹{f16.get('total_tds_deposited',0):,.2f}</td>
+  </tr>
+</table>
+
+<div class="verification-box">
+  <div class="bold">VERIFICATION</div>
+  <div style="margin-top:6px;line-height:1.6;">
+    Certified that a sum of <strong>₹{f16.get('total_tds_deducted',0):,.2f}</strong> has been deducted and deposited to the credit of Central Government. It is also certified that the information given above is true, complete and correct, and is based on the books of accounts, documents and other available records.
+  </div>
+</div>
+
+<div class="sig-block">
+  <div></div>
+  <div>
+    <div style="margin-bottom:30px;"></div>
+    <div class="sig-line">Signature of responsible person for deduction of tax</div>
+    <div style="margin-top:4px;font-size:10px;">Name: {empr.get('name','')}</div>
+    <div style="font-size:10px;">Date: {datetime.now(timezone.utc).strftime('%d-%m-%Y')}</div>
+  </div>
+</div>
+
+<!-- PART B — NEW PAGE -->
+<div class="page-break"></div>
+<div class="header-box">
+  <div class="bold" style="font-size:12px;">PART B (Annexure)</div>
+  <div style="font-size:10px;">Details of Salary paid and Tax Deducted thereon</div>
+  <div style="font-size:10px;">Assessment Year: {f16.get('assessment_year')} &nbsp;|&nbsp; Employee PAN: {emp.get('pan','—')} &nbsp;|&nbsp; Name: {emp.get('name','—')}</div>
+</div>
+
+<div class="section-title">COMPUTATION OF TOTAL INCOME</div>
+
+<div class="amount-row"><span>Gross Salary</span><span>₹{f16.get('gross_salary',0):,.2f}</span></div>
+<div class="amount-row"><span style="padding-left:16px;">Less: HRA Exemption u/s 10(13A)</span><span>₹{f16.get('hra_exemption',0):,.2f}</span></div>
+<div class="amount-row"><span style="padding-left:16px;">Less: LTA Exemption u/s 10(5)</span><span>₹{f16.get('lta_exemption',0):,.2f}</span></div>
+<div class="amount-row"><span>Balance Salary (a)</span><span>₹{f16.get('gross_salary',0) - f16.get('hra_exemption',0) - f16.get('lta_exemption',0):,.2f}</span></div>
+<div class="amount-row"><span style="padding-left:16px;">Less: Standard Deduction u/s 16(ia)</span><span>₹{f16.get('standard_deduction',50000):,.2f}</span></div>
+<div class="amount-row bold"><span>Net Salary</span><span>₹{max(0, net_salary):,.2f}</span></div>
+
+<div class="section-title">DEDUCTIONS UNDER CHAPTER VIA</div>
+<div class="amount-row"><span>Section 80C (LIC, PPF, ELSS, Tuition, PF)</span><span>₹{f16.get('deduction_80c',0):,.2f}</span></div>
+<div class="amount-row"><span>Section 80D (Health Insurance)</span><span>₹{f16.get('deduction_80d',0):,.2f}</span></div>
+<div class="amount-row"><span>Section 80CCD(1B) (NPS Additional)</span><span>₹{f16.get('deduction_80ccd',0):,.2f}</span></div>
+<div class="amount-row"><span>Section 80E (Education Loan Interest)</span><span>₹{f16.get('deduction_80e',0):,.2f}</span></div>
+<div class="amount-row"><span>Section 80G (Donations)</span><span>₹{f16.get('deduction_80g',0):,.2f}</span></div>
+<div class="amount-row"><span>Section 80TTA (Savings Bank Interest)</span><span>₹{f16.get('deduction_80tta',0):,.2f}</span></div>
+<div class="amount-row bold"><span>Total Chapter VIA Deductions</span><span>₹{total_deductions:,.2f}</span></div>
+
+<div class="section-title">TAX COMPUTATION</div>
+<div class="amount-row"><span>Net Taxable Income</span><span>₹{f16.get('net_taxable_income',0):,.2f}</span></div>
+<div class="amount-row"><span>Tax on Total Income (Slab-wise)</span><span>₹{f16.get('tax_on_income',0):,.2f}</span></div>
+<div class="amount-row"><span style="padding-left:16px;">Less: Rebate u/s 87A</span><span>₹{f16.get('rebate_87a',0):,.2f}</span></div>
+<div class="amount-row"><span style="padding-left:16px;">Add: Surcharge (if applicable)</span><span>₹{f16.get('surcharge',0):,.2f}</span></div>
+<div class="amount-row"><span style="padding-left:16px;">Add: Health & Education Cess @ 4%</span><span>₹{f16.get('cess',0):,.2f}</span></div>
+<div class="amount-row bold"><span>Total Tax Liability</span><span>₹{f16.get('total_tax_liability',0):,.2f}</span></div>
+<div class="amount-row"><span style="padding-left:16px;">Less: TDS Deducted this Year</span><span>₹{f16.get('tds_deducted',0):,.2f}</span></div>
+<div class="amount-total">
+  <span>Balance Tax {'Payable' if balance_tax >= 0 else 'Refundable'}</span>
+  <span class="{'payable' if balance_tax >= 0 else 'refund'}">₹{abs(balance_tax):,.2f}</span>
+</div>
+
+<div class="verification-box" style="margin-top:20px;">
+  <div class="bold">VERIFICATION (PART B)</div>
+  <div style="margin-top:6px;line-height:1.6;">
+    I, the undersigned, do hereby certify that the particulars given above are true and correct to the best of my knowledge and belief.
+  </div>
+</div>
+
+<div class="sig-block">
+  <div></div>
+  <div>
+    <div style="margin-bottom:30px;"></div>
+    <div class="sig-line">Signature of person responsible for deduction of tax</div>
+    <div style="margin-top:4px;font-size:10px;">Name: {empr.get('name','')}</div>
+    <div style="font-size:10px;">Designation: Authorised Signatory</div>
+    <div style="font-size:10px;">Date: {datetime.now(timezone.utc).strftime('%d-%m-%Y')}</div>
+  </div>
+</div>
+
+<div style="text-align:center;margin-top:15px;font-size:9px;color:#666;">
+  Generated by Battwheels OS • {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC
+</div>
+</div>
+</body>
+</html>"""
+
+
 async def get_org_id(request: Request, db) -> Optional[str]:
     """Extract organization ID from request"""
     try:
