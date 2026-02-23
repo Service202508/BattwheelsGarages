@@ -114,7 +114,7 @@
     "root_cause": "ProtectedRoute component in App.js has allowedRoles parameter but it's only applied to /fault-tree-import route. Other admin routes like /dashboard, /tickets don't have role restrictions.",
     "reproduction_steps": [
       "1. Login as customer (customer@demo.com / customer123)",
-      "2. Navigate directly to https://production-readiness-4.preview.emergentagent.com/tickets",
+      "2. Navigate directly to https://production-hardening-1.preview.emergentagent.com/tickets",
       "3. Customer can see admin tickets page"
     ],
     "mitigation": "Add allowedRoles=['admin', 'technician', 'manager'] to ProtectedRoute for all admin routes in App.js"
