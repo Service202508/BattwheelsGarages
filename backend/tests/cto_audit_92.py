@@ -212,7 +212,8 @@ def run():
     cust_name = customers[0].get("name", "Workshop Customer") if customers else "Workshop Customer"
     if cust_id:
         veh_data = {"customer_id": cust_id, "owner_name": cust_name, "make": "Ather", "model": "450X",
-                    "registration_number": f"MH01AB{ts%10000:04d}", "year": 2024, "vehicle_type": "2W"}
+                    "registration_number": f"MH01AB{ts%10000:04d}", "year": 2024, "vehicle_type": "2W",
+                    "battery_capacity": 3.7}
         r = c.post(f"{API_URL}/vehicles", headers=H, json=veh_data)
         T("Vehicle Create", r.status_code == 200, f"HTTP {r.status_code} {r.text[:100]}")
         new_vehicle_id = r.json().get("vehicle_id") if r.status_code == 200 else None
