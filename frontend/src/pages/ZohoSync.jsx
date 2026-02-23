@@ -505,7 +505,7 @@ export default function ZohoSync() {
               <p className="text-sm text-[rgba(244,246,240,0.35)]">The following data was removed:</p>
               <div className="bg-[#111820] rounded-lg p-4 text-sm">
                 {Object.entries(purgeStats).map(([key, value]) => (
-                  <div key={key} className="flex justify-between py-1 border-b border-gray-200 last:border-0">
+                  <div key={key} className="flex justify-between py-1 border-b border-[rgba(255,255,255,0.07)] last:border-0">
                     <span className="capitalize">{key.replace(/_/g, ' ')}</span>
                     <span className="font-mono text-[rgba(244,246,240,0.35)]">{value} records</span>
                   </div>

@@ -350,7 +350,7 @@ export default function BrandingSettings({ user }) {
         <Label>{label}</Label>
         <div
           className={`border-2 border-dashed rounded-lg p-6 text-center transition-all ${
-            isDragging ? "border-[rgba(200,255,0,0.50)] bg-[rgba(200,255,0,0.08)]" : "border-gray-200"
+            isDragging ? "border-[rgba(200,255,0,0.50)] bg-[rgba(200,255,0,0.08)]" : "border-[rgba(255,255,255,0.07)]"
           }`}
           style={{ backgroundColor: bgColor === "dark" ? "#1e293b" : "#fff" }}
           onDrop={(e) => handleDrop(e, logoType)}
@@ -537,7 +537,7 @@ export default function BrandingSettings({ user }) {
                     <div className="flex gap-4 items-start">
                       <div 
                         className={`w-16 h-16 border-2 border-dashed rounded-lg flex items-center justify-center bg-[#111820] cursor-pointer transition-all ${
-                          dragOver.favicon ? "border-[rgba(200,255,0,0.50)] bg-[rgba(200,255,0,0.08)]" : "border-gray-200"
+                          dragOver.favicon ? "border-[rgba(200,255,0,0.50)] bg-[rgba(200,255,0,0.08)]" : "border-[rgba(255,255,255,0.07)]"
                         }`}
                         onClick={() => faviconRef.current?.click()}
                         onDrop={(e) => handleDrop(e, "favicon")}

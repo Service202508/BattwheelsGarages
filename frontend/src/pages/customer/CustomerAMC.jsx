@@ -60,7 +60,7 @@ export default function CustomerAMC({ user }) {
       active: { color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)] border-green-200", icon: CheckCircle, label: "Active" },
       expiring: { color: "bg-orange-100 text-[#FF8C00] border-orange-200", icon: AlertCircle, label: "Expiring Soon" },
       expired: { color: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)] border-red-200", icon: Clock, label: "Expired" },
-      cancelled: { color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)] border-gray-200", icon: Clock, label: "Cancelled" }
+      cancelled: { color: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)] border-[rgba(255,255,255,0.07)]", icon: Clock, label: "Cancelled" }
     };
     return configs[status] || configs.active;
   };
