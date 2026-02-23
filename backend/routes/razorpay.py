@@ -183,18 +183,19 @@ async def save_payment_config(config: RazorpayConfigUpdate, request: Request):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid Razorpay credentials: {str(e)}")
     
-    db = get_db()
-    config_data = {
+    # Save using credential_service (Fernet encrypted)
+    from services.credential_service import save_credentials, RAZORPAY
+    await save_credentials(org_id, RAZORPAY, {
         "key_id": config.key_id,
         "key_secret": config.key_secret,
         "webhook_secret": config.webhook_secret,
         "test_mode": config.test_mode,
-        "updated_at": datetime.now(timezone.utc).isoformat()
-    }
-    
+    })
+    # Also clear any legacy plaintext storage in org document
+    db = get_db()
     await db.organizations.update_one(
         {"organization_id": org_id},
-        {"$set": {"razorpay_config": config_data}}
+        {"$unset": {"razorpay_config": ""}}
     )
     
     return {"code": 0, "message": "Razorpay configuration saved", "test_mode": config.test_mode}
