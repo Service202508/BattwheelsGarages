@@ -5503,6 +5503,17 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Finance Dashboard Module
+try:
+    from routes.finance_dashboard import router as finance_dashboard_router, set_db as set_finance_dashboard_db
+    set_finance_dashboard_db(db)
+    api_router.include_router(finance_dashboard_router)
+    logger.info("Finance Dashboard routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Finance Dashboard routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
