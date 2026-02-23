@@ -25,7 +25,7 @@ import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "
 const statusColors = {
   draft: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]",
   confirmed: "bg-blue-100 text-[#3B9EFF]",
-  open: "bg-green-100 text-[#22C55E]",
+  open: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]",
   partially_fulfilled: "bg-yellow-100 text-[#EAB308]",
   fulfilled: "bg-purple-100 text-[#8B5CF6]",
   closed: "bg-[#141E27] text-[rgba(244,246,240,0.45)]",
@@ -45,7 +45,7 @@ const statusLabels = {
 const fulfillmentColors = {
   unfulfilled: "bg-red-100 text-[#FF3B2F]",
   partially_fulfilled: "bg-yellow-100 text-[#EAB308]",
-  fulfilled: "bg-green-100 text-[#22C55E]"
+  fulfilled: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]"
 };
 
 export default function SalesOrdersEnhanced() {
@@ -897,7 +897,7 @@ export default function SalesOrdersEnhanced() {
                   )}
                   {["confirmed", "open", "partially_fulfilled"].includes(selectedOrder.status) && (
                     <>
-                      <Button onClick={() => setShowFulfillDialog(true)} className="bg-[#22C55E] hover:bg-green-600 text-[#080C0F]"><Package className="h-4 w-4 mr-1" /> Create Fulfillment</Button>
+                      <Button onClick={() => setShowFulfillDialog(true)} className="bg-[#22C55E] hover:bg-[#16a34a] text-[#080C0F]"><Package className="h-4 w-4 mr-1" /> Create Fulfillment</Button>
                       <Button variant="outline" onClick={() => handleConvertToInvoice(selectedOrder.salesorder_id)}><Receipt className="h-4 w-4 mr-1" /> Convert to Invoice</Button>
                     </>
                   )}

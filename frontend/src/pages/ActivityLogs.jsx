@@ -18,8 +18,8 @@ const ENTITY_TYPES = {
   invoice: { label: "Invoice", color: "bg-blue-100 text-blue-800", icon: FileText },
   bill: { label: "Bill", color: "bg-orange-100 text-orange-800", icon: FileText },
   expense: { label: "Expense", color: "bg-red-100 text-red-800", icon: FileText },
-  contact: { label: "Contact", color: "bg-green-100 text-green-800", icon: User },
-  customer: { label: "Customer", color: "bg-green-100 text-green-800", icon: User },
+  contact: { label: "Contact", color: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]", icon: User },
+  customer: { label: "Customer", color: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]", icon: User },
   vendor: { label: "Vendor", color: "bg-yellow-100 text-yellow-800", icon: User },
   item: { label: "Item", color: "bg-purple-100 text-purple-800", icon: FileText },
   payment: { label: "Payment", color: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] text-800", icon: FileText },
@@ -165,12 +165,12 @@ export default function ActivityLogs() {
         <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
+              <div className="p-2 bg-[rgba(34,197,94,0.10)] rounded-lg">
                 <Plus className="h-5 w-5 text-green-600" />
               </div>
               <div>
                 <p className="text-xs text-green-600">Created</p>
-                <p className="text-xl font-bold text-green-800">
+                <p className="text-xl font-bold text-[#22C55E]">
                   {logs.filter(l => l.action?.toLowerCase() === 'created').length}
                 </p>
               </div>
