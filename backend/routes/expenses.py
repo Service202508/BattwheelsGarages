@@ -212,12 +212,16 @@ async def list_expenses(
     employee_id: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
-    limit: int = Query(50, ge=1, le=100)
+    limit: int = Query(25, ge=1)
 ):
-    """List expenses with filters and pagination"""
+    """List expenses with filters and standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     service = get_service()
     org_id = await get_org_id(request)
-    
+
     expenses, total = await service.list_expenses(
         org_id=org_id,
         status=status,
@@ -230,14 +234,18 @@ async def list_expenses(
         page=page,
         limit=limit
     )
-    
+
+    total_pages = math.ceil(total / limit) if total > 0 else 1
     return {
-        "code": 0,
-        "expenses": expenses,
-        "total": total,
-        "page": page,
-        "limit": limit,
-        "total_pages": (total + limit - 1) // limit
+        "data": expenses,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
     }
 
 
