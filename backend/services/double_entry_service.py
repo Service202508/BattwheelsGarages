@@ -81,6 +81,7 @@ SYSTEM_ACCOUNTS = {
     "OTHER_INCOME": {"name": "Other Income", "type": AccountType.INCOME, "code": "4900"},
     
     # Expenses
+    "PURCHASES": {"name": "Purchases", "type": AccountType.EXPENSE, "code": "5000"},
     "COST_OF_GOODS_SOLD": {"name": "Cost of Goods Sold", "type": AccountType.EXPENSE, "code": "5100"},
     "SALARY_EXPENSE": {"name": "Salary Expense", "type": AccountType.EXPENSE, "code": "6100"},
     "RENT_EXPENSE": {"name": "Rent Expense", "type": AccountType.EXPENSE, "code": "6200"},
