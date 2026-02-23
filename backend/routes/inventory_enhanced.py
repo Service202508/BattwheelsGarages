@@ -1588,7 +1588,7 @@ async def update_stocktake_line(stocktake_id: str, item_id: str, data: Stocktake
         raise HTTPException(status_code=400, detail="Stocktake is not in progress")
 
     lines = st.get("lines", [])
-    line_idx = next((i for i, l in enumerate(lines) if l["item_id"] == item_id), None)
+    line_idx = next((i for i, ln in enumerate(lines) if ln["item_id"] == item_id), None)
     if line_idx is None:
         raise HTTPException(status_code=404, detail="Item not in this stocktake")
 
@@ -1601,8 +1601,8 @@ async def update_stocktake_line(stocktake_id: str, item_id: str, data: Stocktake
     lines[line_idx]["notes"] = data.notes
     lines[line_idx]["counted"] = True
 
-    counted_count = sum(1 for l in lines if l["counted"])
-    total_variance = round_qty(sum(l["variance"] or 0 for l in lines if l["counted"]))
+    counted_count = sum(1 for ln in lines if ln["counted"])
+    total_variance = round_qty(sum(ln["variance"] or 0 for ln in lines if ln["counted"]))
     now_iso = datetime.now(timezone.utc).isoformat()
 
     await db["stocktakes"].update_one(
