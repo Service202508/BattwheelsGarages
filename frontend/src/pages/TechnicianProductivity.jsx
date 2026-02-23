@@ -321,7 +321,7 @@ export default function TechnicianProductivity({ user }) {
                       index === 0 ? 'bg-[rgba(234,179,8,0.10)]' :
                       index === 1 ? 'bg-gray-400' :
                       index === 2 ? 'bg-amber-600' :
-                      'bg-gray-300'
+                      'bg-[#141E27]'
                     }`}>
                       {index + 1}
                     </div>
@@ -394,7 +394,7 @@ export default function TechnicianProductivity({ user }) {
               
               <div className="space-y-6 py-4">
                 {/* Technician Info */}
-                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-4 p-4 bg-[#111820] rounded-lg">
                   <div className="h-12 w-12 rounded-full bg-[rgba(200,255,0,0.10)] flex items-center justify-center">
                     <span className="text-[#C8FF00] text-700 font-bold text-lg">
                       {technicianDetail.technician?.name?.charAt(0)}
@@ -411,7 +411,7 @@ export default function TechnicianProductivity({ user }) {
                   <h4 className="font-semibold mb-3">Ticket Status Breakdown</h4>
                   <div className="grid grid-cols-5 gap-2">
                     {Object.entries(technicianDetail.status_breakdown || {}).map(([status, count]) => (
-                      <div key={status} className="text-center p-2 rounded-lg bg-gray-50">
+                      <div key={status} className="text-center p-2 rounded-lg bg-[#111820]">
                         <p className="text-xl font-bold">{count}</p>
                         <p className="text-xs text-gray-500 capitalize">{status.replace('_', ' ')}</p>
                       </div>

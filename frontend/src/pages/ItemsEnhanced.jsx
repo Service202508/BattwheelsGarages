@@ -980,7 +980,7 @@ export default function ItemsEnhanced() {
           ) : (
             <div className="border rounded-lg overflow-hidden bg-[#111820]">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-[#111820] border-b">
                   <tr>
                     <th className="px-4 py-3 text-left w-10">
                       <Checkbox checked={selectAll} onCheckedChange={toggleSelectAll} />
@@ -998,7 +998,7 @@ export default function ItemsEnhanced() {
                 </thead>
                 <tbody>
                   {items.map(item => (
-                    <tr key={item.item_id} className="border-t hover:bg-gray-50" data-testid={`item-row-${item.item_id}`}>
+                    <tr key={item.item_id} className="border-t hover:bg-[#111820]" data-testid={`item-row-${item.item_id}`}>
                       <td className="px-4 py-3">
                         <Checkbox 
                           checked={selectedItems.includes(item.item_id)} 
@@ -1231,7 +1231,7 @@ export default function ItemsEnhanced() {
           ) : (
             <div className="border rounded-lg overflow-hidden bg-[#111820]">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50">
+                <thead className="bg-[#111820]">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium">Date</th>
                     <th className="px-4 py-3 text-left font-medium">Item</th>
@@ -1244,7 +1244,7 @@ export default function ItemsEnhanced() {
                 </thead>
                 <tbody>
                   {adjustments.map(adj => (
-                    <tr key={adj.adjustment_id} className="border-t hover:bg-gray-50">
+                    <tr key={adj.adjustment_id} className="border-t hover:bg-[#111820]">
                       <td className="px-4 py-3 text-gray-600">{new Date(adj.date || adj.created_time).toLocaleDateString('en-IN')}</td>
                       <td className="px-4 py-3 font-medium">{adj.item_name}</td>
                       <td className="px-4 py-3">{adj.warehouse_name}</td>
@@ -1396,7 +1396,7 @@ export default function ItemsEnhanced() {
               ) : (
                 <div className="space-y-3">
                   {itemHistory.map((entry, idx) => (
-                    <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <div key={idx} className="flex items-start gap-3 p-3 bg-[#111820] rounded-lg">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                         entry.action === "created" ? "bg-green-100 text-green-600" :
                         entry.action === "updated" ? "bg-blue-100 text-[#3B9EFF]" :
@@ -1754,7 +1754,7 @@ export default function ItemsEnhanced() {
                       </div>
                       <div>
                         <Label>Opening Stock Value</Label>
-                        <Input type="number" value={newItem.opening_stock_value} onChange={(e) => setNewItem({ ...newItem, opening_stock_value: parseFloat(e.target.value) || 0 })} className="bg-gray-50" />
+                        <Input type="number" value={newItem.opening_stock_value} onChange={(e) => setNewItem({ ...newItem, opening_stock_value: parseFloat(e.target.value) || 0 })} className="bg-[#111820]" />
                       </div>
                     </div>
                   </div>
@@ -2447,7 +2447,7 @@ export default function ItemsEnhanced() {
           <div className="py-4">
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50">
+                <thead className="bg-[#111820]">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium">Field</th>
                     <th className="px-4 py-3 text-center font-medium">Active</th>
@@ -2465,7 +2465,7 @@ export default function ItemsEnhanced() {
                 </thead>
                 <tbody>
                   {fieldConfig.map((field, idx) => (
-                    <tr key={field.field_name} className={idx % 2 === 0 ? "bg-[#111820]" : "bg-gray-50"}>
+                    <tr key={field.field_name} className={idx % 2 === 0 ? "bg-[#111820]" : "bg-[#111820]"}>
                       <td className="px-4 py-2 font-medium">{field.display_name || field.field_name}</td>
                       <td className="px-4 py-2 text-center">
                         <Switch 

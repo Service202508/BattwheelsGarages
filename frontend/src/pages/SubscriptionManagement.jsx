@@ -493,7 +493,7 @@ export default function SubscriptionManagement() {
                               className={`flex items-center gap-2 p-2 rounded-lg ${
                                 isEnabled 
                                   ? "bg-[rgba(34,197,94,0.08)] text-green-700" 
-                                  : "bg-gray-50 text-gray-400"
+                                  : "bg-[#111820] text-gray-400"
                               }`}
                             >
                               {isEnabled ? (

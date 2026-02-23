@@ -682,7 +682,7 @@ export default function BillsEnhanced() {
               </div>
 
               {/* Line Items */}
-              <div className="border rounded-lg p-4 bg-gray-50">
+              <div className="border rounded-lg p-4 bg-[#111820]">
                 <h3 className="font-medium mb-3">Line Items</h3>
                 <div className="grid grid-cols-6 gap-2 mb-3">
                   <Input className="col-span-2" placeholder="Item name *" value={newLineItem.name} onChange={(e) => setNewLineItem({ ...newLineItem, name: e.target.value })} />
@@ -725,7 +725,7 @@ export default function BillsEnhanced() {
                           );
                         })}
                       </tbody>
-                      <tfoot className="bg-gray-50 font-semibold">
+                      <tfoot className="bg-[#111820] font-semibold">
                         <tr>
                           <td colSpan={4} className="px-3 py-2 text-right">Total:</td>
                           <td className="px-3 py-2 text-right">₹{calculateLineTotal(newBill.line_items).toLocaleString('en-IN')}</td>
@@ -828,7 +828,7 @@ export default function BillsEnhanced() {
               </div>
 
               {/* Line Items */}
-              <div className="border rounded-lg p-4 bg-gray-50">
+              <div className="border rounded-lg p-4 bg-[#111820]">
                 <h3 className="font-medium mb-3">Line Items</h3>
                 <div className="grid grid-cols-6 gap-2 mb-3">
                   <Input className="col-span-2" placeholder="Item name *" value={newLineItem.name} onChange={(e) => setNewLineItem({ ...newLineItem, name: e.target.value })} />
@@ -871,7 +871,7 @@ export default function BillsEnhanced() {
                           );
                         })}
                       </tbody>
-                      <tfoot className="bg-gray-50 font-semibold">
+                      <tfoot className="bg-[#111820] font-semibold">
                         <tr>
                           <td colSpan={4} className="px-3 py-2 text-right">Total:</td>
                           <td className="px-3 py-2 text-right">₹{calculateLineTotal(newPO.line_items).toLocaleString('en-IN')}</td>
@@ -975,7 +975,7 @@ export default function BillsEnhanced() {
                     <h4 className="font-medium mb-2">Line Items</h4>
                     <div className="border rounded overflow-hidden">
                       <table className="w-full text-sm">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-[#111820]">
                           <tr>
                             <th className="px-3 py-2 text-left">Item</th>
                             <th className="px-3 py-2 text-right">Qty</th>
@@ -1125,7 +1125,7 @@ export default function BillsEnhanced() {
                     <h4 className="font-medium mb-2">Items</h4>
                     <div className="border rounded overflow-hidden">
                       <table className="w-full text-sm">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-[#111820]">
                           <tr>
                             <th className="px-3 py-2 text-left">Item</th>
                             <th className="px-3 py-2 text-right">Qty</th>

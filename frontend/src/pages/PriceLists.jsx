@@ -441,7 +441,7 @@ export default function PriceLists() {
                   {pl.items?.length > 0 ? (
                     <div className="border rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-[#111820]">
                           <tr>
                             <th className="px-4 py-2 text-left font-medium">Item ID</th>
                             <th className="px-4 py-2 text-left font-medium">Item Name</th>
@@ -456,7 +456,7 @@ export default function PriceLists() {
                         </thead>
                         <tbody>
                           {pl.items.map(item => (
-                            <tr key={item.item_id} className="border-t hover:bg-gray-50">
+                            <tr key={item.item_id} className="border-t hover:bg-[#111820]">
                               <td className="px-4 py-2 font-mono text-xs text-gray-500">{item.item_id}</td>
                               <td className="px-4 py-2">
                                 <div className="flex items-center gap-2">
@@ -624,7 +624,7 @@ export default function PriceLists() {
             
             <div className="border rounded-lg max-h-[300px] overflow-y-auto">
               {filteredItems.map(item => (
-                <div key={item.item_id} className="flex items-center gap-3 p-3 hover:bg-gray-50 border-b last:border-b-0">
+                <div key={item.item_id} className="flex items-center gap-3 p-3 hover:bg-[#111820] border-b last:border-b-0">
                   <Checkbox 
                     checked={bulkAddItems.includes(item.item_id)}
                     onCheckedChange={(checked) => {
@@ -678,7 +678,7 @@ export default function PriceLists() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="p-3 bg-gray-50 rounded-lg text-xs font-mono">
+            <div className="p-3 bg-[#111820] rounded-lg text-xs font-mono">
               <p className="font-semibold mb-1">Expected CSV Format:</p>
               <p>Item ID,Item Name,SKU,Status,is_combo_product,Item Price,PriceList Rate,Discount</p>
             </div>

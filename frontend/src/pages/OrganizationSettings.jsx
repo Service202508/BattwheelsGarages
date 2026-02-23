@@ -30,7 +30,7 @@ const roleBadgeColors = {
   dispatcher: "bg-[rgba(234,179,8,0.20)] text-yellow-400 border-yellow-500/30",
   technician: "bg-[rgba(255,140,0,0.20)] text-orange-400 border-orange-500/30",
   accountant: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
-  viewer: "bg-gray-500/20 text-gray-400 border-gray-500/30",
+  viewer: "bg-[#111820]0/20 text-gray-400 border-gray-500/30",
 };
 
 // Status badge colors
@@ -38,7 +38,7 @@ const statusBadgeColors = {
   active: "bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30",
   invited: "bg-[rgba(234,179,8,0.20)] text-yellow-400 border-yellow-500/30",
   suspended: "bg-[rgba(255,59,47,0.20)] text-red-400 border-red-500/30",
-  deactivated: "bg-gray-500/20 text-gray-400 border-gray-500/30",
+  deactivated: "bg-[#111820]0/20 text-gray-400 border-gray-500/30",
 };
 
 export default function OrganizationSettings({ user }) {

@@ -189,7 +189,7 @@ export default function CustomerDashboard({ user }) {
               {recentServices.map((service) => (
                 <div 
                   key={service.ticket_id}
-                  className="flex items-center justify-between p-4 rounded-lg border bg-[#111820] hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-between p-4 rounded-lg border bg-[#111820] hover:bg-[#111820] transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <div className={`p-2 rounded-lg ${

@@ -337,7 +337,7 @@ export default function RecurringBills() {
                   {newBill.line_items.length > 0 && (
                     <div className="space-y-2 mt-3">
                       {newBill.line_items.map((item, idx) => (
-                        <div key={idx} className="flex justify-between items-center bg-gray-50 p-2 rounded">
+                        <div key={idx} className="flex justify-between items-center bg-[#111820] p-2 rounded">
                           <span>{item.name} × {item.quantity}</span>
                           <span>₹{(item.quantity * item.rate * (1 + item.tax_percentage/100)).toLocaleString()}</span>
                           <Button size="sm" variant="ghost" onClick={() => removeLineItem(idx)}>
@@ -437,7 +437,7 @@ export default function RecurringBills() {
             <Card>
               <CardContent className="p-0">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-[#111820] border-b">
                     <tr>
                       <th className="text-left p-4 font-medium">Name</th>
                       <th className="text-left p-4 font-medium">Vendor</th>
@@ -450,7 +450,7 @@ export default function RecurringBills() {
                   </thead>
                   <tbody>
                     {(tab === "all" ? bills : bills.filter(b => b.status === tab)).map(bill => (
-                      <tr key={bill.recurring_bill_id} className="border-b hover:bg-gray-50">
+                      <tr key={bill.recurring_bill_id} className="border-b hover:bg-[#111820]">
                         <td className="p-4">
                           <div className="font-medium">{bill.recurrence_name}</div>
                           <div className="text-sm text-gray-500">{bill.bills_generated} bills generated</div>

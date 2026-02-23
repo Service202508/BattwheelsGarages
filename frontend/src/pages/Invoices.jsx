@@ -21,7 +21,7 @@ const statusColors = {
   paid: "bg-green-100 text-[#22C55E]",
   partially_paid: "bg-yellow-100 text-[#EAB308]",
   overdue: "bg-red-100 text-[#FF3B2F]",
-  void: "bg-gray-200 text-[rgba(244,246,240,0.45)]"
+  void: "bg-[#141E27] text-[rgba(244,246,240,0.45)]"
 };
 
 export default function Invoices() {

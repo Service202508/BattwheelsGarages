@@ -34,7 +34,7 @@ const statusColors = {
   draft: "bg-[rgba(234,179,8,0.20)] text-yellow-400 border-yellow-500/30",
   pending_review: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   approved: "bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30",
-  deprecated: "bg-gray-500/20 text-gray-400 border-gray-500/30"
+  deprecated: "bg-[#111820]0/20 text-gray-400 border-gray-500/30"
 };
 
 const confidenceColors = {

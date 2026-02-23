@@ -449,7 +449,7 @@ export default function ReportsAdvanced() {
                 <CardContent>
                   <div className="grid md:grid-cols-6 gap-4">
                     {monthlyRevenue.data?.map((item, idx) => (
-                      <div key={idx} className="bg-gray-50 p-4 rounded-lg text-center">
+                      <div key={idx} className="bg-[#111820] p-4 rounded-lg text-center">
                         <p className="text-xs text-gray-500">{item.month_name}</p>
                         <p className="text-lg font-bold text-[#3B9EFF] mt-1">{formatCurrencyK(item.invoiced)}</p>
                         <p className="text-xs text-green-600">{formatCurrencyK(item.collected)} collected</p>

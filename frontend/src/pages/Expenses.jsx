@@ -305,7 +305,7 @@ export default function Expenses() {
           <h3 className="font-semibold mb-4">Expenses by Category</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {Object.entries(expensesByCategory).slice(0, 8).map(([cat, data]) => (
-              <div key={cat} className="p-3 bg-gray-50 rounded-lg">
+              <div key={cat} className="p-3 bg-[#111820] rounded-lg">
                 <p className="text-xs text-gray-500 truncate">{cat}</p>
                 <p className="font-semibold text-red-600">₹{data.total.toLocaleString('en-IN')}</p>
                 <p className="text-xs text-gray-400">{data.count} records</p>

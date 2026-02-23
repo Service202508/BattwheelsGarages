@@ -380,7 +380,7 @@ export default function StockTransfers() {
                       <div className="border rounded-lg overflow-hidden">
                         <Table>
                           <TableHeader>
-                            <TableRow className="bg-gray-50">
+                            <TableRow className="bg-[#111820]">
                               <TableHead>Item</TableHead>
                               <TableHead className="text-right">Quantity</TableHead>
                               <TableHead className="w-12"></TableHead>
@@ -534,7 +534,7 @@ export default function StockTransfers() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50">
+                <TableRow className="bg-[#111820]">
                   <TableHead>Transfer #</TableHead>
                   <TableHead>From</TableHead>
                   <TableHead>To</TableHead>
@@ -549,7 +549,7 @@ export default function StockTransfers() {
                   const status = statusConfig[transfer.status] || statusConfig.draft;
                   const StatusIcon = status.icon;
                   return (
-                    <TableRow key={transfer.transfer_id} className="hover:bg-gray-50">
+                    <TableRow key={transfer.transfer_id} className="hover:bg-[#111820]">
                       <TableCell className="font-medium">
                         {transfer.transfer_order_number}
                       </TableCell>
@@ -633,7 +633,7 @@ export default function StockTransfers() {
                 </Badge>
               </div>
               
-              <div className="flex items-center justify-center gap-4 py-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center gap-4 py-4 bg-[#111820] rounded-lg">
                 <div className="text-center">
                   <Building2 className="h-6 w-6 mx-auto text-gray-500 mb-1" />
                   <p className="text-sm font-medium">{selectedTransfer.source_warehouse_name}</p>

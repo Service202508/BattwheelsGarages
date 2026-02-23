@@ -360,7 +360,7 @@ const FaultTreeImport = () => {
           <CardContent className="space-y-4">
             {/* Stats */}
             <div className="grid grid-cols-4 gap-4">
-              <div className="bg-gray-50 p-4 rounded-lg text-center">
+              <div className="bg-[#111820] p-4 rounded-lg text-center">
                 <div className="text-2xl font-bold text-[#F4F6F0]">{preview.total_rows}</div>
                 <div className="text-sm text-gray-500">Total Rows</div>
               </div>
@@ -396,7 +396,7 @@ const FaultTreeImport = () => {
                 <h4 className="font-medium mb-2">Sample Data</h4>
                 <div className="space-y-2">
                   {preview.sample_valid.slice(0, 3).map((row, idx) => (
-                    <div key={idx} className="bg-gray-50 p-3 rounded text-sm">
+                    <div key={idx} className="bg-[#111820] p-3 rounded text-sm">
                       <div className="font-medium">{row.complaint_description}</div>
                       <div className="text-gray-500 mt-1">
                         Root causes: {row.root_causes?.slice(0, 2).join(', ')}

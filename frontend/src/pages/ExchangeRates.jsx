@@ -200,7 +200,7 @@ export default function ExchangeRates() {
                   </div>
                 </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg text-center">
+                <div className="bg-[#111820] p-4 rounded-lg text-center">
                   <p className="text-sm text-gray-500 mb-2">Exchange Rate Preview</p>
                   <p className="text-lg font-semibold">
                     1 {getCurrencySymbol(formData.from_currency)} = {formData.rate} {getCurrencySymbol(formData.to_currency)}
@@ -279,7 +279,7 @@ export default function ExchangeRates() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50">
+                <TableRow className="bg-[#111820]">
                   <TableHead>From</TableHead>
                   <TableHead></TableHead>
                   <TableHead>To</TableHead>

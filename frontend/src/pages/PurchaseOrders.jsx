@@ -222,7 +222,7 @@ export default function PurchaseOrders() {
                     </div>
                   </div>
 
-                  <div className="border rounded-lg p-4 bg-gray-50">
+                  <div className="border rounded-lg p-4 bg-[#111820]">
                     <h3 className="font-medium mb-3">Add Parts/Items</h3>
                     <Select onValueChange={handleSelectItem}>
                       <SelectTrigger><SelectValue placeholder="Select part" /></SelectTrigger>
@@ -243,7 +243,7 @@ export default function PurchaseOrders() {
                   {newPO.line_items.length > 0 && (
                     <div className="border rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-[#111820]">
                           <tr>
                             <th className="px-3 py-2 text-left">Item</th>
                             <th className="px-3 py-2 text-right">Qty</th>
@@ -261,7 +261,7 @@ export default function PurchaseOrders() {
                             </tr>
                           ))}
                         </tbody>
-                        <tfoot className="bg-gray-50 font-semibold">
+                        <tfoot className="bg-[#111820] font-semibold">
                           <tr><td colSpan={3} className="px-3 py-2 text-right">Total:</td><td className="px-3 py-2 text-right">₹{calculateTotal().toLocaleString('en-IN')}</td></tr>
                         </tfoot>
                       </table>

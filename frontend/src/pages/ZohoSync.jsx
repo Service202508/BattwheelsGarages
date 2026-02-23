@@ -390,7 +390,7 @@ export default function ZohoSync() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50">
+                <TableRow className="bg-[#111820]">
                   <TableHead>Sync ID</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Status</TableHead>
@@ -503,7 +503,7 @@ export default function ZohoSync() {
             </DialogHeader>
             <div className="space-y-2 py-4">
               <p className="text-sm text-gray-600">The following data was removed:</p>
-              <div className="bg-gray-50 rounded-lg p-4 text-sm">
+              <div className="bg-[#111820] rounded-lg p-4 text-sm">
                 {Object.entries(purgeStats).map(([key, value]) => (
                   <div key={key} className="flex justify-between py-1 border-b border-gray-200 last:border-0">
                     <span className="capitalize">{key.replace(/_/g, ' ')}</span>

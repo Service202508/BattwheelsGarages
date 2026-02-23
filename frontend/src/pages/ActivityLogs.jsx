@@ -225,7 +225,7 @@ export default function ActivityLogs() {
             <>
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-gray-50">
+                  <TableRow className="bg-[#111820]">
                     <TableHead className="w-[180px]">Timestamp</TableHead>
                     <TableHead>Entity Type</TableHead>
                     <TableHead>Entity ID</TableHead>

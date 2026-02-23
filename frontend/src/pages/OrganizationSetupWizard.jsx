@@ -487,7 +487,7 @@ export default function OrganizationSetupWizard({ user, onComplete }) {
                   Invite your team members to get started. You can always add more later from Settings → Team Management.
                 </p>
 
-                <div className="border rounded-lg p-4 bg-gray-50">
+                <div className="border rounded-lg p-4 bg-[#111820]">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                     <Input
                       placeholder="Name"

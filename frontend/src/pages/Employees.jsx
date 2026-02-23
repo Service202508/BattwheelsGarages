@@ -23,7 +23,7 @@ import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "
 
 const statusColors = {
   active: "bg-[rgba(34,197,94,0.20)] text-green-400",
-  inactive: "bg-gray-500/20 text-gray-400",
+  inactive: "bg-[#111820]0/20 text-gray-400",
   terminated: "bg-[rgba(255,59,47,0.20)] text-red-400",
   resigned: "bg-[rgba(234,179,8,0.20)] text-yellow-400",
   on_notice: "bg-[rgba(255,140,0,0.20)] text-orange-400"
@@ -552,12 +552,12 @@ export default function Employees({ user }) {
                     <TableCell className="capitalize">{emp.department?.replace("_", " ")}</TableCell>
                     <TableCell>{emp.designation}</TableCell>
                     <TableCell>
-                      <Badge className={roleColors[emp.system_role] || "bg-gray-500"}>
+                      <Badge className={roleColors[emp.system_role] || "bg-[#111820]0"}>
                         {emp.system_role}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className={statusColors[emp.status] || "bg-gray-500"}>
+                      <Badge className={statusColors[emp.status] || "bg-[#111820]0"}>
                         {emp.status}
                       </Badge>
                     </TableCell>

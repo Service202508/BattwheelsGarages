@@ -396,7 +396,7 @@ export default function InventoryEnhanced() {
                 ) : (
                   <div className="space-y-2">
                     {shipments.filter(s => s.status !== 'delivered').slice(0, 5).map(s => (
-                      <div key={s.shipment_id} className="flex justify-between items-center p-2 bg-gray-50 rounded cursor-pointer hover:bg-[rgba(255,255,255,0.05)]" onClick={() => viewDetail('shipment', s.shipment_id)}>
+                      <div key={s.shipment_id} className="flex justify-between items-center p-2 bg-[#111820] rounded cursor-pointer hover:bg-[rgba(255,255,255,0.05)]" onClick={() => viewDetail('shipment', s.shipment_id)}>
                         <div>
                           <p className="font-medium">{s.package_number}</p>
                           <p className="text-xs text-gray-500">{s.customer_name}</p>
@@ -699,7 +699,7 @@ export default function InventoryEnhanced() {
             </div>
             <div><Label>Description</Label><Textarea value={newBundle.description} onChange={(e) => setNewBundle({...newBundle, description: e.target.value})} /></div>
             
-            <div className="border rounded p-4 bg-gray-50">
+            <div className="border rounded p-4 bg-[#111820]">
               <h4 className="font-medium mb-3">Components</h4>
               <div className="flex gap-2 mb-3">
                 <Select onValueChange={(v) => setBundleComponent({...bundleComponent, item_id: v})}>
@@ -863,7 +863,7 @@ export default function InventoryEnhanced() {
                         <h4 className="font-medium mb-2">Stock Items</h4>
                         <div className="border rounded max-h-48 overflow-y-auto">
                           <table className="w-full text-sm">
-                            <thead className="bg-gray-50 sticky top-0"><tr><th className="px-3 py-2 text-left">Item</th><th className="px-3 py-2 text-right">Available</th><th className="px-3 py-2 text-right">Reserved</th></tr></thead>
+                            <thead className="bg-[#111820] sticky top-0"><tr><th className="px-3 py-2 text-left">Item</th><th className="px-3 py-2 text-right">Available</th><th className="px-3 py-2 text-right">Reserved</th></tr></thead>
                             <tbody>
                               {detailData.stock_items.map((si, idx) => (
                                 <tr key={idx} className="border-t"><td className="px-3 py-2">{si.item_name}</td><td className="px-3 py-2 text-right">{si.available_stock}</td><td className="px-3 py-2 text-right">{si.reserved_stock || 0}</td></tr>
@@ -891,7 +891,7 @@ export default function InventoryEnhanced() {
                         <h4 className="font-medium mb-2">Components</h4>
                         <div className="space-y-2">
                           {detailData.components.map((c, idx) => (
-                            <div key={idx} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                            <div key={idx} className="flex justify-between items-center p-2 bg-[#111820] rounded">
                               <span>{c.item_name}</span>
                               <div className="text-right">
                                 <span className="font-medium">x{c.quantity}</span>
@@ -923,7 +923,7 @@ export default function InventoryEnhanced() {
                         <h4 className="font-medium mb-2">Shipped Items</h4>
                         <div className="space-y-2">
                           {detailData.items.map((i, idx) => (
-                            <div key={idx} className="flex justify-between p-2 bg-gray-50 rounded">
+                            <div key={idx} className="flex justify-between p-2 bg-[#111820] rounded">
                               <span>{i.item_name}</span>
                               <span>Qty: {i.quantity_shipped}</span>
                             </div>
@@ -934,7 +934,7 @@ export default function InventoryEnhanced() {
                   </>
                 )}
                 {(detailType === 'variant' || detailType === 'serial' || detailType === 'return') && (
-                  <pre className="bg-gray-50 p-4 rounded text-xs overflow-auto">{JSON.stringify(detailData, null, 2)}</pre>
+                  <pre className="bg-[#111820] p-4 rounded text-xs overflow-auto">{JSON.stringify(detailData, null, 2)}</pre>
                 )}
               </div>
             )}

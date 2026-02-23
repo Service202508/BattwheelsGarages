@@ -22,7 +22,7 @@ const statusColors = {
   estimate_approved: "bg-indigo-500",
   in_progress: "bg-[rgba(255,140,0,0.10)]",
   resolved: "bg-[rgba(34,197,94,0.10)]",
-  closed: "bg-gray-500",
+  closed: "bg-[#111820]0",
 };
 
 const statusLabels = {
@@ -379,12 +379,12 @@ export default function Tickets({ user }) {
                     </TableCell>
                     <TableCell className="max-w-[200px] truncate">{ticket.title}</TableCell>
                     <TableCell>
-                      <Badge className={priorityColors[ticket.priority] || "bg-gray-500"}>
+                      <Badge className={priorityColors[ticket.priority] || "bg-[#111820]0"}>
                         {ticket.priority}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className={statusColors[ticket.status] || "bg-gray-500"}>
+                      <Badge className={statusColors[ticket.status] || "bg-[#111820]0"}>
                         {statusLabels[ticket.status] || ticket.status}
                       </Badge>
                     </TableCell>

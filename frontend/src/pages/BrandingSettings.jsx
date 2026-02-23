@@ -536,7 +536,7 @@ export default function BrandingSettings({ user }) {
                     <Label>Favicon (Browser Tab Icon)</Label>
                     <div className="flex gap-4 items-start">
                       <div 
-                        className={`w-16 h-16 border-2 border-dashed rounded-lg flex items-center justify-center bg-gray-50 cursor-pointer transition-all ${
+                        className={`w-16 h-16 border-2 border-dashed rounded-lg flex items-center justify-center bg-[#111820] cursor-pointer transition-all ${
                           dragOver.favicon ? "border-[rgba(200,255,0,0.50)] bg-[rgba(200,255,0,0.08)]" : "border-gray-200"
                         }`}
                         onClick={() => faviconRef.current?.click()}
@@ -762,7 +762,7 @@ export default function BrandingSettings({ user }) {
                       onError={(e) => { e.target.style.display = 'none'; }}
                     />
                   ) : (
-                    <div className="h-8 w-24 bg-gray-700 rounded flex items-center justify-center text-gray-400 text-xs">
+                    <div className="h-8 w-24 bg-[#111820] rounded flex items-center justify-center text-gray-400 text-xs">
                       Logo
                     </div>
                   )}

@@ -152,7 +152,7 @@ const ReceivablesPayablesWidget = ({ type, data, loading }) => {
         </div>
         
         {/* Progress bar */}
-        <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+        <div className="h-2 w-full bg-[#141E27] rounded-full overflow-hidden">
           <div 
             className="h-full transition-all duration-500"
             style={{ 

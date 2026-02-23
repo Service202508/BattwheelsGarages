@@ -191,7 +191,7 @@ export default function Items() {
             <DialogContent className="max-w-xl">
               <DialogHeader><DialogTitle>Bulk Import Items</DialogTitle></DialogHeader>
               <div className="space-y-4 py-4">
-                <div className="border-2 border-dashed rounded-lg p-6 text-center bg-gray-50">
+                <div className="border-2 border-dashed rounded-lg p-6 text-center bg-[#111820]">
                   <Upload className="h-10 w-10 mx-auto mb-3 text-gray-400" />
                   <p className="text-sm text-gray-600 mb-2">Upload a CSV file with your items</p>
                   <p className="text-xs text-gray-500 mb-4">Columns: name, sku, description, rate, purchase_rate, item_type, unit, hsn_or_sac, tax_percentage, stock_on_hand, reorder_level</p>
@@ -335,7 +335,7 @@ export default function Items() {
             ) : (
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-[#111820]">
                     <tr>
                       <th className="px-4 py-3 text-left font-medium">Item</th>
                       <th className="px-4 py-3 text-left font-medium">SKU</th>
@@ -347,7 +347,7 @@ export default function Items() {
                   </thead>
                   <tbody>
                     {filteredItems.map(item => (
-                      <tr key={item.item_id} className="border-t hover:bg-gray-50">
+                      <tr key={item.item_id} className="border-t hover:bg-[#111820]">
                         <td className="px-4 py-3">
                           <div>
                             <p className="font-medium">{item.name}</p>

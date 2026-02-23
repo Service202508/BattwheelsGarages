@@ -339,7 +339,7 @@ export default function ProjectTasks() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50">
+                <TableRow className="bg-[#111820]">
                   <TableHead>Task Name</TableHead>
                   <TableHead>Description</TableHead>
                   <TableHead className="text-right">Rate</TableHead>

@@ -31,7 +31,7 @@ const statusColors = {
   work_in_progress: "bg-[rgba(255,140,0,0.08)]0",
   work_completed: "bg-teal-500",
   resolved: "bg-[rgba(34,197,94,0.08)]0",
-  closed: "bg-gray-500",
+  closed: "bg-[#111820]0",
   in_progress: "bg-[rgba(255,140,0,0.08)]0",  // Legacy alias
 };
 
@@ -512,7 +512,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
               <div className="text-right">
                 <h3 className="text-xl font-semibold">Job Card</h3>
                 <p className="text-muted-foreground font-mono">{localTicket.ticket_id}</p>
-                <Badge className={statusColors[localTicket.status] || "bg-gray-500"}>
+                <Badge className={statusColors[localTicket.status] || "bg-[#111820]0"}>
                   {statusLabels[localTicket.status] || localTicket.status}
                 </Badge>
               </div>

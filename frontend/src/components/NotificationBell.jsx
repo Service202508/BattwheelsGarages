@@ -154,7 +154,7 @@ export default function NotificationBell({ user }) {
                 return (
                   <div
                     key={notif.notification_id}
-                    className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
+                    className={`p-4 hover:bg-[#111820] cursor-pointer transition-colors ${
                       !notif.is_read ? "bg-blue-50/50" : ""
                     }`}
                     onClick={() => !notif.is_read && markAsRead(notif.notification_id)}

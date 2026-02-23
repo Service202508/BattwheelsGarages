@@ -166,7 +166,7 @@ export default function CreditNotes() {
                 </div>
               </div>
 
-              <div className="border rounded-lg p-4 bg-gray-50">
+              <div className="border rounded-lg p-4 bg-[#111820]">
                 <h3 className="font-medium mb-3">Add Items</h3>
                 <div className="grid grid-cols-4 gap-3">
                   <Input value={newLineItem.name} onChange={(e) => setNewLineItem({ ...newLineItem, name: e.target.value })} placeholder="Item name" />
@@ -179,7 +179,7 @@ export default function CreditNotes() {
               {newCN.line_items.length > 0 && (
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-[#111820]">
                       <tr>
                         <th className="px-3 py-2 text-left">Item</th>
                         <th className="px-3 py-2 text-right">Qty</th>
@@ -203,7 +203,7 @@ export default function CreditNotes() {
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-gray-50 font-semibold">
+                    <tfoot className="bg-[#111820] font-semibold">
                       <tr><td colSpan={3} className="px-3 py-2 text-right">Total Credit:</td><td className="px-3 py-2 text-right">₹{calculateTotal().toLocaleString('en-IN')}</td><td></td></tr>
                     </tfoot>
                   </table>

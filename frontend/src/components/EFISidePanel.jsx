@@ -315,7 +315,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                 </div>
 
                 {/* Current Step */}
-                <div className="p-3 bg-[#111820] dark:bg-gray-900 rounded-lg border">
+                <div className="p-3 bg-[#111820] dark:bg-[#080C0F] rounded-lg border">
                   <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
                     <Target className="h-4 w-4 text-[#3B9EFF]" />
                     {currentStep.instruction}
@@ -347,7 +347,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                         <Image className="h-3 w-3" />
                         <span className="font-medium">Reference Image</span>
                       </div>
-                      <div className="relative rounded-lg overflow-hidden border bg-gray-50">
+                      <div className="relative rounded-lg overflow-hidden border bg-[#111820]">
                         <img 
                           src={currentStep.reference_image.startsWith('/api') 
                             ? `${window.location.origin}${currentStep.reference_image}` 
@@ -451,7 +451,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                     <h5 className="text-xs font-medium mb-1">Suggested Parts:</h5>
                     <div className="space-y-1">
                       {estimate.parts.map((part, idx) => (
-                        <div key={idx} className="flex justify-between text-xs p-1.5 bg-[#111820] dark:bg-gray-900 rounded">
+                        <div key={idx} className="flex justify-between text-xs p-1.5 bg-[#111820] dark:bg-[#080C0F] rounded">
                           <span>{part.name} × {part.quantity}</span>
                           <span className="font-mono">₹{(part.price || 0).toLocaleString()}</span>
                         </div>
@@ -461,7 +461,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
                 )}
 
                 {/* Estimate Summary */}
-                <div className="p-3 bg-[#111820] dark:bg-gray-900 rounded-lg border space-y-1 text-sm">
+                <div className="p-3 bg-[#111820] dark:bg-[#080C0F] rounded-lg border space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Parts Total</span>
                     <span className="font-mono">₹{(estimate.parts_total || 0).toLocaleString()}</span>
