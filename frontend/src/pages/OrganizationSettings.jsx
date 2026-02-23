@@ -258,11 +258,6 @@ export default function OrganizationSettings({ user }) {
           setSlaConfig(prev => ({ ...prev, ...slaData.sla_config }));
         }
       }
-
-      // Set logo preview from org data (use already parsed orgData)
-      if (orgRes.ok && orgData && orgData.logo_url) {
-        setLogoPreview(orgData.logo_url);
-      }
     } catch (error) {
       toast.error("Failed to load organization data");
     } finally {
