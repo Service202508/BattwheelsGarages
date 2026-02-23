@@ -1845,7 +1845,7 @@ export default function EstimatesEnhanced() {
               <div className="space-y-4 py-4 flex-1 overflow-y-auto min-h-0">
                 {/* Linked Ticket Banner - For ticket estimates */}
                 {selectedEstimate.is_ticket_estimate && selectedEstimate.ticket_id && (
-                  <div className="bg-[rgba(59,158,255,0.08)] border border-blue-200 rounded-lg px-4 py-3 flex items-center justify-between">
+                  <div className="bg-[rgba(59,158,255,0.08)] border border-[rgba(59,158,255,0.25)] rounded-lg px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Ticket className="h-5 w-5 text-[#3B9EFF]" />
                       <div>
