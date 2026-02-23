@@ -5764,6 +5764,136 @@ async def get_satisfaction_report(request: Request):
         dist[r.get("rating", 3)] = dist.get(r.get("rating", 3), 0) + 1
     return {"code": 0, "total_reviews": len(reviews), "avg_rating": round(avg, 2), "rating_distribution": dist, "reviews": reviews[:20]}
 
+
+# ==================== DATA EXPORT ROUTES ====================
+@api_router.post("/settings/export-data")
+async def request_data_export(request: Request):
+    """
+    POST /api/settings/export-data
+    Kick off an async export of all org data (tickets, invoices, contacts, inventory).
+    Returns a job_id to poll for status.
+    """
+    user = await require_auth(request)
+    ctx = getattr(request.state, "tenant_context", None)
+    org_id = ctx.org_id if ctx else user.get("organization_id", "")
+    if not org_id:
+        raise HTTPException(status_code=400, detail="Organization context required")
+
+    body = {}
+    try:
+        body = await request.json()
+    except Exception:
+        pass
+
+    export_type = body.get("export_type", "all")
+    fmt = body.get("format", "json")
+
+    import uuid as _uuid
+    job_id = f"EXP-{_uuid.uuid4().hex[:12].upper()}"
+    now = datetime.now(timezone.utc)
+
+    export_job = {
+        "job_id": job_id,
+        "organization_id": org_id,
+        "requested_by": user.get("user_id", ""),
+        "export_type": export_type,
+        "format": fmt,
+        "status": "pending",
+        "created_at": now.isoformat(),
+        "completed_at": None,
+        "download_url": None,
+        "error": None,
+    }
+    await db.export_jobs.insert_one(export_job)
+    export_job.pop("_id", None)
+
+    # Run export inline (small orgs — synchronous for now)
+    try:
+        import json as _json
+        collections_to_export = {
+            "tickets": db.tickets,
+            "invoices": db.invoices_enhanced,
+            "contacts": db.contacts_enhanced,
+            "inventory": db.inventory,
+            "employees": db.employees,
+            "expenses": db.expenses,
+        }
+        if export_type != "all":
+            collections_to_export = {export_type: collections_to_export.get(export_type, db[export_type])}
+
+        export_data = {"org_id": org_id, "exported_at": now.isoformat(), "collections": {}}
+        for col_name, col in collections_to_export.items():
+            try:
+                docs = await col.find({"organization_id": org_id}, {"_id": 0}).to_list(10000)
+                export_data["collections"][col_name] = docs
+            except Exception:
+                export_data["collections"][col_name] = []
+
+        export_data["total_records"] = sum(len(v) for v in export_data["collections"].values())
+
+        # Store result in DB
+        await db.export_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {
+                "status": "completed",
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "record_count": export_data["total_records"],
+                "download_url": f"/api/settings/export-data/{job_id}/download",
+            }}
+        )
+        # Store export data temporarily
+        await db.export_data.replace_one(
+            {"job_id": job_id},
+            {"job_id": job_id, "organization_id": org_id, "data": export_data},
+            upsert=True
+        )
+        return {
+            "code": 0,
+            "job_id": job_id,
+            "status": "completed",
+            "record_count": export_data["total_records"],
+            "download_url": f"/api/settings/export-data/{job_id}/download",
+        }
+    except Exception as e:
+        await db.export_jobs.update_one(
+            {"job_id": job_id},
+            {"$set": {"status": "failed", "error": str(e)}}
+        )
+        return {"code": 1, "job_id": job_id, "status": "failed", "error": str(e)}
+
+
+@api_router.get("/settings/export-data/status")
+async def list_export_jobs(request: Request):
+    """GET /api/settings/export-data/status — List all export jobs for org."""
+    user = await require_auth(request)
+    ctx = getattr(request.state, "tenant_context", None)
+    org_id = ctx.org_id if ctx else user.get("organization_id", "")
+    jobs = await db.export_jobs.find(
+        {"organization_id": org_id}, {"_id": 0}
+    ).sort("created_at", -1).to_list(20)
+    return {"code": 0, "jobs": jobs, "total": len(jobs)}
+
+
+@api_router.get("/settings/export-data/{job_id}/download")
+async def download_export(job_id: str, request: Request):
+    """GET /api/settings/export-data/{job_id}/download — Download export as JSON."""
+    user = await require_auth(request)
+    ctx = getattr(request.state, "tenant_context", None)
+    org_id = ctx.org_id if ctx else user.get("organization_id", "")
+    record = await db.export_data.find_one(
+        {"job_id": job_id, "organization_id": org_id}, {"_id": 0}
+    )
+    if not record:
+        raise HTTPException(status_code=404, detail="Export job not found")
+    import json as _json
+    from fastapi.responses import Response as _Response
+    content = _json.dumps(record.get("data", {}), indent=2, default=str)
+    return _Response(
+        content=content,
+        media_type="application/json",
+        headers={"Content-Disposition": f"attachment; filename=export_{job_id}.json"}
+    )
+
 # Include main router
 app.include_router(api_router)
 
