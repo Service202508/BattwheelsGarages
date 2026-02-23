@@ -1484,7 +1484,7 @@ async def get_inventory_valuation(
     db = get_db()
 
     # Get org from header
-    raw_org_id = request.headers.get("X-Organization-ID", org_id or "")
+    raw_org_id = request.headers.get("X-Organization-ID", "")
 
     query: dict = {}
     if raw_org_id:
