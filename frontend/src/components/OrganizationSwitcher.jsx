@@ -29,10 +29,6 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
   const isPlatformAdmin = user?.is_platform_admin || false;
 
   useEffect(() => {
-    if (!isPlatformAdmin) fetchOrganizations();
-  }, [isPlatformAdmin]);
-
-  useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
@@ -41,6 +37,10 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!isPlatformAdmin) fetchOrganizations();
+  }, [isPlatformAdmin]);
 
   // ── Platform Admin: show SYSTEM badge, no org dropdown ──────────────────────
   if (isPlatformAdmin) {
