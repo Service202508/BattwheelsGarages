@@ -8,6 +8,7 @@ import { Car, Wrench, Clock, Users, MapPin, Building2, Truck, Wifi, TrendingUp, 
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { MetricCard } from "@/components/ui/stat-card";
 import { API, getAuthHeaders } from "@/App";
+import { OnboardingBanner } from "@/components/OnboardingBanner";
 
 // Wrapper component to prevent chart dimension warnings in hidden tabs
 const ChartContainer = ({ children, isVisible, height = "240px" }) => {
