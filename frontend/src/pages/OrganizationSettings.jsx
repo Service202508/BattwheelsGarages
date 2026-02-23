@@ -901,7 +901,7 @@ export default function OrganizationSettings({ user }) {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+        <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
           <TabsTrigger value="general" className="gap-2">
             <Building2 className="h-4 w-4" />
             <span className="hidden sm:inline">General</span>
@@ -921,6 +921,10 @@ export default function OrganizationSettings({ user }) {
           <TabsTrigger value="efi" className="gap-2">
             <Brain className="h-4 w-4" />
             <span className="hidden sm:inline">EFI</span>
+          </TabsTrigger>
+          <TabsTrigger value="integrations" className="gap-2">
+            <Link2 className="h-4 w-4" />
+            <span className="hidden sm:inline">Integrations</span>
           </TabsTrigger>
         </TabsList>
 
