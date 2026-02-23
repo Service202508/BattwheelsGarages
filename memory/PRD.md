@@ -117,6 +117,9 @@ Battwheels OS is a multi-tenant SaaS platform for EV service management. It prov
 | ✅ JWT Secret Hardening | Replaced weak JWT secret with 256-bit cryptographic key | `backend/.env` |
 | ✅ CORS Policy Fix | Dynamic CORS origins from env var, no longer hardcoded `*` | `backend/server.py` |
 | ✅ EstimatesEnhanced Refactor | Extracted 4 UI components, reduced 3010→2925 lines, fixed light mode | `components/estimates/*`, `pages/EstimatesEnhanced.jsx` |
+| ✅ **Proactive Upgrade Banner** | FeatureGateBanner: amber sticky banner on gated routes, blur overlay on content, CTA to /subscription. 12/12 tests pass (Feb 2026) | `components/FeatureGateBanner.jsx` (new), `components/Layout.jsx` |
+| ✅ **EstimatesEnhanced Hook Extraction** | Extracted `useEstimateCalculations` + `useEstimateFilters` hooks. Line count: 2925→2917 | `hooks/useEstimateCalculations.js` (new), `hooks/useEstimateFilters.js` (new), `pages/EstimatesEnhanced.jsx` |
+
 | ✅ **Payroll → Accounting** | Journal entry on payroll run with full debit/credit breakdown | `services/hr_service.py`, `services/double_entry_service.py`, `services/posting_hooks.py` |
 | ✅ **Bill → Inventory** | Stock qty/WAC updated on bill approval + stock_movement record | `services/inventory_service.py`, `routes/bills_enhanced.py` |
 | ✅ **Job Card → COGS** | COGS journal entry + stock movement on parts consumption | `services/inventory_service.py` |
