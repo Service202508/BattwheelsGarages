@@ -1048,9 +1048,9 @@ The Public Ticket Form (`/submit-ticket`) was redesigned from a rejected dark th
 3. **Real-time Sync:** Tickets submitted via public form are stored in the same `tickets` collection used by the admin panel - instant sync
 
 **Public URL for Domain Mapping:**
-- **Service Request Form:** `https://erp-expenses-bills.preview.emergentagent.com/submit-ticket`
-- **Ticket Tracking:** `https://erp-expenses-bills.preview.emergentagent.com/track-ticket`
-- **Admin Panel:** `https://erp-expenses-bills.preview.emergentagent.com/login`
+- **Service Request Form:** `https://fin-summary.preview.emergentagent.com/submit-ticket`
+- **Ticket Tracking:** `https://fin-summary.preview.emergentagent.com/track-ticket`
+- **Admin Panel:** `https://fin-summary.preview.emergentagent.com/login`
 
 ---
 
