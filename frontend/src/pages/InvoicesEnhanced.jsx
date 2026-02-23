@@ -1046,28 +1046,58 @@ export default function InvoicesEnhanced() {
     }
   };
 
-  // ========================= SEND EMAIL =========================
+  // ========================= SEND EMAIL (5B) =========================
   const handleSendInvoiceEmail = async () => {
-    if (!selectedInvoice || !sendEmail) {
+    if (!selectedInvoice) {
+      toast.error("No invoice selected");
+      return;
+    }
+    
+    if (!sendEmail) {
       toast.error("Please enter email address");
       return;
     }
+    
+    // Pre-send validation - check if invoice is cancelled
+    if (selectedInvoice.status === "cancelled") {
+      toast.error("Cannot send cancelled invoice");
+      return;
+    }
+    
+    // Check for B2B IRN requirement (will be enforced by backend too)
+    if (einvoiceEnabled && isB2BInvoice(selectedInvoice) && !selectedInvoice.irn && selectedInvoice.status !== "draft") {
+      toast.error("IRN registration required before sending B2B invoice. Generate IRN first.");
+      setShowSendDialog(false);
+      return;
+    }
+    
     try {
       const url = `${API}/invoices-enhanced/${selectedInvoice.invoice_id}/send?email_to=${encodeURIComponent(sendEmail)}&message=${encodeURIComponent(sendMessage)}`;
       const res = await fetch(url, { method: "POST", headers });
-      if (res.ok) {
-        toast.success("Invoice sent!");
+      const data = await res.json();
+      
+      if (res.ok && data.code === 0) {
+        toast.success(data.message || "Invoice sent successfully!");
         setShowSendDialog(false);
         setSendEmail("");
         setSendMessage("");
         fetchInvoiceDetail(selectedInvoice.invoice_id);
         fetchData();
       } else {
-        const err = await res.json();
-        toast.error(err.detail || "Failed to send invoice");
+        // Handle specific error cases
+        const errorMsg = data.detail || data.message || "Failed to send invoice";
+        if (errorMsg.includes("IRN registration required")) {
+          toast.error("IRN registration required before sending. Generate IRN first.", { duration: 5000 });
+        } else if (errorMsg.includes("PDF generation failed")) {
+          toast.error("PDF generation failed. Please check invoice data and try again.", { duration: 5000 });
+        } else if (errorMsg.includes("email")) {
+          toast.error(errorMsg, { duration: 5000 });
+        } else {
+          toast.error(errorMsg);
+        }
       }
     } catch (e) {
-      toast.error("Error sending invoice");
+      toast.error("Error sending invoice. Please try again.");
     }
   };
 
