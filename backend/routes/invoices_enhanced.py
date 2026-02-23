@@ -1415,55 +1415,62 @@ async def send_invoice(
             send_email_flag = True  # Auto-fallback
 
     # ==================== SEND EMAIL ====================
-    try:
-        email_result = await EmailService.send_invoice_email(
-            to_email=recipient_email,
-            customer_name=invoice.get('customer_name', 'Customer'),
-            invoice_number=invoice.get('invoice_number', invoice_id),
-            invoice_date=invoice.get('invoice_date', invoice.get('date', '')),
-            due_date=invoice.get('due_date', ''),
-            amount=invoice.get('sub_total', 0),
-            tax_amount=invoice.get('tax_total', 0),
-            total=invoice.get('grand_total', invoice.get('total', 0)),
-            org_name=org_settings.get('company_name', org_settings.get('name', 'Battwheels')),
-            org_address=f"{org_settings.get('address', '')} {org_settings.get('city', '')} {org_settings.get('pincode', '')}".strip(),
-            org_gstin=org_settings.get('gstin', ''),
-            org_logo_url=org_settings.get('logo_url'),
-            org_email=org_settings.get('email'),
-            irn=invoice.get('irn') if has_irn else None,
-            irn_ack_no=invoice.get('irn_ack_no') if has_irn else None,
-            payment_link=payment_link,
-            pdf_content=pdf_content,
-            pdf_filename=pdf_filename
-        )
-        
-        if email_result.get("status") == "error":
-            raise HTTPException(status_code=500, detail=f"Email sending failed: {email_result.get('message')}")
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Email sending failed for invoice {invoice_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
-    
+    email_result = {"status": "skipped"}
+    if send_email_flag and recipient_email:
+        try:
+            email_result = await EmailService.send_invoice_email(
+                to_email=recipient_email,
+                customer_name=invoice.get('customer_name', 'Customer'),
+                invoice_number=invoice.get('invoice_number', invoice_id),
+                invoice_date=invoice.get('invoice_date', invoice.get('date', '')),
+                due_date=invoice.get('due_date', ''),
+                amount=invoice.get('sub_total', 0),
+                tax_amount=invoice.get('tax_total', 0),
+                total=invoice.get('grand_total', invoice.get('total', 0)),
+                org_name=org_settings.get('company_name', org_settings.get('name', 'Battwheels')),
+                org_address=f"{org_settings.get('address', '')} {org_settings.get('city', '')} {org_settings.get('pincode', '')}".strip(),
+                org_gstin=org_settings.get('gstin', ''),
+                org_logo_url=org_settings.get('logo_url'),
+                org_email=org_settings.get('email'),
+                irn=invoice.get('irn') if has_irn else None,
+                irn_ack_no=invoice.get('irn_ack_no') if has_irn else None,
+                payment_link=payment_link,
+                pdf_content=pdf_content,
+                pdf_filename=pdf_filename
+            )
+            if email_result.get("status") == "error":
+                raise HTTPException(status_code=500, detail=f"Email sending failed: {email_result.get('message')}")
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Email sending failed for invoice {invoice_id}: {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
+
     # ==================== UPDATE INVOICE STATUS ====================
     was_draft = invoice.get("status") == "draft"
     if was_draft:
         await update_item_stock_for_invoice(invoice_id, reverse=False)
-    
+
     new_status = "sent" if was_draft else invoice.get("status")
+    channels_used = []
+    if whatsapp_result:
+        channels_used.append("whatsapp")
+    if email_result.get("status") not in ("skipped", None):
+        channels_used.append("email")
+
     await invoices_collection.update_one(
         {"invoice_id": invoice_id},
         {"$set": {
             "status": new_status,
             "is_sent": True,
             "sent_date": datetime.now(timezone.utc).isoformat(),
-            "sent_to_email": recipient_email,
+            "sent_to_email": recipient_email if send_email_flag else None,
+            "sent_to_whatsapp": customer_phone if whatsapp_result else None,
             "updated_time": datetime.now(timezone.utc).isoformat(),
             "stock_deducted": True
         }}
     )
-    
+
     # Post journal entry for double-entry bookkeeping (only when transitioning from draft)
     if was_draft:
         if org_id:
@@ -1472,20 +1479,21 @@ async def send_invoice(
                 logger.info(f"Posted journal entry for invoice {invoice.get('invoice_number')}")
             except Exception as e:
                 logger.warning(f"Failed to post journal entry for invoice {invoice.get('invoice_number')}: {e}")
-    
-    # Add to activity log
+
+    channel_desc = " + ".join(channels_used) if channels_used else "none"
     await add_invoice_history(
-        invoice_id, 
-        "sent", 
-        f"Invoice emailed to {recipient_email} with PDF attachment"
+        invoice_id,
+        "sent",
+        f"Invoice sent via {channel_desc}"
     )
     await update_contact_balance(invoice["customer_id"])
-    
+
     return {
-        "code": 0, 
-        "message": f"Invoice sent to {recipient_email}",
+        "code": 0,
+        "message": f"Invoice sent via {channel_desc}",
+        "channels": channels_used,
         "email_status": email_result.get("status"),
-        "email_id": email_result.get("email_id")
+        "whatsapp_message_id": whatsapp_result.get("message_id") if whatsapp_result else None,
     }
 
 @router.post("/{invoice_id}/mark-sent")
