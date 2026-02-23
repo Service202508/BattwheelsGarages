@@ -461,7 +461,8 @@ async def list_payroll_records(
     month: Optional[str] = None,
     year: Optional[int] = None,
     page: int = Query(1, ge=1),
-    limit: int = Query(25, ge=1)
+    limit: int = Query(25, ge=1),
+    _: None = Depends(require_feature("hr_payroll"))
 ):
     """List payroll records with standardized pagination"""
     import math
