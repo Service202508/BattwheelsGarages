@@ -1753,17 +1753,18 @@ async def delete_inventory_item(
 # ==================== MATERIAL ALLOCATION ROUTES ====================
 
 @api_router.post("/allocations")
-async def create_allocation(data: MaterialAllocationCreate, request: Request):
+async def create_allocation(data: MaterialAllocationCreate, request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     """Allocate materials from inventory to a ticket"""
     user = await require_technician_or_admin(request)
+    org_id = ctx.org_id
     
-    # Verify ticket exists
-    ticket = await db.tickets.find_one({"ticket_id": data.ticket_id}, {"_id": 0})
+    # Verify ticket exists AND belongs to this org
+    ticket = await db.tickets.find_one({"ticket_id": data.ticket_id, "organization_id": org_id}, {"_id": 0})
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     
-    # Get item details and check stock
-    item = await db.inventory.find_one({"item_id": data.item_id}, {"_id": 0})
+    # Get item details and check stock — scoped to this org
+    item = await db.inventory.find_one({"item_id": data.item_id, "organization_id": org_id}, {"_id": 0})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
@@ -1783,17 +1784,18 @@ async def create_allocation(data: MaterialAllocationCreate, request: Request):
     )
     doc = allocation.model_dump()
     doc['allocated_at'] = doc['allocated_at'].isoformat()
+    doc['organization_id'] = org_id
     await db.allocations.insert_one(doc)
     
-    # Update inventory reserved quantity
+    # Update inventory reserved quantity (scoped)
     await db.inventory.update_one(
-        {"item_id": data.item_id},
+        {"item_id": data.item_id, "organization_id": org_id},
         {"$inc": {"reserved_quantity": data.quantity}}
     )
     
-    # Update ticket parts cost
+    # Update ticket parts cost (scoped)
     await db.tickets.update_one(
-        {"ticket_id": data.ticket_id},
+        {"ticket_id": data.ticket_id, "organization_id": org_id},
         {"$inc": {"parts_cost": allocation.total_price}}
     )
     
