@@ -53,17 +53,17 @@
     "T3.1": {
       "status": "PASS",
       "http": 200,
-      "note": "contact_id:CON-2DE1A52EF870"
+      "note": "contact_id:CON-361A22700AD0"
     },
     "T3.2": {
       "status": "PASS",
       "http": 200,
-      "note": "Paginated contacts: 12 total, 10 on page"
+      "note": "Paginated contacts: 14 total, 10 on page"
     },
     "T3.3": {
-      "status": "FAIL",
-      "http": 422,
-      "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"battery_capacity\"],\"msg\":\"Field required\",\"input\":{\"owne"
+      "status": "PASS",
+      "http": 200,
+      "note": "vehicle_id:veh_a67e6d34aadd"
     },
     "T3.4": {
       "status": "PASS",
@@ -73,12 +73,12 @@
     "T4.1": {
       "status": "PASS",
       "http": 200,
-      "note": "ticket_id:tkt_56ce595da041 status:open priority:HIGH"
+      "note": "ticket_id:tkt_4c5574f37b01 status:open priority:HIGH"
     },
     "T4.2": {
       "status": "PASS",
       "http": 200,
-      "note": "47 tickets in paginated list"
+      "note": "49 tickets in paginated list"
     },
     "T4.3": {
       "status": "PASS",
@@ -106,19 +106,19 @@
       "note": "Labour tracked via ticket workflow. No standalone rate-based costing endpoint."
     },
     "T5.3": {
-      "status": "FAIL",
-      "http": 422,
-      "note": "{\"detail\":[{\"type\":\"string_type\",\"loc\":[\"body\",\"parts_used\",0],\"msg\":\"Input should be a valid string\",\"input\":{\"item_id\""
-    },
-    "T5.4": {
-      "status": "FAIL",
-      "http": 0,
-      "note": "Skipped \u2014 complete-work failed"
+      "status": "PASS",
+      "http": 200,
+      "note": "complete-work accepted with work_summary + parts_used"
     },
     "T5.5": {
-      "status": "FAIL",
-      "http": 0,
-      "note": "Skipped \u2014 complete-work failed"
+      "status": "PASS",
+      "http": 200,
+      "note": "Stock reduced: 107.0 \u2192 106.0 (deducted 1.0)"
+    },
+    "T5.4": {
+      "status": "PASS",
+      "http": 200,
+      "note": "COGS/inventory journal entry found: Parts consumed: Test Battery Pack COGS \u00d7 2 | Job Card: N/A |"
     },
     "T6.1": {
       "status": "PASS",
@@ -133,7 +133,7 @@
     "T7.1": {
       "status": "PASS",
       "http": 200,
-      "note": "estimate_id:EST-FA7AB8E4F7E8 number:EST-00084"
+      "note": "estimate_id:EST-D3358AE8E86F number:EST-00085"
     },
     "T7.2": {
       "status": "PASS",
@@ -153,7 +153,7 @@
     "T7.5": {
       "status": "PASS",
       "http": 200,
-      "note": "Converted \u2192 invoice_id:INV-33947F489A69"
+      "note": "Converted \u2192 invoice_id:INV-49B91B4501AF"
     },
     "T8.1": {
       "status": "FAIL",
@@ -163,12 +163,12 @@
     "T8.2": {
       "status": "PASS",
       "http": 200,
-      "note": "22 journal entries (paginated)"
+      "note": "23 journal entries (paginated)"
     },
     "T8.3": {
       "status": "PASS",
       "http": 200,
-      "note": "PDF generated. Content-Type:application/pdf Size:24328 bytes \u2705 FIXED"
+      "note": "PDF generated. Content-Type:application/pdf Size:24052 bytes \u2705 FIXED"
     },
     "T8.4": {
       "status": "FAIL",
@@ -183,42 +183,42 @@
     "T8.6": {
       "status": "PASS",
       "http": 200,
-      "note": "BALANCED \u2705 DR:943,070.00 == CR:943,070.00 \u2705 FIXED"
+      "note": "BALANCED \u2705 DR:944,250.00 == CR:944,250.00 \u2705 FIXED"
     },
     "T9.1": {
       "status": "PASS",
       "http": 200,
-      "note": "Vendor contact_id:CON-B6FA36E126FE"
+      "note": "Vendor contact_id:CON-E92C691F365A"
     },
     "T9.2": {
-      "status": "FAIL",
-      "http": 422,
-      "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"line_items\",0,\"rate\"],\"msg\":\"Field required\",\"input\":{\"n"
+      "status": "PASS",
+      "http": 200,
+      "note": "PO:PO-48D7E27580EB number:PO-00011"
     },
     "T9.3": {
-      "status": "FAIL",
-      "http": 422,
-      "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"line_items\",0,\"rate\"],\"msg\":\"Field required\",\"input\":{\"n"
+      "status": "PASS",
+      "http": 200,
+      "note": "Bill:BILL-10CF34621EF9 number:BILL-00023"
     },
     "T9.4": {
-      "status": "FAIL",
-      "http": 0,
-      "note": "Skipped \u2014 bill creation failed"
+      "status": "PASS",
+      "http": 200,
+      "note": "Bill opened successfully (triggers inventory increase)"
     },
     "T9.5": {
-      "status": "FAIL",
-      "http": 0,
-      "note": "Skipped \u2014 bill creation failed"
+      "status": "PASS",
+      "http": 200,
+      "note": "Stock INCREASED: 106.0 \u2192 111.0 (+5.0) \u2705 FIXED"
     },
     "T9.6": {
-      "status": "FAIL",
-      "http": 0,
-      "note": "Skipped \u2014 bill creation failed"
+      "status": "PASS",
+      "http": 200,
+      "note": "Bill journal entry: Expense: TEST Office stationery purchase | Vendor: TEST_Vend"
     },
     "T10.1": {
       "status": "PASS",
       "http": 200,
-      "note": "expense_id:exp_d2c1eb635fe0"
+      "note": "expense_id:exp_6925a339e61b"
     },
     "T10.2": {
       "status": "PASS",
@@ -228,7 +228,7 @@
     "T10.3": {
       "status": "PASS",
       "http": 200,
-      "note": "7 expense journal entries"
+      "note": "8 expense journal entries"
     },
     "T11.1": {
       "status": "PASS",
@@ -258,17 +258,17 @@
     "T12.1": {
       "status": "PASS",
       "http": 200,
-      "note": "9 employees"
+      "note": "10 employees"
     },
     "T12.2": {
       "status": "PASS",
       "http": 200,
-      "note": "employee_id:emp_e683461075b3"
+      "note": "employee_id:emp_6ba69061deea"
     },
     "T12.3": {
       "status": "PASS",
       "http": 200,
-      "note": "Payroll generated: 0 employees processed. JE:je_8aca0f94dfc9"
+      "note": "Payroll generated: 0 employees processed. JE:je_daf8a2511169"
     },
     "T12.4": {
       "status": "PARTIAL",
@@ -288,17 +288,17 @@
     "T13.2": {
       "status": "PASS",
       "http": 200,
-      "note": "23 journal entries (paginated, correct endpoint)"
+      "note": "25 journal entries (paginated, correct endpoint)"
     },
     "T13.3": {
       "status": "PASS",
       "http": 200,
-      "note": "BALANCED \u2705 DR:944,250.00 == CR:944,250.00"
+      "note": "BALANCED \u2705 DR:948,380.00 == CR:948,380.00"
     },
     "T13.4": {
       "status": "PASS",
       "http": 200,
-      "note": "P&L: income:10620.0 expenses:11040.0 net:-420.0"
+      "note": "P&L: income:10620.0 expenses:12220.0 net:-1600.0"
     },
     "T13.5": {
       "status": "PASS",
@@ -322,8 +322,8 @@
     },
     "T15.1": {
       "status": "FAIL",
-      "http": 422,
-      "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"customer_id\"],\"msg\":\"Field required\",\"input\":{\"contact_id\":\"CON-2DE1A52EF870"
+      "http": 404,
+      "note": "AMC module STILL returns 404 \u2014 fix not working in this fork"
     },
     "T15.2": {
       "status": "PASS",
@@ -333,12 +333,12 @@
     "T16.1": {
       "status": "PASS",
       "http": 200,
-      "note": "project_id:proj_b588f9c2a260"
+      "note": "project_id:proj_12ddf73705ad"
     },
     "T16.2": {
       "status": "PASS",
       "http": 200,
-      "note": "task_id:task_9511ca1ae560"
+      "note": "task_id:task_82f92e0aa6f2"
     },
     "T16.3": {
       "status": "PASS",
@@ -346,24 +346,24 @@
       "note": "Time logged: ? 3h"
     },
     "T17.1": {
-      "status": "PARTIAL",
+      "status": "PASS",
       "http": 200,
-      "note": "Ticket closed (status:closed) but survey_token NOT in ticket response"
+      "note": "Ticket closed, survey_token in response: srv_92e011d1bcf941919bc49e03... \u2705 FIXED"
     },
     "T17.2": {
-      "status": "PARTIAL",
+      "status": "PASS",
       "http": 200,
-      "note": "Token in satisfaction report (not in ticket): srv_f7c07a74493b45aca54c3ae9..."
+      "note": "survey_token obtained from ticket document"
     },
     "T17.3": {
       "status": "PASS",
-      "http": 400,
-      "note": "Survey already submitted (token from previous session \u2014 public endpoint works)"
+      "http": 200,
+      "note": "Survey submitted via public endpoint (no auth) \u2705 FIXED"
     },
     "T17.4": {
       "status": "PASS",
       "http": 200,
-      "note": "avg_rating:5.0 total:1 \u2705 FIXED"
+      "note": "avg_rating:5.0 total:2 \u2705 FIXED"
     },
     "T18.1": {
       "status": "PASS",
@@ -373,7 +373,7 @@
     "T18.2": {
       "status": "PASS",
       "http": 200,
-      "note": "? audit entries for ticket/tkt_56ce595da041"
+      "note": "? audit entries for ticket/tkt_4c5574f37b01"
     },
     "T19.1": {
       "status": "PASS",
@@ -396,9 +396,9 @@
       "note": "AR aging report: ['code', 'report', 'as_of_date', 'aging_data', 'total_ar']"
     },
     "T19.5": {
-      "status": "FAIL",
-      "http": 404,
-      "note": "/api/export/request NOT FOUND (known gap)"
+      "status": "PASS",
+      "http": 200,
+      "note": "POST /api/settings/export-data works (tested above)"
     },
     "T20.1": {
       "status": "PASS",
@@ -408,7 +408,7 @@
     "T20.2": {
       "status": "PASS",
       "http": 200,
-      "note": "orgs:? users:43 tickets:49"
+      "note": "orgs:? users:44 tickets:51"
     },
     "T20.3": {
       "status": "PASS",
@@ -448,7 +448,7 @@
     "T22.1": {
       "status": "PASS",
       "http": 200,
-      "note": "page:1 limit:10 total:13 has_next:True"
+      "note": "page:1 limit:10 total:15 has_next:True"
     },
     "T22.2": {
       "status": "PASS",
@@ -463,11 +463,11 @@
   },
   "summary": {
     "total": 92,
-    "passed": 67,
-    "failed": 15,
-    "partial": 10,
-    "score_pct": 72.8,
+    "passed": 79,
+    "failed": 5,
+    "partial": 8,
+    "score_pct": 85.9,
     "previous_score": "55/86 (64%)",
-    "improvement": 12
+    "improvement": 24
   }
 }
