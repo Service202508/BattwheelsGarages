@@ -1941,7 +1941,7 @@ async def create_purchase_order(data: PurchaseOrderCreate, request: Request, ctx
     tax_amount = subtotal * 0.18  # 18% GST
     total_amount = subtotal + tax_amount
     
-    po_number = await generate_po_number()
+    po_number = await generate_po_number(ctx.org_id)
     
     po = PurchaseOrder(
         po_number=po_number,
