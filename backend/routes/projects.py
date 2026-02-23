@@ -25,6 +25,7 @@ from services.projects_service import (
     TASK_PRIORITIES,
     BILLING_TYPES
 )
+from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/projects", tags=["projects"])

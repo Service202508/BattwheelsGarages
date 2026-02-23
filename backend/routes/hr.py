@@ -2,7 +2,7 @@
 Battwheels OS - HR Routes
 Thin controller layer for HR management
 """
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, HTTPException, Request, Query, Depends
 from typing import Optional, List
 from datetime import datetime, timezone
 from pydantic import BaseModel
@@ -13,6 +13,7 @@ from services.hr_service import (
     get_hr_service,
     init_hr_service
 )
+from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 
