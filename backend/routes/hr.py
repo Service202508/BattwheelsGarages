@@ -780,6 +780,306 @@ async def record_tds_challan(data: TDSChallanRequest, request: Request):
     }
 
 
+@router.post("/payroll/tds/mark-deposited")
+async def mark_tds_deposited(data: TDSMarkDepositedRequest, request: Request):
+    """
+    Mark TDS as deposited with journal entry posting
+    
+    POST /api/payroll/tds/mark-deposited
+    Payload: month, year, challan_number, bsr_code, deposit_date, amount, payment_mode
+    
+    Actions:
+    - Validate challan_number is not duplicate
+    - Post journal entry: DEBIT TDS Payable, CREDIT Bank
+    - Update tds_deposit_status = DEPOSITED
+    - Store challan_number, bsr_code against payroll month record
+    - Return updated TDS summary
+    """
+    import uuid
+    from services.double_entry_service import get_double_entry_service, init_double_entry_service
+    
+    service = get_service()
+    user = await get_current_user(request, service.db)
+    org_id = await get_org_id(request, service.db)
+    
+    # Validate challan_number is not duplicate
+    existing_challan = await service.db.tds_challans.find_one({
+        "organization_id": org_id,
+        "challan_number": data.challan_number
+    })
+    
+    if existing_challan:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Challan number {data.challan_number} already exists. Cannot record duplicate."
+        )
+    
+    # Determine quarter and financial year
+    quarter = "Q4" if data.month <= 3 else "Q1" if data.month <= 6 else "Q2" if data.month <= 9 else "Q3"
+    fy = f"{data.year}-{str(data.year + 1)[-2:]}" if data.month >= 4 else f"{data.year - 1}-{str(data.year)[-2:]}"
+    
+    month_names = ["", "January", "February", "March", "April", "May", "June", 
+                   "July", "August", "September", "October", "November", "December"]
+    month_name = month_names[data.month]
+    
+    # Create challan record
+    challan_id = f"challan_{uuid.uuid4().hex[:12]}"
+    challan = {
+        "challan_id": challan_id,
+        "organization_id": org_id,
+        "quarter": quarter,
+        "financial_year": fy,
+        "challan_number": data.challan_number,
+        "bsr_code": data.bsr_code,
+        "deposit_date": data.deposit_date,
+        "amount": data.amount,
+        "payment_mode": data.payment_mode,
+        "month": data.month,
+        "year": data.year,
+        "status": "DEPOSITED",
+        "recorded_by": user.get("user_id"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await service.db.tds_challans.insert_one(challan)
+    
+    # Post journal entry: DEBIT TDS Payable, CREDIT Bank
+    try:
+        try:
+            de_service = get_double_entry_service()
+        except:
+            init_double_entry_service(service.db)
+            de_service = get_double_entry_service()
+        
+        # Ensure system accounts exist
+        await de_service.ensure_system_accounts(org_id)
+        
+        # Get TDS Payable and Bank accounts
+        tds_payable = await de_service.get_account_by_code(org_id, "2320")  # TDS Payable
+        bank_account = await de_service.get_account_by_code(org_id, "1200")  # Bank
+        
+        if tds_payable and bank_account:
+            # Create journal entry
+            narration = f"TDS deposit {month_name}/{data.year} — Challan: {data.challan_number} | BSR: {data.bsr_code} | Date: {data.deposit_date}"
+            
+            success, msg, entry = await de_service.create_journal_entry(
+                organization_id=org_id,
+                entry_date=data.deposit_date,
+                description=narration,
+                lines=[
+                    {
+                        "account_id": tds_payable["account_id"],
+                        "debit_amount": data.amount,
+                        "credit_amount": 0,
+                        "description": f"TDS deposit for {month_name} {data.year}"
+                    },
+                    {
+                        "account_id": bank_account["account_id"],
+                        "debit_amount": 0,
+                        "credit_amount": data.amount,
+                        "description": f"TDS payment via {data.payment_mode} - Challan {data.challan_number}"
+                    }
+                ],
+                entry_type="PAYMENT",
+                source_document_id=challan_id,
+                source_document_type="TDS_CHALLAN",
+                created_by=user.get("user_id")
+            )
+            
+            if success:
+                logger.info(f"Posted TDS deposit journal entry: {entry.get('entry_id')}")
+                challan["journal_entry_id"] = entry.get("entry_id")
+                await service.db.tds_challans.update_one(
+                    {"challan_id": challan_id},
+                    {"$set": {"journal_entry_id": entry.get("entry_id")}}
+                )
+            else:
+                logger.warning(f"Failed to post TDS journal entry: {msg}")
+    except Exception as e:
+        logger.warning(f"Failed to post TDS journal entry: {e}")
+    
+    # Update payroll records for this month with deposit status
+    await service.db.payroll.update_many(
+        {"organization_id": org_id, "month": month_name, "year": data.year},
+        {"$set": {"tds_deposit_status": "DEPOSITED", "tds_challan_number": data.challan_number}}
+    )
+    
+    # Fetch updated TDS summary to return
+    from services.tds_service import init_tds_service, get_tds_calculator
+    try:
+        tds_calc = get_tds_calculator()
+    except:
+        init_tds_service(service.db)
+        tds_calc = get_tds_calculator()
+    
+    # Get all active employees and calculate summary
+    employees = await service.list_employees(status="active")
+    total_tds_month = 0
+    
+    for emp in employees:
+        tax_config = emp.get("tax_config", {"pan_number": emp.get("pan_number"), "tax_regime": "new", "declarations": {}})
+        salary_structure = emp.get("salary_structure", {})
+        ytd_tds = await tds_calc.get_ytd_tds(emp["employee_id"], fy)
+        
+        try:
+            result = await tds_calc.calculate_monthly_tds(
+                employee_id=emp["employee_id"],
+                month=data.month,
+                year=data.year,
+                salary_structure=salary_structure,
+                tax_config=tax_config,
+                ytd_tds_deducted=ytd_tds
+            )
+            total_tds_month += result.get("monthly_tds", 0)
+        except:
+            pass
+    
+    # Get all challans YTD
+    challans = await service.db.tds_challans.find(
+        {"organization_id": org_id, "financial_year": fy},
+        {"_id": 0}
+    ).to_list(100)
+    
+    tds_deposited_ytd = sum(c.get("amount", 0) for c in challans)
+    
+    return {
+        "code": 0,
+        "message": f"TDS deposited — Challan {data.challan_number} recorded",
+        "challan": {k: v for k, v in challan.items() if k != "_id"},
+        "tds_summary": {
+            "total_tds_this_month": round(total_tds_month, 2),
+            "tds_deposited_ytd": round(tds_deposited_ytd, 2),
+            "deposit_status": "UP_TO_DATE"
+        }
+    }
+
+
+@router.get("/payroll/tds/export")
+async def export_tds_data(
+    request: Request,
+    month: int = Query(..., ge=1, le=12),
+    year: int = Query(...)
+):
+    """
+    Export TDS data as CSV
+    
+    GET /api/payroll/tds/export?month={m}&year={y}
+    
+    CSV columns:
+    Employee Name, PAN, Designation, Gross Salary, Taxable Income, New/Old Regime,
+    80C Deductions, 80D Deductions, HRA Exemption, Standard Deduction, Net Taxable Income,
+    Annual Tax, Monthly TDS, YTD TDS Deducted, YTD TDS Deposited, Balance TDS Pending
+    """
+    from services.tds_service import init_tds_service, get_tds_calculator
+    import io
+    import csv
+    from fastapi.responses import StreamingResponse
+    
+    service = get_service()
+    org_id = await get_org_id(request, service.db)
+    
+    # Initialize TDS service
+    try:
+        tds_calc = get_tds_calculator()
+    except:
+        init_tds_service(service.db)
+        tds_calc = get_tds_calculator()
+    
+    # Determine FY
+    fy_start_year = year if month >= 4 else year - 1
+    financial_year = f"{fy_start_year}-{str(fy_start_year + 1)[-2:]}"
+    
+    # Get employees
+    employees = await service.list_employees(status="active")
+    
+    # Get challans for YTD deposited
+    challans = await service.db.tds_challans.find(
+        {"organization_id": org_id, "financial_year": financial_year},
+        {"_id": 0}
+    ).to_list(100)
+    tds_deposited_ytd = sum(c.get("amount", 0) for c in challans)
+    
+    # Build CSV data
+    csv_buffer = io.StringIO()
+    writer = csv.writer(csv_buffer)
+    
+    # Header row
+    writer.writerow([
+        "Employee Name", "PAN", "Designation", "Gross Salary (Annual)", "Taxable Income",
+        "Tax Regime", "80C Deductions", "80D Deductions", "HRA Exemption", "Standard Deduction",
+        "Net Taxable Income", "Annual Tax", "Monthly TDS", "YTD TDS Deducted",
+        "YTD TDS Deposited", "Balance TDS Pending"
+    ])
+    
+    total_ytd_tds = 0
+    
+    for emp in employees:
+        tax_config = emp.get("tax_config", {"pan_number": emp.get("pan_number"), "tax_regime": "new", "declarations": {}})
+        salary_structure = emp.get("salary_structure", {})
+        
+        ytd_tds = await tds_calc.get_ytd_tds(emp["employee_id"], financial_year)
+        total_ytd_tds += ytd_tds
+        
+        try:
+            result = await tds_calc.calculate_monthly_tds(
+                employee_id=emp["employee_id"],
+                month=month,
+                year=year,
+                salary_structure=salary_structure,
+                tax_config=tax_config,
+                ytd_tds_deducted=ytd_tds
+            )
+            
+            annual_calc = result.get("annual_calculation", {})
+            breakdown = annual_calc.get("breakdown", {})
+            chapter_via = breakdown.get("chapter_via", {})
+            
+            # Calculate gross annual
+            basic = salary_structure.get("basic", 0)
+            hra = salary_structure.get("hra", 0)
+            da = salary_structure.get("da", 0)
+            special = salary_structure.get("special_allowance", 0)
+            gross_annual = (basic + hra + da + special) * 12
+            
+            writer.writerow([
+                f"{emp.get('first_name', '')} {emp.get('last_name', '')}".strip(),
+                tax_config.get("pan_number") or "PAN MISSING",
+                emp.get("designation", ""),
+                round(gross_annual, 2),
+                round(annual_calc.get("taxable_income", 0), 2),
+                (tax_config.get("tax_regime") or "new").upper(),
+                round(chapter_via.get("80C", 0), 2),
+                round(chapter_via.get("80D", 0), 2),
+                round(breakdown.get("hra_exemption", 0), 2),
+                round(annual_calc.get("standard_deduction", 50000), 2),
+                round(annual_calc.get("taxable_income", 0), 2),
+                round(annual_calc.get("total_tax_liability", 0), 2),
+                round(result.get("monthly_tds", 0), 2),
+                round(ytd_tds, 2),
+                round(tds_deposited_ytd, 2),
+                round(ytd_tds - tds_deposited_ytd, 2)
+            ])
+        except Exception as e:
+            logger.warning(f"Failed to calculate TDS for {emp['employee_id']}: {e}")
+            writer.writerow([
+                f"{emp.get('first_name', '')} {emp.get('last_name', '')}".strip(),
+                emp.get("pan_number", "PAN MISSING"),
+                emp.get("designation", ""),
+                0, 0, "NEW", 0, 0, 0, 50000, 0, 0, 0, 0, 0, 0
+            ])
+    
+    csv_buffer.seek(0)
+    
+    month_names = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    filename = f"TDS_Summary_{month_names[month]}_{year}.csv"
+    
+    return StreamingResponse(
+        iter([csv_buffer.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
 @router.get("/tds/challans")
 async def list_tds_challans(
     request: Request,
