@@ -596,7 +596,11 @@ export default function Login({ onLogin }) {
         }
         await onLogin(data.user, data.token, orgs);
         toast.success("Welcome back!");
-        if (orgs.length <= 1) navigate("/dashboard", { replace: true });
+        if (data.user?.is_platform_admin) {
+          navigate("/platform-admin", { replace: true });
+        } else if (orgs.length <= 1) {
+          navigate("/dashboard", { replace: true });
+        }
       } else {
         const msg = data.detail || "Login failed";
         setLoginError(msg);
