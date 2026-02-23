@@ -239,6 +239,13 @@ export default function InvoicesEnhanced() {
   };
 
   const handleSendInvoice = async (invoiceId) => {
+    // Check if IRN is required but not generated
+    const invoice = invoices.find(i => i.invoice_id === invoiceId) || selectedInvoice;
+    if (einvoiceEnabled && isB2BInvoice(invoice) && !invoice.irn) {
+      toast.error("IRN registration required before sending. Generate IRN first.");
+      return;
+    }
+    
     try {
       const res = await fetch(`${API}/invoices-enhanced/${invoiceId}/send`, { method: "POST", headers });
       if (res.ok) {
