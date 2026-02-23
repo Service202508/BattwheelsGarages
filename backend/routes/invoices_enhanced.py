@@ -975,10 +975,21 @@ async def get_invoice(invoice_id: str, request: Request):
 
 
 @router.get("/{invoice_id}/pdf")
-async def get_invoice_pdf(invoice_id: str):
-    """Generate and download invoice PDF"""
-    from services.pdf_service import generate_invoice_html
+async def get_invoice_pdf(invoice_id: str, request: Request):
+    """
+    Generate and download GST-compliant invoice PDF
+    
+    Business Rules (E-Invoice Compliance - 4A):
+    - If org has e-invoicing ENABLED AND invoice is B2B AND IRN status is PENDING:
+      Block PDF download and return error
+    - If IRN is REGISTERED: Generate PDF with full IRN block
+    - If B2C or e-invoicing DISABLED: Generate standard PDF without IRN block
+    """
+    from services.pdf_service import generate_gst_invoice_html
     from weasyprint import HTML
+    
+    # Get org context
+    org_id = await get_org_id(request)
     
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id}, {"_id": 0})
     if not invoice:
@@ -989,21 +1000,84 @@ async def get_invoice_pdf(invoice_id: str):
         {"invoice_id": invoice_id},
         {"_id": 0}
     ).to_list(100)
-    invoice["line_items"] = line_items
     
     # Get organization settings
-    org_settings = await db["organization_settings"].find_one({}, {"_id": 0}) or {}
+    org_query_filter = {"organization_id": org_id} if org_id else {}
+    org_settings = await db["organizations"].find_one(org_query_filter, {"_id": 0}) or {}
+    if not org_settings:
+        org_settings = await db["organization_settings"].find_one({}, {"_id": 0}) or {}
     
+    # ==================== E-INVOICE BUSINESS RULES (4A) ====================
+    customer_gstin = invoice.get('customer_gstin', invoice.get('gst_no', ''))
+    is_b2b = bool(customer_gstin and customer_gstin not in ['', 'URP', None])
+    
+    # Check E-Invoice configuration
+    einvoice_config = None
+    einvoice_enabled = False
+    if org_id:
+        einvoice_config = await db["einvoice_config"].find_one(
+            {"organization_id": org_id}, 
+            {"_id": 0}
+        )
+        einvoice_enabled = einvoice_config.get("enabled", False) if einvoice_config else False
+    
+    irn_status = invoice.get('irn_status', 'pending')
+    has_irn = invoice.get('irn') and irn_status == 'registered'
+    
+    # Rule 4A: Block PDF if e-invoicing enabled, B2B invoice, and IRN not registered
+    if einvoice_enabled and is_b2b and not has_irn:
+        raise HTTPException(
+            status_code=400,
+            detail="IRN registration required before PDF can be generated. Generate IRN first from the invoice detail page."
+        )
+    
+    # ==================== PREPARE IRN DATA (4B) ====================
+    irn_data = None
+    if has_irn:
+        irn_data = {
+            'irn': invoice.get('irn'),
+            'ack_no': invoice.get('irn_ack_no'),
+            'ack_date': invoice.get('irn_ack_date'),
+            'signed_qr_code': invoice.get('irn_signed_qr')
+        }
+    
+    # ==================== GET BANK DETAILS ====================
+    bank_details = None
+    if org_id:
+        bank_config = await db["organizations"].find_one(
+            {"organization_id": org_id},
+            {"_id": 0, "bank_name": 1, "bank_account_number": 1, "bank_ifsc": 1, 
+             "bank_account_type": 1, "upi_id": 1}
+        )
+        if bank_config and bank_config.get("bank_account_number"):
+            bank_details = {
+                "bank_name": bank_config.get("bank_name", ""),
+                "account_number": bank_config.get("bank_account_number", ""),
+                "ifsc_code": bank_config.get("bank_ifsc", ""),
+                "account_type": bank_config.get("bank_account_type", "Current"),
+                "upi_id": bank_config.get("upi_id", "")
+            }
+    
+    # ==================== GENERATE PDF ====================
     try:
-        # Generate HTML
-        html_content = generate_invoice_html(invoice, org_settings)
+        # Generate comprehensive GST-compliant HTML
+        html_content = generate_gst_invoice_html(
+            invoice=invoice,
+            line_items=line_items,
+            org_settings=org_settings,
+            irn_data=irn_data,
+            bank_details=bank_details,
+            payment_qr_url=None  # Can be enhanced with Razorpay QR
+        )
         
         # Generate PDF
         pdf_buffer = io.BytesIO()
         HTML(string=html_content).write_pdf(pdf_buffer)
         pdf_buffer.seek(0)
         
-        filename = f"Invoice_{invoice.get('invoice_number', invoice_id)}.pdf"
+        # File naming per 4E spec: INV-{invoice_number}-{customer_name}.pdf
+        customer_name_safe = (invoice.get('customer_name', '') or 'Customer').replace(' ', '_')[:30]
+        filename = f"INV-{invoice.get('invoice_number', invoice_id)}-{customer_name_safe}.pdf"
         
         return StreamingResponse(
             pdf_buffer,
@@ -1012,6 +1086,8 @@ async def get_invoice_pdf(invoice_id: str):
                 "Content-Disposition": f"attachment; filename={filename}"
             }
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"PDF generation failed: {e}")
         raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
