@@ -16,6 +16,7 @@ import logging
 import bcrypt
 
 from events import get_dispatcher, EventType, EventPriority
+from services.posting_hooks import post_payroll_run_journal_entry
 
 logger = logging.getLogger(__name__)
 
