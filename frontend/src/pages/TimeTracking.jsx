@@ -336,7 +336,7 @@ const StartTimerDialog = ({ open, onClose, onStart, tickets, currentUser }) => {
         
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleStart} className="bg-green-600 hover:bg-green-700">
+          <Button onClick={handleStart} className="bg-[#22C55E] hover:bg-[#16a34a]">
             <Play className="h-4 w-4 mr-2" />
             Start Timer
           </Button>
@@ -532,7 +532,7 @@ export default function TimeTracking({ user }) {
             <Plus className="h-4 w-4 mr-2" />
             Log Time
           </Button>
-          <Button onClick={() => setShowStartTimer(true)} className="bg-green-600 hover:bg-green-700">
+          <Button onClick={() => setShowStartTimer(true)} className="bg-[#22C55E] hover:bg-[#16a34a]">
             <Play className="h-4 w-4 mr-2" />
             Start Timer
           </Button>
@@ -575,7 +575,7 @@ export default function TimeTracking({ user }) {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-lg bg-[rgba(34,197,94,0.10)] flex items-center justify-center">
                 <DollarSign className="h-5 w-5 text-green-600" />
               </div>
               <div>
@@ -699,7 +699,7 @@ export default function TimeTracking({ user }) {
                         </TableCell>
                         <TableCell>
                           {entry.billed ? (
-                            <Badge className="bg-green-100 text-green-800">
+                            <Badge className="bg-[rgba(34,197,94,0.10)] text-[#22C55E]">
                               <CheckCircle className="h-3 w-3 mr-1" />
                               Billed
                             </Badge>
