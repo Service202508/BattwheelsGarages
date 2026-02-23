@@ -861,3 +861,259 @@ async def list_payment_links(invoice_id: str = "", status: str = ""):
     links = await db.razorpay_payment_links.find(query, {"_id": 0}).sort("created_time", -1).to_list(length=100)
     
     return {"code": 0, "payment_links": links}
+
+
+# ==================== CREDIT NOTE REFUND ENDPOINTS ====================
+
+class CreditNoteRefundRequest(BaseModel):
+    """Request to initiate a refund linked to a credit note"""
+    credit_note_id: str
+    payment_id: str = Field(..., description="Razorpay payment ID (pay_xxx)")
+    amount: float = Field(..., gt=0, description="Refund amount in INR")
+    reason: str = Field(default="", description="Reason for refund")
+
+
+@router.post("/razorpay/refund")
+async def initiate_credit_note_refund(req: CreditNoteRefundRequest, request: Request):
+    """
+    Initiate a Razorpay refund linked to a credit note.
+
+    Flow:
+    1. Validate credit note and original payment
+    2. Call Razorpay Refunds API
+    3. On success: store refund record (INITIATED) + post journal entry
+       DEBIT: Sales Revenue A/C (4100)
+       CREDIT: Bank A/C (1200)
+    4. On failure: store failed attempt (no journal entry)
+    """
+    db = get_db()
+    org_id = await get_org_id_from_request(request)
+
+    # Validate credit note exists
+    credit_note = await db.creditnotes.find_one(
+        {"creditnote_id": req.credit_note_id},
+        {"_id": 0}
+    )
+    if not credit_note:
+        raise HTTPException(status_code=404, detail="Credit note not found")
+
+    credit_note_number = credit_note.get("creditnote_number", req.credit_note_id)
+
+    # Get org Razorpay config
+    config = await get_org_razorpay_config(org_id)
+    rp_client = get_razorpay_client(config)
+
+    refund_id = f"RFND-{uuid.uuid4().hex[:12].upper()}"
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    try:
+        if rp_client:
+            amount_paise = int(req.amount * 100)
+            refund_data = {
+                "amount": amount_paise,
+                "notes": {
+                    "credit_note_id": req.credit_note_id,
+                    "credit_note_number": credit_note_number,
+                    "reason": req.reason,
+                    "organization_id": org_id
+                }
+            }
+            rzp_refund = rp_client.payment.refund(req.payment_id, refund_data)
+            razorpay_refund_id = rzp_refund.get("id", refund_id)
+            refund_status = "INITIATED"
+        else:
+            # Mock when Razorpay not configured
+            razorpay_refund_id = f"rfnd_MOCK_{uuid.uuid4().hex[:12]}"
+            refund_status = "INITIATED"
+
+        # Store refund record
+        refund_record = {
+            "refund_id": refund_id,
+            "razorpay_refund_id": razorpay_refund_id,
+            "razorpay_payment_id": req.payment_id,
+            "credit_note_id": req.credit_note_id,
+            "credit_note_number": credit_note_number,
+            "organization_id": org_id,
+            "amount": req.amount,
+            "reason": req.reason,
+            "status": refund_status,
+            "initiated_at": now_iso,
+            "created_at": now_iso
+        }
+        await db.razorpay_refunds.insert_one(refund_record)
+
+        # Post journal entry: DEBIT Sales Revenue / CREDIT Bank
+        try:
+            from services.double_entry_service import get_double_entry_service
+            de_service = get_double_entry_service()
+            if de_service:
+                await de_service.ensure_system_accounts(org_id)
+                sales_account = await de_service.get_account_by_code(org_id, "4100")
+                bank_account = await de_service.get_account_by_code(org_id, "1200")
+
+                if sales_account and bank_account:
+                    narration = (
+                        f"Refund initiated: {credit_note_number} | "
+                        f"Razorpay Refund: {razorpay_refund_id}"
+                    )
+                    await de_service.create_journal_entry(
+                        organization_id=org_id,
+                        entry_date=datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                        description=narration,
+                        lines=[
+                            {
+                                "account_id": sales_account["account_id"],
+                                "debit_amount": req.amount,
+                                "credit_amount": 0,
+                                "description": f"Sales Revenue reversal — {credit_note_number}"
+                            },
+                            {
+                                "account_id": bank_account["account_id"],
+                                "debit_amount": 0,
+                                "credit_amount": req.amount,
+                                "description": f"Bank refund — {razorpay_refund_id}"
+                            }
+                        ],
+                        source_document_id=req.credit_note_id,
+                        source_document_type="credit_note_refund"
+                    )
+                    logger.info(f"Journal entry posted for refund {refund_id}")
+        except Exception as je_err:
+            logger.warning(f"Failed to post refund journal entry: {je_err}")
+
+        # Update credit note with refund status
+        await db.creditnotes.update_one(
+            {"creditnote_id": req.credit_note_id},
+            {"$set": {
+                "razorpay_refund_id": razorpay_refund_id,
+                "refund_status": refund_status,
+                "refund_amount": req.amount,
+                "refund_initiated_at": now_iso
+            }}
+        )
+
+        refund_record.pop("_id", None)
+        return {
+            "code": 0,
+            "message": "Refund initiated successfully",
+            "refund_id": refund_id,
+            "razorpay_refund_id": razorpay_refund_id,
+            "amount": req.amount,
+            "status": refund_status,
+            "is_mock": not bool(rp_client)
+        }
+
+    except Exception as e:
+        # Store failed attempt
+        failed_record = {
+            "refund_id": refund_id,
+            "razorpay_payment_id": req.payment_id,
+            "credit_note_id": req.credit_note_id,
+            "organization_id": org_id,
+            "amount": req.amount,
+            "reason": req.reason,
+            "status": "FAILED",
+            "error": str(e),
+            "initiated_at": now_iso,
+            "created_at": now_iso
+        }
+        await db.razorpay_refunds.insert_one(failed_record)
+        await db.creditnotes.update_one(
+            {"creditnote_id": req.credit_note_id},
+            {"$set": {"refund_status": "FAILED", "refund_error": str(e)}}
+        )
+        logger.error(f"Refund failed for credit note {req.credit_note_id}: {e}")
+        raise HTTPException(status_code=400, detail=f"Refund failed: {str(e)}")
+
+
+@router.get("/razorpay/refund/{refund_id}")
+async def get_refund_status(refund_id: str, request: Request):
+    """
+    Get refund status. Checks Razorpay API for latest status and updates local record.
+    Status: INITIATED → PROCESSED or FAILED
+    """
+    db = get_db()
+    org_id = await get_org_id_from_request(request)
+
+    # Find local refund record
+    refund = await db.razorpay_refunds.find_one(
+        {"$or": [
+            {"refund_id": refund_id},
+            {"razorpay_refund_id": refund_id}
+        ]},
+        {"_id": 0}
+    )
+    if not refund:
+        raise HTTPException(status_code=404, detail="Refund not found")
+
+    razorpay_refund_id = refund.get("razorpay_refund_id", "")
+
+    # If already processed/failed, return cached status
+    if refund.get("status") in ["PROCESSED", "FAILED"]:
+        return {"code": 0, "refund": refund}
+
+    # Try to fetch latest status from Razorpay
+    try:
+        config = await get_org_razorpay_config(org_id)
+        rp_client = get_razorpay_client(config)
+
+        if rp_client and razorpay_refund_id and not razorpay_refund_id.startswith("rfnd_MOCK"):
+            rzp_refund = rp_client.refund.fetch(razorpay_refund_id)
+            rzp_status = rzp_refund.get("status", "").lower()
+
+            if rzp_status == "processed":
+                new_status = "PROCESSED"
+            elif rzp_status in ["failed", "cancelled"]:
+                new_status = "FAILED"
+            else:
+                new_status = "INITIATED"
+
+            if new_status != refund.get("status"):
+                await db.razorpay_refunds.update_one(
+                    {"razorpay_refund_id": razorpay_refund_id},
+                    {"$set": {
+                        "status": new_status,
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }}
+                )
+                # Update credit note
+                if refund.get("credit_note_id"):
+                    await db.creditnotes.update_one(
+                        {"creditnote_id": refund["credit_note_id"]},
+                        {"$set": {"refund_status": new_status}}
+                    )
+                refund["status"] = new_status
+    except Exception as e:
+        logger.warning(f"Could not fetch Razorpay refund status: {e}")
+
+    return {"code": 0, "refund": refund}
+
+
+@router.get("/check-razorpay/{invoice_id}")
+async def check_razorpay_payment(invoice_id: str, request: Request):
+    """
+    Check if an invoice was paid via Razorpay.
+    Returns payment details if found.
+    Used by credit note UI to show refund option.
+    """
+    db = get_db()
+    org_id = await get_org_id_from_request(request)
+
+    payment = await db.customerpayments.find_one(
+        {
+            "invoice_id": invoice_id,
+            "payment_mode": "razorpay",
+            "status": "captured"
+        },
+        {"_id": 0, "razorpay_payment_id": 1, "amount": 1, "date": 1, "payment_id": 1}
+    )
+
+    if payment:
+        return {
+            "code": 0,
+            "has_razorpay_payment": True,
+            "payment_id": payment.get("razorpay_payment_id"),
+            "amount": payment.get("amount"),
+            "date": payment.get("date")
+        }
+    return {"code": 0, "has_razorpay_payment": False}
