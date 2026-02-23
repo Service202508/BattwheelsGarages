@@ -128,6 +128,9 @@ Battwheels OS is a multi-tenant SaaS platform for EV service management. It prov
 | ✅ **Invoice Isolation Bug Fix** | `/api/invoices` GET/GET-by-ID were missing org filter. Fixed + backfilled org_id on all existing invoices | `server.py` (GET/invoices endpoints) |
 | ✅ **Suspension Enforcement Gap Fix** | `TenantGuardMiddleware` now checks `is_active` on every authenticated request, returning 403 ORG_SUSPENDED | `core/tenant/guard.py` |
 
+| ✅ **Onboarding Checklist (Feb 2026)** | New org banner below navbar: 6-step checklist (contact/vehicle/ticket/inventory/invoice/team), auto-complete by querying data counts on dashboard load, progress bar, celebration on all complete (5s auto-dismiss), skip/dismiss. Trigger: org < 7 days old AND onboarding_completed=false. Battwheels Garages excluded (onboarding_completed=true in DB). 16/16 backend + 10/10 frontend tests pass. | `components/OnboardingBanner.jsx` (new), `pages/Dashboard.jsx`, `routes/organizations.py` (3 new endpoints: GET /onboarding/status, POST /onboarding/complete-step, POST /onboarding/skip) |
+| ✅ **Revenue & Health Tab (Feb 2026)** | Platform admin new tab: MRR, trial pipeline, churn risk, recent signups. `GET /api/platform/revenue-health` endpoint. | `routes/platform_admin.py`, `components/Platform/RevenueHealthTab.jsx`, `pages/PlatformAdmin.jsx` |
+
 | ✅ **Payroll → Accounting** | Journal entry on payroll run with full debit/credit breakdown | `services/hr_service.py`, `services/double_entry_service.py`, `services/posting_hooks.py` |
 | ✅ **Bill → Inventory** | Stock qty/WAC updated on bill approval + stock_movement record | `services/inventory_service.py`, `routes/bills_enhanced.py` |
 | ✅ **Job Card → COGS** | COGS journal entry + stock movement on parts consumption | `services/inventory_service.py` |
