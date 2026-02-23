@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="34" skipped="0" tests="34" time="8.881" timestamp="2026-02-23T22:26:04.968441+00:00" hostname="agent-env-4c9a7174-159c-4876-9cf0-f60289658e0b"><testcase classname="backend.tests.test_insights.TestRevenueInsights" name="test_revenue_returns_200" time="3.293"><failure message="AssertionError: Expected 200 got 401: {&quot;detail&quot;:&quot;Authentication required&quot;,&quot;code&quot;:&quot;AUTH_REQUIRED&quot;}&#10;assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_insights.py:41: in test_revenue_returns_200
+    assert resp.status_code == 200, f"Expected 200 got {resp.status_code}: {resp.text[:200]}"
+E   AssertionError: Expected 200 got 401: {"detail":"Authentication required","code":"AUTH_REQUIRED"}
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_insights.TestRevenueInsights" name="test_revenue_has_required_keys" time="0.174"><failure message="AssertionError: Missing 'kpis' key. Got: ['detail', 'code']&#10;assert 'kpis' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}">backend/tests/test_insights.py:46: in test_revenue_has_required_keys
+    assert "kpis" in data, f"Missing 'kpis' key. Got: {list(data.keys())}"
+E   AssertionError: Missing 'kpis' key. Got: ['detail', 'code']
+E   assert 'kpis' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}</failure></testcase><testcase classname="backend.tests.test_insights.TestRevenueInsights" name="test_revenue_kpis_structure" time="0.139"><failure message="KeyError: 'kpis'">backend/tests/test_insights.py:52: in test_revenue_kpis_structure
+    kpis = resp.json()["kpis"]
+           ^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'kpis'</failure></testcase><testcase classname="backend.tests.test_insights.TestRevenueInsights" name="test_revenue_trend_is_list" time="0.147"><failure message="KeyError: 'trend'">backend/tests/test_insights.py:59: in test_revenue_trend_is_list
+    trend = resp.json()["trend"]
+            ^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'trend'</failure></testcase><testcase classname="backend.tests.test_insights.TestRevenueInsights" name="test_revenue_by_type_is_list" time="0.293"><failure message="KeyError: 'by_type'">backend/tests/test_insights.py:64: in test_revenue_by_type_is_list
+    by_type = resp.json()["by_type"]
+              ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'by_type'</failure></testcase><testcase classname="backend.tests.test_insights.TestRevenueInsights" name="test_revenue_with_current_month_params" time="0.128"><failure message="AssertionError: Expected 200 got 401&#10;assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_insights.py:75: in test_revenue_with_current_month_params
+    assert resp.status_code == 200, f"Expected 200 got {resp.status_code}"
+E   AssertionError: Expected 200 got 401
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_insights.TestOperationsInsights" name="test_operations_returns_200" time="0.122"><failure message="AssertionError: Expected 200 got 401: {&quot;detail&quot;:&quot;Authentication required&quot;,&quot;code&quot;:&quot;AUTH_REQUIRED&quot;}&#10;assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_insights.py:86: in test_operations_returns_200
+    assert resp.status_code == 200, f"Expected 200 got {resp.status_code}: {resp.text[:200]}"
+E   AssertionError: Expected 200 got 401: {"detail":"Authentication required","code":"AUTH_REQUIRED"}
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_insights.TestOperationsInsights" name="test_operations_has_required_keys" time="0.152"><failure message="AssertionError: Missing 'kpis'. Got: ['detail', 'code']&#10;assert 'kpis' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}">backend/tests/test_insights.py:91: in test_operations_has_required_keys
+    assert "kpis" in data, f"Missing 'kpis'. Got: {list(data.keys())}"
+E   AssertionError: Missing 'kpis'. Got: ['detail', 'code']
+E   assert 'kpis' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}</failure></testcase><testcase classname="backend.tests.test_insights.TestOperationsInsights" name="test_operations_kpis_structure" time="0.153"><failure message="KeyError: 'kpis'">backend/tests/test_insights.py:97: in test_operations_kpis_structure
+    kpis = resp.json()["kpis"]
+           ^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'kpis'</failure></testcase><testcase classname="backend.tests.test_insights.TestOperationsInsights" name="test_operations_volume_is_list" time="0.154"><failure message="KeyError: 'volume'">backend/tests/test_insights.py:105: in test_operations_volume_is_list
+    volume = resp.json()["volume"]
+             ^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'volume'</failure></testcase><testcase classname="backend.tests.test_insights.TestOperationsInsights" name="test_operations_vehicle_dist_is_list" time="0.143"><failure message="KeyError: 'vehicle_dist'">backend/tests/test_insights.py:110: in test_operations_vehicle_dist_is_list
+    vd = resp.json()["vehicle_dist"]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'vehicle_dist'</failure></testcase><testcase classname="backend.tests.test_insights.TestTechnicianInsights" name="test_technicians_returns_200" time="0.138"><failure message="AssertionError: Expected 200 got 401: {&quot;detail&quot;:&quot;Authentication required&quot;,&quot;code&quot;:&quot;AUTH_REQUIRED&quot;}&#10;assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_insights.py:120: in test_technicians_returns_200
+    assert resp.status_code == 200, f"Expected 200 got {resp.status_code}: {resp.text[:200]}"
+E   AssertionError: Expected 200 got 401: {"detail":"Authentication required","code":"AUTH_REQUIRED"}
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_insights.TestTechnicianInsights" name="test_technicians_has_required_keys" time="0.142"><failure message="AssertionError: Missing 'leaderboard'. Got: ['detail', 'code']&#10;assert 'leaderboard' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}">backend/tests/test_insights.py:125: in test_technicians_has_required_keys
+    assert "leaderboard" in data, f"Missing 'leaderboard'. Got: {list(data.keys())}"
+E   AssertionError: Missing 'leaderboard'. Got: ['detail', 'code']
+E   assert 'leaderboard' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}</failure></testcase><testcase classname="backend.tests.test_insights.TestTechnicianInsights" name="test_technicians_leaderboard_is_list" time="0.136"><failure message="KeyError: 'leaderboard'">backend/tests/test_insights.py:131: in test_technicians_leaderboard_is_list
+    lb = resp.json()["leaderboard"]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'leaderboard'</failure></testcase><testcase classname="backend.tests.test_insights.TestTechnicianInsights" name="test_technicians_heatmap_is_list" time="0.327"><failure message="KeyError: 'heatmap'">backend/tests/test_insights.py:136: in test_technicians_heatmap_is_list
+    hm = resp.json()["heatmap"]
+         ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'heatmap'</failure></testcase><testcase classname="backend.tests.test_insights.TestTechnicianInsights" name="test_technicians_vehicle_types_is_list" time="0.142"><failure message="KeyError: 'vehicle_types'">backend/tests/test_insights.py:141: in test_technicians_vehicle_types_is_list
+    vt = resp.json()["vehicle_types"]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'vehicle_types'</failure></testcase><testcase classname="backend.tests.test_insights.TestTechnicianInsights" name="test_technicians_leaderboard_item_structure" time="0.125"><failure message="KeyError: 'leaderboard'">backend/tests/test_insights.py:147: in test_technicians_leaderboard_item_structure
+    lb = resp.json()["leaderboard"]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'leaderboard'</failure></testcase><testcase classname="backend.tests.test_insights.TestEfiInsights" name="test_efi_returns_200" time="0.120"><failure message="AssertionError: Expected 200 got 401: {&quot;detail&quot;:&quot;Authentication required&quot;,&quot;code&quot;:&quot;AUTH_REQUIRED&quot;}&#10;assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_insights.py:161: in test_efi_returns_200
+    assert resp.status_code == 200, f"Expected 200 got {resp.status_code}: {resp.text[:200]}"
+E   AssertionError: Expected 200 got 401: {"detail":"Authentication required","code":"AUTH_REQUIRED"}
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_insights.TestEfiInsights" name="test_efi_has_required_keys" time="0.147"><failure message="AssertionError: Missing 'stats'. Got: ['detail', 'code']&#10;assert 'stats' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}">backend/tests/test_insights.py:166: in test_efi_has_required_keys
+    assert "stats" in data, f"Missing 'stats'. Got: {list(data.keys())}"
+E   AssertionError: Missing 'stats'. Got: ['detail', 'code']
+E   assert 'stats' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}</failure></testcase><testcase classname="backend.tests.test_insights.TestEfiInsights" name="test_efi_stats_structure" time="0.113"><failure message="KeyError: 'stats'">backend/tests/test_insights.py:171: in test_efi_stats_structure
+    stats = resp.json()["stats"]
+            ^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'stats'</failure></testcase><testcase classname="backend.tests.test_insights.TestEfiInsights" name="test_efi_failure_patterns_is_list" time="0.161"><failure message="KeyError: 'failure_patterns'">backend/tests/test_insights.py:178: in test_efi_failure_patterns_is_list
+    fp = resp.json()["failure_patterns"]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'failure_patterns'</failure></testcase><testcase classname="backend.tests.test_insights.TestEfiInsights" name="test_efi_optional_keys_present" time="0.199"><failure message="AssertionError: Missing 'vehicle_fault_chart'. Got: ['detail', 'code']&#10;assert 'vehicle_fault_chart' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}">backend/tests/test_insights.py:185: in test_efi_optional_keys_present
+    assert "vehicle_fault_chart" in data, f"Missing 'vehicle_fault_chart'. Got: {list(data.keys())}"
+E   AssertionError: Missing 'vehicle_fault_chart'. Got: ['detail', 'code']
+E   assert 'vehicle_fault_chart' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}</failure></testcase><testcase classname="backend.tests.test_insights.TestCustomerInsights" name="test_customers_returns_200" time="0.215"><failure message="AssertionError: Expected 200 got 401: {&quot;detail&quot;:&quot;Authentication required&quot;,&quot;code&quot;:&quot;AUTH_REQUIRED&quot;}&#10;assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_insights.py:195: in test_customers_returns_200
+    assert resp.status_code == 200, f"Expected 200 got {resp.status_code}: {resp.text[:200]}"
+E   AssertionError: Expected 200 got 401: {"detail":"Authentication required","code":"AUTH_REQUIRED"}
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_insights.TestCustomerInsights" name="test_customers_has_required_keys" time="0.143"><failure message="AssertionError: Missing 'kpis'. Got: ['detail', 'code']&#10;assert 'kpis' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}">backend/tests/test_insights.py:200: in test_customers_has_required_keys
+    assert "kpis" in data, f"Missing 'kpis'. Got: {list(data.keys())}"
+E   AssertionError: Missing 'kpis'. Got: ['detail', 'code']
+E   assert 'kpis' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}</failure></testcase><testcase classname="backend.tests.test_insights.TestCustomerInsights" name="test_customers_kpis_structure" time="0.184"><failure message="KeyError: 'kpis'">backend/tests/test_insights.py:206: in test_customers_kpis_structure
+    kpis = resp.json()["kpis"]
+           ^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'kpis'</failure></testcase><testcase classname="backend.tests.test_insights.TestCustomerInsights" name="test_customers_rating_trend_is_list" time="0.171"><failure message="KeyError: 'rating_trend'">backend/tests/test_insights.py:213: in test_customers_rating_trend_is_list
+    rt = resp.json()["rating_trend"]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'rating_trend'</failure></testcase><testcase classname="backend.tests.test_insights.TestCustomerInsights" name="test_customers_top_customers_is_list" time="0.120"><failure message="KeyError: 'top_customers'">backend/tests/test_insights.py:218: in test_customers_top_customers_is_list
+    tc = resp.json()["top_customers"]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'top_customers'</failure></testcase><testcase classname="backend.tests.test_insights.TestInventoryInsights" name="test_inventory_returns_200" time="0.142"><failure message="AssertionError: Expected 200 got 401: {&quot;detail&quot;:&quot;Authentication required&quot;,&quot;code&quot;:&quot;AUTH_REQUIRED&quot;}&#10;assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_insights.py:228: in test_inventory_returns_200
+    assert resp.status_code == 200, f"Expected 200 got {resp.status_code}: {resp.text[:200]}"
+E   AssertionError: Expected 200 got 401: {"detail":"Authentication required","code":"AUTH_REQUIRED"}
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_insights.TestInventoryInsights" name="test_inventory_has_required_keys" time="0.150"><failure message="AssertionError: Missing 'kpis'. Got: ['detail', 'code']&#10;assert 'kpis' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}">backend/tests/test_insights.py:233: in test_inventory_has_required_keys
+    assert "kpis" in data, f"Missing 'kpis'. Got: {list(data.keys())}"
+E   AssertionError: Missing 'kpis'. Got: ['detail', 'code']
+E   assert 'kpis' in {'code': 'AUTH_REQUIRED', 'detail': 'Authentication required'}</failure></testcase><testcase classname="backend.tests.test_insights.TestInventoryInsights" name="test_inventory_kpis_structure" time="0.126"><failure message="KeyError: 'kpis'">backend/tests/test_insights.py:240: in test_inventory_kpis_structure
+    kpis = resp.json()["kpis"]
+           ^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'kpis'</failure></testcase><testcase classname="backend.tests.test_insights.TestInventoryInsights" name="test_inventory_stock_health_is_list" time="0.233"><failure message="KeyError: 'stock_health'">backend/tests/test_insights.py:247: in test_inventory_stock_health_is_list
+    sh = resp.json()["stock_health"]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'stock_health'</failure></testcase><testcase classname="backend.tests.test_insights.TestInventoryInsights" name="test_inventory_fast_movers_is_list" time="0.123"><failure message="KeyError: 'fast_movers'">backend/tests/test_insights.py:252: in test_inventory_fast_movers_is_list
+    fm = resp.json()["fast_movers"]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'fast_movers'</failure></testcase><testcase classname="backend.tests.test_insights.TestInventoryInsights" name="test_inventory_dead_stock_is_list" time="0.128"><failure message="KeyError: 'dead_stock'">backend/tests/test_insights.py:257: in test_inventory_dead_stock_is_list
+    ds = resp.json()["dead_stock"]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'dead_stock'</failure></testcase><testcase classname="backend.tests.test_insights.TestInventoryInsights" name="test_inventory_stock_health_items" time="0.212"><failure message="KeyError: 'stock_health'">backend/tests/test_insights.py:262: in test_inventory_stock_health_items
+    sh = resp.json()["stock_health"]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'stock_health'</failure></testcase></testsuite></testsuites>
