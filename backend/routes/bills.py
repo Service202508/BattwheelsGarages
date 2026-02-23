@@ -139,6 +139,79 @@ async def get_aging_report(request: Request):
     return {"code": 0, **report}
 
 
+@router.get("/aging/vendor")
+async def get_vendor_aging_report(request: Request):
+    """Get bills aging report grouped by vendor"""
+    service = get_service()
+    org_id = await get_org_id(request)
+    
+    report = await service.get_vendor_aging_report(org_id)
+    
+    return {"code": 0, **report}
+
+
+@router.get("/export")
+async def export_bills(
+    request: Request,
+    status: Optional[str] = Query(None),
+    date_from: Optional[str] = Query(None),
+    date_to: Optional[str] = Query(None)
+):
+    """Export bills as CSV"""
+    import io
+    import csv
+    from fastapi.responses import StreamingResponse
+    
+    service = get_service()
+    org_id = await get_org_id(request)
+    
+    bills, _ = await service.list_bills(
+        org_id=org_id,
+        status=status,
+        date_from=date_from,
+        date_to=date_to,
+        limit=1000
+    )
+    
+    csv_buffer = io.StringIO()
+    writer = csv.writer(csv_buffer)
+    
+    writer.writerow([
+        "Internal Ref", "Vendor Invoice #", "Vendor", "GSTIN", "Bill Date", "Due Date",
+        "Subtotal", "CGST", "SGST", "IGST", "Total Amount",
+        "Amount Paid", "Balance Due", "Status", "ITC Eligible", "RCM"
+    ])
+    
+    for bill in bills:
+        writer.writerow([
+            bill.get("internal_ref"),
+            bill.get("bill_number"),
+            bill.get("vendor_name") or "",
+            bill.get("vendor_gstin") or "",
+            bill.get("bill_date"),
+            bill.get("due_date"),
+            bill.get("subtotal"),
+            bill.get("cgst"),
+            bill.get("sgst"),
+            bill.get("igst"),
+            bill.get("total_amount"),
+            bill.get("amount_paid"),
+            bill.get("balance_due"),
+            bill.get("status"),
+            "Yes" if bill.get("is_itc_eligible") else "No",
+            "Yes" if bill.get("is_rcm") else "No"
+        ])
+    
+    csv_buffer.seek(0)
+    filename = f"bills_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    
+    return StreamingResponse(
+        iter([csv_buffer.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
 @router.get("")
 async def list_bills(
     request: Request,
