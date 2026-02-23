@@ -49,7 +49,8 @@ class BankingService:
         opening_balance_date: Optional[str] = None,
         upi_id: Optional[str] = None,
         is_default: bool = False,
-        created_by: str = "system"
+        created_by: str = "system",
+        de_service = None
     ) -> Dict[str, Any]:
         """Create a new bank account"""
         account_id = f"bank_{uuid.uuid4().hex[:12]}"
@@ -66,6 +67,8 @@ class BankingService:
         if existing_count == 0:
             is_default = True
         
+        balance_date = opening_balance_date or datetime.now().strftime("%Y-%m-%d")
+        
         account = {
             "account_id": account_id,
             "organization_id": org_id,
@@ -76,12 +79,13 @@ class BankingService:
             "ifsc_code": ifsc_code,
             "account_type": account_type,
             "opening_balance": opening_balance,
-            "opening_balance_date": opening_balance_date or datetime.now().strftime("%Y-%m-%d"),
+            "opening_balance_date": balance_date,
             "current_balance": opening_balance,
             "upi_id": upi_id,
             "is_active": True,
             "is_default": is_default,
             "created_by": created_by,
+            "opening_journal_entry_id": None,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
@@ -89,7 +93,79 @@ class BankingService:
         await self.accounts.insert_one(account)
         logger.info(f"Created bank account {account_name} for org {org_id}")
         
+        # Post opening balance journal entry if there's an opening balance
+        if opening_balance > 0 and de_service:
+            journal_id = await self._post_opening_balance_journal(
+                org_id, account_id, account_name, bank_name, 
+                account_number[-4:] if len(account_number) >= 4 else account_number,
+                opening_balance, balance_date, created_by, de_service
+            )
+            if journal_id:
+                await self.accounts.update_one(
+                    {"account_id": account_id},
+                    {"$set": {"opening_journal_entry_id": journal_id}}
+                )
+        
         return {k: v for k, v in account.items() if k != "_id"}
+    
+    async def _post_opening_balance_journal(
+        self,
+        org_id: str,
+        account_id: str,
+        account_name: str,
+        bank_name: str,
+        last4: str,
+        amount: float,
+        balance_date: str,
+        created_by: str,
+        de_service
+    ) -> Optional[str]:
+        """Post journal entry for opening balance"""
+        try:
+            await de_service.ensure_system_accounts(org_id)
+            
+            # Get Bank and Opening Balance Equity accounts
+            bank_account = await de_service.get_account_by_code(org_id, "1200")
+            equity_account = await de_service.get_account_by_code(org_id, "3300")
+            
+            if not bank_account or not equity_account:
+                logger.warning("Missing accounts for opening balance journal")
+                return None
+            
+            narration = f"Opening balance - {bank_name} ****{last4}"
+            
+            success, msg, entry = await de_service.create_journal_entry(
+                organization_id=org_id,
+                entry_date=balance_date,
+                description=narration,
+                lines=[
+                    {
+                        "account_id": bank_account["account_id"],
+                        "debit_amount": amount,
+                        "credit_amount": 0,
+                        "description": f"Opening balance - {account_name}"
+                    },
+                    {
+                        "account_id": equity_account["account_id"],
+                        "debit_amount": 0,
+                        "credit_amount": amount,
+                        "description": f"Opening balance equity - {bank_name}"
+                    }
+                ],
+                entry_type="OPENING",
+                source_document_id=account_id,
+                source_document_type="BANK_OPENING",
+                created_by=created_by
+            )
+            
+            if success:
+                logger.info(f"Posted opening balance journal: {entry.get('entry_id')}")
+                return entry.get("entry_id")
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error posting opening balance journal: {e}")
+            return None
     
     async def get_account(self, account_id: str) -> Optional[Dict[str, Any]]:
         """Get a single bank account"""
