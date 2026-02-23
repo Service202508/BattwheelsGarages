@@ -1030,17 +1030,8 @@ export default function EstimatesEnhanced() {
     });
   };
 
-  const calculateTotals = () => {
-    const subtotal = newEstimate.line_items.reduce((sum, item) => sum + (item.taxable_amount || 0), 0);
-    const totalTax = newEstimate.line_items.reduce((sum, item) => sum + (item.tax_amount || 0), 0);
-    let discount = 0;
-    if (newEstimate.discount_type === "percent") discount = subtotal * (newEstimate.discount_value / 100);
-    else if (newEstimate.discount_type === "amount") discount = newEstimate.discount_value;
-    const grandTotal = subtotal - discount + totalTax + (newEstimate.shipping_charge || 0) + (newEstimate.adjustment || 0);
-    return { subtotal, totalTax, discount, grandTotal };
-  };
-
-  const resetForm = () => {
+  // ── Totals derived from newEstimate (via custom hook — no API calls) ──
+  const totals = useEstimateCalculations(newEstimate);
     setNewEstimate({
       customer_id: "", reference_number: "", date: new Date().toISOString().split('T')[0],
       expiry_date: "", subject: "", salesperson_name: "", terms_and_conditions: "", notes: "",
