@@ -1323,13 +1323,13 @@ async def get_technician_performance(
     start_iso = start_dt.isoformat()
     end_iso = end_dt.isoformat()
 
+    db = get_db()
+
     # Build query
     query = {
         "assigned_technician_id": {"$exists": True, "$ne": None},
         "created_at": {"$gte": start_iso, "$lte": end_iso}
     }
-    if org_id:
-        query["organization_id"] = org_id
 
     tickets = await db.tickets.find(query, {
         "_id": 0,
