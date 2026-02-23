@@ -1236,6 +1236,7 @@ async def send_invoice(
     request: Request,
     email_to: Optional[str] = Query(None),
     message: Optional[str] = Query(None),
+    channel: Optional[str] = Query(None),  # "email", "whatsapp", "both"
     background_tasks: BackgroundTasks = None
 ):
     """
