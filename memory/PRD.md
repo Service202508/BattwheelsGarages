@@ -1,5 +1,8 @@
 # Battwheels OS - Product Requirements Document
 
+## Changelog
+- **Feb 2026**: Login page complete world-class redesign — split layout (55/45), DM Serif Display/JetBrains Mono/Syne fonts, volt-green (#C8FF00) brand identity, grid + ambient glow left panel, stats strip, animated form with inline error display, Google OAuth, mobile responsive. All auth logic preserved exactly.
+
 ## Original Problem Statement
 
 Battwheels OS is a multi-tenant SaaS platform for EV service management. It provides comprehensive workshop management including service tickets, job cards, invoicing, HR/payroll, inventory, and AI-assisted diagnostics (EFI - EV Failure Intelligence).
