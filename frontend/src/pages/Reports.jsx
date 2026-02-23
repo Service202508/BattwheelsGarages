@@ -937,7 +937,6 @@ export default function Reports() {
             </CardContent>
           </Card>
         </TabsContent>
-        </TabsContent>
 
         {/* Technician Performance Tab */}
         <TabsContent value="technician-performance" className="space-y-4">
