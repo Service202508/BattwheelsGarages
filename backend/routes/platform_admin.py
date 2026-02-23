@@ -383,6 +383,100 @@ async def get_revenue_health(
 
 
 
+@router.get("/activity")
+async def get_platform_activity(
+    request: Request,
+    _=Depends(require_platform_admin),
+):
+    """Last 20 platform-level audit runs"""
+    runs = await db.platform_audit_runs.find(
+        {}, {"_id": 0}
+    ).sort("created_at", -1).limit(20).to_list(20)
+    return {"runs": runs, "total": len(runs)}
+
+
+@router.get("/audit-status")
+async def get_audit_status(
+    request: Request,
+    _=Depends(require_platform_admin),
+):
+    """Return the most recent audit run result"""
+    last = await db.platform_audit_runs.find_one(
+        {}, {"_id": 0}, sort=[("created_at", -1)]
+    )
+    return last or {}
+
+
+@router.post("/run-audit")
+async def run_platform_audit(
+    request: Request,
+    _=Depends(require_platform_admin),
+):
+    """
+    Run the full 103-test CTO production audit as a subprocess.
+    Stores result in platform_audit_runs (keeps last 10 runs).
+    """
+    audit_script = "/app/backend/tests/cto_audit_92.py"
+    if not os.path.exists(audit_script):
+        raise HTTPException(status_code=404, detail="Audit script not found")
+
+    start_time = time.time()
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            "python3", audit_script,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        try:
+            _stdout, _stderr = await asyncio.wait_for(proc.communicate(), timeout=200)
+        except asyncio.TimeoutError:
+            proc.kill()
+            raise HTTPException(status_code=504, detail="Audit timed out after 200 seconds")
+
+        duration = round(time.time() - start_time, 1)
+
+        # Read the JSON report written by the script
+        report_path = "/app/test_reports/cto_audit_92.json"
+        if not os.path.exists(report_path):
+            raise HTTPException(status_code=500, detail="Audit ran but report file not found")
+
+        with open(report_path) as f:
+            report = json.load(f)
+
+        result = {
+            "total": report.get("total_tests", 0),
+            "passed": report.get("passed", 0),
+            "failed": report.get("failed", 0),
+            "score_pct": report.get("pass_rate", 0.0),
+            "failures": report.get("failures", []),
+            "duration_seconds": duration,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+
+        # Persist to DB
+        await db.platform_audit_runs.insert_one(dict(result))
+
+        # Keep only last 10 runs
+        all_runs = await db.platform_audit_runs.find(
+            {}, {"_id": 1}
+        ).sort("created_at", -1).to_list(None)
+        if len(all_runs) > 10:
+            ids_to_delete = [r["_id"] for r in all_runs[10:]]
+            await db.platform_audit_runs.delete_many({"_id": {"$in": ids_to_delete}})
+
+        # Remove MongoDB _id before returning
+        result.pop("created_at", None)
+        logger.info(f"[PLATFORM] Audit complete: {result['passed']}/{result['total']} ({result['score_pct']}%)")
+        return result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[PLATFORM] Audit failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Audit execution error: {str(e)}")
+
+
 @router.post("/users/make-admin")
 async def make_platform_admin(
     data: MakeAdminRequest,
