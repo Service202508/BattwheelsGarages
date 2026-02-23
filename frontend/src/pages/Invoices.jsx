@@ -15,13 +15,13 @@ import {
 import { API } from "@/App";
 
 const statusColors = {
-  draft: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]",
-  sent: "bg-blue-100 text-[#3B9EFF]",
-  viewed: "bg-purple-100 text-[#8B5CF6]",
-  paid: "bg-green-100 text-[#22C55E]",
-  partially_paid: "bg-yellow-100 text-[#EAB308]",
-  overdue: "bg-red-100 text-[#FF3B2F]",
-  void: "bg-[#141E27] text-[rgba(244,246,240,0.45)]"
+  draft: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.35)] border border-[rgba(255,255,255,0.08)]",
+  sent: "bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]",
+  viewed: "bg-[rgba(139,92,246,0.10)] text-[#8B5CF6] border border-[rgba(139,92,246,0.25)]",
+  paid: "bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.25)]",
+  partially_paid: "bg-[rgba(234,179,8,0.10)] text-[#EAB308] border border-[rgba(234,179,8,0.25)]",
+  overdue: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]",
+  void: "bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.25)] border border-[rgba(255,255,255,0.08)]"
 };
 
 export default function Invoices() {
