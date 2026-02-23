@@ -5575,9 +5575,13 @@ try:
     init_entitlement_service()
     logger.info("EntitlementService initialized")
     
-    # Add tenant guard middleware (enforces tenant context on all requests)
+    # CRITICAL: Set database reference on TenantGuardMiddleware for enforcement
+    TenantGuardMiddleware.set_db(db)
+    logger.info("TenantGuardMiddleware database reference set")
+    
+    # Add tenant guard middleware (ENFORCES tenant context on all requests)
     app.add_middleware(TenantGuardMiddleware)
-    logger.info("TenantGuardMiddleware added - Multi-tenant isolation ACTIVE")
+    logger.info("TenantGuardMiddleware added - Multi-tenant isolation ENFORCEMENT ACTIVE")
     
 except Exception as e:
     logger.error(f"Failed to initialize multi-tenant system: {e}")
