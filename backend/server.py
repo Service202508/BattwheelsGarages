@@ -22,15 +22,33 @@ from core.tenant.context import TenantContext, tenant_context_required, optional
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+# Configure logging (must be before validation)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Validate environment variables on startup
+from config.env_validator import check_and_report
+if not check_and_report():
+    logger.critical("Critical environment variables missing. Check .env file.")
+    # Don't exit in development/preview - just warn
+    logger.warning("Continuing with defaults - this may cause issues in production")
+
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[os.environ.get('DB_NAME', 'battwheels_db')]
 
 # JWT Configuration
 JWT_SECRET = os.environ.get('JWT_SECRET', 'battwheels-secret')
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24 * 7
+
+# Warn if JWT secret is weak
+if len(JWT_SECRET) < 32:
+    logger.warning("JWT_SECRET is shorter than 32 characters - consider using a stronger secret")
 
 # Create the main app
 app = FastAPI(title="Battwheels OS API")
@@ -40,13 +58,6 @@ api_router = APIRouter(prefix="/api")
 
 # Security
 security = HTTPBearer(auto_error=False)
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 # ==================== TENANT EXCEPTION HANDLERS ====================
 
