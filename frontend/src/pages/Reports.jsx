@@ -108,6 +108,38 @@ export default function Reports() {
     setSalesByCustomer(data);
   };
 
+  const fetchSlaReport = async () => {
+    const res = await fetch(
+      `${API}/sla/breach-report?start_date=${dateRange.start_date}&end_date=${dateRange.end_date}`,
+      { headers }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      setSlaReport(data);
+    } else {
+      toast.error("Failed to load SLA report");
+    }
+  };
+
+  const exportSlaReportCsv = () => {
+    if (!slaReport?.breaches?.length) { toast.error("No data to export"); return; }
+    const cols = ["Ticket ID", "Customer", "Priority", "Technician", "Breach Type", "Breach Time", "Reassigned"];
+    const rows = slaReport.breaches.map(t => [
+      t.ticket_id, t.customer_name || "N/A", t.priority,
+      t.assigned_technician_name || "Unassigned",
+      t.sla_resolution_breached ? "Resolution" : "Response",
+      t.sla_resolution_breached_at || t.sla_response_breached_at || "N/A",
+      t.sla_auto_reassigned ? "Yes" : "No"
+    ]);
+    const csv = [cols, ...rows].map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `SLA_Breach_Report_${dateRange.start_date}_${dateRange.end_date}.csv`; a.click();
+    URL.revokeObjectURL(url);
+    toast.success("CSV exported");
+  };
+
   const exportReport = async (format) => {
     setExporting(true);
     try {
