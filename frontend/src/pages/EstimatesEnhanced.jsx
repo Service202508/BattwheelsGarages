@@ -1032,6 +1032,8 @@ export default function EstimatesEnhanced() {
 
   // ── Totals derived from newEstimate (via custom hook — no API calls) ──
   const totals = useEstimateCalculations(newEstimate);
+
+  const resetForm = () => {
     setNewEstimate({
       customer_id: "", reference_number: "", date: new Date().toISOString().split('T')[0],
       expiry_date: "", subject: "", salesperson_name: "", terms_and_conditions: "", notes: "",
@@ -1042,8 +1044,6 @@ export default function EstimatesEnhanced() {
     setContactSearch("");
     setCustomerPricing(null);
   };
-
-  const totals = calculateTotals();
 
   return (
     <div className="space-y-6" data-testid="estimates-enhanced-page">
