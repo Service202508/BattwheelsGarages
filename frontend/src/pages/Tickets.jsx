@@ -392,6 +392,7 @@ export default function Tickets({ user }) {
                   <TableHead>Status</TableHead>
                   <TableHead>Technician</TableHead>
                   <TableHead>Created</TableHead>
+                  <TableHead style={{ fontFamily: "JetBrains Mono, monospace" }}>SLA</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
