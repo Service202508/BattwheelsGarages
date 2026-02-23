@@ -56,6 +56,21 @@ ORG_B_INVOICE  = "inv_31da406729f1"
 _token_cache: dict[str, str] = {}
 
 
+@pytest.fixture(scope="session", autouse=True)
+def ensure_clean_state():
+    """Ensure Org B is active and on Starter plan before the test suite runs."""
+    # Activate Org B (in case a previous run left it suspended)
+    try:
+        plat_token = _login_with_retry(PLATFORM_ADMIN)
+        h = {"Authorization": f"Bearer {plat_token}"}
+        requests.post(f"{BASE}/platform/organizations/{ORG_B_ID}/activate", headers=h, timeout=15)
+        requests.put(f"{BASE}/platform/organizations/{ORG_B_ID}/plan",
+                     headers=h, json={"plan_type": "starter"}, timeout=15)
+    except Exception:
+        pass  # Non-fatal — tests will surface the issue themselves
+    yield
+
+
 def _login_with_retry(creds: dict, max_retries: int = 3) -> str:
     """Login with exponential back-off on rate limit."""
     for attempt in range(max_retries):
