@@ -44,7 +44,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
   return (
     <div className="min-h-screen bg-[#111820]">
       {/* Mobile Header */}
-      <header className="lg:hidden sticky top-0 z-50 bg-[#111820] border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      <header className="lg:hidden sticky top-0 z-50 bg-[#111820] border-b border-[rgba(255,255,255,0.07)] px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -62,13 +62,13 @@ export default function CustomerLayout({ children, user, onLogout }) {
       <div className="flex">
         {/* Sidebar */}
         <aside className={`
-          fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-[#111820] border-r border-gray-200
+          fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-[#111820] border-r border-[rgba(255,255,255,0.07)]
           transform transition-transform duration-200 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
           <div className="flex flex-col h-full">
             {/* Logo */}
-            <div className="hidden lg:flex items-center gap-3 px-6 py-5 border-b border-gray-200">
+            <div className="hidden lg:flex items-center gap-3 px-6 py-5 border-b border-[rgba(255,255,255,0.07)]">
               <div className="h-10 w-10 rounded-lg bg-[rgba(200,255,0,0.08)]0 flex items-center justify-center">
                 <Car className="h-6 w-6 text-white" />
               </div>
@@ -108,7 +108,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
               </nav>
 
               {/* Quick Actions */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="mt-6 pt-6 border-t border-[rgba(255,255,255,0.07)]">
                 <p className="px-3 mb-2 text-xs font-semibold text-[rgba(244,246,240,0.45)] uppercase tracking-wider">
                   Quick Actions
                 </p>
@@ -132,7 +132,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
             </ScrollArea>
 
             {/* User Info & Logout */}
-            <div className="border-t border-gray-200 p-4">
+            <div className="border-t border-[rgba(255,255,255,0.07)] p-4">
               <div className="flex items-center gap-3 mb-3">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={user?.picture} />

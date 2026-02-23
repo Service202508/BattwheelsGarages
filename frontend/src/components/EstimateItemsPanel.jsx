@@ -36,7 +36,7 @@ const estimateStatusColors = {
   approved: "bg-green-100 text-green-800 border-green-300",
   rejected: "bg-red-100 text-red-800 border-red-300",
   converted: "bg-purple-100 text-purple-800 border-purple-300",
-  void: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0] border-gray-300",
+  void: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0] border-[rgba(255,255,255,0.07)]",
 };
 
 const estimateStatusLabels = {
