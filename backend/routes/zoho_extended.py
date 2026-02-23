@@ -283,18 +283,41 @@ async def create_delivery_challan(dc: DeliveryChallanCreate):
     return {"code": 0, "message": "Delivery challan created", "delivery_challan": dc_dict}
 
 @router.get("/delivery-challans")
-async def list_delivery_challans(status: str = "", customer_id: str = ""):
-    """List all delivery challans"""
+async def list_delivery_challans(
+    status: str = "",
+    customer_id: str = "",
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
+):
+    """List delivery challans with standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     db = get_db()
     query = {}
     if status:
         query["status"] = status
     if customer_id:
         query["customer_id"] = customer_id
-    
-    cursor = db.delivery_challans.find(query, {"_id": 0}).sort("date", -1)
-    items = await cursor.to_list(length=200)
-    return {"code": 0, "delivery_challans": items}
+
+    total = await db.delivery_challans.count_documents(query)
+    skip = (page - 1) * limit
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    items = await db.delivery_challans.find(query, {"_id": 0}).sort("date", -1).skip(skip).limit(limit).to_list(limit)
+
+    return {
+        "data": items,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
 
 @router.get("/delivery-challans/{dc_id}")
 async def get_delivery_challan(dc_id: str):
