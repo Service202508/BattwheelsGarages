@@ -151,21 +151,21 @@ export default function CustomerAMC({ user }) {
 
                   {/* Features */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center p-3 rounded-lg bg-gray-50">
+                    <div className="text-center p-3 rounded-lg bg-[#111820]">
                       <Wrench className="h-5 w-5 mx-auto mb-1 text-[#C8FF00] text-600" />
                       <p className="text-sm font-medium">{sub.max_services} Services</p>
                     </div>
                     {sub.includes_parts && (
-                      <div className="text-center p-3 rounded-lg bg-gray-50">
+                      <div className="text-center p-3 rounded-lg bg-[#111820]">
                         <Gift className="h-5 w-5 mx-auto mb-1 text-[#C8FF00] text-600" />
                         <p className="text-sm font-medium">{sub.parts_discount_percent}% Parts Discount</p>
                       </div>
                     )}
-                    <div className="text-center p-3 rounded-lg bg-gray-50">
+                    <div className="text-center p-3 rounded-lg bg-[#111820]">
                       <Phone className="h-5 w-5 mx-auto mb-1 text-[#C8FF00] text-600" />
                       <p className="text-sm font-medium">Priority Support</p>
                     </div>
-                    <div className="text-center p-3 rounded-lg bg-gray-50">
+                    <div className="text-center p-3 rounded-lg bg-[#111820]">
                       <Car className="h-5 w-5 mx-auto mb-1 text-[#C8FF00] text-600" />
                       <p className="text-sm font-medium">Roadside Assist</p>
                     </div>
@@ -288,7 +288,7 @@ export default function CustomerAMC({ user }) {
           
           {selectedPlan && (
             <div className="space-y-4 py-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4 bg-[#111820] rounded-lg">
                 <h4 className="font-semibold mb-2">Plan Summary</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">

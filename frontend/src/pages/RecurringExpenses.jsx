@@ -413,7 +413,7 @@ export default function RecurringExpenses() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50">
+                <TableRow className="bg-[#111820]">
                   <TableHead>Name</TableHead>
                   <TableHead>Account</TableHead>
                   <TableHead>Vendor</TableHead>

@@ -50,7 +50,7 @@ const TableSkeleton = React.forwardRef(({
   return (
     <div ref={ref} className={cn("bg-[#111820] rounded-lg border overflow-hidden", className)} {...props}>
       {/* Header */}
-      <div className="bg-gray-50 border-b px-4 py-3">
+      <div className="bg-[#111820] border-b px-4 py-3">
         <div className="flex gap-4">
           {Array.from({ length: columns }).map((_, i) => (
             <Skeleton key={i} className="h-4 flex-1 max-w-[120px]" />

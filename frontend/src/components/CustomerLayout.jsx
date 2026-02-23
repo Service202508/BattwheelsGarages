@@ -42,7 +42,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#111820]">
       {/* Mobile Header */}
       <header className="lg:hidden sticky top-0 z-50 bg-[#111820] border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -96,7 +96,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
                         transition-colors duration-150
                         ${isActive 
                           ? 'bg-[rgba(200,255,0,0.08)] text-[#C8FF00] text-700' 
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-[#F4F6F0]'
+                          : 'text-gray-600 hover:bg-[#111820] hover:text-[#F4F6F0]'
                         }
                       `}
                     >
@@ -115,7 +115,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
                 <Link
                   to="/customer/request-callback"
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-[#F4F6F0]"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-[#111820] hover:text-[#F4F6F0]"
                 >
                   <Phone className="h-5 w-5 text-gray-400" />
                   Request Callback
@@ -123,7 +123,7 @@ export default function CustomerLayout({ children, user, onLogout }) {
                 <Link
                   to="/customer/book-appointment"
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-[#F4F6F0]"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-[#111820] hover:text-[#F4F6F0]"
                 >
                   <Calendar className="h-5 w-5 text-gray-400" />
                   Book Appointment

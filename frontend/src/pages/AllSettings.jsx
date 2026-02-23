@@ -453,7 +453,7 @@ function UsersPanel({ onRefresh }) {
       dispatcher: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
       technician: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
       accountant: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400",
-      viewer: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0] dark:bg-gray-900/30 dark:text-gray-400"
+      viewer: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0] dark:bg-[#080C0F]/30 dark:text-gray-400"
     };
     return colors[role] || colors.viewer;
   };

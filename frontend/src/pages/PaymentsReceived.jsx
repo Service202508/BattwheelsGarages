@@ -564,7 +564,7 @@ export default function PaymentsReceived() {
               {/* Payments Table */}
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-[#111820] border-b">
                     <tr>
                       <th className="px-4 py-3 text-left w-10">
                         <Checkbox
@@ -599,7 +599,7 @@ export default function PaymentsReceived() {
                       </tr>
                     ) : (
                       payments.map((payment) => (
-                        <tr key={payment.payment_id} className="hover:bg-gray-50">
+                        <tr key={payment.payment_id} className="hover:bg-[#111820]">
                           <td className="px-4 py-3">
                             <Checkbox
                               checked={selectedPayments.includes(payment.payment_id)}
@@ -737,7 +737,7 @@ export default function PaymentsReceived() {
             <CardContent>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-[#111820] border-b">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Source</th>
@@ -753,7 +753,7 @@ export default function PaymentsReceived() {
                       </tr>
                     ) : (
                       allCredits.map((credit) => (
-                        <tr key={credit.credit_id} className="hover:bg-gray-50">
+                        <tr key={credit.credit_id} className="hover:bg-[#111820]">
                           <td className="px-4 py-3 font-medium">{credit.customer_name}</td>
                           <td className="px-4 py-3 text-sm">{credit.source_number}</td>
                           <td className="px-4 py-3">
@@ -925,7 +925,7 @@ export default function PaymentsReceived() {
                 <Label className="text-base font-medium">Apply to Invoices</Label>
                 <div className="mt-2 border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-[#111820]">
                       <tr>
                         <th className="px-3 py-2 text-left">Invoice Date</th>
                         <th className="px-3 py-2 text-left">Invoice #</th>
@@ -997,7 +997,7 @@ export default function PaymentsReceived() {
 
             {/* Summary */}
             {paymentForm.amount > 0 && (
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4 bg-[#111820] rounded-lg">
                 <div className="flex justify-between text-sm mb-2">
                   <span>Amount Received:</span>
                   <span className="font-medium">₹{paymentForm.amount.toLocaleString('en-IN')}</span>
@@ -1106,7 +1106,7 @@ export default function PaymentsReceived() {
                   <h4 className="font-medium mb-2">Applied to Invoices</h4>
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-[#111820]">
                         <tr>
                           <th className="px-3 py-2 text-left">Invoice #</th>
                           <th className="px-3 py-2 text-left">Date</th>

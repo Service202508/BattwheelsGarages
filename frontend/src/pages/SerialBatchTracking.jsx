@@ -429,7 +429,7 @@ export default function SerialBatchTracking() {
                   {serials.map(serial => (
                     <div 
                       key={serial.serial_id}
-                      className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer"
+                      className="flex items-center justify-between p-4 hover:bg-[#111820] cursor-pointer"
                       onClick={() => setSelectedSerial(serial)}
                     >
                       <div className="flex items-center gap-4">
@@ -478,7 +478,7 @@ export default function SerialBatchTracking() {
                   {batches.map(batch => (
                     <div 
                       key={batch.batch_id}
-                      className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer"
+                      className="flex items-center justify-between p-4 hover:bg-[#111820] cursor-pointer"
                       onClick={() => setSelectedBatch(batch)}
                     >
                       <div className="flex items-center gap-4">
@@ -535,7 +535,7 @@ export default function SerialBatchTracking() {
               ) : (
                 <div className="divide-y">
                   {trackingItems.map(item => (
-                    <div key={item.item_id} className="flex items-center justify-between p-4 hover:bg-gray-50">
+                    <div key={item.item_id} className="flex items-center justify-between p-4 hover:bg-[#111820]">
                       <div>
                         <p className="font-medium">{item.name}</p>
                         <p className="text-sm text-gray-500">{item.sku || "No SKU"}</p>
@@ -694,7 +694,7 @@ export default function SerialBatchTracking() {
                 onChange={(e) => setBulkSerial({ ...bulkSerial, cost_price: parseFloat(e.target.value) || 0 })}
               />
             </div>
-            <div className="bg-gray-50 p-3 rounded-lg text-sm">
+            <div className="bg-[#111820] p-3 rounded-lg text-sm">
               <p className="font-medium">Preview:</p>
               <p className="text-gray-600">
                 {bulkSerial.prefix}{String(bulkSerial.start_number).padStart(6, '0')} to {bulkSerial.prefix}{String(bulkSerial.start_number + bulkSerial.count - 1).padStart(6, '0')}

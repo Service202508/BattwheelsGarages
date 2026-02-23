@@ -28,7 +28,7 @@ const statusColors = {
   open: "bg-green-100 text-[#22C55E]",
   partially_fulfilled: "bg-yellow-100 text-[#EAB308]",
   fulfilled: "bg-purple-100 text-[#8B5CF6]",
-  closed: "bg-gray-200 text-[rgba(244,246,240,0.45)]",
+  closed: "bg-[#141E27] text-[rgba(244,246,240,0.45)]",
   void: "bg-red-100 text-red-500"
 };
 

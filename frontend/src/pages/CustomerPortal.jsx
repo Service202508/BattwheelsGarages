@@ -410,7 +410,7 @@ export default function CustomerPortal() {
 
   // Portal Dashboard
   return (
-    <div className="min-h-screen bg-gray-50" data-testid="customer-portal-dashboard">
+    <div className="min-h-screen bg-[#111820]" data-testid="customer-portal-dashboard">
       {/* Header */}
       <header className="bg-[#111820] border-b px-6 py-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
@@ -482,7 +482,7 @@ export default function CustomerPortal() {
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className={dashboard.summary.overdue_invoices > 0 ? "bg-[rgba(255,59,47,0.08)] border-red-200" : "bg-gray-50"}>
+                  <Card className={dashboard.summary.overdue_invoices > 0 ? "bg-[rgba(255,59,47,0.08)] border-red-200" : "bg-[#111820]"}>
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-3">
                         <AlertTriangle className={`h-8 w-8 ${dashboard.summary.overdue_invoices > 0 ? "text-red-500" : "text-gray-400"}`} />
@@ -508,7 +508,7 @@ export default function CustomerPortal() {
                         {dashboard.recent_invoices.map(inv => (
                           <div 
                             key={inv.invoice_id} 
-                            className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
+                            className="flex justify-between items-center p-3 bg-[#111820] rounded-lg hover:bg-[rgba(255,255,255,0.05)] cursor-pointer"
                             onClick={() => fetchInvoiceDetail(inv.invoice_id)}
                           >
                             <div>
@@ -564,7 +564,7 @@ export default function CustomerPortal() {
                     {invoices.map(inv => (
                       <div 
                         key={inv.invoice_id}
-                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-[#111820] cursor-pointer"
                         onClick={() => fetchInvoiceDetail(inv.invoice_id)}
                       >
                         <div>
@@ -600,7 +600,7 @@ export default function CustomerPortal() {
                     {estimates.map(est => (
                       <div 
                         key={est.estimate_id}
-                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                        className="flex justify-between items-center p-4 border rounded-lg hover:bg-[#111820] cursor-pointer"
                         onClick={() => fetchEstimateDetail(est.estimate_id)}
                       >
                         <div>
@@ -656,7 +656,7 @@ export default function CustomerPortal() {
                 {statement && (
                   <div className="space-y-6">
                     {/* Summary */}
-                    <div className="grid grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
+                    <div className="grid grid-cols-3 gap-4 bg-[#111820] p-4 rounded-lg">
                       <div className="text-center">
                         <p className="text-sm text-gray-500">Total Invoiced</p>
                         <p className="text-xl font-bold">{formatCurrency(statement.summary.total_invoiced)}</p>
@@ -676,7 +676,7 @@ export default function CustomerPortal() {
                       <h4 className="font-medium mb-3">Transactions</h4>
                       <div className="border rounded-lg overflow-hidden">
                         <table className="w-full text-sm">
-                          <thead className="bg-gray-50">
+                          <thead className="bg-[#111820]">
                             <tr>
                               <th className="px-4 py-2 text-left">Date</th>
                               <th className="px-4 py-2 text-left">Description</th>
@@ -731,7 +731,7 @@ export default function CustomerPortal() {
                     {tickets.map((ticket) => (
                       <div
                         key={ticket.ticket_id}
-                        className="p-4 hover:bg-gray-50 cursor-pointer flex justify-between items-center"
+                        className="p-4 hover:bg-[#111820] cursor-pointer flex justify-between items-center"
                         onClick={() => viewTicketDetails(ticket.ticket_id)}
                         data-testid={`ticket-${ticket.ticket_id}`}
                       >
@@ -892,7 +892,7 @@ export default function CustomerPortal() {
                       <h4 className="font-medium mb-3">Updates</h4>
                       <div className="space-y-3">
                         {selectedTicket.updates.map((update, idx) => (
-                          <div key={idx} className={`p-3 rounded-lg text-sm ${update.author_type === "customer" ? "bg-blue-50 ml-8" : "bg-gray-50 mr-8"}`}>
+                          <div key={idx} className={`p-3 rounded-lg text-sm ${update.author_type === "customer" ? "bg-blue-50 ml-8" : "bg-[#111820] mr-8"}`}>
                             <div className="flex justify-between mb-1">
                               <span className="font-medium">{update.author}</span>
                               <span className="text-xs text-gray-400">{formatDate(update.created_at)}</span>
@@ -951,7 +951,7 @@ export default function CustomerPortal() {
                 {selectedInvoice.line_items?.length > 0 && (
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-[#111820]">
                         <tr>
                           <th className="px-3 py-2 text-left">Item</th>
                           <th className="px-3 py-2 text-right">Qty</th>
@@ -973,7 +973,7 @@ export default function CustomerPortal() {
                   </div>
                 )}
                 
-                <div className="bg-gray-50 p-4 rounded-lg space-y-1 text-sm w-48 ml-auto">
+                <div className="bg-[#111820] p-4 rounded-lg space-y-1 text-sm w-48 ml-auto">
                   <div className="flex justify-between"><span>Sub Total:</span><span>{formatCurrency(selectedInvoice.sub_total)}</span></div>
                   <div className="flex justify-between"><span>Tax:</span><span>{formatCurrency(selectedInvoice.tax_total)}</span></div>
                   <Separator />
@@ -1009,7 +1009,7 @@ export default function CustomerPortal() {
                 {selectedEstimate.line_items?.length > 0 && (
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-[#111820]">
                         <tr>
                           <th className="px-3 py-2 text-left">Item</th>
                           <th className="px-3 py-2 text-right">Qty</th>
@@ -1031,7 +1031,7 @@ export default function CustomerPortal() {
                   </div>
                 )}
                 
-                <div className="bg-gray-50 p-4 rounded-lg text-center">
+                <div className="bg-[#111820] p-4 rounded-lg text-center">
                   <p className="text-2xl font-bold">{formatCurrency(selectedEstimate.grand_total)}</p>
                 </div>
                 

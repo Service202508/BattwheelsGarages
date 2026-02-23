@@ -407,7 +407,7 @@ export default function Accountant() {
                   ) : (
                     <div className="divide-y max-h-96 overflow-y-auto">
                       {transactions.slice(0, 10).map(txn => (
-                        <div key={txn.transaction_id} className="p-4 flex items-center justify-between hover:bg-gray-50">
+                        <div key={txn.transaction_id} className="p-4 flex items-center justify-between hover:bg-[#111820]">
                           <div className="flex items-center gap-3">
                             <div className={`p-2 rounded-full ${txn.transaction_type === 'deposit' ? 'bg-green-100' : 'bg-red-100'}`}>
                               {txn.transaction_type === 'deposit' 
@@ -479,7 +479,7 @@ export default function Accountant() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+                    <div className="grid grid-cols-3 gap-4 p-4 bg-[#111820] rounded-lg">
                       <div>
                         <p className="text-xs text-gray-500">Book Balance</p>
                         <p className="text-lg font-bold">{formatCurrency(activeRecon.book_balance)}</p>
@@ -500,7 +500,7 @@ export default function Accountant() {
                       <h4 className="font-medium mb-2">Unreconciled Transactions ({activeRecon.unreconciled_transactions?.length || 0})</h4>
                       <div className="border rounded-lg max-h-64 overflow-y-auto">
                         {activeRecon.unreconciled_transactions?.map(txn => (
-                          <div key={txn.transaction_id} className="p-3 flex items-center justify-between border-b last:border-0 hover:bg-gray-50">
+                          <div key={txn.transaction_id} className="p-3 flex items-center justify-between border-b last:border-0 hover:bg-[#111820]">
                             <div>
                               <p className="font-medium">{txn.payee || txn.description}</p>
                               <p className="text-xs text-gray-500">{txn.transaction_date}</p>
@@ -615,7 +615,7 @@ export default function Accountant() {
                     <div className="border rounded-lg overflow-hidden">
                       <Table>
                         <TableHeader>
-                          <TableRow className="bg-gray-50">
+                          <TableRow className="bg-[#111820]">
                             <TableHead>Account</TableHead>
                             <TableHead className="w-32">Debit</TableHead>
                             <TableHead className="w-32">Credit</TableHead>
@@ -678,7 +678,7 @@ export default function Accountant() {
                               </TableCell>
                             </TableRow>
                           ))}
-                          <TableRow className="bg-gray-50 font-bold">
+                          <TableRow className="bg-[#111820] font-bold">
                             <TableCell>Total</TableCell>
                             <TableCell className="text-right">
                               {formatCurrency(journalForm.lines.reduce((s, l) => s + (parseFloat(l.debit) || 0), 0))}
@@ -713,7 +713,7 @@ export default function Accountant() {
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-gray-50">
+                  <TableRow className="bg-[#111820]">
                     <TableHead>Entry #</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Reference</TableHead>
@@ -770,7 +770,7 @@ export default function Accountant() {
                 <div className="space-y-4">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-gray-50">
+                      <TableRow className="bg-[#111820]">
                         <TableHead>Code</TableHead>
                         <TableHead>Account</TableHead>
                         <TableHead>Type</TableHead>
@@ -797,7 +797,7 @@ export default function Accountant() {
                       </TableRow>
                     </TableBody>
                   </Table>
-                  <div className="flex items-center justify-center gap-2 p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 p-4 bg-[#111820] rounded-lg">
                     {trialBalance.is_balanced ? (
                       <>
                         <CheckCircle2 className="h-5 w-5 text-green-600" />

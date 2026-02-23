@@ -412,7 +412,7 @@ export default function CustomModules() {
                     {newModule.fields.map((field, idx) => {
                       const Icon = fieldTypeIcons[field.type] || FileText;
                       return (
-                        <div key={idx} className="flex justify-between items-center bg-gray-50 p-3 rounded">
+                        <div key={idx} className="flex justify-between items-center bg-[#111820] p-3 rounded">
                           <div className="flex items-center gap-3">
                             <Icon className="h-4 w-4 text-gray-500" />
                             <div>
@@ -456,7 +456,7 @@ export default function CustomModules() {
                   {modules.map(module => (
                     <div
                       key={module.module_id}
-                      className={`p-4 cursor-pointer hover:bg-gray-50 ${selectedModule?.module_id === module.module_id ? "bg-blue-50 border-l-4 border-blue-500" : ""}`}
+                      className={`p-4 cursor-pointer hover:bg-[#111820] ${selectedModule?.module_id === module.module_id ? "bg-blue-50 border-l-4 border-blue-500" : ""}`}
                       onClick={() => setSelectedModule(module)}
                     >
                       <div className="flex items-center gap-3">
@@ -560,7 +560,7 @@ export default function CustomModules() {
                 {records.length > 0 ? (
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-[#111820]">
                         <tr>
                           {selectedModule.fields.slice(0, 5).map(field => (
                             <th key={field.name} className="text-left p-3 font-medium">
@@ -572,7 +572,7 @@ export default function CustomModules() {
                       </thead>
                       <tbody>
                         {records.map(record => (
-                          <tr key={record.record_id} className="border-t hover:bg-gray-50">
+                          <tr key={record.record_id} className="border-t hover:bg-[#111820]">
                             {selectedModule.fields.slice(0, 5).map(field => (
                               <td key={field.name} className="p-3">
                                 {field.type === "checkbox" 

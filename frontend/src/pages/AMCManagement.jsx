@@ -643,7 +643,7 @@ export default function AMCManagement({ user }) {
                           ? "bg-purple-600 hover:bg-purple-700" 
                           : plan.tier === "fleet_essential"
                           ? "bg-blue-600 hover:bg-blue-700"
-                          : "bg-gray-800 hover:bg-gray-900"
+                          : "bg-[#0D1317] hover:bg-[#080C0F]"
                       }`}
                       onClick={() => {
                         setSubscriptionForm({ ...subscriptionForm, plan_id: plan.plan_id });

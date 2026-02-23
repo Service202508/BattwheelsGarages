@@ -105,11 +105,11 @@ export default function CustomerVehicles({ user }) {
               <CardContent className="p-4 space-y-4">
                 {/* Vehicle Stats */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 rounded-lg bg-gray-50">
+                  <div className="text-center p-3 rounded-lg bg-[#111820]">
                     <p className="text-2xl font-bold text-[#F4F6F0]">{vehicle.total_services || 0}</p>
                     <p className="text-xs text-gray-600">Total Services</p>
                   </div>
-                  <div className="text-center p-3 rounded-lg bg-gray-50">
+                  <div className="text-center p-3 rounded-lg bg-[#111820]">
                     <p className="text-2xl font-bold text-[#F4F6F0]">₹{(vehicle.total_service_cost || 0).toLocaleString()}</p>
                     <p className="text-xs text-gray-600">Total Spent</p>
                   </div>

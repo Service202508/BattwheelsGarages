@@ -364,7 +364,7 @@ export default function CompositeItems() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm" data-testid="composite-items-table">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-[#111820] border-b">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium text-gray-600">Name</th>
                     <th className="px-4 py-3 text-left font-medium text-gray-600">SKU</th>
@@ -379,7 +379,7 @@ export default function CompositeItems() {
                 </thead>
                 <tbody className="divide-y">
                   {filteredItems.map((item) => (
-                    <tr key={item.composite_id} className="hover:bg-gray-50" data-testid={`item-row-${item.composite_id}`}>
+                    <tr key={item.composite_id} className="hover:bg-[#111820]" data-testid={`item-row-${item.composite_id}`}>
                       <td className="px-4 py-3">
                         <div>
                           <p className="font-medium">{item.name}</p>
@@ -601,7 +601,7 @@ export default function CompositeItems() {
               {form.components.length > 0 && (
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-[#111820]">
                       <tr>
                         <th className="px-3 py-2 text-left">Component</th>
                         <th className="px-3 py-2 text-right">Qty</th>
@@ -656,7 +656,7 @@ export default function CompositeItems() {
               <div className="space-y-4">
                 {/* Quick Stats */}
                 <div className="grid grid-cols-4 gap-3">
-                  <div className="p-3 bg-gray-50 rounded-lg text-center">
+                  <div className="p-3 bg-[#111820] rounded-lg text-center">
                     <p className="text-xs text-gray-500">Component Cost</p>
                     <p className="font-bold">{formatCurrency(selectedItem.current_component_cost || selectedItem.component_cost)}</p>
                   </div>
@@ -679,7 +679,7 @@ export default function CompositeItems() {
                   <h4 className="font-semibold mb-2">Bill of Materials</h4>
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-[#111820]">
                         <tr>
                           <th className="px-3 py-2 text-left">Component</th>
                           <th className="px-3 py-2 text-right">Qty Required</th>
@@ -715,7 +715,7 @@ export default function CompositeItems() {
                     <h4 className="font-semibold mb-2">Recent Build History</h4>
                     <div className="space-y-2">
                       {selectedItem.recent_builds.map((build, idx) => (
-                        <div key={idx} className="flex justify-between items-center p-2 bg-gray-50 rounded-lg text-sm">
+                        <div key={idx} className="flex justify-between items-center p-2 bg-[#111820] rounded-lg text-sm">
                           <div className="flex items-center gap-2">
                             <Badge variant="outline">{build.type === "build" ? "Built" : "Unbuilt"}</Badge>
                             <span>Qty: {build.quantity_built || build.quantity_unbuilt}</span>

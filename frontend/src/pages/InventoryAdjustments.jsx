@@ -626,7 +626,7 @@ export default function InventoryAdjustments() {
             <>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm" data-testid="adjustments-table">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-[#111820] border-b">
                     <tr>
                       <th className="px-4 py-3 text-left font-medium text-gray-600">Date</th>
                       <th className="px-4 py-3 text-left font-medium text-gray-600">Reference #</th>
@@ -641,7 +641,7 @@ export default function InventoryAdjustments() {
                   </thead>
                   <tbody className="divide-y">
                     {adjustments.map((adj) => (
-                      <tr key={adj.adjustment_id} className="hover:bg-gray-50" data-testid={`row-${adj.adjustment_id}`}>
+                      <tr key={adj.adjustment_id} className="hover:bg-[#111820]" data-testid={`row-${adj.adjustment_id}`}>
                         <td className="px-4 py-3 text-gray-600">{adj.date}</td>
                         <td className="px-4 py-3">
                           <button className="text-[#3B9EFF] hover:underline font-medium" onClick={() => viewDetail(adj.adjustment_id)} data-testid={`ref-link-${adj.adjustment_id}`}>
@@ -724,7 +724,7 @@ export default function InventoryAdjustments() {
 
           <div className="space-y-5">
             {/* Mode Toggle */}
-            <div className="flex gap-3 p-3 bg-gray-50 rounded-lg">
+            <div className="flex gap-3 p-3 bg-[#111820] rounded-lg">
               <Button variant={form.adjustment_type === "quantity" ? "default" : "outline"}
                 onClick={() => setForm({ ...form, adjustment_type: "quantity", line_items: [] })}
                 data-testid="mode-quantity">
@@ -875,7 +875,7 @@ export default function InventoryAdjustments() {
               {form.line_items.length > 0 && (
                 <div className="border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-[#111820]">
                       <tr>
                         <th className="px-3 py-2 text-left">Item</th>
                         <th className="px-3 py-2 text-left text-xs text-gray-400">SKU</th>
@@ -981,7 +981,7 @@ export default function InventoryAdjustments() {
                 <TabsContent value="lines">
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-[#111820]">
                         <tr>
                           <th className="px-3 py-2 text-left">Item</th>
                           {selectedAdj.adjustment_type === "quantity" ? (
@@ -1055,7 +1055,7 @@ export default function InventoryAdjustments() {
                     </div>
                   </div>
                   {selectedAdj.description && (
-                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                    <div className="mt-4 p-3 bg-[#111820] rounded-lg">
                       <p className="text-sm text-gray-500 mb-1">Description</p>
                       <p className="text-sm">{selectedAdj.description}</p>
                     </div>
@@ -1066,7 +1066,7 @@ export default function InventoryAdjustments() {
                       <p className="text-sm text-gray-500 mb-2 flex items-center gap-1"><Paperclip className="h-4 w-4" /> Attachments</p>
                       <div className="space-y-1">
                         {selectedAdj.attachments.map(att => (
-                          <div key={att.attachment_id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                          <div key={att.attachment_id} className="flex items-center justify-between p-2 bg-[#111820] rounded">
                             <span className="text-sm">{att.filename} ({(att.size / 1024).toFixed(1)} KB)</span>
                           </div>
                         ))}
@@ -1079,7 +1079,7 @@ export default function InventoryAdjustments() {
                   {selectedAdj.audit_trail?.length > 0 ? (
                     <div className="space-y-2">
                       {selectedAdj.audit_trail.map((entry, idx) => (
-                        <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg text-sm">
+                        <div key={idx} className="flex items-start gap-3 p-3 bg-[#111820] rounded-lg text-sm">
                           <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
                           <div>
                             <p className="font-medium">{entry.action}</p>
@@ -1140,7 +1140,7 @@ export default function InventoryAdjustments() {
             </div>
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
               {reasons.map(r => (
-                <div key={r.reason_id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                <div key={r.reason_id} className="flex items-center justify-between p-2 bg-[#111820] rounded">
                   <span className="text-sm font-medium">{r.name}</span>
                   <Button size="sm" variant="ghost" className="text-red-500 h-7" onClick={() => deleteReason(r.reason_id)}>
                     <XCircle className="h-4 w-4" />
@@ -1215,7 +1215,7 @@ export default function InventoryAdjustments() {
                 {importPreview.preview_rows?.length > 0 && (
                   <div className="border rounded-lg overflow-x-auto">
                     <table className="w-full text-xs">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-[#111820]">
                         <tr>
                           {importPreview.available_fields?.map(f => (
                             <th key={f} className="px-2 py-1 text-left font-medium">{f}</th>
@@ -1271,7 +1271,7 @@ export default function InventoryAdjustments() {
               </div>
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-[#111820]">
                     <tr>
                       <th className="px-3 py-2 text-left">Date</th>
                       <th className="px-3 py-2 text-left">Reference</th>
@@ -1283,7 +1283,7 @@ export default function InventoryAdjustments() {
                   </thead>
                   <tbody className="divide-y">
                     {(abcDrillDown.adjustments || []).map((a, i) => (
-                      <tr key={i} className="hover:bg-gray-50">
+                      <tr key={i} className="hover:bg-[#111820]">
                         <td className="px-3 py-2">{a.date}</td>
                         <td className="px-3 py-2">
                           <button className="text-[#3B9EFF] hover:underline" onClick={() => { setShowAbcDialog(false); viewDetail(a.adjustment_id); }}>
@@ -1308,7 +1308,7 @@ export default function InventoryAdjustments() {
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
                 {["A", "B", "C"].map(cls => (
-                  <Card key={cls} className={cls === "A" ? "bg-[rgba(34,197,94,0.08)] border-green-200" : cls === "B" ? "bg-[rgba(234,179,8,0.08)] border-yellow-200" : "bg-gray-50"}>
+                  <Card key={cls} className={cls === "A" ? "bg-[rgba(34,197,94,0.08)] border-green-200" : cls === "B" ? "bg-[rgba(234,179,8,0.08)] border-yellow-200" : "bg-[#111820]"}>
                     <CardContent className="p-3 text-center">
                       <p className="text-sm font-semibold">Class {cls}</p>
                       <p className="text-2xl font-bold">{abcReport.class_counts?.[cls] || 0}</p>
@@ -1319,7 +1319,7 @@ export default function InventoryAdjustments() {
               </div>
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full text-sm" data-testid="abc-report-table">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-[#111820]">
                     <tr>
                       <th className="px-3 py-2 text-left">Item</th>
                       <th className="px-3 py-2 text-center">Adjustments</th>
@@ -1331,7 +1331,7 @@ export default function InventoryAdjustments() {
                   </thead>
                   <tbody className="divide-y">
                     {(abcReport.items || []).map((item, i) => (
-                      <tr key={i} className="hover:bg-gray-50 cursor-pointer" onClick={() => loadAbcDrillDown(item._id)}>
+                      <tr key={i} className="hover:bg-[#111820] cursor-pointer" onClick={() => loadAbcDrillDown(item._id)}>
                         <td className="px-3 py-2">
                           <span className="text-[#3B9EFF] hover:underline">{item.item_name || item._id}</span>
                         </td>

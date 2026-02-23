@@ -258,7 +258,7 @@ export default function CustomerServiceHistory({ user }) {
                           <div className="flex flex-col items-center">
                             <div className="h-3 w-3 rounded-full bg-[rgba(200,255,0,0.08)]0"></div>
                             {index < selectedService.status_history.length - 1 && (
-                              <div className="w-0.5 h-8 bg-gray-200 mt-1"></div>
+                              <div className="w-0.5 h-8 bg-[#141E27] mt-1"></div>
                             )}
                           </div>
                           <div>
@@ -278,7 +278,7 @@ export default function CustomerServiceHistory({ user }) {
 
                 {/* Cost */}
                 {selectedService.total_cost > 0 && (
-                  <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="bg-[#111820] rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Total Cost</span>
                       <span className="text-xl font-bold text-[#F4F6F0]">

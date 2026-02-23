@@ -14,7 +14,7 @@ import { API } from "@/App";
 
 const statusColors = {
   active: "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]",
-  stopped: "bg-gray-200 text-gray-600",
+  stopped: "bg-[#141E27] text-gray-600",
   expired: "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F] border border-[rgba(255,59,47,0.25)]"
 };
 
@@ -166,7 +166,7 @@ export default function RecurringTransactions() {
                   <Switch checked={newRI.never_expires} onCheckedChange={(v) => setNewRI({ ...newRI, never_expires: v })} />
                   <Label>Never Expires</Label>
                 </div>
-                <div className="border rounded-lg p-4 bg-gray-50">
+                <div className="border rounded-lg p-4 bg-[#111820]">
                   <h3 className="font-medium mb-3">Add Items</h3>
                   <div className="grid grid-cols-4 gap-3">
                     <Input value={newLineItem.name} onChange={(e) => setNewLineItem({ ...newLineItem, name: e.target.value })} placeholder="Item name" />
@@ -178,7 +178,7 @@ export default function RecurringTransactions() {
                 {newRI.line_items.length > 0 && (
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50"><tr><th className="px-3 py-2 text-left">Item</th><th className="px-3 py-2 text-right">Qty</th><th className="px-3 py-2 text-right">Rate</th><th className="px-3 py-2 text-right">Amount</th><th></th></tr></thead>
+                      <thead className="bg-[#111820]"><tr><th className="px-3 py-2 text-left">Item</th><th className="px-3 py-2 text-right">Qty</th><th className="px-3 py-2 text-right">Rate</th><th className="px-3 py-2 text-right">Amount</th><th></th></tr></thead>
                       <tbody>
                         {newRI.line_items.map((item, idx) => (
                           <tr key={idx} className="border-t">
@@ -190,7 +190,7 @@ export default function RecurringTransactions() {
                           </tr>
                         ))}
                       </tbody>
-                      <tfoot className="bg-gray-50 font-semibold"><tr><td colSpan={3} className="px-3 py-2 text-right">Total per Invoice:</td><td className="px-3 py-2 text-right">₹{calculateTotal().toLocaleString('en-IN')}</td><td></td></tr></tfoot>
+                      <tfoot className="bg-[#111820] font-semibold"><tr><td colSpan={3} className="px-3 py-2 text-right">Total per Invoice:</td><td className="px-3 py-2 text-right">₹{calculateTotal().toLocaleString('en-IN')}</td><td></td></tr></tfoot>
                     </table>
                   </div>
                 )}

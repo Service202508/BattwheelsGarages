@@ -172,7 +172,7 @@ export default function CustomerInvoices({ user }) {
                 </div>
 
                 {/* Customer & Vehicle Info */}
-                <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                <div className="grid grid-cols-2 gap-4 p-4 bg-[#111820] rounded-lg">
                   <div>
                     <p className="text-sm text-gray-500">Customer</p>
                     <p className="font-medium">{selectedInvoice.customer_name}</p>
