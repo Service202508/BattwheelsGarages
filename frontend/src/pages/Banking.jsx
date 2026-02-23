@@ -446,7 +446,7 @@ export default function Banking() {
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
-                  <SelectItem value="" className="text-[#F4F6F0]">All Categories</SelectItem>
+                  <SelectItem value="all" className="text-[#F4F6F0]">All Categories</SelectItem>
                   {transactionCategories.map(c => <SelectItem key={c.value} value={c.value} className="text-[#F4F6F0]">{c.label}</SelectItem>)}
                 </SelectContent>
               </Select>
