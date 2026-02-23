@@ -773,6 +773,127 @@ async def get_sla_performance_report(
 
 # ==================== BACKGROUND SCHEDULER ====================
 
+async def _get_alert_recipients(db, org_id: str, assigned_tech_id: str = None) -> List[Dict]:
+    """Get email recipients: assigned technician + managers + org admins."""
+    recipients: List[Dict] = []
+    seen_emails: set = set()
+
+    # Assigned technician first
+    if assigned_tech_id:
+        tech = await db.users.find_one(
+            {"user_id": assigned_tech_id}, {"_id": 0, "email": 1, "name": 1}
+        )
+        if tech and tech.get("email") and tech["email"] not in seen_emails:
+            recipients.append(tech)
+            seen_emails.add(tech["email"])
+
+    # Managers and admins
+    admins = await db.users.find(
+        {"organization_id": org_id, "role": {"$in": ["admin", "manager"]}},
+        {"_id": 0, "email": 1, "name": 1}
+    ).to_list(10)
+    for a in admins:
+        if a.get("email") and a["email"] not in seen_emails:
+            recipients.append(a)
+            seen_emails.add(a["email"])
+
+    return recipients
+
+
+async def _send_sla_approaching_alert(ticket: Dict, deadline: str, org_id: str):
+    """Alert Type 1: SLA due in 1 hour — to technician + manager."""
+    try:
+        from services.email_service import EmailService
+        db = get_db()
+        recipients = await _get_alert_recipients(db, org_id, ticket.get("assigned_technician_id"))
+        if not recipients:
+            return
+
+        ticket_id = ticket.get("ticket_id", "")
+        title = ticket.get("title", "Untitled")
+        priority = ticket.get("priority", "HIGH").upper()
+        customer = ticket.get("customer_name", "Unknown Customer")
+        vehicle = f"{ticket.get('vehicle_make','')} {ticket.get('vehicle_model','')}".strip() or "N/A"
+        status = ticket.get("status", "open")
+        deadline_disp = deadline[:19].replace("T", " ") if deadline else "Unknown"
+
+        subject = f"⚠️ SLA Due in 1 hour — Ticket #{ticket_id}: {title}"
+        body = (
+            f"SLA Warning — Action Required Within 1 Hour\n\n"
+            f"Ticket:    #{ticket_id}\n"
+            f"Title:     {title}\n"
+            f"Customer:  {customer}\n"
+            f"Vehicle:   {vehicle}\n"
+            f"Priority:  {priority}\n"
+            f"SLA Deadline: {deadline_disp} UTC\n"
+            f"Current Status: {status}\n\n"
+            f"Action required immediately. Please log in to Battwheels OS."
+        )
+
+        for r in recipients:
+            try:
+                await EmailService.send_generic_email(
+                    to_email=r["email"], subject=subject, body=body
+                )
+            except Exception:
+                pass
+    except Exception as e:
+        logger.warning(f"SLA approaching alert error: {e}")
+
+
+async def _send_sla_breach_alert(ticket: Dict, breach_type: str, org_id: str, now: datetime):
+    """Alert Type 2: SLA breached — to technician + manager + admin."""
+    try:
+        from services.email_service import EmailService
+        db = get_db()
+        recipients = await _get_alert_recipients(db, org_id, ticket.get("assigned_technician_id"))
+        if not recipients:
+            return
+
+        ticket_id = ticket.get("ticket_id", "")
+        title = ticket.get("title", "Untitled")
+        priority = ticket.get("priority", "HIGH").upper()
+        customer = ticket.get("customer_name", "Unknown Customer")
+        vehicle = f"{ticket.get('vehicle_make','')} {ticket.get('vehicle_model','')}".strip() or "N/A"
+        status = ticket.get("status", "open")
+        breach_label = "Response SLA" if breach_type == "response" else "Resolution SLA"
+
+        # Calculate how long ago breach occurred
+        deadline_str = ticket.get("sla_resolution_due_at" if breach_type == "resolution" else "sla_response_due_at", "")
+        breached_minutes = ""
+        if deadline_str:
+            try:
+                dl = datetime.fromisoformat(deadline_str.replace("Z", "+00:00"))
+                mins = int((now - dl).total_seconds() / 60)
+                breached_minutes = f"Breached: {mins} minute(s) ago\n"
+            except Exception:
+                pass
+
+        subject = f"🚨 SLA BREACHED — Ticket #{ticket_id}: {title}"
+        body = (
+            f"SLA BREACH ALERT — {breach_label}\n\n"
+            f"Ticket:    #{ticket_id}\n"
+            f"Title:     {title}\n"
+            f"Customer:  {customer}\n"
+            f"Vehicle:   {vehicle}\n"
+            f"Priority:  {priority}\n"
+            f"Current Status: {status}\n"
+            f"{breached_minutes}"
+            f"\nEscalation triggered. Please resolve immediately.\n"
+            f"Log in to Battwheels OS to take action."
+        )
+
+        for r in recipients:
+            try:
+                await EmailService.send_generic_email(
+                    to_email=r["email"], subject=subject, body=body
+                )
+            except Exception:
+                pass
+    except Exception as e:
+        logger.warning(f"SLA breach alert error: {e}")
+
+
 async def _send_sla_breach_notification(ticket: Dict, breach_type: str, org_id: str):
     """Send SLA breach email to admins"""
     try:
