@@ -122,13 +122,18 @@ async def list_journal_entries(
     entry_type: str = Query(None, description="Filter by entry type"),
     account_id: str = Query(None, description="Filter by account"),
     is_posted: bool = Query(None, description="Filter by posted status"),
-    limit: int = Query(100, ge=1, le=500),
-    skip: int = Query(0, ge=0)
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
-    """List journal entries with filters"""
+    """List journal entries with filters and standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     org_id = await get_org_id(request)
     service = get_service()
-    
+
+    skip = (page - 1) * limit
     result = await service.get_journal_entries(
         organization_id=org_id,
         start_date=start_date,
@@ -139,8 +144,21 @@ async def list_journal_entries(
         limit=limit,
         skip=skip
     )
-    
-    return {"code": 0, **result}
+
+    total = result.get("total", len(result.get("entries", [])))
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    return {
+        "data": result.get("entries", []),
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
 
 
 @router.post("")

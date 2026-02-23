@@ -275,10 +275,14 @@ async def list_bank_transactions(
     is_reconciled: Optional[bool] = None,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
-    page: int = 1,
-    per_page: int = 50
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
 ):
-    """List bank transactions with filters"""
+    """List bank transactions with standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     query = {}
     if bank_account_id:
         query["bank_account_id"] = bank_account_id
@@ -293,21 +297,24 @@ async def list_bank_transactions(
             query["transaction_date"]["$lte"] = end_date
         else:
             query["transaction_date"] = {"$lte": end_date}
-    
+
     total = await bank_transactions_col.count_documents(query)
-    skip = (page - 1) * per_page
-    
+    skip = (page - 1) * limit
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
     transactions = await bank_transactions_col.find(
         query, {"_id": 0}
-    ).sort("transaction_date", -1).skip(skip).limit(per_page).to_list(per_page)
-    
+    ).sort("transaction_date", -1).skip(skip).limit(limit).to_list(limit)
+
     return {
-        "code": 0,
-        "transactions": transactions,
-        "page_context": {
+        "data": transactions,
+        "pagination": {
             "page": page,
-            "per_page": per_page,
-            "total": total
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
         }
     }
 
