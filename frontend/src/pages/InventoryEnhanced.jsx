@@ -697,28 +697,54 @@ export default function InventoryEnhanced() {
 
         {/* Serial/Batch Tab */}
         <TabsContent value="serial-batch">
-          {serialBatches.length === 0 ? (
-            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">No serial numbers or batches. Track individual units or lot numbers for traceability.</CardContent></Card>
-          ) : (
-            <div className="space-y-3">
-              {serialBatches.map(sb => (
-                <Card key={sb.serial_batch_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewDetail('serial', sb.serial_batch_id)}>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <Barcode className="h-8 w-8 text-[rgba(244,246,240,0.45)]" />
-                        <div>
-                          <h3 className="font-semibold">{sb.number}</h3>
-                          <p className="text-sm text-[rgba(244,246,240,0.45)]">{sb.tracking_type === 'serial' ? 'Serial Number' : `Batch (Qty: ${sb.quantity})`}</p>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(244,246,240,0.45)]" />
+                <Input
+                  placeholder="Search by serial/batch number..."
+                  value={serialSearch}
+                  onChange={e => setSerialSearch(e.target.value)}
+                  className="pl-9"
+                  data-testid="serial-search-input"
+                />
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setSerialSearch("")}>Clear</Button>
+            </div>
+          {(() => {
+            const filtered = serialBatches.filter(sb =>
+              !serialSearch || sb.number?.toLowerCase().includes(serialSearch.toLowerCase())
+            );
+            return filtered.length === 0 ? (
+              <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
+                {serialSearch ? `No results for "${serialSearch}"` : "No serial numbers or batches. Track individual units or lot numbers for traceability."}
+              </CardContent></Card>
+            ) : (
+              <div className="space-y-2">
+                {filtered.map(sb => (
+                  <Card key={sb.serial_batch_id} className="border border-[rgba(255,255,255,0.07)] hover:border-[rgba(200,255,0,0.2)] transition-colors cursor-pointer" onClick={() => viewDetail('serial', sb.serial_batch_id)}>
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                          <Barcode className="h-8 w-8 text-[rgba(244,246,240,0.45)]" />
+                          <div>
+                            <h3 className="font-semibold font-mono">{sb.number}</h3>
+                            <p className="text-xs text-[rgba(244,246,240,0.45)]">{sb.tracking_type === 'serial' ? 'Serial Number' : `Batch (Qty: ${sb.quantity})`}</p>
+                            {sb.warehouse_id && <p className="text-xs text-[rgba(244,246,240,0.35)]">WH: {warehouses.find(w => w.warehouse_id === sb.warehouse_id)?.name || sb.warehouse_id}</p>}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <Badge className={statusColors[sb.status] || "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.45)]"}>{sb.status}</Badge>
+                          {sb.expiry_date && <p className="text-xs text-[rgba(244,246,240,0.35)] mt-1">Exp: {sb.expiry_date}</p>}
                         </div>
                       </div>
-                      <Badge className={statusColors[sb.status]}>{sb.status}</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            );
+          })()}
+          </div>
         </TabsContent>
 
         {/* Shipments Tab */}
