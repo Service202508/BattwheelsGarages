@@ -73,6 +73,7 @@ import ActivityLogs from "@/pages/ActivityLogs";
 import ZohoSync from "@/pages/ZohoSync";
 import OrganizationSettings from "@/pages/OrganizationSettings";
 import AllSettings from "@/pages/AllSettings";
+import FinanceDashboard from "@/pages/finance/FinanceDashboard";
 import DataManagement from "@/pages/DataManagement";
 import Home from "@/pages/Home";
 import TimeTracking from "@/pages/TimeTracking";
