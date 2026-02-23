@@ -1745,6 +1745,142 @@ async def get_inventory(
         }
     }
 
+@api_router.get("/inventory/reorder-suggestions")
+async def get_inventory_reorder_suggestions(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """
+    GET /api/inventory/reorder-suggestions
+    Items where qty <= reorder_level, grouped by preferred vendor.
+    """
+    await require_auth(request)
+    query = {
+        "organization_id": ctx.org_id,
+        "$expr": {"$lte": ["$quantity", "$reorder_level"]}
+    }
+    items = await db.inventory.find(query, {"_id": 0}).to_list(500)
+
+    suggestions = []
+    by_vendor: dict = {}
+    for item in items:
+        qty = float(item.get("quantity", 0))
+        reorder = float(item.get("reorder_level", 10))
+        shortage = max(0.0, reorder - qty)
+        suggested_qty = item.get("reorder_quantity", max(int(shortage * 1.5), 1))
+        unit_cost = float(item.get("cost_price") or item.get("unit_price", 0))
+        s = {
+            "item_id": item.get("item_id", ""),
+            "item_name": item.get("name", ""),
+            "sku": item.get("sku", ""),
+            "category": item.get("category", ""),
+            "current_stock_qty": qty,
+            "reorder_level": reorder,
+            "shortage": round(shortage, 2),
+            "suggested_qty": suggested_qty,
+            "unit_cost": unit_cost,
+            "estimated_cost": round(suggested_qty * unit_cost, 2),
+            "vendor_id": item.get("preferred_vendor_id"),
+            "vendor_name": item.get("preferred_vendor_name", "No preferred vendor"),
+        }
+        suggestions.append(s)
+        key = s.get("vendor_id") or "no_vendor"
+        if key not in by_vendor:
+            by_vendor[key] = {
+                "vendor_id": s.get("vendor_id"),
+                "vendor_name": s.get("vendor_name", "No preferred vendor"),
+                "items": [], "total_estimated_cost": 0.0
+            }
+        by_vendor[key]["items"].append(s)
+        by_vendor[key]["total_estimated_cost"] = round(
+            by_vendor[key]["total_estimated_cost"] + s["estimated_cost"], 2
+        )
+
+    return {
+        "code": 0,
+        "total_items_below_reorder": len(suggestions),
+        "suggestions": suggestions,
+        "grouped_by_vendor": list(by_vendor.values()),
+    }
+
+
+@api_router.get("/inventory/stocktakes")
+async def list_stocktakes_api(
+    request: Request,
+    status: Optional[str] = None,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """GET /api/inventory/stocktakes — List stocktake sessions for org."""
+    await require_auth(request)
+    query: dict = {"organization_id": ctx.org_id}
+    if status:
+        query["status"] = status
+    stocktakes = await db.stocktakes.find(
+        query,
+        {"_id": 0, "stocktake_id": 1, "name": 1, "status": 1,
+         "total_lines": 1, "counted_lines": 1, "total_variance": 1,
+         "created_at": 1, "finalized_at": 1}
+    ).sort("created_at", -1).to_list(100)
+    return {"code": 0, "stocktakes": stocktakes, "total": len(stocktakes)}
+
+
+class StocktakeCreateModel(BaseModel):
+    name: Optional[str] = None
+    notes: Optional[str] = None
+    item_ids: Optional[list] = None
+
+
+@api_router.post("/inventory/stocktakes")
+async def create_stocktake_api(
+    data: StocktakeCreateModel,
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """POST /api/inventory/stocktakes — Create stocktake session."""
+    import uuid as _uuid
+    await require_technician_or_admin(request)
+    org_id = ctx.org_id
+    now_iso = datetime.now(timezone.utc).isoformat()
+    stocktake_id = f"ST-{_uuid.uuid4().hex[:12].upper()}"
+
+    item_query: dict = {"organization_id": org_id}
+    if data.item_ids:
+        item_query["item_id"] = {"$in": data.item_ids}
+
+    items = await db.inventory.find(
+        item_query, {"_id": 0, "item_id": 1, "name": 1, "sku": 1, "quantity": 1}
+    ).to_list(2000)
+
+    lines = [{
+        "item_id": it["item_id"],
+        "item_name": it["name"],
+        "sku": it.get("sku", ""),
+        "system_quantity": float(it.get("quantity", 0)),
+        "counted_quantity": None,
+        "variance": None,
+        "notes": "",
+        "counted": False,
+    } for it in items]
+
+    doc = {
+        "stocktake_id": stocktake_id,
+        "name": data.name or f"Stocktake {datetime.now(timezone.utc).strftime('%Y-%m-%d')}",
+        "organization_id": org_id,
+        "status": "in_progress",
+        "lines": lines,
+        "total_lines": len(lines),
+        "counted_lines": 0,
+        "total_variance": 0,
+        "notes": data.notes or "",
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "finalized_at": None,
+    }
+    await db.stocktakes.insert_one(doc)
+    doc.pop("_id", None)
+    return {"code": 0, "message": "Stocktake created", "stocktake": doc}
+
+
 @api_router.get("/inventory/{item_id}")
 async def get_inventory_item(
     item_id: str, 
