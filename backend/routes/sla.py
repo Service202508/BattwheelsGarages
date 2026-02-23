@@ -632,6 +632,95 @@ async def get_sla_breach_report(
     }
 
 
+# ==================== SLA PERFORMANCE REPORT ====================
+
+@router.get("/performance-report")
+async def get_sla_performance_report(
+    request: Request,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    page: int = 1,
+    limit: int = 25,
+):
+    """
+    GET /api/sla/performance-report
+    Full SLA performance metrics: compliance rate, breach counts,
+    avg response/resolution times, paginated breach list.
+    """
+    org_id = await get_org_id_from_request(request)
+    db = get_db()
+    now = datetime.now(timezone.utc)
+
+    end = date_to or now.isoformat()
+    start = date_from or (now - timedelta(days=30)).isoformat()
+
+    total_tickets = await db.tickets.count_documents({
+        "organization_id": org_id,
+        "created_at": {"$gte": start, "$lte": end}
+    })
+
+    breached = await db.tickets.find(
+        {
+            "organization_id": org_id,
+            "created_at": {"$gte": start, "$lte": end},
+            "$or": [{"sla_response_breached": True}, {"sla_resolution_breached": True}]
+        },
+        {"_id": 0, "ticket_id": 1, "title": 1, "priority": 1, "status": 1,
+         "customer_name": 1, "assigned_technician_name": 1,
+         "sla_response_breached": 1, "sla_response_breached_at": 1,
+         "sla_resolution_breached": 1, "sla_resolution_breached_at": 1,
+         "sla_response_due_at": 1, "sla_resolution_due_at": 1,
+         "first_response_at": 1, "resolved_at": 1, "created_at": 1}
+    ).sort("created_at", -1).to_list(500)
+
+    breached_response = sum(1 for t in breached if t.get("sla_response_breached"))
+    breached_resolution = sum(1 for t in breached if t.get("sla_resolution_breached"))
+    within_sla = max(0, total_tickets - len(breached))
+    compliance_pct = round(within_sla / total_tickets * 100, 1) if total_tickets > 0 else 100.0
+
+    all_sample = await db.tickets.find(
+        {"organization_id": org_id, "created_at": {"$gte": start, "$lte": end},
+         "first_response_at": {"$ne": None}},
+        {"_id": 0, "created_at": 1, "first_response_at": 1, "resolved_at": 1}
+    ).to_list(200)
+
+    def _parse(s):
+        if not s:
+            return None
+        try:
+            return datetime.fromisoformat(s.replace("Z", "+00:00"))
+        except Exception:
+            return None
+
+    resp_times, res_times = [], []
+    for t in all_sample:
+        c, r, v = _parse(t.get("created_at")), _parse(t.get("first_response_at")), _parse(t.get("resolved_at"))
+        if c and r:
+            resp_times.append((r - c).total_seconds() / 60)
+        if c and v:
+            res_times.append((v - c).total_seconds() / 60)
+
+    offset = (page - 1) * limit
+    return {
+        "code": 0,
+        "period": {"date_from": start, "date_to": end},
+        "summary": {
+            "total_tickets": total_tickets,
+            "within_sla_count": within_sla,
+            "breached_response_count": breached_response,
+            "breached_resolution_count": breached_resolution,
+            "compliance_rate_pct": compliance_pct,
+            "avg_response_time_minutes": round(sum(resp_times) / len(resp_times), 1) if resp_times else 0,
+            "avg_resolution_time_minutes": round(sum(res_times) / len(res_times), 1) if res_times else 0,
+        },
+        "breach_list": breached[offset:offset + limit],
+        "pagination": {
+            "page": page, "limit": limit,
+            "total_count": len(breached),
+            "has_next": offset + limit < len(breached),
+        }
+    }
+
 
 # ==================== BACKGROUND SCHEDULER ====================
 
