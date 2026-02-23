@@ -426,7 +426,8 @@ export default function Tickets({ user }) {
                       {ticket.created_at ? format(new Date(ticket.created_at), "MMM dd, HH:mm") : "N/A"}
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           )}
