@@ -1202,7 +1202,14 @@ class TicketEstimateService:
         organization_id: str,
         user_id: str
     ):
-        """Consume reserved inventory when estimate is converted to invoice"""
+        """
+        Consume reserved inventory when estimate is converted to invoice.
+        
+        CRITICAL: This method now properly handles:
+        1. Updates stock location
+        2. Creates stock_movement record for audit trail
+        3. Posts COGS journal entry for accounting
+        """
         now = datetime.now(timezone.utc)
         
         # Find the allocation
@@ -1212,10 +1219,16 @@ class TicketEstimateService:
             "status": "reserved"
         })
         
+        # Get item details for cost calculation
+        item = await self.db.items.find_one({"item_id": item_id}, {"_id": 0})
+        item_name = item.get("name", "Unknown") if item else "Unknown"
+        unit_cost = item.get("purchase_price", 0) if item else 0
+        total_cost = round(unit_cost * quantity, 2)
+        
         if allocation:
             warehouse_id = allocation.get("warehouse_id", "default")
             
-            # Update stock location - decrease both available and reserved
+            # 1. Update stock location - decrease both available and reserved
             await self.db.item_stock_locations.update_one(
                 {"item_id": item_id, "warehouse_id": warehouse_id},
                 {
@@ -1227,13 +1240,35 @@ class TicketEstimateService:
                 }
             )
             
-            # Update allocation status
+            # 2. Update allocation status
             await self.db.inventory_allocations.update_one(
                 {"allocation_id": allocation["allocation_id"]},
                 {"$set": {"status": "consumed", "consumed_at": now.isoformat()}}
             )
             
-            # Log inventory history
+            # 3. Create stock_movement record (CRITICAL for audit trail)
+            movement_id = f"stm_{uuid.uuid4().hex[:12]}"
+            stock_movement = {
+                "movement_id": movement_id,
+                "item_id": item_id,
+                "item_name": item_name,
+                "movement_type": "CONSUMPTION",
+                "reference_type": "ESTIMATE",
+                "reference_id": estimate_id,
+                "reference_number": estimate_id,
+                "movement_date": now.isoformat(),
+                "quantity": -quantity,  # Negative for consumption
+                "unit_cost": unit_cost,
+                "total_value": total_cost,
+                "warehouse_id": warehouse_id,
+                "organization_id": organization_id,
+                "created_by": user_id,
+                "created_at": now.isoformat(),
+                "notes": f"Consumed for estimate {estimate_id}"
+            }
+            await self.db.stock_movements.insert_one(stock_movement)
+            
+            # 4. Log inventory history (existing)
             await self.db.inventory_history.insert_one({
                 "history_id": f"hist_{uuid.uuid4().hex[:12]}",
                 "item_id": item_id,
@@ -1245,7 +1280,83 @@ class TicketEstimateService:
                 "timestamp": now.isoformat()
             })
             
-            logger.info(f"Consumed {quantity} units of item {item_id} for estimate {estimate_id}")
+            # 5. Post COGS journal entry (CRITICAL for accounting)
+            if total_cost > 0:
+                await self._post_cogs_entry(
+                    item_name=item_name,
+                    quantity=quantity,
+                    unit_cost=unit_cost,
+                    total_cost=total_cost,
+                    estimate_id=estimate_id,
+                    organization_id=organization_id,
+                    user_id=user_id,
+                    movement_id=movement_id
+                )
+            
+            logger.info(f"Consumed {quantity} units of item {item_id} for estimate {estimate_id} (COGS: ₹{total_cost})")
+    
+    async def _post_cogs_entry(
+        self,
+        item_name: str,
+        quantity: float,
+        unit_cost: float,
+        total_cost: float,
+        estimate_id: str,
+        organization_id: str,
+        user_id: str,
+        movement_id: str
+    ):
+        """Post COGS journal entry for inventory consumption"""
+        try:
+            now = datetime.now(timezone.utc)
+            entry_id = f"je_{uuid.uuid4().hex[:12]}"
+            
+            narration = f"Parts consumed: {item_name} × {quantity} | Estimate: {estimate_id} | Cost: ₹{unit_cost}"
+            
+            journal_entry = {
+                "entry_id": entry_id,
+                "entry_date": now.strftime("%Y-%m-%d"),
+                "reference_number": movement_id,
+                "description": narration,
+                "organization_id": organization_id,
+                "created_by": user_id,
+                "entry_type": "COGS",
+                "source_document_id": estimate_id,
+                "source_document_type": "ESTIMATE",
+                "is_posted": True,
+                "is_reversed": False,
+                "reversed_entry_id": "",
+                "lines": [
+                    {
+                        "line_id": f"jel_{uuid.uuid4().hex[:8]}",
+                        "account_id": "COST_OF_GOODS_SOLD",
+                        "account_name": "Cost of Goods Sold",
+                        "account_code": "5100",
+                        "account_type": "Expense",
+                        "debit_amount": total_cost,
+                        "credit_amount": 0,
+                        "description": f"COGS - {item_name}"
+                    },
+                    {
+                        "line_id": f"jel_{uuid.uuid4().hex[:8]}",
+                        "account_id": "INVENTORY",
+                        "account_name": "Inventory",
+                        "account_code": "1300",
+                        "account_type": "Asset",
+                        "debit_amount": 0,
+                        "credit_amount": total_cost,
+                        "description": f"Inventory reduction - {item_name}"
+                    }
+                ],
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat()
+            }
+            
+            await self.db.journal_entries.insert_one(journal_entry)
+            logger.info(f"COGS journal entry posted: {entry_id} for ₹{total_cost}")
+            
+        except Exception as e:
+            logger.error(f"Failed to post COGS journal entry: {e}")
 
 
 # ==================== CUSTOM EXCEPTIONS ====================
