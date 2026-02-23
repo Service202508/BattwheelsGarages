@@ -1500,6 +1500,165 @@ export default function InvoicesEnhanced() {
                   <div><span className="text-[rgba(244,246,240,0.45)]">Payment Terms:</span><br/><span className="font-medium">{selectedInvoice.payment_terms} days</span></div>
                 </div>
 
+                {/* ==================== E-INVOICE / IRN STATUS PANEL ==================== */}
+                {isB2BInvoice(selectedInvoice) && einvoiceEnabled && selectedInvoice.status !== "draft" && (
+                  <>
+                    <Separator />
+                    {/* State 1: IRN Pending */}
+                    {needsIRN(selectedInvoice) && !irnLoading && (
+                      <div className="p-4 bg-[rgba(255,140,0,0.08)] border border-[rgba(255,140,0,0.25)] border-l-[3px] border-l-[#FF8C00] rounded">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start gap-3">
+                            <div className="w-3 h-3 rounded-full bg-[#FF8C00] animate-pulse mt-1" />
+                            <div>
+                              <h4 className="font-medium text-[#FF8C00]">IRN Registration Pending</h4>
+                              <p className="text-sm text-[rgba(244,246,240,0.65)] mt-1">
+                                This B2B invoice requires IRN registration before dispatch
+                              </p>
+                              <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">
+                                Invoice date: {formatDate(selectedInvoice.invoice_date)} · Must register within 3 days of invoice date
+                              </p>
+                            </div>
+                          </div>
+                          <Button 
+                            onClick={() => handleGenerateIRN(selectedInvoice.invoice_id)}
+                            className="bg-[#C8FF00] hover:bg-[#a8d900] text-[#080C0F]"
+                            data-testid="generate-irn-btn"
+                          >
+                            <FileCheck className="h-4 w-4 mr-2" />
+                            Generate IRN Now
+                          </Button>
+                        </div>
+                        
+                        {/* Validation Errors */}
+                        {irnValidationErrors.length > 0 && (
+                          <div className="mt-4 p-3 bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.25)] border-l-[3px] border-l-[#FF3B2F] rounded">
+                            <h5 className="font-medium text-[#FF3B2F] text-sm">Cannot Generate IRN — Validation Failed</h5>
+                            <ul className="mt-2 space-y-1">
+                              {irnValidationErrors.map((error, idx) => (
+                                <li key={idx} className="text-sm text-[rgba(244,246,240,0.65)] flex items-start gap-2">
+                                  <XCircle className="h-4 w-4 text-[#FF3B2F] mt-0.5 flex-shrink-0" />
+                                  {error}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* State 2: IRN Generating (Loading) */}
+                    {irnLoading && (
+                      <div className="p-6 bg-[rgba(200,255,0,0.04)] border border-[rgba(200,255,0,0.15)] rounded">
+                        <div className="flex flex-col items-center justify-center gap-3">
+                          <Loader2 className="h-8 w-8 animate-spin text-[#C8FF00]" />
+                          <div className="text-center">
+                            <p className="font-medium">Submitting to IRP portal...</p>
+                            <p className="text-sm text-[rgba(244,246,240,0.45)]">This usually takes 5–10 seconds</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* State 3: IRN Registered */}
+                    {selectedInvoice.irn && selectedInvoice.irn_status === "registered" && !irnLoading && (
+                      <div className="p-4 bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.25)] border-l-[3px] border-l-[#22C55E] rounded">
+                        <div className="flex items-start gap-3">
+                          <CheckCircle className="h-5 w-5 text-[#22C55E] mt-0.5 flex-shrink-0" />
+                          <div className="flex-1 space-y-4">
+                            {/* IRN Number */}
+                            <div>
+                              <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)]">IRN</Label>
+                              <div className="flex items-center gap-2 mt-1">
+                                <code className="text-[11px] font-mono text-[#C8FF00] tracking-wider break-all">
+                                  {selectedInvoice.irn}
+                                </code>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(selectedInvoice.irn);
+                                    toast.success("IRN copied to clipboard");
+                                  }}
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                            
+                            {/* Ack Number and Date */}
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)]">Ack Number</Label>
+                                <p className="font-mono text-[#C8FF00] mt-1">{selectedInvoice.irn_ack_no || "-"}</p>
+                              </div>
+                              <div>
+                                <Label className="text-[10px] uppercase tracking-wider text-[rgba(244,246,240,0.45)]">Ack Date</Label>
+                                <p className="font-mono text-[rgba(244,246,240,0.65)] mt-1">{selectedInvoice.irn_ack_date || "-"}</p>
+                              </div>
+                            </div>
+                            
+                            {/* QR Code */}
+                            {irnQrCode && (
+                              <div className="flex items-start gap-4 pt-2">
+                                <div className="p-2 bg-white rounded">
+                                  <img src={irnQrCode} alt="E-Invoice QR Code" className="w-32 h-32" />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-xs text-[rgba(244,246,240,0.45)]">Scan to verify on IRP portal</p>
+                                  
+                                  {/* Cancel IRN Button - only within 24 hours */}
+                                  {canCancelIRN(selectedInvoice) ? (
+                                    <Button 
+                                      variant="ghost" 
+                                      className="mt-4 text-[#FF3B2F] hover:text-red-300 hover:bg-[rgba(255,59,47,0.08)]"
+                                      onClick={() => setShowIrnCancelDialog(true)}
+                                      data-testid="cancel-irn-btn"
+                                    >
+                                      <XCircle className="h-4 w-4 mr-2" />
+                                      Cancel IRN
+                                    </Button>
+                                  ) : (
+                                    <div className="mt-4 text-xs text-[rgba(244,246,240,0.35)]">
+                                      <Info className="h-3 w-3 inline mr-1" />
+                                      IRN cancellation window (24 hrs) has passed
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* State 4: IRN Cancelled */}
+                    {selectedInvoice.irn_status === "cancelled" && (
+                      <div className="p-4 bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.25)] border-l-[3px] border-l-[#FF3B2F] rounded">
+                        <div className="flex items-start gap-3">
+                          <XCircle className="h-5 w-5 text-[#FF3B2F] mt-0.5 flex-shrink-0" />
+                          <div>
+                            <h4 className="font-medium text-[#FF3B2F]">IRN CANCELLED</h4>
+                            {selectedInvoice.irn_cancel_reason && (
+                              <p className="text-sm text-[rgba(244,246,240,0.65)] mt-1">
+                                Reason: {selectedInvoice.irn_cancel_reason === "1" ? "Duplicate invoice" : 
+                                        selectedInvoice.irn_cancel_reason === "2" ? "Invoice raised in error" :
+                                        selectedInvoice.irn_cancel_reason === "3" ? "Wrong GSTIN entered" :
+                                        selectedInvoice.irn_cancel_reason === "4" ? "Wrong invoice amount" : "Other"}
+                              </p>
+                            )}
+                            <p className="text-xs font-mono text-[rgba(244,246,240,0.35)] mt-2">{selectedInvoice.irn}</p>
+                            <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">
+                              A new invoice must be raised with a new invoice number
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
                 {/* Line Items */}
                 {selectedInvoice.line_items?.length > 0 && (
                   <>
