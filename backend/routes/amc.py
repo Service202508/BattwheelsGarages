@@ -90,9 +90,9 @@ async def get_current_user_from_request(request: Request):
     
     session_token = request.cookies.get("session_token")
     if session_token:
-        session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+        session = await get_db().user_sessions.find_one({"session_token": session_token}, {"_id": 0})
         if session:
-            user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+            user = await get_db().users.find_one({"user_id": session["user_id"]}, {"_id": 0})
             if user:
                 return user
     
@@ -101,7 +101,7 @@ async def get_current_user_from_request(request: Request):
         token = auth_header.split(" ")[1]
         try:
             payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-            user = await db.users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
+            user = await get_db().users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
             if user:
                 return user
         except:
@@ -151,7 +151,7 @@ async def create_amc_plan(plan_data: AMCPlanCreate, request: Request):
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.amc_plans.insert_one(plan)
+    await get_db().amc_plans.insert_one(plan)
     if "_id" in plan:
         del plan["_id"]
     
@@ -163,11 +163,11 @@ async def get_amc_plans(request: Request, include_inactive: bool = False):
     user = await require_admin_or_technician(request)
     
     query = {} if include_inactive else {"is_active": True}
-    plans = await db.amc_plans.find(query, {"_id": 0}).to_list(100)
+    plans = await get_db().amc_plans.find(query, {"_id": 0}).to_list(100)
     
     # Add subscription count for each plan
     for plan in plans:
-        plan["active_subscriptions"] = await db.amc_subscriptions.count_documents({
+        plan["active_subscriptions"] = await get_db().amc_subscriptions.count_documents({
             "plan_id": plan["plan_id"],
             "status": {"$in": ["active", "expiring"]}
         })
@@ -179,7 +179,7 @@ async def get_amc_plan(plan_id: str, request: Request):
     """Get AMC plan details"""
     user = await require_admin_or_technician(request)
     
-    plan = await db.amc_plans.find_one({"plan_id": plan_id}, {"_id": 0})
+    plan = await get_db().amc_plans.find_one({"plan_id": plan_id}, {"_id": 0})
     if not plan:
         raise HTTPException(status_code=404, detail="AMC plan not found")
     
@@ -190,7 +190,7 @@ async def update_amc_plan(plan_id: str, update_data: AMCPlanUpdate, request: Req
     """Update AMC plan (admin only)"""
     user = await require_admin(request)
     
-    plan = await db.amc_plans.find_one({"plan_id": plan_id}, {"_id": 0})
+    plan = await get_db().amc_plans.find_one({"plan_id": plan_id}, {"_id": 0})
     if not plan:
         raise HTTPException(status_code=404, detail="AMC plan not found")
     
@@ -198,12 +198,12 @@ async def update_amc_plan(plan_id: str, update_data: AMCPlanUpdate, request: Req
     update_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
     update_dict["updated_by"] = user["user_id"]
     
-    await db.amc_plans.update_one(
+    await get_db().amc_plans.update_one(
         {"plan_id": plan_id},
         {"$set": update_dict}
     )
     
-    updated_plan = await db.amc_plans.find_one({"plan_id": plan_id}, {"_id": 0})
+    updated_plan = await get_db().amc_plans.find_one({"plan_id": plan_id}, {"_id": 0})
     return updated_plan
 
 @router.delete("/plans/{plan_id}")
@@ -211,7 +211,7 @@ async def deactivate_amc_plan(plan_id: str, request: Request):
     """Deactivate AMC plan (soft delete)"""
     user = await require_admin(request)
     
-    result = await db.amc_plans.update_one(
+    result = await get_db().amc_plans.update_one(
         {"plan_id": plan_id},
         {"$set": {"is_active": False, "deactivated_by": user["user_id"]}}
     )
@@ -229,17 +229,17 @@ async def create_amc_subscription(sub_data: AMCSubscriptionCreate, request: Requ
     user = await require_admin_or_technician(request)
     
     # Get plan details
-    plan = await db.amc_plans.find_one({"plan_id": sub_data.plan_id}, {"_id": 0})
+    plan = await get_db().amc_plans.find_one({"plan_id": sub_data.plan_id}, {"_id": 0})
     if not plan:
         raise HTTPException(status_code=404, detail="AMC plan not found")
     
     # Get customer details
-    customer = await db.users.find_one({"user_id": sub_data.customer_id}, {"_id": 0})
+    customer = await get_db().users.find_one({"user_id": sub_data.customer_id}, {"_id": 0})
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     
     # Get vehicle details
-    vehicle = await db.vehicles.find_one({"vehicle_id": sub_data.vehicle_id}, {"_id": 0})
+    vehicle = await get_db().vehicles.find_one({"vehicle_id": sub_data.vehicle_id}, {"_id": 0})
     if not vehicle:
         raise HTTPException(status_code=404, detail="Vehicle not found")
     
@@ -277,7 +277,7 @@ async def create_amc_subscription(sub_data: AMCSubscriptionCreate, request: Requ
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.amc_subscriptions.insert_one(subscription)
+    await get_db().amc_subscriptions.insert_one(subscription)
     if "_id" in subscription:
         del subscription["_id"]
     
@@ -307,11 +307,11 @@ async def get_amc_subscriptions(
     if status:
         query["status"] = status
 
-    total = await db.amc_subscriptions.count_documents(query)
+    total = await get_db().amc_subscriptions.count_documents(query)
     skip = (page - 1) * limit
     total_pages = math.ceil(total / limit) if total > 0 else 1
 
-    subscriptions = await db.amc_subscriptions.find(
+    subscriptions = await get_db().amc_subscriptions.find(
         query, {"_id": 0}
     ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
 
@@ -342,7 +342,7 @@ async def get_amc_subscription(subscription_id: str, request: Request):
     """Get AMC subscription details"""
     user = await require_admin_or_technician(request)
     
-    subscription = await db.amc_subscriptions.find_one(
+    subscription = await get_db().amc_subscriptions.find_one(
         {"subscription_id": subscription_id},
         {"_id": 0}
     )
@@ -351,7 +351,7 @@ async def get_amc_subscription(subscription_id: str, request: Request):
         raise HTTPException(status_code=404, detail="AMC subscription not found")
     
     # Get usage history
-    services_used = await db.tickets.find({
+    services_used = await get_db().tickets.find({
         "amc_subscription_id": subscription_id
     }, {"_id": 0, "ticket_id": 1, "title": 1, "created_at": 1, "status": 1}).to_list(100)
     
@@ -365,7 +365,7 @@ async def record_amc_service_usage(subscription_id: str, request: Request):
     user = await require_admin_or_technician(request)
     body = await request.json()
     
-    subscription = await db.amc_subscriptions.find_one(
+    subscription = await get_db().amc_subscriptions.find_one(
         {"subscription_id": subscription_id},
         {"_id": 0}
     )
@@ -380,7 +380,7 @@ async def record_amc_service_usage(subscription_id: str, request: Request):
         raise HTTPException(status_code=400, detail="All AMC services have been used")
     
     # Increment usage
-    await db.amc_subscriptions.update_one(
+    await get_db().amc_subscriptions.update_one(
         {"subscription_id": subscription_id},
         {
             "$inc": {"services_used": 1},
@@ -390,7 +390,7 @@ async def record_amc_service_usage(subscription_id: str, request: Request):
     
     # If ticket_id provided, link it to the AMC
     if body.get("ticket_id"):
-        await db.tickets.update_one(
+        await get_db().tickets.update_one(
             {"ticket_id": body["ticket_id"]},
             {"$set": {"amc_subscription_id": subscription_id, "amc_covered": True}}
         )
@@ -403,7 +403,7 @@ async def cancel_amc_subscription(subscription_id: str, request: Request):
     user = await require_admin(request)
     body = await request.json()
     
-    result = await db.amc_subscriptions.update_one(
+    result = await get_db().amc_subscriptions.update_one(
         {"subscription_id": subscription_id},
         {
             "$set": {
@@ -426,7 +426,7 @@ async def renew_amc_subscription(subscription_id: str, request: Request):
     user = await require_admin_or_technician(request)
     body = await request.json()
     
-    old_subscription = await db.amc_subscriptions.find_one(
+    old_subscription = await get_db().amc_subscriptions.find_one(
         {"subscription_id": subscription_id},
         {"_id": 0}
     )
@@ -436,7 +436,7 @@ async def renew_amc_subscription(subscription_id: str, request: Request):
     
     # Get the plan (might want to use same or different plan)
     plan_id = body.get("plan_id", old_subscription["plan_id"])
-    plan = await db.amc_plans.find_one({"plan_id": plan_id}, {"_id": 0})
+    plan = await get_db().amc_plans.find_one({"plan_id": plan_id}, {"_id": 0})
     if not plan:
         raise HTTPException(status_code=404, detail="AMC plan not found")
     
@@ -473,10 +473,10 @@ async def renew_amc_subscription(subscription_id: str, request: Request):
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.amc_subscriptions.insert_one(new_subscription)
+    await get_db().amc_subscriptions.insert_one(new_subscription)
     
     # Mark old subscription as renewed
-    await db.amc_subscriptions.update_one(
+    await get_db().amc_subscriptions.update_one(
         {"subscription_id": subscription_id},
         {"$set": {"renewed_to": new_subscription["subscription_id"]}}
     )
@@ -496,16 +496,16 @@ async def get_amc_analytics(request: Request):
     expiring_threshold = (datetime.now(timezone.utc) + timedelta(days=15)).strftime("%Y-%m-%d")
     
     # Counts
-    total_active = await db.amc_subscriptions.count_documents({
+    total_active = await get_db().amc_subscriptions.count_documents({
         "status": "active",
         "end_date": {"$gte": today}
     })
     
-    expiring_soon = await db.amc_subscriptions.count_documents({
+    expiring_soon = await get_db().amc_subscriptions.count_documents({
         "end_date": {"$gte": today, "$lte": expiring_threshold}
     })
     
-    expired = await db.amc_subscriptions.count_documents({
+    expired = await get_db().amc_subscriptions.count_documents({
         "end_date": {"$lt": today}
     })
     
@@ -514,7 +514,7 @@ async def get_amc_analytics(request: Request):
         {"$match": {"payment_status": "paid"}},
         {"$group": {"_id": None, "total": {"$sum": "$amount_paid"}}}
     ]
-    revenue_result = await db.amc_subscriptions.aggregate(pipeline).to_list(1)
+    revenue_result = await get_db().amc_subscriptions.aggregate(pipeline).to_list(1)
     total_revenue = revenue_result[0]["total"] if revenue_result else 0
     
     # Plan distribution
@@ -522,21 +522,21 @@ async def get_amc_analytics(request: Request):
         {"$match": {"status": {"$in": ["active", "expiring"]}}},
         {"$group": {"_id": "$plan_name", "count": {"$sum": 1}}}
     ]
-    plan_dist = await db.amc_subscriptions.aggregate(plan_pipeline).to_list(100)
+    plan_dist = await get_db().amc_subscriptions.aggregate(plan_pipeline).to_list(100)
     
     # Vehicle category distribution
     vehicle_pipeline = [
         {"$match": {"status": {"$in": ["active", "expiring"]}}},
         {"$group": {"_id": "$vehicle_category", "count": {"$sum": 1}}}
     ]
-    vehicle_dist = await db.amc_subscriptions.aggregate(vehicle_pipeline).to_list(10)
+    vehicle_dist = await get_db().amc_subscriptions.aggregate(vehicle_pipeline).to_list(10)
     
     # Billing frequency distribution
     billing_pipeline = [
         {"$match": {"status": {"$in": ["active", "expiring"]}}},
         {"$group": {"_id": "$billing_frequency", "count": {"$sum": 1}}}
     ]
-    billing_dist = await db.amc_subscriptions.aggregate(billing_pipeline).to_list(10)
+    billing_dist = await get_db().amc_subscriptions.aggregate(billing_pipeline).to_list(10)
     
     return {
         "total_active": total_active,
@@ -557,7 +557,7 @@ async def seed_official_battwheels_plans(request: Request):
     user = await require_admin(request)
     
     # Clear existing plans (optional - comment out to keep existing)
-    # await db.amc_plans.delete_many({})
+    # await get_db().amc_plans.delete_many({})
     
     # Official Battwheels Plans for each vehicle category
     vehicle_categories = ["2W", "3W", "4W"]
@@ -771,7 +771,7 @@ async def seed_official_battwheels_plans(request: Request):
         
         for plan in base_plans:
             # Check if plan already exists
-            existing = await db.amc_plans.find_one({
+            existing = await get_db().amc_plans.find_one({
                 "name": plan["name"],
                 "vehicle_category": plan["vehicle_category"],
                 "billing_frequency": plan["billing_frequency"]
@@ -781,7 +781,7 @@ async def seed_official_battwheels_plans(request: Request):
                 plan["plan_id"] = f"amc_plan_{uuid.uuid4().hex[:8]}"
                 plan["created_at"] = datetime.now(timezone.utc).isoformat()
                 plan["created_by"] = user["user_id"]
-                await db.amc_plans.insert_one(plan)
+                await get_db().amc_plans.insert_one(plan)
                 plans_created += 1
     
     return {
@@ -807,7 +807,7 @@ async def get_plans_by_category(
     if billing_frequency:
         query["billing_frequency"] = billing_frequency
     
-    plans = await db.amc_plans.find(query, {"_id": 0}).sort([
+    plans = await get_db().amc_plans.find(query, {"_id": 0}).sort([
         ("vehicle_category", 1),
         ("tier", 1),
         ("billing_frequency", 1)
@@ -825,7 +825,7 @@ async def get_plans_by_category(
         freq = plan.get("billing_frequency", "monthly")
         if cat in grouped and freq in grouped[cat]:
             # Add subscription count
-            plan["active_subscriptions"] = await db.amc_subscriptions.count_documents({
+            plan["active_subscriptions"] = await get_db().amc_subscriptions.count_documents({
                 "plan_id": plan["plan_id"],
                 "status": {"$in": ["active", "expiring"]}
             })
