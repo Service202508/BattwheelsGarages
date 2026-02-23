@@ -734,7 +734,9 @@ def generate_sales_by_customer_excel(data: dict) -> bytes:
 async def get_profit_loss_report(
     start_date: str = "",
     end_date: str = "",
-    format: str = Query("json", enum=["json", "pdf", "excel"])
+    format: str = Query("json", enum=["json", "pdf", "excel"]),
+    request: Request = None,
+    _: None = Depends(require_feature("advanced_reports"))
 ):
     """
     Profit & Loss Report (Income Statement)
