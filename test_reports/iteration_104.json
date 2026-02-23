@@ -1,0 +1,74 @@
+{
+  "summary": "Comprehensive testing of 5 critical multi-tenant SaaS fixes. All 29 backend tests passed (100%). All 5 fixes verified working. Frontend Platform Admin page renders correctly with KPIs. One architectural concern found: razorpay_routes.py (using credential_service encryption) is not registered in server.py - razorpay config uses old unencrypted storage.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/razorpay/config",
+        "issue": "URL /api/razorpay/config returns 404 - actual Razorpay config is at /api/payments/config (prefix from routes/razorpay.py). The newer routes/razorpay_routes.py (which uses credential_service for Fernet encryption) is NOT registered in server.py. The included routes/razorpay.py reads config from organizations.razorpay_config field (NOT from tenant_credentials/encrypted). FIX 1 for Razorpay is partial - per-org config works but NOT encrypted via credential_service.",
+        "priority": "MEDIUM"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_new_features_iter104.py",
+    "/app/test_reports/pytest/iter104_results.xml"
+  ],
+  "action_items": [
+    "FIX 1 Razorpay Partial: routes/razorpay_routes.py (using credential_service Fernet encryption) is never registered in server.py. Either: (a) Register it instead of routes/razorpay.py, or (b) Update routes/razorpay.py to use credential_service for encrypted Razorpay key storage. Currently Razorpay keys are stored unencrypted in organizations.razorpay_config field."
+  ],
+  "critical_code_review_comments": [
+    "routes/razorpay_routes.py uses credential_service (Fernet encryption) as intended by FIX 1, but is never imported or registered in server.py (server imports 'routes.razorpay' not 'routes.razorpay_routes'). Two separate razorpay files exist with overlapping functionality - this is dead code that should either replace or merge with routes/razorpay.py.",
+    "FIX 2 verified: get_users (line 1504-1517) uses organization_users lookup for org-scoping. get_allocations (line 1859-1866) filters by organization_id. get_technicians (line 1541-1554) uses organization_users with role=technician. All correctly scoped.",
+    "FIX 3 verified: generate_invoice_number and generate_po_number both use atomic find_one_and_update on sequences collection with org_id scope (lines 1218-1246). Correct implementation.",
+    "FIX 4 verified: platform_admin.py router registered at server.py line 5613. require_platform_admin dependency correctly checks is_platform_admin field.",
+    "FIX 5 verified: auth.py uses bcrypt.hashpw for hash_password(), and verify_password() tries bcrypt first then falls back to SHA256 for migration. Login as admin@battwheels.in/admin works."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_new_features_iter104.py"
+  ],
+  "success_rate": {
+    "backend": "100% (29/29 tests passed)",
+    "frontend": "100% (Platform Admin, login, settings all working)"
+  },
+  "test_credentials": "admin@battwheels.in / admin",
+  "seed_data_creation": "Posted and deleted email settings for testing (re_test_key_12345678 / re_test_secretkey99 - cleaned up via DELETE endpoint).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All 5 critical fixes verified working end-to-end: FIX1 email settings (encrypted via credential_service, masked in GET), FIX2 users/allocations/technicians org-scoped, FIX3 invoice/PO sequential per-org numbering, FIX4 platform admin at /platform-admin with full CRUD, FIX5 bcrypt auth with SHA256 migration. One unresolved issue: routes/razorpay_routes.py (FIX1 full encryption for Razorpay) is not registered in server.py - Razorpay config uses old unencrypted org document storage via /api/payments/config endpoint.",
+  "fix_verification": {
+    "fix1_email_settings": {
+      "status": "PASS",
+      "endpoint": "GET/POST/DELETE /api/organizations/me/email-settings",
+      "details": "GET returns masked api_key (***last4), configured flag, using_global flag. POST saves encrypted via credential_service. DELETE falls back to global."
+    },
+    "fix1_razorpay_config": {
+      "status": "PARTIAL",
+      "endpoint": "/api/payments/config (NOT /api/razorpay/config)",
+      "details": "Per-org config works with fallback. BUT Razorpay keys stored unencrypted in organizations.razorpay_config field - credential_service NOT used for Razorpay (razorpay_routes.py is not registered)."
+    },
+    "fix2_org_scoped_routes": {
+      "status": "PASS",
+      "endpoints": "/api/users, /api/allocations, /api/technicians",
+      "details": "All three routes use TenantContext and organization_users lookup. Unauthenticated requests return 401."
+    },
+    "fix3_sequential_numbering": {
+      "status": "PASS",
+      "details": "generate_invoice_number and generate_po_number use atomic find_one_and_update on sequences collection with org_id + sequence_type keys. Upsert creates sequence on first use."
+    },
+    "fix4_platform_admin": {
+      "status": "PASS",
+      "endpoints": "GET/POST /api/platform/*, /platform-admin frontend",
+      "details": "Platform metrics shows 21 orgs, 21 active, 34 users, 0 suspended. 403 for non-admins. Frontend /platform-admin renders with full org table, search/filter/suspend/activate actions."
+    },
+    "fix5_bcrypt": {
+      "status": "PASS",
+      "details": "Login as admin@battwheels.in/admin works. verify_password() tries bcrypt first then SHA256 fallback. hash_password() uses bcrypt.hashpw()."
+    }
+  }
+}
