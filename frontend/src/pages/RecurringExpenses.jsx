@@ -216,8 +216,8 @@ export default function RecurringExpenses() {
 
   const getStatusBadge = (status) => {
     const styles = {
-      active: "bg-green-100 text-green-800",
-      stopped: "bg-red-100 text-red-800",
+      active: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]",
+      stopped: "bg-[rgba(255,59,47,0.10)] text-red-800",
       expired: "bg-[rgba(255,255,255,0.05)] text-[#F4F6F0]"
     };
     return <Badge className={styles[status] || "bg-[rgba(255,255,255,0.05)]"}>{status}</Badge>;
@@ -446,11 +446,11 @@ export default function RecurringExpenses() {
                           </Button>
                         ) : (
                           <Button variant="ghost" size="sm" onClick={() => handleResume(exp.recurring_expense_id)} title="Resume">
-                            <Play className="h-4 w-4 text-green-600" />
+                            <Play className="h-4 w-4 text-[#22C55E]" />
                           </Button>
                         )}
                         <Button variant="ghost" size="sm" onClick={() => handleDelete(exp.recurring_expense_id)} title="Delete">
-                          <Trash2 className="h-4 w-4 text-red-600" />
+                          <Trash2 className="h-4 w-4 text-[#FF3B2F]" />
                         </Button>
                       </div>
                     </TableCell>

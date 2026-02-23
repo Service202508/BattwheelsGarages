@@ -237,8 +237,8 @@ export default function DataManagement() {
             <div className="flex items-center gap-4">
               <div className={`h-12 w-12 rounded-full flex items-center justify-center ${
                 connectionStatus?.status === "connected" 
-                  ? "bg-green-100 text-green-600" 
-                  : "bg-red-100 text-red-600"
+                  ? "bg-[rgba(34,197,94,0.10)] text-[#22C55E]" 
+                  : "bg-[rgba(255,59,47,0.10)] text-[#FF3B2F]"
               }`}>
                 <Link2 className="h-6 w-6" />
               </div>
@@ -276,9 +276,9 @@ export default function DataManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Zoho Synced</p>
-                <p className="text-2xl font-bold text-green-600">{zohoSyncedRecords.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-[#22C55E]">{zohoSyncedRecords.toLocaleString()}</p>
               </div>
-              <CloudDownload className="h-8 w-8 text-green-600 opacity-80" />
+              <CloudDownload className="h-8 w-8 text-[#22C55E] opacity-80" />
             </div>
           </CardContent>
         </Card>
@@ -298,11 +298,11 @@ export default function DataManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Test Records</p>
-                <p className="text-2xl font-bold text-red-600">
+                <p className="text-2xl font-bold text-[#FF3B2F]">
                   {sanitizationReport?.total_test_records || "—"}
                 </p>
               </div>
-              <Trash2 className="h-8 w-8 text-red-600 opacity-80" />
+              <Trash2 className="h-8 w-8 text-[#FF3B2F] opacity-80" />
             </div>
           </CardContent>
         </Card>
@@ -331,7 +331,7 @@ export default function DataManagement() {
                     <div className="text-sm font-medium capitalize">{collection.replace(/_/g, " ")}</div>
                     <div className="text-2xl font-bold">{counts.total || 0}</div>
                     <div className="flex gap-2 mt-1 text-xs">
-                      <span className="text-green-600">{counts.zoho_synced || 0} Zoho</span>
+                      <span className="text-[#22C55E]">{counts.zoho_synced || 0} Zoho</span>
                       <span className="text-muted-foreground">{counts.local_only || 0} local</span>
                     </div>
                   </div>
@@ -457,11 +457,11 @@ export default function DataManagement() {
                     <p className="text-sm text-muted-foreground">Records Scanned</p>
                   </div>
                   <div className="p-4 border rounded-lg text-center bg-[rgba(255,59,47,0.08)]">
-                    <p className="text-2xl font-bold text-red-600">{sanitizationReport.total_test_records}</p>
+                    <p className="text-2xl font-bold text-[#FF3B2F]">{sanitizationReport.total_test_records}</p>
                     <p className="text-sm text-muted-foreground">Test Records Found</p>
                   </div>
                   <div className="p-4 border rounded-lg text-center bg-[rgba(34,197,94,0.08)]">
-                    <p className="text-2xl font-bold text-green-600">{sanitizationReport.total_deleted}</p>
+                    <p className="text-2xl font-bold text-[#22C55E]">{sanitizationReport.total_deleted}</p>
                     <p className="text-sm text-muted-foreground">Records Deleted</p>
                   </div>
                 </div>
@@ -483,8 +483,8 @@ export default function DataManagement() {
                         <TableRow key={result.collection}>
                           <TableCell className="font-medium">{result.collection}</TableCell>
                           <TableCell>{result.total_records}</TableCell>
-                          <TableCell className="text-red-600">{result.test_records_found}</TableCell>
-                          <TableCell className="text-green-600">{result.records_deleted}</TableCell>
+                          <TableCell className="text-[#FF3B2F]">{result.test_records_found}</TableCell>
+                          <TableCell className="text-[#22C55E]">{result.records_deleted}</TableCell>
                           <TableCell>{result.records_kept}</TableCell>
                           <TableCell className="max-w-xs truncate">
                             {result.sample_deleted?.slice(0, 2).map(s => s.name).join(", ") || "—"}

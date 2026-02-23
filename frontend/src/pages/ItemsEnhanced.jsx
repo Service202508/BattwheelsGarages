@@ -1031,7 +1031,7 @@ export default function ItemsEnhanced() {
                       <td className="px-4 py-3 text-right font-medium">₹{(item.sales_rate || item.rate || 0).toLocaleString('en-IN')}</td>
                       <td className="px-4 py-3 text-right">
                         {(item.item_type === "inventory" || item.item_type === "sales_and_purchases") ? (
-                          <span className={(item.total_stock || item.stock_on_hand || 0) <= (item.reorder_level || 0) ? "text-red-600 font-medium" : ""}>
+                          <span className={(item.total_stock || item.stock_on_hand || 0) <= (item.reorder_level || 0) ? "text-[#FF3B2F] font-medium" : ""}>
                             {item.total_stock ?? item.stock_on_hand ?? 0} {item.unit}
                           </span>
                         ) : '-'}
@@ -1067,7 +1067,7 @@ export default function ItemsEnhanced() {
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteItem(item.item_id)}>
+                            <DropdownMenuItem className="text-[#FF3B2F]" onClick={() => handleDeleteItem(item.item_id)}>
                               <Trash2 className="h-4 w-4 mr-2" /> Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -1189,7 +1189,7 @@ export default function ItemsEnhanced() {
                             <Tags className="h-4 w-4 mr-2" /> Set Bulk Prices
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600" onClick={() => handleDeletePriceList(pl.pricelist_id)}>
+                          <DropdownMenuItem className="text-[#FF3B2F]" onClick={() => handleDeletePriceList(pl.pricelist_id)}>
                             <Trash2 className="h-4 w-4 mr-2" /> Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -1271,7 +1271,7 @@ export default function ItemsEnhanced() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <TrendingUp className="h-5 w-5 text-green-600" /> Sales by Item
+                  <TrendingUp className="h-5 w-5 text-[#22C55E]" /> Sales by Item
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -1292,7 +1292,7 @@ export default function ItemsEnhanced() {
                       {(salesReport.items || []).slice(0, 5).map((item, idx) => (
                         <div key={idx} className="flex justify-between text-sm py-1 border-b border-[rgba(255,255,255,0.07)]">
                           <span className="truncate flex-1">{item.item_name}</span>
-                          <span className="text-green-600 font-medium">₹{item.total_revenue?.toLocaleString('en-IN')}</span>
+                          <span className="text-[#22C55E] font-medium">₹{item.total_revenue?.toLocaleString('en-IN')}</span>
                         </div>
                       ))}
                     </div>
@@ -1398,7 +1398,7 @@ export default function ItemsEnhanced() {
                   {itemHistory.map((entry, idx) => (
                     <div key={idx} className="flex items-start gap-3 p-3 bg-[#111820] rounded-lg">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        entry.action === "created" ? "bg-green-100 text-green-600" :
+                        entry.action === "created" ? "bg-[rgba(34,197,94,0.10)] text-[#22C55E]" :
                         entry.action === "updated" ? "bg-blue-100 text-[#3B9EFF]" :
                         entry.action === "stock_adjusted" ? "bg-orange-100 text-[#FF8C00]" :
                         "bg-[rgba(255,255,255,0.05)] text-[rgba(244,246,240,0.35)]"
@@ -1998,7 +1998,7 @@ export default function ItemsEnhanced() {
                 <p className="text-sm text-[rgba(244,246,240,0.35)]">Click to select a CSV file</p>
                 <p className="text-xs text-[rgba(244,246,240,0.45)] mt-1">Max file size: 1MB</p>
               </label>
-              {importFile && <p className="mt-2 text-sm font-medium text-green-600">{importFile.name}</p>}
+              {importFile && <p className="mt-2 text-sm font-medium text-[#22C55E]">{importFile.name}</p>}
             </div>
             <div className="flex items-center gap-2">
               <Checkbox checked={importOverwrite} onCheckedChange={(v) => setImportOverwrite(v)} />
@@ -2578,15 +2578,15 @@ export default function ItemsEnhanced() {
                 <div key={item.item_id} className="bg-[#111820] rounded-lg p-3 border border-red-200">
                   <p className="font-medium text-sm">{item.name}</p>
                   <div className="flex justify-between mt-1 text-xs">
-                    <span className="text-[rgba(244,246,240,0.45)]">Current: <span className="text-red-600 font-bold">{item.current_stock}</span></span>
+                    <span className="text-[rgba(244,246,240,0.45)]">Current: <span className="text-[#FF3B2F] font-bold">{item.current_stock}</span></span>
                     <span className="text-[rgba(244,246,240,0.45)]">Reorder: {item.reorder_level}</span>
                   </div>
-                  <p className="text-xs text-red-600 mt-1">Shortage: {item.shortage} units</p>
+                  <p className="text-xs text-[#FF3B2F] mt-1">Shortage: {item.shortage} units</p>
                 </div>
               ))}
             </div>
             {lowStockItems.length > 6 && (
-              <p className="text-sm text-red-600 mt-3">+ {lowStockItems.length - 6} more items need attention</p>
+              <p className="text-sm text-[#FF3B2F] mt-3">+ {lowStockItems.length - 6} more items need attention</p>
             )}
           </CardContent>
         </Card>

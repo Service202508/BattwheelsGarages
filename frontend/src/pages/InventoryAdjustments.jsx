@@ -33,8 +33,8 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const STATUS_STYLES = {
   draft: "bg-yellow-100 text-yellow-800",
-  adjusted: "bg-green-100 text-green-800",
-  void: "bg-red-100 text-red-800"
+  adjusted: "bg-[rgba(34,197,94,0.10)] text-[#22C55E]",
+  void: "bg-[rgba(255,59,47,0.10)] text-red-800"
 };
 
 const ACCOUNTS = [
@@ -502,13 +502,13 @@ export default function InventoryAdjustments() {
           </Card>
           <Card className="bg-[rgba(34,197,94,0.08)] border-green-200">
             <CardContent className="p-3">
-              <p className="text-xs text-green-600">Adjusted</p>
+              <p className="text-xs text-[#22C55E]">Adjusted</p>
               <p className="text-xl font-bold text-green-700">{summary.adjusted}</p>
             </CardContent>
           </Card>
           <Card className="bg-[rgba(255,59,47,0.08)] border-red-200">
             <CardContent className="p-3">
-              <p className="text-xs text-red-600">Voided</p>
+              <p className="text-xs text-[#FF3B2F]">Voided</p>
               <p className="text-xl font-bold text-red-700">{summary.voided}</p>
             </CardContent>
           </Card>
@@ -679,13 +679,13 @@ export default function InventoryAdjustments() {
                                     <ShieldCheck className="h-4 w-4 mr-2" /> Convert to Adjusted
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem className="text-red-600" onClick={() => deleteAdjustment(adj.adjustment_id)}>
+                                  <DropdownMenuItem className="text-[#FF3B2F]" onClick={() => deleteAdjustment(adj.adjustment_id)}>
                                     <Trash2 className="h-4 w-4 mr-2" /> Delete
                                   </DropdownMenuItem>
                                 </>
                               )}
                               {adj.status === "adjusted" && (
-                                <DropdownMenuItem className="text-red-600" onClick={() => voidAdjustment(adj.adjustment_id)}>
+                                <DropdownMenuItem className="text-[#FF3B2F]" onClick={() => voidAdjustment(adj.adjustment_id)}>
                                   <ShieldX className="h-4 w-4 mr-2" /> Void
                                 </DropdownMenuItem>
                               )}
@@ -908,7 +908,7 @@ export default function InventoryAdjustments() {
                                   onChange={(e) => updateLineQty(idx, parseFloat(e.target.value) || 0)} />
                               </td>
                               <td className="px-3 py-2 text-right">
-                                <span className={line.quantity_adjusted < 0 ? "text-red-600 font-medium" : line.quantity_adjusted > 0 ? "text-green-600 font-medium" : ""}>
+                                <span className={line.quantity_adjusted < 0 ? "text-[#FF3B2F] font-medium" : line.quantity_adjusted > 0 ? "text-[#22C55E] font-medium" : ""}>
                                   {line.quantity_adjusted > 0 ? "+" : ""}{line.quantity_adjusted ?? 0}
                                 </span>
                               </td>
@@ -921,7 +921,7 @@ export default function InventoryAdjustments() {
                                   onChange={(e) => updateLineValue(idx, parseFloat(e.target.value) || 0)} />
                               </td>
                               <td className="px-3 py-2 text-right">
-                                <span className={line.value_adjusted < 0 ? "text-red-600 font-medium" : line.value_adjusted > 0 ? "text-green-600 font-medium" : ""}>
+                                <span className={line.value_adjusted < 0 ? "text-[#FF3B2F] font-medium" : line.value_adjusted > 0 ? "text-[#22C55E] font-medium" : ""}>
                                   {line.value_adjusted > 0 ? "+" : ""}{fmt(line.value_adjusted ?? 0)}
                                 </span>
                               </td>
@@ -1013,7 +1013,7 @@ export default function InventoryAdjustments() {
                                 <td className="px-3 py-2 text-right">{line.quantity_available}</td>
                                 <td className="px-3 py-2 text-right font-medium">{line.new_quantity}</td>
                                 <td className="px-3 py-2 text-right">
-                                  <span className={line.quantity_adjusted < 0 ? "text-red-600 font-bold" : "text-green-600 font-bold"}>
+                                  <span className={line.quantity_adjusted < 0 ? "text-[#FF3B2F] font-bold" : "text-[#22C55E] font-bold"}>
                                     {line.quantity_adjusted > 0 ? "+" : ""}{line.quantity_adjusted}
                                   </span>
                                 </td>
@@ -1023,7 +1023,7 @@ export default function InventoryAdjustments() {
                                 <td className="px-3 py-2 text-right">{fmt(line.current_value)}</td>
                                 <td className="px-3 py-2 text-right font-medium">{fmt(line.new_value)}</td>
                                 <td className="px-3 py-2 text-right">
-                                  <span className={line.value_adjusted < 0 ? "text-red-600 font-bold" : "text-green-600 font-bold"}>
+                                  <span className={line.value_adjusted < 0 ? "text-[#FF3B2F] font-bold" : "text-[#22C55E] font-bold"}>
                                     {line.value_adjusted > 0 ? "+" : ""}{fmt(line.value_adjusted)}
                                   </span>
                                 </td>
@@ -1188,7 +1188,7 @@ export default function InventoryAdjustments() {
                   </Card>
                   <Card className="bg-[rgba(34,197,94,0.08)]">
                     <CardContent className="p-3 text-center">
-                      <p className="text-xs text-green-600">Items Matched</p>
+                      <p className="text-xs text-[#22C55E]">Items Matched</p>
                       <p className="text-lg font-bold text-green-700">{importPreview.items_found}</p>
                     </CardContent>
                   </Card>
@@ -1266,7 +1266,7 @@ export default function InventoryAdjustments() {
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <Card><CardContent className="p-3 text-center"><p className="text-xs text-[rgba(244,246,240,0.45)]">Adjustments</p><p className="text-lg font-bold">{abcDrillDown.total_adjustments}</p></CardContent></Card>
-                <Card className="bg-[rgba(34,197,94,0.08)]"><CardContent className="p-3 text-center"><p className="text-xs text-green-600">Qty Change</p><p className="text-lg font-bold text-green-700">{abcDrillDown.total_qty_change}</p></CardContent></Card>
+                <Card className="bg-[rgba(34,197,94,0.08)]"><CardContent className="p-3 text-center"><p className="text-xs text-[#22C55E]">Qty Change</p><p className="text-lg font-bold text-green-700">{abcDrillDown.total_qty_change}</p></CardContent></Card>
                 <Card className="bg-blue-50"><CardContent className="p-3 text-center"><p className="text-xs text-[#3B9EFF]">Value Change</p><p className="text-lg font-bold text-[#3B9EFF]">{fmt(abcDrillDown.total_value_change)}</p></CardContent></Card>
               </div>
               <div className="border rounded-lg overflow-hidden">
@@ -1293,7 +1293,7 @@ export default function InventoryAdjustments() {
                         <td className="px-3 py-2">{a.reason}</td>
                         <td className="px-3 py-2 text-center capitalize">{a.type}</td>
                         <td className="px-3 py-2 text-right">
-                          <span className={a.quantity_adjusted > 0 ? "text-green-600" : a.quantity_adjusted < 0 ? "text-red-600" : ""}>
+                          <span className={a.quantity_adjusted > 0 ? "text-[#22C55E]" : a.quantity_adjusted < 0 ? "text-[#FF3B2F]" : ""}>
                             {a.quantity_adjusted > 0 ? "+" : ""}{a.quantity_adjusted}
                           </span>
                         </td>

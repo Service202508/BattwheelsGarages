@@ -484,8 +484,8 @@ export default function StockTransfers() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                <div className="p-2 bg-[rgba(34,197,94,0.10)] rounded-lg">
+                  <CheckCircle2 className="h-5 w-5 text-[#22C55E]" />
                 </div>
                 <div>
                   <p className="text-xs text-[rgba(244,246,240,0.45)]">Received</p>
@@ -590,7 +590,7 @@ export default function StockTransfers() {
                           {transfer.status === "in_transit" && (
                             <Button 
                               size="sm" 
-                              className="bg-green-600 hover:bg-green-700 text-white"
+                              className="bg-[#22C55E] hover:bg-[#16a34a] text-white"
                               onClick={() => handleReceiveTransfer(transfer.transfer_id)}
                               data-testid={`receive-${transfer.transfer_id}`}
                             >
@@ -699,7 +699,7 @@ export default function StockTransfers() {
                     </Button>
                     <Button 
                       size="sm"
-                      className="bg-green-600 hover:bg-green-700 text-white"
+                      className="bg-[#22C55E] hover:bg-[#16a34a] text-white"
                       onClick={() => handleReceiveTransfer(selectedTransfer.transfer_id)}
                     >
                       <PackageCheck className="h-4 w-4 mr-1" /> Receive
