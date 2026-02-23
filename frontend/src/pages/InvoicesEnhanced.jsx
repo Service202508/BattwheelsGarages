@@ -556,6 +556,170 @@ export default function InvoicesEnhanced() {
     }
   }, [searchParams]);
 
+  // ==================== E-INVOICE / IRN STATE ====================
+  const [einvoiceEnabled, setEinvoiceEnabled] = useState(false);
+  const [irnLoading, setIrnLoading] = useState(false);
+  const [irnValidationErrors, setIrnValidationErrors] = useState([]);
+  const [showIrnCancelDialog, setShowIrnCancelDialog] = useState(false);
+  const [irnCancelReason, setIrnCancelReason] = useState("");
+  const [irnCancelRemarks, setIrnCancelRemarks] = useState("");
+  const [irnQrCode, setIrnQrCode] = useState(null);
+  
+  // Check E-Invoice config on mount
+  useEffect(() => {
+    const checkEinvoiceConfig = async () => {
+      try {
+        const res = await fetch(`${API}/einvoice/eligibility`, { headers });
+        const data = await res.json();
+        setEinvoiceEnabled(data.eligible || false);
+      } catch (e) {
+        console.error("Failed to check E-Invoice config:", e);
+      }
+    };
+    checkEinvoiceConfig();
+  }, []);
+  
+  // Check if invoice is B2B (has buyer GSTIN)
+  const isB2BInvoice = (invoice) => {
+    return invoice && invoice.customer_gstin && invoice.customer_gstin !== "URP" && invoice.customer_gstin.length === 15;
+  };
+  
+  // Check if invoice needs IRN
+  const needsIRN = (invoice) => {
+    return einvoiceEnabled && 
+           isB2BInvoice(invoice) && 
+           invoice.status !== "draft" && 
+           !invoice.irn;
+  };
+  
+  // Check if IRN is within cancellation window (24 hours)
+  const canCancelIRN = (invoice) => {
+    if (!invoice.irn || !invoice.irn_generated_at) return false;
+    const generatedAt = new Date(invoice.irn_generated_at);
+    const now = new Date();
+    const hoursDiff = (now - generatedAt) / (1000 * 60 * 60);
+    return hoursDiff < 24;
+  };
+  
+  // Validate invoice for E-Invoice compliance
+  const validateForEInvoice = async (invoiceId) => {
+    try {
+      const res = await fetch(`${API}/einvoice/validate-invoice/${invoiceId}`, { headers });
+      const data = await res.json();
+      return data;
+    } catch (e) {
+      return { is_valid: false, errors: ["Failed to validate invoice"] };
+    }
+  };
+  
+  // Generate IRN for invoice
+  const handleGenerateIRN = async (invoiceId) => {
+    setIrnLoading(true);
+    setIrnValidationErrors([]);
+    
+    try {
+      // First validate
+      const validation = await validateForEInvoice(invoiceId);
+      if (!validation.is_valid) {
+        setIrnValidationErrors(validation.errors || []);
+        toast.error("Invoice validation failed. Fix the errors and try again.");
+        setIrnLoading(false);
+        return;
+      }
+      
+      // Generate IRN
+      const res = await fetch(`${API}/einvoice/generate-irn`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ invoice_id: invoiceId })
+      });
+      
+      const data = await res.json();
+      
+      if (data.code === 0 && data.success) {
+        toast.success("IRN generated successfully!");
+        // Refresh invoice details
+        fetchInvoiceDetail(invoiceId);
+        fetchData();
+        // Fetch QR code
+        fetchIrnQrCode(invoiceId);
+      } else if (data.skip_irn) {
+        toast.info(data.message || "E-Invoice not required for this invoice");
+      } else {
+        setIrnValidationErrors(data.errors || [data.message || "IRN generation failed"]);
+        toast.error("IRN generation failed");
+      }
+    } catch (e) {
+      toast.error("Failed to generate IRN");
+      console.error("IRN generation error:", e);
+    } finally {
+      setIrnLoading(false);
+    }
+  };
+  
+  // Cancel IRN
+  const handleCancelIRN = async () => {
+    if (!selectedInvoice?.irn || !irnCancelReason) {
+      toast.error("Please select a cancellation reason");
+      return;
+    }
+    
+    setIrnLoading(true);
+    try {
+      const res = await fetch(`${API}/einvoice/cancel-irn`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          irn: selectedInvoice.irn,
+          reason: irnCancelReason,
+          remarks: irnCancelRemarks
+        })
+      });
+      
+      const data = await res.json();
+      
+      if (data.code === 0 && data.success) {
+        toast.success("IRN cancelled successfully");
+        setShowIrnCancelDialog(false);
+        setIrnCancelReason("");
+        setIrnCancelRemarks("");
+        fetchInvoiceDetail(selectedInvoice.invoice_id);
+        fetchData();
+      } else {
+        toast.error(data.message || "Failed to cancel IRN");
+      }
+    } catch (e) {
+      toast.error("Failed to cancel IRN");
+    } finally {
+      setIrnLoading(false);
+    }
+  };
+  
+  // Fetch IRN QR code
+  const fetchIrnQrCode = async (invoiceId) => {
+    try {
+      const res = await fetch(`${API}/einvoice/qr-code/${invoiceId}`, { headers });
+      const data = await res.json();
+      if (data.has_qr) {
+        setIrnQrCode(data.qr_code_data_uri);
+      } else {
+        setIrnQrCode(null);
+      }
+    } catch (e) {
+      console.error("Failed to fetch QR code:", e);
+      setIrnQrCode(null);
+    }
+  };
+  
+  // Fetch QR code when invoice with IRN is selected
+  useEffect(() => {
+    if (selectedInvoice?.irn && selectedInvoice?.irn_status === "registered") {
+      fetchIrnQrCode(selectedInvoice.invoice_id);
+    } else {
+      setIrnQrCode(null);
+    }
+  }, [selectedInvoice?.irn]);
+
   // Line Items
   const addLineItem = () => {
     setNewInvoice(prev => ({
