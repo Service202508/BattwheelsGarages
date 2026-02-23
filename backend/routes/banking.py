@@ -358,3 +358,40 @@ async def reconcile_transaction(
     
     action = "reconciled" if reconciled else "unreconciled"
     return {"code": 0, "message": f"Transaction {action}", "transaction": transaction}
+
+
+@router.post("/transfer")
+async def transfer_funds(data: TransferRequest, request: Request):
+    """Transfer funds between two bank accounts"""
+    from services.double_entry_service import get_double_entry_service, init_double_entry_service
+    
+    service = get_service()
+    user_id = await get_current_user_id(request)
+    
+    # Get double-entry service
+    try:
+        de_service = get_double_entry_service()
+    except:
+        init_double_entry_service(db_ref)
+        de_service = get_double_entry_service()
+    
+    try:
+        transfer, journal_entry_id = await service.transfer_between_accounts(
+            from_account_id=data.from_account_id,
+            to_account_id=data.to_account_id,
+            amount=data.amount,
+            transfer_date=data.transfer_date,
+            reference=data.reference,
+            notes=data.notes,
+            created_by=user_id,
+            de_service=de_service
+        )
+        
+        return {
+            "code": 0,
+            "message": f"Transferred ₹{data.amount}",
+            "transfer": transfer,
+            "journal_entry_id": journal_entry_id
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
