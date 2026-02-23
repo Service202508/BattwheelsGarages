@@ -119,6 +119,14 @@ export default function InventoryEnhanced() {
       setReturns(returnsData.returns || []);
       setItems(itemsData.items || []);
       setLowStockItems(lowStockData.report?.low_stock_items || []);
+
+      // Fetch transfers and stocktakes
+      const [transfersRes, stocktakesRes] = await Promise.all([
+        fetch(`${API}/inventory-enhanced/stock-transfers?limit=20`, { headers }),
+        fetch(`${API}/inventory-enhanced/stocktakes`, { headers }),
+      ]);
+      if (transfersRes.ok) { const d = await transfersRes.json(); setStockTransfers(d.transfers || []); }
+      if (stocktakesRes.ok) { const d = await stocktakesRes.json(); setStocktakes(d.stocktakes || []); }
     } catch (error) {
       console.error("Failed to fetch:", error);
       toast.error("Failed to load inventory data");
