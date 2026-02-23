@@ -815,6 +815,171 @@ export default function InventoryEnhanced() {
             </div>
           )}
         </TabsContent>
+
+        {/* ========== REORDER ALERTS TAB ========== */}
+        <TabsContent value="reorder-alerts" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-[#F4F6F0]">Reorder Point Alerts</h3>
+              <p className="text-xs text-[rgba(244,246,240,0.45)]">Items below reorder level — auto-grouped by vendor for PO creation</p>
+            </div>
+            <Button onClick={fetchReorderSuggestions} disabled={loadingReorder} size="sm" data-testid="refresh-reorder-btn">
+              {loadingReorder ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-1" />}
+              Refresh
+            </Button>
+          </div>
+
+          {!reorderSuggestions && !loadingReorder && (
+            <Card><CardContent className="py-12 text-center text-[rgba(244,246,240,0.45)]">
+              Click Refresh to check reorder levels
+            </CardContent></Card>
+          )}
+
+          {loadingReorder && (
+            <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-[#C8FF00]" /></div>
+          )}
+
+          {reorderSuggestions && !loadingReorder && (
+            <>
+              {reorderSuggestions.total_items_below_reorder === 0 ? (
+                <Card><CardContent className="py-12 text-center">
+                  <CheckCircle className="h-10 w-10 text-[#22C55E] mx-auto mb-3" />
+                  <p className="text-sm text-[rgba(244,246,240,0.65)]">All items are at or above reorder levels</p>
+                </CardContent></Card>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3 p-3 rounded bg-[rgba(255,59,47,0.08)] border border-[rgba(255,59,47,0.20)]">
+                    <AlertTriangle className="h-5 w-5 text-[#FF3B2F] flex-shrink-0" />
+                    <p className="text-sm text-[#FF3B2F] font-medium">{reorderSuggestions.total_items_below_reorder} item(s) below reorder point</p>
+                  </div>
+
+                  {reorderSuggestions.grouped_by_vendor?.map((group, gi) => (
+                    <Card key={gi} className="border border-[rgba(255,255,255,0.07)]">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <CardTitle className="text-sm">{group.vendor_name}</CardTitle>
+                            <CardDescription className="text-xs">{group.items.length} items · Est. ₹{group.total_estimated_cost.toLocaleString('en-IN', {maximumFractionDigits: 0})}</CardDescription>
+                          </div>
+                          <Button size="sm" onClick={() => handleCreatePoFromGroup(group)} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid={`create-po-btn-${gi}`}>
+                            <Plus className="h-4 w-4 mr-1" /> Create PO
+                          </Button>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="space-y-2">
+                          {group.items.map(item => (
+                            <div key={item.item_id} className="flex items-center justify-between p-2 bg-[rgba(255,255,255,0.03)] rounded">
+                              <div>
+                                <p className="text-sm font-medium">{item.item_name}</p>
+                                <p className="text-xs font-mono text-[rgba(244,246,240,0.45)]">{item.sku}</p>
+                              </div>
+                              <div className="text-right text-xs">
+                                <p className="text-[#FF3B2F]">{item.current_stock} / {item.reorder_level} (short by {item.shortage})</p>
+                                <p className="text-[rgba(244,246,240,0.45)]">Suggest: <span className="text-[#C8FF00] font-mono">{item.suggested_order_qty} units</span></p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </>
+              )}
+            </>
+          )}
+        </TabsContent>
+
+        {/* ========== STOCKTAKE TAB ========== */}
+        <TabsContent value="stocktake" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-[#F4F6F0]">Inventory Count / Stocktake</h3>
+              <p className="text-xs text-[rgba(244,246,240,0.45)]">Create count sessions, enter physical quantities, apply variances</p>
+            </div>
+            <Button onClick={() => setShowStocktakeDialog(true)} size="sm" data-testid="new-stocktake-btn">
+              <Plus className="h-4 w-4 mr-1" /> New Stocktake
+            </Button>
+          </div>
+
+          {/* Active / Open Stocktake */}
+          {activeStocktake && (
+            <Card className={`border ${activeStocktake.status === 'finalized' ? 'border-[rgba(200,255,0,0.25)]' : 'border-[rgba(59,158,255,0.25)]'}`}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      {activeStocktake.status === 'finalized'
+                        ? <CheckCircle className="h-4 w-4 text-[#C8FF00]" />
+                        : <Clock className="h-4 w-4 text-[#3B9EFF]" />
+                      }
+                      {activeStocktake.name}
+                    </CardTitle>
+                    <CardDescription className="text-xs">{activeStocktake.warehouse_name} · {activeStocktake.counted_lines || 0}/{activeStocktake.total_lines} counted · Variance: {activeStocktake.total_variance > 0 ? '+' : ''}{activeStocktake.total_variance}</CardDescription>
+                  </div>
+                  {activeStocktake.status === 'in_progress' && (
+                    <Button size="sm" onClick={() => handleFinalizeStocktake(activeStocktake.stocktake_id)} className="bg-[#C8FF00] text-[#080C0F] font-bold" data-testid="finalize-stocktake-btn">
+                      Finalize & Apply
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {(activeStocktake.lines || []).map(line => (
+                    <div key={line.item_id} className={`flex items-center gap-3 p-2 rounded ${line.counted ? 'bg-[rgba(200,255,0,0.04)]' : 'bg-[rgba(255,255,255,0.02)]'}`}>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{line.item_name}</p>
+                        <p className="text-xs font-mono text-[rgba(244,246,240,0.45)]">{line.item_sku} · System: {line.system_quantity}</p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {activeStocktake.status === 'in_progress' ? (
+                          <CountInput
+                            key={line.item_id}
+                            defaultValue={line.counted_quantity ?? line.system_quantity}
+                            onSubmit={(val) => handleSubmitCount(activeStocktake.stocktake_id, line.item_id, val)}
+                          />
+                        ) : (
+                          <span className="text-sm font-mono">{line.counted_quantity ?? '—'}</span>
+                        )}
+                        {line.counted && (
+                          <span className={`text-xs font-mono font-bold ${line.variance > 0 ? 'text-[#22C55E]' : line.variance < 0 ? 'text-[#FF3B2F]' : 'text-[rgba(244,246,240,0.35)]'}`}>
+                            {line.variance > 0 ? '+' : ''}{line.variance}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Stocktake History */}
+          {stocktakes.length > 0 && (
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Stocktake History</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {stocktakes.map(st => (
+                  <div key={st.stocktake_id} className="flex items-center justify-between p-2 bg-[rgba(255,255,255,0.03)] rounded border border-[rgba(255,255,255,0.06)]">
+                    <div>
+                      <p className="text-sm font-medium">{st.name}</p>
+                      <p className="text-xs text-[rgba(244,246,240,0.45)]">{st.warehouse_name} · {st.counted_lines}/{st.total_lines} counted · {st.created_at?.split("T")[0]}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge className={st.status === 'finalized' ? 'bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]' : 'bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]'}>{st.status}</Badge>
+                      {st.status === 'in_progress' && (
+                        <Button variant="outline" size="sm" onClick={() => handleLoadStocktake(st.stocktake_id)}>Open</Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
       </Tabs>
 
       {/* ========== DIALOGS ========== */}
