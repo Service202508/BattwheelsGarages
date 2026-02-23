@@ -12,10 +12,10 @@ from datetime import datetime, timezone, timedelta
 import os
 import uuid
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# MongoDB connection — deferred to avoid module-level env var access at import time
+def get_db():
+    from server import db as _db
+    return _db
 
 router = APIRouter(prefix="/amc", tags=["AMC Management"])
 
