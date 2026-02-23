@@ -1967,14 +1967,37 @@ export default function InvoicesEnhanced() {
                     size="sm" 
                     variant={detailViewMode === "pdf" ? "default" : "outline"}
                     onClick={() => handleDownloadPDF(selectedInvoice.invoice_id)}
+                    disabled={selectedInvoice.status === "cancelled"}
                   >
                     <FileText className="h-4 w-4 mr-1" /> PDF Preview
                   </Button>
                 </div>
 
+                {/* Cancelled Invoice Banner (5A) */}
+                {selectedInvoice.status === "cancelled" && (
+                  <div className="p-4 bg-[rgba(255,59,47,0.12)] border border-[rgba(255,59,47,0.4)] rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Ban className="h-5 w-5 text-[#FF3B2F]" />
+                      <div>
+                        <h4 className="font-semibold text-[#FF3B2F]">This invoice has been cancelled</h4>
+                        <p className="text-sm text-[rgba(244,246,240,0.65)] mt-1">
+                          {selectedInvoice.irn ? (
+                            <>IRN: <code className="font-mono text-xs">{selectedInvoice.irn}</code> was cancelled on {formatDate(selectedInvoice.irn_cancelled_at || selectedInvoice.updated_time)}.</>
+                          ) : (
+                            <>Cancelled on {formatDate(selectedInvoice.updated_time)}.</>
+                          )}
+                        </p>
+                        <p className="text-xs text-[rgba(244,246,240,0.45)] mt-2">
+                          Raise a fresh invoice with a new invoice number.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Primary Actions */}
                 <div className="flex flex-wrap gap-2">
-                  {/* Edit - Only for draft invoices */}
+                  {/* Edit - Only for draft invoices (not cancelled) */}
                   {selectedInvoice.status === "draft" && (
                     <Button 
                       variant="outline" 
@@ -1992,7 +2015,8 @@ export default function InvoicesEnhanced() {
                       <Button variant="outline" size="sm" onClick={() => handleMarkSent(selectedInvoice.invoice_id)}><CheckCircle className="h-4 w-4 mr-1" /> Mark Sent</Button>
                     </>
                   )}
-                  {selectedInvoice.status !== "draft" && selectedInvoice.balance_due > 0 && (
+                  {/* Record Payment - not for cancelled invoices */}
+                  {selectedInvoice.status !== "draft" && selectedInvoice.status !== "cancelled" && selectedInvoice.balance_due > 0 && (
                     <Button 
                       size="sm" 
                       className="bg-[#22C55E] hover:bg-green-600 text-[#080C0F]" 
@@ -2005,8 +2029,8 @@ export default function InvoicesEnhanced() {
                   
                   <Separator orientation="vertical" className="h-8" />
                   
-                  {/* Share Link */}
-                  {selectedInvoice.status !== "draft" && (
+                  {/* Share Link - not for cancelled invoices */}
+                  {selectedInvoice.status !== "draft" && selectedInvoice.status !== "cancelled" && (
                     <Button 
                       variant="outline" 
                       size="sm" 
@@ -2037,16 +2061,22 @@ export default function InvoicesEnhanced() {
                     <MessageSquare className="h-4 w-4 mr-1" /> Notes
                   </Button>
                   
-                  {/* Download PDF */}
-                  <Button variant="outline" size="sm" onClick={() => handleDownloadPDF(selectedInvoice.invoice_id)} data-testid="download-pdf-btn">
+                  {/* Download PDF - disabled for cancelled */}
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleDownloadPDF(selectedInvoice.invoice_id)} 
+                    disabled={selectedInvoice.status === "cancelled"}
+                    data-testid="download-pdf-btn"
+                  >
                     <Download className="h-4 w-4 mr-1" /> PDF
                   </Button>
                   
                   {/* Clone */}
                   <Button variant="outline" size="sm" onClick={() => handleCloneInvoice(selectedInvoice.invoice_id)}><Copy className="h-4 w-4 mr-1" /> Clone</Button>
                   
-                  {/* Void */}
-                  {selectedInvoice.status !== "void" && selectedInvoice.status !== "paid" && (
+                  {/* Void - not for cancelled */}
+                  {selectedInvoice.status !== "void" && selectedInvoice.status !== "paid" && selectedInvoice.status !== "cancelled" && (
                     <Button variant="outline" size="sm" onClick={() => handleVoidInvoice(selectedInvoice.invoice_id)}><Ban className="h-4 w-4 mr-1" /> Void</Button>
                   )}
                   
