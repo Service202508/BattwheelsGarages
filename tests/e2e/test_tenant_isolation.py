@@ -98,7 +98,9 @@ def ticket_ids(response: requests.Response) -> list[str]:
     data = response.json()
     if isinstance(data, list):
         return [t.get("ticket_id", "") for t in data]
-    return [t.get("ticket_id", "") for t in data.get("tickets", [])]
+    # Handle both 'tickets' and 'data' keys
+    return [t.get("ticket_id", "") for t in
+            data.get("tickets", data.get("data", []))]
 
 
 def invoice_ids(response: requests.Response) -> list[str]:
