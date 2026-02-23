@@ -2099,7 +2099,7 @@ async def update_service(service_id: str, data: dict, request: Request):
 # ==================== SALES ORDER ROUTES ====================
 
 @api_router.post("/sales-orders")
-async def create_sales_order(data: SalesOrderCreate, request: Request):
+async def create_sales_order(data: SalesOrderCreate, request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     user = await require_technician_or_admin(request)
     
     # Get ticket details
