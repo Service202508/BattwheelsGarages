@@ -1927,6 +1927,91 @@ export default function OrganizationSettings({ user }) {
             </CardContent>
           </Card>
           
+          {/* Email Settings Card */}
+          <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-blue-400" />
+                    Email Settings
+                  </CardTitle>
+                  <CardDescription className="mt-1">
+                    Configure a custom sender address for invoices, notifications and invitations
+                  </CardDescription>
+                </div>
+                {emailConfigured ? (
+                  <Badge className="bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30">CONFIGURED</Badge>
+                ) : (
+                  <Badge className="bg-[rgba(234,179,8,0.20)] text-yellow-400 border-yellow-500/30">USING PLATFORM DEFAULT</Badge>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!emailConfigured && (
+                <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20 text-sm text-blue-300">
+                  Using platform default sender. Configure your own Resend key to send from your own domain.
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>From Email</Label>
+                  <Input
+                    value={emailConfig.from_email}
+                    onChange={e => setEmailConfig({ ...emailConfig, from_email: e.target.value })}
+                    placeholder="invoices@yourgaragename.com"
+                    className="bg-[rgba(17,24,32,0.6)] border-[rgba(255,255,255,0.1)] mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>From Name</Label>
+                  <Input
+                    value={emailConfig.from_name}
+                    onChange={e => setEmailConfig({ ...emailConfig, from_name: e.target.value })}
+                    placeholder="Battwheels Garages"
+                    className="bg-[rgba(17,24,32,0.6)] border-[rgba(255,255,255,0.1)] mt-1"
+                  />
+                </div>
+              </div>
+              <div className="relative">
+                <Label>Resend API Key</Label>
+                <div className="relative mt-1">
+                  <Input
+                    type={showEmailKey ? "text" : "password"}
+                    value={emailConfig.api_key}
+                    onChange={e => setEmailConfig({ ...emailConfig, api_key: e.target.value })}
+                    placeholder={emailConfigured ? "•••• (enter new key to update)" : "re_xxxxxxxx"}
+                    className="bg-[rgba(17,24,32,0.6)] border-[rgba(255,255,255,0.1)] pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowEmailKey(!showEmailKey)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showEmailKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Get your API key from <a href="https://resend.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">resend.com/api-keys</a></p>
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Button
+                  onClick={saveEmailSettings}
+                  disabled={savingEmail || !emailConfig.from_email || !emailConfig.from_name || !emailConfig.api_key}
+                  data-testid="save-email-settings-btn"
+                >
+                  {savingEmail ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                  Save Email Settings
+                </Button>
+                {emailConfigured && (
+                  <Button variant="outline" size="sm" onClick={removeEmailSettings}>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Reset to Default
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+          
           {/* E-Invoice (IRN) Settings Card */}
           <Card className="bg-[#111820] border-[rgba(255,255,255,0.07)]">
             <CardHeader className="pb-4">
