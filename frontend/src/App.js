@@ -349,6 +349,9 @@ const ProtectedRoute = ({ children, user, loading, allowedRoles = null }) => {
 
 // Role-based redirect after login
 const RoleBasedRedirect = ({ user }) => {
+  if (user?.is_platform_admin) {
+    return <Navigate to="/platform-admin" replace />;
+  }
   if (user?.role === "customer") {
     return <Navigate to="/customer" replace />;
   }
