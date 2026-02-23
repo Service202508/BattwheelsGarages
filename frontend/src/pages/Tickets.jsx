@@ -156,6 +156,14 @@ export default function Tickets({ user }) {
     fetchKPIs();
   }, [fetchKPIs]);
 
+  // Refresh tickets every 60s to keep SLA countdowns accurate
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchTickets();
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [fetchTickets]);
+
   const fetchTicketDetails = async (ticketId) => {
     setDetailsLoading(true);
     try {
