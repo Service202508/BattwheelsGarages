@@ -316,7 +316,8 @@ class ProjectsService:
         expense_date: Optional[str] = None,
         expense_id: Optional[str] = None,
         approved_by: Optional[str] = None,
-        category: str = "general"
+        category: str = "general",
+        status: str = "PENDING"
     ) -> Dict[str, Any]:
         """Add expense to project"""
         pe_id = f"proj_exp_{uuid.uuid4().hex[:12]}"
@@ -330,7 +331,11 @@ class ProjectsService:
             "description": description,
             "category": category,
             "expense_date": expense_date or now.split("T")[0],
+            "status": status,  # PENDING, APPROVED, REJECTED, PAID
             "approved_by": approved_by,
+            "approved_at": None,
+            "invoiced": False,
+            "invoice_id": None,
             "created_at": now
         }
         
@@ -339,10 +344,48 @@ class ProjectsService:
         
         return {k: v for k, v in expense.items() if k != "_id"}
     
-    async def get_expenses(self, project_id: str) -> List[Dict[str, Any]]:
+    async def approve_expense(
+        self,
+        expense_id: str,
+        approved_by: str,
+        approved: bool = True
+    ) -> Optional[Dict[str, Any]]:
+        """Approve or reject a project expense"""
+        now = datetime.now(timezone.utc).isoformat()
+        
+        update = {
+            "status": "APPROVED" if approved else "REJECTED",
+            "approved_by": approved_by,
+            "approved_at": now
+        }
+        
+        result = await self.expenses.find_one_and_update(
+            {"project_expense_id": expense_id},
+            {"$set": update},
+            return_document=True
+        )
+        
+        if result:
+            return {k: v for k, v in result.items() if k != "_id"}
+        return None
+    
+    async def get_expenses(
+        self, 
+        project_id: str,
+        status: Optional[str] = None,
+        only_uninvoiced: bool = False
+    ) -> List[Dict[str, Any]]:
         """Get all expenses for a project"""
+        query = {"project_id": project_id}
+        
+        if status:
+            query["status"] = status
+        
+        if only_uninvoiced:
+            query["invoiced"] = {"$ne": True}
+        
         return await self.expenses.find(
-            {"project_id": project_id},
+            query,
             {"_id": 0}
         ).sort("expense_date", -1).to_list(200)
     
