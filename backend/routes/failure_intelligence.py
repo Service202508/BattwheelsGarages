@@ -31,7 +31,11 @@ from core.subscriptions.entitlement import require_feature
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/efi", tags=["Failure Intelligence"])
+router = APIRouter(
+    prefix="/efi",
+    tags=["Failure Intelligence"],
+    dependencies=[Depends(require_feature("efi_failure_intelligence"))]
+)
 
 # Service reference
 _service: Optional[EFIService] = None
