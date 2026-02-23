@@ -5,7 +5,6 @@ import { useOrganization } from '@/App';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Plan badge colors per tier
 const PLAN_BADGE = {
   free:         { bg: "rgba(244,246,240,0.08)", text: "rgba(244,246,240,0.35)", label: "FREE" },
   starter:      { bg: "rgba(59,130,246,0.15)",  text: "#60a5fa",               label: "STARTER" },
@@ -18,15 +17,18 @@ function getPlanBadge(planType) {
 }
 
 const OrganizationSwitcher = ({ onSwitch, user }) => {
-  // Read currentOrg from context — no prop needed
+  // ── ALL HOOKS FIRST — no conditionals before this block ─────────────────────
   const currentOrg = useOrganization();
   const [isOpen, setIsOpen] = useState(false);
   const [organizations, setOrganizations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Detect platform admin from user prop or localStorage token
   const isPlatformAdmin = user?.is_platform_admin || false;
+
+  useEffect(() => {
+    if (!isPlatformAdmin) fetchOrganizations();
+  }, [isPlatformAdmin]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -37,12 +39,64 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+  // ── END HOOKS ────────────────────────────────────────────────────────────────
 
-  useEffect(() => {
-    if (!isPlatformAdmin) fetchOrganizations();
-  }, [isPlatformAdmin]);
+  const fetchOrganizations = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/organizations/my-organizations`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setOrganizations(data.organizations || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch organizations:', error);
+    }
+  };
 
-  // ── Platform Admin: show SYSTEM badge, no org dropdown ──────────────────────
+  const handleSwitch = async (org) => {
+    if (org.organization_id === currentOrg?.organization_id) {
+      setIsOpen(false);
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/auth/switch-organization`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ organization_id: org.organization_id })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('organization', JSON.stringify(data.organization));
+        toast.success(`Switched to ${org.name}`);
+        setIsOpen(false);
+        if (onSwitch) onSwitch(data.organization);
+        window.location.reload();
+      } else {
+        toast.error('Failed to switch organization');
+      }
+    } catch {
+      toast.error('Network error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getRoleColor = (role) => {
+    switch (role) {
+      case 'owner':   return 'bg-purple-500/20 text-purple-400';
+      case 'admin':   return 'bg-blue-500/20 text-blue-400';
+      case 'manager': return 'bg-emerald-500/20 text-emerald-400';
+      default:        return 'bg-slate-500/20 text-slate-400';
+    }
+  };
+
+  // ── Platform Admin display ───────────────────────────────────────────────────
   if (isPlatformAdmin) {
     return (
       <div
@@ -68,84 +122,14 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
     );
   }
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const fetchOrganizations = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/organizations/my-organizations`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setOrganizations(data.organizations || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch organizations:', error);
-    }
-  };
-
-  const handleSwitch = async (org) => {
-    if (org.organization_id === currentOrg?.organization_id) {
-      setIsOpen(false);
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/auth/switch-organization`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ organization_id: org.organization_id })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('organization', JSON.stringify(data.organization));
-        toast.success(`Switched to ${org.name}`);
-        setIsOpen(false);
-        if (onSwitch) {
-          onSwitch(data.organization);
-        }
-        // Reload to apply new context
-        window.location.reload();
-      } else {
-        toast.error('Failed to switch organization');
-      }
-    } catch (error) {
-      toast.error('Network error');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getRoleColor = (role) => {
-    switch (role) {
-      case 'owner': return 'bg-[rgba(139,92,246,0.08)]0/20 text-purple-400';
-      case 'admin': return 'bg-blue-500/20 text-blue-400';
-      case 'manager': return 'bg-[rgba(200,255,0,0.08)]0/20 text-[#C8FF00] text-400';
-      default: return 'bg-slate-500/20 text-slate-400';
-    }
-  };
-
+  // ── Single org (no switcher needed) ─────────────────────────────────────────
   if (organizations.length <= 1) {
-    // Single org - show name + color-coded plan badge
     const badge = getPlanBadge(currentOrg?.plan_type);
     return (
-      <div className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-[rgba(255,255,255,0.07)]" data-testid="org-switcher-single">
+      <div
+        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-[rgba(255,255,255,0.07)]"
+        data-testid="org-switcher-single"
+      >
         <div className="w-8 h-8 bg-[rgba(200,255,0,0.08)] rounded-lg flex items-center justify-center">
           <Building2 className="w-4 h-4 text-[#C8FF00]" />
         </div>
@@ -165,6 +149,7 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
     );
   }
 
+  // ── Multi-org switcher dropdown ──────────────────────────────────────────────
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -173,11 +158,9 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
         data-testid="org-switcher-btn"
       >
         <div className="w-8 h-8 bg-[rgba(200,255,0,0.08)] rounded-lg flex items-center justify-center">
-          {currentOrg?.logo_url ? (
-            <img src={currentOrg.logo_url} alt="" className="w-6 h-6 rounded" />
-          ) : (
-            <Building2 className="w-4 h-4 text-[#C8FF00]" />
-          )}
+          {currentOrg?.logo_url
+            ? <img src={currentOrg.logo_url} alt="" className="w-6 h-6 rounded" />
+            : <Building2 className="w-4 h-4 text-[#C8FF00]" />}
         </div>
         <div className="hidden sm:block text-left">
           <p className="text-sm font-medium text-white truncate max-w-[150px]" data-testid="org-switcher-name">
@@ -204,7 +187,6 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
           <div className="p-2 border-b border-[rgba(255,255,255,0.07)]">
             <p className="text-xs font-medium text-slate-400 px-2 py-1">YOUR ORGANIZATIONS</p>
           </div>
-
           <div className="max-h-64 overflow-y-auto py-1">
             {organizations.map((org) => (
               <button
@@ -216,11 +198,9 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
                 }`}
               >
                 <div className="w-10 h-10 bg-[rgba(200,255,0,0.08)] rounded-lg flex items-center justify-center flex-shrink-0">
-                  {org.logo_url ? (
-                    <img src={org.logo_url} alt="" className="w-8 h-8 rounded" />
-                  ) : (
-                    <Building2 className="w-5 h-5 text-[#C8FF00]" />
-                  )}
+                  {org.logo_url
+                    ? <img src={org.logo_url} alt="" className="w-8 h-8 rounded" />
+                    : <Building2 className="w-5 h-5 text-[#C8FF00]" />}
                 </div>
                 <div className="flex-1 text-left min-w-0">
                   <p className="text-sm font-medium text-white truncate">{org.name}</p>
@@ -244,26 +224,16 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
               </button>
             ))}
           </div>
-
           <div className="p-2 border-t border-[rgba(255,255,255,0.07)] space-y-1">
-            <a
-              href="/organization-settings"
-              className="flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition"
-            >
+            <a href="/organization-settings" className="flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition">
               <Settings className="w-4 h-4" />
               Organization Settings
             </a>
-            <a
-              href="/team"
-              className="flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition"
-            >
+            <a href="/team" className="flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition">
               <Users className="w-4 h-4" />
               Manage Team
             </a>
-            <a
-              href="/subscription"
-              className="flex items-center gap-2 px-3 py-2 text-sm text-[#C8FF00] hover:text-[#C8FF00] hover:bg-[rgba(200,255,0,0.08)] rounded-lg transition"
-            >
+            <a href="/subscription" className="flex items-center gap-2 px-3 py-2 text-sm text-[#C8FF00] hover:bg-[rgba(200,255,0,0.08)] rounded-lg transition">
               <Plus className="w-4 h-4" />
               Upgrade Plan
             </a>
