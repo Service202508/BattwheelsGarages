@@ -682,7 +682,6 @@ export default function Dashboard({ user }) {
             />
           </div>
         </TabsContent>
-        </TabsContent>
 
         {/* ==================== TECHNICIAN LEADERBOARD TAB ==================== */}
         <TabsContent value="technicians" className="mt-6">
