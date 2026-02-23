@@ -53,12 +53,12 @@
     "T3.1": {
       "status": "PASS",
       "http": 200,
-      "note": "contact_id:CON-BFC040A71247"
+      "note": "contact_id:CON-2DE1A52EF870"
     },
     "T3.2": {
       "status": "PASS",
       "http": 200,
-      "note": "Paginated contacts: 9 total, 9 on page"
+      "note": "Paginated contacts: 12 total, 10 on page"
     },
     "T3.3": {
       "status": "FAIL",
@@ -73,12 +73,12 @@
     "T4.1": {
       "status": "PASS",
       "http": 200,
-      "note": "ticket_id:tkt_9996ccd16549 status:open priority:HIGH"
+      "note": "ticket_id:tkt_56ce595da041 status:open priority:HIGH"
     },
     "T4.2": {
       "status": "PASS",
       "http": 200,
-      "note": "45 tickets in paginated list"
+      "note": "47 tickets in paginated list"
     },
     "T4.3": {
       "status": "PASS",
@@ -133,7 +133,7 @@
     "T7.1": {
       "status": "PASS",
       "http": 200,
-      "note": "estimate_id:EST-7B8476DE4A09 number:EST-00083"
+      "note": "estimate_id:EST-FA7AB8E4F7E8 number:EST-00084"
     },
     "T7.2": {
       "status": "PASS",
@@ -153,7 +153,7 @@
     "T7.5": {
       "status": "PASS",
       "http": 200,
-      "note": "Converted \u2192 invoice_id:INV-D5AB3F5736FE"
+      "note": "Converted \u2192 invoice_id:INV-33947F489A69"
     },
     "T8.1": {
       "status": "FAIL",
@@ -163,12 +163,12 @@
     "T8.2": {
       "status": "PASS",
       "http": 200,
-      "note": "20 journal entries (paginated)"
+      "note": "22 journal entries (paginated)"
     },
     "T8.3": {
       "status": "PASS",
       "http": 200,
-      "note": "PDF generated. Content-Type:application/pdf Size:24134 bytes \u2705 FIXED"
+      "note": "PDF generated. Content-Type:application/pdf Size:24328 bytes \u2705 FIXED"
     },
     "T8.4": {
       "status": "FAIL",
@@ -183,12 +183,12 @@
     "T8.6": {
       "status": "PASS",
       "http": 200,
-      "note": "BALANCED \u2705 DR:938,940.00 == CR:938,940.00 \u2705 FIXED"
+      "note": "BALANCED \u2705 DR:943,070.00 == CR:943,070.00 \u2705 FIXED"
     },
     "T9.1": {
       "status": "PASS",
       "http": 200,
-      "note": "Vendor contact_id:CON-CE5464E451C1"
+      "note": "Vendor contact_id:CON-B6FA36E126FE"
     },
     "T9.2": {
       "status": "FAIL",
@@ -218,7 +218,7 @@
     "T10.1": {
       "status": "PASS",
       "http": 200,
-      "note": "expense_id:exp_0bc00db8b4b3"
+      "note": "expense_id:exp_d2c1eb635fe0"
     },
     "T10.2": {
       "status": "PASS",
@@ -228,7 +228,7 @@
     "T10.3": {
       "status": "PASS",
       "http": 200,
-      "note": "6 expense journal entries"
+      "note": "7 expense journal entries"
     },
     "T11.1": {
       "status": "PASS",
@@ -241,14 +241,14 @@
       "note": "Inventory item in use: inv_31eac56941c2"
     },
     "T11.3": {
-      "status": "FAIL",
-      "http": 404,
-      "note": "/api/inventory/reorder-suggestions NOT FOUND (404)"
+      "status": "PASS",
+      "http": 200,
+      "note": "Reorder suggestions endpoint works"
     },
     "T11.4": {
-      "status": "FAIL",
-      "http": 404,
-      "note": "/api/inventory/stocktakes NOT FOUND (404)"
+      "status": "PASS",
+      "http": 200,
+      "note": "Stocktake endpoint works"
     },
     "T11.5": {
       "status": "PARTIAL",
@@ -258,17 +258,17 @@
     "T12.1": {
       "status": "PASS",
       "http": 200,
-      "note": "8 employees"
+      "note": "9 employees"
     },
     "T12.2": {
       "status": "PASS",
       "http": 200,
-      "note": "employee_id:emp_a3692317809d"
+      "note": "employee_id:emp_e683461075b3"
     },
     "T12.3": {
       "status": "PASS",
       "http": 200,
-      "note": "Payroll generated: 0 employees processed. JE:je_553e0d26abca"
+      "note": "Payroll generated: 0 employees processed. JE:je_8aca0f94dfc9"
     },
     "T12.4": {
       "status": "PARTIAL",
@@ -288,17 +288,17 @@
     "T13.2": {
       "status": "PASS",
       "http": 200,
-      "note": "21 journal entries (paginated, correct endpoint)"
+      "note": "23 journal entries (paginated, correct endpoint)"
     },
     "T13.3": {
       "status": "PASS",
       "http": 200,
-      "note": "BALANCED \u2705 DR:940,120.00 == CR:940,120.00"
+      "note": "BALANCED \u2705 DR:944,250.00 == CR:944,250.00"
     },
     "T13.4": {
       "status": "PASS",
       "http": 200,
-      "note": "P&L: income:10620.0 expenses:9860.0 net:760.0"
+      "note": "P&L: income:10620.0 expenses:11040.0 net:-420.0"
     },
     "T13.5": {
       "status": "PASS",
@@ -323,7 +323,7 @@
     "T15.1": {
       "status": "FAIL",
       "http": 422,
-      "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"customer_id\"],\"msg\":\"Field required\",\"input\":{\"contact_id\":\"CON-BFC040A71247"
+      "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"customer_id\"],\"msg\":\"Field required\",\"input\":{\"contact_id\":\"CON-2DE1A52EF870"
     },
     "T15.2": {
       "status": "PASS",
@@ -333,12 +333,12 @@
     "T16.1": {
       "status": "PASS",
       "http": 200,
-      "note": "project_id:proj_2515f2a2a3a0"
+      "note": "project_id:proj_b588f9c2a260"
     },
     "T16.2": {
       "status": "PASS",
       "http": 200,
-      "note": "task_id:task_7b09abd5322f"
+      "note": "task_id:task_9511ca1ae560"
     },
     "T16.3": {
       "status": "PASS",
@@ -373,7 +373,7 @@
     "T18.2": {
       "status": "PASS",
       "http": 200,
-      "note": "? audit entries for ticket/tkt_9996ccd16549"
+      "note": "? audit entries for ticket/tkt_56ce595da041"
     },
     "T19.1": {
       "status": "PASS",
@@ -381,14 +381,14 @@
       "note": "Technician performance: 1 technicians"
     },
     "T19.2": {
-      "status": "FAIL",
-      "http": 404,
-      "note": "/api/sla/performance-report NOT FOUND (known gap)"
+      "status": "PASS",
+      "http": 200,
+      "note": "SLA performance report works"
     },
     "T19.3": {
-      "status": "FAIL",
-      "http": 404,
-      "note": "/api/reports/inventory-valuation NOT FOUND (known gap)"
+      "status": "PASS",
+      "http": 200,
+      "note": "Inventory valuation report works"
     },
     "T19.4": {
       "status": "PASS",
@@ -408,7 +408,7 @@
     "T20.2": {
       "status": "PASS",
       "http": 200,
-      "note": "orgs:? users:42 tickets:47"
+      "note": "orgs:? users:43 tickets:49"
     },
     "T20.3": {
       "status": "PASS",
@@ -431,9 +431,9 @@
       "note": "Org B user exists but org_id not extracted for isolation test"
     },
     "T21.3": {
-      "status": "FAIL",
-      "http": 200,
-      "note": "Cross-tenant returns 10 items \u2014 possible data leakage. Check org_id on items!"
+      "status": "PASS",
+      "http": 403,
+      "note": "Cross-tenant access correctly blocked: 403 Forbidden"
     },
     "T21.4": {
       "status": "PARTIAL",
@@ -448,7 +448,7 @@
     "T22.1": {
       "status": "PASS",
       "http": 200,
-      "note": "page:1 limit:10 total:10 has_next:False"
+      "note": "page:1 limit:10 total:13 has_next:True"
     },
     "T22.2": {
       "status": "PASS",
@@ -463,11 +463,11 @@
   },
   "summary": {
     "total": 92,
-    "passed": 62,
-    "failed": 20,
+    "passed": 67,
+    "failed": 15,
     "partial": 10,
-    "score_pct": 67.4,
+    "score_pct": 72.8,
     "previous_score": "55/86 (64%)",
-    "improvement": 7
+    "improvement": 12
   }
 }
