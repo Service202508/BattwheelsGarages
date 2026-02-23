@@ -105,6 +105,7 @@ class BankingService:
                     {"account_id": account_id},
                     {"$set": {"opening_journal_entry_id": journal_id}}
                 )
+                account["opening_journal_entry_id"] = journal_id
         
         return {k: v for k, v in account.items() if k != "_id"}
     
