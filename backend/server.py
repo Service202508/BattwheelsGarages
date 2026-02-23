@@ -4603,84 +4603,14 @@ async def update_customer(customer_id: str, update: CustomerUpdate, request: Req
     customer = await db.customers.find_one(query, {"_id": 0})
     return customer
 
-# ==================== EXPENSE ROUTES ====================
+# ==================== EXPENSE ROUTES (LEGACY - DEPRECATED) ====================
+# These routes have been replaced by /app/backend/routes/expenses.py
+# Keeping as reference but disabling to avoid route conflicts
 
-@api_router.post("/expenses")
-async def create_expense(data: ExpenseCreate, request: Request):
-    user = await require_technician_or_admin(request)
-    expense = Expense(
-        expense_date=datetime.fromisoformat(data.expense_date),
-        description=data.description,
-        expense_account=data.expense_account,
-        vendor_id=data.vendor_id,
-        amount=data.amount,
-        tax_amount=data.tax_amount,
-        reference_number=data.reference_number,
-        is_billable=data.is_billable,
-        created_by=user.user_id
-    )
-    doc = expense.model_dump()
-    doc['expense_date'] = doc['expense_date'].isoformat()
-    doc['created_at'] = doc['created_at'].isoformat()
-    await db.expenses.insert_one(doc)
-    
-    # Create ledger entry
-    await create_ledger_entry(
-        account_type="expense",
-        account_name=data.expense_account,
-        description=data.description or f"Expense: {data.expense_account}",
-        reference_type="expense",
-        reference_id=expense.expense_id,
-        debit=data.amount,
-        credit=0,
-        created_by=user.user_id
-    )
-    
-    return expense.model_dump()
-
-@api_router.get("/expenses")
-async def get_expenses(
-    request: Request,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
-    account: Optional[str] = None
-):
-    await require_auth(request)
-    query = {}
-    if start_date:
-        query["expense_date"] = {"$gte": start_date}
-    if end_date:
-        if "expense_date" in query:
-            query["expense_date"]["$lte"] = end_date
-        else:
-            query["expense_date"] = {"$lte": end_date}
-    if account:
-        query["expense_account"] = account
-    
-    expenses = await db.expenses.find(query, {"_id": 0}).sort("expense_date", -1).to_list(1000)
-    return expenses
-
-@api_router.get("/expenses/summary")
-async def get_expense_summary(request: Request):
-    await require_admin(request)
-    
-    pipeline = [
-        {"$group": {
-            "_id": "$expense_account",
-            "total": {"$sum": "$amount"},
-            "count": {"$sum": 1}
-        }},
-        {"$sort": {"total": -1}}
-    ]
-    
-    summary = await db.expenses.aggregate(pipeline).to_list(50)
-    total = sum(item["total"] for item in summary)
-    
-    return {
-        "by_account": summary,
-        "total_expenses": total,
-        "expense_count": sum(item["count"] for item in summary)
-    }
+# @api_router.post("/expenses-legacy")
+# async def create_expense_legacy(data: ExpenseCreate, request: Request):
+#     """Legacy expense creation - use /api/expenses instead"""
+#     pass
 
 # ==================== CHART OF ACCOUNTS ROUTES ====================
 
