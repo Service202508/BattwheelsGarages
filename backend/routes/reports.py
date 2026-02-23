@@ -1286,6 +1286,8 @@ async def get_technician_performance(
     period: str = Query("this_month", description="this_week | this_month | this_quarter | custom"),
     date_from: str = Query(None),
     date_to: str = Query(None),
+    request: Request = None,
+    _: None = Depends(require_feature("advanced_reports"))
 ):
     """
     GET /api/reports/technician-performance
