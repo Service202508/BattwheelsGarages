@@ -627,7 +627,7 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
     
     async def _validate_membership(self, user_id: str, org_id: str) -> bool:
         """CRITICAL: Validate user is member of organization"""
-        if not self._db:
+        if self._db is None:
             logger.error("Database not initialized in TenantGuardMiddleware")
             return False
         
