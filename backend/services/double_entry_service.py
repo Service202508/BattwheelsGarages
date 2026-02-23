@@ -88,7 +88,15 @@ SYSTEM_ACCOUNTS = {
     "OFFICE_EXPENSE": {"name": "Office Supplies", "type": AccountType.EXPENSE, "code": "6400"},
     "PROFESSIONAL_FEES": {"name": "Professional Fees", "type": AccountType.EXPENSE, "code": "6500"},
     "DEPRECIATION_EXPENSE": {"name": "Depreciation Expense", "type": AccountType.EXPENSE, "code": "6600"},
+    "TRAVEL_EXPENSE": {"name": "Travel & Conveyance", "type": AccountType.EXPENSE, "code": "6710"},
+    "REPAIRS_EXPENSE": {"name": "Repairs & Maintenance", "type": AccountType.EXPENSE, "code": "6720"},
+    "ADVERTISING_EXPENSE": {"name": "Advertising & Marketing", "type": AccountType.EXPENSE, "code": "6730"},
+    "STAFF_WELFARE": {"name": "Staff Welfare", "type": AccountType.EXPENSE, "code": "6740"},
+    "COMMUNICATION_EXPENSE": {"name": "Communication Expense", "type": AccountType.EXPENSE, "code": "6750"},
     "MISC_EXPENSE": {"name": "Miscellaneous Expense", "type": AccountType.EXPENSE, "code": "6900"},
+    
+    # Equity - Additional
+    "OPENING_BALANCE_EQUITY": {"name": "Opening Balance Equity", "type": AccountType.EQUITY, "code": "3300"},
 }
 
 
