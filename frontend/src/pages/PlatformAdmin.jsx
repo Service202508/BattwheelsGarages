@@ -5,7 +5,8 @@ import { toast } from "sonner";
 import {
   Building2, Users, BarChart3, ShieldAlert, CheckCircle,
   XCircle, TrendingUp, Search, RefreshCw, ChevronRight,
-  Crown, Loader2, AlertTriangle, ArrowLeft, Settings
+  Crown, Loader2, AlertTriangle, ArrowLeft, Settings,
+  IndianRupee, Activity, UserPlus, Flame
 } from "lucide-react";
 
 const PLAN_COLORS = {
@@ -27,6 +28,7 @@ function StatCard({ icon: Icon, label, value, sub, color = "emerald" }) {
     blue: "text-blue-400 bg-blue-400/10",
     amber: "text-amber-400 bg-amber-400/10",
     red: "text-red-400 bg-red-400/10",
+    volt: "text-[#C8FF00] bg-[rgba(200,255,0,0.08)]",
   };
   return (
     <div className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
@@ -42,10 +44,24 @@ function StatCard({ icon: Icon, label, value, sub, color = "emerald" }) {
   );
 }
 
+function SectionCard({ title, icon: Icon, iconColor = "text-blue-400", children }) {
+  return (
+    <div className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+      <h3 className="text-sm font-medium text-white mb-4 flex items-center gap-2">
+        <Icon className={`w-4 h-4 ${iconColor}`} />
+        {title}
+      </h3>
+      {children}
+    </div>
+  );
+}
+
 export default function PlatformAdmin({ user }) {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("orgs");
   const [loading, setLoading] = useState(true);
   const [metrics, setMetrics] = useState(null);
+  const [health, setHealth] = useState(null);
   const [orgs, setOrgs] = useState([]);
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
@@ -62,12 +78,16 @@ export default function PlatformAdmin({ user }) {
     if (res.ok) setMetrics(await res.json());
   }
 
+  async function fetchHealth() {
+    const res = await fetch(`${API}/platform/revenue-health`, { headers });
+    if (res.ok) setHealth(await res.json());
+  }
+
   async function fetchOrgs() {
     const params = new URLSearchParams({ page, limit: 25 });
     if (search) params.set("search", search);
     if (planFilter) params.set("plan", planFilter);
     if (statusFilter) params.set("status", statusFilter);
-
     const res = await fetch(`${API}/platform/organizations?${params}`, { headers });
     if (res.ok) {
       const data = await res.json();
@@ -81,13 +101,12 @@ export default function PlatformAdmin({ user }) {
 
   async function load() {
     setLoading(true);
-    await Promise.all([fetchMetrics(), fetchOrgs()]);
+    await Promise.all([fetchMetrics(), fetchOrgs(), fetchHealth()]);
     setLoading(false);
   }
 
   useEffect(() => { load(); }, [page, planFilter, statusFilter]);
 
-  // Debounced search
   useEffect(() => {
     const t = setTimeout(() => fetchOrgs(), 400);
     return () => clearTimeout(t);
@@ -98,12 +117,8 @@ export default function PlatformAdmin({ user }) {
     setActionLoading(p => ({ ...p, [orgId]: "suspending" }));
     const res = await fetch(`${API}/platform/organizations/${orgId}/suspend`, { method: "POST", headers });
     const data = await res.json();
-    if (res.ok) {
-      toast.success(data.message);
-      fetchOrgs();
-    } else {
-      toast.error(data.detail || "Failed to suspend");
-    }
+    if (res.ok) { toast.success(data.message); fetchOrgs(); }
+    else toast.error(data.detail || "Failed to suspend");
     setActionLoading(p => ({ ...p, [orgId]: null }));
   }
 
@@ -111,12 +126,8 @@ export default function PlatformAdmin({ user }) {
     setActionLoading(p => ({ ...p, [orgId]: "activating" }));
     const res = await fetch(`${API}/platform/organizations/${orgId}/activate`, { method: "POST", headers });
     const data = await res.json();
-    if (res.ok) {
-      toast.success(data.message);
-      fetchOrgs();
-    } else {
-      toast.error(data.detail || "Failed to activate");
-    }
+    if (res.ok) { toast.success(data.message); fetchOrgs(); }
+    else toast.error(data.detail || "Failed to activate");
     setActionLoading(p => ({ ...p, [orgId]: null }));
   }
 
@@ -126,14 +137,18 @@ export default function PlatformAdmin({ user }) {
       method: "PUT", headers, body: JSON.stringify({ plan_type: newPlan })
     });
     const data = await res.json();
-    if (res.ok) {
-      toast.success(data.message);
-      fetchOrgs();
-    } else {
-      toast.error(data.detail || "Failed to change plan");
-    }
+    if (res.ok) { toast.success(data.message); fetchOrgs(); }
+    else toast.error(data.detail || "Failed to change plan");
     setActionLoading(p => ({ ...p, [orgId]: null }));
   }
+
+  const fmtINR = (n) => n >= 1000
+    ? `₹${(n / 1000).toFixed(1)}k`
+    : `₹${n}`;
+
+  const fmtDate = (d) => d
+    ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
+    : "—";
 
   if (loading) {
     return (
@@ -149,10 +164,7 @@ export default function PlatformAdmin({ user }) {
       <div className="border-b border-[rgba(255,255,255,0.07)] bg-[#0D1117] px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="text-[rgba(244,246,240,0.45)] hover:text-white transition"
-            >
+            <button onClick={() => navigate("/dashboard")} className="text-[rgba(244,246,240,0.45)] hover:text-white transition">
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
@@ -163,10 +175,7 @@ export default function PlatformAdmin({ user }) {
               <p className="text-xs text-[rgba(244,246,240,0.35)]">Battwheels OS — Operator Dashboard</p>
             </div>
           </div>
-          <button
-            onClick={load}
-            className="flex items-center gap-2 text-xs text-[rgba(244,246,240,0.45)] hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-white/5"
-          >
+          <button onClick={load} className="flex items-center gap-2 text-xs text-[rgba(244,246,240,0.45)] hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-white/5">
             <RefreshCw className="w-3.5 h-3.5" />
             Refresh
           </button>
@@ -174,153 +183,266 @@ export default function PlatformAdmin({ user }) {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
-        {/* Metrics */}
+        {/* KPI strip */}
         {metrics && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard icon={Building2} label="Total Organisations" value={metrics.total_organizations} color="emerald" />
             <StatCard icon={CheckCircle} label="Active" value={metrics.active_organizations} sub={`+${metrics.new_this_month} this month`} color="blue" />
             <StatCard icon={Users} label="Platform Users" value={metrics.total_users} color="amber" />
-            <StatCard icon={ShieldAlert} label="Suspended" value={metrics.suspended_organizations} color="red" />
+            <StatCard icon={IndianRupee} label="MRR" value={health ? fmtINR(health.total_mrr) : "—"} sub="Monthly Recurring Revenue" color="volt" />
           </div>
         )}
 
-        {/* Plan breakdown */}
-        {metrics?.organizations_by_plan && (
-          <div className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
-            <h3 className="text-sm font-medium text-white mb-4 flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-blue-400" />
-              Organisations by Plan
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              {Object.entries(metrics.organizations_by_plan).map(([plan, count]) => (
-                <div key={plan} className="flex items-center gap-2 px-3 py-1.5 bg-[#0D1117] rounded-lg border border-[rgba(255,255,255,0.07)]">
-                  <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${PLAN_COLORS[plan] || "bg-slate-500/20 text-slate-300"}`}>{plan}</span>
-                  <span className="text-white font-semibold text-sm">{count}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Organisations table */}
-        <div className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl overflow-hidden">
-          <div className="p-5 border-b border-[rgba(255,255,255,0.07)] flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgba(244,246,240,0.35)]" />
-              <input
-                type="text"
-                placeholder="Search by name or email…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-[#0D1117] border border-[rgba(255,255,255,0.07)] rounded-lg text-sm text-white placeholder:text-[rgba(244,246,240,0.35)] focus:outline-none focus:border-emerald-500/40"
-              />
-            </div>
-            <select
-              value={planFilter}
-              onChange={e => { setPlanFilter(e.target.value); setPage(1); }}
-              className="px-3 py-2 bg-[#0D1117] border border-[rgba(255,255,255,0.07)] rounded-lg text-sm text-white focus:outline-none"
+        {/* Tabs */}
+        <div className="flex gap-1 bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl p-1 w-fit">
+          {[
+            { id: "orgs",    label: "Organisations",    icon: Building2 },
+            { id: "health",  label: "Revenue & Health", icon: TrendingUp },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
+                activeTab === tab.id
+                  ? "bg-[#0D1117] text-white border border-[rgba(255,255,255,0.07)]"
+                  : "text-[rgba(244,246,240,0.45)] hover:text-white"
+              }`}
+              data-testid={`tab-${tab.id}`}
             >
-              <option value="">All Plans</option>
-              <option value="free">Free</option>
-              <option value="starter">Starter</option>
-              <option value="professional">Professional</option>
-              <option value="enterprise">Enterprise</option>
-            </select>
-            <select
-              value={statusFilter}
-              onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
-              className="px-3 py-2 bg-[#0D1117] border border-[rgba(255,255,255,0.07)] rounded-lg text-sm text-white focus:outline-none"
-            >
-              <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="suspended">Suspended</option>
-            </select>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[rgba(255,255,255,0.05)]">
-                  {["Organisation", "Plan", "Status", "Members", "Created", "Actions"].map(h => (
-                    <th key={h} className="text-left text-xs font-medium text-[rgba(244,246,240,0.35)] px-5 py-3 uppercase tracking-wider">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {orgs.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="text-center py-12 text-[rgba(244,246,240,0.35)] text-sm">
-                      No organisations found
-                    </td>
-                  </tr>
-                ) : orgs.map(org => (
-                  <tr key={org.organization_id} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-white/[0.02] transition">
-                    <td className="px-5 py-4">
-                      <div>
-                        <p className="text-sm font-medium text-white">{org.name}</p>
-                        <p className="text-xs text-[rgba(244,246,240,0.35)]">{org.email || org.slug}</p>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4">
-                      <select
-                        value={org.plan_type || "free"}
-                        onChange={e => changePlan(org.organization_id, org.name, e.target.value)}
-                        disabled={!!actionLoading[org.organization_id]}
-                        className={`text-xs px-2 py-1 rounded-full border font-medium capitalize cursor-pointer bg-transparent focus:outline-none ${PLAN_COLORS[org.plan_type] || "bg-slate-500/20 text-slate-300"}`}
-                      >
-                        {["free", "starter", "professional", "enterprise"].map(p => (
-                          <option key={p} value={p} className="bg-[#1a2433] capitalize">{p}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className={`text-xs px-2 py-1 rounded-full border font-medium capitalize ${STATUS_COLORS[org.status] || ""}`}>
-                        {org.status}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4 text-sm text-[rgba(244,246,240,0.55)]">{org.member_count}</td>
-                    <td className="px-5 py-4 text-xs text-[rgba(244,246,240,0.35)]">
-                      {org.created_at ? new Date(org.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-2">
-                        {actionLoading[org.organization_id] ? (
-                          <Loader2 className="w-4 h-4 text-[rgba(244,246,240,0.35)] animate-spin" />
-                        ) : org.status === "active" ? (
-                          <button
-                            onClick={() => suspend(org.organization_id, org.name)}
-                            className="text-xs px-2.5 py-1 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition"
-                          >
-                            Suspend
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => activate(org.organization_id, org.name)}
-                            className="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition"
-                          >
-                            Activate
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          {total > 25 && (
-            <div className="px-5 py-4 border-t border-[rgba(255,255,255,0.07)] flex items-center justify-between text-sm text-[rgba(244,246,240,0.45)]">
-              <span>{total} total organisations</span>
-              <div className="flex items-center gap-2">
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">Prev</button>
-                <span>Page {page}</span>
-                <button onClick={() => setPage(p => p + 1)} disabled={orgs.length < 25} className="px-3 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">Next</button>
-              </div>
-            </div>
-          )}
+              <tab.icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          ))}
         </div>
+
+        {/* ── TAB: ORGANISATIONS ── */}
+        {activeTab === "orgs" && (
+          <>
+            {metrics?.organizations_by_plan && (
+              <div className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl p-5">
+                <h3 className="text-sm font-medium text-white mb-4 flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-blue-400" />
+                  Organisations by Plan
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {Object.entries(metrics.organizations_by_plan).map(([plan, count]) => (
+                    <div key={plan} className="flex items-center gap-2 px-3 py-1.5 bg-[#0D1117] rounded-lg border border-[rgba(255,255,255,0.07)]">
+                      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${PLAN_COLORS[plan] || "bg-slate-500/20 text-slate-300"}`}>{plan}</span>
+                      <span className="text-white font-semibold text-sm">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl overflow-hidden">
+              <div className="p-5 border-b border-[rgba(255,255,255,0.07)] flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgba(244,246,240,0.35)]" />
+                  <input type="text" placeholder="Search by name or email…" value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 bg-[#0D1117] border border-[rgba(255,255,255,0.07)] rounded-lg text-sm text-white placeholder:text-[rgba(244,246,240,0.35)] focus:outline-none focus:border-emerald-500/40"
+                  />
+                </div>
+                <select value={planFilter} onChange={e => { setPlanFilter(e.target.value); setPage(1); }}
+                  className="px-3 py-2 bg-[#0D1117] border border-[rgba(255,255,255,0.07)] rounded-lg text-sm text-white focus:outline-none">
+                  <option value="">All Plans</option>
+                  <option value="free">Free</option>
+                  <option value="starter">Starter</option>
+                  <option value="professional">Professional</option>
+                  <option value="enterprise">Enterprise</option>
+                </select>
+                <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
+                  className="px-3 py-2 bg-[#0D1117] border border-[rgba(255,255,255,0.07)] rounded-lg text-sm text-white focus:outline-none">
+                  <option value="">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="suspended">Suspended</option>
+                </select>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-[rgba(255,255,255,0.05)]">
+                      {["Organisation", "Plan", "Status", "Members", "Created", "Actions"].map(h => (
+                        <th key={h} className="text-left text-xs font-medium text-[rgba(244,246,240,0.35)] px-5 py-3 uppercase tracking-wider">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orgs.length === 0 ? (
+                      <tr><td colSpan={6} className="text-center py-12 text-[rgba(244,246,240,0.35)] text-sm">No organisations found</td></tr>
+                    ) : orgs.map(org => (
+                      <tr key={org.organization_id} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-white/[0.02] transition">
+                        <td className="px-5 py-4">
+                          <div>
+                            <p className="text-sm font-medium text-white">{org.name}</p>
+                            <p className="text-xs text-[rgba(244,246,240,0.35)]">{org.email || org.slug}</p>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <select value={org.plan_type || "free"}
+                            onChange={e => changePlan(org.organization_id, org.name, e.target.value)}
+                            disabled={!!actionLoading[org.organization_id]}
+                            className={`text-xs px-2 py-1 rounded-full border font-medium capitalize cursor-pointer bg-transparent focus:outline-none ${PLAN_COLORS[org.plan_type] || "bg-slate-500/20 text-slate-300"}`}>
+                            {["free", "starter", "professional", "enterprise"].map(p => (
+                              <option key={p} value={p} className="bg-[#1a2433] capitalize">{p}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-5 py-4">
+                          <span className={`text-xs px-2 py-1 rounded-full border font-medium capitalize ${STATUS_COLORS[org.status] || ""}`}>
+                            {org.status}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4 text-sm text-[rgba(244,246,240,0.55)]">{org.member_count}</td>
+                        <td className="px-5 py-4 text-xs text-[rgba(244,246,240,0.35)]">{fmtDate(org.created_at)}</td>
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-2">
+                            {actionLoading[org.organization_id] ? (
+                              <Loader2 className="w-4 h-4 text-[rgba(244,246,240,0.35)] animate-spin" />
+                            ) : org.status === "active" ? (
+                              <button onClick={() => suspend(org.organization_id, org.name)}
+                                className="text-xs px-2.5 py-1 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition">
+                                Suspend
+                              </button>
+                            ) : (
+                              <button onClick={() => activate(org.organization_id, org.name)}
+                                className="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">
+                                Activate
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {total > 25 && (
+                <div className="px-5 py-4 border-t border-[rgba(255,255,255,0.07)] flex items-center justify-between text-sm text-[rgba(244,246,240,0.45)]">
+                  <span>{total} total organisations</span>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">Prev</button>
+                    <span>Page {page}</span>
+                    <button onClick={() => setPage(p => p + 1)} disabled={orgs.length < 25} className="px-3 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">Next</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* ── TAB: REVENUE & HEALTH ── */}
+        {activeTab === "health" && health && (
+          <div className="space-y-6">
+            {/* MRR summary */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <StatCard icon={IndianRupee} label="Total MRR" value={fmtINR(health.total_mrr)} sub="Monthly Recurring Revenue" color="volt" />
+              <StatCard icon={Activity}    label="Trial Pipeline" value={health.trial_pipeline.count} sub="Free & trial orgs" color="amber" />
+              <StatCard icon={Flame}        label="Churn Risk" value={health.churn_risk.count} sub="Inactive 30+ days" color="red" />
+            </div>
+
+            {/* MRR by plan */}
+            <SectionCard title="MRR by Plan Tier" icon={BarChart3} iconColor="text-[#C8FF00]">
+              {health.mrr_by_plan.length === 0 ? (
+                <p className="text-sm text-[rgba(244,246,240,0.35)]">No paid plans yet</p>
+              ) : (
+                <div className="space-y-3">
+                  {health.mrr_by_plan.map(item => {
+                    const pct = health.total_mrr > 0 ? (item.mrr / health.total_mrr) * 100 : 0;
+                    return (
+                      <div key={item.plan}>
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${PLAN_COLORS[item.plan] || "bg-slate-500/20 text-slate-300"}`}>
+                              {item.plan}
+                            </span>
+                            <span className="text-xs text-[rgba(244,246,240,0.45)]">{item.count} org{item.count !== 1 ? "s" : ""}</span>
+                          </div>
+                          <span className="text-sm font-semibold text-white">{fmtINR(item.mrr)}<span className="text-[rgba(244,246,240,0.35)] text-xs">/mo</span></span>
+                        </div>
+                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <div className="h-full bg-[#C8FF00] rounded-full" style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </SectionCard>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Trial pipeline */}
+              <SectionCard title={`Trial Pipeline (${health.trial_pipeline.count})`} icon={TrendingUp} iconColor="text-amber-400">
+                {health.trial_pipeline.count === 0 ? (
+                  <p className="text-sm text-[rgba(244,246,240,0.35)]">No free/trial orgs — all customers are on paid plans.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {health.trial_pipeline.orgs.map((org, i) => (
+                      <div key={i} className="flex items-center justify-between py-2 border-b border-[rgba(255,255,255,0.04)] last:border-0">
+                        <div>
+                          <p className="text-sm text-white">{org.name}</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.35)]">{fmtDate(org.created_at)}</p>
+                        </div>
+                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${PLAN_COLORS[org.plan_type] || ""}`}>{org.plan_type}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </SectionCard>
+
+              {/* Churn risk */}
+              <SectionCard title={`Churn Risk (${health.churn_risk.count})`} icon={AlertTriangle} iconColor="text-red-400">
+                {health.churn_risk.count === 0 ? (
+                  <p className="text-sm text-[rgba(244,246,240,0.35)]">No orgs at risk — all have recent activity.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {health.churn_risk.orgs.map((org, i) => (
+                      <div key={i} className="flex items-center justify-between py-2 border-b border-[rgba(255,255,255,0.04)] last:border-0">
+                        <div>
+                          <p className="text-sm text-white">{org.name}</p>
+                          <p className="text-xs text-red-400">{org.last_activity}</p>
+                        </div>
+                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${PLAN_COLORS[org.plan] || ""}`}>{org.plan}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </SectionCard>
+            </div>
+
+            {/* Recent signups */}
+            <SectionCard title="Recent Signups" icon={UserPlus} iconColor="text-emerald-400">
+              {health.recent_signups.length === 0 ? (
+                <p className="text-sm text-[rgba(244,246,240,0.35)]">No signups yet</p>
+              ) : (
+                <div className="divide-y divide-[rgba(255,255,255,0.04)]">
+                  {health.recent_signups.map((org, i) => (
+                    <div key={i} className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center">
+                          <Building2 className="w-4 h-4 text-emerald-400" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-white">{org.name}</p>
+                          <p className="text-xs text-[rgba(244,246,240,0.35)]">{org.email || "—"}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium capitalize ${PLAN_COLORS[org.plan_type] || "bg-slate-500/20 text-slate-300"}`}>
+                          {org.plan_type || "free"}
+                        </span>
+                        <p className="text-xs text-[rgba(244,246,240,0.35)] mt-1">{fmtDate(org.created_at)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </SectionCard>
+          </div>
+        )}
       </div>
     </div>
   );
