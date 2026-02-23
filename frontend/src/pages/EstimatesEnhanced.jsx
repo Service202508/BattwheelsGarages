@@ -1989,7 +1989,7 @@ export default function EstimatesEnhanced() {
                   {(selectedEstimate.status === "sent" || selectedEstimate.status === "customer_viewed") && (
                     <>
                       <Button variant="outline" onClick={() => { setSendEmail(selectedEstimate.customer_email || ""); setShowSendDialog(true); }}><Send className="h-4 w-4 mr-1" /> Resend</Button>
-                      <Button onClick={() => handleMarkAccepted(selectedEstimate.estimate_id)} className="bg-[#22C55E] hover:bg-green-600 text-[#080C0F]"><CheckCircle className="h-4 w-4 mr-1" /> Mark Accepted</Button>
+                      <Button onClick={() => handleMarkAccepted(selectedEstimate.estimate_id)} className="bg-[#22C55E] hover:bg-[rgba(34,197,94,0.85)] text-[#080C0F]"><CheckCircle className="h-4 w-4 mr-1" /> Mark Accepted</Button>
                       <Button variant="outline" onClick={() => handleMarkDeclined(selectedEstimate.estimate_id)}><XCircle className="h-4 w-4 mr-1" /> Mark Declined</Button>
                     </>
                   )}
