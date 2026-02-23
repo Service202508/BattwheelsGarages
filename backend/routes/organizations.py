@@ -325,7 +325,7 @@ async def signup_organization(data: OrganizationCreate):
         app_url = os.environ.get("REACT_APP_BACKEND_URL", "https://app.battwheels.in").replace("/api", "")
         trial_end_date = datetime.now(timezone.utc) + timedelta(days=14)
         trial_end_str = trial_end_date.strftime("%d %B %Y")
-        subject = f"Welcome to Battwheels OS — Your 14-day trial has started"
+        subject = "Welcome to Battwheels OS — Your 14-day trial has started"
         html_body = f"""
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #080C0F; color: #F4F6F0; padding: 32px; border-radius: 8px;">
   <h1 style="color: #C8FF00; font-size: 24px; margin-bottom: 8px;">Welcome to Battwheels OS</h1>
