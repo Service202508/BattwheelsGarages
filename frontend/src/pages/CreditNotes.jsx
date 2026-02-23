@@ -128,6 +128,74 @@ export default function CreditNotes() {
     } catch { toast.error("Error applying credit"); }
   };
 
+  const handleOpenRefundDialog = async (cn) => {
+    setSelectedCN(cn);
+    setRefundForm({ amount: cn.total || 0, reason: "" });
+    setRazorpayPayment(null);
+    setShowRefundDialog(true);
+
+    // Check if original invoice was paid via Razorpay
+    if (cn.invoice_id) {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API}/payments/check-razorpay/${cn.invoice_id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.has_razorpay_payment) {
+            setRazorpayPayment(data);
+          }
+        }
+      } catch (e) {
+        console.warn("Could not check Razorpay payment:", e);
+      }
+    }
+  };
+
+  const handleInitiateRefund = async () => {
+    if (!selectedCN || !razorpayPayment?.payment_id) return toast.error("No Razorpay payment found");
+    if (!refundForm.amount || refundForm.amount <= 0) return toast.error("Enter refund amount");
+
+    setRefundLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API}/payments/razorpay/refund`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          credit_note_id: selectedCN.creditnote_id,
+          payment_id: razorpayPayment.payment_id,
+          amount: parseFloat(refundForm.amount),
+          reason: refundForm.reason
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.code === 0) {
+        toast.success("Refund initiated successfully via Razorpay");
+        setShowRefundDialog(false);
+        fetchData();
+      } else {
+        toast.error(data.detail || "Refund failed");
+      }
+    } catch { toast.error("Error initiating refund"); }
+    finally { setRefundLoading(false); }
+  };
+
+  const handleCheckRefundStatus = async (refundId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API}/payments/razorpay/refund/${refundId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.info(`Refund status: ${data.refund?.status || "Unknown"}`);
+        fetchData();
+      }
+    } catch { toast.error("Error checking refund status"); }
+  };
+
   const customerInvoices = invoices.filter(i => i.customer_id === selectedCN?.customer_id && i.balance > 0);
 
   return (
