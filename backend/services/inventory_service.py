@@ -392,6 +392,154 @@ class InventoryService:
         )
         
         return await self.db.allocations.find_one({"allocation_id": allocation_id}, {"_id": 0})
+    
+    async def receive_from_bill(
+        self,
+        bill_id: str,
+        bill_number: str,
+        line_items: list,
+        organization_id: str,
+        user_id: str
+    ) -> dict:
+        """
+        Update inventory when a purchase bill is approved.
+        
+        For each line item with an item_id:
+        1. Update item stock quantity (increase)
+        2. Recalculate weighted average cost
+        3. Create stock_movement record with type=PURCHASE
+        
+        Accounting impact is handled separately by post_bill_journal_entry.
+        """
+        now = datetime.now(timezone.utc)
+        movements_created = []
+        items_updated = []
+        
+        for line_item in line_items:
+            item_id = line_item.get("item_id")
+            if not item_id:
+                # Skip non-inventory line items (services, etc.)
+                continue
+            
+            # Fetch current item from items collection (InventoryEnhanced)
+            item = await self.db.items.find_one(
+                {"item_id": item_id, "organization_id": organization_id},
+                {"_id": 0}
+            )
+            
+            if not item:
+                # Try legacy inventory collection
+                item = await self.db.inventory.find_one(
+                    {"item_id": item_id},
+                    {"_id": 0}
+                )
+            
+            if not item:
+                logger.warning(f"Item {item_id} not found for bill {bill_number}")
+                continue
+            
+            purchase_qty = float(line_item.get("quantity", 0))
+            purchase_rate = float(line_item.get("rate", 0))
+            purchase_value = purchase_qty * purchase_rate
+            
+            if purchase_qty <= 0:
+                continue
+            
+            # Get current stock values
+            old_qty = float(item.get("current_stock_qty", item.get("quantity", 0)))
+            old_value = float(item.get("current_stock_value", old_qty * item.get("avg_cost", item.get("unit_price", 0))))
+            old_avg_cost = old_value / old_qty if old_qty > 0 else 0
+            
+            # Calculate new values using weighted average
+            new_qty = old_qty + purchase_qty
+            new_value = old_value + purchase_value
+            new_avg_cost = new_value / new_qty if new_qty > 0 else purchase_rate
+            
+            # Update item in items collection
+            update_result = await self.db.items.update_one(
+                {"item_id": item_id, "organization_id": organization_id},
+                {
+                    "$set": {
+                        "current_stock_qty": round(new_qty, 2),
+                        "current_stock_value": round(new_value, 2),
+                        "avg_cost": round(new_avg_cost, 2),
+                        "last_purchase_rate": purchase_rate,
+                        "last_purchase_date": now.strftime("%Y-%m-%d"),
+                        "updated_at": now.isoformat()
+                    }
+                }
+            )
+            
+            # If not in items, try inventory collection
+            if update_result.modified_count == 0:
+                await self.db.inventory.update_one(
+                    {"item_id": item_id},
+                    {
+                        "$set": {
+                            "quantity": round(new_qty, 2),
+                            "unit_price": round(new_avg_cost, 2),
+                            "updated_at": now.isoformat()
+                        }
+                    }
+                )
+            
+            # Create stock_movement record
+            movement_id = f"sm_{uuid.uuid4().hex[:12]}"
+            movement = {
+                "movement_id": movement_id,
+                "item_id": item_id,
+                "item_name": item.get("name", ""),
+                "movement_type": "PURCHASE",
+                "reference_type": "BILL",
+                "reference_id": bill_id,
+                "reference_number": bill_number,
+                "movement_date": now.strftime("%Y-%m-%d"),
+                "quantity": purchase_qty,  # Positive for purchase
+                "unit_cost": purchase_rate,
+                "total_value": purchase_value,
+                "balance_qty": new_qty,
+                "balance_value": new_value,
+                "avg_cost_after": new_avg_cost,
+                "organization_id": organization_id,
+                "created_by": user_id,
+                "narration": f"Purchase: {item.get('name', '')} × {purchase_qty} @ ₹{purchase_rate:,.2f} | Bill: {bill_number}",
+                "created_at": now.isoformat()
+            }
+            
+            await self.db.stock_movements.insert_one(movement)
+            movements_created.append(movement_id)
+            items_updated.append({
+                "item_id": item_id,
+                "name": item.get("name", ""),
+                "qty_added": purchase_qty,
+                "new_qty": new_qty,
+                "new_avg_cost": new_avg_cost
+            })
+            
+            logger.info(
+                f"Inventory updated from bill {bill_number}: "
+                f"{item.get('name', '')} +{purchase_qty} → {new_qty} @ ₹{new_avg_cost:,.2f}"
+            )
+        
+        # Emit event
+        if items_updated:
+            await self.dispatcher.emit(
+                EventType.INVENTORY_UPDATED,
+                {
+                    "bill_id": bill_id,
+                    "bill_number": bill_number,
+                    "items_updated": len(items_updated),
+                    "movements_created": movements_created
+                },
+                source="inventory_service",
+                user_id=user_id
+            )
+        
+        return {
+            "bill_id": bill_id,
+            "items_updated": items_updated,
+            "movements_created": movements_created
+        }
 
 
 # Service factory
