@@ -196,9 +196,9 @@ class JournalEntry:
 
 # ========================= HELPER FUNCTIONS =========================
 
-def round_currency(amount: float | Decimal) -> Decimal:
+def round_currency(amount: float | Decimal | int) -> Decimal:
     """Round to 2 decimal places"""
-    if isinstance(amount, float):
+    if isinstance(amount, (int, float)):
         amount = Decimal(str(amount))
     return amount.quantize(CURRENCY_PRECISION, rounding=ROUND_HALF_UP)
 
