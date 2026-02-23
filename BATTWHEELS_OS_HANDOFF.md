@@ -476,3 +476,27 @@ tail -f /var/log/supervisor/backend.out.log
 **END OF DOCUMENT**
 
 *Platform is ready for beta launch. Good luck!*
+
+---
+
+## Sprint 2 Roadmap (Post-Beta Launch)
+
+### WhatsApp Business API Integration
+**Priority:** HIGH — Indian market essential
+
+Business Case: EV workshop technicians in India use WhatsApp as primary channel.
+Email alerts have ~4h read time; WhatsApp is read within minutes.
+
+Technical Requirements:
+- Meta Business verification + WhatsApp Business API approval
+- Recommended: Twilio WhatsApp API (quickest to market)
+- Use existing credential_service for per-org credentials
+- Extend SLA background job to send WhatsApp alongside email
+
+Message Templates (need Meta pre-approval):
+1. SLA approaching: "⚠️ SLA alert: Ticket #{id} for {customer} due in 1 hour"
+2. SLA breached:    "🚨 SLA BREACH: Ticket #{id} breached. Action required"
+3. Survey:          "Hi {name}! Rate your service at {garage}: {survey_link}"
+4. Ticket update:   "Ticket #{id} status: {status}. Track: {link}"
+
+Timeline: Implement after beta launch stabilizes (2-4 weeks post-launch)
