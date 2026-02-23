@@ -12,55 +12,62 @@
 
 ## Session 105 Updates (February 2026)
 
-### GST E-Invoice IRN Integration - Step 4 ✅ (P0 IN PROGRESS)
-**Status:** ✅ Step 4 (PDF Generation) COMPLETE
+### GST E-Invoice IRN Integration ✅ (P0 COMPLETE)
+**Status:** ✅ ALL STEPS COMPLETE (Steps 1-5)
 
-Implemented comprehensive GST-compliant invoice PDF generation with IRN block support:
+#### Step 5A: IRN Cancellation Flow ✅
+- Enhanced `handleCancelIRN()` in frontend with proper error handling
+- 24-hour window expiry detection with user-friendly message
+- Journal entry reversal on cancellation with narration
+- Invoice status updated to "cancelled"
+- Activity timeline logging for IRN cancellation
+- Cancelled invoice banner with action blocking
 
-**Backend Implementation:**
-- `/backend/services/pdf_service.py` - Enhanced PDF service (1600+ lines)
-  - `generate_gst_invoice_html()` - Full GST-compliant invoice PDF generator
-  - `generate_credit_note_html()` - Credit Note PDF generator (4F)
-  - `number_to_words_indian()` - Indian number system conversion (Lakhs, Crores)
-  - IRN block with 64-char IRN, Ack No/Date, and signed QR code
-  - GST Summary table for B2B invoices
-  - Bank details and payment QR sections
-  - Signature block and terms/conditions
+**Backend Updates:**
+- `/backend/services/einvoice_service.py` - Enhanced `cancel_irn()`:
+  - Posts reversal journal entry (Credit A/R, Debit Sales & Tax)
+  - Adds history entry for audit trail
+  - Updates invoice status to "cancelled"
 
-- `/backend/routes/invoices_enhanced.py` - Updated PDF endpoint
-  - Business rule 4A enforcement:
-    - Blocks PDF download if E-Invoice enabled + B2B + IRN pending
-    - Generates full PDF with IRN block if IRN registered
-    - Standard PDF without IRN for B2C or E-Invoice disabled
-  - File naming: `INV-{number}-{customer}.pdf`
+**Frontend Updates:**
+- `/frontend/src/pages/InvoicesEnhanced.jsx`:
+  - Enhanced error handling for 24-hour window expiry
+  - Added cancelled invoice banner
+  - Disabled actions (Send, PDF, Record Payment) for cancelled invoices
+  - Enhanced Activity Timeline with colored dots (5D)
 
-**PDF Layout (4B, 4C):**
-1. **Header Section** - Company logo, "TAX INVOICE" title
-2. **Supplier Block** - Legal name, address, GSTIN, State Code, PAN
-3. **Buyer Block** - Customer details, billing address, GSTIN
-4. **Invoice Details Row** - Number, Date, Due Date, Place of Supply, Reverse Charge
-5. **IRN Block** (if registered):
-   - 64-char IRN (Courier New, 7.5pt)
-   - Acknowledgement Number & Date
-   - Signed QR Code (80x80px) with "Scan to verify" label
-6. **Line Items Table** - Description, HSN/SAC, Qty, Rate, GST%, CGST/SGST/IGST, Total
-7. **Totals Section** - Subtotal, Tax breakdown, Grand Total
-8. **Amount in Words** - Indian format (Lakhs, Crores)
-9. **GST Summary Table** - HSN-wise tax breakdown (for B2B > ₹50,000)
-10. **Bank Details** - Account info for payment
-11. **Signature Block** - "For {Company Name}" + Authorized Signatory
-12. **Footer** - Computer generated notice + timestamp
+#### Step 5B: Email Invoice with PDF Attachment ✅
+- Full implementation of `POST /api/invoices-enhanced/{invoice_id}/send`
+- Pre-send validation checks:
+  - B2B + E-Invoice enabled → IRN must be registered
+  - Customer email required
+  - Invoice not cancelled
+- PDF generation and attachment
+- Email template with:
+  - Organization branding (dark header with logo)
+  - Invoice summary table
+  - IRN confirmation block (if B2B)
+  - Pay Now button (if Razorpay configured)
+  - Organization details footer
 
-**Technical Specs (4E):**
-- Library: WeasyPrint (HTML to PDF)
-- Paper: A4, 15mm margins
-- Fonts: Helvetica (body), Courier New (codes)
-- Required dependencies: `libpangoft2-1.0-0`, `libgdk-pixbuf-2.0-0`
+**Email Service Updates:**
+- `/backend/services/email_service.py`:
+  - Added `send_invoice_email()` method
+  - Invoice-specific dark header template
+  - PDF attachment support (base64 encoded)
+  - CC and reply-to support
 
-**Testing:**
-- PDF generation verified via curl (25KB valid PDF 1.7)
-- UI screenshot verification complete
-- E-Invoice business rules (4A) functioning correctly
+#### Step 4: Invoice PDF with IRN & QR Code ✅
+- Comprehensive GST-compliant PDF generator
+- IRN block with 64-char IRN, Ack details, QR code
+- Indian number system (Lakhs, Crores)
+- Business rule 4A enforcement
+- Credit Note PDF generator
+
+#### Steps 1-3: Previously Completed ✅
+- Step 1: Backend IRP API integration
+- Step 2: Organization Settings UI
+- Step 3: Invoice workflow enhancements
 
 ---
 
