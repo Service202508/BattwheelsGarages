@@ -1181,16 +1181,12 @@ class DoubleEntryService:
             credit = Decimal(str(row["total_credit"]))
             net_balance = debit - credit
             
-            # Determine debit/credit balance based on account type
+            # Determine debit/credit balance based on net balance direction.
+            # Rule: if net (DR-CR) > 0 → show in Debit column; if < 0 → show in Credit column.
+            # This applies uniformly to all account types to prevent double-counting.
             account_type = row["_id"]["account_type"]
-            
-            # Normal balance: Assets & Expenses = Debit, Liabilities & Equity & Income = Credit
-            if account_type in [AccountType.ASSET.value, AccountType.EXPENSE.value]:
-                debit_balance = net_balance if net_balance > 0 else Decimal("0")
-                credit_balance = abs(net_balance) if net_balance < 0 else Decimal("0")
-            else:
-                credit_balance = abs(net_balance) if net_balance < 0 else net_balance
-                debit_balance = Decimal("0") if net_balance >= 0 else abs(net_balance)
+            debit_balance = net_balance if net_balance > 0 else Decimal("0")
+            credit_balance = abs(net_balance) if net_balance < 0 else Decimal("0")
             
             grand_total_debit += debit_balance
             grand_total_credit += credit_balance
