@@ -405,7 +405,7 @@ def run():
     # ─────────────────────────────────────────────
     section("PHASE 13 — FINANCE & ACCOUNTING (6 tests)")
     # ─────────────────────────────────────────────
-    r = c.get(f"{API_URL}/journal-entries/?page=1&limit=10", headers=H)
+    r = c.get(f"{API_URL}/journal-entries?page=1&limit=10", headers=H)
     T("Journal Entries List", r.status_code in [200, 403], f"HTTP {r.status_code}")
     if r.status_code == 200:
         je_count = r.json().get("total_count", r.json().get("total", len(r.json().get("data", r.json().get("entries", [])))))
