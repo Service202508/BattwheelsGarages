@@ -34,17 +34,34 @@ logger = logging.getLogger(__name__)
 
 class FeatureNotAvailable(HTTPException):
     """Exception raised when a feature is not available for the subscription"""
-    def __init__(self, feature: str, plan: str, upgrade_to: Optional[str] = None):
+
+    # Human-readable names for features used in error messages
+    FEATURE_DISPLAY_NAMES: Dict[str, str] = {
+        "hr_payroll": "Payroll",
+        "advanced_reports": "Advanced Reports",
+        "project_management": "Project Management",
+        "inventory_multi_warehouse": "Multi-Warehouse",
+        "inventory_stock_transfers": "Stock Transfers",
+        "einvoice": "E-Invoice",
+        "accounting_module": "Accounting Module",
+        "efi_failure_intelligence": "EFI Intelligence",
+        "efi_ai_guidance": "EFI AI Guidance",
+        "efi_knowledge_brain": "Knowledge Brain",
+        "efi_expert_escalation": "Expert Escalation",
+    }
+
+    def __init__(self, feature: str, plan: str, required_plan: Optional[str] = None, upgrade_to: Optional[str] = None):
+        display_name = self.FEATURE_DISPLAY_NAMES.get(feature, feature.replace("_", " ").title())
+        req_plan_display = (required_plan or upgrade_to or "a higher").title()
         detail = {
             "error": "feature_not_available",
-            "feature": feature,
+            "feature": display_name,
+            "feature_key": feature,
             "current_plan": plan,
-            "message": f"The '{feature}' feature is not available on the {plan} plan."
+            "required_plan": required_plan or upgrade_to,
+            "message": f"Upgrade to {req_plan_display} to access {display_name}",
+            "upgrade_url": "/settings/billing",
         }
-        if upgrade_to:
-            detail["upgrade_to"] = upgrade_to
-            detail["message"] += f" Upgrade to {upgrade_to} to access this feature."
-        
         super().__init__(status_code=403, detail=detail)
 
 
