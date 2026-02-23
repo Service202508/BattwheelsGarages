@@ -1289,7 +1289,6 @@ async def get_technician_performance(
     ranked by a composite score: resolution_rate(0.4) + sla_compliance(0.4) + speed(0.2).
     """
     from fastapi import Request as _Req
-    import math
     now = datetime.now(timezone.utc)
 
     # Determine date range
