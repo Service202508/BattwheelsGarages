@@ -2208,7 +2208,7 @@ async def create_invoice(data: InvoiceCreate, request: Request, ctx: TenantConte
     tax_amount = (subtotal - data.discount_amount) * 0.18
     total_amount = subtotal - data.discount_amount + tax_amount
     
-    invoice_number = await generate_invoice_number()
+    invoice_number = await generate_invoice_number(ctx.org_id)
     due_date = datetime.now(timezone.utc) + timedelta(days=data.due_days)
     
     invoice = Invoice(
