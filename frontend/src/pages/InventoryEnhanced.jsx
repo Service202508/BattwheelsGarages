@@ -71,6 +71,20 @@ export default function InventoryEnhanced() {
   const [newAdjustment, setNewAdjustment] = useState({ item_id: "", warehouse_id: "", adjustment_type: "add", quantity: 0, reason: "", reference_number: "", notes: "" });
   const [bundleComponent, setBundleComponent] = useState({ item_id: "", quantity: 1 });
 
+  // New feature states
+  const [reorderSuggestions, setReorderSuggestions] = useState(null);
+  const [loadingReorder, setLoadingReorder] = useState(false);
+  const [stockTransfers, setStockTransfers] = useState([]);
+  const [showTransferDialog, setShowTransferDialog] = useState(false);
+  const [newTransfer, setNewTransfer] = useState({ from_warehouse_id: "", to_warehouse_id: "", items: [], notes: "" });
+  const [transferLine, setTransferLine] = useState({ item_id: "", quantity: 1 });
+  const [stocktakes, setStocktakes] = useState([]);
+  const [activeStocktake, setActiveStocktake] = useState(null);
+  const [showStocktakeDialog, setShowStocktakeDialog] = useState(false);
+  const [newStocktake, setNewStocktake] = useState({ warehouse_id: "", name: "", notes: "" });
+  const [loadingStocktake, setLoadingStocktake] = useState(false);
+  const [serialSearch, setSerialSearch] = useState("");
+
   const token = localStorage.getItem("token");
   const headers = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
 
