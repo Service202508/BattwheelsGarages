@@ -77,6 +77,26 @@ export default function OrganizationSettings({ user }) {
   const [savingRazorpay, setSavingRazorpay] = useState(false);
   const [testingRazorpay, setTestingRazorpay] = useState(false);
 
+  // E-Invoice state
+  const [einvoiceConfig, setEinvoiceConfig] = useState({
+    gstin: "",
+    legal_name: "",
+    irp_username: "",
+    irp_password: "",
+    client_id: "",
+    client_secret: "",
+    is_sandbox: true,
+    enabled: false,
+    turnover_threshold_met: false
+  });
+  const [einvoiceConfigured, setEinvoiceConfigured] = useState(false);
+  const [einvoiceEnabled, setEinvoiceEnabled] = useState(false);
+  const [showEinvoiceSecrets, setShowEinvoiceSecrets] = useState(false);
+  const [savingEinvoice, setSavingEinvoice] = useState(false);
+  const [testingEinvoice, setTestingEinvoice] = useState(false);
+  const [einvoiceTestResult, setEinvoiceTestResult] = useState(null);
+  const [gstinValid, setGstinValid] = useState(null);
+
   const getAuthHeaders = useCallback(() => {
     const token = localStorage.getItem("token");
     return {
