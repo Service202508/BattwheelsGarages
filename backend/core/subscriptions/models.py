@@ -111,6 +111,11 @@ class PlanFeatures(BaseModel):
     advanced_white_label: FeatureLimit = Field(default_factory=lambda: FeatureLimit(enabled=False))
     advanced_sso: FeatureLimit = Field(default_factory=lambda: FeatureLimit(enabled=False))
 
+    # Module-level gates (new)
+    project_management: FeatureLimit = Field(default_factory=lambda: FeatureLimit(enabled=False))
+    einvoice: FeatureLimit = Field(default_factory=lambda: FeatureLimit(enabled=False))
+    accounting_module: FeatureLimit = Field(default_factory=lambda: FeatureLimit(enabled=False))
+
 
 class PlanLimits(BaseModel):
     """Usage limits for a plan"""
@@ -289,6 +294,7 @@ DEFAULT_PLANS = [
             efi_ai_guidance=FeatureLimit(enabled=True, limit=100),
             portal_customer=FeatureLimit(enabled=True),
             portal_technician=FeatureLimit(enabled=True),
+            advanced_reports=FeatureLimit(enabled=True),
         ),
         "limits": PlanLimits(
             max_users=3,
