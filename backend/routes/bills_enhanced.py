@@ -12,6 +12,7 @@ import logging
 
 # Import double-entry posting hooks
 from services.posting_hooks import post_bill_journal_entry, post_bill_payment_journal_entry
+from services.inventory_service import get_inventory_service
 
 logger = logging.getLogger(__name__)
 
