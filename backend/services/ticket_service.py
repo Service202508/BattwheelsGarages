@@ -577,6 +577,27 @@ class TicketService:
         
         logger.info(f"Closed ticket {ticket_id} with outcome: {data.resolution_outcome}")
         
+        # Generate satisfaction survey token
+        try:
+            survey_token = f"srv_{uuid.uuid4().hex[:24]}"
+            customer_email = existing.get("customer_email", "")
+            await self.db.ticket_reviews.insert_one({
+                "ticket_id": ticket_id,
+                "organization_id": organization_id or existing.get("organization_id", ""),
+                "customer_id": existing.get("customer_id", ""),
+                "customer_name": existing.get("customer_name", ""),
+                "customer_email": customer_email,
+                "survey_token": survey_token,
+                "completed": False,
+                "created_at": now.isoformat()
+            })
+            await self.db.tickets.update_one(
+                {"ticket_id": ticket_id},
+                {"$set": {"survey_token": survey_token}}
+            )
+        except Exception as e:
+            logger.warning(f"Survey token generation failed for {ticket_id}: {e}")
+        
         return await self.db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
     
     # ==================== TICKET ASSIGNMENT ====================
