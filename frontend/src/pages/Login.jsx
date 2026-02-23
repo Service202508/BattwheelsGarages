@@ -715,6 +715,7 @@ export default function Login({ onLogin }) {
           alignItems: "center",
           justifyContent: "center",
           minHeight: "100vh",
+          padding: "80px 56px",
         }}
       >
         {/* Form wrapper */}
@@ -723,7 +724,6 @@ export default function Login({ onLogin }) {
           style={{
             width: "100%",
             maxWidth: 360,
-            padding: "0 56px",
           }}
         >
           {/* Header */}
