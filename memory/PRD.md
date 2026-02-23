@@ -306,9 +306,12 @@ customer / fleet_customer (portal access)
 **Re-Audit (2026-02-24):** 75/86 (87%) — ✅ SIGNED OFF for customer-facing launch
 **Post-Audit Fixes (2026-02-24):** ~81/86 (94%) — ✅ BETA LAUNCH READY
 **Final Audit (2026-02-24):** 80/92 (87%) — ✅ OFFICIAL SIGN-OFF FOR BETA LAUNCH
+**Sprint Closing Fixes (2026-02-24):** 82/92 (89.1%) — ✅ SPRINT COMPLETE
 
-### Official Final Sign-Off: ✅ BETA LAUNCH READY
-All 22 modules tested. 2 genuine gaps (both LOW severity). Saved to /app/CTO_FINAL_AUDIT.md
+### Sprint Closing Fixes Applied:
+- ✅ T8.1 FIXED: Estimate→Invoice now inserts with org_id, uses per-org sequences
+- ✅ Survey QR Code in Invoice PDF (qrcode library, conditional on uncompleted survey)
+- ✅ Customer Survey Frontend: /survey/:token public page, E2E verified
 
 ### Post-Audit Fixes Applied:
 - ✅ GET /api/inventory/reorder-suggestions (T11.3)
