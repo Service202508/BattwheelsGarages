@@ -1013,6 +1013,74 @@ async def reset_branding(
     }
 
 
+# ==================== EMAIL SETTINGS (PER-ORG) ====================
+
+class EmailSettings(BaseModel):
+    provider: str = "resend"  # resend or smtp
+    api_key: str = Field(..., min_length=1)
+    from_email: str = Field(..., min_length=5)
+    from_name: str = Field(..., min_length=1)
+
+
+@router.get("/me/email-settings")
+async def get_email_settings(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Get email settings status (keys masked)"""
+    from services.credential_service import get_email_credentials, EMAIL_SMTP
+    creds = await get_email_credentials(ctx.org_id)
+    has_own = not creds.get("_using_global", False)
+    return {
+        "configured": has_own,
+        "using_global": creds.get("_using_global", True),
+        "provider": creds.get("provider", "resend"),
+        "from_email": creds.get("from_email", ""),
+        "from_name": creds.get("from_name", ""),
+        "api_key_masked": ("***" + creds.get("api_key", "")[-4:]) if creds.get("api_key") else None,
+    }
+
+
+@router.post("/me/email-settings")
+async def save_email_settings(
+    data: EmailSettings,
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Save per-org email settings (admin only)"""
+    membership = await db.organization_users.find_one({
+        "organization_id": ctx.org_id, "user_id": ctx.user_id
+    })
+    if not membership or membership.get("role") not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Only admins can update email settings")
+
+    from services.credential_service import save_credentials, EMAIL_SMTP
+    await save_credentials(ctx.org_id, EMAIL_SMTP, {
+        "provider": data.provider,
+        "api_key": data.api_key,
+        "from_email": data.from_email,
+        "from_name": data.from_name,
+    })
+    return {"success": True, "message": "Email settings saved"}
+
+
+@router.delete("/me/email-settings")
+async def remove_email_settings(
+    request: Request,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Remove per-org email settings (falls back to global)"""
+    membership = await db.organization_users.find_one({
+        "organization_id": ctx.org_id, "user_id": ctx.user_id
+    })
+    if not membership or membership.get("role") not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Only admins can update email settings")
+
+    from services.credential_service import delete_credentials, EMAIL_SMTP
+    await delete_credentials(ctx.org_id, EMAIL_SMTP)
+    return {"success": True, "message": "Email settings removed, using platform defaults"}
+
+
 # ==================== INITIALIZATION ====================
 
 def init_organizations_router(app_db):
