@@ -195,12 +195,34 @@ class RBACMiddleware(BaseHTTPMiddleware):
     Role-Based Access Control Middleware.
     
     Checks if user's role is authorized to access the requested route.
-    Must run AFTER TenantIsolationMiddleware (which sets user role).
+    Must run AFTER TenantGuardMiddleware (which sets user role).
     """
+    
+    # Public endpoints that skip RBAC
+    PUBLIC_ENDPOINTS = {
+        "/api/health", "/api/", "/", "/docs", "/redoc", "/openapi.json",
+        "/api/auth/login", "/api/auth/register", "/api/auth/session",
+        "/api/auth/logout", "/api/auth/me", "/api/auth/google",
+    }
+    
+    PUBLIC_PATTERNS = [
+        r"^/api/public/.*",
+        r"^/api/webhooks/.*",
+        r"^/api/customer-portal/auth.*",
+    ]
     
     def __init__(self, app):
         super().__init__(app)
         logger.info("RBACMiddleware initialized")
+    
+    def _is_public(self, path: str) -> bool:
+        """Check if path is public"""
+        if path in self.PUBLIC_ENDPOINTS:
+            return True
+        for pattern in self.PUBLIC_PATTERNS:
+            if re.match(pattern, path):
+                return True
+        return False
     
     async def dispatch(self, request: Request, call_next: Callable):
         """Check role permissions for each request"""
@@ -212,27 +234,25 @@ class RBACMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
         
         # Skip public routes
-        if is_public_route(path):
+        if self._is_public(path):
             return await call_next(request)
         
-        # Get user role from request state (set by TenantIsolationMiddleware)
+        # Get user role from request state (set by TenantGuardMiddleware)
         user_role = getattr(request.state, "tenant_user_role", None)
         user_id = getattr(request.state, "tenant_user_id", None)
         
         if not user_role:
-            # TenantIsolationMiddleware should have set this
+            # TenantGuardMiddleware should have set this
             # If not, it means the request wasn't properly authenticated
-            logger.warning(f"No role found for path {path}")
+            logger.debug(f"No role found for path {path} - letting through for auth check")
             return await call_next(request)  # Let other middleware handle auth
         
         # Check route permissions
         allowed_roles = get_allowed_roles(path)
         
         if allowed_roles is None:
-            # Route not in permissions map - use default policy
-            # Default: Allow authenticated users (logged in = can access)
-            # In strict mode, you might want to DENY by default
-            logger.debug(f"Route {path} not in RBAC map, allowing authenticated user")
+            # Route not in permissions map - allow authenticated users
+            logger.debug(f"Route {path} not in RBAC map, allowing authenticated user with role {user_role}")
             return await call_next(request)
         
         # Check if user's role is authorized
