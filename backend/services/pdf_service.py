@@ -11,6 +11,22 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+def generate_qr_base64(url: str, box_size: int = 4, border: int = 2) -> str:
+    """Generate a QR code for a URL and return as base64 PNG string."""
+    try:
+        import qrcode
+        qr = qrcode.QRCode(version=1, box_size=box_size, border=border)
+        qr.add_data(url)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buf = BytesIO()
+        img.save(buf, format="PNG")
+        return base64.b64encode(buf.getvalue()).decode()
+    except Exception as e:
+        logger.warning(f"QR code generation failed: {e}")
+        return ""
+
 # ==================== INDIAN NUMBER SYSTEM (4D) ====================
 
 def number_to_words_indian(amount: float) -> str:
