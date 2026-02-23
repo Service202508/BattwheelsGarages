@@ -486,9 +486,11 @@ export default function InventoryEnhanced() {
         <TabsList className="flex-wrap">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="warehouses">Warehouses</TabsTrigger>
+          <TabsTrigger value="serial-batch">Serial/Batch</TabsTrigger>
+          <TabsTrigger value="reorder-alerts" data-testid="reorder-alerts-tab">Reorder Alerts</TabsTrigger>
+          <TabsTrigger value="stocktake" data-testid="stocktake-tab">Stocktake</TabsTrigger>
           <TabsTrigger value="variants">Variants</TabsTrigger>
           <TabsTrigger value="bundles">Bundles</TabsTrigger>
-          <TabsTrigger value="serial-batch">Serial/Batch</TabsTrigger>
           <TabsTrigger value="shipments">Shipments</TabsTrigger>
           <TabsTrigger value="returns">Returns</TabsTrigger>
         </TabsList>
