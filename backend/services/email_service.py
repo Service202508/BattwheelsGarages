@@ -6,12 +6,14 @@ Handles transactional emails using Resend API:
 - Team invitation emails
 - Notification emails
 - Password reset emails
+- Invoice emails with PDF attachments
 """
 
 import os
 import asyncio
 import logging
-from typing import Optional
+import base64
+from typing import Optional, List
 
 logger = logging.getLogger(__name__)
 
@@ -89,14 +91,65 @@ class EmailService:
         """
     
     @staticmethod
+    def _get_invoice_template(content: str, org_name: str, org_logo_url: str = None) -> str:
+        """Invoice-specific email template with dark header"""
+        logo_html = ""
+        if org_logo_url:
+            logo_html = f'<img src="{org_logo_url}" alt="{org_name}" style="max-height: 50px; max-width: 150px; margin-bottom: 10px;" />'
+        
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td align="center" style="padding: 40px 20px;">
+                        <table role="presentation" style="width: 100%; max-width: 600px; border-collapse: collapse;">
+                            <!-- Header -->
+                            <tr>
+                                <td style="padding: 24px; text-align: center; background-color: #080C0F; border-radius: 12px 12px 0 0;">
+                                    {logo_html}
+                                    <h1 style="margin: 0; color: #C8FF00; font-size: 24px; font-weight: 600;">{org_name}</h1>
+                                </td>
+                            </tr>
+                            <!-- Content -->
+                            <tr>
+                                <td style="padding: 40px 30px; background-color: white;">
+                                    {content}
+                                </td>
+                            </tr>
+                            <!-- Footer -->
+                            <tr>
+                                <td style="padding: 20px; text-align: center; background-color: #080C0F; border-radius: 0 0 12px 12px;">
+                                    <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                                        This is a system generated email from {APP_NAME}
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        """
+    
+    @staticmethod
     async def send_email(
         to: str,
         subject: str,
-        html_content: str
+        html_content: str,
+        attachments: List[dict] = None,
+        cc: List[str] = None,
+        reply_to: str = None
     ) -> dict:
-        """Send an email using Resend"""
+        """Send an email using Resend with optional attachments"""
         if not EMAIL_ENABLED:
-            logger.info(f"[EMAIL MOCK] To: {to}, Subject: {subject}")
+            logger.info(f"[EMAIL MOCK] To: {to}, Subject: {subject}, Attachments: {len(attachments) if attachments else 0}")
             return {"status": "mocked", "message": f"Email logged (Resend not configured): {to}"}
         
         params = {
@@ -106,6 +159,15 @@ class EmailService:
             "html": html_content
         }
         
+        if cc:
+            params["cc"] = cc
+        
+        if reply_to:
+            params["reply_to"] = reply_to
+        
+        if attachments:
+            params["attachments"] = attachments
+        
         try:
             email = await asyncio.to_thread(resend.Emails.send, params)
             logger.info(f"Email sent to {to}: {email.get('id')}")
@@ -113,6 +175,131 @@ class EmailService:
         except Exception as e:
             logger.error(f"Failed to send email to {to}: {str(e)}")
             return {"status": "error", "message": str(e)}
+    
+    @classmethod
+    async def send_invoice_email(
+        cls,
+        to_email: str,
+        customer_name: str,
+        invoice_number: str,
+        invoice_date: str,
+        due_date: str,
+        amount: float,
+        tax_amount: float,
+        total: float,
+        org_name: str,
+        org_address: str = "",
+        org_gstin: str = "",
+        org_logo_url: str = None,
+        org_email: str = None,
+        irn: str = None,
+        irn_ack_no: str = None,
+        payment_link: str = None,
+        pdf_content: bytes = None,
+        pdf_filename: str = None
+    ) -> dict:
+        """
+        Send invoice email with PDF attachment (5B)
+        """
+        # Format currency
+        def fmt(amt): return f"₹{amt:,.2f}"
+        
+        # IRN block (if B2B with IRN)
+        irn_html = ""
+        if irn:
+            irn_display = f"{irn[:20]}...{irn[-8:]}" if len(irn) > 28 else irn
+            irn_html = f"""
+            <div style="margin: 20px 0; padding: 16px; background-color: #f0fdf4; border-left: 4px solid #10b981; border-radius: 4px;">
+                <p style="margin: 0; color: #166534; font-size: 14px;">
+                    <strong>✓ E-Invoice Registered</strong><br>
+                    <span style="font-family: monospace; font-size: 12px;">IRN: {irn_display}</span><br>
+                    <span style="font-size: 12px;">Ack No: {irn_ack_no or 'N/A'}</span>
+                </p>
+            </div>
+            """
+        
+        # Pay Now button (if Razorpay configured)
+        pay_button_html = ""
+        if payment_link:
+            pay_button_html = f"""
+            <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td align="center" style="padding: 24px 0;">
+                        <a href="{payment_link}" style="display: inline-block; padding: 16px 40px; background-color: #C8FF00; color: #080C0F; text-decoration: none; font-size: 16px; font-weight: 700; border-radius: 8px;">
+                            Pay {fmt(total)} Online →
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            """
+        
+        # Build email content
+        content = f"""
+        <p style="margin: 0 0 20px; color: #111827; font-size: 16px;">Dear {customer_name},</p>
+        
+        <p style="margin: 0 0 20px; color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Please find attached your invoice <strong>{invoice_number}</strong> dated {invoice_date} 
+            for <strong>{fmt(total)}</strong> due on <strong>{due_date}</strong>.
+        </p>
+        
+        <!-- Invoice Summary Table -->
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+            <tr style="background-color: #f9fafb;">
+                <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 14px;">Invoice Number</td>
+                <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 14px; font-weight: 600; text-align: right;">{invoice_number}</td>
+            </tr>
+            <tr>
+                <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 14px;">Invoice Date</td>
+                <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 14px; text-align: right;">{invoice_date}</td>
+            </tr>
+            <tr style="background-color: #f9fafb;">
+                <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 14px;">Due Date</td>
+                <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 14px; text-align: right;">{due_date}</td>
+            </tr>
+            <tr>
+                <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 14px;">Amount Due</td>
+                <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; color: #C8FF00; background-color: #080C0F; font-size: 14px; font-weight: 700; text-align: right;">{fmt(amount)}</td>
+            </tr>
+            <tr style="background-color: #f9fafb;">
+                <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 14px;">GST Amount</td>
+                <td style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 14px; text-align: right;">{fmt(tax_amount)}</td>
+            </tr>
+            <tr>
+                <td style="padding: 16px; color: #111827; font-size: 16px; font-weight: 600;">Total</td>
+                <td style="padding: 16px; color: #111827; font-size: 20px; font-weight: 700; text-align: right;">{fmt(total)}</td>
+            </tr>
+        </table>
+        
+        {irn_html}
+        
+        {pay_button_html}
+        
+        <!-- Organization Details -->
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+            <p style="margin: 0; color: #111827; font-size: 14px; font-weight: 600;">{org_name}</p>
+            <p style="margin: 4px 0 0; color: #6b7280; font-size: 12px;">{org_address}</p>
+            {f'<p style="margin: 4px 0 0; color: #6b7280; font-size: 12px;">GSTIN: {org_gstin}</p>' if org_gstin else ''}
+        </div>
+        """
+        
+        html = cls._get_invoice_template(content, org_name, org_logo_url)
+        
+        # Prepare attachments
+        attachments = None
+        if pdf_content and pdf_filename:
+            attachments = [{
+                "filename": pdf_filename,
+                "content": base64.b64encode(pdf_content).decode("utf-8")
+            }]
+        
+        return await cls.send_email(
+            to=to_email,
+            subject=f"Invoice {invoice_number} from {org_name} — {fmt(total)}",
+            html_content=html,
+            attachments=attachments,
+            cc=[org_email] if org_email else None,
+            reply_to=org_email
+        )
     
     @classmethod
     async def send_invitation_email(
