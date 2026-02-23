@@ -413,6 +413,25 @@ export default function InventoryEnhanced() {
     } catch { toast.error("Failed to load details"); }
   };
 
+  // Inline count input component for stocktake
+  const CountInput = ({ defaultValue, onSubmit }) => {
+    const [val, setVal] = useState(defaultValue !== null && defaultValue !== undefined ? String(defaultValue) : "");
+    return (
+      <div className="flex items-center gap-1">
+        <Input
+          type="number"
+          value={val}
+          onChange={e => setVal(e.target.value)}
+          className="w-20 h-7 text-sm text-center font-mono"
+          onKeyDown={e => { if (e.key === "Enter") onSubmit(parseFloat(val) || 0); }}
+        />
+        <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => onSubmit(parseFloat(val) || 0)}>
+          Save
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6" data-testid="inventory-enhanced-page">
       {/* Header */}
