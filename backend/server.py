@@ -29,6 +29,49 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# ==================== SENTRY MONITORING ====================
+def _scrub_sensitive_data(event, hint):
+    """Remove PII and credentials before sending to Sentry"""
+    SENSITIVE_KEYS = {
+        "password", "token", "secret", "api_key", "gstin", "pan_number",
+        "bank_account", "ifsc_code", "jwt", "authorization", "key_secret",
+        "webhook_secret", "razorpay_key", "otp", "pin"
+    }
+    def scrub_dict(d):
+        if not isinstance(d, dict):
+            return d
+        return {
+            k: "[FILTERED]" if k.lower() in SENSITIVE_KEYS else scrub_dict(v)
+            for k, v in d.items()
+        }
+    if "request" in event:
+        if "data" in event["request"]:
+            event["request"]["data"] = scrub_dict(event["request"]["data"])
+        if "headers" in event["request"]:
+            event["request"]["headers"] = scrub_dict(event["request"]["headers"])
+    return event
+
+SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.fastapi import FastApiIntegration
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            integrations=[FastApiIntegration()],
+            traces_sample_rate=0.1,
+            profiles_sample_rate=0.1,
+            environment=os.environ.get("ENVIRONMENT", "development"),
+            release=os.environ.get("APP_VERSION", "1.0.0"),
+            before_send=_scrub_sensitive_data,
+        )
+        logger.info("Sentry monitoring initialized")
+    except Exception as _sentry_err:
+        logger.warning(f"Sentry initialization failed: {_sentry_err}")
+else:
+    logger.info("SENTRY_DSN not set — Sentry monitoring disabled")
+
+
 # Validate environment variables on startup
 from config.env_validator import check_and_report
 if not check_and_report():
