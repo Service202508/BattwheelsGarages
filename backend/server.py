@@ -6003,7 +6003,7 @@ async def list_export_jobs(request: Request):
     """GET /api/settings/export-data/status — List all export jobs for org."""
     user = await require_auth(request)
     ctx = getattr(request.state, "tenant_context", None)
-    org_id = ctx.org_id if ctx else user.get("organization_id", "")
+    org_id = ctx.org_id if ctx else getattr(user, "organization_id", "")
     jobs = await db.export_jobs.find(
         {"organization_id": org_id}, {"_id": 0}
     ).sort("created_at", -1).to_list(20)
