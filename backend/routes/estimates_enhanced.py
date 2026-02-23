@@ -2143,7 +2143,7 @@ async def mark_declined(estimate_id: str, reason: str = ""):
 # ========================= CONVERSION ENDPOINTS =========================
 
 @router.post("/{estimate_id}/convert-to-invoice")
-async def convert_to_invoice(estimate_id: str):
+async def convert_to_invoice(estimate_id: str, request: Request):
     """Convert estimate to invoice"""
     estimate = await estimates_collection.find_one({"estimate_id": estimate_id})
     if not estimate:
@@ -2154,26 +2154,34 @@ async def convert_to_invoice(estimate_id: str):
     
     if estimate.get("converted_to"):
         raise HTTPException(status_code=400, detail=f"Estimate already converted to {estimate.get('converted_to')}")
+
+    # Get org_id from tenant context
+    org_id = await get_org_id(request)
+    if not org_id:
+        org_id = estimate.get("organization_id", "")
     
     # Get line items
     line_items = await estimate_items_collection.find({"estimate_id": estimate_id}, {"_id": 0}).to_list(100)
     
-    # Generate invoice number
-    inv_settings = await db["invoice_settings"].find_one({"type": "numbering"})
-    if not inv_settings:
-        inv_settings = {"prefix": "INV-", "next_number": 1, "padding": 5}
-        await db["invoice_settings"].insert_one({**inv_settings, "type": "numbering"})
-    
-    invoice_number = f"{inv_settings.get('prefix', 'INV-')}{str(inv_settings.get('next_number', 1)).zfill(inv_settings.get('padding', 5))}"
-    await db["invoice_settings"].update_one({"type": "numbering"}, {"$inc": {"next_number": 1}})
+    # Use per-org sequence for invoice numbering (same as invoices_enhanced create)
+    from server import db as server_db
+    seq = await server_db.sequences.find_one_and_update(
+        {"organization_id": org_id, "type": "invoice"},
+        {"$inc": {"seq": 1}},
+        upsert=True,
+        return_document=True
+    )
+    next_num = seq.get("seq", 1) if seq else 1
+    invoice_number = f"INV-{str(next_num).zfill(5)}"
     
     invoice_id = generate_id("INV")
     today = datetime.now(timezone.utc).date().isoformat()
     
-    # Create invoice
+    # Create invoice document — insert into invoices_enhanced (correct collection)
     invoice_doc = {
         "invoice_id": invoice_id,
         "invoice_number": invoice_number,
+        "organization_id": org_id,                        # ← FIXED: always set org_id
         "customer_id": estimate["customer_id"],
         "customer_name": estimate.get("customer_name", ""),
         "customer_email": estimate.get("customer_email", ""),
@@ -2215,13 +2223,16 @@ async def convert_to_invoice(estimate_id: str):
         "updated_time": datetime.now(timezone.utc).isoformat()
     }
     
-    await db["invoices"].insert_one(invoice_doc)
+    # ← FIXED: insert into invoices_enhanced (not legacy invoices)
+    await db["invoices_enhanced"].insert_one(invoice_doc)
     
-    # Copy line items
+    # Copy line items with org_id
     for item in line_items:
         item["invoice_id"] = invoice_id
+        item["organization_id"] = org_id
         item["line_item_id"] = generate_id("LI")
         item.pop("estimate_id", None)
+        item.pop("_id", None)
         await db["invoice_line_items"].insert_one(item)
     
     # Update estimate
