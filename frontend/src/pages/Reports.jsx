@@ -66,6 +66,9 @@ export default function Reports() {
         case "sla-performance":
           await fetchSlaReport();
           break;
+        case "technician-performance":
+          await fetchTechReport();
+          break;
       }
     } catch (error) {
       console.error("Failed to fetch report:", error);
