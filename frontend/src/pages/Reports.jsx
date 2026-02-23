@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { 
   TrendingUp, TrendingDown, IndianRupee, Users, FileText,
   Calendar, Download, RefreshCw, BarChart3, PieChart, FileSpreadsheet,
-  Loader2, ArrowUp, ArrowDown
+  Loader2, ArrowUp, ArrowDown, ShieldAlert
 } from "lucide-react";
 import { API } from "@/App";
 
