@@ -1469,3 +1469,69 @@ async def get_technician_performance(
         "total_technicians": len(results),
     }
 
+
+
+# ==================== INVENTORY VALUATION REPORT ====================
+
+@router.get("/inventory-valuation")
+async def get_inventory_valuation(
+    request: Request,
+    org_id: Optional[str] = None,
+):
+    """
+    GET /api/reports/inventory-valuation
+    Returns per-item stock value summary and totals for the org's inventory.
+    """
+    from fastapi import Request as FastAPIRequest
+    db = get_db()
+
+    # Get org from header
+    raw_org_id = request.headers.get("X-Organization-ID", org_id or "")
+
+    query: dict = {}
+    if raw_org_id:
+        query["organization_id"] = raw_org_id
+
+    items = await db.inventory.find(query, {"_id": 0}).to_list(10000)
+
+    valuation_items = []
+    total_value = 0.0
+    low_stock_count = 0
+
+    for item in items:
+        qty = float(item.get("quantity", 0))
+        avg_cost = float(item.get("cost_price") or item.get("unit_price", 0))
+        item_value = qty * avg_cost
+        total_value += item_value
+
+        reorder = float(item.get("reorder_level", 10))
+        if qty <= reorder:
+            low_stock_count += 1
+
+        valuation_items.append({
+            "item_id": item.get("item_id", ""),
+            "item_name": item.get("name", ""),
+            "sku": item.get("sku", ""),
+            "category": item.get("category", ""),
+            "current_stock_qty": qty,
+            "avg_cost": round(avg_cost, 2),
+            "total_value": round(item_value, 2),
+            "reorder_level": reorder,
+            "is_low_stock": qty <= reorder,
+        })
+
+    # Sort by total_value descending
+    valuation_items.sort(key=lambda x: x["total_value"], reverse=True)
+
+    return {
+        "code": 0,
+        "report": "inventory_valuation",
+        "as_of_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "summary": {
+            "total_inventory_value": round(total_value, 2),
+            "item_count": len(valuation_items),
+            "low_stock_count": low_stock_count,
+        },
+        "items": valuation_items,
+    }
+
