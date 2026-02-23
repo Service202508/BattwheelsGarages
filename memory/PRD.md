@@ -15,6 +15,39 @@
 ### FINANCE MODULE - COMPLETE ✅ (100% COMPLETE)
 **Status:** ✅ Full Implementation - 3 Parts Complete
 
+### FINANCE DASHBOARD - COMPLETE ✅
+**Location:** `/finance` (Finance → Dashboard)
+
+**Row 1 - Cash Position Strip (6 cards):**
+- Total Bank Balance: Sum of all bank accounts (volt if positive, red if negative)
+- Accounts Receivable: Outstanding customer invoices
+- Accounts Payable: Outstanding vendor bills
+- Pending Expenses: Count of expenses awaiting approval
+- Overdue Bills: Count of bills past due date
+- Net Cash Flow: This month's receipts minus payments
+
+**Row 2 - Two Column Layout:**
+- Left (60%): Cash Flow Trend Chart (Recharts ComposedChart)
+  - Bar chart: Income (green) vs Expenses (orange) per month
+  - Line overlay: Net cash flow (cyan)
+  - Summary pills: Total In, Total Out, Net
+- Right (40%): Bank Accounts Summary
+  - Account cards with type badges and balances
+  - Total balance footer with volt accent
+  - "View All Transactions" link
+
+**Row 3 - Three Column Alerts:**
+- Overdue Bills (red accent): Top 5 overdue with days overdue badges
+- Pending Approvals (orange accent): Expenses with quick approve/reject buttons
+- Due This Week (yellow accent): Bills due in next 7 days
+
+**Backend API (`/api/finance/dashboard`):**
+- Single endpoint aggregates all dashboard data
+- Cash position calculations
+- Cash flow trend (6 months aggregation)
+- Bank accounts with balances
+- Alerts: overdue bills, pending expenses, upcoming bills
+
 ---
 
 #### PART 1: EXPENSES MODULE ✅
