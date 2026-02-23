@@ -1016,7 +1016,8 @@ async def mark_tds_deposited(data: TDSMarkDepositedRequest, request: Request,
 async def export_tds_data(
     request: Request,
     month: int = Query(..., ge=1, le=12),
-    year: int = Query(...)
+    year: int = Query(...),
+    _: None = Depends(require_feature("hr_payroll"))
 ):
     """
     Export TDS data as CSV
@@ -1160,7 +1161,8 @@ async def list_tds_challans(
 async def get_form16_data(
     employee_id: str,
     fy: str,
-    request: Request
+    request: Request,
+    _: None = Depends(require_feature("hr_payroll"))
 ):
     """
     Get Form 16 data for an employee
