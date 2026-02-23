@@ -70,6 +70,9 @@ PUBLIC_ROUTES: List[str] = [
     r"^/api/razorpay/webhook$",
     r"^/api/stripe/webhook$",
     
+    # Platform admin routes (cross-tenant, use own auth check)
+    r"^/api/platform/.*$",
+    
     # Static files
     r"^/static/.*$",
     r"^/favicon.ico$",
