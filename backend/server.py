@@ -5538,6 +5538,17 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Expenses Module
+try:
+    from routes.expenses import router as expenses_router, set_db as set_expenses_db
+    set_expenses_db(db)
+    api_router.include_router(expenses_router)
+    logger.info("Expenses routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Expenses routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Include main router
 app.include_router(api_router)
 
