@@ -754,6 +754,22 @@ class IRNGenerator:
                     }}
                 )
                 
+                # Update journal entry narration with IRN reference
+                try:
+                    irn_narration = f"IRN: {irn_data['irn']} | Ack: {irn_data['ack_no']} | {irn_data['ack_date']}"
+                    await db.journal_entries.update_one(
+                        {
+                            "source_document_id": invoice.get("invoice_id"),
+                            "organization_id": self.org_id
+                        },
+                        {"$set": {
+                            "irn_reference": irn_narration,
+                            "narration": irn_narration
+                        }}
+                    )
+                except Exception as je_error:
+                    logger.warning(f"Could not update journal entry with IRN: {je_error}")
+                
                 logger.info(f"IRN generated successfully: {irn_data['irn']}")
                 
                 return {
