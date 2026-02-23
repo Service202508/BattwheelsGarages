@@ -6015,7 +6015,7 @@ async def download_export(job_id: str, request: Request):
     """GET /api/settings/export-data/{job_id}/download — Download export as JSON."""
     user = await require_auth(request)
     ctx = getattr(request.state, "tenant_context", None)
-    org_id = ctx.org_id if ctx else user.get("organization_id", "")
+    org_id = ctx.org_id if ctx else getattr(user, "organization_id", "")
     record = await db.export_data.find_one(
         {"job_id": job_id, "organization_id": org_id}, {"_id": 0}
     )
