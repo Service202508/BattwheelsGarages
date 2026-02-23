@@ -1,10 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Building2, ChevronDown, Check, Plus, Settings, Users } from 'lucide-react';
 import { toast } from 'sonner';
+import { useOrganization } from '@/App';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-const OrganizationSwitcher = ({ currentOrg, onSwitch }) => {
+// Plan badge colors per tier
+const PLAN_BADGE = {
+  free:         { bg: "rgba(244,246,240,0.08)", text: "rgba(244,246,240,0.35)", label: "FREE" },
+  starter:      { bg: "rgba(59,130,246,0.15)",  text: "#60a5fa",               label: "STARTER" },
+  professional: { bg: "rgba(234,179,8,0.15)",   text: "#EAB308",               label: "PROFESSIONAL" },
+  enterprise:   { bg: "rgba(200,255,0,0.10)",   text: "#C8FF00",               label: "ENTERPRISE" },
+};
+
+function getPlanBadge(planType) {
+  return PLAN_BADGE[(planType || "free").toLowerCase()] || PLAN_BADGE.free;
+}
+
+const OrganizationSwitcher = ({ onSwitch }) => {
+  // Read currentOrg from context — no prop needed
+  const currentOrg = useOrganization();
   const [isOpen, setIsOpen] = useState(false);
   const [organizations, setOrganizations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
