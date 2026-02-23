@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Building2, ChevronDown, Check, Plus, Settings, Users } from 'lucide-react';
+import { Building2, ChevronDown, Check, Plus, Settings, Users, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { useOrganization } from '@/App';
 
@@ -17,7 +17,7 @@ function getPlanBadge(planType) {
   return PLAN_BADGE[(planType || "free").toLowerCase()] || PLAN_BADGE.free;
 }
 
-const OrganizationSwitcher = ({ onSwitch }) => {
+const OrganizationSwitcher = ({ onSwitch, user }) => {
   // Read currentOrg from context — no prop needed
   const currentOrg = useOrganization();
   const [isOpen, setIsOpen] = useState(false);
@@ -25,9 +25,48 @@ const OrganizationSwitcher = ({ onSwitch }) => {
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef(null);
 
+  // Detect platform admin from user prop or localStorage token
+  const isPlatformAdmin = user?.is_platform_admin || false;
+
   useEffect(() => {
-    fetchOrganizations();
+    if (!isPlatformAdmin) fetchOrganizations();
+  }, [isPlatformAdmin]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // ── Platform Admin: show SYSTEM badge, no org dropdown ──────────────────────
+  if (isPlatformAdmin) {
+    return (
+      <div
+        className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-[rgba(200,255,0,0.2)]"
+        data-testid="org-switcher-platform-admin"
+      >
+        <div className="w-8 h-8 bg-[rgba(200,255,0,0.08)] rounded-lg flex items-center justify-center">
+          <Shield className="w-4 h-4 text-[#C8FF00]" />
+        </div>
+        <div className="hidden sm:block">
+          <p className="text-sm font-medium text-white" data-testid="org-switcher-name">
+            Platform Admin
+          </p>
+          <span
+            className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+            style={{ background: "rgba(200,255,0,0.10)", color: "#C8FF00" }}
+            data-testid="org-switcher-plan-badge"
+          >
+            SYSTEM
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
