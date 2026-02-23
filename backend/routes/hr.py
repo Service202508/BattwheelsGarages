@@ -474,6 +474,17 @@ class TDSChallanRequest(BaseModel):
     bank_name: Optional[str] = None
 
 
+class TDSMarkDepositedRequest(BaseModel):
+    """Mark TDS as deposited with challan details"""
+    month: int
+    year: int
+    challan_number: str
+    bsr_code: str
+    deposit_date: str
+    amount: float
+    payment_mode: str = "net_banking"
+
+
 @router.put("/employees/{employee_id}/tax-config")
 async def update_employee_tax_config(
     employee_id: str,
