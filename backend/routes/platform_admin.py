@@ -298,6 +298,86 @@ async def get_platform_metrics(
     }
 
 
+@router.get("/revenue-health")
+async def get_revenue_health(
+    request: Request,
+    _=Depends(require_platform_admin),
+):
+    """Revenue & Health metrics: MRR by plan, trial pipeline, churn risk, recent signups"""
+    PLAN_MRR = {"free": 0, "starter": 2999, "professional": 7999, "enterprise": 24999}
+
+    now = datetime.now(timezone.utc)
+    thirty_days_ago = now - timedelta(days=30)
+
+    # MRR by plan
+    by_plan_cursor = db.organizations.aggregate([
+        {"$match": {"is_active": True}},
+        {"$group": {"_id": "$plan_type", "count": {"$sum": 1}}}
+    ])
+    by_plan_raw = await by_plan_cursor.to_list(20)
+    mrr_by_plan = []
+    total_mrr = 0
+    for item in by_plan_raw:
+        plan = item["_id"] or "free"
+        count = item["count"]
+        mrr = PLAN_MRR.get(plan, 0) * count
+        total_mrr += mrr
+        mrr_by_plan.append({"plan": plan, "count": count, "mrr": mrr})
+    mrr_by_plan.sort(key=lambda x: x["mrr"], reverse=True)
+
+    # Trial pipeline — free / free_trial orgs
+    trial_orgs = await db.organizations.find(
+        {"plan_type": {"$in": ["free", "free_trial"]}, "is_active": True},
+        {"_id": 0, "name": 1, "plan_type": 1, "created_at": 1, "email": 1}
+    ).sort("created_at", -1).limit(10).to_list(10)
+
+    # Churn risk — active orgs with no tickets in 30+ days
+    all_active_orgs = await db.organizations.find(
+        {"is_active": True},
+        {"_id": 0, "organization_id": 1, "name": 1, "plan_type": 1, "created_at": 1}
+    ).to_list(200)
+
+    churn_risk = []
+    for org in all_active_orgs:
+        oid = org.get("organization_id")
+        if not oid:
+            continue
+        # Skip very new orgs (< 7 days old)
+        created = org.get("created_at", "")
+        if created:
+            try:
+                created_dt = datetime.fromisoformat(str(created).replace("Z", "+00:00"))
+                if (now - created_dt).days < 7:
+                    continue
+            except Exception:
+                pass
+        recent_ticket = await db.tickets.find_one(
+            {"organization_id": oid, "created_at": {"$gte": thirty_days_ago.isoformat()}},
+            {"_id": 0, "ticket_id": 1}
+        )
+        if not recent_ticket:
+            churn_risk.append({
+                "name": org.get("name"),
+                "plan": org.get("plan_type", "free"),
+                "days_since_activity": 30
+            })
+
+    # Recent signups — last 5 orgs
+    recent_signups = await db.organizations.find(
+        {},
+        {"_id": 0, "name": 1, "plan_type": 1, "created_at": 1, "email": 1}
+    ).sort("created_at", -1).limit(5).to_list(5)
+
+    return {
+        "total_mrr": total_mrr,
+        "mrr_by_plan": mrr_by_plan,
+        "trial_pipeline": {"count": len(trial_orgs), "orgs": trial_orgs},
+        "churn_risk": {"count": len(churn_risk), "orgs": churn_risk},
+        "recent_signups": recent_signups,
+    }
+
+
+
 @router.post("/users/make-admin")
 async def make_platform_admin(
     data: MakeAdminRequest,
