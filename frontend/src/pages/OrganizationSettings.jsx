@@ -1009,6 +1009,55 @@ export default function OrganizationSettings({ user }) {
               </div>
             </CardContent>
           </Card>
+
+          {/* Logo Upload Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Image className="h-4 w-4" />
+                Organization Logo
+              </CardTitle>
+              <CardDescription>Used in email communications and documents. PNG, JPG, or SVG. Max 2MB. Recommended: 200×60px.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-6">
+                {/* Preview */}
+                <div className="w-48 h-16 rounded border border-white/10 bg-black/30 flex items-center justify-center overflow-hidden flex-shrink-0">
+                  {logoPreview ? (
+                    <img src={logoPreview} alt="Logo" className="max-h-12 max-w-full object-contain" />
+                  ) : (
+                    <span className="text-xs text-muted-foreground">No logo</span>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground">How your logo appears in emails</p>
+                  <div className="flex gap-2">
+                    <label htmlFor="logo-upload-input">
+                      <Button variant="outline" size="sm" asChild disabled={logoUploading}>
+                        <span className="cursor-pointer">
+                          {logoUploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
+                          Upload Logo
+                        </span>
+                      </Button>
+                    </label>
+                    <input
+                      id="logo-upload-input"
+                      type="file"
+                      accept="image/png,image/jpeg,image/svg+xml"
+                      className="hidden"
+                      onChange={(e) => handleLogoUpload(e.target.files?.[0])}
+                    />
+                    {logoPreview && (
+                      <Button variant="ghost" size="sm" onClick={handleLogoRemove} className="text-red-400 hover:text-red-300">
+                        <X className="h-4 w-4 mr-1" />
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Team Tab */}
