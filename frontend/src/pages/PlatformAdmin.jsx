@@ -89,6 +89,36 @@ export default function PlatformAdmin({ user }) {
     if (res.ok) setHealth(await res.json());
   }
 
+  async function fetchAuditStatus() {
+    const res = await fetch(`${API}/platform/audit-status`, { headers });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.timestamp) setLastAudit(data);
+    }
+  }
+
+  async function runAudit() {
+    setAuditRunning(true);
+    setShowAuditPanel(true);
+    setAuditResult(null);
+    try {
+      const res = await fetch(`${API}/platform/run-audit`, { method: "POST", headers });
+      const data = await res.json();
+      if (res.ok) {
+        setAuditResult(data);
+        setLastAudit(data);
+      } else {
+        toast.error(data.detail || "Audit failed");
+        setShowAuditPanel(false);
+      }
+    } catch (e) {
+      toast.error("Audit request failed");
+      setShowAuditPanel(false);
+    } finally {
+      setAuditRunning(false);
+    }
+  }
+
   async function fetchOrgs() {
     const params = new URLSearchParams({ page, limit: 25 });
     if (search) params.set("search", search);
