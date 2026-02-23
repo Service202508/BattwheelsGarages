@@ -50,7 +50,7 @@ export default function Banking() {
   // Filters
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [reconciledFilter, setReconciledFilter] = useState("all");
   
   // Dialogs
@@ -129,7 +129,7 @@ export default function Banking() {
       let url = `${API}/banking/accounts/${selectedAccount.account_id}/transactions?limit=100`;
       if (dateFrom) url += `&date_from=${dateFrom}`;
       if (dateTo) url += `&date_to=${dateTo}`;
-      if (categoryFilter) url += `&category=${categoryFilter}`;
+      if (categoryFilter && categoryFilter !== "all") url += `&category=${categoryFilter}`;
       if (reconciledFilter === "yes") url += `&reconciled=true`;
       if (reconciledFilter === "no") url += `&reconciled=false`;
       
@@ -446,7 +446,7 @@ export default function Banking() {
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#14141B] border-[rgba(244,246,240,0.15)]">
-                  <SelectItem value="" className="text-[#F4F6F0]">All Categories</SelectItem>
+                  <SelectItem value="all" className="text-[#F4F6F0]">All Categories</SelectItem>
                   {transactionCategories.map(c => <SelectItem key={c.value} value={c.value} className="text-[#F4F6F0]">{c.label}</SelectItem>)}
                 </SelectContent>
               </Select>
