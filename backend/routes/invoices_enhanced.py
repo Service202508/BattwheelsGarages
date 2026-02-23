@@ -1550,7 +1550,7 @@ async def bulk_invoice_action(request: BulkActionRequest, background_tasks: Back
                     mock_send_email(
                         [invoice["customer_email"]],
                         f"Invoice {invoice['invoice_number']}",
-                        f"Please find attached invoice.",
+                        "Please find attached invoice.",
                         f"Invoice_{invoice['invoice_number']}.pdf"
                     )
                     await invoices_collection.update_one(
