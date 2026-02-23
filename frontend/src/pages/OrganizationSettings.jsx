@@ -564,6 +564,59 @@ export default function OrganizationSettings({ user }) {
     }
   };
 
+  // WhatsApp save / test
+  const saveWhatsAppSettings = async () => {
+    if (!waConfig.phone_number_id || !waConfig.access_token) {
+      toast.error("Please enter Phone Number ID and Access Token");
+      return;
+    }
+    setSavingWa(true);
+    try {
+      const res = await fetch(`${API}/organizations/me/whatsapp-settings`, {
+        method: "POST",
+        headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify(waConfig),
+      });
+      if (res.ok) {
+        toast.success("WhatsApp settings saved!");
+        setWaConfigured(true);
+        setWaConfig(prev => ({ ...prev, access_token: "" }));
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || "Failed to save WhatsApp settings");
+      }
+    } catch { toast.error("Failed to save WhatsApp settings"); }
+    finally { setSavingWa(false); }
+  };
+
+  const testWhatsApp = async () => {
+    setTestingWa(true);
+    try {
+      const res = await fetch(`${API}/organizations/me/whatsapp-test`, {
+        method: "POST", headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      if (data.delivered) {
+        toast.success("Test message sent! Check your WhatsApp.");
+      } else {
+        toast.error(data.error || "Test failed — check credentials");
+      }
+    } catch { toast.error("Test request failed"); }
+    finally { setTestingWa(false); }
+  };
+
+  const removeWhatsAppSettings = async () => {
+    if (!confirm("Remove WhatsApp integration?")) return;
+    const res = await fetch(`${API}/organizations/me/whatsapp-settings`, {
+      method: "DELETE", headers: getAuthHeaders(),
+    });
+    if (res.ok) {
+      toast.success("WhatsApp settings removed");
+      setWaConfigured(false);
+      setWaConfig({ phone_number_id: "", access_token: "" });
+    }
+  };
+
   // E-Invoice GSTIN validation
   const validateGstin = (gstin) => {
     if (!gstin || gstin.length !== 15) return false;
