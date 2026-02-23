@@ -131,7 +131,7 @@ export default function TechnicianLeave({ user }) {
         </div>
         <Button 
           onClick={() => setShowRequestDialog(true)}
-          className="bg-green-600 hover:bg-green-700"
+          className="bg-[#22C55E] hover:bg-[#16a34a]"
           data-testid="request-leave-btn"
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -365,7 +365,7 @@ export default function TechnicianLeave({ user }) {
             <Button 
               onClick={handleSubmitLeave}
               disabled={submitting}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-[#22C55E] hover:bg-[#16a34a]"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
               Submit Request

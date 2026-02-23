@@ -322,7 +322,7 @@ export default function TechnicianTickets({ user }) {
                     {["open", "assigned", "technician_assigned", "estimate_approved"].includes(ticket.status) && (
                       <Button 
                         size="sm" 
-                        className="bg-green-600 hover:bg-green-700"
+                        className="bg-[#22C55E] hover:bg-[#16a34a]"
                         onClick={() => { setSelectedTicket(ticket); setShowStartWorkDialog(true); }}
                       >
                         <Play className="h-4 w-4 mr-2" />
@@ -378,7 +378,7 @@ export default function TechnicianTickets({ user }) {
             <Button 
               onClick={handleStartWork}
               disabled={actionLoading}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-[#22C55E] hover:bg-[#16a34a]"
             >
               {actionLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Play className="h-4 w-4 mr-2" />}
               Start Work
