@@ -7,7 +7,7 @@ Provides comprehensive financial reports with PDF and Excel export capabilities
 - Accounts Payable Aging
 - Sales by Customer Report
 """
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from fastapi.responses import Response, StreamingResponse
 from datetime import datetime, timezone, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -16,6 +16,8 @@ import os
 import openpyxl
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.utils import get_column_letter
+
+from core.subscriptions.entitlement import require_feature
 
 # Soft import for PDF service (may not be available in all environments)
 PDF_SERVICE_AVAILABLE = False
