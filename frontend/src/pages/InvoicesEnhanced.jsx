@@ -1185,6 +1185,7 @@ export default function InvoicesEnhanced() {
                     <th className="px-4 py-3 text-right">Amount</th>
                     <th className="px-4 py-3 text-right">Balance</th>
                     <th className="px-4 py-3 text-center">Status</th>
+                    {einvoiceEnabled && <th className="px-4 py-3 text-center">IRN</th>}
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -1209,6 +1210,27 @@ export default function InvoicesEnhanced() {
                       <td className="px-4 py-3 text-center">
                         <Badge className={statusColors[inv.status] || "bg-[rgba(255,255,255,0.05)]"}>{statusLabels[inv.status] || inv.status}</Badge>
                       </td>
+                      {einvoiceEnabled && (
+                        <td className="px-4 py-3 text-center">
+                          {inv.irn && inv.irn_status === "registered" ? (
+                            <Badge className="bg-[rgba(34,197,94,0.20)] text-green-400 border-green-500/30 text-xs">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              IRN ✓
+                            </Badge>
+                          ) : inv.irn_status === "cancelled" ? (
+                            <Badge className="bg-[rgba(255,59,47,0.15)] text-[#FF3B2F] border-red-500/30 text-xs">
+                              Cancelled
+                            </Badge>
+                          ) : isB2BInvoice(inv) && inv.status !== "draft" ? (
+                            <Badge 
+                              className="bg-[rgba(255,140,0,0.15)] text-[#FF8C00] border-orange-500/30 text-xs cursor-pointer hover:bg-[rgba(255,140,0,0.25)]"
+                              onClick={(e) => { e.stopPropagation(); fetchInvoiceDetail(inv.invoice_id); }}
+                            >
+                              IRN Pending
+                            </Badge>
+                          ) : null}
+                        </td>
+                      )}
                       <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <Button size="icon" variant="ghost" onClick={() => fetchInvoiceDetail(inv.invoice_id)}><Eye className="h-4 w-4" /></Button>
                       </td>
