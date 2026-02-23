@@ -318,7 +318,42 @@ async def signup_organization(data: OrganizationCreate):
         logger.warning(f"Failed to log activity: {e}")
     
     logger.info(f"New organization created: {data.name} ({org_id})")
-    
+
+    # Send welcome email (non-blocking)
+    try:
+        from services.email_service import EmailService
+        app_url = os.environ.get("REACT_APP_BACKEND_URL", "https://app.battwheels.in").replace("/api", "")
+        trial_end_date = datetime.now(timezone.utc) + timedelta(days=14)
+        trial_end_str = trial_end_date.strftime("%d %B %Y")
+        subject = f"Welcome to Battwheels OS — Your 14-day trial has started"
+        html_body = f"""
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #080C0F; color: #F4F6F0; padding: 32px; border-radius: 8px;">
+  <h1 style="color: #C8FF00; font-size: 24px; margin-bottom: 8px;">Welcome to Battwheels OS</h1>
+  <p>Hi {data.admin_name},</p>
+  <p>Your workshop <strong>{data.name}</strong> is now live on Battwheels OS.</p>
+  <p>
+    <a href="{app_url}" style="display: inline-block; background: #C8FF00; color: #080C0F; font-weight: bold; padding: 12px 24px; border-radius: 4px; text-decoration: none; margin: 16px 0;">
+      Log in to your dashboard →
+    </a>
+  </p>
+  <p>Your free trial ends on <strong>{trial_end_str}</strong>. No credit card required until then.</p>
+  <p>Need help? Just reply to this email — we're here.</p>
+  <p style="color: rgba(244,246,240,0.45); font-size: 12px; margin-top: 32px;">
+    Battwheels OS — EV Workshop Intelligence Platform<br>
+    <a href="https://battwheels.in" style="color: #C8FF00;">battwheels.in</a>
+  </p>
+</div>
+"""
+        await EmailService.send_generic_email(
+            to_email=data.admin_email,
+            to_name=data.admin_name,
+            subject=subject,
+            html_body=html_body,
+        )
+        logger.info(f"Welcome email sent to {data.admin_email}")
+    except Exception as e:
+        logger.warning(f"Failed to send welcome email: {e}")
+
     return {
         "success": True,
         "message": "Organization created successfully",
