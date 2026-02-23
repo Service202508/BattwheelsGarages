@@ -319,7 +319,7 @@ export default function TechnicianProductivity({ user }) {
                   <div key={tech.technician_id} className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
                       index === 0 ? 'bg-[rgba(234,179,8,0.10)]' :
-                      index === 1 ? 'bg-gray-400' :
+                      index === 1 ? 'bg-[rgba(244,246,240,0.35)]' :
                       index === 2 ? 'bg-amber-600' :
                       'bg-[#141E27]'
                     }`}>

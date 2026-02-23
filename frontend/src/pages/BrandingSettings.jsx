@@ -607,7 +607,7 @@ export default function BrandingSettings({ user }) {
                   <button
                     key={preset.name}
                     onClick={() => applyPreset(preset)}
-                    className="p-3 border rounded-lg hover:border-gray-400 transition-colors text-left"
+                    className="p-3 border rounded-lg hover:border-[rgba(200,255,0,0.3)] transition-colors text-left"
                   >
                     <div className="flex gap-1 mb-2">
                       <div className="w-6 h-6 rounded" style={{ backgroundColor: preset.primary }} />
