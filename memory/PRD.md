@@ -325,3 +325,20 @@ customer / fleet_customer (portal access)
 6. Bill open not increasing inventory (EventType.INVENTORY_UPDATED typo + missing org_id on bill doc)
 7. Customer satisfaction survey system not implemented → added
 8. Audit log API not exposed → added /api/audit-logs route
+
+## Sprint 2 Roadmap (Post-Beta Launch)
+
+### WhatsApp Business API Integration
+**Priority:** HIGH — Indian market essential
+**Description:** WhatsApp Business API integration for SLA breach notifications.
+- Requires Meta Business verification and WhatsApp Business API approval
+- Technicians respond to WhatsApp in seconds vs email in hours
+- Implementation: Twilio WhatsApp API or Meta Cloud API
+- Use cases: SLA approaching alerts, breach notifications, ticket updates, survey links
+- Implement after beta launch stabilizes (2-4 weeks post-launch)
+
+### Other Sprint 2 Items
+- Customer survey link in SMS/WhatsApp after ticket close
+- Advanced inventory reorder automation (auto PO creation)
+- Multi-vehicle AMC bundle pricing
+- Dashboard real-time updates (WebSocket)
