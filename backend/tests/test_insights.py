@@ -9,7 +9,7 @@ import requests
 import os
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
-SESSION_TOKEN = "test_session_insights_1771885529665"
+SESSION_TOKEN = "REDACTED_JWT_TOKEN"
 
 HEADERS = {
     "Authorization": f"Bearer {SESSION_TOKEN}",
