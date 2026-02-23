@@ -5549,6 +5549,14 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# ==================== SLA ROUTES ====================
+try:
+    from routes.sla import router as sla_router
+    api_router.include_router(sla_router)
+    logger.info("SLA routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load SLA routes: {e}")
+
 # Include main router
 app.include_router(api_router)
 
