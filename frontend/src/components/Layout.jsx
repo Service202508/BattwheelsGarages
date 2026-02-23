@@ -508,7 +508,7 @@ export default function Layout({ children, user, onLogout }) {
             
             {/* Left side desktop - Organization Switcher */}
             <div className="hidden lg:flex items-center">
-              <OrganizationSwitcher />
+              <OrganizationSwitcher user={user} />
             </div>
             
             {/* Center - Spacer */}
