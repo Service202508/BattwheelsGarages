@@ -1367,6 +1367,53 @@ async def send_invoice(
             # Check for existing payment link or we can generate one
             payment_link = invoice.get('razorpay_payment_link')
     
+    # ==================== DETERMINE DELIVERY CHANNEL ====================
+    customer_phone = invoice.get("customer_phone", "") or invoice.get("contact_number", "")
+
+    # Check if WhatsApp is configured for this org
+    whatsapp_configured = False
+    if org_id:
+        from services.credential_service import get_credentials, WHATSAPP as WA_CRED
+        wa_creds = await get_credentials(org_id, WA_CRED)
+        whatsapp_configured = bool(wa_creds and wa_creds.get("phone_number_id"))
+
+    # Default channel logic
+    if not channel:
+        channel = "whatsapp" if (whatsapp_configured and customer_phone) else "email"
+
+    send_whatsapp_flag = channel in ("whatsapp", "both")
+    send_email_flag = channel in ("email", "both") or (not whatsapp_configured and channel == "whatsapp")
+
+    # ==================== SEND VIA WHATSAPP ====================
+    whatsapp_result = None
+    if send_whatsapp_flag and whatsapp_configured and customer_phone:
+        try:
+            from services.whatsapp_service import send_whatsapp_document, WhatsAppNotConfigured
+            # Build a public URL for the PDF  (use the share-link endpoint)
+            api_base = os.environ.get("REACT_APP_BACKEND_URL", "")
+            pdf_url = f"{api_base}/api/invoices-enhanced/{invoice_id}/pdf"
+
+            inv_number = invoice.get("invoice_number", invoice_id)
+            customer_name = invoice.get("customer_name", "Customer")
+            grand_total = invoice.get("grand_total", invoice.get("total", 0))
+            org_name_wa = org_settings.get("company_name", org_settings.get("name", "Battwheels"))
+
+            caption = (
+                f"Hi {customer_name}, your invoice {inv_number} "
+                f"for ₹{grand_total:,.0f} is ready. "
+                f"Thank you for choosing {org_name_wa}."
+            )
+            whatsapp_result = await send_whatsapp_document(
+                to_phone=customer_phone,
+                document_url=pdf_url,
+                filename=pdf_filename,
+                caption=caption,
+                org_id=org_id,
+            )
+        except Exception as wa_err:
+            logger.warning(f"WhatsApp send failed for invoice {invoice_id}: {wa_err}. Falling back to email.")
+            send_email_flag = True  # Auto-fallback
+
     # ==================== SEND EMAIL ====================
     try:
         email_result = await EmailService.send_invoice_email(
