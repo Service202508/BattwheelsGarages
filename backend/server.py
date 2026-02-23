@@ -1215,19 +1215,49 @@ async def create_ledger_entry(
     await db.ledger.insert_one(entry)
     return entry
 
-async def generate_po_number():
-    """Generate sequential PO number"""
-    count = await db.purchase_orders.count_documents({})
+async def generate_po_number(org_id: str = None):
+    """Generate sequential PO number per organisation (atomic, race-condition safe)"""
+    if org_id:
+        result = await db.sequences.find_one_and_update(
+            {"organization_id": org_id, "sequence_type": "PURCHASE_ORDER"},
+            {"$inc": {"current_value": 1}},
+            upsert=True,
+            return_document=True
+        )
+        seq = result["current_value"]
+        return f"PO-{datetime.now().strftime('%Y%m')}-{str(seq).zfill(4)}"
+    # Fallback for legacy calls without org_id
+    count = await db.purchase_orders.count_documents({"organization_id": {"$exists": False}})
     return f"PO-{datetime.now().strftime('%Y%m')}-{str(count + 1).zfill(4)}"
 
-async def generate_invoice_number():
-    """Generate sequential invoice number"""
-    count = await db.invoices.count_documents({})
+async def generate_invoice_number(org_id: str = None):
+    """Generate sequential invoice number per organisation (atomic, race-condition safe)"""
+    if org_id:
+        result = await db.sequences.find_one_and_update(
+            {"organization_id": org_id, "sequence_type": "INVOICE"},
+            {"$inc": {"current_value": 1}},
+            upsert=True,
+            return_document=True
+        )
+        seq = result["current_value"]
+        return f"INV-{datetime.now().strftime('%Y%m')}-{str(seq).zfill(4)}"
+    # Fallback
+    count = await db.invoices.count_documents({"organization_id": {"$exists": False}})
     return f"INV-{datetime.now().strftime('%Y%m')}-{str(count + 1).zfill(4)}"
 
-async def generate_sales_number():
-    """Generate sequential sales order number"""
-    count = await db.sales_orders.count_documents({})
+async def generate_sales_number(org_id: str = None):
+    """Generate sequential sales order number per organisation (atomic, race-condition safe)"""
+    if org_id:
+        result = await db.sequences.find_one_and_update(
+            {"organization_id": org_id, "sequence_type": "SALES_ORDER"},
+            {"$inc": {"current_value": 1}},
+            upsert=True,
+            return_document=True
+        )
+        seq = result["current_value"]
+        return f"SO-{datetime.now().strftime('%Y%m')}-{str(seq).zfill(4)}"
+    # Fallback
+    count = await db.sales_orders.count_documents({"organization_id": {"$exists": False}})
     return f"SO-{datetime.now().strftime('%Y%m')}-{str(count + 1).zfill(4)}"
 
 # ==================== AUTH ROUTES ====================
