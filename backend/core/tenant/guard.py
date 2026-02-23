@@ -439,6 +439,10 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         "/api/customer-portal/login",
         "/api/customer-portal/auth",
         "/api/business-portal/register",
+        
+        # Public self-serve signup (no auth needed)
+        "/api/organizations/signup",
+        "/api/organizations/accept-invite",
     }
     
     # Patterns for public endpoints
