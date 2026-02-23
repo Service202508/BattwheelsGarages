@@ -18,7 +18,8 @@ import {
   Brain, Clock, MapPin, Save, Plus, Trash2, Edit2, 
   UserPlus, Mail, Phone, Globe, IndianRupee, Calendar,
   AlertTriangle, CheckCircle, Loader2, RefreshCw, Download, Upload,
-  CreditCard, Eye, EyeOff, Link2, ExternalLink, FileCheck, Info
+  CreditCard, Eye, EyeOff, Link2, ExternalLink, FileCheck, Info,
+  Image, X, BarChart2
 } from "lucide-react";
 import { API } from "@/App";
 
