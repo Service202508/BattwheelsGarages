@@ -880,6 +880,9 @@ def generate_gst_invoice_html(
             </div>
         </div>
         
+        <!-- Survey QR Code -->
+        {survey_qr_block}
+        
         <!-- Footer -->
         <div class="footer">
             This is a computer generated invoice | Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}
