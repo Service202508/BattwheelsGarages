@@ -152,6 +152,128 @@ export default function InventoryEnhanced() {
     } catch { toast.error("Error creating warehouse"); }
   };
 
+  // ========== STOCK TRANSFER ==========
+  const handleCreateTransfer = async () => {
+    if (!newTransfer.from_warehouse_id || !newTransfer.to_warehouse_id) return toast.error("Select both warehouses");
+    if (!newTransfer.items.length) return toast.error("Add at least one item");
+    try {
+      const res = await fetch(`${API}/inventory-enhanced/stock-transfers`, {
+        method: "POST", headers, body: JSON.stringify(newTransfer)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Stock transferred successfully");
+        if (data.warnings?.length) toast.warning(data.warnings.join("; "));
+        setShowTransferDialog(false);
+        setNewTransfer({ from_warehouse_id: "", to_warehouse_id: "", items: [], notes: "" });
+        setTransferLine({ item_id: "", quantity: 1 });
+        fetchAllData();
+      } else {
+        toast.error(data.detail || "Transfer failed");
+      }
+    } catch { toast.error("Error creating transfer"); }
+  };
+
+  // ========== REORDER SUGGESTIONS ==========
+  const fetchReorderSuggestions = async () => {
+    setLoadingReorder(true);
+    try {
+      const res = await fetch(`${API}/inventory-enhanced/reorder-suggestions`, { headers });
+      if (res.ok) { const data = await res.json(); setReorderSuggestions(data); }
+      else toast.error("Failed to load reorder suggestions");
+    } catch { toast.error("Error loading suggestions"); }
+    finally { setLoadingReorder(false); }
+  };
+
+  const handleCreatePoFromGroup = async (vendorGroup) => {
+    try {
+      const body = {
+        vendor_id: vendorGroup.vendor_id,
+        items: vendorGroup.items.map(i => ({
+          item_id: i.item_id, quantity: i.suggested_order_qty, unit_cost: i.unit_cost
+        })),
+        notes: "Auto-generated from reorder suggestions"
+      };
+      const res = await fetch(`${API}/inventory-enhanced/reorder-suggestions/create-po`, {
+        method: "POST", headers, body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`PO ${data.purchase_order?.po_number} created`);
+      } else {
+        toast.error(data.detail || "Failed to create PO");
+      }
+    } catch { toast.error("Error creating PO"); }
+  };
+
+  // ========== STOCKTAKE ==========
+  const handleCreateStocktake = async () => {
+    if (!newStocktake.warehouse_id) return toast.error("Select a warehouse");
+    setLoadingStocktake(true);
+    try {
+      const res = await fetch(`${API}/inventory-enhanced/stocktakes`, {
+        method: "POST", headers, body: JSON.stringify(newStocktake)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Stocktake session started");
+        setShowStocktakeDialog(false);
+        setNewStocktake({ warehouse_id: "", name: "", notes: "" });
+        setActiveStocktake(data.stocktake);
+        setStocktakes(prev => [data.stocktake, ...prev]);
+      } else {
+        toast.error(data.detail || "Failed to create stocktake");
+      }
+    } catch { toast.error("Error creating stocktake"); }
+    finally { setLoadingStocktake(false); }
+  };
+
+  const handleLoadStocktake = async (id) => {
+    try {
+      const res = await fetch(`${API}/inventory-enhanced/stocktakes/${id}`, { headers });
+      if (res.ok) { const data = await res.json(); setActiveStocktake(data.stocktake); }
+    } catch { toast.error("Failed to load stocktake"); }
+  };
+
+  const handleSubmitCount = async (stocktakeId, itemId, countedQty) => {
+    try {
+      const res = await fetch(`${API}/inventory-enhanced/stocktakes/${stocktakeId}/lines/${itemId}`, {
+        method: "PUT", headers, body: JSON.stringify({ counted_quantity: countedQty, notes: "" })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setActiveStocktake(prev => ({
+          ...prev,
+          lines: prev.lines.map(ln =>
+            ln.item_id === itemId
+              ? { ...ln, counted_quantity: countedQty, variance: data.variance, counted: true }
+              : ln
+          ),
+          counted_lines: (prev.counted_lines || 0) + (prev.lines.find(ln => ln.item_id === itemId)?.counted ? 0 : 1)
+        }));
+      } else {
+        toast.error(data.detail || "Failed to update count");
+      }
+    } catch { toast.error("Error updating count"); }
+  };
+
+  const handleFinalizeStocktake = async (stocktakeId) => {
+    if (!window.confirm("Finalize this stocktake? All variances will be applied as stock adjustments.")) return;
+    try {
+      const res = await fetch(`${API}/inventory-enhanced/stocktakes/${stocktakeId}/finalize`, {
+        method: "POST", headers
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message);
+        setActiveStocktake(prev => ({ ...prev, status: "finalized", finalized_at: new Date().toISOString() }));
+        fetchAllData();
+      } else {
+        toast.error(data.detail || "Failed to finalize");
+      }
+    } catch { toast.error("Error finalizing stocktake"); }
+  };
+
   // ========== VARIANT CRUD ==========
   const handleCreateVariant = async () => {
     if (!newVariant.item_id || !newVariant.variant_name) return toast.error("Select item and enter variant name");
