@@ -127,6 +127,36 @@ export default function Reports() {
     }
   };
 
+  const fetchTechReport = async (period = techPeriod) => {
+    const params = period === "custom"
+      ? `period=custom&date_from=${dateRange.start_date}&date_to=${dateRange.end_date}`
+      : `period=${period}`;
+    const res = await fetch(`${API}/reports/technician-performance?${params}`, { headers });
+    if (res.ok) {
+      const data = await res.json();
+      setTechReport(data);
+    } else {
+      toast.error("Failed to load technician report");
+    }
+  };
+
+  const exportTechReportCsv = () => {
+    if (!techReport?.technicians?.length) { toast.error("No data to export"); return; }
+    const cols = ["Rank","Technician","Assigned","Resolved","Resolution %","Avg Response (min)","Avg Resolution (min)","SLA Compliance %","SLA Breaches (Resp)","SLA Breaches (Res)"];
+    const rows = techReport.technicians.map(t => [
+      t.rank, t.technician_name, t.total_tickets_assigned, t.total_tickets_resolved,
+      t.resolution_rate_pct, t.avg_response_time_minutes ?? "N/A", t.avg_resolution_time_minutes ?? "N/A",
+      t.sla_compliance_rate_pct, t.sla_breaches_response, t.sla_breaches_resolution
+    ]);
+    const csv = [cols, ...rows].map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url;
+    a.download = `Technician_Performance_${techPeriod}.csv`; a.click();
+    URL.revokeObjectURL(url);
+    toast.success("CSV exported");
+  };
+
   const exportSlaReportCsv = () => {
     if (!slaReport?.breaches?.length) { toast.error("No data to export"); return; }
     const cols = ["Ticket ID", "Customer", "Priority", "Technician", "Breach Type", "Breach Time", "Reassigned"];
