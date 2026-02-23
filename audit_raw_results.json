@@ -1,0 +1,462 @@
+{
+  "T1.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "admin@battwheels.in login successful, token returned"
+  },
+  "T1.2": {
+    "status": "PASS",
+    "http": 401,
+    "note": "Invalid credentials rejected"
+  },
+  "T1.3": {
+    "status": "PASS",
+    "http": 401,
+    "note": "Protected route blocked without token (AUTH_REQUIRED)"
+  },
+  "T1.4": {
+    "status": "PASS",
+    "http": 429,
+    "note": "Rate limit 429 confirmed during setup (after 3 wrong attempts)"
+  },
+  "T1.5": {
+    "status": "PASS",
+    "http": 200,
+    "note": "platform-admin@battwheels.in login successful"
+  },
+  "T2.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "name:Battwheels Garages plan:None gstin:06AABCU9603R1ZM"
+  },
+  "T2.2": {
+    "status": "PASS",
+    "http": 200,
+    "note": "PUT /api/organizations/me works"
+  },
+  "T2.3": {
+    "status": "PASS",
+    "http": 200,
+    "note": "SLA config returned. Keys: ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'auto_reassign_on_breach', 'reassignment_delay_minutes']"
+  },
+  "T2.4": {
+    "status": "PASS",
+    "http": 200,
+    "note": "SLA config updated successfully"
+  },
+  "T2.5": {
+    "status": "PASS",
+    "http": 200,
+    "note": "2 team members found (GET /api/users)"
+  },
+  "T3.1": {
+    "status": "FAIL",
+    "http": 200,
+    "note": "{\"code\":0,\"message\":\"Contact created\",\"contact\":{\"contact_id\":\"CON-741B9D778E96\",\"contact_number\":\"C"
+  },
+  "T3.2": {
+    "status": "PASS",
+    "http": 200,
+    "note": "7 contacts in paginated list"
+  },
+  "T3.3": {
+    "status": "FAIL",
+    "http": 422,
+    "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"owner_name\"],\"msg\":\"Field required\",\"input\":{\"contact_id"
+  },
+  "T3.4": {
+    "status": "PASS",
+    "http": 200,
+    "note": "make:Ola Electric model:S1 Pro reg:KA01AB1234"
+  },
+  "T4.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "ticket_id:tkt_ff0283828b6d status:open priority:HIGH"
+  },
+  "T4.2": {
+    "status": "PASS",
+    "http": 200,
+    "note": "25 tickets in list"
+  },
+  "T4.3": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Ticket status updated to in_progress"
+  },
+  "T4.4": {
+    "status": "PARTIAL",
+    "http": 404,
+    "note": "No SLA status in ticket or /api/sla/ticket/{id} returns 404"
+  },
+  "T4.5": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Technician user_97a86492d99f assigned to ticket"
+  },
+  "T5.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Ticket tkt_ff0283828b6d \u2192 status: work_in_progress"
+  },
+  "T5.2": {
+    "status": "PARTIAL",
+    "http": 200,
+    "note": "Labour activity tracked via ticket workflow. No rate-based costing endpoint."
+  },
+  "T5.3": {
+    "status": "FAIL",
+    "http": 422,
+    "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"work_summary\"],\"msg\":\"Field required\",\"input\":{\"notes\":\""
+  },
+  "T5.4": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 complete-work failed"
+  },
+  "T5.5": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 complete-work failed"
+  },
+  "T6.1": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "{\"detail\":\"Not Found\"}"
+  },
+  "T6.2": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "{\"detail\":\"Not Found\"}"
+  },
+  "T7.1": {
+    "status": "FAIL",
+    "http": 422,
+    "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"customer_id\"],\"msg\":\"Field required\",\"input\":{\"contact_i"
+  },
+  "T7.2": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 estimate creation failed"
+  },
+  "T7.3": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 estimate creation failed"
+  },
+  "T7.4": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 estimate creation failed"
+  },
+  "T7.5": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 estimate creation failed"
+  },
+  "T8.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "invoice_number:None total:None status:None"
+  },
+  "T8.2": {
+    "status": "PASS",
+    "http": 200,
+    "note": "20 journal entries found"
+  },
+  "T8.3": {
+    "status": "FAIL",
+    "http": 500,
+    "note": "{\"detail\":\"Internal server error during tenant validation\"}"
+  },
+  "T8.4": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "{\"detail\":\"Not Found\"}"
+  },
+  "T8.5": {
+    "status": "FAIL",
+    "http": 200,
+    "note": "status:None (expected paid)"
+  },
+  "T8.6": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "{\"detail\":\"Not Found\"}"
+  },
+  "T9.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Vendor created: "
+  },
+  "T9.2": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 vendor creation failed"
+  },
+  "T9.3": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 vendor creation failed"
+  },
+  "T9.4": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 vendor creation failed"
+  },
+  "T9.5": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 vendor creation failed"
+  },
+  "T9.6": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 vendor creation failed"
+  },
+  "T10.1": {
+    "status": "FAIL",
+    "http": 200,
+    "note": "{\"code\":0,\"message\":\"Expense created\",\"expense\":{\"expense_id\":\"exp_e37147a9138a\",\"expense_number\":\"E"
+  },
+  "T10.2": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 expense creation failed"
+  },
+  "T10.3": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 expense creation failed"
+  },
+  "T11.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Paginated: page:1 limit:10 total:1 has_next:False"
+  },
+  "T11.2": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Inventory item created earlier: inv_31eac56941c2"
+  },
+  "T11.3": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "/api/inventory/reorder-suggestions NOT FOUND"
+  },
+  "T11.4": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "/api/inventory/stocktakes NOT FOUND"
+  },
+  "T11.5": {
+    "status": "PARTIAL",
+    "http": 403,
+    "note": "Warehouses gated (enterprise entitlement)"
+  },
+  "T12.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "8 employees"
+  },
+  "T12.2": {
+    "status": "FAIL",
+    "http": 422,
+    "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"date_of_joining\"],\"msg\":\"Field required\",\"input\":{\"first"
+  },
+  "T12.3": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "{\"detail\":\"Not Found\"}"
+  },
+  "T12.4": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 payroll run failed"
+  },
+  "T12.5": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 employee creation failed"
+  },
+  "T13.1": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "{\"detail\":\"Not Found\"}"
+  },
+  "T13.2": {
+    "status": "PASS",
+    "http": 200,
+    "note": "20 journal entries (paginated)"
+  },
+  "T13.3": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "{\"detail\":\"Not Found\"}"
+  },
+  "T13.4": {
+    "status": "PASS",
+    "http": 200,
+    "note": "P&L: income:10620.0 expenses:8680.0 net:1940.0"
+  },
+  "T13.5": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Finance dashboard: AR:? bank:?"
+  },
+  "T14.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "GST summary: fy:None output_tax:?"
+  },
+  "T14.2": {
+    "status": "FAIL",
+    "http": 400,
+    "note": "{\"detail\":\"Invalid month format. Use YYYY-MM\"}"
+  },
+  "T14.3": {
+    "status": "PARTIAL",
+    "http": 200,
+    "note": "GSTR-1 shows split, but invoice response lacks cgst/sgst fields. gst_type:"
+  },
+  "T15.1": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "AMC module still returns 404 \u2014 router not loaded"
+  },
+  "T15.2": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "AMC GET contracts still returns 404"
+  },
+  "T16.1": {
+    "status": "FAIL",
+    "http": 200,
+    "note": "{\"code\":0,\"message\":\"Project created\",\"project\":{\"project_id\":\"proj_b2e305e6356f\",\"organization_id\":"
+  },
+  "T16.2": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 project creation failed"
+  },
+  "T16.3": {
+    "status": "FAIL",
+    "http": 0,
+    "note": "Skipped \u2014 project creation failed"
+  },
+  "T17.1": {
+    "status": "PARTIAL",
+    "http": 200,
+    "note": "Ticket closed but survey_token NOT in ticket response. status:closed"
+  },
+  "T17.2": {
+    "status": "PARTIAL",
+    "http": 200,
+    "note": "survey_token found via satisfaction report: srv_REDACTED..."
+  },
+  "T17.3": {
+    "status": "FAIL",
+    "http": 400,
+    "note": "{\"detail\":\"Survey already completed\"}"
+  },
+  "T17.4": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Satisfaction report: avg_rating:5.0 total:1"
+  },
+  "T18.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "? audit log entries returned"
+  },
+  "T18.2": {
+    "status": "PASS",
+    "http": 200,
+    "note": "4 audit entries for ticket resource filter"
+  },
+  "T19.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Technician performance: 1 technicians"
+  },
+  "T19.2": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "/api/sla/performance-report NOT FOUND"
+  },
+  "T19.3": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "/api/reports/inventory-valuation NOT FOUND"
+  },
+  "T19.4": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "{\"detail\":\"Not Found\"}"
+  },
+  "T19.5": {
+    "status": "FAIL",
+    "http": 404,
+    "note": "/api/export/request NOT FOUND"
+  },
+  "T20.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "23 organisations visible to platform admin"
+  },
+  "T20.2": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Platform metrics: orgs:? users:40 tickets:45"
+  },
+  "T20.3": {
+    "status": "PASS",
+    "http": 403,
+    "note": "admin@battwheels.in correctly blocked from platform routes (403)"
+  },
+  "T20.4": {
+    "status": "FAIL",
+    "http": 422,
+    "note": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"plan_type\"],\"msg\":\"Field required\",\"input\":{\"plan\":\"star"
+  },
+  "T21.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Org B user created. org_id:"
+  },
+  "T21.2": {
+    "status": "PARTIAL",
+    "http": 0,
+    "note": "Could not create Org B user to test isolation"
+  },
+  "T21.3": {
+    "status": "FAIL",
+    "http": 200,
+    "note": "Cross-tenant access ALLOWED \u2014 10 items visible!"
+  },
+  "T21.4": {
+    "status": "PARTIAL",
+    "http": 0,
+    "note": "No Org B session for sequence isolation test"
+  },
+  "T21.5": {
+    "status": "FAIL",
+    "http": 400,
+    "note": "Payroll accessible to Org B (should be gated): {\"detail\":\"Organization context required. Use X-Organization-ID header or select"
+  },
+  "T22.1": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Pagination: page:1 limit:10 total:8 has_next:False"
+  },
+  "T22.2": {
+    "status": "PASS",
+    "http": 400,
+    "note": "Limit enforcement: limit=500 returns 400 (rejected)"
+  },
+  "T22.3": {
+    "status": "PASS",
+    "http": 200,
+    "note": "Dashboard response: 15ms (threshold: 2000ms)"
+  }
+}
