@@ -1227,6 +1227,259 @@ def generate_invoice_html(invoice: dict, org_settings: dict = None) -> str:
     return html
 
 
+def generate_credit_note_html(
+    credit_note: dict,
+    line_items: list,
+    org_settings: dict = None,
+    original_invoice: dict = None
+) -> str:
+    """
+    Generate Credit Note PDF HTML (4F)
+    
+    Credit Note has same structure as Tax Invoice but:
+    - Header: "CREDIT NOTE" instead of "TAX INVOICE"
+    - Reference to original invoice
+    - IRN block NOT required (credit notes do not require IRN)
+    """
+    org = org_settings or {}
+    
+    # Supplier details
+    company_name = org.get('company_name', org.get('name', 'Company Name'))
+    company_legal_name = org.get('legal_name', company_name)
+    company_address = org.get('address', '')
+    company_city = org.get('city', '')
+    company_state = org.get('state', '')
+    company_pincode = org.get('pincode', org.get('zip', ''))
+    company_phone = org.get('phone', '')
+    company_email = org.get('email', '')
+    company_gstin = org.get('gstin', '')
+    company_state_code = get_state_code_from_gstin(company_gstin) or org.get('state_code', '')
+    company_state_name = get_state_name_from_code(company_state_code) or company_state
+    logo_url = org.get('logo_url', '')
+    
+    # Customer details
+    customer_name = credit_note.get('customer_name', '')
+    customer_gstin = credit_note.get('customer_gstin', credit_note.get('gst_no', ''))
+    billing_address = credit_note.get('billing_address', {})
+    if isinstance(billing_address, dict):
+        customer_address = billing_address.get('address', '')
+        customer_city = billing_address.get('city', '')
+        customer_state = billing_address.get('state', '')
+        customer_pincode = billing_address.get('zip', '')
+    else:
+        customer_address = str(billing_address) if billing_address else ''
+        customer_city = ''
+        customer_state = ''
+        customer_pincode = ''
+    
+    customer_state_code = get_state_code_from_gstin(customer_gstin) or credit_note.get('place_of_supply', '')
+    customer_state_name = get_state_name_from_code(customer_state_code) or customer_state
+    
+    # Document details
+    cn_number = credit_note.get('credit_note_number', credit_note.get('creditnote_number', ''))
+    cn_date = credit_note.get('credit_note_date', credit_note.get('date', ''))
+    
+    # Original invoice reference
+    original_invoice_ref = ""
+    if original_invoice:
+        orig_inv_num = original_invoice.get('invoice_number', '')
+        orig_inv_date = original_invoice.get('invoice_date', original_invoice.get('date', ''))
+        original_invoice_ref = f'''
+        <div class="original-invoice-ref">
+            <span class="ref-label">Against Invoice:</span> {orig_inv_num}<br>
+            <span class="ref-label">Dated:</span> {orig_inv_date}
+        </div>
+        '''
+    elif credit_note.get('reference_invoice_number') or credit_note.get('original_invoice_number'):
+        orig_inv_num = credit_note.get('reference_invoice_number', credit_note.get('original_invoice_number', ''))
+        orig_inv_date = credit_note.get('reference_invoice_date', credit_note.get('original_invoice_date', ''))
+        original_invoice_ref = f'''
+        <div class="original-invoice-ref">
+            <span class="ref-label">Against Invoice:</span> {orig_inv_num}<br>
+            <span class="ref-label">Dated:</span> {orig_inv_date}
+        </div>
+        '''
+    
+    # Logo HTML
+    logo_html = ""
+    if logo_url:
+        logo_html = f'<img src="{logo_url}" alt="{company_name}" class="company-logo" />'
+    
+    # Calculate if IGST or CGST/SGST
+    is_igst = company_state_code != customer_state_code if company_state_code and customer_state_code else credit_note.get('is_igst', False)
+    
+    # Build line items
+    items_html = ""
+    for idx, item in enumerate(line_items, 1):
+        hsn_sac = item.get('hsn_sac_code', item.get('hsn_or_sac', '-'))
+        quantity = item.get('quantity', 0)
+        unit = item.get('unit', 'Nos')
+        rate = item.get('rate', 0)
+        taxable_amount = item.get('taxable_amount', item.get('amount', 0))
+        gst_rate = item.get('tax_rate', 0)
+        
+        if is_igst:
+            igst_amt = item.get('igst_amount', item.get('tax_amount', 0))
+            cgst_amt = 0
+            sgst_amt = 0
+        else:
+            cgst_amt = item.get('cgst_amount', item.get('tax_amount', 0) / 2)
+            sgst_amt = item.get('sgst_amount', item.get('tax_amount', 0) / 2)
+            igst_amt = 0
+        
+        item_total = item.get('total', taxable_amount + igst_amt + cgst_amt + sgst_amt)
+        
+        items_html += f'''
+            <tr>
+                <td class="center">{idx}</td>
+                <td>{item.get('name', '')}</td>
+                <td class="center">{hsn_sac}</td>
+                <td class="right">{quantity:,.2f}</td>
+                <td class="center">{unit}</td>
+                <td class="right">₹{rate:,.2f}</td>
+                <td class="right">₹{taxable_amount:,.2f}</td>
+                <td class="center">{gst_rate}%</td>
+                {'<td class="right">₹' + f'{cgst_amt:,.2f}' + '</td>' if not is_igst else ''}
+                {'<td class="right">₹' + f'{sgst_amt:,.2f}' + '</td>' if not is_igst else ''}
+                {'<td class="right">₹' + f'{igst_amt:,.2f}' + '</td>' if is_igst else ''}
+                <td class="right bold">₹{item_total:,.2f}</td>
+            </tr>
+        '''
+    
+    # Totals
+    sub_total = credit_note.get('sub_total', 0)
+    cgst_total = credit_note.get('cgst_total', 0)
+    sgst_total = credit_note.get('sgst_total', 0)
+    igst_total = credit_note.get('igst_total', 0)
+    grand_total = credit_note.get('total', credit_note.get('grand_total', 0))
+    amount_in_words = number_to_words_indian(grand_total)
+    
+    # Tax columns header
+    if is_igst:
+        tax_header = '<th class="right">IGST</th>'
+    else:
+        tax_header = '<th class="right">CGST</th><th class="right">SGST</th>'
+    
+    html = f'''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            @page {{ size: A4; margin: 15mm; }}
+            body {{ font-family: Helvetica, Arial, sans-serif; font-size: 9pt; line-height: 1.4; color: #000; margin: 0; padding: 0; }}
+            .header {{ display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #333; }}
+            .company-logo {{ max-height: 60px; max-width: 180px; margin-bottom: 8px; }}
+            .doc-title {{ text-align: center; font-size: 14pt; font-weight: bold; color: #c00; margin: 10px 0; }}
+            .parties-section {{ display: flex; justify-content: space-between; margin-bottom: 15px; }}
+            .party-block {{ width: 48%; }}
+            .party-title {{ font-weight: bold; font-size: 8pt; color: #666; text-transform: uppercase; margin-bottom: 5px; border-bottom: 1px solid #ddd; padding-bottom: 3px; }}
+            .party-name {{ font-weight: bold; font-size: 10pt; margin-bottom: 3px; }}
+            .party-detail {{ font-size: 8pt; color: #333; margin: 2px 0; }}
+            .gstin-highlight {{ font-weight: bold; }}
+            .original-invoice-ref {{ background: #fff3cd; padding: 8px 12px; margin-bottom: 15px; border: 1px solid #ffc107; }}
+            .ref-label {{ font-weight: bold; }}
+            .items-table {{ width: 100%; border-collapse: collapse; margin-bottom: 15px; }}
+            .items-table th {{ background: #333; color: #fff; padding: 8px 5px; text-align: left; font-size: 7.5pt; }}
+            .items-table td {{ padding: 6px 5px; border-bottom: 1px solid #ddd; font-size: 8pt; }}
+            .items-table .center {{ text-align: center; }}
+            .items-table .right {{ text-align: right; }}
+            .items-table .bold {{ font-weight: bold; }}
+            .totals-container {{ display: flex; justify-content: flex-end; margin-bottom: 15px; }}
+            .totals-table {{ width: 280px; }}
+            .totals-table td {{ padding: 5px 8px; font-size: 8pt; }}
+            .totals-table .label {{ text-align: right; color: #666; }}
+            .totals-table .value {{ text-align: right; font-weight: 500; width: 100px; }}
+            .totals-table .total-row {{ font-size: 11pt; font-weight: bold; border-top: 2px solid #333; background: #f0f0f0; }}
+            .amount-words {{ background: #f8f8f8; padding: 8px 12px; margin-bottom: 15px; border: 1px solid #ddd; font-style: italic; }}
+            .signature-section {{ margin-top: 30px; text-align: right; }}
+            .for-company {{ font-weight: bold; font-size: 9pt; margin-bottom: 40px; }}
+            .signature-line {{ border-top: 1px solid #333; width: 180px; margin-left: auto; padding-top: 5px; }}
+            .signature-label {{ font-size: 8pt; }}
+            .footer {{ margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: center; font-size: 7pt; color: #666; }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div>{logo_html}</div>
+            <div class="doc-title">CREDIT NOTE</div>
+            <div style="text-align: right;">
+                <div style="font-weight: bold; font-size: 11pt;">{cn_number}</div>
+                <div style="font-size: 8pt;">{cn_date}</div>
+            </div>
+        </div>
+        
+        <div class="parties-section">
+            <div class="party-block">
+                <div class="party-title">From</div>
+                <div class="party-name">{company_legal_name}</div>
+                <div class="party-detail">{company_address}</div>
+                <div class="party-detail">{company_city} {company_pincode}</div>
+                <div class="party-detail"><span class="gstin-highlight">GSTIN: {company_gstin}</span></div>
+                <div class="party-detail">State: {company_state_name} | Code: {company_state_code}</div>
+            </div>
+            <div class="party-block">
+                <div class="party-title">To</div>
+                <div class="party-name">{customer_name}</div>
+                <div class="party-detail">{customer_address}</div>
+                <div class="party-detail">{customer_city} {customer_pincode}</div>
+                {f'<div class="party-detail"><span class="gstin-highlight">GSTIN: {customer_gstin}</span></div>' if customer_gstin else ''}
+                <div class="party-detail">State: {customer_state_name} | Code: {customer_state_code}</div>
+            </div>
+        </div>
+        
+        {original_invoice_ref}
+        
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th class="center">#</th>
+                    <th>Description</th>
+                    <th class="center">HSN/SAC</th>
+                    <th class="right">Qty</th>
+                    <th class="center">Unit</th>
+                    <th class="right">Rate</th>
+                    <th class="right">Taxable</th>
+                    <th class="center">GST%</th>
+                    {tax_header}
+                    <th class="right">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {items_html}
+            </tbody>
+        </table>
+        
+        <div class="totals-container">
+            <table class="totals-table">
+                <tr><td class="label">Subtotal:</td><td class="value">₹{sub_total:,.2f}</td></tr>
+                {f'<tr><td class="label">CGST:</td><td class="value">₹{cgst_total:,.2f}</td></tr>' if not is_igst else ''}
+                {f'<tr><td class="label">SGST:</td><td class="value">₹{sgst_total:,.2f}</td></tr>' if not is_igst else ''}
+                {f'<tr><td class="label">IGST:</td><td class="value">₹{igst_total:,.2f}</td></tr>' if is_igst else ''}
+                <tr class="total-row"><td class="label">Total Credit:</td><td class="value">₹{grand_total:,.2f}</td></tr>
+            </table>
+        </div>
+        
+        <div class="amount-words">
+            <strong>Amount in Words:</strong> {amount_in_words}
+        </div>
+        
+        <div class="signature-section">
+            <div class="for-company">For {company_name}</div>
+            <div class="signature-line">
+                <div class="signature-label">Authorized Signatory</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            This is a computer generated credit note | Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}
+        </div>
+    </body>
+    </html>
+    '''
+    return html
+
+
 def generate_pdf_from_html(html_content: str) -> bytes:
     """Convert HTML to PDF using WeasyPrint"""
     html = HTML(string=html_content)
