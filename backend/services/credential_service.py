@@ -92,11 +92,13 @@ def decrypt_dict(data: dict, fields_to_decrypt: list) -> dict:
 
 RAZORPAY = "RAZORPAY"
 EMAIL_SMTP = "EMAIL_SMTP"
+WHATSAPP = "WHATSAPP"
 
 # Fields to encrypt per credential type
 _ENCRYPTED_FIELDS = {
     RAZORPAY: ["key_secret", "webhook_secret"],
     EMAIL_SMTP: ["api_key", "smtp_pass"],
+    WHATSAPP: ["access_token"],
 }
 
 
