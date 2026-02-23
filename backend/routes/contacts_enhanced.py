@@ -741,14 +741,24 @@ async def delete_contact_tag(tag_id: str):
 # ========================= BACKWARD COMPATIBILITY (Must be before /{contact_id}) =========================
 
 @router.get("/customers")
-async def list_customers_only(search: Optional[str] = None, page: int = 1, per_page: int = 50):
+async def list_customers_only(
+    search: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1),
+    request: Request = None
+):
     """Backward compatible: List customers only"""
-    return await list_contacts(contact_type="customer", search=search, page=page, per_page=per_page)
+    return await list_contacts(request=request, contact_type="customer", search=search, page=page, limit=limit)
 
 @router.get("/vendors")
-async def list_vendors_only(search: Optional[str] = None, page: int = 1, per_page: int = 50):
+async def list_vendors_only(
+    search: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1),
+    request: Request = None
+):
     """Backward compatible: List vendors only"""
-    return await list_contacts(contact_type="vendor", search=search, page=page, per_page=per_page)
+    return await list_contacts(request=request, contact_type="vendor", search=search, page=page, limit=limit)
 
 # ========================= REPORTS (Must be before /{contact_id}) =========================
 
