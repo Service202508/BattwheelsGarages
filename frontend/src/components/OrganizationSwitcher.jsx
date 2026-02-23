@@ -103,19 +103,24 @@ const OrganizationSwitcher = ({ onSwitch }) => {
   };
 
   if (organizations.length <= 1) {
-    // Single org - just show the name
+    // Single org - show name + color-coded plan badge
+    const badge = getPlanBadge(currentOrg?.plan_type);
     return (
-      <div className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-[rgba(255,255,255,0.07)] border-700">
-        <div className="w-8 h-8 bg-[rgba(200,255,0,0.08)]0/20 rounded-lg flex items-center justify-center">
-          <Building2 className="w-4 h-4 text-[#C8FF00] text-400" />
+      <div className="flex items-center gap-2 px-3 py-2 bg-slate-800/50 rounded-lg border border-[rgba(255,255,255,0.07)]" data-testid="org-switcher-single">
+        <div className="w-8 h-8 bg-[rgba(200,255,0,0.08)] rounded-lg flex items-center justify-center">
+          <Building2 className="w-4 h-4 text-[#C8FF00]" />
         </div>
         <div className="hidden sm:block">
-          <p className="text-sm font-medium text-white truncate max-w-[150px]">
+          <p className="text-sm font-medium text-white truncate max-w-[150px]" data-testid="org-switcher-name">
             {currentOrg?.name || 'Organization'}
           </p>
-          <p className="text-xs text-slate-400 capitalize">
-            {currentOrg?.plan_type || 'Free'}
-          </p>
+          <span
+            className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+            style={{ background: badge.bg, color: badge.text }}
+            data-testid="org-switcher-plan-badge"
+          >
+            {badge.label}
+          </span>
         </div>
       </div>
     );
