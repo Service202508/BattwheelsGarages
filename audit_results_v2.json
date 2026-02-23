@@ -53,17 +53,17 @@
     "T3.1": {
       "status": "PASS",
       "http": 200,
-      "note": "contact_id:CON-C8264CBA9D65"
+      "note": "contact_id:CON-915C0000AC96"
     },
     "T3.2": {
       "status": "PASS",
       "http": 200,
-      "note": "Paginated contacts: 16 total, 10 on page"
+      "note": "Paginated contacts: 19 total, 10 on page"
     },
     "T3.3": {
       "status": "PASS",
       "http": 200,
-      "note": "vehicle_id:veh_a84982598cf3"
+      "note": "vehicle_id:veh_3653f0f1dbcb"
     },
     "T3.4": {
       "status": "PASS",
@@ -73,12 +73,12 @@
     "T4.1": {
       "status": "PASS",
       "http": 200,
-      "note": "ticket_id:tkt_1cdedcfe5368 status:open priority:HIGH"
+      "note": "ticket_id:tkt_7c8f1ab993ec status:open priority:HIGH"
     },
     "T4.2": {
       "status": "PASS",
       "http": 200,
-      "note": "51 tickets in paginated list"
+      "note": "53 tickets in paginated list"
     },
     "T4.3": {
       "status": "PASS",
@@ -113,7 +113,7 @@
     "T5.5": {
       "status": "PASS",
       "http": 200,
-      "note": "Stock reduced: 111.0 \u2192 110.0 (deducted 1.0)"
+      "note": "Stock reduced: 115.0 \u2192 114.0 (deducted 1.0)"
     },
     "T5.4": {
       "status": "PASS",
@@ -133,7 +133,7 @@
     "T7.1": {
       "status": "PASS",
       "http": 200,
-      "note": "estimate_id:EST-95EB205DFD13 number:EST-00086"
+      "note": "estimate_id:EST-9E8B89E166A0 number:EST-00088"
     },
     "T7.2": {
       "status": "PASS",
@@ -153,52 +153,52 @@
     "T7.5": {
       "status": "PASS",
       "http": 200,
-      "note": "Converted \u2192 invoice_id:INV-A68D2850BBBB"
+      "note": "Converted \u2192 invoice_id:INV-83468C0A830A"
     },
     "T8.1": {
-      "status": "FAIL",
-      "http": 404,
-      "note": "{\"detail\":\"Invoice not found\"}"
+      "status": "PASS",
+      "http": 200,
+      "note": "invoice_number:INV-00003 total:0.0 status:draft"
     },
     "T8.2": {
       "status": "PASS",
       "http": 200,
-      "note": "25 journal entries (paginated)"
+      "note": "27 journal entries (paginated)"
     },
     "T8.3": {
       "status": "PASS",
       "http": 200,
-      "note": "PDF generated. Content-Type:application/pdf Size:24223 bytes \u2705 FIXED"
+      "note": "PDF generated. Content-Type:application/pdf Size:24157 bytes \u2705 FIXED"
     },
     "T8.4": {
       "status": "FAIL",
-      "http": 400,
-      "note": "{\"detail\":\"Payment amount (1000.0) exceeds balance due (0.0)\"}"
+      "http": 422,
+      "note": "{\"detail\":[{\"type\":\"greater_than\",\"loc\":[\"body\",\"amount\"],\"msg\":\"Input should be greater than 0\",\"in"
     },
     "T8.5": {
       "status": "FAIL",
-      "http": 404,
-      "note": "{\"detail\":\"Invoice not found\"}"
+      "http": 200,
+      "note": "status:draft (expected paid)"
     },
     "T8.6": {
       "status": "PASS",
       "http": 200,
-      "note": "BALANCED \u2705 DR:948,380.00 == CR:948,380.00 \u2705 FIXED"
+      "note": "BALANCED \u2705 DR:952,510.00 == CR:952,510.00 \u2705 FIXED"
     },
     "T9.1": {
       "status": "PASS",
       "http": 200,
-      "note": "Vendor contact_id:CON-6DE5E9A8C081"
+      "note": "Vendor contact_id:CON-61487F4C83B6"
     },
     "T9.2": {
       "status": "PASS",
       "http": 200,
-      "note": "PO:PO-265250F28E86 number:PO-00012"
+      "note": "PO:PO-D5719C7F9F60 number:PO-00013"
     },
     "T9.3": {
       "status": "PASS",
       "http": 200,
-      "note": "Bill:BILL-1CF5BF6822E6 number:BILL-00024"
+      "note": "Bill:BILL-A442FD252A4C number:BILL-00025"
     },
     "T9.4": {
       "status": "PASS",
@@ -208,7 +208,7 @@
     "T9.5": {
       "status": "PASS",
       "http": 200,
-      "note": "Stock INCREASED: 110.0 \u2192 115.0 (+5.0) \u2705 FIXED"
+      "note": "Stock INCREASED: 114.0 \u2192 119.0 (+5.0) \u2705 FIXED"
     },
     "T9.6": {
       "status": "PASS",
@@ -218,7 +218,7 @@
     "T10.1": {
       "status": "PASS",
       "http": 200,
-      "note": "expense_id:exp_8cc8dc06360c"
+      "note": "expense_id:exp_91d641ec6133"
     },
     "T10.2": {
       "status": "PASS",
@@ -228,7 +228,7 @@
     "T10.3": {
       "status": "PASS",
       "http": 200,
-      "note": "9 expense journal entries"
+      "note": "10 expense journal entries"
     },
     "T11.1": {
       "status": "PASS",
@@ -263,12 +263,12 @@
     "T12.2": {
       "status": "PASS",
       "http": 200,
-      "note": "employee_id:emp_be809328c049"
+      "note": "employee_id:emp_f8cc3dc33ba2"
     },
     "T12.3": {
       "status": "PASS",
       "http": 200,
-      "note": "Payroll generated: 0 employees processed. JE:je_43f62c12056e"
+      "note": "Payroll generated: 0 employees processed. JE:je_2f08896ab57f"
     },
     "T12.4": {
       "status": "PARTIAL",
@@ -288,17 +288,17 @@
     "T13.2": {
       "status": "PASS",
       "http": 200,
-      "note": "27 journal entries (paginated, correct endpoint)"
+      "note": "29 journal entries (paginated, correct endpoint)"
     },
     "T13.3": {
       "status": "PASS",
       "http": 200,
-      "note": "BALANCED \u2705 DR:952,510.00 == CR:952,510.00"
+      "note": "BALANCED \u2705 DR:956,640.00 == CR:956,640.00"
     },
     "T13.4": {
       "status": "PASS",
       "http": 200,
-      "note": "P&L: income:10620.0 expenses:13400.0 net:-2780.0"
+      "note": "P&L: income:10620.0 expenses:14580.0 net:-3960.0"
     },
     "T13.5": {
       "status": "PASS",
@@ -316,29 +316,29 @@
       "note": "GSTR-1: 2 B2B invoices"
     },
     "T14.3": {
-      "status": "PARTIAL",
-      "http": 404,
-      "note": "Could not check invoice GST split"
+      "status": "PASS",
+      "http": 200,
+      "note": "GST type:igst CGST:0 SGST:0"
     },
     "T15.1": {
       "status": "PASS",
       "http": 200,
-      "note": "AMC subscription created: amc_sub_fbc5996516c7 \u2705 FIXED (was 404)"
+      "note": "AMC subscription created: amc_sub_5bf979dcfe8d \u2705 FIXED (was 404)"
     },
     "T15.2": {
       "status": "PASS",
       "http": 200,
-      "note": "1 AMC subscriptions returned \u2705 FIXED (was 404)"
+      "note": "2 AMC subscriptions returned \u2705 FIXED (was 404)"
     },
     "T16.1": {
       "status": "PASS",
       "http": 200,
-      "note": "project_id:proj_8702e0d90731"
+      "note": "project_id:proj_293771e6a3d4"
     },
     "T16.2": {
       "status": "PASS",
       "http": 200,
-      "note": "task_id:task_e4718cce5751"
+      "note": "task_id:task_8a43e7ddddcc"
     },
     "T16.3": {
       "status": "PASS",
@@ -348,7 +348,7 @@
     "T17.1": {
       "status": "PASS",
       "http": 200,
-      "note": "Ticket closed, survey_token in response: srv_eecd968805d34ac1a8fbba89... \u2705 FIXED"
+      "note": "Ticket closed, survey_token in response: srv_c5b1bf79dd1a4b849a6f9e5c... \u2705 FIXED"
     },
     "T17.2": {
       "status": "PASS",
@@ -363,7 +363,7 @@
     "T17.4": {
       "status": "PASS",
       "http": 200,
-      "note": "avg_rating:5.0 total:3 \u2705 FIXED"
+      "note": "avg_rating:4.75 total:4 \u2705 FIXED"
     },
     "T18.1": {
       "status": "PASS",
@@ -373,7 +373,7 @@
     "T18.2": {
       "status": "PASS",
       "http": 200,
-      "note": "? audit entries for ticket/tkt_1cdedcfe5368"
+      "note": "? audit entries for ticket/tkt_7c8f1ab993ec"
     },
     "T19.1": {
       "status": "PASS",
@@ -408,7 +408,7 @@
     "T20.2": {
       "status": "PASS",
       "http": 200,
-      "note": "orgs:? users:45 tickets:53"
+      "note": "orgs:? users:46 tickets:55"
     },
     "T20.3": {
       "status": "PASS",
@@ -448,7 +448,7 @@
     "T22.1": {
       "status": "PASS",
       "http": 200,
-      "note": "page:1 limit:10 total:17 has_next:True"
+      "note": "page:1 limit:10 total:20 has_next:True"
     },
     "T22.2": {
       "status": "PASS",
@@ -458,16 +458,16 @@
     "T22.3": {
       "status": "PASS",
       "http": 200,
-      "note": "Dashboard: 4ms (threshold 2000ms)"
+      "note": "Dashboard: 5ms (threshold 2000ms)"
     }
   },
   "summary": {
     "total": 92,
-    "passed": 80,
-    "failed": 4,
-    "partial": 8,
-    "score_pct": 87.0,
+    "passed": 82,
+    "failed": 3,
+    "partial": 7,
+    "score_pct": 89.1,
     "previous_score": "55/86 (64%)",
-    "improvement": 25
+    "improvement": 27
   }
 }
