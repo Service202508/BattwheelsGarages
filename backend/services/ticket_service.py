@@ -760,6 +760,38 @@ class TicketService:
             {"$set": update_data}
         )
         
+        # Deduct inventory for parts used
+        if parts_used:
+            org_id = existing.get("organization_id", "")
+            for item_id in parts_used:
+                try:
+                    item = await self.db.inventory.find_one({"item_id": item_id}, {"_id": 0})
+                    if item:
+                        old_qty = float(item.get("quantity", 0))
+                        new_qty = max(0, old_qty - 1)
+                        await self.db.inventory.update_one(
+                            {"item_id": item_id},
+                            {"$set": {"quantity": new_qty, "updated_at": now.isoformat()}}
+                        )
+                        # Log stock movement
+                        await self.db.stock_movements.insert_one({
+                            "movement_id": f"sm_{ticket_id}_{item_id}",
+                            "item_id": item_id,
+                            "item_name": item.get("name", ""),
+                            "movement_type": "TICKET_USAGE",
+                            "reference_type": "TICKET",
+                            "reference_id": ticket_id,
+                            "movement_date": now.strftime("%Y-%m-%d"),
+                            "quantity": -1,
+                            "balance_qty": new_qty,
+                            "organization_id": org_id,
+                            "created_by": user_id,
+                            "narration": f"Used on ticket {ticket_id}",
+                            "created_at": now.isoformat()
+                        })
+                except Exception as e:
+                    logger.warning(f"Inventory deduction failed for {item_id}: {e}")
+        
         # Log activity
         activity_desc = f"Work completed: {work_summary}"
         if labor_hours:
