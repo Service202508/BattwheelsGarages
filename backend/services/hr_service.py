@@ -496,7 +496,7 @@ class HRService:
         }
     
     async def generate_payroll(self, month: str, year: int, user_id: str) -> Dict[str, Any]:
-        """Generate payroll for all active employees"""
+        """Generate payroll for all active employees and post journal entry"""
         employees = await self.list_employees(status="active")
         
         records = []
@@ -522,10 +522,44 @@ class HRService:
             total_gross += payroll["earnings"]["gross"]
             total_net += payroll["net_salary"]
         
+        # Get organization_id from context
+        org_id = None
+        if records:
+            # Fetch the org_id from the first employee
+            first_emp = await self.db.employees.find_one(
+                {"employee_id": records[0]["employee_id"]},
+                {"_id": 0, "organization_id": 1}
+            )
+            if first_emp:
+                org_id = first_emp.get("organization_id")
+        
+        # If no org_id from employee, try to get from user
+        if not org_id:
+            user = await self.db.users.find_one({"user_id": user_id}, {"_id": 0, "organization_id": 1})
+            if user:
+                org_id = user.get("organization_id")
+        
+        # Post journal entry for payroll run
+        journal_entry_id = None
+        if org_id and records:
+            try:
+                success, msg, entry = await post_payroll_run_journal_entry(
+                    organization_id=org_id,
+                    payroll_records=records,
+                    created_by=user_id
+                )
+                if success and entry:
+                    journal_entry_id = entry.get("entry_id")
+                    logger.info(f"Posted payroll journal entry {journal_entry_id} for {month} {year}")
+                else:
+                    logger.warning(f"Failed to post payroll journal entry: {msg}")
+            except Exception as e:
+                logger.error(f"Exception posting payroll journal entry: {e}")
+        
         # Emit event
         await self.dispatcher.emit(
             EventType.PAYROLL_PROCESSED,
-            {"month": month, "year": year, "employees": len(records), "total_net": total_net},
+            {"month": month, "year": year, "employees": len(records), "total_net": total_net, "journal_entry_id": journal_entry_id},
             source="hr_service",
             user_id=user_id,
             priority=EventPriority.HIGH
@@ -537,7 +571,8 @@ class HRService:
             "employees_processed": len(records),
             "total_gross": round(total_gross, 2),
             "total_net": round(total_net, 2),
-            "status": "generated"
+            "status": "generated",
+            "journal_entry_id": journal_entry_id
         }
 
 
