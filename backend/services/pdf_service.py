@@ -914,7 +914,7 @@ def generate_invoice_html(invoice: dict, org_settings: dict = None) -> str:
             f"{billing_address.get('city', '')}, {billing_address.get('state', '')} {billing_address.get('zip', '')}",
             billing_address.get('country', '')
         ]
-        customer_address = '<br>'.join([l for l in addr_lines if l.strip()])
+        customer_address = '<br>'.join([line for line in addr_lines if line.strip()])
     else:
         customer_address = str(billing_address)
     
