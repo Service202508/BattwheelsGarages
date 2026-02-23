@@ -530,9 +530,11 @@ export default function Layout({ children, user, onLogout }) {
           </div>
         </header>
 
-        {/* Page Content */}
+        {/* Page Content — wrapped in FeatureGateBanner for plan-gated routes */}
         <div className="p-4 lg:p-8">
-          {children}
+          <FeatureGateBanner>
+            {children}
+          </FeatureGateBanner>
         </div>
       </main>
     </div>
