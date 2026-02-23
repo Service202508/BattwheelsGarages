@@ -682,7 +682,8 @@ async def calculate_employee_tds(
 async def get_tds_summary(
     request: Request,
     month: int = Query(None, ge=1, le=12),
-    year: int = Query(None)
+    year: int = Query(None),
+    _: None = Depends(require_feature("hr_payroll"))
 ):
     """
     Get TDS summary for all employees (Step 4)
