@@ -90,6 +90,7 @@ import SubscriptionManagement from "@/pages/SubscriptionManagement";
 import TeamManagement from "@/pages/TeamManagement";
 import OrganizationSetupWizard from "@/pages/OrganizationSetupWizard";
 import BrandingSettings from "@/pages/BrandingSettings";
+import PlatformAdmin from "@/pages/PlatformAdmin";
 
 // Customer Portal Pages
 import CustomerLayout from "@/components/CustomerLayout";
