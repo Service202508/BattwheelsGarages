@@ -499,9 +499,9 @@ export default function InventoryEnhanced() {
         <TabsContent value="overview" className="space-y-6">
           {/* Low Stock Alert */}
           {lowStockItems.length > 0 && (
-            <Card className="border-l-4 border-l-red-500">
+            <Card className="border-l-4 border-l-[#FF3B2F]">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2 text-red-700">
+                <CardTitle className="text-lg flex items-center gap-2 text-[#FF3B2F]">
                   <AlertTriangle className="h-5 w-5" /> Low Stock Alert
                 </CardTitle>
               </CardHeader>
@@ -514,7 +514,7 @@ export default function InventoryEnhanced() {
                         <p className="text-xs text-[rgba(244,246,240,0.45)]">{item.sku}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-red-600 font-bold">{item.total_stock} in stock</p>
+                        <p className="text-[#FF3B2F] font-bold">{item.total_stock} in stock</p>
                         <p className="text-xs text-[rgba(244,246,240,0.45)]">Reorder at: {item.reorder_level}</p>
                       </div>
                     </div>
