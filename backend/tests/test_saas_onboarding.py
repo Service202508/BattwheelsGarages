@@ -18,7 +18,7 @@ import uuid
 # Get API URL from environment
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
-    BASE_URL = "https://syscheck-1.preview.emergentagent.com"
+    BASE_URL = "https://performance-boost-64.preview.emergentagent.com"
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
