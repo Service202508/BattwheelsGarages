@@ -172,11 +172,12 @@ async def get_razorpay_credentials(org_id: str) -> Dict[str, Any]:
         return creds
 
     # Fallback to global .env
+    key_id = os.environ.get("RAZORPAY_KEY_ID", "")
     return {
-        "key_id": os.environ.get("RAZORPAY_KEY_ID", ""),
+        "key_id": key_id,
         "key_secret": os.environ.get("RAZORPAY_KEY_SECRET", ""),
         "webhook_secret": os.environ.get("RAZORPAY_WEBHOOK_SECRET", ""),
-        "test_mode": True,
+        "test_mode": not key_id.startswith("rzp_live_"),
         "_using_global": True,
     }
 
