@@ -2273,9 +2273,9 @@ async def create_invoice(data: InvoiceCreate, request: Request, ctx: TenantConte
     return invoice.model_dump()
 
 @api_router.get("/invoices")
-async def get_invoices(request: Request, status: Optional[str] = None):
+async def get_invoices(request: Request, status: Optional[str] = None, ctx: TenantContext = Depends(tenant_context_required)):
     user = await require_auth(request)
-    query = {}
+    query = {"organization_id": ctx.org_id}   # tenant-scoped
     if status:
         query["status"] = status
     if user.role == "customer":
@@ -2285,9 +2285,12 @@ async def get_invoices(request: Request, status: Optional[str] = None):
     return invoices
 
 @api_router.get("/invoices/{invoice_id}")
-async def get_invoice(invoice_id: str, request: Request):
+async def get_invoice(invoice_id: str, request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     await require_auth(request)
-    invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "organization_id": ctx.org_id},
+        {"_id": 0}
+    )
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     return invoice
