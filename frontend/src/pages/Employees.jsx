@@ -23,7 +23,7 @@ import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "
 
 const statusColors = {
   active: "bg-[rgba(34,197,94,0.20)] text-green-400",
-  inactive: "bg-[#111820]0/20 text-[rgba(244,246,240,0.45)]",
+  inactive: "bg-[rgba(17,24,32,0.2)] text-[rgba(244,246,240,0.45)]",
   terminated: "bg-[rgba(255,59,47,0.20)] text-red-400",
   resigned: "bg-[rgba(234,179,8,0.20)] text-yellow-400",
   on_notice: "bg-[rgba(255,140,0,0.20)] text-orange-400"
