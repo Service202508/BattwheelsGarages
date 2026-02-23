@@ -15,7 +15,7 @@ API_URL = f"{BASE_URL}/api"
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "test_pwd_placeholder"
+ADMIN_PASSWORD = "admin"
 
 class AuditResults:
     total = 0
