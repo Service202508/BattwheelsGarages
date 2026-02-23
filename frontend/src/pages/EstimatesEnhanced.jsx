@@ -1857,7 +1857,7 @@ export default function EstimatesEnhanced() {
                       variant="outline" 
                       size="sm"
                       onClick={() => window.open(`/tickets?id=${selectedEstimate.ticket_id}`, '_blank')}
-                      className="text-[#3B9EFF] border-blue-300 hover:bg-blue-100"
+                      className="text-[#3B9EFF] border-[rgba(59,158,255,0.35)] hover:bg-[rgba(59,158,255,0.08)]"
                     >
                       <Wrench className="h-4 w-4 mr-1" />
                       Open Job Card
