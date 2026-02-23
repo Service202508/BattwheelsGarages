@@ -227,6 +227,9 @@ export default function Dashboard({ user }) {
         </div>
       </div>
 
+      {/* Onboarding Banner - only shown for new orgs */}
+      <OnboardingBanner />
+
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="bg-[#111820] border border-[rgba(255,255,255,0.07)] p-1 rounded-lg">
