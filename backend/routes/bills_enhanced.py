@@ -378,19 +378,40 @@ async def create_purchase_order(po: PurchaseOrderCreate, background_tasks: Backg
     return {"code": 0, "message": "Purchase order created", "purchase_order": po_doc}
 
 @router.get("/purchase-orders")
-async def list_purchase_orders(vendor_id: Optional[str] = None, status: Optional[str] = None, page: int = 1, per_page: int = 50):
+async def list_purchase_orders(
+    vendor_id: Optional[str] = None,
+    status: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(25, ge=1)
+):
+    """List purchase orders with standardized pagination"""
+    import math
+    if limit > 100:
+        raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
+
     query = {"status": {"$ne": "void"}}
     if vendor_id:
         query["vendor_id"] = vendor_id
     if status:
         query["status"] = status
-    
+
     total = await purchase_orders_collection.count_documents(query)
-    skip = (page - 1) * per_page
-    
-    orders = await purchase_orders_collection.find(query, {"_id": 0}).sort("order_date", -1).skip(skip).limit(per_page).to_list(per_page)
-    
-    return {"code": 0, "purchase_orders": orders, "page_context": {"page": page, "per_page": per_page, "total": total}}
+    skip = (page - 1) * limit
+    total_pages = math.ceil(total / limit) if total > 0 else 1
+
+    orders = await purchase_orders_collection.find(query, {"_id": 0}).sort("order_date", -1).skip(skip).limit(limit).to_list(limit)
+
+    return {
+        "data": orders,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
 
 @router.get("/purchase-orders/{po_id}")
 async def get_purchase_order(po_id: str):
