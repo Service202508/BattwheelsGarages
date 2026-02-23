@@ -5098,6 +5098,15 @@ try:
 except Exception as e:
     logger.error(f"Failed to load E-Invoice routes: {e}")
 
+# Include Projects routes
+try:
+    from routes.projects import router as projects_router, set_db as set_projects_db
+    set_projects_db(db)
+    api_router.include_router(projects_router)
+    logger.info("Projects routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Projects routes: {e}")
+
 # Include Financial Reports routes
 try:
     from routes.reports import router as reports_router
