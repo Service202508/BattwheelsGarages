@@ -290,6 +290,18 @@ export default function OrganizationSettings({ user }) {
           }));
         }
       }
+
+      // Load WhatsApp settings
+      try {
+        const waRes = await fetch(`${API}/organizations/me/whatsapp-settings`, { headers: getAuthHeaders() });
+        if (waRes.ok) {
+          const waData = await waRes.json();
+          setWaConfigured(waData.configured || false);
+          if (waData.configured) {
+            setWaConfig(prev => ({ ...prev, phone_number_id: waData.phone_number_id || "" }));
+          }
+        }
+      } catch {}
     } catch (error) {
       toast.error("Failed to load organization data");
     } finally {
