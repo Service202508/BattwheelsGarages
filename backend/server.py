@@ -1816,9 +1816,9 @@ async def create_allocation(data: MaterialAllocationCreate, request: Request, ct
     return allocation.model_dump()
 
 @api_router.get("/allocations")
-async def get_allocations(request: Request, ticket_id: Optional[str] = None):
+async def get_allocations(request: Request, ctx: TenantContext = Depends(tenant_context_required), ticket_id: Optional[str] = None):
     await require_auth(request)
-    query = {}
+    query = {"organization_id": ctx.org_id}
     if ticket_id:
         query["ticket_id"] = ticket_id
     allocations = await db.allocations.find(query, {"_id": 0}).to_list(1000)
