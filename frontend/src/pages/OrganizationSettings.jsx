@@ -246,6 +246,19 @@ export default function OrganizationSettings({ user }) {
           if (eiData.gstin) setGstinValid(true);
         }
       }
+
+      if (slaRes && slaRes.ok) {
+        const slaData = await slaRes.json();
+        if (slaData.sla_config) {
+          setSlaConfig(prev => ({ ...prev, ...slaData.sla_config }));
+        }
+      }
+
+      // Set logo preview from org data
+      if (orgRes.ok) {
+        const orgData2 = await orgRes.json();
+        if (orgData2.logo_url) setLogoPreview(orgData2.logo_url);
+      }
     } catch (error) {
       toast.error("Failed to load organization data");
     } finally {
