@@ -23,15 +23,29 @@ if (SENTRY_DSN) {
   });
 }
 
-// Register service worker for PWA support — production only.
-// In development, the SW's cache-first strategy conflicts with
-// webpack HMR chunk fetching and causes intermittent full-page reloads.
-if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then((reg) => console.log('SW registered:', reg.scope))
-      .catch((err) => console.warn('SW registration failed:', err));
-  });
+// Service worker: register in production, actively unregister in development.
+// In development the SW's cache-first strategy intercepts webpack HMR chunk
+// fetches and returns stale cached versions, causing intermittent full-page
+// reloads. We unregister any previously installed SW so those reloads stop.
+if ('serviceWorker' in navigator) {
+  if (process.env.NODE_ENV === 'production') {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then((reg) => console.log('SW registered:', reg.scope))
+        .catch((err) => console.warn('SW registration failed:', err));
+    });
+  } else {
+    // Development: unregister every active service worker and clear caches
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      registrations.forEach((reg) => {
+        reg.unregister();
+        console.log('SW unregistered (dev mode):', reg.scope);
+      });
+    });
+    if (window.caches) {
+      caches.keys().then((keys) => keys.forEach((key) => caches.delete(key)));
+    }
+  }
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
