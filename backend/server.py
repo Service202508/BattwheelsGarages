@@ -5317,15 +5317,17 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
-# Banking & Accountant Module Routes
-try:
-    from routes.banking_module import router as banking_module_router
-    api_router.include_router(banking_module_router)
-    logger.info("Banking Module routes loaded")
-except Exception as e:
-    logger.error(f"Failed to load Banking Module routes: {e}")
-    import traceback
-    traceback.print_exc()
+# Banking & Accountant Module Routes (LEGACY - DISABLED)
+# Old banking_module.py routes replaced by new finance/banking module at /api/banking
+# Keeping file for reference but not loading to avoid route conflict
+# try:
+#     from routes.banking_module import router as banking_module_router
+#     api_router.include_router(banking_module_router)
+#     logger.info("Banking Module routes loaded")
+# except Exception as e:
+#     logger.error(f"Failed to load Banking Module routes: {e}")
+#     import traceback
+#     traceback.print_exc()
 
 # Seed Utility Routes (for testing)
 try:
