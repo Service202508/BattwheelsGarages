@@ -264,7 +264,8 @@ async def get_inventory_summary():
 # ========================= WAREHOUSES =========================
 
 @router.post("/warehouses")
-async def create_warehouse(warehouse: WarehouseCreate):
+async def create_warehouse(warehouse: WarehouseCreate, request: Request = None,
+                           _: None = Depends(require_feature("inventory_multi_warehouse"))):
     """Create a new warehouse"""
     warehouse_id = generate_id("WH")
     
@@ -283,7 +284,8 @@ async def create_warehouse(warehouse: WarehouseCreate):
     return {"code": 0, "message": "Warehouse created", "warehouse": warehouse_doc}
 
 @router.get("/warehouses")
-async def list_warehouses(active_only: bool = True):
+async def list_warehouses(active_only: bool = True, request: Request = None,
+                          _: None = Depends(require_feature("inventory_multi_warehouse"))):
     """List all warehouses"""
     query = {"is_active": True} if active_only else {}
     warehouses = await warehouses_collection.find(query, {"_id": 0}).to_list(100)
@@ -316,7 +318,8 @@ async def get_stock(warehouse_id: str = None):
     return {"code": 0, "stock": stock_items}
 
 @router.get("/warehouses/{warehouse_id}")
-async def get_warehouse(warehouse_id: str):
+async def get_warehouse(warehouse_id: str, request: Request = None,
+                        _: None = Depends(require_feature("inventory_multi_warehouse"))):
     """Get warehouse details with stock summary"""
     warehouse = await warehouses_collection.find_one({"warehouse_id": warehouse_id}, {"_id": 0})
     if not warehouse:
@@ -344,7 +347,8 @@ async def get_warehouse(warehouse_id: str):
     return {"code": 0, "warehouse": warehouse}
 
 @router.put("/warehouses/{warehouse_id}")
-async def update_warehouse(warehouse_id: str, update: dict):
+async def update_warehouse(warehouse_id: str, update: dict, request: Request = None,
+                           _: None = Depends(require_feature("inventory_multi_warehouse"))):
     """Update warehouse"""
     if update.get("is_primary"):
         await warehouses_collection.update_many({"is_primary": True}, {"$set": {"is_primary": False}})
