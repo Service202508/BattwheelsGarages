@@ -193,11 +193,17 @@ async def list_tickets(
     status: Optional[str] = Query(None, description="Filter by status"),
     priority: Optional[str] = Query(None, description="Filter by priority"),
     category: Optional[str] = Query(None, description="Filter by category"),
-    limit: int = Query(100, le=500, description="Max results"),
-    skip: int = Query(0, ge=0, description="Results to skip")
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(25, ge=1, le=100, description="Items per page (max 100)"),
+    sort_by: Optional[str] = Query(None, description="Sort field"),
+    sort_order: str = Query("desc", regex="^(asc|desc)$", description="Sort order")
 ):
     """
-    List tickets with filtering
+    List tickets with pagination and filtering
+    
+    Returns standardized paginated response:
+    - data: Array of tickets
+    - pagination: {page, limit, total_count, total_pages, has_next, has_prev}
     
     - Customers see only their tickets
     - Technicians see assigned + unassigned tickets
@@ -206,6 +212,13 @@ async def list_tickets(
     """
     service = get_service()
     user = await get_current_user(request, service.db)
+    
+    # Cap limit at 100
+    if limit > 100:
+        limit = 100
+    
+    # Calculate skip for backward compatibility with service layer
+    skip = (page - 1) * limit
     
     # Use tenant context for org_id (strict enforcement)
     result = await service.list_tickets(
@@ -219,7 +232,22 @@ async def list_tickets(
         organization_id=ctx.org_id
     )
     
-    return result
+    # Get total count for pagination
+    total_count = result.get("total", len(result.get("tickets", [])))
+    import math
+    total_pages = math.ceil(total_count / limit) if total_count > 0 else 1
+    
+    return {
+        "data": result.get("tickets", []),
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_count": total_count,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1
+        }
+    }
 
 
 @router.get("/stats")
