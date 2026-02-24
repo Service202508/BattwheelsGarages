@@ -20,6 +20,26 @@ import LocationPicker from "@/components/LocationPicker";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Resolve the workshop slug from the current URL:
+// workshopname.battwheels.com → "workshopname"
+// Falls back to ?org query param for development / preview URLs
+function getOrgSlug() {
+  const hostname = window.location.hostname;
+  const parts = hostname.split(".");
+  if (parts.length >= 3 && !["www", "app", "api", "platform"].includes(parts[0])) {
+    return parts[0];
+  }
+  const params = new URLSearchParams(window.location.search);
+  return params.get("org") || null;
+}
+
+function getPublicHeaders() {
+  const slug = getOrgSlug();
+  const headers = { "Content-Type": "application/json" };
+  if (slug) headers["X-Organization-Slug"] = slug;
+  return headers;
+}
+
 // Customer types
 const customerTypes = [
   { value: "individual", label: "Individual", icon: User, desc: "Personal EV Owner" },
