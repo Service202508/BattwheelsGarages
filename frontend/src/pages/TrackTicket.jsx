@@ -18,6 +18,24 @@ import {
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Resolve workshop slug from subdomain or ?org query param
+function getOrgSlug() {
+  const hostname = window.location.hostname;
+  const parts = hostname.split(".");
+  if (parts.length >= 3 && !["www", "app", "api", "platform"].includes(parts[0])) {
+    return parts[0];
+  }
+  const params = new URLSearchParams(window.location.search);
+  return params.get("org") || null;
+}
+
+function getPublicHeaders(extra = {}) {
+  const slug = getOrgSlug();
+  const headers = { "Content-Type": "application/json", ...extra };
+  if (slug) headers["X-Organization-Slug"] = slug;
+  return headers;
+}
+
 // Status colors and icons
 const statusConfig = {
   pending_payment: { label: "Pending Payment", color: "bg-amber-500", icon: CreditCard },
