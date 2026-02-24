@@ -531,6 +531,114 @@ const SaaSLanding = () => {
         </ul>
       </footer>
 
+      {/* Book Demo Modal */}
+      {showBookDemo && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" data-testid="book-demo-modal">
+          <div className="bg-[#111820] rounded-sm max-w-md w-full p-8 border border-white/10 shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-bold">Book a Demo</h2>
+                <p className="text-white/40 text-sm mt-1">We'll call you within 1 business day.</p>
+              </div>
+              <button onClick={() => { setShowBookDemo(false); setBookDemoSubmitted(false); }} className="text-white/40 hover:text-white transition" data-testid="close-book-demo-modal">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {bookDemoSubmitted ? (
+              <div className="text-center py-8" data-testid="book-demo-success">
+                <div className="w-12 h-12 bg-[#C8FF00]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Check className="w-6 h-6 text-[#C8FF00]" />
+                </div>
+                <h3 className="text-lg font-bold mb-2">Request Received</h3>
+                <p className="text-white/50 text-sm leading-relaxed">
+                  Our team will call <strong className="text-white">{bookDemoData.phone}</strong> within 1 business day to schedule your demo.
+                </p>
+                <button
+                  onClick={() => { setShowBookDemo(false); setBookDemoSubmitted(false); }}
+                  className="mt-6 px-6 py-2.5 text-sm font-semibold uppercase tracking-wide bg-[#C8FF00] text-[#080C0F] rounded-sm hover:bg-[#d4ff1a] transition"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleBookDemoSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm text-white/60 mb-1.5">Your Name *</label>
+                  <input
+                    type="text" required placeholder="Rahul Sharma"
+                    value={bookDemoData.name}
+                    onChange={(e) => setBookDemoData({ ...bookDemoData, name: e.target.value })}
+                    className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition"
+                    data-testid="demo-name-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1.5">Workshop / Company Name *</label>
+                  <input
+                    type="text" required placeholder="Mumbai EV Service Center"
+                    value={bookDemoData.workshop_name}
+                    onChange={(e) => setBookDemoData({ ...bookDemoData, workshop_name: e.target.value })}
+                    className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition"
+                    data-testid="demo-workshop-input"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-white/60 mb-1.5">City *</label>
+                    <input
+                      type="text" required placeholder="Mumbai"
+                      value={bookDemoData.city}
+                      onChange={(e) => setBookDemoData({ ...bookDemoData, city: e.target.value })}
+                      className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition"
+                      data-testid="demo-city-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white/60 mb-1.5">Phone *</label>
+                    <input
+                      type="tel" required placeholder="+91 98765 43210"
+                      value={bookDemoData.phone}
+                      onChange={(e) => setBookDemoData({ ...bookDemoData, phone: e.target.value })}
+                      className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white placeholder-white/30 focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition"
+                      data-testid="demo-phone-input"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1.5">Vehicles serviced per month</label>
+                  <select
+                    value={bookDemoData.vehicles_per_month}
+                    onChange={(e) => setBookDemoData({ ...bookDemoData, vehicles_per_month: e.target.value })}
+                    className="w-full px-4 py-3 bg-[#080C0F] border border-white/10 rounded-sm text-white focus:ring-2 focus:ring-[#C8FF00]/50 focus:border-transparent transition"
+                    data-testid="demo-vehicles-select"
+                  >
+                    <option value="<10">&lt;10 vehicles</option>
+                    <option value="10-50">10 – 50 vehicles</option>
+                    <option value="50-200">50 – 200 vehicles</option>
+                    <option value="200+">200+ vehicles</option>
+                  </select>
+                </div>
+                <button
+                  type="submit" disabled={bookDemoLoading}
+                  className="w-full bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] py-3 rounded-sm font-bold text-sm uppercase tracking-wide transition disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                  data-testid="demo-submit-btn"
+                >
+                  {bookDemoLoading ? (
+                    <><div className="w-4 h-4 border-2 border-[#080C0F]/30 border-t-[#080C0F] rounded-full animate-spin" /> Submitting...</>
+                  ) : (
+                    <><ChevronRight className="w-4 h-4" /> Request Demo Call</>
+                  )}
+                </button>
+                <p className="text-center text-white/30 text-xs pt-1">
+                  No sales pressure. We'll walk you through the platform in 30 minutes.
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Signup Modal */}
       {showSignup && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
