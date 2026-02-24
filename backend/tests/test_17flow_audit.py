@@ -194,6 +194,7 @@ class TestFlow03InviteTeam:
         assert state["token"], "No token from Flow 01"
         payload = {
             "email": "tech-audit@battwheelstest.com",
+            "name": "Tech Audit User",
             "role": "technician",
         }
         res = requests.post(
