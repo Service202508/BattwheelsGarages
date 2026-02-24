@@ -1150,7 +1150,7 @@ async def get_current_user(request: Request) -> Optional[User]:
                 expires_at = expires_at.replace(tzinfo=timezone.utc)
             if expires_at > datetime.now(timezone.utc):
                 user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
-                if user:
+                if user and user.get("is_active", True):
                     if isinstance(user.get('created_at'), str):
                         user['created_at'] = datetime.fromisoformat(user['created_at'])
                     return User(**user)
@@ -1161,6 +1161,12 @@ async def get_current_user(request: Request) -> Optional[User]:
             payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
             user = await db.users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
             if user:
+                if not user.get("is_active", True):
+                    return None
+                token_pwd_v = payload.get("pwd_v", 0)
+                db_pwd_v = user.get("password_version", 0)
+                if token_pwd_v != db_pwd_v:
+                    return None
                 if isinstance(user.get('created_at'), str):
                     user['created_at'] = datetime.fromisoformat(user['created_at'])
                 return User(**user)
