@@ -442,6 +442,7 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         
         # Public self-serve signup (no auth needed)
         "/api/organizations/signup",
+        "/api/organizations/register",
         "/api/organizations/accept-invite",
     }
     
@@ -450,6 +451,7 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         r"^/api/public/.*",
         r"^/api/webhooks/.*",
         r"^/api/razorpay/webhook$",
+        r"^/api/payments/webhook$",
         r"^/api/stripe/webhook$",
         r"^/api/invoices/public/.*",
         r"^/api/estimates/public/.*",
