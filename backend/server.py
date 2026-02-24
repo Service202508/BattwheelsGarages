@@ -113,7 +113,7 @@ async def lifespan(app: FastAPI):
         logger.warning(f"Index migration failed on startup (non-fatal): {e}")
 
     try:
-        from scripts.add_compound_indexes import ensure_compound_indexes
+        from utils.indexes import ensure_compound_indexes
         await ensure_compound_indexes(db)
         logger.info("Compound indexes ensured on startup")
     except Exception as e:
