@@ -56,6 +56,75 @@ function SectionCard({ title, icon: Icon, iconColor = "text-blue-400", children 
   );
 }
 
+const LEAD_STATUS_STYLES = {
+  new:         "bg-amber-500/20 text-amber-300 border-amber-500/30",
+  called:      "bg-blue-500/20 text-blue-300 border-blue-500/30",
+  qualified:   "bg-[rgba(200,255,0,0.15)] text-[#C8FF00] border-[rgba(200,255,0,0.30)]",
+  closed_won:  "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+  closed_lost: "bg-slate-500/20 text-slate-400 border-slate-500/30",
+};
+
+const LEAD_STATUS_LABELS = {
+  new: "New", called: "Called", qualified: "Qualified",
+  closed_won: "Closed — Won", closed_lost: "Closed — Lost",
+};
+
+function LeadRow({ lead, expanded, onToggleNotes, onStatusChange, onNotesSave }) {
+  const [notes, setNotes] = useState(lead.notes || "");
+  const fmtDate = (d) => d
+    ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })
+    : "—";
+
+  return (
+    <>
+      <tr className="border-b border-[rgba(255,255,255,0.04)] hover:bg-white/[0.02] transition" data-testid={`lead-row-${lead.lead_id}`}>
+        <td className="px-4 py-3 text-xs text-[rgba(244,246,240,0.45)] whitespace-nowrap">{fmtDate(lead.submitted_at)}</td>
+        <td className="px-4 py-3 text-sm text-white font-medium whitespace-nowrap">{lead.name}</td>
+        <td className="px-4 py-3 text-sm text-[rgba(244,246,240,0.70)]">{lead.workshop_name}</td>
+        <td className="px-4 py-3 text-sm text-[rgba(244,246,240,0.55)] whitespace-nowrap">{lead.city}</td>
+        <td className="px-4 py-3 text-sm font-mono text-[rgba(244,246,240,0.55)] whitespace-nowrap">{lead.phone}</td>
+        <td className="px-4 py-3 text-xs text-[rgba(244,246,240,0.45)] whitespace-nowrap">{lead.vehicles_per_month}</td>
+        <td className="px-4 py-3">
+          <select
+            value={lead.status || "new"}
+            onChange={e => onStatusChange(e.target.value)}
+            className={`text-xs px-2 py-1 rounded-full border font-medium cursor-pointer bg-transparent focus:outline-none ${LEAD_STATUS_STYLES[lead.status || "new"]}`}
+            data-testid={`lead-status-${lead.lead_id}`}
+          >
+            {Object.entries(LEAD_STATUS_LABELS).map(([val, label]) => (
+              <option key={val} value={val} className="bg-[#1a2433] text-white">{label}</option>
+            ))}
+          </select>
+        </td>
+        <td className="px-4 py-3">
+          <button
+            onClick={onToggleNotes}
+            className="text-xs text-[rgba(244,246,240,0.40)] hover:text-[#C8FF00] transition font-mono"
+            data-testid={`toggle-notes-${lead.lead_id}`}
+          >
+            {expanded ? "▲ hide" : notes ? "▼ notes" : "▼ add note"}
+          </button>
+        </td>
+      </tr>
+      {expanded && (
+        <tr className="bg-[rgba(255,255,255,0.01)]">
+          <td colSpan={8} className="px-4 pb-3 pt-1">
+            <textarea
+              rows={3}
+              placeholder="Log call notes here… saves automatically on blur."
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              onBlur={() => onNotesSave(notes)}
+              className="w-full px-3 py-2 bg-[#0D1117] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-white placeholder:text-[rgba(244,246,240,0.30)] focus:outline-none focus:border-[rgba(200,255,0,0.30)] resize-none font-mono"
+              data-testid={`notes-textarea-${lead.lead_id}`}
+            />
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
 export default function PlatformAdmin({ user }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("orgs");
