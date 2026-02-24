@@ -714,6 +714,7 @@ class TestFlow12TallyExport:
         res = requests.get(
             f"{BASE_URL}/api/finance/export/tally-xml",
             headers=auth_headers(),
+            params={"date_from": "2026-01-01", "date_to": "2026-03-31"},
             timeout=20,
         )
         assert res.status_code == 200, f"Tally export failed: {res.status_code} {res.text[:200]}"
