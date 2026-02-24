@@ -1645,7 +1645,7 @@ async def reset_password(data: ResetPasswordRequest):
     return {"message": "Password has been reset successfully. You can now log in with your new password."}
 
 
-@api_router.post("/employees/{employee_id}/reset-password")
+@v1_router.post("/employees/{employee_id}/reset-password")
 async def admin_reset_employee_password(employee_id: str, data: AdminResetPasswordRequest, request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     """Admin resets an employee's login password"""
     admin_user = await require_admin(request)
@@ -1678,7 +1678,7 @@ async def admin_reset_employee_password(employee_id: str, data: AdminResetPasswo
 
 # ==================== USER ROUTES ====================
 
-@api_router.get("/users")
+@v1_router.get("/users")
 async def get_users(request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     await require_admin(request)
     # Return only users who are members of this organisation (not all platform users)
@@ -1693,7 +1693,7 @@ async def get_users(request: Request, ctx: TenantContext = Depends(tenant_contex
     ).to_list(1000)
     return users
 
-@api_router.get("/users/{user_id}")
+@v1_router.get("/users/{user_id}")
 async def get_user(user_id: str, request: Request):
     await require_auth(request)
     user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
@@ -1701,7 +1701,7 @@ async def get_user(user_id: str, request: Request):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@api_router.put("/users/{user_id}")
+@v1_router.put("/users/{user_id}")
 async def update_user(user_id: str, update: UserUpdate, request: Request):
     current_user = await require_auth(request)
     if current_user.user_id != user_id and current_user.role != "admin":
@@ -1715,7 +1715,7 @@ async def update_user(user_id: str, update: UserUpdate, request: Request):
     user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
     return user
 
-@api_router.get("/technicians")
+@v1_router.get("/technicians")
 async def get_technicians(request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     await require_auth(request)
     # Return technicians belonging to this org only
@@ -1732,7 +1732,7 @@ async def get_technicians(request: Request, ctx: TenantContext = Depends(tenant_
 
 # ==================== SUPPLIER ROUTES ====================
 
-@api_router.post("/suppliers")
+@v1_router.post("/suppliers")
 async def create_supplier(
     data: SupplierCreate, 
     request: Request,
@@ -1747,7 +1747,7 @@ async def create_supplier(
     await db.suppliers.insert_one(doc)
     return supplier.model_dump()
 
-@api_router.get("/suppliers")
+@v1_router.get("/suppliers")
 async def get_suppliers(
     request: Request,
     ctx: TenantContext = Depends(tenant_context_required)
@@ -1757,7 +1757,7 @@ async def get_suppliers(
     suppliers = await db.suppliers.find(query, {"_id": 0}).to_list(1000)
     return suppliers
 
-@api_router.get("/suppliers/{supplier_id}")
+@v1_router.get("/suppliers/{supplier_id}")
 async def get_supplier(
     supplier_id: str, 
     request: Request,
@@ -1770,7 +1770,7 @@ async def get_supplier(
         raise HTTPException(status_code=404, detail="Supplier not found")
     return supplier
 
-@api_router.put("/suppliers/{supplier_id}")
+@v1_router.put("/suppliers/{supplier_id}")
 async def update_supplier(
     supplier_id: str, 
     update: SupplierUpdate, 
@@ -1786,7 +1786,7 @@ async def update_supplier(
 
 # ==================== VEHICLE ROUTES ====================
 
-@api_router.post("/vehicles")
+@v1_router.post("/vehicles")
 async def create_vehicle(
     vehicle_data: VehicleCreate, 
     request: Request,
@@ -1811,7 +1811,7 @@ async def create_vehicle(
     await db.vehicles.insert_one(doc)
     return vehicle.model_dump()
 
-@api_router.get("/vehicles")
+@v1_router.get("/vehicles")
 async def get_vehicles(
     request: Request,
     ctx: TenantContext = Depends(tenant_context_required)
@@ -1826,7 +1826,7 @@ async def get_vehicles(
         vehicles = await db.vehicles.find(query, {"_id": 0}).to_list(100)
     return vehicles
 
-@api_router.get("/vehicles/{vehicle_id}")
+@v1_router.get("/vehicles/{vehicle_id}")
 async def get_vehicle(
     vehicle_id: str, 
     request: Request,
@@ -1840,7 +1840,7 @@ async def get_vehicle(
         raise HTTPException(status_code=404, detail="Vehicle not found")
     return vehicle
 
-@api_router.put("/vehicles/{vehicle_id}/status")
+@v1_router.put("/vehicles/{vehicle_id}/status")
 async def update_vehicle_status(
     vehicle_id: str, 
     status: str, 
@@ -1866,7 +1866,7 @@ async def update_vehicle_status(
 
 # ==================== INVENTORY ROUTES ====================
 
-@api_router.post("/inventory")
+@v1_router.post("/inventory")
 async def create_inventory_item(
     item_data: InventoryCreate, 
     request: Request,
@@ -1888,7 +1888,7 @@ async def create_inventory_item(
     await db.inventory.insert_one(doc)
     return item.model_dump()
 
-@api_router.get("/inventory")
+@v1_router.get("/inventory")
 async def get_inventory(
     request: Request,
     ctx: TenantContext = Depends(tenant_context_required),
@@ -1922,7 +1922,7 @@ async def get_inventory(
         }
     }
 
-@api_router.get("/inventory/reorder-suggestions")
+@v1_router.get("/inventory/reorder-suggestions")
 async def get_inventory_reorder_suggestions(
     request: Request,
     ctx: TenantContext = Depends(tenant_context_required)
@@ -1981,7 +1981,7 @@ async def get_inventory_reorder_suggestions(
     }
 
 
-@api_router.get("/inventory/stocktakes")
+@v1_router.get("/inventory/stocktakes")
 async def list_stocktakes_api(
     request: Request,
     status: Optional[str] = None,
@@ -2007,7 +2007,7 @@ class StocktakeCreateModel(BaseModel):
     item_ids: Optional[list] = None
 
 
-@api_router.post("/inventory/stocktakes")
+@v1_router.post("/inventory/stocktakes")
 async def create_stocktake_api(
     data: StocktakeCreateModel,
     request: Request,
@@ -2058,7 +2058,7 @@ async def create_stocktake_api(
     return {"code": 0, "message": "Stocktake created", "stocktake": doc}
 
 
-@api_router.get("/inventory/{item_id}")
+@v1_router.get("/inventory/{item_id}")
 async def get_inventory_item(
     item_id: str, 
     request: Request,
@@ -2071,7 +2071,7 @@ async def get_inventory_item(
         raise HTTPException(status_code=404, detail="Item not found")
     return item
 
-@api_router.put("/inventory/{item_id}")
+@v1_router.put("/inventory/{item_id}")
 async def update_inventory_item(
     item_id: str, 
     update: InventoryUpdate, 
@@ -2093,7 +2093,7 @@ async def update_inventory_item(
     item = await db.inventory.find_one(query, {"_id": 0})
     return item
 
-@api_router.delete("/inventory/{item_id}")
+@v1_router.delete("/inventory/{item_id}")
 async def delete_inventory_item(
     item_id: str, 
     request: Request,
@@ -2106,7 +2106,7 @@ async def delete_inventory_item(
 
 # ==================== MATERIAL ALLOCATION ROUTES ====================
 
-@api_router.post("/allocations")
+@v1_router.post("/allocations")
 async def create_allocation(data: MaterialAllocationCreate, request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     """Allocate materials from inventory to a ticket"""
     user = await require_technician_or_admin(request)
@@ -2169,7 +2169,7 @@ async def create_allocation(data: MaterialAllocationCreate, request: Request, ct
     
     return allocation.model_dump()
 
-@api_router.get("/allocations")
+@v1_router.get("/allocations")
 async def get_allocations(request: Request, ctx: TenantContext = Depends(tenant_context_required), ticket_id: Optional[str] = None):
     await require_auth(request)
     query = {"organization_id": ctx.org_id}
@@ -2178,7 +2178,7 @@ async def get_allocations(request: Request, ctx: TenantContext = Depends(tenant_
     allocations = await db.allocations.find(query, {"_id": 0}).to_list(1000)
     return allocations
 
-@api_router.put("/allocations/{allocation_id}/use")
+@v1_router.put("/allocations/{allocation_id}/use")
 async def mark_allocation_used(allocation_id: str, request: Request):
     """Mark allocated materials as used"""
     user = await require_technician_or_admin(request)
@@ -2206,7 +2206,7 @@ async def mark_allocation_used(allocation_id: str, request: Request):
     
     return {"message": "Allocation marked as used"}
 
-@api_router.put("/allocations/{allocation_id}/return")
+@v1_router.put("/allocations/{allocation_id}/return")
 async def return_allocation(allocation_id: str, request: Request):
     """Return allocated materials to inventory"""
     user = await require_technician_or_admin(request)
@@ -2237,7 +2237,7 @@ async def return_allocation(allocation_id: str, request: Request):
 
 # ==================== PURCHASE ORDER ROUTES ====================
 
-@api_router.post("/purchase-orders")
+@v1_router.post("/purchase-orders")
 async def create_purchase_order(data: PurchaseOrderCreate, request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     user = await require_technician_or_admin(request)
     
@@ -2289,7 +2289,7 @@ async def create_purchase_order(data: PurchaseOrderCreate, request: Request, ctx
     
     return po.model_dump()
 
-@api_router.get("/purchase-orders")
+@v1_router.get("/purchase-orders")
 async def get_purchase_orders(request: Request, status: Optional[str] = None):
     await require_auth(request)
     query = {}
@@ -2298,7 +2298,7 @@ async def get_purchase_orders(request: Request, status: Optional[str] = None):
     pos = await db.purchase_orders.find(query, {"_id": 0}).to_list(1000)
     return pos
 
-@api_router.get("/purchase-orders/{po_id}")
+@v1_router.get("/purchase-orders/{po_id}")
 async def get_purchase_order(po_id: str, request: Request):
     await require_auth(request)
     po = await db.purchase_orders.find_one({"po_id": po_id}, {"_id": 0})
@@ -2306,7 +2306,7 @@ async def get_purchase_order(po_id: str, request: Request):
         raise HTTPException(status_code=404, detail="Purchase order not found")
     return po
 
-@api_router.put("/purchase-orders/{po_id}")
+@v1_router.put("/purchase-orders/{po_id}")
 async def update_purchase_order(po_id: str, update: PurchaseOrderUpdate, request: Request):
     user = await require_admin(request)
     
@@ -2339,7 +2339,7 @@ async def update_purchase_order(po_id: str, update: PurchaseOrderUpdate, request
     
     return po
 
-@api_router.post("/purchase-orders/{po_id}/receive")
+@v1_router.post("/purchase-orders/{po_id}/receive")
 async def receive_stock(po_id: str, items: List[dict], request: Request):
     """Receive stock from purchase order and update inventory"""
     user = await require_technician_or_admin(request)
@@ -2398,7 +2398,7 @@ async def receive_stock(po_id: str, items: List[dict], request: Request):
 
 # ==================== SERVICE OFFERING ROUTES ====================
 
-@api_router.post("/services")
+@v1_router.post("/services")
 async def create_service(data: ServiceOfferingCreate, request: Request):
     await require_admin(request)
     service = ServiceOffering(**data.model_dump())
@@ -2407,13 +2407,13 @@ async def create_service(data: ServiceOfferingCreate, request: Request):
     await db.services.insert_one(doc)
     return service.model_dump()
 
-@api_router.get("/services")
+@v1_router.get("/services")
 async def get_services(request: Request):
     await require_auth(request)
     services = await db.services.find({"is_active": True}, {"_id": 0}).to_list(1000)
     return services
 
-@api_router.put("/services/{service_id}")
+@v1_router.put("/services/{service_id}")
 async def update_service(service_id: str, data: dict, request: Request):
     await require_admin(request)
     await db.services.update_one({"service_id": service_id}, {"$set": data})
@@ -2422,7 +2422,7 @@ async def update_service(service_id: str, data: dict, request: Request):
 
 # ==================== SALES ORDER ROUTES ====================
 
-@api_router.post("/sales-orders")
+@v1_router.post("/sales-orders")
 async def create_sales_order(data: SalesOrderCreate, request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     user = await require_technician_or_admin(request)
     
@@ -2477,7 +2477,7 @@ async def create_sales_order(data: SalesOrderCreate, request: Request, ctx: Tena
     
     return sales_order.model_dump()
 
-@api_router.get("/sales-orders")
+@v1_router.get("/sales-orders")
 async def get_sales_orders(request: Request, status: Optional[str] = None):
     await require_auth(request)
     query = {}
@@ -2486,7 +2486,7 @@ async def get_sales_orders(request: Request, status: Optional[str] = None):
     orders = await db.sales_orders.find(query, {"_id": 0}).to_list(1000)
     return orders
 
-@api_router.get("/sales-orders/{sales_id}")
+@v1_router.get("/sales-orders/{sales_id}")
 async def get_sales_order(sales_id: str, request: Request):
     await require_auth(request)
     order = await db.sales_orders.find_one({"sales_id": sales_id}, {"_id": 0})
@@ -2494,7 +2494,7 @@ async def get_sales_order(sales_id: str, request: Request):
         raise HTTPException(status_code=404, detail="Sales order not found")
     return order
 
-@api_router.put("/sales-orders/{sales_id}")
+@v1_router.put("/sales-orders/{sales_id}")
 async def update_sales_order(sales_id: str, update: SalesOrderUpdate, request: Request):
     user = await require_auth(request)
     
@@ -2512,7 +2512,7 @@ async def update_sales_order(sales_id: str, update: SalesOrderUpdate, request: R
 
 # ==================== INVOICE ROUTES ====================
 
-@api_router.post("/invoices")
+@v1_router.post("/invoices")
 async def create_invoice(data: InvoiceCreate, request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     user = await require_technician_or_admin(request)
     
@@ -2585,7 +2585,7 @@ async def create_invoice(data: InvoiceCreate, request: Request, ctx: TenantConte
     
     return invoice.model_dump()
 
-@api_router.get("/invoices")
+@v1_router.get("/invoices")
 async def get_invoices(request: Request, status: Optional[str] = None, ctx: TenantContext = Depends(tenant_context_required)):
     user = await require_auth(request)
     query = {"organization_id": ctx.org_id}   # tenant-scoped
@@ -2597,7 +2597,7 @@ async def get_invoices(request: Request, status: Optional[str] = None, ctx: Tena
     invoices = await db.invoices.find(query, {"_id": 0}).to_list(1000)
     return invoices
 
-@api_router.get("/invoices/{invoice_id}")
+@v1_router.get("/invoices/{invoice_id}")
 async def get_invoice(invoice_id: str, request: Request, ctx: TenantContext = Depends(tenant_context_required)):
     await require_auth(request)
     invoice = await db.invoices.find_one(
@@ -2608,7 +2608,7 @@ async def get_invoice(invoice_id: str, request: Request, ctx: TenantContext = De
         raise HTTPException(status_code=404, detail="Invoice not found")
     return invoice
 
-@api_router.put("/invoices/{invoice_id}")
+@v1_router.put("/invoices/{invoice_id}")
 async def update_invoice(invoice_id: str, update: InvoiceUpdate, request: Request):
     await require_technician_or_admin(request)
     update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
@@ -2617,7 +2617,7 @@ async def update_invoice(invoice_id: str, update: InvoiceUpdate, request: Reques
     invoice = await db.invoices.find_one({"invoice_id": invoice_id}, {"_id": 0})
     return invoice
 
-@api_router.get("/invoices/{invoice_id}/pdf")
+@v1_router.get("/invoices/{invoice_id}/pdf")
 async def download_invoice_pdf(invoice_id: str, request: Request):
     """Generate and download invoice PDF with GST compliance"""
     from services.invoice_service import generate_invoice_pdf
@@ -2702,7 +2702,7 @@ async def download_invoice_pdf(invoice_id: str, request: Request):
 
 # ==================== PAYMENT ROUTES ====================
 
-@api_router.post("/payments")
+@v1_router.post("/payments")
 async def record_payment(data: PaymentCreate, request: Request):
     user = await require_technician_or_admin(request)
     
@@ -2795,7 +2795,7 @@ async def record_payment(data: PaymentCreate, request: Request):
     
     return payment.model_dump()
 
-@api_router.get("/payments")
+@v1_router.get("/payments")
 async def get_payments(request: Request, invoice_id: Optional[str] = None):
     await require_auth(request)
     query = {}
@@ -2806,7 +2806,7 @@ async def get_payments(request: Request, invoice_id: Optional[str] = None):
 
 # ==================== ACCOUNTING/LEDGER ROUTES ====================
 
-@api_router.get("/ledger")
+@v1_router.get("/ledger")
 async def get_ledger(
     request: Request,
     account_type: Optional[str] = None,
@@ -2829,7 +2829,7 @@ async def get_ledger(
     entries = await db.ledger.find(query, {"_id": 0}).sort("entry_date", -1).to_list(1000)
     return entries
 
-@api_router.get("/accounting/summary")
+@v1_router.get("/accounting/summary")
 async def get_accounting_summary(request: Request):
     await require_admin(request)
     
@@ -2860,7 +2860,7 @@ async def get_accounting_summary(request: Request):
         net_profit=revenue - expenses
     )
 
-@api_router.get("/accounting/ticket/{ticket_id}")
+@v1_router.get("/accounting/ticket/{ticket_id}")
 async def get_ticket_financials(ticket_id: str, request: Request):
     """Get all financial data for a specific ticket"""
     await require_auth(request)
@@ -2993,7 +2993,7 @@ VEHICLE_CATEGORY_CONTEXT = {
     }
 }
 
-@api_router.post("/ai/diagnose")
+@v1_router.post("/ai/diagnose")
 async def ai_diagnose(query: AIQuery, request: Request):
     await require_auth(request)
     
@@ -3126,7 +3126,7 @@ Schedule a workshop inspection for detailed diagnosis. Our technicians are train
 
 # ==================== DASHBOARD & ANALYTICS ====================
 
-@api_router.get("/dashboard/stats")
+@v1_router.get("/dashboard/stats")
 async def get_dashboard_stats(request: Request):
     await require_auth(request)
 
@@ -3321,7 +3321,7 @@ async def get_dashboard_stats(request: Request):
         service_ticket_stats=service_ticket_stats
     )
 
-@api_router.get("/dashboard/financial")
+@v1_router.get("/dashboard/financial")
 async def get_financial_dashboard(request: Request):
     """Get financial metrics for dashboard"""
     await require_admin(request)
@@ -3340,7 +3340,7 @@ async def get_financial_dashboard(request: Request):
 
 # ==================== ALERTS ====================
 
-@api_router.get("/alerts")
+@v1_router.get("/alerts")
 async def get_alerts(request: Request):
     user = await require_auth(request)
     alerts = []
@@ -3421,7 +3421,7 @@ async def get_alerts(request: Request):
 
 # ==================== SEED DATA ====================
 
-@api_router.post("/seed")
+@v1_router.post("/seed")
 async def seed_data():
     existing_admin = await db.users.find_one({"email": "admin@battwheels.in"}, {"_id": 0})
     if existing_admin:
@@ -3532,7 +3532,7 @@ async def seed_data():
     
     return {"message": "Data seeded successfully"}
 
-@api_router.post("/seed-customer-demo")
+@v1_router.post("/seed-customer-demo")
 async def seed_customer_demo():
     """Seed demo customer account, vehicles, and AMC plans for testing customer portal"""
     
@@ -3772,7 +3772,7 @@ async def seed_customer_demo():
         "tickets": 2
     }
 
-@api_router.post("/reseed")
+@v1_router.post("/reseed")
 async def reseed_missing_data():
     """Reseed missing data (suppliers, services) without deleting existing data"""
     results = {"suppliers": 0, "services": 0}
@@ -3880,7 +3880,7 @@ def calculate_salary_deductions(basic_salary: float, gross_salary: float, pf_enr
     
     return deductions
 
-@api_router.post("/employees")
+@v1_router.post("/employees")
 async def create_employee(data: EmployeeCreate, request: Request):
     """Create a new employee with user account"""
     admin_user = await require_admin(request)
@@ -4032,7 +4032,7 @@ async def create_employee(data: EmployeeCreate, request: Request):
     
     return employee.model_dump()
 
-@api_router.get("/employees")
+@v1_router.get("/employees")
 async def get_employees(
     request: Request,
     department: Optional[str] = None,
@@ -4053,7 +4053,7 @@ async def get_employees(
     employees = await db.employees.find(query, {"_id": 0}).to_list(1000)
     return employees
 
-@api_router.get("/employees/{employee_id}")
+@v1_router.get("/employees/{employee_id}")
 async def get_employee(employee_id: str, request: Request):
     """Get single employee details"""
     await require_auth(request)
@@ -4063,7 +4063,7 @@ async def get_employee(employee_id: str, request: Request):
         raise HTTPException(status_code=404, detail="Employee not found")
     return employee
 
-@api_router.put("/employees/{employee_id}")
+@v1_router.put("/employees/{employee_id}")
 async def update_employee(employee_id: str, data: EmployeeUpdate, request: Request):
     """Update employee details"""
     await require_admin(request)
@@ -4176,7 +4176,7 @@ async def update_employee(employee_id: str, data: EmployeeUpdate, request: Reque
     updated = await db.employees.find_one({"employee_id": employee_id}, {"_id": 0})
     return updated
 
-@api_router.delete("/employees/{employee_id}")
+@v1_router.delete("/employees/{employee_id}")
 async def delete_employee(employee_id: str, request: Request):
     """Deactivate an employee (soft delete)"""
     await require_admin(request)
@@ -4204,7 +4204,7 @@ async def delete_employee(employee_id: str, request: Request):
     
     return {"message": "Employee deactivated successfully"}
 
-@api_router.get("/employees/managers/list")
+@v1_router.get("/employees/managers/list")
 async def get_managers(request: Request):
     """Get list of employees who can be managers (all active employees)"""
     await require_auth(request)
@@ -4225,13 +4225,13 @@ async def get_managers(request: Request):
     
     return managers
 
-@api_router.get("/employees/departments/list")
+@v1_router.get("/employees/departments/list")
 async def get_departments(request: Request):
     """Get list of departments"""
     await require_auth(request)
     return DEPARTMENTS
 
-@api_router.get("/employees/roles/list")
+@v1_router.get("/employees/roles/list")
 async def get_roles(request: Request):
     """Get list of available roles"""
     await require_auth(request)
@@ -4245,7 +4245,7 @@ async def get_roles(request: Request):
 
 # ==================== ATTENDANCE ROUTES ====================
 
-@api_router.post("/attendance/clock-in")
+@v1_router.post("/attendance/clock-in")
 async def clock_in(data: ClockInRequest, request: Request):
     """Clock in for the day"""
     user = await require_auth(request)
@@ -4300,7 +4300,7 @@ async def clock_in(data: ClockInRequest, request: Request):
         "late_by_minutes": int((actual_start - standard_start).total_seconds() / 60) if late_arrival else 0
     }
 
-@api_router.post("/attendance/clock-out")
+@v1_router.post("/attendance/clock-out")
 async def clock_out(data: ClockOutRequest, request: Request):
     """Clock out for the day"""
     user = await require_auth(request)
@@ -4376,7 +4376,7 @@ async def clock_out(data: ClockOutRequest, request: Request):
         "warnings": warnings if warnings else None
     }
 
-@api_router.get("/attendance/today")
+@v1_router.get("/attendance/today")
 async def get_today_attendance(request: Request):
     """Get current user's attendance for today"""
     user = await require_auth(request)
@@ -4394,7 +4394,7 @@ async def get_today_attendance(request: Request):
         "standard_end": STANDARD_END_TIME
     }
 
-@api_router.get("/attendance/my-records")
+@v1_router.get("/attendance/my-records")
 async def get_my_attendance(
     request: Request,
     month: Optional[int] = None,
@@ -4464,7 +4464,7 @@ async def get_my_attendance(
         }
     }
 
-@api_router.get("/attendance/all")
+@v1_router.get("/attendance/all")
 async def get_all_attendance(
     request: Request,
     date: Optional[str] = None,
@@ -4507,7 +4507,7 @@ async def get_all_attendance(
         }
     }
 
-@api_router.get("/attendance/team-summary")
+@v1_router.get("/attendance/team-summary")
 async def get_team_attendance_summary(
     request: Request,
     month: Optional[int] = None,
@@ -4585,7 +4585,7 @@ async def get_team_attendance_summary(
 
 # ==================== LEAVE MANAGEMENT ROUTES ====================
 
-@api_router.get("/leave/types")
+@v1_router.get("/leave/types")
 async def get_leave_types(request: Request):
     """Get all leave types"""
     await require_auth(request)
@@ -4603,7 +4603,7 @@ async def get_leave_types(request: Request):
     
     return types
 
-@api_router.get("/leave/balance")
+@v1_router.get("/leave/balance")
 async def get_leave_balance(request: Request):
     """Get current user's leave balance"""
     user = await require_auth(request)
@@ -4635,7 +4635,7 @@ async def get_leave_balance(request: Request):
     
     return balance
 
-@api_router.post("/leave/request")
+@v1_router.post("/leave/request")
 async def create_leave_request(data: LeaveRequestCreate, request: Request):
     """Create a new leave request"""
     user = await require_auth(request)
@@ -4692,7 +4692,7 @@ async def create_leave_request(data: LeaveRequestCreate, request: Request):
     
     return {"message": "Leave request submitted", "leave": leave_doc}
 
-@api_router.get("/leave/my-requests")
+@v1_router.get("/leave/my-requests")
 async def get_my_leave_requests(request: Request):
     """Get current user's leave requests"""
     user = await require_auth(request)
@@ -4704,7 +4704,7 @@ async def get_my_leave_requests(request: Request):
     
     return requests
 
-@api_router.get("/leave/pending-approvals")
+@v1_router.get("/leave/pending-approvals")
 async def get_pending_approvals(request: Request):
     """Get pending leave requests for approval (manager/admin)"""
     user = await require_technician_or_admin(request)
@@ -4717,7 +4717,7 @@ async def get_pending_approvals(request: Request):
     
     return requests
 
-@api_router.put("/leave/{leave_id}/approve")
+@v1_router.put("/leave/{leave_id}/approve")
 async def approve_leave(leave_id: str, data: LeaveApproval, request: Request):
     """Approve or reject a leave request"""
     user = await require_technician_or_admin(request)
@@ -4790,7 +4790,7 @@ async def approve_leave(leave_id: str, data: LeaveApproval, request: Request):
     
     return {"message": f"Leave request {data.status}", "leave_id": leave_id}
 
-@api_router.delete("/leave/{leave_id}")
+@v1_router.delete("/leave/{leave_id}")
 async def cancel_leave_request(leave_id: str, request: Request):
     """Cancel a pending leave request"""
     user = await require_auth(request)
@@ -4822,7 +4822,7 @@ async def cancel_leave_request(leave_id: str, request: Request):
 
 # ==================== PAYROLL ROUTES ====================
 
-@api_router.get("/payroll/calculate/{user_id}")
+@v1_router.get("/payroll/calculate/{user_id}")
 async def calculate_payroll(
     user_id: str,
     month: int,
@@ -4918,7 +4918,7 @@ async def calculate_payroll(
     
     return payroll_data
 
-@api_router.post("/payroll/generate")
+@v1_router.post("/payroll/generate")
 async def generate_payroll(
     month: int,
     year: int,
@@ -4963,7 +4963,7 @@ async def generate_payroll(
         "records": payroll_records
     }
 
-@api_router.get("/payroll/records")
+@v1_router.get("/payroll/records")
 async def get_payroll_records(
     month: Optional[int] = None,
     year: Optional[int] = None,
@@ -4982,7 +4982,7 @@ async def get_payroll_records(
     
     return records
 
-@api_router.get("/payroll/my-records")
+@v1_router.get("/payroll/my-records")
 async def get_my_payroll(request: Request):
     """Get current user's payroll records"""
     user = await require_auth(request)
@@ -4996,7 +4996,7 @@ async def get_my_payroll(request: Request):
 
 # ==================== CUSTOMER ROUTES ====================
 
-@api_router.post("/customers")
+@v1_router.post("/customers")
 async def create_customer(data: CustomerCreate, request: Request):
     await require_technician_or_admin(request)
     # Get org context for multi-tenant scoping
@@ -5014,7 +5014,7 @@ async def create_customer(data: CustomerCreate, request: Request):
     await db.customers.insert_one(doc)
     return customer.model_dump()
 
-@api_router.get("/customers")
+@v1_router.get("/customers")
 async def get_customers(request: Request, search: Optional[str] = None, status: Optional[str] = None):
     await require_auth(request)
     # Get org context for multi-tenant scoping
@@ -5036,7 +5036,7 @@ async def get_customers(request: Request, search: Optional[str] = None, status: 
     customers = await db.customers.find(query, {"_id": 0}).to_list(1000)
     return customers
 
-@api_router.get("/customers/{customer_id}")
+@v1_router.get("/customers/{customer_id}")
 async def get_customer(customer_id: str, request: Request):
     await require_auth(request)
     # Get org context for multi-tenant scoping
@@ -5051,7 +5051,7 @@ async def get_customer(customer_id: str, request: Request):
         raise HTTPException(status_code=404, detail="Customer not found")
     return customer
 
-@api_router.put("/customers/{customer_id}")
+@v1_router.put("/customers/{customer_id}")
 async def update_customer(customer_id: str, update: CustomerUpdate, request: Request):
     await require_technician_or_admin(request)
     # Get org context for multi-tenant scoping
@@ -5071,20 +5071,20 @@ async def update_customer(customer_id: str, update: CustomerUpdate, request: Req
 # These routes have been replaced by /app/backend/routes/expenses.py
 # Keeping as reference but disabling to avoid route conflicts
 
-# @api_router.post("/expenses-legacy")
+# @v1_router.post("/expenses-legacy")
 # async def create_expense_legacy(data: ExpenseCreate, request: Request):
 #     """Legacy expense creation - use /api/expenses instead"""
 #     pass
 
 # ==================== CHART OF ACCOUNTS ROUTES ====================
 
-@api_router.get("/chart-of-accounts")
+@v1_router.get("/chart-of-accounts")
 async def get_chart_of_accounts(request: Request):
     await require_auth(request)
     accounts = await db.chart_of_accounts.find({}, {"_id": 0}).to_list(500)
     return accounts
 
-@api_router.get("/chart-of-accounts/by-type/{account_type}")
+@v1_router.get("/chart-of-accounts/by-type/{account_type}")
 async def get_accounts_by_type(account_type: str, request: Request):
     await require_auth(request)
     accounts = await db.chart_of_accounts.find(
@@ -5095,7 +5095,7 @@ async def get_accounts_by_type(account_type: str, request: Request):
 
 # ==================== MIGRATION ROUTES ====================
 
-@api_router.post("/migration/upload")
+@v1_router.post("/migration/upload")
 async def upload_migration_file(request: Request):
     """Upload and extract legacy backup file"""
     user = await require_admin(request)
@@ -5117,7 +5117,7 @@ async def upload_migration_file(request: Request):
         "files": xls_files[:20]  # Show first 20 files
     }
 
-@api_router.post("/migration/run")
+@v1_router.post("/migration/run")
 async def run_migration(request: Request):
     """Run full legacy data migration"""
     user = await require_admin(request)
@@ -5142,7 +5142,7 @@ async def run_migration(request: Request):
         logger.error(f"Migration error: {e}")
         raise HTTPException(status_code=500, detail=f"Migration failed: {str(e)}")
 
-@api_router.post("/migration/customers")
+@v1_router.post("/migration/customers")
 async def migrate_customers_only(request: Request):
     """Migrate only customers from legacy data"""
     user = await require_admin(request)
@@ -5161,7 +5161,7 @@ async def migrate_customers_only(request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.post("/migration/suppliers")
+@v1_router.post("/migration/suppliers")
 async def migrate_suppliers_only(request: Request):
     """Migrate only suppliers/vendors from legacy data"""
     user = await require_admin(request)
@@ -5180,7 +5180,7 @@ async def migrate_suppliers_only(request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.post("/migration/inventory")
+@v1_router.post("/migration/inventory")
 async def migrate_inventory_only(request: Request):
     """Migrate only inventory items from legacy data"""
     user = await require_admin(request)
@@ -5200,7 +5200,7 @@ async def migrate_inventory_only(request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.post("/migration/invoices")
+@v1_router.post("/migration/invoices")
 async def migrate_invoices_only(request: Request):
     """Migrate only invoices from legacy data"""
     user = await require_admin(request)
@@ -5220,7 +5220,7 @@ async def migrate_invoices_only(request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.get("/migration/status")
+@v1_router.get("/migration/status")
 async def get_migration_status(request: Request):
     """Get current migration status and data counts"""
     await require_admin(request)
@@ -5258,7 +5258,7 @@ async def get_migration_status(request: Request):
     }
 
 # Root endpoint
-@api_router.get("/")
+@v1_router.get("/")
 async def root():
     return {"message": "Battwheels OS API", "version": "2.0.0"}
 
@@ -6017,7 +6017,7 @@ except Exception as e:
     logger.error(f"Failed to load SLA routes: {e}")
 
 # ==================== AUDIT LOG API ROUTES ====================
-@api_router.get("/audit-logs")
+@v1_router.get("/audit-logs")
 async def get_audit_logs(
     request: Request,
     resource_type: Optional[str] = None,
@@ -6050,7 +6050,7 @@ async def get_audit_logs(
         total = await db.audit_logs.count_documents(query)
         return {"code": 0, "audit_logs": logs, "total": total, "page": page}
 
-@api_router.get("/audit-logs/{resource_type}/{resource_id}")
+@v1_router.get("/audit-logs/{resource_type}/{resource_id}")
 async def get_audit_log_for_resource(
     resource_type: str,
     resource_id: str,
@@ -6065,7 +6065,7 @@ async def get_audit_log_for_resource(
     return {"code": 0, "resource_type": resource_type, "resource_id": resource_id, "history": logs}
 
 # ==================== SATISFACTION SURVEY ROUTES ====================
-@api_router.get("/public/survey/{survey_token}")
+@v1_router.get("/public/survey/{survey_token}")
 async def get_survey_info(survey_token: str):
     """Public endpoint: get survey metadata for display before submission (no auth)"""
     review = await db.ticket_reviews.find_one({"survey_token": survey_token}, {"_id": 0})
@@ -6103,7 +6103,7 @@ async def get_survey_info(survey_token: str):
     }
 
 
-@api_router.post("/public/survey/{survey_token}")
+@v1_router.post("/public/survey/{survey_token}")
 async def submit_satisfaction_survey(survey_token: str, request: Request):
     """Public endpoint: customer submits satisfaction rating after ticket close"""
     body = await request.json()
@@ -6128,7 +6128,7 @@ async def submit_satisfaction_survey(survey_token: str, request: Request):
     )
     return {"code": 0, "message": "Thank you for your feedback!"}
 
-@api_router.get("/reports/satisfaction")
+@v1_router.get("/reports/satisfaction")
 async def get_satisfaction_report(request: Request):
     """Get customer satisfaction report"""
     user = await require_auth(request)
@@ -6147,7 +6147,7 @@ async def get_satisfaction_report(request: Request):
 
 
 # ==================== DATA EXPORT ROUTES ====================
-@api_router.post("/settings/export-data")
+@v1_router.post("/settings/export-data")
 async def request_data_export(request: Request):
     """
     POST /api/settings/export-data
@@ -6243,7 +6243,7 @@ async def request_data_export(request: Request):
         return {"code": 1, "job_id": job_id, "status": "failed", "error": str(e)}
 
 
-@api_router.get("/settings/export-data/status")
+@v1_router.get("/settings/export-data/status")
 async def list_export_jobs(request: Request):
     """GET /api/settings/export-data/status — List all export jobs for org."""
     user = await require_auth(request)
@@ -6255,7 +6255,7 @@ async def list_export_jobs(request: Request):
     return {"code": 0, "jobs": jobs, "total": len(jobs)}
 
 
-@api_router.get("/settings/export-data/{job_id}/download")
+@v1_router.get("/settings/export-data/{job_id}/download")
 async def download_export(job_id: str, request: Request):
     """GET /api/settings/export-data/{job_id}/download — Download export as JSON."""
     user = await require_auth(request)
