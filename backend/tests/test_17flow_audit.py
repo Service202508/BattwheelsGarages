@@ -336,8 +336,15 @@ class TestFlow05CustomerVehicle:
         )
         data = res.json()
         assert res.status_code in [200, 201], f"Contact create failed ({res.status_code}): {data}"
-        contact_id = data.get("id") or data.get("contact_id") or data.get("_id")
-        assert contact_id, "No contact_id in response"
+        # Response is {code, message, contact: {contact_id, ...}}
+        contact = data.get("contact", data)
+        contact_id = (
+            contact.get("contact_id")
+            or contact.get("id")
+            or data.get("contact_id")
+            or data.get("id")
+        )
+        assert contact_id, f"No contact_id in response: {data}"
         state["contact_id"] = contact_id
         print(f"PASS: Contact Rajesh Kumar created id={contact_id}")
 
