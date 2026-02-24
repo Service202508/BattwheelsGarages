@@ -101,7 +101,7 @@ def get_today() -> str:
 # ========================= ITEM TRACKING CONFIG =========================
 
 @router.post("/items/{item_id}/configure")
-async def configure_item_tracking(item_id: str, config: ItemTrackingConfig, request: Request)::
+async def configure_item_tracking(item_id: str, config: ItemTrackingConfig, request: Request):
     org_id = extract_org_id(request)
     """Enable/configure serial or batch tracking for an item"""
     item = await items_collection.find_one({"item_id": item_id})
@@ -138,7 +138,7 @@ async def configure_item_tracking(item_id: str, config: ItemTrackingConfig, requ
     }
 
 @router.get("/items/{item_id}/config")
-async def get_item_tracking_config(item_id: str, request: Request)::
+async def get_item_tracking_config(item_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get tracking configuration for an item"""
     item = await items_collection.find_one(
@@ -168,7 +168,7 @@ async def get_item_tracking_config(item_id: str, request: Request)::
     }
 
 @router.get("/items/tracking-enabled")
-async def list_tracking_enabled_items(request: Request)::
+async def list_tracking_enabled_items(request: Request):
     org_id = extract_org_id(request)
     """List all items with serial or batch tracking enabled"""
     items = await items_collection.find(
@@ -197,7 +197,7 @@ async def list_tracking_enabled_items(request: Request)::
 # ========================= SERIAL NUMBERS =========================
 
 @router.post("/serials")
-async def create_serial_number(data: SerialNumberCreate, request: Request)::
+async def create_serial_number(data: SerialNumberCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a single serial number"""
     # Validate item
@@ -253,7 +253,7 @@ async def create_serial_number(data: SerialNumberCreate, request: Request)::
     return {"code": 0, "message": "Serial number created", "serial": serial_doc}
 
 @router.post("/serials/bulk")
-async def bulk_create_serials(data: SerialNumberBulkCreate, request: Request)::
+async def bulk_create_serials(data: SerialNumberBulkCreate, request: Request):
     org_id = extract_org_id(request)
     """Bulk create serial numbers with auto-numbering"""
     item = await items_collection.find_one({"item_id": data.item_id})
@@ -307,7 +307,7 @@ async def list_serial_numbers(
     status: Optional[str] = None,
     search: str = "",
     page: int = 1,
-    per_page: int = 50, request: Request)::
+    per_page: int = 50, request: Request):
     org_id = extract_org_id(request)
     """List serial numbers with filters"""
     query = {}
@@ -339,7 +339,7 @@ async def list_serial_numbers(
     }
 
 @router.get("/serials/{serial_id}")
-async def get_serial_number(serial_id: str, request: Request)::
+async def get_serial_number(serial_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get serial number details with history"""
     serial = await serial_numbers_collection.find_one({"serial_id": serial_id}, {"_id": 0})
@@ -356,7 +356,7 @@ async def get_serial_number(serial_id: str, request: Request)::
     return {"code": 0, "serial": serial}
 
 @router.get("/serials/lookup/{serial_number}")
-async def lookup_serial_number(serial_number: str, item_id: Optional[str] = None, request: Request)::
+async def lookup_serial_number(serial_number: str, item_id: Optional[str] = None, request: Request):
     org_id = extract_org_id(request)
     """Look up a serial number across all items or for a specific item"""
     query = {"serial_number": serial_number}
@@ -370,7 +370,7 @@ async def lookup_serial_number(serial_number: str, item_id: Optional[str] = None
     return {"code": 0, "serial": serial}
 
 @router.put("/serials/{serial_id}/status")
-async def update_serial_status(serial_id: str, status: str, reason: str = "", request: Request)::
+async def update_serial_status(serial_id: str, status: str, reason: str = "", request: Request):
     org_id = extract_org_id(request)
     """Update serial number status"""
     valid_statuses = ["available", "sold", "returned", "damaged", "reserved"]
@@ -408,7 +408,7 @@ async def update_serial_status(serial_id: str, status: str, reason: str = "", re
 # ========================= BATCH NUMBERS =========================
 
 @router.post("/batches")
-async def create_batch_number(data: BatchNumberCreate, request: Request)::
+async def create_batch_number(data: BatchNumberCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a batch/lot number"""
     item = await items_collection.find_one({"item_id": data.item_id})
@@ -469,7 +469,7 @@ async def list_batch_numbers(
     expiring_within_days: Optional[int] = None,
     search: str = "",
     page: int = 1,
-    per_page: int = 50, request: Request)::
+    per_page: int = 50, request: Request):
     org_id = extract_org_id(request)
     """List batch numbers with filters"""
     query = {}
@@ -513,7 +513,7 @@ async def list_batch_numbers(
     }
 
 @router.get("/batches/expiring")
-async def get_expiring_batches(days: int = 30, request: Request)::
+async def get_expiring_batches(days: int = 30, request: Request):
     org_id = extract_org_id(request)
     """Get batches expiring within specified days"""
     future_date = (datetime.now(timezone.utc) + timedelta(days=days)).strftime("%Y-%m-%d")
@@ -531,7 +531,7 @@ async def get_expiring_batches(days: int = 30, request: Request)::
     return {"code": 0, "expiring_batches": batches, "total": len(batches)}
 
 @router.get("/batches/{batch_id}")
-async def get_batch_number(batch_id: str, request: Request)::
+async def get_batch_number(batch_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get batch number details with history"""
     batch = await batch_numbers_collection.find_one({"batch_id": batch_id}, {"_id": 0})
@@ -548,7 +548,7 @@ async def get_batch_number(batch_id: str, request: Request)::
     return {"code": 0, "batch": batch}
 
 @router.put("/batches/{batch_id}/quantity")
-async def adjust_batch_quantity(batch_id: str, quantity_change: float, reason: str = "", request: Request)::
+async def adjust_batch_quantity(batch_id: str, quantity_change: float, reason: str = "", request: Request):
     org_id = extract_org_id(request)
     """Adjust batch quantity (positive to add, negative to deduct)"""
     batch = await batch_numbers_collection.find_one({"batch_id": batch_id})
@@ -601,7 +601,7 @@ async def adjust_batch_quantity(batch_id: str, quantity_change: float, reason: s
 # ========================= TRANSACTION ASSIGNMENTS =========================
 
 @router.post("/assign/serials")
-async def assign_serials_to_transaction(assignment: SerialAssignment, request: Request)::
+async def assign_serials_to_transaction(assignment: SerialAssignment, request: Request):
     org_id = extract_org_id(request)
     """Assign serial numbers to an invoice/shipment"""
     updated = 0
@@ -653,7 +653,7 @@ async def assign_serials_to_transaction(assignment: SerialAssignment, request: R
     }
 
 @router.post("/assign/batches")
-async def assign_batches_to_transaction(assignment: BatchAssignment, request: Request)::
+async def assign_batches_to_transaction(assignment: BatchAssignment, request: Request):
     org_id = extract_org_id(request)
     """Assign batch quantities to an invoice/shipment"""
     allocated = []
@@ -716,7 +716,7 @@ async def assign_batches_to_transaction(assignment: BatchAssignment, request: Re
 # ========================= REPORTS =========================
 
 @router.get("/reports/serial-summary")
-async def serial_tracking_summary(request: Request)::
+async def serial_tracking_summary(request: Request):
     org_id = extract_org_id(request)
     """Get serial number tracking summary"""
     pipeline = [
@@ -744,7 +744,7 @@ async def serial_tracking_summary(request: Request)::
     }
 
 @router.get("/reports/batch-summary")
-async def batch_tracking_summary(request: Request)::
+async def batch_tracking_summary(request: Request):
     org_id = extract_org_id(request)
     """Get batch tracking summary"""
     pipeline = [
@@ -784,7 +784,7 @@ async def batch_tracking_summary(request: Request)::
     }
 
 @router.get("/reports/item-tracking/{item_id}")
-async def item_tracking_report(item_id: str, request: Request)::
+async def item_tracking_report(item_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get comprehensive tracking report for an item"""
     item = await items_collection.find_one({"item_id": item_id}, {"_id": 0, "item_id": 1, "name": 1, "sku": 1})

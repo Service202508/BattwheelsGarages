@@ -128,7 +128,7 @@ async def preprocess_complaint(
     request: Request,
     ticket_id: str,
     complaint_text: str
-)::
+):
     org_id = extract_org_id(request)
     """
     FEATURE 1: Pre-process complaint when logged
@@ -187,7 +187,7 @@ async def preprocess_complaint(
 # ==================== GUIDED EXECUTION ====================
 
 @router.get("/suggestions/{ticket_id}")
-async def get_efi_suggestions(ticket_id: str, request: Request)::
+async def get_efi_suggestions(ticket_id: str, request: Request):
     org_id = extract_org_id(request)
     """
     FEATURE 2: Get EFI suggestions when Job Card opened
@@ -250,7 +250,7 @@ async def get_efi_suggestions(ticket_id: str, request: Request)::
 
 
 @router.post("/session/start")
-async def start_diagnostic_session(data: StartSessionRequest, request: Request)::
+async def start_diagnostic_session(data: StartSessionRequest, request: Request):
     org_id = extract_org_id(request)
     """
     Start EFI diagnostic session for a ticket
@@ -275,7 +275,7 @@ async def start_diagnostic_session(data: StartSessionRequest, request: Request):
 
 
 @router.get("/session/{session_id}")
-async def get_session(session_id: str, request: Request)::
+async def get_session(session_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get current session state with step details"""
     await get_current_user(request)
@@ -291,7 +291,7 @@ async def get_session(session_id: str, request: Request)::
 
 
 @router.get("/session/ticket/{ticket_id}")
-async def get_session_by_ticket(ticket_id: str, request: Request)::
+async def get_session_by_ticket(ticket_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get active session for a ticket"""
     await get_current_user(request)
@@ -309,7 +309,7 @@ async def record_step_outcome(
     step_id: str, 
     data: RecordOutcomeRequest,
     request: Request
-)::
+):
     org_id = extract_org_id(request)
     """
     FEATURE 3: Record PASS/FAIL for diagnostic step
@@ -338,7 +338,7 @@ async def record_step_outcome(
 # ==================== SMART ESTIMATE ====================
 
 @router.get("/session/{session_id}/estimate")
-async def get_smart_estimate(session_id: str, request: Request)::
+async def get_smart_estimate(session_id: str, request: Request):
     org_id = extract_org_id(request)
     """
     FEATURE 4: Get smart estimate from completed session
@@ -359,7 +359,7 @@ async def get_smart_estimate(session_id: str, request: Request)::
 # ==================== CONTINUOUS LEARNING ====================
 
 @router.post("/learning/capture")
-async def capture_completion(data: CaptureCompletionRequest, request: Request)::
+async def capture_completion(data: CaptureCompletionRequest, request: Request):
     org_id = extract_org_id(request)
     """
     FEATURE 5: Capture job completion for learning
@@ -384,7 +384,7 @@ async def capture_completion(data: CaptureCompletionRequest, request: Request)::
 
 
 @router.get("/learning/pending")
-async def get_pending_learning(request: Request, limit: int = Query(50, le=200))::
+async def get_pending_learning(request: Request, limit: int = Query(50, le=200)):
     org_id = extract_org_id(request)
     """Get learning items pending engineer review"""
     user = await get_current_user(request)
@@ -406,7 +406,7 @@ async def review_learning_item(
     action: str,  # "create_card", "update_card", "dismiss"
     request: Request,
     notes: Optional[str] = None
-)::
+):
     org_id = extract_org_id(request)
     """Review learning item - engineer approval"""
     user = await get_current_user(request)
@@ -433,7 +433,7 @@ async def review_learning_item(
 # ==================== DECISION TREE MANAGEMENT ====================
 
 @router.post("/trees")
-async def create_decision_tree(data: CreateDecisionTreeRequest, request: Request)::
+async def create_decision_tree(data: CreateDecisionTreeRequest, request: Request):
     org_id = extract_org_id(request)
     """Create decision tree for a failure card"""
     user = await get_current_user(request)
@@ -459,7 +459,7 @@ async def create_decision_tree(data: CreateDecisionTreeRequest, request: Request
 
 
 @router.get("/trees/{failure_card_id}")
-async def get_decision_tree(failure_card_id: str, request: Request)::
+async def get_decision_tree(failure_card_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get decision tree for a failure card"""
     await get_current_user(request)
@@ -477,7 +477,7 @@ async def get_decision_tree(failure_card_id: str, request: Request)::
 # ==================== EMBEDDING MANAGEMENT ====================
 
 @router.post("/embeddings/generate-all")
-async def generate_all_embeddings(request: Request)::
+async def generate_all_embeddings(request: Request):
     org_id = extract_org_id(request)
     """Generate embeddings for all failure cards"""
     user = await get_current_user(request)
@@ -493,7 +493,7 @@ async def generate_all_embeddings(request: Request)::
 
 
 @router.get("/embeddings/status")
-async def get_embedding_status(request: Request)::
+async def get_embedding_status(request: Request):
     org_id = extract_org_id(request)
     """Get embedding status for failure cards"""
     await get_current_user(request)
@@ -514,7 +514,7 @@ async def get_embedding_status(request: Request)::
 # ==================== SEED DATA ====================
 
 @router.post("/seed")
-async def seed_failure_data(request: Request)::
+async def seed_failure_data(request: Request):
     org_id = extract_org_id(request)
     """Seed failure cards and decision trees (Admin only)"""
     user = await get_current_user(request)
@@ -563,7 +563,7 @@ async def list_failure_cards(
 
 
 @router.get("/failure-cards/{failure_id}")
-async def get_failure_card(failure_id: str, request: Request)::
+async def get_failure_card(failure_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get a single failure card by ID"""
     await get_current_user(request)
@@ -649,7 +649,7 @@ async def upload_step_image(
 
 
 @router.get("/step-image/{image_id}")
-async def get_step_image(image_id: str, request: Request)::
+async def get_step_image(image_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get a step image by ID (public endpoint for display)"""
     image = await _db.efi_step_images.find_one({"image_id": image_id})
@@ -667,7 +667,7 @@ async def get_step_image(image_id: str, request: Request)::
 
 
 @router.get("/failure-cards/{failure_id}/images")
-async def list_step_images(failure_id: str, request: Request)::
+async def list_step_images(failure_id: str, request: Request):
     org_id = extract_org_id(request)
     """List all images for a failure card's decision tree"""
     await get_current_user(request)
@@ -681,7 +681,7 @@ async def list_step_images(failure_id: str, request: Request)::
 
 
 @router.delete("/step-image/{image_id}")
-async def delete_step_image(image_id: str, request: Request)::
+async def delete_step_image(image_id: str, request: Request):
     org_id = extract_org_id(request)
     """Delete a step image"""
     await get_current_user(request)

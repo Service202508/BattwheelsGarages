@@ -81,7 +81,7 @@ async def require_admin_or_manager(request: Request):
 # ==================== PRODUCTIVITY ENDPOINTS ====================
 
 @router.get("/summary")
-async def get_productivity_summary(request: Request)::
+async def get_productivity_summary(request: Request):
     org_id = extract_org_id(request)
     """Get overall productivity summary"""
     user = await require_admin_or_manager(request)
@@ -160,7 +160,7 @@ async def get_technician_productivity(
     request: Request,
     period: str = "all",  # all, week, month
     sort_by: str = "tickets_resolved"  # tickets_resolved, avg_time, rating
-)::
+):
     org_id = extract_org_id(request)
     """Get productivity breakdown by technician"""
     user = await require_admin_or_manager(request)
@@ -281,7 +281,7 @@ async def get_technician_productivity(
     return productivity_data
 
 @router.get("/technicians/{technician_id}")
-async def get_technician_detail(technician_id: str, request: Request)::
+async def get_technician_detail(technician_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get detailed productivity for a specific technician"""
     user = await require_admin_or_manager(request)
@@ -370,7 +370,7 @@ async def get_productivity_leaderboard(
     request: Request,
     period: str = "month",
     metric: str = "tickets"  # tickets, revenue, rating
-)::
+):
     org_id = extract_org_id(request)
     """Get top performing technicians"""
     user = await require_admin_or_manager(request)
@@ -393,7 +393,7 @@ async def get_productivity_leaderboard(
     return technicians[:10]  # Top 10
 
 @router.get("/trends")
-async def get_productivity_trends(request: Request)::
+async def get_productivity_trends(request: Request):
     org_id = extract_org_id(request)
     """Get productivity trends over time"""
     user = await require_admin_or_manager(request)
@@ -423,7 +423,7 @@ async def get_productivity_trends(request: Request)::
     return trends
 
 @router.get("/kpis")
-async def get_productivity_kpis(request: Request)::
+async def get_productivity_kpis(request: Request):
     org_id = extract_org_id(request)
     """Get key performance indicators"""
     user = await require_admin_or_manager(request)

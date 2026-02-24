@@ -204,7 +204,7 @@ async def add_history(entity_type: str, entity_id: str, action: str, details: st
 # ========================= SUMMARY =========================
 
 @router.get("/summary")
-async def get_inventory_summary(request: Request)::
+async def get_inventory_summary(request: Request):
     org_id = extract_org_id(request)
     """Get inventory summary statistics"""
     total_items = await items_collection.count_documents({"status": "active"})
@@ -268,7 +268,7 @@ async def get_inventory_summary(request: Request)::
 
 @router.post("/warehouses")
 async def create_warehouse(warehouse: WarehouseCreate, request: Request = None,
-                           _: None = Depends(require_feature("inventory_multi_warehouse")))::
+                           _: None = Depends(require_feature("inventory_multi_warehouse"))):
     org_id = extract_org_id(request)
     """Create a new warehouse"""
     warehouse_id = generate_id("WH")
@@ -289,7 +289,7 @@ async def create_warehouse(warehouse: WarehouseCreate, request: Request = None,
 
 @router.get("/warehouses")
 async def list_warehouses(active_only: bool = True, request: Request = None,
-                          _: None = Depends(require_feature("inventory_multi_warehouse")))::
+                          _: None = Depends(require_feature("inventory_multi_warehouse"))):
     org_id = extract_org_id(request)
     """List all warehouses"""
     query = {"is_active": True} if active_only else {}
@@ -297,7 +297,7 @@ async def list_warehouses(active_only: bool = True, request: Request = None,
     return {"code": 0, "warehouses": warehouses}
 
 @router.get("/stock")
-async def get_stock(warehouse_id: str = None, request: Request)::
+async def get_stock(warehouse_id: str = None, request: Request):
     org_id = extract_org_id(request)
     """Get stock items, optionally filtered by warehouse"""
     query = {}
@@ -325,7 +325,7 @@ async def get_stock(warehouse_id: str = None, request: Request)::
 
 @router.get("/warehouses/{warehouse_id}")
 async def get_warehouse(warehouse_id: str, request: Request = None,
-                        _: None = Depends(require_feature("inventory_multi_warehouse")))::
+                        _: None = Depends(require_feature("inventory_multi_warehouse"))):
     org_id = extract_org_id(request)
     """Get warehouse details with stock summary"""
     warehouse = await warehouses_collection.find_one({"warehouse_id": warehouse_id}, {"_id": 0})
@@ -355,7 +355,7 @@ async def get_warehouse(warehouse_id: str, request: Request = None,
 
 @router.put("/warehouses/{warehouse_id}")
 async def update_warehouse(warehouse_id: str, update: dict, request: Request = None,
-                           _: None = Depends(require_feature("inventory_multi_warehouse")))::
+                           _: None = Depends(require_feature("inventory_multi_warehouse"))):
     org_id = extract_org_id(request)
     """Update warehouse"""
     if update.get("is_primary"):
@@ -368,7 +368,7 @@ async def update_warehouse(warehouse_id: str, update: dict, request: Request = N
 # ========================= VARIANTS =========================
 
 @router.post("/variants")
-async def create_variant(variant: VariantCreate, request: Request)::
+async def create_variant(variant: VariantCreate, request: Request):
     org_id = extract_org_id(request)
     """Create item variant (e.g., size/color combinations)"""
     # Verify base item exists
@@ -410,7 +410,7 @@ async def create_variant(variant: VariantCreate, request: Request)::
     return {"code": 0, "message": "Variant created", "variant": variant_doc}
 
 @router.get("/variants")
-async def list_variants(item_id: Optional[str] = None, request: Request)::
+async def list_variants(item_id: Optional[str] = None, request: Request):
     org_id = extract_org_id(request)
     """List item variants"""
     query = {}
@@ -427,7 +427,7 @@ async def list_variants(item_id: Optional[str] = None, request: Request)::
     return {"code": 0, "variants": variants}
 
 @router.get("/variants/{variant_id}")
-async def get_variant(variant_id: str, request: Request)::
+async def get_variant(variant_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get variant details"""
     variant = await variants_collection.find_one({"variant_id": variant_id}, {"_id": 0})
@@ -446,7 +446,7 @@ async def get_variant(variant_id: str, request: Request)::
     return {"code": 0, "variant": variant}
 
 @router.put("/variants/{variant_id}")
-async def update_variant(variant_id: str, update: VariantUpdate, request: Request)::
+async def update_variant(variant_id: str, update: VariantUpdate, request: Request):
     org_id = extract_org_id(request)
     """Update variant"""
     update_dict = {k: v for k, v in update.dict().items() if v is not None}
@@ -467,7 +467,7 @@ async def update_variant(variant_id: str, update: VariantUpdate, request: Reques
     return {"code": 0, "variant": variant}
 
 @router.delete("/variants/{variant_id}")
-async def delete_variant(variant_id: str, request: Request)::
+async def delete_variant(variant_id: str, request: Request):
     org_id = extract_org_id(request)
     """Delete variant (soft delete)"""
     await variants_collection.update_one({"variant_id": variant_id}, {"$set": {"status": "inactive"}})
@@ -476,7 +476,7 @@ async def delete_variant(variant_id: str, request: Request)::
 # ========================= BUNDLES =========================
 
 @router.post("/bundles")
-async def create_bundle(bundle: BundleCreate, request: Request)::
+async def create_bundle(bundle: BundleCreate, request: Request):
     org_id = extract_org_id(request)
     """Create item bundle (composite/kit)"""
     bundle_id = generate_id("BDL")
@@ -537,7 +537,7 @@ async def create_bundle(bundle: BundleCreate, request: Request)::
     return {"code": 0, "message": "Bundle created", "bundle": bundle_doc}
 
 @router.get("/bundles")
-async def list_bundles(status: str = "active", request: Request)::
+async def list_bundles(status: str = "active", request: Request):
     org_id = extract_org_id(request)
     """List item bundles"""
     query = {"status": status} if status != "all" else {}
@@ -545,7 +545,7 @@ async def list_bundles(status: str = "active", request: Request)::
     return {"code": 0, "bundles": bundles}
 
 @router.get("/bundles/{bundle_id}")
-async def get_bundle(bundle_id: str, request: Request)::
+async def get_bundle(bundle_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get bundle with components"""
     bundle = await bundles_collection.find_one({"bundle_id": bundle_id}, {"_id": 0})
@@ -566,7 +566,7 @@ async def get_bundle(bundle_id: str, request: Request)::
     return {"code": 0, "bundle": bundle}
 
 @router.post("/bundles/{bundle_id}/assemble")
-async def assemble_bundle(bundle_id: str, quantity: int = 1, warehouse_id: str = "", request: Request)::
+async def assemble_bundle(bundle_id: str, quantity: int = 1, warehouse_id: str = "", request: Request):
     org_id = extract_org_id(request)
     """Assemble bundle by consuming component stock"""
     bundle = await bundles_collection.find_one({"bundle_id": bundle_id})
@@ -608,7 +608,7 @@ async def assemble_bundle(bundle_id: str, quantity: int = 1, warehouse_id: str =
 # ========================= SERIAL/BATCH TRACKING =========================
 
 @router.post("/serial-batches")
-async def create_serial_batch(data: SerialBatchCreate, request: Request)::
+async def create_serial_batch(data: SerialBatchCreate, request: Request):
     org_id = extract_org_id(request)
     """Create serial number or batch"""
     # Check for duplicate
@@ -641,7 +641,7 @@ async def create_serial_batch(data: SerialBatchCreate, request: Request)::
 async def list_serial_batches(
     item_id: Optional[str] = None,
     tracking_type: Optional[str] = None,
-    status: str = "available", request: Request)::
+    status: str = "available", request: Request):
     org_id = extract_org_id(request)
     """List serial numbers and batches"""
     query = {}
@@ -656,7 +656,7 @@ async def list_serial_batches(
     return {"code": 0, "serial_batches": serials}
 
 @router.get("/serial-batches/{serial_batch_id}")
-async def get_serial_batch(serial_batch_id: str, request: Request)::
+async def get_serial_batch(serial_batch_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get serial/batch details with history"""
     serial = await serial_batches_collection.find_one({"serial_batch_id": serial_batch_id}, {"_id": 0})
@@ -671,7 +671,7 @@ async def get_serial_batch(serial_batch_id: str, request: Request)::
     return {"code": 0, "serial_batch": serial}
 
 @router.put("/serial-batches/{serial_batch_id}/status")
-async def update_serial_status(serial_batch_id: str, status: str, reason: str = "", request: Request)::
+async def update_serial_status(serial_batch_id: str, status: str, reason: str = "", request: Request):
     org_id = extract_org_id(request)
     """Update serial/batch status"""
     valid_statuses = ["available", "sold", "returned", "damaged", "expired"]
@@ -688,7 +688,7 @@ async def update_serial_status(serial_batch_id: str, status: str, reason: str = 
 # ========================= SHIPMENTS =========================
 
 @router.post("/shipments")
-async def create_shipment(shipment: ShipmentCreate, request: Request)::
+async def create_shipment(shipment: ShipmentCreate, request: Request):
     org_id = extract_org_id(request)
     """Create shipment from sales order"""
     # Verify sales order
@@ -808,7 +808,7 @@ async def list_shipments(
     }
 
 @router.get("/shipments/{shipment_id}")
-async def get_shipment(shipment_id: str, request: Request)::
+async def get_shipment(shipment_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get shipment details"""
     shipment = await shipments_collection.find_one({"shipment_id": shipment_id}, {"_id": 0})
@@ -821,7 +821,7 @@ async def get_shipment(shipment_id: str, request: Request)::
     return {"code": 0, "shipment": shipment}
 
 @router.post("/shipments/{shipment_id}/ship")
-async def mark_shipped(shipment_id: str, tracking_number: str = "", request: Request)::
+async def mark_shipped(shipment_id: str, tracking_number: str = "", request: Request):
     org_id = extract_org_id(request)
     """Mark shipment as shipped"""
     shipment = await shipments_collection.find_one({"shipment_id": shipment_id})
@@ -845,7 +845,7 @@ async def mark_shipped(shipment_id: str, tracking_number: str = "", request: Req
     return {"code": 0, "message": "Shipment marked as shipped"}
 
 @router.post("/shipments/{shipment_id}/deliver")
-async def mark_delivered(shipment_id: str, request: Request)::
+async def mark_delivered(shipment_id: str, request: Request):
     org_id = extract_org_id(request)
     """Mark shipment as delivered"""
     shipment = await shipments_collection.find_one({"shipment_id": shipment_id})
@@ -865,7 +865,7 @@ async def mark_delivered(shipment_id: str, request: Request)::
 # ========================= RETURNS =========================
 
 @router.post("/returns")
-async def create_return(ret: ReturnCreate, request: Request)::
+async def create_return(ret: ReturnCreate, request: Request):
     org_id = extract_org_id(request)
     """Create return from shipment"""
     shipment = await shipments_collection.find_one({"shipment_id": ret.shipment_id})
@@ -968,7 +968,7 @@ async def list_returns(
     }
 
 @router.get("/returns/{return_id}")
-async def get_return(return_id: str, request: Request)::
+async def get_return(return_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get return details"""
     ret = await returns_collection.find_one({"return_id": return_id}, {"_id": 0})
@@ -977,7 +977,7 @@ async def get_return(return_id: str, request: Request)::
     return {"code": 0, "return": ret}
 
 @router.post("/returns/{return_id}/process")
-async def process_return(return_id: str, create_credit_note: bool = True, request: Request)::
+async def process_return(return_id: str, create_credit_note: bool = True, request: Request):
     org_id = extract_org_id(request)
     """Process pending return"""
     ret = await returns_collection.find_one({"return_id": return_id})
@@ -999,7 +999,7 @@ async def process_return(return_id: str, create_credit_note: bool = True, reques
 # ========================= STOCK ADJUSTMENTS =========================
 
 @router.post("/adjustments")
-async def create_adjustment(adjustment: StockAdjustmentCreate, request: Request)::
+async def create_adjustment(adjustment: StockAdjustmentCreate, request: Request):
     org_id = extract_org_id(request)
     """Create stock adjustment"""
     item = await items_collection.find_one({"item_id": adjustment.item_id})
@@ -1085,7 +1085,7 @@ async def list_adjustments(
 # ========================= REPORTS =========================
 
 @router.get("/reports/stock-summary")
-async def stock_summary_report(warehouse_id: Optional[str] = None, request: Request)::
+async def stock_summary_report(warehouse_id: Optional[str] = None, request: Request):
     org_id = extract_org_id(request)
     """Stock summary report"""
     match = {"status": "active"}
@@ -1161,7 +1161,7 @@ async def stock_summary_report(warehouse_id: Optional[str] = None, request: Requ
     }
 
 @router.get("/reports/low-stock")
-async def low_stock_report(request: Request)::
+async def low_stock_report(request: Request):
     org_id = extract_org_id(request)
     """Low stock items report"""
     pipeline = [
@@ -1207,7 +1207,7 @@ async def low_stock_report(request: Request)::
     return {"code": 0, "report": {"low_stock_items": items, "total": len(items)}}
 
 @router.get("/reports/valuation")
-async def inventory_valuation_report(request: Request)::
+async def inventory_valuation_report(request: Request):
     org_id = extract_org_id(request)
     """Inventory valuation report"""
     pipeline = [
@@ -1242,7 +1242,7 @@ async def inventory_valuation_report(request: Request)::
 @router.get("/reports/movement")
 async def stock_movement_report(
     item_id: Optional[str] = None,
-    days: int = 30, request: Request)::
+    days: int = 30, request: Request):
     org_id = extract_org_id(request)
     """Stock movement/history report"""
     since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
@@ -1279,7 +1279,7 @@ class StockTransferCreate(BaseModel):
 
 
 @router.post("/stock-transfers")
-async def create_stock_transfer(data: StockTransferCreate, request: Request)::
+async def create_stock_transfer(data: StockTransferCreate, request: Request):
     org_id = extract_org_id(request)
     """Transfer stock between two warehouses"""
     if data.from_warehouse_id == data.to_warehouse_id:
@@ -1358,7 +1358,7 @@ async def create_stock_transfer(data: StockTransferCreate, request: Request)::
 
 
 @router.get("/stock-transfers")
-async def list_stock_transfers(limit: int = 50, request: Request)::
+async def list_stock_transfers(limit: int = 50, request: Request):
     org_id = extract_org_id(request)
     """List recent stock transfers"""
     transfers = await db["stock_transfers"].find(
@@ -1370,7 +1370,7 @@ async def list_stock_transfers(limit: int = 50, request: Request)::
 # ========================= REORDER SUGGESTIONS & AUTO-PO =========================
 
 @router.get("/reorder-suggestions")
-async def get_reorder_suggestions(request: Request)::
+async def get_reorder_suggestions(request: Request):
     org_id = extract_org_id(request)
     """
     Get items below reorder point with suggested PO quantities.
@@ -1450,7 +1450,7 @@ async def get_reorder_suggestions(request: Request)::
 
 
 @router.post("/reorder-suggestions/create-po")
-async def create_po_from_suggestions(data: dict, request: Request)::
+async def create_po_from_suggestions(data: dict, request: Request):
     org_id = extract_org_id(request)
     """
     Create a purchase order from reorder suggestions.
@@ -1533,7 +1533,7 @@ class StocktakeCountUpdate(BaseModel):
 
 
 @router.post("/stocktakes")
-async def create_stocktake(data: StocktakeCreate, request: Request)::
+async def create_stocktake(data: StocktakeCreate, request: Request):
     org_id = extract_org_id(request)
     """
     Create a new stocktake (inventory count session) for a warehouse.
@@ -1598,7 +1598,7 @@ async def create_stocktake(data: StocktakeCreate, request: Request)::
 
 
 @router.get("/stocktakes")
-async def list_stocktakes(status: Optional[str] = None, request: Request)::
+async def list_stocktakes(status: Optional[str] = None, request: Request):
     org_id = extract_org_id(request)
     """List all stocktakes"""
     query = {}
@@ -1613,7 +1613,7 @@ async def list_stocktakes(status: Optional[str] = None, request: Request)::
 
 
 @router.get("/stocktakes/{stocktake_id}")
-async def get_stocktake(stocktake_id: str, request: Request)::
+async def get_stocktake(stocktake_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get stocktake details with all count lines"""
     st = await db["stocktakes"].find_one({"stocktake_id": stocktake_id}, {"_id": 0})
@@ -1623,7 +1623,7 @@ async def get_stocktake(stocktake_id: str, request: Request)::
 
 
 @router.put("/stocktakes/{stocktake_id}/lines/{item_id}")
-async def update_stocktake_line(stocktake_id: str, item_id: str, data: StocktakeCountUpdate, request: Request)::
+async def update_stocktake_line(stocktake_id: str, item_id: str, data: StocktakeCountUpdate, request: Request):
     org_id = extract_org_id(request)
     """Submit a count for a specific item in the stocktake"""
     st = await db["stocktakes"].find_one({"stocktake_id": stocktake_id}, {"_id": 0})
@@ -1663,7 +1663,7 @@ async def update_stocktake_line(stocktake_id: str, item_id: str, data: Stocktake
 
 
 @router.post("/stocktakes/{stocktake_id}/finalize")
-async def finalize_stocktake(stocktake_id: str, request: Request)::
+async def finalize_stocktake(stocktake_id: str, request: Request):
     org_id = extract_org_id(request)
     """
     Finalize stocktake: apply all variances as stock adjustments.
