@@ -156,8 +156,7 @@ async def get_productivity_summary(request: Request):
     }
 
 @router.get("/technicians")
-async def get_technician_productivity(request: Request, period: str = "all", # all, week, month
-    sort_by: str = "tickets_resolved"  # tickets_resolved, avg_time, rating):
+async def get_technician_productivity(request: Request, period: str = "all", sort_by: str = "tickets_resolved"):
     org_id = extract_org_id(request)
     """Get productivity breakdown by technician"""
     user = await require_admin_or_manager(request)
