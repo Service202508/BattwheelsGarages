@@ -1503,6 +1503,174 @@ async def logout(request: Request, response: Response):
     response.delete_cookie(key="session_token", path="/")
     return {"message": "Logged out"}
 
+# ==================== PASSWORD MANAGEMENT ====================
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(..., min_length=6)
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str = Field(..., min_length=6)
+
+class AdminResetPasswordRequest(BaseModel):
+    new_password: str = Field(..., min_length=6)
+
+
+@api_router.post("/auth/change-password")
+async def change_password(request: Request, data: ChangePasswordRequest):
+    """Self-service password change — requires current password"""
+    user = await require_auth(request)
+    full_user = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
+    if not full_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    stored_hash = full_user.get("password_hash", "")
+    if not stored_hash:
+        raise HTTPException(status_code=400, detail="Account uses social login — no password to change")
+    
+    if not verify_password(data.current_password, stored_hash):
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
+    
+    new_hash = hash_password(data.new_password)
+    await db.users.update_one(
+        {"user_id": user.user_id},
+        {"$set": {"password_hash": new_hash, "password_changed_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    logger.info(f"Password changed for user {user.user_id}")
+    return {"message": "Password changed successfully"}
+
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(data: ForgotPasswordRequest):
+    """Send a time-limited password reset link via email"""
+    import secrets, hashlib
+    user = await db.users.find_one({"email": data.email}, {"_id": 0, "password_hash": 0})
+    # Always return success to prevent email enumeration
+    if not user:
+        logger.info(f"Forgot password for non-existent email: {data.email}")
+        return {"message": "If an account with that email exists, a reset link has been sent."}
+    
+    # Generate a secure token
+    raw_token = secrets.token_urlsafe(48)
+    token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+    
+    # Store hashed token with 1-hour expiry
+    await db.password_reset_tokens.delete_many({"user_id": user["user_id"]})  # Remove old tokens
+    await db.password_reset_tokens.insert_one({
+        "user_id": user["user_id"],
+        "email": user["email"],
+        "token_hash": token_hash,
+        "expires_at": datetime.now(timezone.utc) + timedelta(hours=1),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "used": False
+    })
+    
+    # Build reset link using FRONTEND URL
+    frontend_url = os.environ.get("APP_URL", os.environ.get("REACT_APP_BACKEND_URL", "https://battwheels.com"))
+    reset_link = f"{frontend_url}/reset-password?token={raw_token}"
+    
+    # Send email
+    try:
+        from services.email_service import EmailService
+        await EmailService.send_email(
+            to=user["email"],
+            subject="Reset your Battwheels OS password",
+            html_content=f"""
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+                <h2 style="margin: 0 0 20px; color: #111827; font-size: 20px;">Reset Your Password</h2>
+                <p style="margin: 0 0 16px; color: #4b5563; font-size: 16px; line-height: 1.6;">
+                    Hi {user.get('name', 'there')},
+                </p>
+                <p style="margin: 0 0 16px; color: #4b5563; font-size: 16px; line-height: 1.6;">
+                    We received a request to reset your password. Click the button below to create a new password:
+                </p>
+                <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td align="center" style="padding: 20px 0;">
+                            <a href="{reset_link}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 8px;">
+                                Reset Password
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+                <p style="margin: 24px 0 0; color: #9ca3af; font-size: 14px;">
+                    This link expires in 1 hour. If you didn't request a password reset, you can safely ignore this email.
+                </p>
+            </div>
+            """
+        )
+        logger.info(f"Password reset email sent to {user['email']}")
+    except Exception as e:
+        logger.error(f"Failed to send password reset email: {e}")
+    
+    return {"message": "If an account with that email exists, a reset link has been sent."}
+
+
+@api_router.post("/auth/reset-password")
+async def reset_password(data: ResetPasswordRequest):
+    """Reset password using a valid token from the forgot-password email"""
+    import hashlib
+    token_hash = hashlib.sha256(data.token.encode()).hexdigest()
+    
+    token_doc = await db.password_reset_tokens.find_one({
+        "token_hash": token_hash,
+        "used": False,
+    })
+    
+    if not token_doc:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset link")
+    
+    if datetime.now(timezone.utc) > token_doc["expires_at"]:
+        await db.password_reset_tokens.update_one({"_id": token_doc["_id"]}, {"$set": {"used": True}})
+        raise HTTPException(status_code=400, detail="Reset link has expired. Please request a new one.")
+    
+    # Update password
+    new_hash = hash_password(data.new_password)
+    await db.users.update_one(
+        {"user_id": token_doc["user_id"]},
+        {"$set": {"password_hash": new_hash, "password_changed_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    # Mark token as used
+    await db.password_reset_tokens.update_one({"_id": token_doc["_id"]}, {"$set": {"used": True}})
+    
+    logger.info(f"Password reset completed for user {token_doc['user_id']}")
+    return {"message": "Password has been reset successfully. You can now log in with your new password."}
+
+
+@api_router.post("/employees/{employee_id}/reset-password")
+async def admin_reset_employee_password(employee_id: str, data: AdminResetPasswordRequest, request: Request, ctx: TenantContext = Depends(tenant_context_required)):
+    """Admin resets an employee's login password"""
+    admin_user = await require_admin(request)
+    
+    # Find the employee in this org
+    employee = await db.employees.find_one({"employee_id": employee_id, "organization_id": ctx.org_id}, {"_id": 0})
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    work_email = employee.get("work_email")
+    if not work_email:
+        raise HTTPException(status_code=400, detail="Employee has no work email — cannot reset password")
+    
+    # Find the user account linked to this employee's work email
+    user = await db.users.find_one({"email": work_email}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="No user account found for this employee's work email")
+    
+    new_hash = hash_password(data.new_password)
+    await db.users.update_one(
+        {"user_id": user["user_id"]},
+        {"$set": {"password_hash": new_hash, "password_changed_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    logger.info(f"Admin {admin_user.user_id} reset password for employee {employee_id} (user {user['user_id']})")
+    return {"message": f"Password reset successfully for {employee.get('full_name', work_email)}"}
+
+
 # ==================== USER ROUTES ====================
 
 @api_router.get("/users")
