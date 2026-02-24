@@ -35,7 +35,7 @@ class AIQueryResponse(BaseModel):
 
 
 @router.post("/diagnose", response_model=AIQueryResponse)
-async def ai_diagnose(data: AIQueryRequest, request: Request):
+async def ai_diagnose(request: Request, data: AIQueryRequest):
     """
     Unified AI Assistant endpoint for all portals.
     Routes queries to Gemini with portal-specific context.

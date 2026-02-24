@@ -41,7 +41,7 @@ class NotificationUpdate(BaseModel):
 # ============== NOTIFICATION CRUD ==============
 
 @router.post("")
-async def create_notification(notification: NotificationCreate, request: Request):
+async def create_notification(request: Request, notification: NotificationCreate):
     org_id = extract_org_id(request)
     """Create a new notification"""
     db = get_db()
@@ -62,14 +62,7 @@ async def create_notification(notification: NotificationCreate, request: Request
     return {"code": 0, "message": "Notification created", "notification": notification_dict}
 
 @router.get("")
-async def list_notifications(
-    user_id: str = "",
-    role: str = "",
-    notification_type: str = "",
-    is_read: str = "",
-    priority: str = "",
-    page: int = 1,
-    per_page: int = 50, request: Request):
+async def list_notifications(request: Request, user_id: str = "", role: str = "", notification_type: str = "", is_read: str = "", priority: str = "", page: int = 1, per_page: int = 50):
     org_id = extract_org_id(request)
     """List notifications with filters"""
     db = get_db()
@@ -100,7 +93,7 @@ async def list_notifications(
     }
 
 @router.get("/unread-count")
-async def get_unread_count(user_id: str = "", role: str = "", request: Request):
+async def get_unread_count(request: Request, user_id: str = "", role: str = ""):
     org_id = extract_org_id(request)
     """Get unread notification count"""
     db = get_db()
@@ -117,7 +110,7 @@ async def get_unread_count(user_id: str = "", role: str = "", request: Request):
     return {"code": 0, "unread_count": count}
 
 @router.get("/{notification_id}")
-async def get_notification(notification_id: str, request: Request):
+async def get_notification(request: Request, notification_id: str):
     org_id = extract_org_id(request)
     """Get notification details"""
     db = get_db()
@@ -127,7 +120,7 @@ async def get_notification(notification_id: str, request: Request):
     return {"code": 0, "notification": notification}
 
 @router.put("/{notification_id}/read")
-async def mark_as_read(notification_id: str, request: Request):
+async def mark_as_read(request: Request, notification_id: str):
     org_id = extract_org_id(request)
     """Mark notification as read"""
     db = get_db()
@@ -140,7 +133,7 @@ async def mark_as_read(notification_id: str, request: Request):
     return {"code": 0, "message": "Notification marked as read"}
 
 @router.put("/mark-all-read")
-async def mark_all_as_read(user_id: str = "", role: str = "", request: Request):
+async def mark_all_as_read(request: Request, user_id: str = "", role: str = ""):
     org_id = extract_org_id(request)
     """Mark all notifications as read"""
     db = get_db()
@@ -160,7 +153,7 @@ async def mark_all_as_read(user_id: str = "", role: str = "", request: Request):
     return {"code": 0, "message": f"{result.modified_count} notifications marked as read"}
 
 @router.delete("/{notification_id}")
-async def archive_notification(notification_id: str, request: Request):
+async def archive_notification(request: Request, notification_id: str):
     org_id = extract_org_id(request)
     """Archive (soft delete) notification"""
     db = get_db()
@@ -394,7 +387,7 @@ class NotificationPreference(BaseModel):
     ticket_alerts: bool = True
 
 @router.get("/preferences/{user_id}")
-async def get_notification_preferences(user_id: str, request: Request):
+async def get_notification_preferences(request: Request, user_id: str):
     org_id = extract_org_id(request)
     """Get user notification preferences"""
     db = get_db()
@@ -413,7 +406,7 @@ async def get_notification_preferences(user_id: str, request: Request):
     return {"code": 0, "preferences": prefs}
 
 @router.put("/preferences/{user_id}")
-async def update_notification_preferences(user_id: str, prefs: NotificationPreference, request: Request):
+async def update_notification_preferences(request: Request, user_id: str, prefs: NotificationPreference):
     org_id = extract_org_id(request)
     """Update user notification preferences"""
     db = get_db()

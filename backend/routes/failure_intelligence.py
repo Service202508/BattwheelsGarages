@@ -97,7 +97,7 @@ async def get_current_user(request: Request, db) -> dict:
 # ==================== FAILURE CARD ROUTES ====================
 
 @router.post("/failure-cards")
-async def create_failure_card(data: FailureCardCreate, request: Request):
+async def create_failure_card(request: Request, data: FailureCardCreate):
     """Create a new failure intelligence card"""
     service = get_service()
     user = await get_current_user(request, service.db)
@@ -110,15 +110,7 @@ async def create_failure_card(data: FailureCardCreate, request: Request):
 
 
 @router.get("/failure-cards")
-async def list_failure_cards(
-    request: Request,
-    status: Optional[str] = None,
-    subsystem: Optional[str] = None,
-    search: Optional[str] = None,
-    min_confidence: Optional[float] = None,
-    min_effectiveness: Optional[float] = None,
-    source_type: Optional[str] = None,
-    limit: int = Query(50, le=500),
+async def list_failure_cards(request: Request, status: Optional[str] = None, subsystem: Optional[str] = None, search: Optional[str] = None, min_confidence: Optional[float] = None, min_effectiveness: Optional[float] = None, source_type: Optional[str] = None, limit: int = Query(50, le=500),
     skip: int = Query(0, ge=0)
 ):
     """List failure cards with filtering"""
@@ -139,7 +131,7 @@ async def list_failure_cards(
 
 
 @router.get("/failure-cards/{failure_id}")
-async def get_failure_card(failure_id: str, request: Request):
+async def get_failure_card(request: Request, failure_id: str):
     """Get a single failure card by ID"""
     service = get_service()
     
@@ -150,7 +142,7 @@ async def get_failure_card(failure_id: str, request: Request):
 
 
 @router.get("/failure-cards/{failure_id}/confidence-history")
-async def get_confidence_history(failure_id: str, request: Request):
+async def get_confidence_history(request: Request, failure_id: str):
     """Get confidence score history for a failure card"""
     service = get_service()
     
@@ -161,7 +153,7 @@ async def get_confidence_history(failure_id: str, request: Request):
 
 
 @router.put("/failure-cards/{failure_id}")
-async def update_failure_card(failure_id: str, data: FailureCardUpdate, request: Request):
+async def update_failure_card(request: Request, failure_id: str, data: FailureCardUpdate):
     """Update a failure card"""
     service = get_service()
     user = await get_current_user(request, service.db)
@@ -177,11 +169,7 @@ async def update_failure_card(failure_id: str, data: FailureCardUpdate, request:
 
 
 @router.post("/failure-cards/{failure_id}/approve")
-async def approve_failure_card(
-    failure_id: str,
-    request: Request,
-    approved_by: Optional[str] = None
-):
+async def approve_failure_card(request: Request, failure_id: str, approved_by: Optional[str] = None):
     """Approve a failure card for network distribution"""
     service = get_service()
     user = await get_current_user(request, service.db)
@@ -197,7 +185,7 @@ async def approve_failure_card(
 
 
 @router.post("/failure-cards/{failure_id}/deprecate")
-async def deprecate_failure_card(failure_id: str, reason: str, request: Request):
+async def deprecate_failure_card(request: Request, failure_id: str, reason: str):
     """Deprecate a failure card"""
     service = get_service()
     user = await get_current_user(request, service.db)
@@ -215,7 +203,7 @@ async def deprecate_failure_card(failure_id: str, reason: str, request: Request)
 # ==================== AI MATCHING ROUTES ====================
 
 @router.post("/match")
-async def match_failure(data: FailureMatchRequest, request: Request):
+async def match_failure(request: Request, data: FailureMatchRequest):
     """AI-powered failure matching - 4-stage pipeline"""
     service = get_service()
     
@@ -224,7 +212,7 @@ async def match_failure(data: FailureMatchRequest, request: Request):
 
 
 @router.post("/match-ticket/{ticket_id}")
-async def match_ticket_to_failures(ticket_id: str, request: Request):
+async def match_ticket_to_failures(request: Request, ticket_id: str):
     """Match an existing ticket to failure cards"""
     service = get_service()
     
@@ -237,7 +225,7 @@ async def match_ticket_to_failures(ticket_id: str, request: Request):
 # ==================== TECHNICIAN ACTION ROUTES ====================
 
 @router.post("/technician-actions")
-async def record_technician_action(data: TechnicianActionCreate, request: Request):
+async def record_technician_action(request: Request, data: TechnicianActionCreate):
     """Record technician diagnostic and repair actions"""
     service = get_service()
     user = await get_current_user(request, service.db)
@@ -253,13 +241,7 @@ async def record_technician_action(data: TechnicianActionCreate, request: Reques
 
 
 @router.get("/technician-actions")
-async def list_technician_actions(
-    request: Request,
-    ticket_id: Optional[str] = None,
-    technician_id: Optional[str] = None,
-    include_hypotheses: bool = False,
-    limit: int = 50
-):
+async def list_technician_actions(request: Request, ticket_id: Optional[str] = None, technician_id: Optional[str] = None, include_hypotheses: bool = False, limit: int = 50):
     """List technician actions"""
     service = get_service()
     
@@ -284,7 +266,7 @@ async def list_technician_actions(
 # ==================== PART USAGE ROUTES ====================
 
 @router.post("/part-usage")
-async def record_part_usage(data: PartUsageCreate, request: Request):
+async def record_part_usage(request: Request, data: PartUsageCreate):
     """Record part usage with failure card linkage"""
     service = get_service()
     await get_current_user(request, service.db)  # Auth check
@@ -296,13 +278,7 @@ async def record_part_usage(data: PartUsageCreate, request: Request):
 
 
 @router.get("/part-usage")
-async def list_part_usage(
-    request: Request,
-    ticket_id: Optional[str] = None,
-    failure_card_id: Optional[str] = None,
-    unexpected_only: bool = False,
-    limit: int = 100
-):
+async def list_part_usage(request: Request, ticket_id: Optional[str] = None, failure_card_id: Optional[str] = None, unexpected_only: bool = False, limit: int = 100):
     """List part usage records"""
     service = get_service()
     
@@ -321,12 +297,7 @@ async def list_part_usage(
 # ==================== PATTERN DETECTION ROUTES ====================
 
 @router.get("/patterns")
-async def list_emerging_patterns(
-    request: Request,
-    status: Optional[str] = None,
-    pattern_type: Optional[str] = None,
-    limit: int = 50
-):
+async def list_emerging_patterns(request: Request, status: Optional[str] = None, pattern_type: Optional[str] = None, limit: int = 50):
     """List detected emerging patterns"""
     service = get_service()
     
@@ -344,12 +315,7 @@ async def list_emerging_patterns(
 
 
 @router.post("/patterns/{pattern_id}/review")
-async def review_pattern(
-    pattern_id: str,
-    action: str,
-    request: Request,
-    notes: Optional[str] = None
-):
+async def review_pattern(request: Request, pattern_id: str, action: str, notes: Optional[str] = None):
     """Review and action an emerging pattern"""
     service = get_service()
     
@@ -389,7 +355,7 @@ async def trigger_pattern_detection(request: Request, background_tasks: Backgrou
 # ==================== SYMPTOM LIBRARY ROUTES ====================
 
 @router.post("/symptoms")
-async def create_symptom(data: SymptomCreate, request: Request):
+async def create_symptom(request: Request, data: SymptomCreate):
     """Create a new symptom in the library"""
     service = get_service()
     
@@ -408,11 +374,7 @@ async def create_symptom(data: SymptomCreate, request: Request):
 
 
 @router.get("/symptoms")
-async def list_symptoms(
-    request: Request,
-    category: Optional[str] = None,
-    search: Optional[str] = None
-):
+async def list_symptoms(request: Request, category: Optional[str] = None, search: Optional[str] = None):
     """List symptoms from library"""
     service = get_service()
     
@@ -433,7 +395,7 @@ async def list_symptoms(
 # ==================== KNOWLEDGE GRAPH ROUTES ====================
 
 @router.post("/relations")
-async def create_knowledge_relation(data: dict, request: Request):
+async def create_knowledge_relation(request: Request, data: dict):
     """Create a relationship in the knowledge graph"""
     service = get_service()
     
@@ -459,12 +421,7 @@ async def create_knowledge_relation(data: dict, request: Request):
 
 
 @router.get("/relations")
-async def get_knowledge_relations(
-    request: Request,
-    source_id: Optional[str] = None,
-    target_id: Optional[str] = None,
-    relation_type: Optional[str] = None
-):
+async def get_knowledge_relations(request: Request, source_id: Optional[str] = None, target_id: Optional[str] = None, relation_type: Optional[str] = None):
     """Get relationships from knowledge graph"""
     service = get_service()
     
@@ -481,7 +438,7 @@ async def get_knowledge_relations(
 
 
 @router.get("/graph/{entity_type}/{entity_id}")
-async def get_entity_graph(entity_type: str, entity_id: str, request: Request, depth: int = 2):
+async def get_entity_graph(request: Request, entity_type: str, entity_id: str, depth: int = 2):
     """Get knowledge graph around an entity"""
     service = get_service()
     
@@ -600,12 +557,7 @@ async def get_part_anomaly_report(request: Request):
 # ==================== EVENT PROCESSING ====================
 
 @router.get("/events")
-async def list_events(
-    request: Request,
-    event_type: Optional[str] = None,
-    processed: Optional[bool] = None,
-    limit: int = 50
-):
+async def list_events(request: Request, event_type: Optional[str] = None, processed: Optional[bool] = None, limit: int = 50):
     """List EFI system events"""
     service = get_service()
     

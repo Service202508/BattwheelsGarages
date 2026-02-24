@@ -341,7 +341,7 @@ async def update_customer_balance(customer_id: str):
 
 
 @router.get("/invoice/{invoice_id}/payment-link")
-async def get_invoice_payment_link(invoice_id: str, request: Request):
+async def get_invoice_payment_link(request: Request, invoice_id: str):
     org_id = extract_org_id(request)
     """Get existing payment link for an invoice"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id}, {"_id": 0})
@@ -364,12 +364,7 @@ async def get_invoice_payment_link(invoice_id: str, request: Request):
 
 
 @router.get("/transactions")
-async def list_payment_transactions(
-    invoice_id: str = "",
-    customer_id: str = "",
-    status: str = "",
-    page: int = 1,
-    per_page: int = 50, request: Request):
+async def list_payment_transactions(request: Request, invoice_id: str = "", customer_id: str = "", status: str = "", page: int = 1, per_page: int = 50):
     org_id = extract_org_id(request)
     """List payment transactions"""
     query = {}

@@ -859,17 +859,7 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
     return {"code": 0, "message": "Invoice created", "invoice": invoice_doc}
 
 @router.get("/")
-async def list_invoices(
-    request: Request,
-    customer_id: Optional[str] = None,
-    status: Optional[str] = None,
-    search: Optional[str] = None,
-    date_from: Optional[str] = None,
-    date_to: Optional[str] = None,
-    overdue_only: bool = False,
-    sort_by: str = "invoice_date",
-    sort_order: str = "desc",
-    page: int = Query(1, ge=1),
+async def list_invoices(request: Request, customer_id: Optional[str] = None, status: Optional[str] = None, search: Optional[str] = None, date_from: Optional[str] = None, date_to: Optional[str] = None, overdue_only: bool = False, sort_by: str = "invoice_date", sort_order: str = "desc", page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1)
 ):
     """List invoices with filters and standardized pagination"""
@@ -927,7 +917,7 @@ async def list_invoices(
     }
 
 @router.get("/{invoice_id}")
-async def get_invoice(invoice_id: str, request: Request):
+async def get_invoice(request: Request, invoice_id: str):
     """Get invoice details with line items, payments, and history"""
     # Get org context for multi-tenant scoping
     org_id = await get_org_id(request)
@@ -983,7 +973,7 @@ async def get_invoice(invoice_id: str, request: Request):
 
 
 @router.get("/{invoice_id}/pdf")
-async def get_invoice_pdf(invoice_id: str, request: Request):
+async def get_invoice_pdf(request: Request, invoice_id: str):
     """
     Generate and download GST-compliant invoice PDF
     
@@ -1233,10 +1223,7 @@ async def delete_invoice(invoice_id: str, force: bool = False):
 # ========================= INVOICE ACTIONS =========================
 
 @router.post("/{invoice_id}/send")
-async def send_invoice(
-    invoice_id: str, 
-    request: Request,
-    email_to: Optional[str] = Query(None),
+async def send_invoice(request: Request, invoice_id: str, email_to: Optional[str] = Query(None),
     message: Optional[str] = Query(None),
     channel: Optional[str] = Query(None),  # "email", "whatsapp", "both"
     background_tasks: BackgroundTasks = None

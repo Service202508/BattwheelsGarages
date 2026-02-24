@@ -218,7 +218,7 @@ async def list_roles(request: Request):
     return {"roles": roles}
 
 @router.get("/roles/{role}")
-async def get_role_permissions(role: str, request: Request):
+async def get_role_permissions(request: Request, role: str):
     org_id = extract_org_id(request)
     """Get permissions for a specific role"""
     db = get_db()
@@ -240,7 +240,7 @@ async def get_role_permissions(role: str, request: Request):
     raise HTTPException(status_code=404, detail=f"Role '{role}' not found")
 
 @router.put("/roles/{role}")
-async def update_role_permissions(role: str, data: RolePermissions, request: Request):
+async def update_role_permissions(request: Request, role: str, data: RolePermissions):
     org_id = extract_org_id(request)
     """Update permissions for a role (admin only)"""
     db = get_db()
@@ -275,7 +275,7 @@ async def update_role_permissions(role: str, data: RolePermissions, request: Req
     return permission_doc
 
 @router.patch("/roles/{role}/module/{module_id}")
-async def update_module_permission(role: str, module_id: str, data: PermissionUpdate, request: Request):
+async def update_module_permission(request: Request, role: str, module_id: str, data: PermissionUpdate):
     org_id = extract_org_id(request)
     """Update a single permission for a module"""
     db = get_db()
@@ -317,7 +317,7 @@ async def update_module_permission(role: str, module_id: str, data: PermissionUp
     return {"message": "Permission updated", "role": role, "module": module_id}
 
 @router.post("/roles")
-async def create_custom_role(data: RolePermissions, request: Request):
+async def create_custom_role(request: Request, data: RolePermissions):
     org_id = extract_org_id(request)
     """Create a new custom role"""
     db = get_db()
@@ -354,7 +354,7 @@ async def create_custom_role(data: RolePermissions, request: Request):
     return permission_doc
 
 @router.delete("/roles/{role}")
-async def delete_custom_role(role: str, request: Request):
+async def delete_custom_role(request: Request, role: str):
     org_id = extract_org_id(request)
     """Delete a custom role (system roles cannot be deleted)"""
     if role in DEFAULT_ROLE_PERMISSIONS:
@@ -369,10 +369,7 @@ async def delete_custom_role(role: str, request: Request):
     return {"message": f"Role '{role}' deleted"}
 
 @router.get("/check")
-async def check_permission(
-    role: str,
-    module_id: str,
-    action: str = "can_view", request: Request):
+async def check_permission(request: Request, role: str, module_id: str, action: str = "can_view"):
     org_id = extract_org_id(request)
     """Check if a role has permission for a specific action on a module"""
     db = get_db()

@@ -159,10 +159,7 @@ async def require_technician_or_admin(user: dict):
 # ==================== ROUTES ====================
 
 @router.post("")
-async def create_ticket(
-    data: TicketCreateRequest, 
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def create_ticket(request: Request, data: TicketCreateRequest, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """
     Create a new service ticket
@@ -188,9 +185,7 @@ async def create_ticket(
 
 
 @router.get("")
-async def list_tickets(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required),
+async def list_tickets(request: Request, ctx: TenantContext = Depends(tenant_context_required),
     status: Optional[str] = Query(None, description="Filter by status"),
     priority: Optional[str] = Query(None, description="Filter by priority"),
     category: Optional[str] = Query(None, description="Filter by category"),
@@ -252,9 +247,7 @@ async def list_tickets(
 
 
 @router.get("/stats")
-async def get_ticket_stats(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def get_ticket_stats(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Get ticket statistics for dashboard (scoped to organization)"""
     service = get_service()
@@ -264,10 +257,7 @@ async def get_ticket_stats(
 
 
 @router.get("/{ticket_id}")
-async def get_ticket(
-    ticket_id: str, 
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def get_ticket(request: Request, ticket_id: str, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Get a single ticket by ID (must belong to user's organization)"""
     service = get_service()
@@ -281,11 +271,7 @@ async def get_ticket(
 
 
 @router.put("/{ticket_id}")
-async def update_ticket(
-    ticket_id: str, 
-    data: TicketUpdateRequest, 
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def update_ticket(request: Request, ticket_id: str, data: TicketUpdateRequest, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """
     Update a ticket
@@ -315,11 +301,7 @@ async def update_ticket(
 
 
 @router.post("/{ticket_id}/close")
-async def close_ticket(
-    ticket_id: str, 
-    data: TicketCloseRequest, 
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def close_ticket(request: Request, ticket_id: str, data: TicketCloseRequest, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """
     Close a ticket with resolution details
@@ -376,7 +358,7 @@ class UpdateActivityRequest(BaseModel):
 
 
 @router.post("/{ticket_id}/start-work")
-async def start_work(ticket_id: str, data: StartWorkRequest, request: Request):
+async def start_work(request: Request, ticket_id: str, data: StartWorkRequest):
     """
     Start work on a ticket (transitions to work_in_progress)
     
@@ -400,7 +382,7 @@ async def start_work(ticket_id: str, data: StartWorkRequest, request: Request):
 
 
 @router.post("/{ticket_id}/complete-work")
-async def complete_work(ticket_id: str, data: CompleteWorkRequest, request: Request):
+async def complete_work(request: Request, ticket_id: str, data: CompleteWorkRequest):
     """
     Mark work as completed on a ticket
     
@@ -428,7 +410,7 @@ async def complete_work(ticket_id: str, data: CompleteWorkRequest, request: Requ
 
 
 @router.get("/{ticket_id}/activities")
-async def get_ticket_activities(ticket_id: str, request: Request):
+async def get_ticket_activities(request: Request, ticket_id: str):
     """
     Get all activity logs for a ticket
     
@@ -447,7 +429,7 @@ async def get_ticket_activities(ticket_id: str, request: Request):
 
 
 @router.post("/{ticket_id}/activities")
-async def add_activity(ticket_id: str, data: AddActivityRequest, request: Request):
+async def add_activity(request: Request, ticket_id: str, data: AddActivityRequest):
     """
     Add a manual activity log entry
     
@@ -472,11 +454,9 @@ async def add_activity(ticket_id: str, data: AddActivityRequest, request: Reques
 
 
 @router.put("/{ticket_id}/activities/{activity_id}")
-async def update_activity(
-    ticket_id: str, 
+async def update_activity(request: Request, ticket_id: str, 
     activity_id: str, 
-    data: UpdateActivityRequest, 
-    request: Request
+    data: UpdateActivityRequest
 ):
     """
     Update an activity log entry (admin only)
@@ -505,7 +485,7 @@ async def update_activity(
 
 
 @router.delete("/{ticket_id}/activities/{activity_id}")
-async def delete_activity(ticket_id: str, activity_id: str, request: Request):
+async def delete_activity(request: Request, ticket_id: str, activity_id: str):
     """
     Delete an activity log entry (admin only)
     """
@@ -528,7 +508,7 @@ async def delete_activity(ticket_id: str, activity_id: str, request: Request):
 
 
 @router.post("/{ticket_id}/assign")
-async def assign_ticket(ticket_id: str, data: AssignTicketRequest, request: Request):
+async def assign_ticket(request: Request, ticket_id: str, data: AssignTicketRequest):
     """
     Assign ticket to a technician
     
@@ -552,7 +532,7 @@ async def assign_ticket(ticket_id: str, data: AssignTicketRequest, request: Requ
 
 
 @router.get("/{ticket_id}/matches")
-async def get_ticket_matches(ticket_id: str, request: Request):
+async def get_ticket_matches(request: Request, ticket_id: str):
     """
     Get AI-suggested failure cards for a ticket
     
@@ -573,7 +553,7 @@ async def get_ticket_matches(ticket_id: str, request: Request):
 
 
 @router.post("/{ticket_id}/select-card")
-async def select_failure_card(ticket_id: str, data: SelectCardRequest, request: Request):
+async def select_failure_card(request: Request, ticket_id: str, data: SelectCardRequest):
     """
     Select a failure card for the ticket
     
@@ -601,7 +581,7 @@ async def select_failure_card(ticket_id: str, data: SelectCardRequest, request: 
 # These maintain backward compatibility with existing frontend
 
 @router.post("/{ticket_id}/select-card/{failure_id}")
-async def select_failure_card_legacy(ticket_id: str, failure_id: str, request: Request):
+async def select_failure_card_legacy(request: Request, ticket_id: str, failure_id: str):
     """Legacy route - select failure card by path parameter"""
     service = get_service()
     user = await get_current_user(request, service.db)

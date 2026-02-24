@@ -52,12 +52,7 @@ class RequestInfoRequest(BaseModel):
 # ==================== ESCALATION ENDPOINTS ====================
 
 @router.get("/escalations")
-async def list_escalations(
-    http_request: Request,
-    status: Optional[str] = None,
-    priority: Optional[str] = None,
-    assigned_to: Optional[str] = None,
-    limit: int = Query(50, le=100),
+async def list_escalations(http_request: Request, status: Optional[str] = None, priority: Optional[str] = None, assigned_to: Optional[str] = None, limit: int = Query(50, le=100),
     offset: int = 0
 ):
     """
@@ -251,10 +246,7 @@ async def get_expert_workload(http_request: Request):
 
 
 @router.get("/my-queue")
-async def get_my_queue(
-    http_request: Request,
-    status: Optional[str] = None,
-    limit: int = Query(20, le=100)
+async def get_my_queue(http_request: Request, status: Optional[str] = None, limit: int = Query(20, le=100)
 ):
     """Get escalations assigned to the current expert"""
     org_id = http_request.headers.get("X-Organization-ID")

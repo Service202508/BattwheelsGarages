@@ -67,7 +67,7 @@ async def get_reminder_settings(request: Request):
     return {"code": 0, "settings": settings}
 
 @router.put("/reminder-settings")
-async def update_reminder_settings(settings: ReminderSettings, request: Request):
+async def update_reminder_settings(request: Request, settings: ReminderSettings):
     org_id = extract_org_id(request)
     """Update payment reminder settings"""
     await reminder_settings_collection.update_one(
@@ -87,7 +87,7 @@ async def get_late_fee_settings(request: Request):
     return {"code": 0, "settings": settings}
 
 @router.put("/late-fee-settings")
-async def update_late_fee_settings(settings: LateFeeSettings, request: Request):
+async def update_late_fee_settings(request: Request, settings: LateFeeSettings):
     org_id = extract_org_id(request)
     """Update late fee settings"""
     await late_fee_settings_collection.update_one(
@@ -126,7 +126,7 @@ async def get_overdue_invoices(request: Request):
     }
 
 @router.get("/due-soon-invoices")
-async def get_due_soon_invoices(days: int = 7, request: Request):
+async def get_due_soon_invoices(request: Request, days: int = 7):
     org_id = extract_org_id(request)
     """Get invoices due within specified days"""
     today = datetime.now(timezone.utc)
@@ -153,7 +153,7 @@ async def get_due_soon_invoices(days: int = 7, request: Request):
     }
 
 @router.post("/send-reminder/{invoice_id}")
-async def send_payment_reminder(invoice_id: str, background_tasks: BackgroundTasks, request: Request):
+async def send_payment_reminder(request: Request, invoice_id: str, background_tasks: BackgroundTasks):
     org_id = extract_org_id(request)
     """Send payment reminder for a specific invoice"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
@@ -207,7 +207,7 @@ async def send_payment_reminder(invoice_id: str, background_tasks: BackgroundTas
     }
 
 @router.post("/send-bulk-reminders")
-async def send_bulk_reminders(invoice_ids: List[str], background_tasks: BackgroundTasks, request: Request):
+async def send_bulk_reminders(request: Request, invoice_ids: List[str], background_tasks: BackgroundTasks):
     org_id = extract_org_id(request)
     """Send payment reminders for multiple invoices"""
     sent = 0
@@ -264,7 +264,7 @@ async def send_bulk_reminders(invoice_ids: List[str], background_tasks: Backgrou
     }
 
 @router.get("/reminder-history")
-async def get_reminder_history(invoice_id: str = "", customer_id: str = "", limit: int = 50, request: Request):
+async def get_reminder_history(request: Request, invoice_id: str = "", customer_id: str = "", limit: int = 50):
     org_id = extract_org_id(request)
     """Get reminder history"""
     query = {}
@@ -281,7 +281,7 @@ async def get_reminder_history(invoice_id: str = "", customer_id: str = "", limi
 # ==================== LATE FEE FUNCTIONS ====================
 
 @router.get("/calculate-late-fee/{invoice_id}")
-async def calculate_late_fee(invoice_id: str, request: Request):
+async def calculate_late_fee(request: Request, invoice_id: str):
     org_id = extract_org_id(request)
     """Calculate late fee for an invoice"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
@@ -329,7 +329,7 @@ async def calculate_late_fee(invoice_id: str, request: Request):
     }
 
 @router.post("/apply-late-fee/{invoice_id}")
-async def apply_late_fee(invoice_id: str, request: Request):
+async def apply_late_fee(request: Request, invoice_id: str):
     org_id = extract_org_id(request)
     """Apply late fee to an invoice"""
     # Calculate fee
@@ -366,7 +366,7 @@ async def apply_late_fee(invoice_id: str, request: Request):
 # ==================== AUTO CREDIT APPLICATION ====================
 
 @router.post("/auto-apply-credits/{invoice_id}")
-async def auto_apply_credits(invoice_id: str, request: Request):
+async def auto_apply_credits(request: Request, invoice_id: str):
     org_id = extract_org_id(request)
     """Automatically apply available customer credits to an invoice"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id})

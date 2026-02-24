@@ -238,11 +238,7 @@ async def submit_guidance_feedback(
 
 
 @router.get("/ticket/{ticket_id}")
-async def get_guidance_for_ticket(
-    ticket_id: str,
-    http_request: Request,
-    mode: str = "quick"
-):
+async def get_guidance_for_ticket(http_request: Request, ticket_id: str, mode: str = "quick"):
     """
     Get existing guidance for a ticket (or generate if not exists).
     """
@@ -465,11 +461,7 @@ async def get_checklist_template(category: str):
 # ==================== SNAPSHOT MANAGEMENT ====================
 
 @router.get("/snapshot/{ticket_id}")
-async def get_snapshot_info(
-    ticket_id: str,
-    http_request: Request,
-    mode: str = "quick"
-):
+async def get_snapshot_info(http_request: Request, ticket_id: str, mode: str = "quick"):
     """
     Get snapshot info for a ticket.
     Used to show "Regenerate" button only when context changed.
@@ -566,9 +558,7 @@ async def get_feedback_summary(
 # ==================== METRICS ====================
 
 @router.get("/metrics")
-async def get_guidance_metrics(
-    http_request: Request,
-    days: int = Query(7, le=30)
+async def get_guidance_metrics(http_request: Request, days: int = Query(7, le=30)
 ):
     """
     Get AI guidance usage metrics.

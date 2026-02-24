@@ -151,9 +151,7 @@ async def get_vendor_aging_report(request: Request):
 
 
 @router.get("/export")
-async def export_bills(
-    request: Request,
-    status: Optional[str] = Query(None),
+async def export_bills(request: Request, status: Optional[str] = Query(None),
     date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None)
 ):
@@ -213,9 +211,7 @@ async def export_bills(
 
 
 @router.get("")
-async def list_bills(
-    request: Request,
-    status: Optional[str] = Query(None),
+async def list_bills(request: Request, status: Optional[str] = Query(None),
     vendor_id: Optional[str] = Query(None),
     date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
@@ -257,7 +253,7 @@ async def list_bills(
 
 
 @router.post("")
-async def create_bill(data: BillCreate, request: Request):
+async def create_bill(request: Request, data: BillCreate):
     """Create a new vendor bill"""
     service = get_service()
     org_id = await get_org_id(request)
@@ -285,7 +281,7 @@ async def create_bill(data: BillCreate, request: Request):
 
 
 @router.get("/{bill_id}")
-async def get_bill(bill_id: str, request: Request):
+async def get_bill(request: Request, bill_id: str):
     """Get a single bill with line items and payments"""
     service = get_service()
     
@@ -297,7 +293,7 @@ async def get_bill(bill_id: str, request: Request):
 
 
 @router.put("/{bill_id}")
-async def update_bill(bill_id: str, data: BillUpdate, request: Request):
+async def update_bill(request: Request, bill_id: str, data: BillUpdate):
     """Update a bill (DRAFT only)"""
     service = get_service()
     
@@ -314,7 +310,7 @@ async def update_bill(bill_id: str, data: BillUpdate, request: Request):
 
 
 @router.post("/{bill_id}/approve")
-async def approve_bill(bill_id: str, request: Request):
+async def approve_bill(request: Request, bill_id: str):
     """Approve bill and post journal entry"""
     from services.double_entry_service import get_double_entry_service, init_double_entry_service
     
@@ -345,7 +341,7 @@ async def approve_bill(bill_id: str, request: Request):
 
 
 @router.post("/{bill_id}/record-payment")
-async def record_payment(bill_id: str, data: PaymentRecord, request: Request):
+async def record_payment(request: Request, bill_id: str, data: PaymentRecord):
     """Record payment against a bill"""
     from services.double_entry_service import get_double_entry_service, init_double_entry_service
     
@@ -381,7 +377,7 @@ async def record_payment(bill_id: str, data: PaymentRecord, request: Request):
 
 
 @router.get("/{bill_id}/payments")
-async def get_bill_payments(bill_id: str, request: Request):
+async def get_bill_payments(request: Request, bill_id: str):
     """Get all payments for a bill"""
     service = get_service()
     

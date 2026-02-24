@@ -121,9 +121,7 @@ async def get_current_user_id(request: Request) -> str:
 # ==================== JOURNAL ENTRY ENDPOINTS ====================
 
 @router.get("")
-async def list_journal_entries(
-    request: Request,
-    start_date: str = Query(None, description="Filter by start date (YYYY-MM-DD)"),
+async def list_journal_entries(request: Request, start_date: str = Query(None, description="Filter by start date (YYYY-MM-DD)"),
     end_date: str = Query(None, description="Filter by end date (YYYY-MM-DD)"),
     entry_type: str = Query(None, description="Filter by entry type"),
     account_id: str = Query(None, description="Filter by account"),
@@ -168,9 +166,7 @@ async def list_journal_entries(
 
 
 @router.post("")
-async def create_journal_entry(
-    data: JournalEntryCreate,
-    request: Request
+async def create_journal_entry(request: Request, data: JournalEntryCreate
 ):
     """Create a new manual journal entry"""
     org_id = await get_org_id(request)
@@ -212,7 +208,7 @@ async def create_journal_entry(
 
 
 @router.get("/{entry_id}")
-async def get_journal_entry(entry_id: str, request: Request):
+async def get_journal_entry(request: Request, entry_id: str):
     """Get a specific journal entry"""
     org_id = await get_org_id(request)
     service = get_service()
@@ -229,10 +225,8 @@ async def get_journal_entry(entry_id: str, request: Request):
 
 
 @router.post("/{entry_id}/reverse")
-async def reverse_journal_entry(
-    entry_id: str,
-    data: JournalEntryReverse,
-    request: Request
+async def reverse_journal_entry(request: Request, entry_id: str,
+    data: JournalEntryReverse
 ):
     """Create a reversal entry for an existing journal entry"""
     org_id = await get_org_id(request)
@@ -254,9 +248,7 @@ async def reverse_journal_entry(
 
 
 @router.get("/export/csv")
-async def export_journal_entries_csv(
-    request: Request,
-    start_date: str = Query(None),
+async def export_journal_entries_csv(request: Request, start_date: str = Query(None),
     end_date: str = Query(None),
     entry_type: str = Query(None)
 ):
@@ -312,9 +304,7 @@ async def export_journal_entries_csv(
 # ==================== TRIAL BALANCE ====================
 
 @router.get("/reports/trial-balance")
-async def get_trial_balance(
-    request: Request,
-    as_of_date: str = Query(None, description="As of date (YYYY-MM-DD)")
+async def get_trial_balance(request: Request, as_of_date: str = Query(None, description="As of date (YYYY-MM-DD)")
 ):
     """
     Generate Trial Balance from journal entries.
@@ -334,9 +324,7 @@ async def get_trial_balance(
 
 
 @router.get("/reports/trial-balance/csv")
-async def export_trial_balance_csv(
-    request: Request,
-    as_of_date: str = Query(None)
+async def export_trial_balance_csv(request: Request, as_of_date: str = Query(None)
 ):
     """Export Trial Balance to CSV"""
     org_id = await get_org_id(request)
@@ -379,10 +367,7 @@ async def export_trial_balance_csv(
 # ==================== ACCOUNT LEDGER ====================
 
 @router.get("/accounts/{account_id}/ledger")
-async def get_account_ledger(
-    account_id: str,
-    request: Request,
-    start_date: str = Query(None),
+async def get_account_ledger(request: Request, account_id: str, start_date: str = Query(None),
     end_date: str = Query(None)
 ):
     """
@@ -405,10 +390,7 @@ async def get_account_ledger(
 
 
 @router.get("/accounts/{account_id}/balance")
-async def get_account_balance(
-    account_id: str,
-    request: Request,
-    as_of_date: str = Query(None),
+async def get_account_balance(request: Request, account_id: str, as_of_date: str = Query(None),
     start_date: str = Query(None)
 ):
     """Get balance for a specific account"""
@@ -428,9 +410,7 @@ async def get_account_balance(
 # ==================== P&L AND BALANCE SHEET ====================
 
 @router.get("/reports/profit-loss")
-async def get_profit_loss_from_journal(
-    request: Request,
-    start_date: str = Query(None, description="Start date (YYYY-MM-DD)"),
+async def get_profit_loss_from_journal(request: Request, start_date: str = Query(None, description="Start date (YYYY-MM-DD)"),
     end_date: str = Query(None, description="End date (YYYY-MM-DD)")
 ):
     """
@@ -458,9 +438,7 @@ async def get_profit_loss_from_journal(
 
 
 @router.get("/reports/balance-sheet")
-async def get_balance_sheet_from_journal(
-    request: Request,
-    as_of_date: str = Query(None, description="As of date (YYYY-MM-DD)")
+async def get_balance_sheet_from_journal(request: Request, as_of_date: str = Query(None, description="As of date (YYYY-MM-DD)")
 ):
     """
     Generate Balance Sheet from journal entries.
@@ -492,9 +470,7 @@ async def initialize_system_accounts(request: Request):
 
 
 @router.get("/accounts/chart")
-async def get_chart_of_accounts(
-    request: Request,
-    account_type: str = Query(None, description="Filter by account type")
+async def get_chart_of_accounts(request: Request, account_type: str = Query(None, description="Filter by account type")
 ):
     """Get chart of accounts"""
     org_id = await get_org_id(request)

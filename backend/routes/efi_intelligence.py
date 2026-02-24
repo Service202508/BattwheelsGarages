@@ -103,9 +103,7 @@ async def check_intelligence_enabled(org_id: str):
 # ==================== MODEL RISK ALERTS (Part E) ====================
 
 @router.get("/risk-alerts")
-async def get_risk_alerts(
-    http_request: Request,
-    status: str = Query("active", description="Filter by status: active, acknowledged, resolved, all")
+async def get_risk_alerts(http_request: Request, status: str = Query("active", description="Filter by status: active, acknowledged, resolved, all")
 ):
     """
     Get Model Risk Alerts for supervisor dashboard.
@@ -223,9 +221,7 @@ async def resolve_risk_alert(
 # ==================== FAILURE CARDS ====================
 
 @router.get("/failure-cards")
-async def get_failure_cards(
-    http_request: Request,
-    status: str = Query("all", description="Filter: draft, pending_review, approved, all"),
+async def get_failure_cards(http_request: Request, status: str = Query("all", description="Filter: draft, pending_review, approved, all"),
     subsystem: Optional[str] = None,
     vehicle_model: Optional[str] = None,
     limit: int = Query(50, le=200)
@@ -439,9 +435,7 @@ async def capture_ticket_closure(
 
 
 @router.post("/learning/process-pending")
-async def process_pending_learning(
-    http_request: Request,
-    batch_size: int = Query(50, le=100)
+async def process_pending_learning(http_request: Request, batch_size: int = Query(50, le=100)
 ):
     """Process pending learning events (background job trigger)"""
     org_id = http_request.headers.get("X-Organization-ID")
@@ -470,14 +464,8 @@ async def get_learning_stats(http_request: Request):
 
 
 @router.post("/ranking/rank-causes")
-async def rank_probable_causes(
-    http_request: Request,
-    vehicle_make: Optional[str] = None,
-    vehicle_model: Optional[str] = None,
-    subsystem: Optional[str] = None,
-    symptoms: Optional[str] = None,  # Comma-separated
-    dtc_codes: Optional[str] = None  # Comma-separated
-):
+async def rank_probable_causes(http_request: Request, vehicle_make: Optional[str] = None, vehicle_model: Optional[str] = None, subsystem: Optional[str] = None, symptoms: Optional[str] = None, # Comma-separated
+    dtc_codes: Optional[str] = None  # Comma-separated):
     """
     Get ranked probable causes for given context.
     Used by guidance generation.

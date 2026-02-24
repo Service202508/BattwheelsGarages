@@ -369,13 +369,7 @@ async def remove_fleet_vehicle(request: Request, vehicle_id: str):
 # ==================== TICKETS ====================
 
 @router.get("/tickets")
-async def get_business_tickets(
-    request: Request,
-    status: Optional[str] = None,
-    vehicle_number: Optional[str] = None,
-    limit: int = 50,
-    skip: int = 0
-):
+async def get_business_tickets(request: Request, status: Optional[str] = None, vehicle_number: Optional[str] = None, limit: int = 50, skip: int = 0):
     """Get all tickets for the business"""
     user, business = await get_business_customer(request)
     db = get_db()
@@ -479,12 +473,7 @@ async def create_business_ticket(request: Request, data: BusinessTicketCreate):
 # ==================== INVOICES & PAYMENTS ====================
 
 @router.get("/invoices")
-async def get_business_invoices(
-    request: Request,
-    status: Optional[str] = None,
-    limit: int = 50,
-    skip: int = 0
-):
+async def get_business_invoices(request: Request, status: Optional[str] = None, limit: int = 50, skip: int = 0):
     """Get all invoices for the business"""
     user, business = await get_business_customer(request)
     db = get_db()
@@ -596,11 +585,7 @@ async def get_business_amc(request: Request):
 # ==================== REPORTS ====================
 
 @router.get("/reports/summary")
-async def get_business_report_summary(
-    request: Request,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None
-):
+async def get_business_report_summary(request: Request, start_date: Optional[str] = None, end_date: Optional[str] = None):
     """Get summary report for the business"""
     user, business = await get_business_customer(request)
     db = get_db()

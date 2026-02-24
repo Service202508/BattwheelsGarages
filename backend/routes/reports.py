@@ -1538,9 +1538,7 @@ async def get_inventory_valuation(
 # ==================== TRIAL BALANCE REPORT ====================
 
 @router.get("/trial-balance")
-async def get_trial_balance(
-    request: Request,
-    as_of_date: str = Query(None, description="Cut-off date YYYY-MM-DD (defaults to today)"),
+async def get_trial_balance(request: Request, as_of_date: str = Query(None, description="Cut-off date YYYY-MM-DD (defaults to today)"),
 ):
     """
     GET /api/reports/trial-balance

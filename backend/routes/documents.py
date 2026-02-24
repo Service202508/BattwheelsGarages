@@ -158,17 +158,7 @@ async def delete_folder(request: Request, folder_id: str, force: bool = False):
 # ==================== DOCUMENTS ====================
 
 @router.get("/")
-async def list_documents(
-    request: Request,
-    folder_id: str = "",
-    document_type: str = "",
-    related_entity_type: str = "",
-    related_entity_id: str = "",
-    tag: str = "",
-    search: str = "",
-    page: int = 1,
-    per_page: int = 50
-):
+async def list_documents(request: Request, folder_id: str = "", document_type: str = "", related_entity_type: str = "", related_entity_id: str = "", tag: str = "", search: str = "", page: int = 1, per_page: int = 50):
     """List documents with filters"""
     org_id = await get_org_id(request)
     if not org_id:

@@ -226,7 +226,7 @@ async def get_migration_status(request: Request):
 # ========================= PREVIEW ENDPOINT =========================
 
 @router.get("/preview")
-async def preview_migration(limit: int = 10, request: Request):
+async def preview_migration(request: Request, limit: int = 10):
     org_id = extract_org_id(request)
     """Preview records that will be migrated"""
     # Sample customers
@@ -262,7 +262,7 @@ async def preview_migration(limit: int = 10, request: Request):
 # ========================= MIGRATION ENDPOINT =========================
 
 @router.post("/run")
-async def run_migration(config: MigrationConfig, background_tasks: BackgroundTasks, request: Request):
+async def run_migration(request: Request, config: MigrationConfig, background_tasks: BackgroundTasks):
     org_id = extract_org_id(request)
     """Run the migration process"""
     results = {
@@ -444,7 +444,7 @@ async def sync_from_zoho_contacts(request: Request):
 # ========================= CLEANUP =========================
 
 @router.post("/cleanup-duplicates")
-async def cleanup_duplicates(dry_run: bool = True, request: Request):
+async def cleanup_duplicates(request: Request, dry_run: bool = True):
     org_id = extract_org_id(request)
     """Find and optionally remove duplicate contacts"""
     # Find duplicates by email
@@ -493,7 +493,7 @@ async def cleanup_duplicates(dry_run: bool = True, request: Request):
 # ========================= ROLLBACK =========================
 
 @router.post("/rollback")
-async def rollback_migration(migration_source: str = "legacy_customers", request: Request):
+async def rollback_migration(request: Request, migration_source: str = "legacy_customers"):
     org_id = extract_org_id(request)
     """Rollback migrated contacts from a specific source"""
     if migration_source not in ["legacy_customers", "legacy_vendors", "zoho_contacts"]:
@@ -512,7 +512,7 @@ async def rollback_migration(migration_source: str = "legacy_customers", request
 # ========================= LOGS =========================
 
 @router.get("/logs")
-async def get_migration_logs(limit: int = 50, request: Request):
+async def get_migration_logs(request: Request, limit: int = 50):
     org_id = extract_org_id(request)
     """Get migration logs"""
     logs = await migration_logs_collection.find({}, {"_id": 0}).sort("timestamp", -1).limit(limit).to_list(limit)

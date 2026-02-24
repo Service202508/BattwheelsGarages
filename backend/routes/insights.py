@@ -82,9 +82,7 @@ def safe(val, default=0):
 # ======================== REVENUE INTELLIGENCE ========================
 
 @router.get("/revenue")
-async def get_revenue_insights(
-    request: Request,
-    date_from: Optional[str] = Query(None),
+async def get_revenue_insights(request: Request, date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
 ):
     db = get_db()
@@ -203,9 +201,7 @@ async def get_revenue_insights(
 # ======================== WORKSHOP OPERATIONS ========================
 
 @router.get("/operations")
-async def get_operations_insights(
-    request: Request,
-    date_from: Optional[str] = Query(None),
+async def get_operations_insights(request: Request, date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
 ):
     db = get_db()
@@ -316,9 +312,7 @@ async def get_operations_insights(
 # ======================== TECHNICIAN PERFORMANCE ========================
 
 @router.get("/technicians")
-async def get_technician_insights(
-    request: Request,
-    date_from: Optional[str] = Query(None),
+async def get_technician_insights(request: Request, date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
 ):
     db = get_db()
@@ -456,9 +450,7 @@ async def get_technician_insights(
 # ======================== EFI INTELLIGENCE ========================
 
 @router.get("/efi")
-async def get_efi_insights(
-    request: Request,
-    date_from: Optional[str] = Query(None),
+async def get_efi_insights(request: Request, date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
 ):
     db = get_db()
@@ -560,9 +552,7 @@ async def get_efi_insights(
 # ======================== CUSTOMER INTELLIGENCE ========================
 
 @router.get("/customers")
-async def get_customer_insights(
-    request: Request,
-    date_from: Optional[str] = Query(None),
+async def get_customer_insights(request: Request, date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
 ):
     db = get_db()
@@ -687,9 +677,7 @@ async def get_customer_insights(
 # ======================== INVENTORY INTELLIGENCE ========================
 
 @router.get("/inventory")
-async def get_inventory_insights(
-    request: Request,
-    date_from: Optional[str] = Query(None),
+async def get_inventory_insights(request: Request, date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
 ):
     db = get_db()

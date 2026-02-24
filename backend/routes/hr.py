@@ -143,7 +143,7 @@ async def get_current_user(request: Request, db) -> dict:
 # ==================== EMPLOYEE ROUTES ====================
 
 @router.post("/employees")
-async def create_employee(data: EmployeeCreateRequest, request: Request):
+async def create_employee(request: Request, data: EmployeeCreateRequest):
     service = get_service()
     user = await get_current_user(request, service.db)
     org_id = await get_org_id(request, service.db)
@@ -161,11 +161,7 @@ async def create_employee(data: EmployeeCreateRequest, request: Request):
 
 
 @router.get("/employees")
-async def list_employees(
-    request: Request,
-    department: Optional[str] = None,
-    status: str = "active",
-    page: int = Query(1, ge=1),
+async def list_employees(request: Request, department: Optional[str] = None, status: str = "active", page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1)
 ):
     """List employees with standardized pagination"""
@@ -203,7 +199,7 @@ async def list_employees(
 
 
 @router.get("/employees/{employee_id}")
-async def get_employee(employee_id: str, request: Request):
+async def get_employee(request: Request, employee_id: str):
     service = get_service()
     org_id = await get_org_id(request, service.db)
     query = {"employee_id": employee_id}
@@ -216,7 +212,7 @@ async def get_employee(employee_id: str, request: Request):
 
 
 @router.put("/employees/{employee_id}")
-async def update_employee(employee_id: str, data: EmployeeUpdateRequest, request: Request):
+async def update_employee(request: Request, employee_id: str, data: EmployeeUpdateRequest):
     service = get_service()
     user = await get_current_user(request, service.db)
     org_id = await get_org_id(request, service.db)
@@ -232,7 +228,7 @@ async def update_employee(employee_id: str, data: EmployeeUpdateRequest, request
 
 
 @router.delete("/employees/{employee_id}")
-async def delete_employee(employee_id: str, request: Request):
+async def delete_employee(request: Request, employee_id: str):
     service = get_service()
     org_id = await get_org_id(request, service.db)
     query = {"employee_id": employee_id}
@@ -324,11 +320,7 @@ async def get_my_attendance(request: Request, limit: int = 30):
 
 
 @router.get("/attendance/all")
-async def get_all_attendance(
-    request: Request,
-    date: Optional[str] = None,
-    department: Optional[str] = None
-):
+async def get_all_attendance(request: Request, date: Optional[str] = None, department: Optional[str] = None):
     service = get_service()
     
     query = {}
@@ -372,7 +364,7 @@ async def get_leave_balance(request: Request):
 
 
 @router.post("/leave/request")
-async def request_leave(data: LeaveRequest, request: Request):
+async def request_leave(request: Request, data: LeaveRequest):
     service = get_service()
     user = await get_current_user(request, service.db)
     
@@ -418,7 +410,7 @@ async def get_pending_approvals(request: Request):
 
 
 @router.put("/leave/{leave_id}/approve")
-async def approve_leave(leave_id: str, data: LeaveApprovalRequest, request: Request):
+async def approve_leave(request: Request, leave_id: str, data: LeaveApprovalRequest):
     service = get_service()
     user = await get_current_user(request, service.db)
     
@@ -434,7 +426,7 @@ async def approve_leave(leave_id: str, data: LeaveApprovalRequest, request: Requ
 
 
 @router.delete("/leave/{leave_id}")
-async def cancel_leave(leave_id: str, request: Request):
+async def cancel_leave(request: Request, leave_id: str):
     service = get_service()
     user = await get_current_user(request, service.db)
     
@@ -459,8 +451,7 @@ async def cancel_leave(leave_id: str, request: Request):
 # ==================== PAYROLL ROUTES ====================
 
 @router.get("/payroll/calculate/{employee_id}")
-async def calculate_payroll(employee_id: str, request: Request, month: str = None, year: int = None,
-                            _: None = Depends(require_feature("hr_payroll"))):
+async def calculate_payroll(request: Request, employee_id: str, month: str = None, year: int = None, _: None = Depends(require_feature("hr_payroll"))):
     service = get_service()
     
     now = datetime.now(timezone.utc)
@@ -474,8 +465,7 @@ async def calculate_payroll(employee_id: str, request: Request, month: str = Non
 
 
 @router.post("/payroll/generate")
-async def generate_payroll(request: Request, month: str = None, year: int = None,
-                           _: None = Depends(require_feature("hr_payroll"))):
+async def generate_payroll(request: Request, month: str = None, year: int = None, _: None = Depends(require_feature("hr_payroll"))):
     service = get_service()
     user = await get_current_user(request, service.db)
     
@@ -487,11 +477,7 @@ async def generate_payroll(request: Request, month: str = None, year: int = None
 
 
 @router.get("/payroll/records")
-async def list_payroll_records(
-    request: Request,
-    month: Optional[str] = None,
-    year: Optional[int] = None,
-    page: int = Query(1, ge=1),
+async def list_payroll_records(request: Request, month: Optional[str] = None, year: Optional[int] = None, page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1),
     _: None = Depends(require_feature("hr_payroll"))
 ):
@@ -576,10 +562,8 @@ class TDSMarkDepositedRequest(BaseModel):
 
 
 @router.put("/employees/{employee_id}/tax-config")
-async def update_employee_tax_config(
-    employee_id: str,
-    data: TaxConfigUpdateRequest,
-    request: Request
+async def update_employee_tax_config(request: Request, employee_id: str,
+    data: TaxConfigUpdateRequest
 ):
     """
     Update employee tax configuration (Step 1)
@@ -624,7 +608,7 @@ async def update_employee_tax_config(
 
 
 @router.get("/employees/{employee_id}/tax-config")
-async def get_employee_tax_config(employee_id: str, request: Request):
+async def get_employee_tax_config(request: Request, employee_id: str):
     """Get employee tax configuration"""
     service = get_service()
     
@@ -643,10 +627,7 @@ async def get_employee_tax_config(employee_id: str, request: Request):
 
 
 @router.get("/tds/calculate/{employee_id}")
-async def calculate_employee_tds(
-    employee_id: str,
-    request: Request,
-    month: int = Query(None, ge=1, le=12),
+async def calculate_employee_tds(request: Request, employee_id: str, month: int = Query(None, ge=1, le=12),
     year: int = Query(None)
 ):
     """
@@ -713,9 +694,7 @@ async def calculate_employee_tds(
 
 
 @router.get("/payroll/tds-summary")
-async def get_tds_summary(
-    request: Request,
-    month: int = Query(None, ge=1, le=12),
+async def get_tds_summary(request: Request, month: int = Query(None, ge=1, le=12),
     year: int = Query(None),
     _: None = Depends(require_feature("hr_payroll"))
 ):
@@ -839,7 +818,7 @@ async def get_tds_summary(
 
 
 @router.post("/tds/challan")
-async def record_tds_challan(data: TDSChallanRequest, request: Request):
+async def record_tds_challan(request: Request, data: TDSChallanRequest):
     """Record TDS challan deposit"""
     import uuid
     
@@ -872,8 +851,7 @@ async def record_tds_challan(data: TDSChallanRequest, request: Request):
 
 
 @router.post("/payroll/tds/mark-deposited")
-async def mark_tds_deposited(data: TDSMarkDepositedRequest, request: Request,
-                              _: None = Depends(require_feature("hr_payroll"))):
+async def mark_tds_deposited(request: Request, data: TDSMarkDepositedRequest, _: None = Depends(require_feature("hr_payroll"))):
     """
     Mark TDS as deposited with journal entry posting
     
@@ -1047,9 +1025,7 @@ async def mark_tds_deposited(data: TDSMarkDepositedRequest, request: Request,
 
 
 @router.get("/payroll/tds/export")
-async def export_tds_data(
-    request: Request,
-    month: int = Query(..., ge=1, le=12),
+async def export_tds_data(request: Request, month: int = Query(..., ge=1, le=12),
     year: int = Query(...),
     _: None = Depends(require_feature("hr_payroll"))
 ):
@@ -1174,10 +1150,7 @@ async def export_tds_data(
 
 
 @router.get("/tds/challans")
-async def list_tds_challans(
-    request: Request,
-    financial_year: Optional[str] = None
-):
+async def list_tds_challans(request: Request, financial_year: Optional[str] = None):
     """List TDS challans"""
     service = get_service()
     org_id = await get_org_id(request, service.db)
@@ -1192,11 +1165,7 @@ async def list_tds_challans(
 
 
 @router.get("/payroll/form16/{employee_id}/{fy}")
-async def get_form16_data(
-    employee_id: str,
-    fy: str,
-    request: Request,
-    _: None = Depends(require_feature("hr_payroll"))
+async def get_form16_data(request: Request, employee_id: str, fy: str, _: None = Depends(require_feature("hr_payroll"))
 ):
     """
     Get Form 16 data for an employee
@@ -1384,11 +1353,7 @@ async def get_form16_data(
 
 
 @router.get("/payroll/form16/{employee_id}/{fy}/pdf")
-async def download_form16_pdf(
-    employee_id: str,
-    fy: str,
-    request: Request,
-    _: None = Depends(require_feature("hr_payroll"))
+async def download_form16_pdf(request: Request, employee_id: str, fy: str, _: None = Depends(require_feature("hr_payroll"))
 ):
     """
     Generate and download Form 16 as PDF.
@@ -1717,8 +1682,7 @@ def _generate_form16_html(f16: dict) -> str:
 
 
 @router.get("/payroll/form16/bulk/{fy}")
-async def download_bulk_form16_zip(fy: str, request: Request,
-                                   _: None = Depends(require_feature("hr_payroll"))):
+async def download_bulk_form16_zip(request: Request, fy: str, _: None = Depends(require_feature("hr_payroll"))):
     """
     Generate Form 16 PDFs for ALL active employees and return as a ZIP file.
     GET /api/hr/payroll/form16/bulk/{fy}

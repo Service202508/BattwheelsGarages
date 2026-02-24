@@ -378,9 +378,7 @@ async def signup_organization(data: OrganizationCreate):
 # ==================== ORGANIZATION DETAILS ====================
 
 @router.get("/me")
-async def get_current_organization(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def get_current_organization(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Get current user's organization details"""
     org = await db.organizations.find_one(
@@ -403,10 +401,7 @@ async def get_current_organization(
 
 
 @router.put("/me")
-async def update_organization(
-    data: OrganizationUpdate,
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def update_organization(request: Request, data: OrganizationUpdate, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Update organization details (admin only)"""
     # Check if user is admin/owner
@@ -430,9 +425,7 @@ async def update_organization(
 
 
 @router.post("/me/complete-onboarding")
-async def complete_onboarding(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def complete_onboarding(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Mark organization onboarding as complete"""
     await db.organizations.update_one(
@@ -449,10 +442,7 @@ async def complete_onboarding(
 # ==================== USER INVITATIONS ====================
 
 @router.post("/me/invite")
-async def invite_user(
-    data: UserInvite,
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def invite_user(request: Request, data: UserInvite, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """
     Invite a user to the organization.
@@ -543,9 +533,7 @@ async def invite_user(
 
 
 @router.get("/me/invites")
-async def list_invitations(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def list_invitations(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """List all pending invitations for the organization"""
     invites = await db.organization_invites.find(
@@ -557,10 +545,7 @@ async def list_invitations(
 
 
 @router.delete("/me/invites/{invite_id}")
-async def cancel_invitation(
-    invite_id: str,
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def cancel_invitation(request: Request, invite_id: str, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Cancel a pending invitation"""
     result = await db.organization_invites.delete_one({
@@ -693,9 +678,7 @@ async def accept_invitation(data: InviteAccept):
 # ==================== TEAM MANAGEMENT ====================
 
 @router.get("/me/members")
-async def list_members(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def list_members(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """List all members of the organization"""
     memberships = await db.organization_users.find(
@@ -727,11 +710,7 @@ async def list_members(
 
 
 @router.patch("/me/members/{user_id}/role")
-async def update_member_role(
-    user_id: str,
-    data: dict,
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def update_member_role(request: Request, user_id: str, data: dict, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Update a member's role (admin only)"""
     role = data.get("role")
@@ -770,10 +749,7 @@ async def update_member_role(
 
 
 @router.delete("/me/members/{user_id}")
-async def remove_member(
-    user_id: str,
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def remove_member(request: Request, user_id: str, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Remove a member from the organization"""
     # Check if current user is admin/owner
@@ -863,10 +839,7 @@ async def get_user_organizations(request: Request):
 # ==================== SETUP WIZARD ====================
 
 @router.patch("/me/settings")
-async def update_organization_settings(
-    data: dict,
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def update_organization_settings(request: Request, data: dict, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Update organization settings (used by setup wizard and settings page)"""
     # Check if user is admin/owner
@@ -900,9 +873,7 @@ async def update_organization_settings(
 
 
 @router.post("/me/complete-setup")
-async def complete_organization_setup(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def complete_organization_setup(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Mark organization setup as complete"""
     await db.organizations.update_one(
@@ -919,9 +890,7 @@ async def complete_organization_setup(
 
 
 @router.get("/me/setup-status")
-async def get_setup_status(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def get_setup_status(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Check if organization has completed setup"""
     org = await db.organizations.find_one(
@@ -942,9 +911,7 @@ async def get_setup_status(
 # ==================== ONBOARDING CHECKLIST ====================
 
 @router.get("/onboarding/status")
-async def get_onboarding_status(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def get_onboarding_status(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Get onboarding status with auto-detected completed steps"""
     org = await db.organizations.find_one(
@@ -1030,10 +997,7 @@ async def get_onboarding_status(
 
 
 @router.post("/onboarding/complete-step")
-async def complete_onboarding_step(
-    data: CompleteStepRequest,
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def complete_onboarding_step(request: Request, data: CompleteStepRequest, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Mark a specific onboarding step as complete"""
     if data.step not in ONBOARDING_STEPS:
@@ -1069,9 +1033,7 @@ async def complete_onboarding_step(
 
 
 @router.post("/onboarding/skip")
-async def skip_onboarding(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def skip_onboarding(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Skip/dismiss the onboarding checklist"""
     await db.organizations.update_one(
@@ -1104,9 +1066,7 @@ DEFAULT_BRANDING = {
 
 
 @router.get("/me/branding")
-async def get_branding(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def get_branding(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Get organization branding settings"""
     org = await db.organizations.find_one(
@@ -1131,10 +1091,7 @@ async def get_branding(
 
 
 @router.put("/me/branding")
-async def update_branding(
-    data: BrandingSettings,
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def update_branding(request: Request, data: BrandingSettings, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Update organization branding settings (admin only)"""
     # Check admin permission
@@ -1184,9 +1141,7 @@ async def update_branding(
 
 
 @router.post("/me/branding/reset")
-async def reset_branding(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def reset_branding(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Reset branding to defaults (admin only)"""
     membership = await db.organization_users.find_one({
@@ -1224,9 +1179,7 @@ class EmailSettings(BaseModel):
 
 
 @router.get("/me/email-settings")
-async def get_email_settings(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def get_email_settings(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Get email settings status (keys masked)"""
     from services.credential_service import get_email_credentials, EMAIL_SMTP
@@ -1243,10 +1196,7 @@ async def get_email_settings(
 
 
 @router.post("/me/email-settings")
-async def save_email_settings(
-    data: EmailSettings,
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def save_email_settings(request: Request, data: EmailSettings, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Save per-org email settings (admin only)"""
     membership = await db.organization_users.find_one({
@@ -1266,9 +1216,7 @@ async def save_email_settings(
 
 
 @router.delete("/me/email-settings")
-async def remove_email_settings(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def remove_email_settings(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Remove per-org email settings (falls back to global)"""
     membership = await db.organization_users.find_one({
@@ -1290,9 +1238,7 @@ class WhatsAppSettings(BaseModel):
 
 
 @router.get("/me/whatsapp-settings")
-async def get_whatsapp_settings(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def get_whatsapp_settings(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Get WhatsApp integration status (token masked)"""
     from services.credential_service import get_credentials, WHATSAPP
@@ -1306,10 +1252,7 @@ async def get_whatsapp_settings(
 
 
 @router.post("/me/whatsapp-settings")
-async def save_whatsapp_settings(
-    data: WhatsAppSettings,
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def save_whatsapp_settings(request: Request, data: WhatsAppSettings, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Save WhatsApp Business API credentials (admin only)"""
     membership = await db.organization_users.find_one({
@@ -1327,9 +1270,7 @@ async def save_whatsapp_settings(
 
 
 @router.delete("/me/whatsapp-settings")
-async def remove_whatsapp_settings(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def remove_whatsapp_settings(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """Remove WhatsApp credentials"""
     membership = await db.organization_users.find_one({
@@ -1344,9 +1285,7 @@ async def remove_whatsapp_settings(
 
 
 @router.post("/me/whatsapp-test")
-async def test_whatsapp(
-    request: Request,
-    ctx: TenantContext = Depends(tenant_context_required)
+async def test_whatsapp(request: Request, ctx: TenantContext = Depends(tenant_context_required)
 ):
     """
     Send a test WhatsApp message to the org admin's phone.

@@ -2186,7 +2186,7 @@ async def mark_declined(estimate_id: str, reason: str = ""):
 # ========================= CONVERSION ENDPOINTS =========================
 
 @router.post("/{estimate_id}/convert-to-invoice")
-async def convert_to_invoice(estimate_id: str, request: Request):
+async def convert_to_invoice(request: Request, estimate_id: str):
     """Convert estimate to invoice"""
     estimate = await estimates_collection.find_one({"estimate_id": estimate_id})
     if not estimate:

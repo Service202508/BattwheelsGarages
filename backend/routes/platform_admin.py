@@ -68,9 +68,7 @@ class MakeAdminRequest(BaseModel):
 # ==================== ENDPOINTS ====================
 
 @router.get("/organizations")
-async def list_organizations(
-    request: Request,
-    _=Depends(require_platform_admin),
+async def list_organizations(request: Request, _=Depends(require_platform_admin),
     page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1, le=100),
     search: Optional[str] = Query(None),
@@ -132,10 +130,7 @@ async def list_organizations(
 
 
 @router.get("/organizations/{org_id}")
-async def get_organization_detail(
-    org_id: str,
-    request: Request,
-    _=Depends(require_platform_admin),
+async def get_organization_detail(request: Request, org_id: str, _=Depends(require_platform_admin),
 ):
     """Get full details for one organisation"""
     org = await db.organizations.find_one({"organization_id": org_id}, {"_id": 0})
@@ -174,10 +169,7 @@ async def get_organization_detail(
 
 
 @router.post("/organizations/{org_id}/suspend")
-async def suspend_organization(
-    org_id: str,
-    request: Request,
-    _=Depends(require_platform_admin),
+async def suspend_organization(request: Request, org_id: str, _=Depends(require_platform_admin),
 ):
     """Suspend an organisation — all users get 403 on next request"""
     org = await db.organizations.find_one({"organization_id": org_id}, {"_id": 0})
@@ -198,10 +190,7 @@ async def suspend_organization(
 
 
 @router.post("/organizations/{org_id}/activate")
-async def activate_organization(
-    org_id: str,
-    request: Request,
-    _=Depends(require_platform_admin),
+async def activate_organization(request: Request, org_id: str, _=Depends(require_platform_admin),
 ):
     """Re-activate a suspended organisation"""
     org = await db.organizations.find_one({"organization_id": org_id}, {"_id": 0})
@@ -217,11 +206,7 @@ async def activate_organization(
 
 
 @router.put("/organizations/{org_id}/plan")
-async def change_organization_plan(
-    org_id: str,
-    data: ChangePlanRequest,
-    request: Request,
-    _=Depends(require_platform_admin),
+async def change_organization_plan(request: Request, org_id: str, data: ChangePlanRequest, _=Depends(require_platform_admin),
 ):
     """Change subscription plan for an organisation"""
     valid_plans = ["free", "starter", "professional", "enterprise"]
@@ -246,9 +231,7 @@ async def change_organization_plan(
 
 
 @router.get("/metrics")
-async def get_platform_metrics(
-    request: Request,
-    _=Depends(require_platform_admin),
+async def get_platform_metrics(request: Request, _=Depends(require_platform_admin),
 ):
     """Platform-wide summary metrics"""
     now = datetime.now(timezone.utc)
@@ -304,9 +287,7 @@ async def get_platform_metrics(
 
 
 @router.get("/revenue-health")
-async def get_revenue_health(
-    request: Request,
-    _=Depends(require_platform_admin),
+async def get_revenue_health(request: Request, _=Depends(require_platform_admin),
 ):
     """Revenue & Health metrics: MRR by plan, trial pipeline, churn risk, recent signups"""
     PLAN_MRR = {"free": 0, "starter": 2999, "professional": 7999, "enterprise": 24999}
@@ -384,9 +365,7 @@ async def get_revenue_health(
 
 
 @router.get("/activity")
-async def get_platform_activity(
-    request: Request,
-    _=Depends(require_platform_admin),
+async def get_platform_activity(request: Request, _=Depends(require_platform_admin),
 ):
     """Last 20 platform-level audit runs"""
     runs = await db.platform_audit_runs.find(
@@ -396,9 +375,7 @@ async def get_platform_activity(
 
 
 @router.get("/audit-status")
-async def get_audit_status(
-    request: Request,
-    _=Depends(require_platform_admin),
+async def get_audit_status(request: Request, _=Depends(require_platform_admin),
 ):
     """Return the most recent audit run result"""
     last = await db.platform_audit_runs.find_one(
@@ -408,9 +385,7 @@ async def get_audit_status(
 
 
 @router.post("/run-audit")
-async def run_platform_audit(
-    request: Request,
-    _=Depends(require_platform_admin),
+async def run_platform_audit(request: Request, _=Depends(require_platform_admin),
 ):
     """
     Run the full 103-test CTO production audit as a subprocess.
@@ -478,10 +453,7 @@ async def run_platform_audit(
 
 
 @router.post("/users/make-admin")
-async def make_platform_admin(
-    data: MakeAdminRequest,
-    request: Request,
-    _=Depends(require_platform_admin),
+async def make_platform_admin(request: Request, data: MakeAdminRequest, _=Depends(require_platform_admin),
 ):
     """Grant platform admin status to a user by email"""
     user = await db.users.find_one({"email": data.email}, {"_id": 0, "user_id": 1, "name": 1})
@@ -497,10 +469,7 @@ async def make_platform_admin(
 
 
 @router.post("/users/revoke-admin")
-async def revoke_platform_admin(
-    data: MakeAdminRequest,
-    request: Request,
-    _=Depends(require_platform_admin),
+async def revoke_platform_admin(request: Request, data: MakeAdminRequest, _=Depends(require_platform_admin),
 ):
     """Revoke platform admin from a user"""
     user = await db.users.find_one({"email": data.email}, {"_id": 0, "user_id": 1})
@@ -537,9 +506,7 @@ class LeadNotesUpdate(BaseModel):
 
 
 @router.get("/leads")
-async def list_leads(
-    request: Request,
-    _=Depends(require_platform_admin),
+async def list_leads(request: Request, _=Depends(require_platform_admin),
     status: Optional[str] = Query(None),
 ):
     """List all demo requests with summary stats. Platform admin only."""
