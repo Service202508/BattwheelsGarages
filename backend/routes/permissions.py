@@ -7,6 +7,8 @@ from pydantic import BaseModel
 from typing import Optional, List, Dict
 from datetime import datetime, timezone
 import uuid
+from utils.database import extract_org_id, org_query
+
 
 def get_db():
     from server import db

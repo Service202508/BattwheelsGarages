@@ -9,6 +9,8 @@ from typing import Optional, List
 from pydantic import BaseModel
 from datetime import datetime, timezone, timedelta
 import os
+from utils.database import extract_org_id, org_query
+
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']

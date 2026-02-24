@@ -19,6 +19,9 @@ import os
 import re
 import openpyxl
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+from fastapi import Request
+from utils.database import extract_org_id, org_query
+
 
 # Soft import for PDF service (may not be available in all environments)
 PDF_SERVICE_AVAILABLE = False

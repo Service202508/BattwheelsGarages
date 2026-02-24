@@ -8,6 +8,9 @@ from datetime import datetime, timezone
 import motor.motor_asyncio
 import os
 import uuid
+from fastapi import Request
+from utils.database import extract_org_id, org_query
+
 
 router = APIRouter(prefix="/pdf-templates", tags=["PDF Templates"])
 
