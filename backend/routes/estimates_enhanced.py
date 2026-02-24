@@ -1830,7 +1830,7 @@ async def get_estimate(estimate_id: str):
 
 @router.put("/{estimate_id}")
 async def update_estimate(estimate_id: str, estimate: EstimateUpdate):
-    """Update an estimate (available until converted to invoice)"""
+    """Update an estimate (available until converted to invoice) — includes line items"""
     existing = await estimates_collection.find_one({"estimate_id": estimate_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Estimate not found")
@@ -1839,7 +1839,10 @@ async def update_estimate(estimate_id: str, estimate: EstimateUpdate):
     if existing.get("status") in ["converted", "void"]:
         raise HTTPException(status_code=400, detail="Converted or void estimates cannot be edited")
     
-    update_data = {k: v for k, v in estimate.dict().items() if v is not None}
+    raw = estimate.dict()
+    # Separate line_items from header fields
+    new_line_items = raw.pop("line_items", None)
+    update_data = {k: v for k, v in raw.items() if v is not None}
     
     # If customer changed, recalculate GST type
     if "customer_id" in update_data:
@@ -1853,6 +1856,42 @@ async def update_estimate(estimate_id: str, estimate: EstimateUpdate):
             update_data["place_of_supply"] = customer_state
             update_data["gst_type"] = gst_type
     
+    # Process line items if provided
+    if new_line_items is not None:
+        gst_type = existing.get("gst_type", "igst")
+        if "gst_type" in update_data:
+            gst_type = update_data["gst_type"]
+        
+        # Delete existing line items
+        await estimate_items_collection.delete_many({"estimate_id": estimate_id})
+        
+        processed_items = []
+        for idx, item in enumerate(new_line_items):
+            item_dict = dict(item)
+            # Calculate line item totals
+            totals = calculate_line_item_totals(item_dict, gst_type)
+            item_dict.update(totals)
+            item_dict["line_item_id"] = generate_id("LI")
+            item_dict["estimate_id"] = estimate_id
+            item_dict["line_number"] = idx + 1
+            processed_items.append(item_dict)
+        
+        if processed_items:
+            await estimate_items_collection.insert_many(processed_items)
+        
+        # Recalculate estimate totals
+        discount_type = update_data.get("discount_type", existing.get("discount_type", "none"))
+        discount_value = update_data.get("discount_value", existing.get("discount_value", 0))
+        shipping_charge = update_data.get("shipping_charge", existing.get("shipping_charge", 0))
+        adjustment = update_data.get("adjustment", existing.get("adjustment", 0))
+        
+        totals = calculate_estimate_totals(
+            processed_items, discount_type, discount_value,
+            shipping_charge, adjustment, gst_type
+        )
+        update_data.update(totals)
+        update_data["line_items_count"] = len(processed_items)
+    
     if update_data:
         update_data["updated_time"] = datetime.now(timezone.utc).isoformat()
         await estimates_collection.update_one({"estimate_id": estimate_id}, {"$set": update_data})
@@ -1860,6 +1899,9 @@ async def update_estimate(estimate_id: str, estimate: EstimateUpdate):
     await add_estimate_history(estimate_id, "updated", "Estimate details updated")
     
     updated = await estimates_collection.find_one({"estimate_id": estimate_id}, {"_id": 0})
+    # Include line items in response
+    line_items = await estimate_items_collection.find({"estimate_id": estimate_id}, {"_id": 0}).sort("line_number", 1).to_list(100)
+    updated["line_items"] = line_items
     return {"code": 0, "message": "Estimate updated", "estimate": updated}
 
 @router.delete("/{estimate_id}")
