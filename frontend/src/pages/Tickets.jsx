@@ -83,8 +83,8 @@ export default function Tickets({ user }) {
       
       if (response.ok) {
         const responseData = await response.json();
-        // Handle both array and {tickets: [...]} response formats
-        let data = Array.isArray(responseData) ? responseData : (responseData.tickets || []);
+        // Handle paginated {data:[...]} format, legacy {tickets:[...]} format, and plain array
+        let data = Array.isArray(responseData) ? responseData : (responseData.data || responseData.tickets || []);
         
         // Filter for resolved this week if needed
         if (statusFilter === "resolved_this_week") {
@@ -127,8 +127,8 @@ export default function Tickets({ user }) {
       
       if (response.ok) {
         const responseData = await response.json();
-        // Handle both array and {tickets: [...]} response formats
-        const data = Array.isArray(responseData) ? responseData : (responseData.tickets || []);
+        // Handle paginated {data:[...]} format, legacy {tickets:[...]} format, and plain array
+        const data = Array.isArray(responseData) ? responseData : (responseData.data || responseData.tickets || []);
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
         
