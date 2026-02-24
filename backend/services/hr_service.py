@@ -577,6 +577,14 @@ class HRService:
             except Exception as e:
                 logger.error(f"Exception posting payroll journal entry: {e}")
         
+        # Audit log
+        try:
+            from utils.audit import log_audit, AuditAction
+            await log_audit(self.db, AuditAction.PAYROLL_RUN, org_id or "", user_id,
+                "payroll", period, {"total_net": round(total_net, 2), "employees": len(records)})
+        except Exception:
+            pass
+
         # Emit event
         await self.dispatcher.emit(
             EventType.PAYROLL_PROCESSED,
