@@ -253,7 +253,7 @@ export default function Tickets({ user }) {
   };
 
   return (
-    <div className="space-y-4" data-testid="complaint-dashboard">
+    <div className="space-y-4 overflow-x-hidden w-full" data-testid="complaint-dashboard">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
