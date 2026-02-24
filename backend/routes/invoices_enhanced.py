@@ -1,5 +1,6 @@
 # Enhanced Invoices Module - Full Zoho Books Invoice Management
 # Comprehensive invoicing with payment tracking, partial payments, credits, recurring, and GST compliance
+# TENANT GUARD: Every MongoDB query in this file MUST include {"organization_id": org_id} — no exceptions.
 
 from fastapi import APIRouter, HTTPException, Query, BackgroundTasks, UploadFile, File, Request, Depends
 from fastapi.responses import Response, StreamingResponse

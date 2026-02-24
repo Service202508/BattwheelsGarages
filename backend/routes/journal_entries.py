@@ -7,6 +7,7 @@ API endpoints for double-entry bookkeeping:
 - Account Ledger
 - P&L and Balance Sheet from journal entries
 """
+# TENANT GUARD: Every MongoDB query in this file MUST include {"organization_id": org_id} — no exceptions.
 
 from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from fastapi.responses import Response, StreamingResponse
