@@ -444,6 +444,9 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         "/api/organizations/signup",
         "/api/organizations/register",
         "/api/organizations/accept-invite",
+
+        # Public contact form (no auth needed)
+        "/api/contact",
     }
     
     # Patterns for public endpoints
