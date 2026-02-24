@@ -207,7 +207,7 @@ class TestAdminResetEmployeePassword:
         """Login as admin to get token and headers"""
         res = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "admin"},
+            json={"email": "admin@battwheels.in", "password": "admin1"},
             headers={"Content-Type": "application/json"}
         )
         if res.status_code == 200:
