@@ -44,9 +44,11 @@ Full-stack SaaS application (React + FastAPI + MongoDB) for EV workshop manageme
 - `password_reset_tokens`: user_id, email, token_hash (SHA256), expires_at (1hr TTL), used (bool)
 
 ## Credentials
-- Platform Admin: platform-admin@battwheels.in / admin
-- Org Admin: admin@battwheels.in / q56*09ps4ltWR96MVPvO (reset Feb 24 2026)
-- Technician: tech@battwheels.in / tech123
+- Platform Admin: platform-admin@battwheels.in / [RESET — see password manager]
+- Org Admin: admin@battwheels.in / [RESET — see password manager]
+- Technician: tech@battwheels.in / [RESET — see password manager]
+- All passwords reset Feb 24 2026 to 20-char strong passwords
+- Credentials saved to /app/.credentials — transfer to password manager then delete
 
 ### Environment Separation (Feb 24, 2026)
 - Three-environment structure: production (`battwheels`), staging (`battwheels_staging`), development (`battwheels_dev`)
