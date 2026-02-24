@@ -5870,9 +5870,11 @@ except Exception as e:
     traceback.print_exc()
 
 # Public Ticket routes (Public form submission, tracking, payments)
+# NOTE: Mounted on api_router (not v1_router) so paths are /api/public/...
+# Frontend calls /api/public/tickets/submit, /api/public/vehicle-categories, etc.
 try:
     from routes.public_tickets import router as public_tickets_router
-    v1_router.include_router(public_tickets_router)
+    api_router.include_router(public_tickets_router)
     logger.info("Public Tickets routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Public Tickets routes: {e}")
