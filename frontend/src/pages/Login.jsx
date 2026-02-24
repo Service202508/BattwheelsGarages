@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Mail, Lock, User, Eye, EyeOff, Zap } from "lucide-react";
-import { API } from "@/App";
+import { API, AUTH_API } from "@/App";
 
 // ─── Inject fonts + keyframes once ───────────────────────────────────────────
 function useLoginStyles() {
@@ -586,7 +586,7 @@ export default function Login({ onLogin }) {
     setIsLoading(true);
     setLoginError("");
     try {
-      const response = await fetch(`${API}/auth/login`, {
+      const response = await fetch(`${AUTH_API}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
@@ -626,7 +626,7 @@ export default function Login({ onLogin }) {
     }
     setForgotLoading(true);
     try {
-      const res = await fetch(`${API}/auth/forgot-password`, {
+      const res = await fetch(`${AUTH_API}/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: forgotEmail }),
@@ -656,7 +656,7 @@ export default function Login({ onLogin }) {
     setIsLoading(true);
     setRegisterError("");
     try {
-      const response = await fetch(`${API}/auth/register`, {
+      const response = await fetch(`${AUTH_API}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

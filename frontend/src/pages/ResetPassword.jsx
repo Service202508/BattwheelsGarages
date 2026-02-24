@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Lock, ArrowLeft, Check } from "lucide-react";
-import { API } from "@/App";
+import { API, AUTH_API } from "@/App";
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
