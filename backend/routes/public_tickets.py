@@ -109,32 +109,28 @@ class TicketLookup(BaseModel):
 # ==================== PUBLIC TICKET SUBMISSION ====================
 
 @router.post("/tickets/submit")
-async def submit_public_ticket(data: PublicTicketCreate, background_tasks: BackgroundTasks):
+async def submit_public_ticket(request: Request, data: PublicTicketCreate, background_tasks: BackgroundTasks):
     """
-    Submit a service ticket from public form
-    
-    For Individual + OnSite: Returns payment details
-    For other combinations: Creates ticket directly
-    
-    All public tickets are assigned to the default organization.
+    Submit a service ticket from public form.
+
+    Organization is resolved from the request subdomain or X-Organization-Slug header.
+    For Individual + OnSite: Returns payment details.
+    For other combinations: Creates ticket directly.
     """
     db = get_db()
-    
+
+    # STEP 1 — resolve org from subdomain / header (never from a hardcoded default)
+    organization_id = await get_org_from_request(request, db)
+
+    # STEP 4 — guard: should never be None after get_org_from_request, but be explicit
+    if not organization_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Workshop configuration error. Contact the workshop directly."
+        )
+
     ticket_id = f"tkt_{uuid.uuid4().hex[:12]}"
     now = datetime.now(timezone.utc)
-    
-    # Get default organization for public tickets
-    # This ensures public tickets appear in the admin panel
-    default_org = await db.organizations.find_one(
-        {"$or": [{"is_default": True}, {"slug": "battwheels-default"}]},
-        {"_id": 0, "organization_id": 1}
-    )
-    organization_id = default_org.get("organization_id") if default_org else None
-    
-    # If no default org found, get the first organization
-    if not organization_id:
-        first_org = await db.organizations.find_one({}, {"_id": 0, "organization_id": 1})
-        organization_id = first_org.get("organization_id") if first_org else None
     
     # Determine if payment is required
     requires_payment = data.customer_type == "individual" and data.resolution_type == "onsite"
