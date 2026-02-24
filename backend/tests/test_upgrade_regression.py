@@ -423,14 +423,14 @@ class TestStartupIndexMigrationHook:
             pytest.skip("Log file not accessible")
 
     def test_migration_module_is_importable(self):
-        """Confirm the module imported by startup hook exists"""
-        import importlib.util
-        spec = importlib.util.find_spec("migrations.add_org_id_indexes")
-        # Try looking directly if import spec fails (when running from test dir)
-        import os
+        """Confirm the migration file imported by startup hook exists on disk"""
         migration_path = "/app/backend/migrations/add_org_id_indexes.py"
         assert os.path.exists(migration_path), f"Migration file not found: {migration_path}"
-        print(f"PASS: migration module file exists at {migration_path}")
+        # Also verify it contains the 'run' function
+        with open(migration_path, "r") as f:
+            content = f.read()
+        assert "async def run(" in content, f"'run' function not found in migration file"
+        print(f"PASS: migration module exists at {migration_path} with 'run' function")
 
 
 # ──────────────────────────────────────────────────────────
