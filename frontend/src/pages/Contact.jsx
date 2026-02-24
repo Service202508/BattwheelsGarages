@@ -51,10 +51,23 @@ export default function Contact() {
       return;
     }
     setLoading(true);
-    // Simulate submission — in production, wire to /api/contact or Resend
-    await new Promise(r => setTimeout(r, 900));
-    setSubmitted(true);
-    setLoading(false);
+    try {
+      const res = await fetch(`${API_URL}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        toast.error(data.detail || 'Something went wrong. Please try again.');
+      }
+    } catch {
+      toast.error('Network error. Please email us directly at hello@battwheels.com');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
