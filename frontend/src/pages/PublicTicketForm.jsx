@@ -241,7 +241,7 @@ export default function PublicTicketForm() {
       name: "Battwheels Garages", description: "Service Charges", order_id: paymentDetails.order_id,
       handler: async (r) => {
         const res = await fetch(`${API}/public/tickets/verify-payment`, {
-          method: "POST", headers: { "Content-Type": "application/json" },
+          method: "POST", headers: getPublicHeaders(),
           body: JSON.stringify({ ticket_id: ticketResult.ticket_id, ...r })
         });
         if (res.ok) { setStep(3); toast.success("Payment successful!"); }
