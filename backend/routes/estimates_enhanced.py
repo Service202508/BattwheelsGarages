@@ -156,6 +156,7 @@ class EstimateUpdate(BaseModel):
     billing_address: Optional[Dict[str, str]] = None
     shipping_address: Optional[Dict[str, str]] = None
     template_id: Optional[str] = None
+    line_items: Optional[List[Dict[str, Any]]] = None
 
 class StatusUpdate(BaseModel):
     status: str = Field(..., pattern="^(draft|sent|customer_viewed|accepted|declined|expired|converted|void)$")
