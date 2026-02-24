@@ -188,7 +188,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             max_per_minute = 20
             window = 60
         elif category == "auth_login":
-            max_per_minute = 5
+            max_per_minute = 10
             window = 60
         elif category == "auth_register":
             max_per_minute = 3
