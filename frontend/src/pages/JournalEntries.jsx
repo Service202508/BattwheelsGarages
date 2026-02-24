@@ -1143,37 +1143,41 @@ const JournalEntries = () => {
       params.append('limit', '100');
       if (params.toString()) entriesUrl += `?${params.toString()}`;
 
+      const token = localStorage.getItem('token');
+      const orgId = localStorage.getItem('organization_id');
+      const authHeaders = { Authorization: `Bearer ${token}`, 'X-Organization-ID': orgId || '' };
+
       const [entriesRes, accountsRes, trialRes] = await Promise.all([
-        fetch(entriesUrl, { headers: { 'X-Organization-ID': 'default' }, credentials: 'include' }),
-        fetch(`${API_URL}/api/journal-entries/accounts/chart`, { headers: { 'X-Organization-ID': 'default' }, credentials: 'include' }),
-        fetch(`${API_URL}/api/journal-entries/reports/trial-balance`, { headers: { 'X-Organization-ID': 'default' }, credentials: 'include' })
+        fetch(entriesUrl, { headers: authHeaders, credentials: 'include' }),
+        fetch(`${API_URL}/api/journal-entries/accounts/chart`, { headers: authHeaders, credentials: 'include' }),
+        fetch(`${API_URL}/api/journal-entries/reports/trial-balance`, { headers: authHeaders, credentials: 'include' })
       ]);
 
       const entriesData = await entriesRes.json();
       const accountsData = await accountsRes.json();
       const trialData = await trialRes.json();
 
-      if (entriesData.code === 0) {
-        let filtered = entriesData.entries || [];
-        if (searchQuery) {
-          const q = searchQuery.toLowerCase();
-          filtered = filtered.filter(e => 
-            e.reference_number?.toLowerCase().includes(q) ||
-            e.description?.toLowerCase().includes(q)
-          );
-        }
-        setEntries(filtered);
-        
-        // Calculate stats from entries
-        const totalDebit = filtered.reduce((sum, e) => sum + (e.total_debit || 0), 0);
-        const totalCredit = filtered.reduce((sum, e) => sum + (e.total_credit || 0), 0);
-        setStats({
-          total: entriesData.total || filtered.length,
-          totalDebit,
-          totalCredit,
-          isBalanced: trialData.totals?.is_balanced ?? true
-        });
+      // API returns paginated {data: [...], pagination: {...}} format
+      const rawEntries = entriesData.data || entriesData.entries || [];
+      let filtered = rawEntries;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(e =>
+          e.reference_number?.toLowerCase().includes(q) ||
+          e.description?.toLowerCase().includes(q)
+        );
       }
+      setEntries(filtered);
+
+      // Calculate stats from entries
+      const totalDebit = filtered.reduce((sum, e) => sum + (e.total_debit || 0), 0);
+      const totalCredit = filtered.reduce((sum, e) => sum + (e.total_credit || 0), 0);
+      setStats({
+        total: entriesData.pagination?.total_count || entriesData.total || filtered.length,
+        totalDebit,
+        totalCredit,
+        isBalanced: trialData.totals?.is_balanced ?? true
+      });
 
       if (accountsData.code === 0) {
         setAccounts(accountsData.accounts || []);
