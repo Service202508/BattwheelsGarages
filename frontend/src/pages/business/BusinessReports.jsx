@@ -33,9 +33,13 @@ export default function BusinessReports({ user }) {
       case "quarter":
         startDate = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
         break;
-      case "year":
-        startDate = new Date(now.getFullYear(), 0, 1);
+      case "year": {
+        // Indian Financial Year: April 1 to March 31
+        const month = new Date().getMonth() + 1;
+        const fyStart = month >= 4 ? new Date().getFullYear() : new Date().getFullYear() - 1;
+        startDate = new Date(fyStart, 3, 1);
         break;
+      }
       default:
         startDate = new Date(now.getFullYear(), now.getMonth(), 1);
     }
