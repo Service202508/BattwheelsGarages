@@ -54,8 +54,9 @@ export default function Settings({ user }) {
           new_password: newPassword,
         }),
       });
+      const text = await res.text();
       let data = {};
-      try { data = await res.json(); } catch { /* non-JSON response */ }
+      try { data = JSON.parse(text); } catch { /* non-JSON */ }
       if (res.ok) {
         toast.success(data.message || "Password changed successfully");
         setCurrentPassword("");
