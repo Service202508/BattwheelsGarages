@@ -856,6 +856,7 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
     invoice_doc["line_items"] = cleaned_items
     return {"code": 0, "message": "Invoice created", "invoice": invoice_doc}
 
+@router.get("")
 @router.get("/")
 async def list_invoices(request: Request, customer_id: Optional[str] = None, status: Optional[str] = None, search: Optional[str] = None, date_from: Optional[str] = None, date_to: Optional[str] = None, overdue_only: bool = False, sort_by: str = "invoice_date", sort_order: str = "desc", page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1)
