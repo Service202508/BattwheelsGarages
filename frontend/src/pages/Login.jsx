@@ -619,6 +619,32 @@ export default function Login({ onLogin }) {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!forgotEmail) {
+      toast.error("Please enter your email address");
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      const res = await fetch(`${API}/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      if (res.ok) {
+        setForgotSent(true);
+        toast.success("If an account exists, a reset link has been sent");
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
+    } catch {
+      toast.error("Network error. Please try again.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+
   const handleRegister = async (e) => {
     e.preventDefault();
     if (registerData.password !== registerData.confirmPassword) {
