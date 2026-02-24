@@ -7,6 +7,7 @@ Provides comprehensive financial reports with PDF and Excel export capabilities
 - Accounts Payable Aging
 - Sales by Customer Report
 """
+# TENANT GUARD: Every MongoDB query in this file MUST include {"organization_id": org_id} — no exceptions.
 from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from fastapi.responses import Response, StreamingResponse
 from datetime import datetime, timezone, timedelta
