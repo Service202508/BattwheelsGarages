@@ -18,7 +18,7 @@ from typing import Optional
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = 'https://audit-fixes-5.preview.emergentagent.com'
+    BASE_URL = 'https://production-deploy-7.preview.emergentagent.com'
 
 # Test organization ID
 ORG_ID = "org_71f0df814d6d"
