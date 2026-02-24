@@ -62,8 +62,9 @@ UNIQUE_INDEXES = [
     ("webhook_logs", [("payment_id", 1), ("event", 1)], {
         "name": "idx_webhook_logs_payment_event_unique",
         "unique": True,
-        "sparse": True,  # allows multiple docs without payment_id (non-payment events)
-        "partialFilterExpression": {"payment_id": {"$exists": True, "$ne": None}}
+        # partialFilterExpression: only enforce uniqueness where payment_id exists and is non-null
+        # (non-payment events don't have a payment_id so they're excluded from the constraint)
+        "partialFilterExpression": {"payment_id": {"$exists": True, "$type": "string"}}
     }),
 ]
 
