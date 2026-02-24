@@ -2021,20 +2021,20 @@ async def create_invoice_from_estimate(estimate_id: str, background_tasks: Backg
         {"_id": 0}
     ).to_list(100)
     
-    # Convert to invoice line items
+    # Convert to invoice line items (handle field name differences between estimate and invoice)
     invoice_items = [
         LineItem(
             item_id=item.get("item_id"),
             name=item.get("name"),
             description=item.get("description", ""),
-            hsn_sac_code=item.get("hsn_sac_code", ""),
+            hsn_sac_code=item.get("hsn_sac_code") or item.get("hsn_code", ""),
             quantity=item.get("quantity", 1),
             unit=item.get("unit", "pcs"),
             rate=item.get("rate", 0),
-            discount_type=item.get("discount_type", "percentage"),
-            discount_value=item.get("discount_value", 0),
+            discount_type=item.get("discount_type") or "percentage",
+            discount_value=item.get("discount_value") or item.get("discount_percent", 0),
             tax_type=item.get("tax_type", "gst"),
-            tax_rate=item.get("tax_rate", 18)
+            tax_rate=item.get("tax_rate") or item.get("tax_percentage", 18)
         )
         for item in line_items
     ]
