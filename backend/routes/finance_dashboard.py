@@ -5,6 +5,7 @@ Provides aggregated financial data for the dashboard view.
 
 Author: Battwheels OS
 """
+# TENANT GUARD: Every MongoDB query in this file MUST include {"organization_id": org_id} — no exceptions.
 
 from fastapi import APIRouter, Request, HTTPException
 import logging
