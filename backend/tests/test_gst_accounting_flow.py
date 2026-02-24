@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 # Use public URL from environment
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
-    BASE_URL = "https://efi-feedback-loop.preview.emergentagent.com"
+    BASE_URL = "https://hardening-sprint-7.preview.emergentagent.com"
 
 # Test credentials
 TEST_EMAIL = "admin@battwheels.in"
