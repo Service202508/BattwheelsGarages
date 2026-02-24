@@ -563,6 +563,10 @@ export default function Login({ onLogin }) {
   const [activeTab, setActiveTab] = useState("login");
   const [loginError, setLoginError] = useState("");
   const [registerError, setRegisterError] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotSent, setForgotSent] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({
     name: "",
