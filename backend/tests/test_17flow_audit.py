@@ -361,6 +361,8 @@ class TestFlow05CustomerVehicle:
             "registration_number": "DL01AB1234",
             "contact_id": state["contact_id"],
             "vehicle_type": "2W_EV",
+            "owner_name": "Rajesh Kumar",
+            "battery_capacity": 3.97,
         }
         res = requests.post(
             f"{BASE_URL}/api/vehicles",
