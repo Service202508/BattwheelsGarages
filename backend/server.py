@@ -1546,9 +1546,14 @@ async def change_password(request: Request, data: ChangePasswordRequest):
         raise HTTPException(status_code=401, detail="Current password is incorrect")
     
     new_hash = hash_password(data.new_password)
+    new_pwd_version = datetime.now(timezone.utc).timestamp()
     await db.users.update_one(
         {"user_id": user.user_id},
-        {"$set": {"password_hash": new_hash, "password_changed_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {
+            "password_hash": new_hash,
+            "password_version": new_pwd_version,
+            "password_changed_at": datetime.now(timezone.utc).isoformat(),
+        }}
     )
     logger.info(f"Password changed for user {user.user_id}")
     return {"message": "Password changed successfully"}
