@@ -54,14 +54,15 @@ export default function Settings({ user }) {
           new_password: newPassword,
         }),
       });
-      const data = await res.json();
+      let data = {};
+      try { data = await res.json(); } catch { /* non-JSON response */ }
       if (res.ok) {
-        toast.success("Password changed successfully");
+        toast.success(data.message || "Password changed successfully");
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
       } else {
-        toast.error(data.detail || "Failed to change password");
+        toast.error(data.detail || `Failed to change password (${res.status})`);
       }
     } catch (err) {
       console.error("Change password error:", err);
