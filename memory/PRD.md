@@ -45,11 +45,11 @@ Full-stack SaaS application (React + FastAPI + MongoDB) for EV workshop manageme
 
 ## Credentials
 - Platform Admin: platform-admin@battwheels.in / admin
-- Org Admin: admin@battwheels.in / admin
+- Org Admin: admin@battwheels.in / q56*09ps4ltWR96MVPvO (reset Feb 24 2026)
 - Technician: tech@battwheels.in / tech123
 
 ### Environment Separation (Feb 24, 2026)
-- Three-environment structure: production (`test_database`), staging (`battwheels_staging`), development (`battwheels_dev`)
+- Three-environment structure: production (`battwheels`), staging (`battwheels_staging`), development (`battwheels_dev`)
 - Demo org "Volt Motors" seeded in dev DB with 3 months of realistic data (14 tickets, 8 invoices, 8 customers, 10 inventory items, 3 employees, 11 accounts, 2 payroll runs)
 - Dev org "Battwheels Dev" seeded in dev DB for internal testing
 - Production health check script (`verify_prod_org.py`) — read-only, checks contamination
