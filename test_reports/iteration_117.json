@@ -1,0 +1,89 @@
+{
+  "summary": "All 3 estimate bugs (A, B, C) verified FIXED plus chain link fix. Backend: 11/11 pytest tests pass. Frontend: Edit modal loads line items, Save Changes shows success toast, estimates list displays all 7 estimates.",
+  
+  "bugs_verified": {
+    "Bug_A": {
+      "description": "Save Changes showing error toast while 'Saved Just now' displays",
+      "root_cause": "Frontend sending wrong field names + backend PUT not handling line_items",
+      "fix_location": "Frontend: handleUpdateEstimate (line ~703), Backend: update_estimate (line ~1831)",
+      "status": "FIXED",
+      "verification": "Changed Labour rate 1250→1300, saved successfully, totals recalculated to ₹5,310"
+    },
+    "Bug_B": {
+      "description": "Line items empty when editing estimate - items not loading into edit modal",
+      "root_cause": "handleOpenEdit not normalizing field names between enhanced/ticket estimate formats",
+      "fix_location": "Frontend: handleOpenEdit (line ~606)",
+      "status": "FIXED",
+      "verification": "Edit modal shows BMS Module (₹3,200) and Labour (₹1,300) with correct qty, rate, tax"
+    },
+    "Bug_C": {
+      "description": "Estimates list not loading at all on /estimates page",
+      "root_cause": "Frontend reading data.estimates instead of data.data",
+      "fix_location": "Frontend: fetchEstimates (line ~215)",
+      "status": "FIXED",
+      "verification": "Estimates page displays all 7 estimates with correct amounts"
+    },
+    "Chain_Fix": {
+      "description": "Estimate-to-invoice conversion endpoint querying wrong collection",
+      "root_cause": "POST /api/invoices-enhanced/from-estimate/{id} was querying db['estimates_enhanced'] instead of db['estimates']",
+      "fix_location": "Backend: invoices_enhanced.py line ~2011",
+      "status": "FIXED",
+      "verification": "Draft estimate conversion returns 400 (not accepted) instead of 404 (not found)"
+    }
+  },
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Estimates table",
+        "issues": ["React hydration warnings in console: span cannot be child of thead/tbody/table - visual editor injecting span elements into HTML table structure. Functional but generates console noise."]
+      }
+    ]
+  },
+
+  "test_report_links": [
+    "/app/backend/tests/test_estimate_bug_fixes.py",
+    "/app/test_reports/pytest/estimate_bug_fixes_results.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "Frontend EstimatesEnhanced.jsx uses 'data.data || data.estimates || []' fallback pattern (line ~215) - good defensive coding for API response format changes",
+    "Backend PUT /estimates-enhanced/{id} correctly deletes old line items and re-inserts new ones (atomic update pattern) - avoids orphan line items",
+    "Edit modal autosave feature [AutoSave] logs to console - useful for debugging but consider removing in production"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_estimate_bug_fixes.py (new test file)"
+  ],
+
+  "success_rate": {
+    "backend": "100% (11/11 tests pass)",
+    "frontend": "100% (all bug fixes verified via Playwright)"
+  },
+
+  "test_data_used": {
+    "estimate_tested": "EST-BD88FF9079FD (EST-00002)",
+    "customer": "Rajesh Kumar",
+    "original_total": "₹5,251",
+    "after_test_edit": "₹5,310",
+    "line_items": ["BMS Module (₹3,200)", "Labour - BMS Recalibration (₹1,300)"]
+  },
+
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  
+  "context_for_next_testing_agent": "All 3 reported estimate bugs verified fixed. EST-00002 was used for testing - its totals have been modified during testing (now ₹5,310). The discount dropdown correctly shows None/percent/amount options. Customer Notes and Terms & Conditions fields populate correctly in edit modal. Ticket estimates tab shows 2 estimates (TKT-EST-00001, TKT-EST-00002). Backend PUT endpoint now handles line_items array and recalculates totals atomically.",
+
+  "mocked_apis": {
+    "whatsapp_service": "MOCKED - awaiting live credentials"
+  }
+}
