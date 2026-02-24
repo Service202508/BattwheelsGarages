@@ -2551,9 +2551,11 @@ async def record_payment(data: PaymentCreate, request: Request):
     doc['payment_date'] = doc['payment_date'].isoformat()
     await db.payments.insert_one(doc)
     
-    # Update invoice
-    new_amount_paid = invoice["amount_paid"] + data.amount
-    new_balance = invoice["total_amount"] - new_amount_paid
+    # Update invoice — support both legacy (total_amount) and enhanced (grand_total) schema
+    total = invoice.get("grand_total") or invoice.get("total_amount", 0)
+    current_paid = invoice.get("amount_paid", 0)
+    new_amount_paid = current_paid + data.amount
+    new_balance = total - new_amount_paid
     
     payment_status = "paid" if new_balance <= 0 else "partial"
     invoice_status = "paid" if new_balance <= 0 else "partially_paid"
