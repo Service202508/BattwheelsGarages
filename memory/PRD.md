@@ -16,41 +16,61 @@ Multi-tenant architecture with organization-level data isolation.
 - **Public routes:** `/api/public/...` (non-versioned, no auth required)
 - **Frontend:** `API` constant for business, `AUTH_API` for auth
 - **Lifespan:** `@asynccontextmanager` (no deprecated `on_event`)
-- **Startup:** SLA job + index migration + 23 compound indexes (auto on every deployment)
+- **Startup:** SLA job + index migration + 23 compound indexes
 
 ## Security Posture
 - Multi-tenancy: All route files hardened with org_id filtering
 - JWT: uses `JWT_SECRET` (64-char hex key) with `pwd_v` (password version)
 - JWT validation: checks `is_active` in DB on every request
-- Password reset tokens: SHA-256 hashed, single-use, 1h TTL
 - Rate limiting: 10/min on login, 20/min on AI, 300/min standard
-- File uploads: python-magic MIME validation + size limits
 - CORS: Locked to specific origin (not wildcard)
 
-## Data Integrity
-- Atomic inventory deduction via `find_one_and_update` (prevents negative stock)
-- Payroll duplicate prevention: unique compound index on (org_id, period)
-- Razorpay webhook atomicity: payment-first, notification-after pattern
-- 23 compound indexes on critical query patterns
+## Audit History
 
-## Grand Final Audit (2026-02-24) — APPROVED
+### Grand Final Audit (2026-02-24)
 - **Verdict:** UNCONDITIONALLY APPROVED for commercial operation
-- **Bugs Fixed:** Public ticket routing (404→working), JWT secret inconsistency (unified)
-- **Migration:** 1,375 documents fixed — 342 stamped, 830 remapped from 60 ghost orgs, 203 null→known
-- **Post-migration:** 2,080 docs across 111 collections ALL belong to Battwheels Garages
-- **Indexes Added:** 6 compound indexes on estimates, items, bills, expenses
-- **Tests:** 20/20 pytest PASS, frontend build PASS, health check PASS
+- **Migration:** 1,375 documents fixed across 111 tenant collections
+- **Tests:** 20/20 pytest PASS, frontend build PASS
+
+### Full System Audit (2026-02-24)
+- **System Stability:** 72/100
+- **Multi-Tenant Safety:** 78/100
+- **Financial Integrity:** 65/100
+- **Compliance Readiness:** 60/100
+- **4 CRITICAL findings:** RBAC v1 bypass, AI assistant no org_id, Zoho sync unscoped deletes, Journal posting no idempotency
+- **Full report:** /app/FULL_SYSTEM_AUDIT_REPORT.md
 
 ## Test Credentials
 - Admin: admin@battwheels.in / Admin@12345 (org: Battwheels Garages)
 - Demo (dev DB): demo@voltmotors.in / Demo@12345
 
-## Post-Launch Roadmap (Priority Order)
-- **P1:** Credit Notes (GST compliance) — next development session
-- **P2:** Refactor EstimatesEnhanced.jsx (2,966 lines) — month 1
-- **P3:** Consolidate auth middleware (5 files → 1) — month 1
-- **P4:** Live WhatsApp credentials — month 1-2
-- **P5:** E2E Playwright tests
-- **P6:** Logo swap
-- **P7:** Celery for background jobs — at 3+ customers
-- **P8:** Remove orphaned routes/auth.py
+## Post-Launch Roadmap (Updated Priority)
+
+### CRITICAL (Before First Customer)
+- **C1:** Fix RBAC v1 pattern matching (patterns use `/api/` but routes are `/api/v1/`)
+- **C2:** Add org_id to `ai_assistant.py` (0 tenant scoping currently)
+- **C3:** Add org_id filter to Zoho sync destructive operations
+- **C4:** Add idempotency guard to journal entry posting
+
+### P1 — Next Session
+- **Credit Notes** (GST compliance)
+- **Period Locking** (prevent posting to closed periods)
+- **Audit log wiring** (13 remaining action types)
+
+### P2 — Month 1
+- Refactor EstimatesEnhanced.jsx (2,966 lines)
+- Consolidate 5 auth middleware files → 1
+- Attendance-Payroll integration (LOP deduction)
+- State-variable Professional Tax
+
+### P3 — Month 2-3
+- Deferred revenue recognition
+- ITC eligibility validation
+- Feature gate enforcement on routes
+- GSTR-2A/2B reconciliation
+
+### P4 — At Scale
+- Celery background jobs
+- Redis caching
+- server.py decomposition
+- Live WhatsApp credentials
