@@ -515,6 +515,10 @@ class TicketService:
         # Link failure card if provided
         if data.selected_failure_card:
             update_dict["selected_failure_card"] = data.selected_failure_card
+        
+        # Store confirmed fault if provided
+        if data.confirmed_fault:
+            update_dict["confirmed_fault"] = data.confirmed_fault
             
             # Emit FAILURE_CARD_USED
             await self.dispatcher.emit(
