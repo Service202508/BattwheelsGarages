@@ -375,6 +375,11 @@ class TicketService:
         now = datetime.now(timezone.utc)
         update_dict = {k: v for k, v in data.model_dump().items() if v is not None}
         update_dict["updated_at"] = now.isoformat()
+
+        # Sanitize free-text fields on update (SE4.05)
+        for field in ("title", "description", "resolution"):
+            if field in update_dict:
+                update_dict[field] = _strip_html(update_dict[field])
         
         old_status = existing.get("status")
         new_status = data.status
