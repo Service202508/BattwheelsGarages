@@ -146,9 +146,13 @@ async def get_current_user(request: Request, db) -> dict:
 async def create_employee(data: EmployeeCreateRequest, request: Request):
     service = get_service()
     user = await get_current_user(request, service.db)
-    
+    org_id = await get_org_id(request, service.db)
+
     try:
-        return await service.create_employee(data.model_dump(), user.get("user_id"))
+        emp_data = data.model_dump()
+        if org_id:
+            emp_data["organization_id"] = org_id
+        return await service.create_employee(emp_data, user.get("user_id"))
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -170,9 +174,12 @@ async def list_employees(
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
     service = get_service()
+    org_id = await get_org_id(request, service.db)
 
-    # Build query for count
+    # Build query with org_id filter (TENANT GUARD)
     query = {"status": status}
+    if org_id:
+        query["organization_id"] = org_id
     if department:
         query["department"] = department
     total = await service.db.employees.count_documents(query)
