@@ -807,8 +807,7 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
     }
     
     # Add org_id for multi-tenant scoping
-    if org_id:
-        invoice_doc["organization_id"] = org_id
+    invoice_doc["organization_id"] = org_id
     
     # P2: Validate and auto-correct calculations before save
     invoice_doc = pre_save_validation(invoice_doc)
