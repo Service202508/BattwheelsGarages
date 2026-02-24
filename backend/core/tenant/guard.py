@@ -447,6 +447,7 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
 
         # Public contact form (no auth needed)
         "/api/contact",
+        "/api/book-demo",
     }
     
     # Patterns for public endpoints
