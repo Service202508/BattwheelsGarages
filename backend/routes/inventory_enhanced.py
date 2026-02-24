@@ -143,7 +143,7 @@ async def adjust_stock(
     variant_id: str = None,
     user_id: str = ""
 ):
-    """Atomically adjust stock levels"""
+    """Atomically adjust stock levels using find_one_and_update to prevent races"""
     query = {"item_id": item_id, "warehouse_id": warehouse_id}
     if variant_id:
         query["variant_id"] = variant_id
@@ -163,15 +163,34 @@ async def adjust_stock(
         }
         await stock_locations_collection.insert_one(location)
     
-    new_stock = location.get("available_stock", 0) + quantity
-    
-    if new_stock < 0:
-        raise HTTPException(status_code=400, detail=f"Insufficient stock. Available: {location.get('available_stock', 0)}")
-    
-    await stock_locations_collection.update_one(
-        query,
-        {"$set": {"available_stock": new_stock, "updated_time": datetime.now(timezone.utc).isoformat()}}
-    )
+    if quantity < 0:
+        # Deduction: use atomic check to prevent negative stock
+        abs_qty = abs(quantity)
+        atomic_query = {**query, "available_stock": {"$gte": abs_qty}}
+        result = await stock_locations_collection.find_one_and_update(
+            atomic_query,
+            {
+                "$inc": {"available_stock": quantity},
+                "$set": {"updated_time": datetime.now(timezone.utc).isoformat()},
+            },
+            return_document=True,
+        )
+        if result is None:
+            current = await stock_locations_collection.find_one(query)
+            avail = current.get("available_stock", 0) if current else 0
+            raise HTTPException(status_code=400, detail=f"Insufficient stock. Available: {avail}")
+        new_stock = result["available_stock"]
+    else:
+        # Addition: simple atomic increment (no floor check needed)
+        result = await stock_locations_collection.find_one_and_update(
+            query,
+            {
+                "$inc": {"available_stock": quantity},
+                "$set": {"updated_time": datetime.now(timezone.utc).isoformat()},
+            },
+            return_document=True,
+        )
+        new_stock = result["available_stock"]
     
     # Log history
     await history_collection.insert_one({
