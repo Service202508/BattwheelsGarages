@@ -177,11 +177,14 @@ const SaaSLanding = () => {
           <li><a href="#vision" className="hover:text-white transition">Vision</a></li>
         </ul>
         
-        <div className="flex gap-3">
-          <button onClick={() => navigate('/login')} className="px-5 py-2.5 text-[13px] font-semibold uppercase tracking-wide border border-white/10 hover:border-[#C8FF00] hover:text-[#C8FF00] transition rounded-sm">
+        <div className="flex items-center gap-2">
+          <button onClick={() => navigate('/login')} className="px-3 py-2 text-[12px] text-white/45 hover:text-white/80 transition tracking-wide" data-testid="nav-login-link">
+            Login
+          </button>
+          <button onClick={() => setShowBookDemo(true)} className="px-5 py-2.5 text-[13px] font-semibold uppercase tracking-wide border border-white/10 hover:border-[#C8FF00] hover:text-[#C8FF00] transition rounded-sm" data-testid="nav-book-demo-btn">
             Book Demo
           </button>
-          <button onClick={() => setShowSignup(true)} className="px-5 py-2.5 text-[13px] font-bold uppercase tracking-wide bg-[#C8FF00] text-[#080C0F] hover:bg-[#d4ff1a] hover:shadow-[0_0_24px_rgba(200,255,0,0.3)] transition rounded-sm">
+          <button onClick={() => setShowSignup(true)} className="px-5 py-2.5 text-[13px] font-bold uppercase tracking-wide bg-[#C8FF00] text-[#080C0F] hover:bg-[#d4ff1a] hover:shadow-[0_0_24px_rgba(200,255,0,0.3)] transition rounded-sm" data-testid="nav-free-trial-btn">
             Free Trial
           </button>
         </div>
