@@ -1447,17 +1447,28 @@ export default function EstimatesEnhanced() {
                               <Button 
                                 variant="ghost" 
                                 size="icon"
-                                onClick={() => {
-                                  setSelectedEstimate({
-                                    ...est,
-                                    is_ticket_estimate: true,
-                                    estimate_number: est.estimate_number,
-                                    status: est.status,
-                                    customer_name: est.customer_name,
-                                    line_items: est.line_items || [],
-                                    date: est.created_at?.split('T')[0],
-                                  });
-                                  setShowDetailDialog(true);
+                                onClick={async () => {
+                                  try {
+                                    const res = await fetch(`${API}/ticket-estimates/${est.estimate_id}`, { headers });
+                                    const data = await res.json();
+                                    if (data.code === 0 && data.estimate) {
+                                      setSelectedEstimate({
+                                        ...data.estimate,
+                                        is_ticket_estimate: true,
+                                        date: data.estimate.created_at?.split('T')[0],
+                                      });
+                                    } else {
+                                      setSelectedEstimate({
+                                        ...est,
+                                        is_ticket_estimate: true,
+                                        line_items: est.line_items || [],
+                                        date: est.created_at?.split('T')[0],
+                                      });
+                                    }
+                                    setShowDetailDialog(true);
+                                  } catch (e) {
+                                    toast.error("Failed to load estimate details");
+                                  }
                                 }}
                                 title="View Details"
                               >
