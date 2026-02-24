@@ -505,9 +505,10 @@ async def update_invoice_settings(settings: dict):
 # ========================= SUMMARY (Must be before /{invoice_id}) =========================
 
 @router.get("/summary")
-async def get_invoices_summary(period: str = "all"):
-    """Get invoices summary statistics"""
-    query = {"status": {"$ne": "void"}}
+async def get_invoices_summary(request: Request, period: str = "all"):
+    """Get invoices summary statistics — scoped to the authenticated organisation"""
+    org_id = await get_org_id(request)
+    query = org_query(org_id, {"status": {"$ne": "void"}})
     
     if period == "this_month":
         first_of_month = datetime.now(timezone.utc).replace(day=1, hour=0, minute=0, second=0, microsecond=0).isoformat()

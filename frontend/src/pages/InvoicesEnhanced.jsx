@@ -164,7 +164,7 @@ export default function InvoicesEnhanced() {
       
       const res = await fetch(url, { headers });
       const data = await res.json();
-      setInvoices(data.invoices || []);
+      setInvoices(data.data || data.invoices || []);
     } catch (e) {
       console.error("Failed to fetch invoices:", e);
     }
