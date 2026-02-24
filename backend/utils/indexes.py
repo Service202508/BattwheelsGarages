@@ -72,4 +72,30 @@ async def ensure_compound_indexes(db):
         [("organization_id", 1), ("period", 1)],
         unique=True, name="payroll_org_period_unique", background=True)
 
-    logger.info("Compound indexes ensured")
+    # Estimates indexes
+    await db.estimates.create_index(
+        [("organization_id", 1), ("status", 1), ("created_at", -1)],
+        name="estimates_org_status_date", background=True)
+    await db.estimates.create_index(
+        [("organization_id", 1), ("customer_id", 1)],
+        name="estimates_org_customer", background=True)
+
+    # Items indexes
+    await db.items.create_index(
+        [("organization_id", 1), ("name", 1)],
+        name="items_org_name", background=True)
+    await db.items.create_index(
+        [("organization_id", 1), ("item_type", 1)],
+        name="items_org_type", background=True)
+
+    # Bills indexes
+    await db.bills.create_index(
+        [("organization_id", 1), ("status", 1), ("created_at", -1)],
+        name="bills_org_status_date", background=True)
+
+    # Expenses indexes
+    await db.expenses.create_index(
+        [("organization_id", 1), ("category", 1), ("date", -1)],
+        name="expenses_org_category_date", background=True)
+
+    logger.info("Compound indexes ensured (23 total)")
