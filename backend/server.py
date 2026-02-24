@@ -2954,19 +2954,25 @@ Schedule a workshop inspection for detailed diagnosis. Our technicians are train
 @api_router.get("/dashboard/stats")
 async def get_dashboard_stats(request: Request):
     await require_auth(request)
-    
-    vehicles_in_workshop = await db.vehicles.count_documents({"current_status": "in_workshop"})
-    open_tickets = await db.tickets.count_documents({"status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]}})
+
+    # Scope all queries to the authenticated organisation
+    org_id = getattr(request.state, 'tenant_org_id', None)
+    org_filter = {"organization_id": org_id} if org_id else {}
+
+    vehicles_in_workshop = await db.vehicles.count_documents({**org_filter, "current_status": "in_workshop"})
+    open_tickets = await db.tickets.count_documents({**org_filter, "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]}})
     available_technicians = await db.users.count_documents({"role": "technician", "is_active": True})
     
     # ==================== SERVICE TICKET STATS ====================
     # Count open tickets by resolution_type
     open_onsite = await db.tickets.count_documents({
+        **org_filter,
         "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]},
         "resolution_type": "onsite"
     })
     
     open_workshop = await db.tickets.count_documents({
+        **org_filter,
         "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]},
         "$or": [
             {"resolution_type": "workshop"},
@@ -2977,11 +2983,13 @@ async def get_dashboard_stats(request: Request):
     })
     
     open_pickup = await db.tickets.count_documents({
+        **org_filter,
         "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]},
         "resolution_type": "pickup"
     })
     
     open_remote = await db.tickets.count_documents({
+        **org_filter,
         "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]},
         "resolution_type": "remote"
     })
@@ -2991,6 +2999,7 @@ async def get_dashboard_stats(request: Request):
     
     resolved_tickets = await db.tickets.find(
         {
+            **org_filter,
             "status": {"$in": ["resolved", "closed"]},
             "resolved_at": {"$ne": None}
         },
