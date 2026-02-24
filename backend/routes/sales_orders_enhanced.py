@@ -642,16 +642,18 @@ async def list_sales_orders(
     }
 
 @router.get("/summary")
-async def get_salesorders_summary():
+async def get_salesorders_summary(request: Request):
     """Get sales orders summary statistics"""
-    total = await salesorders_collection.count_documents({})
-    draft = await salesorders_collection.count_documents({"status": "draft"})
-    confirmed = await salesorders_collection.count_documents({"status": "confirmed"})
-    open_count = await salesorders_collection.count_documents({"status": "open"})
-    fulfilled = await salesorders_collection.count_documents({"fulfillment_status": "fulfilled"})
-    partially_fulfilled = await salesorders_collection.count_documents({"fulfillment_status": "partially_fulfilled"})
-    closed = await salesorders_collection.count_documents({"status": "closed"})
-    voided = await salesorders_collection.count_documents({"status": "void"})
+    org_id = extract_org_id(request)
+    base = org_query(org_id)
+    total = await salesorders_collection.count_documents(base)
+    draft = await salesorders_collection.count_documents(org_query(org_id, {"status": "draft"}))
+    confirmed = await salesorders_collection.count_documents(org_query(org_id, {"status": "confirmed"}))
+    open_count = await salesorders_collection.count_documents(org_query(org_id, {"status": "open"}))
+    fulfilled = await salesorders_collection.count_documents(org_query(org_id, {"fulfillment_status": "fulfilled"}))
+    partially_fulfilled = await salesorders_collection.count_documents(org_query(org_id, {"fulfillment_status": "partially_fulfilled"}))
+    closed = await salesorders_collection.count_documents(org_query(org_id, {"status": "closed"}))
+    voided = await salesorders_collection.count_documents(org_query(org_id, {"status": "void"}))
     
     # Calculate totals
     pipeline = [
