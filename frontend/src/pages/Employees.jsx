@@ -623,6 +623,11 @@ export default function Employees({ user }) {
                         <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(emp)}>
                           <Edit className="h-4 w-4" />
                         </Button>
+                        {emp.work_email && (
+                          <Button variant="ghost" size="icon" onClick={() => openResetPassword(emp)} title="Reset Password" data-testid={`reset-password-btn-${emp.employee_id}`}>
+                            <KeyRound className="h-4 w-4 text-yellow-500" />
+                          </Button>
+                        )}
                         {emp.status === "active" && (
                           <Button variant="ghost" size="icon" onClick={() => handleDelete(emp.employee_id)}>
                             <Trash2 className="h-4 w-4 text-destructive" />
