@@ -144,6 +144,11 @@ export default function Employees({ user }) {
   const [managers, setManagers] = useState([]);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
+  const [resetPasswordTarget, setResetPasswordTarget] = useState(null);
+  const [resetNewPassword, setResetNewPassword] = useState("");
+  const [resetConfirmPassword, setResetConfirmPassword] = useState("");
+  const [resettingPassword, setResettingPassword] = useState(false);
 
   // Auto-save for Employee form
   const employeePersistence = useFormPersistence(
