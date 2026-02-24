@@ -576,22 +576,42 @@ async def handle_razorpay_webhook(request: Request):
             raise HTTPException(status_code=400, detail="Invalid webhook signature")
     
     db = get_db()
-    
+    payment_id = payment_entity.get("id")
+
+    # ── Idempotency guard ──────────────────────────────────────────────────
+    # If we have already processed this (payment_id, event) pair, return 200
+    # immediately without re-processing. Razorpay may retry on network errors
+    # and we must not double-credit payments.
+    if payment_id and event:
+        already_processed = await db.webhook_logs.find_one(
+            {"payment_id": payment_id, "event": event, "processed": True},
+            {"_id": 0, "webhook_id": 1}
+        )
+        if already_processed:
+            logger.info(
+                f"[RAZORPAY WEBHOOK] Duplicate event ignored — "
+                f"payment_id={payment_id}, event={event}, "
+                f"webhook_id={already_processed['webhook_id']}"
+            )
+            return {"status": "already_processed", "event": event, "payment_id": payment_id}
+    # ──────────────────────────────────────────────────────────────────────
+
     # Log webhook event
     webhook_log = {
         "webhook_id": f"WH-{uuid.uuid4().hex[:12].upper()}",
         "event": event,
-        "payment_id": payment_entity.get("id"),
+        "payment_id": payment_id,
         "order_id": payment_entity.get("order_id"),
         "amount": payment_entity.get("amount"),
         "status": payment_entity.get("status"),
         "organization_id": org_id,
         "payload": payload,
+        "processed": False,
         "received_at": datetime.now(timezone.utc).isoformat()
     }
     await db.webhook_logs.insert_one(webhook_log)
-    
-    logger.info(f"[RAZORPAY WEBHOOK] Event: {event}, Payment: {payment_entity.get('id')}")
+
+    logger.info(f"[RAZORPAY WEBHOOK] Event: {event}, Payment: {payment_id}")
     
     # Handle specific events
     if event == "payment.captured":
