@@ -296,7 +296,7 @@ async def create_amc_subscription(request: Request, sub_data: AMCSubscriptionCre
 
 @router.get("/subscriptions")
 async def get_amc_subscriptions(request: Request, customer_id: Optional[str] = None, vehicle_id: Optional[str] = None, status: Optional[str] = None, page: int = Query(1, ge=1),
-    limit:: int = Query(25, ge=1)
+    limit: int = Query(25, ge=1)
 ):
     """Get AMC subscriptions with standardized pagination"""
     import math
