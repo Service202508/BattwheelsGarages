@@ -1123,12 +1123,13 @@ def hash_password(password: str) -> str:
 def verify_password(password: str, hashed: str) -> bool:
     return bcrypt.checkpw(password.encode(), hashed.encode())
 
-def create_token(user_id: str, email: str, role: str, org_id: str = None) -> str:
-    """Create JWT token with optional organization context"""
+def create_token(user_id: str, email: str, role: str, org_id: str = None, password_version: float = 0) -> str:
+    """Create JWT token with optional organization context and password version"""
     payload = {
         "user_id": user_id,
         "email": email,
         "role": role,
+        "pwd_v": password_version,
         "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS)
     }
     if org_id:
