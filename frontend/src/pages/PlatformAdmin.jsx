@@ -336,6 +336,28 @@ export default function PlatformAdmin({ user }) {
               <h1 className="font-semibold text-white text-sm">Platform Admin</h1>
               <p className="text-xs text-[rgba(244,246,240,0.35)]">Battwheels OS — Operator Dashboard</p>
             </div>
+            {(() => {
+              const env = process.env.REACT_APP_ENVIRONMENT || "production";
+              const cfg = ENV_CONFIG[env] || ENV_CONFIG.production;
+              return (
+                <span
+                  data-testid="env-badge"
+                  style={{
+                    padding: "4px 10px",
+                    borderRadius: "4px",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    fontFamily: "'JetBrains Mono', monospace",
+                    background: cfg.bg,
+                    color: cfg.color,
+                    border: `1px solid ${cfg.color}40`,
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  {cfg.label}
+                </span>
+              );
+            })()}
           </div>
           <div className="flex items-center gap-2">
             {/* Run Audit button */}
