@@ -313,7 +313,7 @@ async def run_migration(request: Request, config: MigrationConfig, background_ta
     
     # Migrate vendors
     if config.migrate_vendors:
-        vendors = await legacy_vendors_collection.find(org_query(org_id)).to_list(None)
+        vendors = await legacy_vendors_collection.find(org_query(org_id)).to_list(5000)
         
         for vendor in vendors:
             try:
