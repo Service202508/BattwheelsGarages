@@ -273,10 +273,15 @@ class EFIService:
         min_effectiveness: Optional[float] = None,
         source_type: Optional[str] = None,
         limit: int = 50,
-        skip: int = 0
+        skip: int = 0,
+        organization_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """List failure cards with filtering"""
         query = {}
+
+        # Scope to organisation if provided
+        if organization_id:
+            query["organization_id"] = organization_id
         
         if status:
             query["status"] = status
