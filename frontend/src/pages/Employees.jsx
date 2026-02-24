@@ -425,6 +425,52 @@ export default function Employees({ user }) {
     }
   };
 
+  const handleResetPassword = async () => {
+    if (!resetPasswordTarget) return;
+    if (resetNewPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    if (resetNewPassword !== resetConfirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    setResettingPassword(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API}/employees/${resetPasswordTarget.employee_id}/reset-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify({ new_password: resetNewPassword }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message || "Password reset successfully");
+        setResetPasswordOpen(false);
+        setResetNewPassword("");
+        setResetConfirmPassword("");
+        setResetPasswordTarget(null);
+      } else {
+        toast.error(data.detail || "Failed to reset password");
+      }
+    } catch {
+      toast.error("Network error. Please try again.");
+    } finally {
+      setResettingPassword(false);
+    }
+  };
+
+  const openResetPassword = (employee) => {
+    setResetPasswordTarget(employee);
+    setResetNewPassword("");
+    setResetConfirmPassword("");
+    setResetPasswordOpen(true);
+  };
+
   const grossSalary = calculateGrossSalary();
 
   return (
