@@ -6182,18 +6182,22 @@ except Exception as e:
     traceback.print_exc()
 
 # ==================== CORS MIDDLEWARE ====================
-_cors_origins_raw = os.environ.get("CORS_ORIGINS", "*")
-_cors_origins = (
-    ["*"]
-    if _cors_origins_raw.strip() == "*"
-    else [o.strip() for o in _cors_origins_raw.split(",") if o.strip()]
+# Explicit allowed origins — never use wildcard in production
+# Set CORS_ORIGINS env var as comma-separated list of allowed origins
+_cors_origins_raw = os.environ.get(
+    "CORS_ORIGINS",
+    "https://battwheels.com,https://app.battwheels.com,https://preview-insights.preview.emergentagent.com"
 )
+_cors_origins = [o.strip() for o in _cors_origins_raw.split(",") if o.strip()]
+# Allow localhost variants for development
+if os.environ.get("NODE_ENV") != "production":
+    _cors_origins += ["http://localhost:3000", "http://localhost:3001"]
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=_cors_origins,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
+    allow_headers=["Authorization", "Content-Type", "X-Organization-ID", "X-Requested-With", "Accept"],
 )
 
 @app.on_event("shutdown")
