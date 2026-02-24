@@ -459,6 +459,7 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
     # Patterns for public endpoints
     PUBLIC_PATTERNS = [
         r"^/api/public/.*",
+        r"^/api/v1/public-tickets/.*",
         r"^/api/webhooks/.*",
         r"^/api/razorpay/webhook$",
         r"^/api/payments/webhook$",
@@ -466,6 +467,9 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         r"^/api/invoices/public/.*",
         r"^/api/estimates/public/.*",
         r"^/api/quotes/public/.*",
+        r"^/api/v1/invoices/public/.*",
+        r"^/api/v1/invoices-enhanced/public/.*",
+        r"^/api/v1/estimates/public/.*",
         r"^/api/platform/.*",
         r"^/static/.*",
     ]
