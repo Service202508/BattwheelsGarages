@@ -1386,6 +1386,19 @@ export default function Employees({ user }) {
                   <div><span className="text-muted-foreground">IFSC:</span> {selectedEmployee.bank_details?.ifsc_code || "N/A"}</div>
                 </div>
               </div>
+
+              {/* Actions */}
+              {selectedEmployee.work_email && (
+                <div className="pt-2 border-t border-white/10">
+                  <Button
+                    variant="outline"
+                    onClick={() => { setViewDialogOpen(false); openResetPassword(selectedEmployee); }}
+                    data-testid="detail-reset-password-btn"
+                  >
+                    <KeyRound className="h-4 w-4 mr-2" /> Reset Login Password
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </DialogContent>
