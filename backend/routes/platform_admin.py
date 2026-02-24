@@ -435,7 +435,7 @@ async def run_platform_audit(request: Request, _=Depends(require_platform_admin)
         # Keep only last 10 runs
         all_runs = await db.platform_audit_runs.find(
             {}, {"_id": 1}
-        ).sort("created_at", -1).to_list(None)
+        ).sort("created_at", -1).to_list(100)
         if len(all_runs) > 10:
             ids_to_delete = [r["_id"] for r in all_runs[10:]]
             await db.platform_audit_runs.delete_many({"_id": {"$in": ids_to_delete}})
