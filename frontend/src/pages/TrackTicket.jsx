@@ -144,7 +144,7 @@ export default function TrackTicket() {
       if (token) url += `token=${token}`;
       else if (contact) url += `contact=${encodeURIComponent(contact)}`;
       
-      const res = await fetch(url);
+      const res = await fetch(url, { headers: getPublicHeaders() });
       const data = await res.json();
       
       if (!res.ok) {
