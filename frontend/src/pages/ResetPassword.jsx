@@ -34,14 +34,21 @@ export default function ResetPassword() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, new_password: newPassword }),
       });
-      const resClone = res.clone();
-      let data = {};
-      try { data = await resClone.json(); } catch { /* non-JSON */ }
       if (res.ok) {
         setDone(true);
         toast.success("Password reset successfully!");
       } else {
-        toast.error(data.detail || "Failed to reset password");
+        let errorMsg;
+        try {
+          const data = await res.clone().json();
+          errorMsg = data.detail;
+        } catch {
+          // Body already consumed by Sentry instrumentation — use status-based fallback
+          if (res.status === 400) errorMsg = "Invalid or expired reset link";
+          else if (res.status === 422) errorMsg = "Invalid input";
+          else errorMsg = `Request failed (${res.status})`;
+        }
+        toast.error(errorMsg || "Failed to reset password");
       }
     } catch {
       toast.error("Network error. Please try again.");
