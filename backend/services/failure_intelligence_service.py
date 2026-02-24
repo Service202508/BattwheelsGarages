@@ -279,14 +279,9 @@ class EFIService:
         """List failure cards with filtering"""
         query = {}
 
-        # Scope to organisation if provided — include org-specific cards AND
-        # legacy unscoped cards (shared knowledge base built before multi-tenant enforcement)
+        # Scope to organisation — failure cards are org-specific knowledge base
         if organization_id:
-            query["$or"] = [
-                {"organization_id": organization_id},
-                {"organization_id": {"$exists": False}},
-                {"organization_id": None}
-            ]
+            query["organization_id"] = organization_id
         
         if status:
             query["status"] = status
