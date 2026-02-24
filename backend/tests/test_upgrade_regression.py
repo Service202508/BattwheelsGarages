@@ -479,9 +479,12 @@ class TestForm16HRMotorRegression:
 class TestWebhookIdempotencyRegression:
     """Confirms razorpay.py webhook idempotency still works after motor upgrade"""
 
-    def _make_webhook_payload(self, payment_id: str, order_id: str = "order_TEST_REG_001") -> dict:
+    WEBHOOK_SECRET = "Ridhisha2023"  # From backend/.env RAZORPAY_WEBHOOK_SECRET
+
+    def _build_webhook_payload(self, payment_id: str, event: str = "payment.captured",
+                                order_id: str = "order_TEST_REG_001") -> dict:
         return {
-            "event": "payment.captured",
+            "event": event,
             "payload": {
                 "payment": {
                     "entity": {
@@ -491,26 +494,40 @@ class TestWebhookIdempotencyRegression:
                         "currency": "INR",
                         "status": "captured",
                         "method": "upi",
-                        "email": "test@battwheels.in",
-                        "contact": "+919999999999",
-                        "fee": 1180,
-                        "tax": 180,
-                        "created_at": int(time.time()),
+                        "notes": {
+                            "organization_id": "",
+                            "invoice_id": "",
+                        },
                     }
                 }
             }
         }
 
+    def _sign_payload(self, body: bytes) -> str:
+        return hmac.new(
+            self.WEBHOOK_SECRET.encode(),
+            body,
+            hashlib.sha256,
+        ).hexdigest()
+
+    def _post_webhook(self, payload: dict) -> requests.Response:
+        body = json.dumps(payload, separators=(",", ":")).encode()
+        sig = self._sign_payload(body)
+        return requests.post(
+            f"{BASE_URL}/api/payments/webhook",
+            data=body,
+            headers={
+                "Content-Type": "application/json",
+                "X-Razorpay-Signature": sig,
+            },
+            timeout=15,
+        )
+
     def test_first_webhook_processed(self):
         """First webhook call should be processed"""
         unique_id = f"pay_REGRESSION_{int(time.time())}"
-        payload = self._make_webhook_payload(unique_id)
-        resp = requests.post(
-            f"{BASE_URL}/api/payments/webhook",
-            json=payload,
-            headers={"Content-Type": "application/json"},
-            timeout=15,
-        )
+        payload = self._build_webhook_payload(unique_id)
+        resp = self._post_webhook(payload)
         assert resp.status_code == 200, f"First webhook failed: {resp.status_code} {resp.text}"
         data = resp.json()
         status = data.get("status", "")
@@ -518,20 +535,21 @@ class TestWebhookIdempotencyRegression:
             f"Unexpected status on first call: {data}"
         )
         print(f"PASS: First webhook processed. status='{status}'")
+        # Store for next test
+        TestWebhookIdempotencyRegression._test_payment_id = unique_id
 
     def test_duplicate_webhook_returns_already_processed(self):
         """Second identical webhook call must return already_processed"""
         unique_id = f"pay_IDEMPOTENT_{int(time.time())}"
-        payload = self._make_webhook_payload(unique_id)
-        headers = {"Content-Type": "application/json"}
+        payload = self._build_webhook_payload(unique_id)
 
         # First call
-        resp1 = requests.post(f"{BASE_URL}/api/payments/webhook", json=payload, headers=headers, timeout=15)
+        resp1 = self._post_webhook(payload)
         assert resp1.status_code == 200, f"First call failed: {resp1.status_code} {resp1.text}"
 
         # Second call — must be idempotent
         time.sleep(0.5)
-        resp2 = requests.post(f"{BASE_URL}/api/payments/webhook", json=payload, headers=headers, timeout=15)
+        resp2 = self._post_webhook(payload)
         assert resp2.status_code == 200, f"Second call failed: {resp2.status_code} {resp2.text}"
         data2 = resp2.json()
         assert data2.get("status") == "already_processed", (
@@ -542,36 +560,19 @@ class TestWebhookIdempotencyRegression:
     def test_different_event_same_payment_not_duplicate(self):
         """Different event type for same payment should NOT be treated as duplicate"""
         unique_id = f"pay_DIFFEVENT_{int(time.time())}"
-        headers = {"Content-Type": "application/json"}
 
         # Payment captured event
-        captured_payload = {
-            "event": "payment.captured",
-            "payload": {"payment": {"entity": {
-                "id": unique_id, "order_id": "order_TEST_REG_002",
-                "amount": 49900, "currency": "INR", "status": "captured",
-                "method": "upi", "email": "test@battwheels.in",
-                "contact": "+919999999999", "fee": 1000, "tax": 150,
-                "created_at": int(time.time()),
-            }}}
-        }
-        resp1 = requests.post(f"{BASE_URL}/api/payments/webhook", json=captured_payload, headers=headers, timeout=15)
-        assert resp1.status_code == 200, f"captured event failed: {resp1.status_code}"
+        payload1 = self._build_webhook_payload(unique_id, event="payment.captured",
+                                                order_id="order_TEST_REG_002")
+        resp1 = self._post_webhook(payload1)
+        assert resp1.status_code == 200, f"captured event failed: {resp1.status_code} {resp1.text}"
 
-        # Different event (refunded) — should be processed independently
-        refunded_payload = {
-            "event": "payment.failed",
-            "payload": {"payment": {"entity": {
-                "id": unique_id, "order_id": "order_TEST_REG_002",
-                "amount": 49900, "currency": "INR", "status": "failed",
-                "method": "upi", "email": "test@battwheels.in",
-                "contact": "+919999999999", "fee": 0, "tax": 0,
-                "created_at": int(time.time()),
-            }}}
-        }
+        # Different event (payment.failed) — should be processed independently
+        payload2 = self._build_webhook_payload(unique_id, event="payment.failed",
+                                                order_id="order_TEST_REG_002")
         time.sleep(0.3)
-        resp2 = requests.post(f"{BASE_URL}/api/payments/webhook", json=refunded_payload, headers=headers, timeout=15)
-        assert resp2.status_code == 200, f"Different event failed: {resp2.status_code}"
+        resp2 = self._post_webhook(payload2)
+        assert resp2.status_code == 200, f"Different event failed: {resp2.status_code} {resp2.text}"
         data2 = resp2.json()
         assert data2.get("status") != "already_processed", (
             f"Different event should NOT be treated as duplicate: {data2}"
