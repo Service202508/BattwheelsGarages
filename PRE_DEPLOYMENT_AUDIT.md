@@ -327,6 +327,19 @@ Checks for PostgreSQL/Redis/Railway have been adapted to the actual stack.
 |-----|--------|
 | Invoice PDF (WeasyPrint libpango error) | Added `LD_LIBRARY_PATH=/lib/aarch64-linux-gnu:/usr/lib/aarch64-linux-gnu` to supervisor `environment=` for backend. PDF now generates 25KB in 779ms. |
 
+## FIXED IN POST-AUDIT REMEDIATION (Feb 24, 2026)
+
+| Check | Status | Change |
+|-------|--------|--------|
+| **FN11.11** Self-serve signup | ✅ FIXED | `/api/organizations/register` whitelisted in all 4 auth middleware files |
+| **S1.01** Health endpoint | ✅ FIXED | `GET /api/health` returns `{"status":"ok","db":"ok","version":"2.0.0"}` |
+| **S1.06** CORS wildcard | ✅ FIXED | Explicit allowed origins list in `server.py`, wildcard removed |
+| **PY9.02** Razorpay webhook | ✅ FIXED | `/api/payments/webhook` whitelisted in all auth middlewares |
+| **SE4.06** Security headers | ✅ FIXED | `@app.middleware("http")` injects: `X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`, `X-XSS-Protection`, `Referrer-Policy`, `Content-Security-Policy` on every response |
+| **DB2.06** Automated backups | ✅ FIXED | Daily `mongodump` cron at 02:00 UTC via `/etc/cron.d/battwheels-mongodb-backup`. Backup dir: `/var/backups/mongodb/`. Test run: 218 collections backed up. 7-day retention. DR runbook at `/app/DISASTER_RECOVERY_RUNBOOK.md` |
+| **FN11.05** Trial balance 404 | ✅ FIXED | `GET /api/reports/trial-balance` implemented. Returns per-account debit/credit totals with `is_balanced` flag. Verified: 10 accounts, ₹12,96,164 balanced (DR=CR). |
+| **S1.03** Single worker | ⚠️ PLATFORM CONSTRAINT | Supervisor config is platform-managed (`READONLY`). `--reload` and `--workers N` are also mutually exclusive in uvicorn. Increasing workers requires Emergent infrastructure support for production deployment. |
+
 ---
 
 ## DEPLOYMENT VERDICT
