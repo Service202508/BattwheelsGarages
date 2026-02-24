@@ -464,8 +464,7 @@ async def get_learning_stats(http_request: Request):
 
 
 @router.post("/ranking/rank-causes")
-async def rank_probable_causes(http_request: Request, vehicle_make: Optional[str] = None, vehicle_model: Optional[str] = None, subsystem: Optional[str] = None, symptoms: Optional[str] = None, # Comma-separated
-    dtc_codes: Optional[str] = None  # Comma-separated):
+async def rank_probable_causes(http_request: Request, vehicle_make: Optional[str] = None, vehicle_model: Optional[str] = None, subsystem: Optional[str] = None, symptoms: Optional[str] = None, dtc_codes: Optional[str] = None):
     """
     Get ranked probable causes for given context.
     Used by guidance generation.
