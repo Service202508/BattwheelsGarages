@@ -6,7 +6,7 @@ import {
   Building2, Users, BarChart3, ShieldAlert, CheckCircle,
   XCircle, TrendingUp, Search, RefreshCw, ChevronRight,
   Crown, Loader2, AlertTriangle, ArrowLeft, Settings,
-  IndianRupee, Activity, UserPlus, Flame, Play, X
+  IndianRupee, Activity, UserPlus, Flame, Play, X, PhoneCall
 } from "lucide-react";
 
 const PLAN_COLORS = {
