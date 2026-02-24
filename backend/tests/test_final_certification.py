@@ -655,9 +655,9 @@ class TestDEPS:
     """DEPS-01..02: pip-audit and yarn audit"""
 
     def test_DEPS01_pip_audit_no_unfixed_cves(self):
-        """DEPS-01: pip-audit ignoring ecdsa → exit 0"""
+        """DEPS-01: pip-audit ignoring ecdsa (CVE-2024-23342, no fix) → exit 0"""
         result = subprocess.run(
-            ["pip-audit", "--ignore-vuln", "GHSA-3f63-hfp8-52jq"],
+            ["pip-audit", "--ignore-vuln", "CVE-2024-23342"],
             capture_output=True, text=True, timeout=120,
             cwd="/app/backend"
         )
@@ -670,7 +670,7 @@ class TestDEPS:
             f"DEPS-01: pip-audit found unfixed CVEs (exit={result.returncode})\n"
             f"Output: {output[:1000]}"
         )
-        print(f"PASS DEPS-01: pip-audit exit 0 (no unfixed CVEs)")
+        print(f"PASS DEPS-01: pip-audit exit 0 (no unfixed CVEs, ecdsa CVE-2024-23342 ignored)")
 
     def test_DEPS02_yarn_audit_acceptable(self):
         """DEPS-02: yarn audit --level high → acceptable (1 HIGH for jsonpath, build-time only, no fix)"""
