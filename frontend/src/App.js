@@ -511,6 +511,7 @@ function AppRouter() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       
       {/* Zoho-style Financial Home Dashboard */}
       <Route path="/home" element={
