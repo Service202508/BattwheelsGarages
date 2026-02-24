@@ -129,7 +129,12 @@ async def export_tally_xml(request: Request, date_from: str = Query(..., descrip
             {"date": {"$gte": date_from, "$lte": date_to}},
         ],
     }
-    entries = await db.journal_entries.find(query, {"_id": 0}).sort("entry_date", 1).to_list(5000)
+    entries = []
+    cursor = db.journal_entries.find(query, {"_id": 0}).sort("entry_date", 1)
+    async for doc in cursor:
+        entries.append(doc)
+        if len(entries) >= 10000:
+            break
 
     if not entries:
         raise HTTPException(
