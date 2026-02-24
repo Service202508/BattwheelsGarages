@@ -499,6 +499,26 @@ class HRService:
         """Generate payroll for all active employees and post journal entry"""
         employees = await self.list_employees(status="active")
         
+        # Get org_id from user
+        user = await self.db.users.find_one({"user_id": user_id}, {"_id": 0, "organization_id": 1})
+        org_id = user.get("organization_id") if user else None
+
+        # Prevent duplicate payroll run for the same org/period
+        period = f"{month} {year}"
+        if org_id:
+            try:
+                await self.db.payroll_runs.insert_one({
+                    "organization_id": org_id,
+                    "period": period,
+                    "status": "generated",
+                    "generated_by": user_id,
+                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                })
+            except Exception as e:
+                if "E11000" in str(e) or "duplicate key" in str(e).lower():
+                    raise ValueError(f"Payroll for {period} has already been processed.")
+                raise
+
         records = []
         total_gross = 0
         total_net = 0
@@ -510,6 +530,7 @@ class HRService:
             payroll_id = f"pay_{uuid.uuid4().hex[:12]}"
             record = {
                 "payroll_id": payroll_id,
+                "organization_id": org_id,
                 **payroll,
                 "status": "generated",
                 "generated_at": datetime.now(timezone.utc).isoformat(),
