@@ -2590,7 +2590,7 @@ async def record_payment(data: PaymentCreate, request: Request):
     await create_ledger_entry(
         account_type="asset",
         account_name="Accounts Receivable",
-        description=f"Payment received for Invoice {invoice['invoice_number']}",
+        description=f"Payment received for Invoice {invoice.get('invoice_number', invoice.get('invoice_id', 'N/A'))}",
         reference_type="payment",
         reference_id=payment.payment_id,
         debit=0,
@@ -2604,7 +2604,7 @@ async def record_payment(data: PaymentCreate, request: Request):
     await create_ledger_entry(
         account_type="revenue",
         account_name="Service Revenue",
-        description=f"Revenue from Invoice {invoice['invoice_number']}",
+        description=f"Revenue from Invoice {invoice.get('invoice_number', invoice.get('invoice_id', 'N/A'))}",
         reference_type="payment",
         reference_id=payment.payment_id,
         debit=0,
