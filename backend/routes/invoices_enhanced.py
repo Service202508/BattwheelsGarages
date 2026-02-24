@@ -2008,7 +2008,7 @@ async def create_invoice_from_salesorder(salesorder_id: str, background_tasks: B
 @router.post("/from-estimate/{estimate_id}")
 async def create_invoice_from_estimate(estimate_id: str, background_tasks: BackgroundTasks):
     """Create invoice from estimate/quote"""
-    estimate = await db["estimates_enhanced"].find_one({"estimate_id": estimate_id})
+    estimate = await db["estimates"].find_one({"estimate_id": estimate_id})
     if not estimate:
         raise HTTPException(status_code=404, detail="Estimate not found")
     
@@ -2058,7 +2058,7 @@ async def create_invoice_from_estimate(estimate_id: str, background_tasks: Backg
     result = await create_invoice(invoice_data, background_tasks)
     
     # Update estimate
-    await db["estimates_enhanced"].update_one(
+    await db["estimates"].update_one(
         {"estimate_id": estimate_id},
         {"$set": {
             "status": "invoiced",
