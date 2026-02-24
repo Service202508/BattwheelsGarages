@@ -61,6 +61,9 @@ PUBLIC_ROUTES: List[str] = [
     r"^/api/invoices/public/.*$",
     r"^/api/estimates/public/.*$",
     r"^/api/quotes/public/.*$",
+    r"^/api/v1/invoices/public/.*$",
+    r"^/api/v1/estimates/public/.*$",
+    r"^/api/v1/invoices-enhanced/public/.*$",
     
     # Customer portal auth
     r"^/api/customer-portal/auth.*$",
