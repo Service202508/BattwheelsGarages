@@ -600,6 +600,9 @@ class TicketService:
         
         logger.info(f"Closed ticket {ticket_id} with outcome: {data.resolution_outcome}")
         
+        # EFI FEEDBACK LOOP: Update platform patterns with confirmed fault data
+        await self._update_efi_platform_patterns(existing, data)
+        
         # Generate satisfaction survey token
         try:
             survey_token = f"srv_{uuid.uuid4().hex[:24]}"
