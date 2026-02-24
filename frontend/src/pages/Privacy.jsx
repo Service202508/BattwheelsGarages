@@ -75,7 +75,7 @@ export default function Privacy() {
 
         <Section icon={Eye} title="4. Third-Party Services">
           {[
-            ['Razorpay', 'Payment processing for Indian customers. Razorpay receives payment amounts, order references, and your customers' phone/email when required for payment links. Razorpay Privacy Policy: razorpay.com/privacy.'],
+            ['Razorpay', "Payment processing for Indian customers. Razorpay receives payment amounts, order references, and your customers' phone/email when required for payment links. Razorpay Privacy Policy: razorpay.com/privacy."],
             ['Stripe', 'Payment processing for international or test transactions. Stripe Privacy Policy: stripe.com/privacy.'],
             ['Resend', 'Transactional email delivery (invoices, SLA alerts, welcome emails). Resend receives recipient email addresses and email body content. Resend Privacy Policy: resend.com/legal/privacy-policy.'],
             ['Google Gemini (via Emergent)', 'EFI AI diagnostics and assistant responses. Ticket descriptions and vehicle details are sent to the Gemini API for AI processing. Gemini does not use your data to train its models (enterprise API usage).'],
