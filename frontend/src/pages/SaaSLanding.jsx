@@ -133,9 +133,7 @@ const SaaSLanding = () => {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/[0.07] bg-[#080C0F]/85 backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 bg-[#C8FF00] rounded flex items-center justify-center">
-            <Zap className="w-4 h-4 text-[#080C0F]" />
-          </div>
+          <img src={LogoVolt} alt="Battwheels OS" className="w-7 h-7" />
           <span className="text-lg font-extrabold tracking-tight">Battwheels OS</span>
         </div>
         
