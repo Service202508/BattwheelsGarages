@@ -233,13 +233,13 @@ Battwheels OS operates three environments. Every developer and every AI agent mu
 
 | Environment | Database | Org | Purpose |
 |-------------|----------|-----|---------|
-| **production** | test_database | Battwheels Garages (real data) | Live customer use only |
+| **production** | battwheels | Battwheels Garages (real data) | Live customer use only |
 | **staging** | battwheels_staging | Battwheels Garages Staging | Pre-deploy testing |
 | **development** | battwheels_dev | Volt Motors Demo + Battwheels Dev | Feature development |
 
 ### The One Rule
 **NEVER seed, modify, or delete data in the production database during development or testing.**
-- Production = `test_database` (DB_NAME from .env)
+- Production = `battwheels` (DB_NAME from .env)
 - Staging = `battwheels_staging` database
 - Dev = `battwheels_dev` database
 

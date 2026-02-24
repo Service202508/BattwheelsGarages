@@ -3,7 +3,7 @@
 ## Three Environments
 
 ### production (.env)
-- Database: test_database (MongoDB — live production data)
+- Database: battwheels (MongoDB — live production data)
 - Org: Battwheels Garages (real data, real customers, real money)
 - Rule: NEVER use for testing. NEVER seed test data here.
 
