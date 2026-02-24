@@ -162,6 +162,7 @@ def generate_slug(name: str) -> str:
 # ==================== ORGANIZATION SIGNUP ====================
 
 @router.post("/signup", response_model=Dict[str, Any])
+@router.post("/register", response_model=Dict[str, Any], include_in_schema=False)
 async def signup_organization(data: OrganizationCreate):
     """
     Create a new organization with admin user.
