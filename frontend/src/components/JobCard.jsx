@@ -364,21 +364,21 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
   };
 
   const handleCloseTicket = async () => {
-    const resolution = prompt("Enter resolution summary:");
-    if (!resolution) return;
-    
-    const confirmed_fault = prompt("Confirmed fault (for EFI learning — optional):");
+    if (!closeResolution.trim()) {
+      toast.error("Resolution summary is required");
+      return;
+    }
     
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
       const closeData = { 
-        resolution: resolution,
+        resolution: closeResolution.trim(),
         resolution_outcome: "success",
         resolution_notes: "Ticket closed after work completion"
       };
-      if (confirmed_fault) {
-        closeData.confirmed_fault = confirmed_fault;
+      if (closeConfirmedFault.trim()) {
+        closeData.confirmed_fault = closeConfirmedFault.trim();
       }
       const response = await fetch(`${API}/tickets/${localTicket.ticket_id}/close`, {
         method: "POST",
@@ -398,6 +398,9 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
       setLocalTicket(updatedTicket);
       setStatusHistory(updatedTicket.status_history || []);
       if (onUpdate) onUpdate(updatedTicket);
+      setCloseDialogOpen(false);
+      setCloseResolution("");
+      setCloseConfirmedFault("");
       toast.success("Ticket closed successfully!");
       fetchActivities();
     } catch (error) {
