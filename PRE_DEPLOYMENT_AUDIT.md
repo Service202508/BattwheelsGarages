@@ -401,3 +401,33 @@ Status: CONDITIONAL — 8 critical blockers must be resolved
         before production deployment
 ═══════════════════════════════════════════════════════════════
 ```
+
+---
+
+## PREVENTION RULES CHECKLIST
+
+> This checklist MUST be verified by the deployment agent before every production launch.
+> It was created after the February 2026 audit uncovered data isolation breaches across 5 of 7 modules.
+> Reference: `/app/CODING_STANDARDS.md` for full rules with code examples.
+
+### Rule 1 — Tenant Filter on Every Query
+
+- [ ] **No unscoped `find({})` calls** exist on any user-data collection. Every `find()`, `find_one()`, `count_documents()`, and aggregation pipeline's first `$match` stage includes `{"organization_id": org_id}`.
+- [ ] Spot-check: run `grep -rn 'find({})' backend/routes/ backend/services/` — result must be empty or limited to auth/platform-admin routes only.
+- [ ] Spot-check: run `grep -rn 'aggregate(\[' backend/routes/ backend/services/` and confirm every pipeline starts with `{"$match": {"organization_id"`.
+
+### Rule 2 — DB-Layer Counts (No Client-Side Counting)
+
+- [ ] **No `len([x for x in list if ...])` pattern** is used to produce counts shown in dashboards or stats endpoints. All counts use `count_documents()` or an aggregation `$group`.
+- [ ] Spot-check: run `grep -rn 'len(\[' backend/routes/` — review any hits to confirm they are not computing user-facing stat counts.
+- [ ] Manually verify: Workshop Dashboard ticket count == Complaint Dashboard ticket count in the live preview URL before declaring launch-ready.
+
+### Rule 3 — No Hardcoded `organization_id` Values
+
+- [ ] **No string literal is used as an `organization_id`** in any MongoDB query. No `"default"`, `"org_abc123"`, or similar hardcoded values exist in route or service files.
+- [ ] Spot-check: run `grep -rn '"organization_id": "' backend/routes/ backend/services/` — result must be empty.
+- [ ] Every `org_id` in a query is sourced exclusively from `TenantContext.get_org_id(request)`.
+
+---
+
+*Full engineering standards and correct/incorrect code examples: `/app/CODING_STANDARDS.md`*
