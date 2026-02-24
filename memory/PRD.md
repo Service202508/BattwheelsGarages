@@ -11,6 +11,8 @@ Full-stack SaaS application (React + FastAPI + MongoDB) for EV workshop manageme
 - **Integrations:** Resend (email), Razorpay, Stripe (test), Gemini (Emergent LLM Key), WhatsApp (MOCKED)
 
 ## What's Been Implemented
+
+### Core Modules
 - Full multi-tenant SaaS with subdomain-based routing
 - Complete estimates module (create, edit with line items, send, accept, convert to invoice)
 - Complete invoicing with GST, payment tracking, journal entries
@@ -20,28 +22,26 @@ Full-stack SaaS application (React + FastAPI + MongoDB) for EV workshop manageme
 - Customer portal with estimate accept/decline
 - Leads management dashboard for platform admin
 - Sales funnel optimization (Book Demo CTA)
-- Pre-deployment audit (17 flows verified)
 
-## Recent Changes (Feb 24, 2026)
-### Bug Fixes
-1. **Bug A — "Error updating estimate" on Save**: Root cause was frontend sending wrong field names (`estimate_date` instead of `date`, `customer_notes` instead of `notes`, `terms_conditions` instead of `terms_and_conditions`) AND backend PUT not handling `line_items`. Fixed in both `EstimatesEnhanced.jsx` and `estimates_enhanced.py`.
-2. **Bug B — Empty line items in Edit modal**: Root cause was `handleOpenEdit` not normalizing field names between enhanced estimates (`quantity`/`rate`) and ticket estimates (`qty`/`unit_price`). Fixed in `EstimatesEnhanced.jsx`.
-3. **Bug C — Estimates list not loading**: Frontend read `data.estimates` but backend returns `data.data`. Fixed to `data.data || data.estimates || []`.
+### Password Management (Feb 24, 2026)
+1. **Admin Reset Password** — KeyRound button in Employee table actions + "Reset Login Password" button in Employee Detail dialog. Admin sets new password, bcrypt-hashed on save.
+2. **Self-Service Password Change** — Settings → Security section. Requires current password + new password (6+ chars) + confirmation.
+3. **Forgot Password Flow** — "Forgot password?" link on login page opens modal. Sends time-limited (1hr) reset link via Resend email. Token stored hashed (SHA256) in `password_reset_tokens` collection. `/reset-password` page handles token validation and new password entry.
 
-### Chain Audit Fixes
-4. **Estimate-to-Invoice collection bug**: `create_invoice_from_estimate` queried `db["estimates_enhanced"]` but estimates are stored in `db["estimates"]`. Fixed.
-5. **Field name mapping in conversion**: `tax_percentage`→`tax_rate`, `hsn_code`→`hsn_sac_code`, `discount_percent`→`discount_value` — all handled with fallback lookups.
-6. **Backend PUT endpoint enhanced**: Now accepts `line_items` in request body, atomically deletes old items and inserts new ones with recalculated totals.
+### Estimates Bug Fixes (Feb 24, 2026)
+- Bug A: "Error updating estimate" — fixed field name mismatches + added line item support to PUT endpoint
+- Bug B: Empty line items in Edit modal — fixed field normalization between estimate types
+- Bug C: Estimates list not loading — fixed `data.estimates` → `data.data` key mismatch
+- Chain fixes: Collection name bug in estimate-to-invoice conversion, field mapping for tax/HSN/discount
 
-## Chain Status (Estimates → Ticket → Invoice → Accounting)
-| Link | Status | Notes |
-|------|--------|-------|
-| Estimate ↔ Ticket | ✅ Working | Ticket estimates linked via ticket_id |
-| Estimate → Invoice | ✅ Fixed | Collection name bug resolved, field mapping fixed |
-| Invoice → Inventory | ✅ Working | Stock deducted on invoice send, reversed on void |
-| Invoice → Journal | ✅ Working | DR AR / CR Revenue / CR GST on send |
-| Payment → Journal | ✅ Working | DR Bank / CR AR |
-| Parts → COGS | ⚠️ Not automated | No auto COGS posting on ticket close; happens via invoice |
+## New Endpoints (Password Management)
+- `POST /api/auth/change-password` — authenticated, self-service
+- `POST /api/auth/forgot-password` — public, anti-enumeration
+- `POST /api/auth/reset-password` — public, token-based
+- `POST /api/employees/{id}/reset-password` — admin-only
+
+## New DB Collections
+- `password_reset_tokens`: user_id, email, token_hash (SHA256), expires_at (1hr TTL), used (bool)
 
 ## Credentials
 - Platform Admin: platform-admin@battwheels.in / admin
@@ -58,3 +58,9 @@ Full-stack SaaS application (React + FastAPI + MongoDB) for EV workshop manageme
 
 ## Mocked Services
 - WhatsApp integration (`whatsapp_service.py`) — awaiting live credentials
+
+## Known Technical Debt
+- Sentry's browserTracingIntegration consumes fetch response bodies — all error handling uses `res.clone().json()` with status-based fallbacks
+- `@app.on_event('startup')` is deprecated — should use lifespan context manager
+- EstimatesEnhanced.jsx is a recurring refactoring candidate
+- 4 auth middleware files could be consolidated
