@@ -901,14 +901,16 @@ async def get_item_image(image_id: str):
     return {"code": 0, "image": image}
 
 @router.get("/summary")
-async def get_items_summary():
+async def get_items_summary(request: Request):
     """Get items summary statistics"""
     db = get_db()
+    org_id = extract_org_id(request)
+    base = org_query(org_id)
     
-    total_items = await db.items.count_documents({})
-    active_items = await db.items.count_documents({"status": "active"})
-    inventory_items = await db.items.count_documents({"item_type": "inventory"})
-    service_items = await db.items.count_documents({"item_type": "service"})
+    total_items = await db.items.count_documents(base)
+    active_items = await db.items.count_documents(org_query(org_id, {"status": "active"}))
+    inventory_items = await db.items.count_documents(org_query(org_id, {"item_type": "inventory"}))
+    service_items = await db.items.count_documents(org_query(org_id, {"item_type": "service"}))
     
     # Calculate total stock value
     pipeline = [
