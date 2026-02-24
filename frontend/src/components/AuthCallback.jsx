@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { API } from "@/App";
+import { API, AUTH_API } from "@/App";
 
 export default function AuthCallback({ onLogin }) {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ export default function AuthCallback({ onLogin }) {
       }
 
       try {
-        const response = await fetch(`${API}/auth/session`, {
+        const response = await fetch(`${AUTH_API}/auth/session`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",

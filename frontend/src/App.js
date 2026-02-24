@@ -277,7 +277,7 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       const token = localStorage.getItem("token");
-      await fetch(`${API}/auth/logout`, {
+      await fetch(`${AUTH_API}/auth/logout`, {
         method: "POST",
         credentials: "include",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
