@@ -6236,6 +6236,75 @@ async def submit_contact_form(data: ContactFormRequest):
 
     return {"status": "ok", "message": "Message received. We'll be in touch within 48 hours."}
 
+
+# ==================== BOOK DEMO ====================
+
+class BookDemoRequest(BaseModel):
+    name: str
+    workshop_name: str
+    city: str
+    phone: str
+    vehicles_per_month: str  # "<10" | "10-50" | "50-200" | "200+"
+
+
+@app.post("/api/book-demo", tags=["Public"])
+async def book_demo(data: BookDemoRequest):
+    """
+    Pre-sales demo request — no auth required.
+    Stores lead in demo_requests collection and notifies sales@battwheels.com.
+    """
+    from services.email_service import EmailService
+    import uuid as _uuid
+
+    now_str = datetime.now(timezone.utc).isoformat()
+    lead_id = f"demo_{_uuid.uuid4().hex[:10]}"
+
+    # Internal notification to sales team
+    sales_html = f"""
+    <div style="font-family:monospace;background:#080C0F;color:#F4F6F0;padding:32px;border-radius:8px;max-width:560px">
+      <div style="display:inline-block;background:#C8FF00;color:#080C0F;padding:4px 10px;font-size:11px;
+                  font-weight:700;letter-spacing:0.15em;text-transform:uppercase;border-radius:3px;margin-bottom:24px">
+        New Demo Request — {lead_id}
+      </div>
+      <h2 style="margin:0 0 4px;color:#F4F6F0;font-size:18px">{data.name}</h2>
+      <p style="margin:0 0 20px;color:#9ca3af;font-size:13px">{data.phone} · {data.city}</p>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:20px">
+        <tr><td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);color:#9ca3af;font-size:12px;width:180px">Workshop</td>
+            <td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);color:#C8FF00;font-size:12px">{data.workshop_name}</td></tr>
+        <tr><td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);color:#9ca3af;font-size:12px">City</td>
+            <td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:12px">{data.city}</td></tr>
+        <tr><td style="padding:8px 0;color:#9ca3af;font-size:12px">Fleet size</td>
+            <td style="padding:8px 0;font-size:12px">{data.vehicles_per_month} vehicles/month</td></tr>
+      </table>
+      <p style="color:#6b7280;font-size:11px;margin:0">Target SLA: call within 1 business day</p>
+    </div>
+    """
+
+    result = await EmailService.send_email(
+        to="sales@battwheels.com",
+        subject=f"[Demo Request] {data.workshop_name} — {data.city} ({data.vehicles_per_month} vehicles/mo)",
+        html_content=sales_html,
+    )
+    if isinstance(result, Exception):
+        logger.warning(f"Demo request email failed: {result}")
+
+    await db.demo_requests.insert_one({
+        "lead_id": lead_id,
+        "name": data.name,
+        "workshop_name": data.workshop_name,
+        "city": data.city,
+        "phone": data.phone,
+        "vehicles_per_month": data.vehicles_per_month,
+        "status": "new",
+        "submitted_at": now_str,
+    })
+
+    return {
+        "status": "ok",
+        "lead_id": lead_id,
+        "message": "We'll call you within 1 business day."
+    }
+
 # ==================== MULTI-TENANT SYSTEM INITIALIZATION ====================
 # Phase A: Tenant Context Foundation
 # Initialize the SaaS multi-tenant isolation layer
