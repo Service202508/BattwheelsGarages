@@ -215,7 +215,7 @@ export default function PublicTicketForm() {
     try {
       const res = await fetch(`${API}/public/tickets/submit`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getPublicHeaders(),
         body: JSON.stringify({ ...formData, include_visit_fee: requiresPayment() })
       });
       const data = await res.json();
