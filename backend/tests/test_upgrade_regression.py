@@ -45,18 +45,32 @@ REQUIRED_SECURITY_HEADERS = {
 # Fixtures
 # ──────────────────────────────────────────────────────────
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def admin_token():
-    """Login as admin and return JWT token"""
-    resp = requests.post(f"{BASE_URL}/api/auth/login", json={
-        "email": ADMIN_EMAIL,
-        "password": ADMIN_PASSWORD,
-    })
-    assert resp.status_code == 200, f"Admin login failed: {resp.status_code} {resp.text}"
-    data = resp.json()
-    token = data.get("token") or data.get("access_token")
-    assert token, f"No token in login response: {data}"
-    return token
+    """
+    Login as admin and return JWT token.
+    Uses INTERNAL_URL to avoid triggering external rate-limiting (5/min per IP),
+    since the auth regression is already tested explicitly in TestAuthDBReads.
+    """
+    # Try internal URL first to avoid rate limiting from previous test runs
+    for url in [INTERNAL_URL, BASE_URL]:
+        try:
+            resp = requests.post(f"{url}/api/auth/login", json={
+                "email": ADMIN_EMAIL,
+                "password": ADMIN_PASSWORD,
+            }, timeout=10)
+            if resp.status_code == 200:
+                data = resp.json()
+                token = data.get("token") or data.get("access_token")
+                if token:
+                    print(f"Fixture: admin token obtained via {url}")
+                    return token
+            elif resp.status_code == 429:
+                print(f"Rate limited at {url}, trying next...")
+                time.sleep(2)
+        except Exception as e:
+            print(f"Fixture: login failed at {url}: {e}")
+    pytest.fail(f"Admin login failed from both {INTERNAL_URL} and {BASE_URL}")
 
 
 @pytest.fixture(scope="module")
