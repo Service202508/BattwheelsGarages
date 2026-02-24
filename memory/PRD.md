@@ -48,6 +48,24 @@ Full-stack SaaS application (React + FastAPI + MongoDB) for EV workshop manageme
 - Org Admin: admin@battwheels.in / admin
 - Technician: tech@battwheels.in / tech123
 
+### Environment Separation (Feb 24, 2026)
+- Three-environment structure: production (`test_database`), staging (`battwheels_staging`), development (`battwheels_dev`)
+- Demo org "Volt Motors" seeded in dev DB with 3 months of realistic data (14 tickets, 8 invoices, 8 customers, 10 inventory items, 3 employees, 11 accounts, 2 payroll runs)
+- Dev org "Battwheels Dev" seeded in dev DB for internal testing
+- Production health check script (`verify_prod_org.py`) — read-only, checks contamination
+- Environment badge in Platform Admin header (PRODUCTION/STAGING/DEVELOPMENT)
+- CODING_STANDARDS.md updated with Rule 4 (Three-Environment Discipline)
+- Makefile with seed/reseed/check-prod targets
+- Demo login: demo@voltmotors.in / Demo@12345 (dev DB only)
+- Dev login: dev@battwheels.internal / DevTest@123 (dev DB only)
+
+## New Files (Environment Separation)
+- `/app/scripts/seed_demo_org.py` — Seeds Volt Motors demo org (dev/staging only)
+- `/app/scripts/seed_dev_org.py` — Seeds Battwheels Dev org (dev only)
+- `/app/scripts/verify_prod_org.py` — Read-only prod health check
+- `/app/config/environments/README.md` — Environment documentation
+- `/app/Makefile` — Dev commands (seed-demo, seed-dev, reseed-dev, check-prod)
+
 ## Backlog (Prioritized)
 - **P0:** Guide through production deployment (5-step checklist)
 - **P1:** Refactor `@app.on_event('startup')` → lifespan context manager
