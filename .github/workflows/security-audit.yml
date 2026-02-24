@@ -1,0 +1,54 @@
+name: Security Audit
+
+on:
+  pull_request:
+    branches: [main, master, develop]
+  push:
+    branches: [main, master]
+
+jobs:
+  pip-audit:
+    name: Backend — pip-audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pip-audit
+
+      - name: Run pip-audit (fail on HIGH/CRITICAL)
+        working-directory: backend
+        run: |
+          pip-audit \
+            --format=columns \
+            --severity high \
+            --ignore-vuln GHSA-wj6h-64fc-37mp
+          # GHSA-wj6h-64fc-37mp = ecdsa CVE-2024-23342 (no upstream fix available, documented known issue)
+
+  npm-audit:
+    name: Frontend — npm audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci --prefer-offline
+
+      - name: Run npm audit (fail on HIGH/CRITICAL)
+        working-directory: frontend
+        run: npm audit --audit-level=high
