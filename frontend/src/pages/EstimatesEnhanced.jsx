@@ -703,14 +703,45 @@ export default function EstimatesEnhanced() {
   const handleUpdateEstimate = async () => {
     if (!editEstimate) return;
     try {
+      if (editEstimate.is_ticket_estimate) {
+        toast.info("Ticket estimates are managed from the Job Card. Use the Ticket Estimates tab to navigate there.");
+        setShowEditDialog(false);
+        return;
+      }
+      
+      // Map form fields to backend-expected names and include line items
+      const updatePayload = {
+        reference_number: editEstimate.reference_number,
+        date: editEstimate.date,
+        expiry_date: editEstimate.expiry_date,
+        discount_type: editEstimate.discount_type,
+        discount_value: editEstimate.discount_value,
+        shipping_charge: editEstimate.shipping_charge,
+        notes: editEstimate.notes,
+        terms_and_conditions: editEstimate.terms_and_conditions,
+        adjustment: editEstimate.adjustment,
+        line_items: editEstimate.line_items.map(item => ({
+          item_id: item.item_id || null,
+          name: item.name || "",
+          description: item.description || "",
+          hsn_code: item.hsn_code || "",
+          quantity: item.quantity || 1,
+          unit: item.unit || "pcs",
+          rate: item.rate || 0,
+          discount_percent: item.discount_percent || 0,
+          discount_amount: item.discount_type === "amount" ? (item.discount_value || 0) : 0,
+          tax_percentage: item.tax_percentage || 0,
+        })),
+      };
+      
       const res = await fetch(`${API}/estimates-enhanced/${editEstimate.estimate_id}`, {
         method: "PUT",
         headers,
-        body: JSON.stringify(editEstimate)
+        body: JSON.stringify(updatePayload)
       });
       if (res.ok) {
         toast.success("Estimate updated successfully");
-        editEstimatePersistence.onSuccessfulSave(); // Clear auto-saved draft
+        editEstimatePersistence.onSuccessfulSave();
         setShowEditDialog(false);
         fetchEstimateDetail(editEstimate.estimate_id);
         fetchData();
