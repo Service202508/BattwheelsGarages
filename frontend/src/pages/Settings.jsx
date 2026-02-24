@@ -182,23 +182,58 @@ export default function Settings({ user }) {
                 <Shield className="h-5 w-5 text-primary" />
                 Security
               </CardTitle>
-              <CardDescription>Manage your security settings.</CardDescription>
+              <CardDescription>Change your account password.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Current Password</Label>
-                <Input type="password" className="bg-background/50" placeholder="••••••••" />
+                <Label htmlFor="current-password">Current Password</Label>
+                <Input
+                  id="current-password"
+                  type="password"
+                  className="bg-background/50"
+                  placeholder="Enter current password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  data-testid="current-password-input"
+                />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>New Password</Label>
-                  <Input type="password" className="bg-background/50" placeholder="••••••••" />
+                  <Label htmlFor="new-password">New Password</Label>
+                  <Input
+                    id="new-password"
+                    type="password"
+                    className="bg-background/50"
+                    placeholder="Min 6 characters"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    data-testid="new-password-input"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label>Confirm Password</Label>
-                  <Input type="password" className="bg-background/50" placeholder="••••••••" />
+                  <Label htmlFor="confirm-password">Confirm New Password</Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    className="bg-background/50"
+                    placeholder="Re-enter new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    data-testid="confirm-password-input"
+                  />
                 </div>
               </div>
+              <Button
+                onClick={handleChangePassword}
+                disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword}
+                data-testid="change-password-btn"
+              >
+                {changingPassword ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Changing...</>
+                ) : (
+                  <><Shield className="h-4 w-4 mr-2" /> Change Password</>
+                )}
+              </Button>
             </CardContent>
           </Card>
 
