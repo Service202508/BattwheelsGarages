@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { User, Bell, Shield, Palette, Save, Loader2 } from "lucide-react";
-import { API } from "@/App";
+import { API, AUTH_API } from "@/App";
 
 export default function Settings({ user }) {
   const [notifications, setNotifications] = useState({
@@ -42,7 +42,7 @@ export default function Settings({ user }) {
     setChangingPassword(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/auth/change-password`, {
+      const res = await fetch(`${AUTH_API}/auth/change-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
