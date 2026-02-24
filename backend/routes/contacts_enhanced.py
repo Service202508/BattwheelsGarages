@@ -1,6 +1,7 @@
 # Enhanced Contacts Module v2 - Unified Customer & Vendor Management
 # Combines features from contacts_enhanced and customers_enhanced for single source of truth
 # Supports contact_type: customer, vendor, both
+# TENANT GUARD: Every MongoDB query in this file MUST include {"organization_id": org_id} — no exceptions.
 
 from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks, Request
 from pydantic import BaseModel, Field, EmailStr, validator

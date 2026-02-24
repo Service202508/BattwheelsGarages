@@ -2,6 +2,7 @@
 Battwheels OS - Inventory Routes
 Thin controller layer for inventory management
 """
+# TENANT GUARD: Every MongoDB query in this file MUST include {"organization_id": org_id} — no exceptions.
 from fastapi import APIRouter, HTTPException, Request, Query, Depends
 from pydantic import BaseModel
 from typing import Optional, List
