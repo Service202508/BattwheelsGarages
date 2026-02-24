@@ -237,7 +237,7 @@ const SaaSLanding = () => {
               Start 14-Day Free Trial
               <ArrowRight className="w-4 h-4" />
             </button>
-            <button onClick={() => navigate('/login')} className="px-8 py-4 text-sm font-semibold uppercase tracking-wide border border-white/10 hover:border-[#C8FF00] hover:text-[#C8FF00] transition rounded-sm">
+            <button onClick={() => setShowBookDemo(true)} className="px-8 py-4 text-sm font-semibold uppercase tracking-wide border border-white/10 hover:border-[#C8FF00] hover:text-[#C8FF00] transition rounded-sm" data-testid="hero-book-demo-btn">
               Book Enterprise Demo
             </button>
           </div>
