@@ -33,6 +33,32 @@ const SaaSLanding = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleBookDemoSubmit = async (e) => {
+    e.preventDefault();
+    if (!bookDemoData.name || !bookDemoData.workshop_name || !bookDemoData.city || !bookDemoData.phone) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    setBookDemoLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/book-demo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookDemoData)
+      });
+      if (res.ok) {
+        setBookDemoSubmitted(true);
+      } else {
+        const d = await res.json();
+        toast.error(d.detail || 'Something went wrong. Please try again.');
+      }
+    } catch {
+      toast.error('Network error. Please try again.');
+    } finally {
+      setBookDemoLoading(false);
+    }
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setIsLoading(true);
