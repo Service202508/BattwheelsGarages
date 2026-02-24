@@ -35,7 +35,7 @@ async def upload_fault_tree(
     request: Request,
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...)
-):
+)::
     """
     Upload Excel file for fault tree import
     
@@ -105,7 +105,8 @@ async def upload_from_url(
     background_tasks: BackgroundTasks,
     file_url: str,
     filename: Optional[str] = None
-):
+)::
+    org_id = extract_org_id(request)
     """
     Import from a URL (e.g., pre-uploaded asset)
     """
@@ -168,14 +169,16 @@ async def upload_from_url(
 
 
 @router.get("/jobs")
-async def list_import_jobs(request: Request, limit: int = 20):
+async def list_import_jobs(request: Request, limit: int = 20)::
+    org_id = extract_org_id(request)
     """List all import jobs"""
     jobs = await import_service.list_jobs(limit=limit)
     return {"jobs": jobs, "total": len(jobs)}
 
 
 @router.get("/jobs/{job_id}")
-async def get_import_job(job_id: str, request: Request):
+async def get_import_job(job_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Get import job status and details"""
     job = await import_service.get_job_status(job_id)
     if not job:
@@ -184,7 +187,8 @@ async def get_import_job(job_id: str, request: Request):
 
 
 @router.get("/jobs/{job_id}/preview")
-async def get_import_preview(job_id: str, request: Request):
+async def get_import_preview(job_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Get parsed data preview before import"""
     job = await import_service.get_job_status(job_id)
     if not job:
@@ -252,7 +256,8 @@ async def execute_import(
     background_tasks: BackgroundTasks,
     skip_duplicates: bool = True,
     batch_size: int = 50
-):
+)::
+    org_id = extract_org_id(request)
     """
     Execute the import after preview confirmation
     
@@ -297,7 +302,8 @@ async def execute_import(
 
 
 @router.delete("/jobs/{job_id}")
-async def cancel_import(job_id: str, request: Request):
+async def cancel_import(job_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Cancel and cleanup an import job"""
     job = await import_service.get_job_status(job_id)
     if not job:
@@ -320,7 +326,8 @@ async def cancel_import(job_id: str, request: Request):
 
 
 @router.get("/jobs/{job_id}/results")
-async def get_import_results(job_id: str, request: Request, limit: int = 20):
+async def get_import_results(job_id: str, request: Request, limit: int = 20)::
+    org_id = extract_org_id(request)
     """Get created/updated failure cards from import"""
     job = await import_service.get_job_status(job_id)
     if not job:
@@ -372,7 +379,8 @@ async def quick_import(
     request: Request,
     background_tasks: BackgroundTasks,
     file_url: str = "https://customer-assets.emergentagent.com/job_ev-command-3/artifacts/se20dto8_Fautl%20Tree%20-%20SOP%20V16_revision_fta_techn.xlsx"
-):
+)::
+    org_id = extract_org_id(request)
     """
     Quick import from default Battwheels Master Fault Tree URL
     Single-click import for admin convenience

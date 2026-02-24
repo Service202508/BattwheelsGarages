@@ -22,6 +22,7 @@ ALGORITHM = "HS256"
 
 
 async def get_current_technician(request: Request):
+    org_id = extract_org_id(request)
     """Extract technician info from token"""
     token = request.cookies.get("session_token")
     if not token:
@@ -55,7 +56,8 @@ async def get_current_technician(request: Request):
 # ==================== DASHBOARD ====================
 
 @router.get("/dashboard")
-async def get_technician_dashboard(request: Request):
+async def get_technician_dashboard(request: Request)::
+    org_id = extract_org_id(request)
     """Get technician's personal dashboard data"""
     technician = await get_current_technician(request)
     db = get_db()
@@ -167,7 +169,8 @@ async def get_my_tickets(
     priority: Optional[str] = None,
     limit: int = 50,
     skip: int = 0
-):
+)::
+    org_id = extract_org_id(request)
     """Get tickets assigned to the technician"""
     technician = await get_current_technician(request)
     db = get_db()
@@ -204,7 +207,8 @@ async def get_my_tickets(
     }
 
 @router.get("/tickets/{ticket_id}")
-async def get_ticket_detail(request: Request, ticket_id: str):
+async def get_ticket_detail(request: Request, ticket_id: str)::
+    org_id = extract_org_id(request)
     """Get detailed ticket info for technician"""
     technician = await get_current_technician(request)
     db = get_db()
@@ -263,7 +267,8 @@ class CompleteWorkRequest(BaseModel):
     notes: Optional[str] = None
 
 @router.post("/tickets/{ticket_id}/start-work")
-async def start_work(request: Request, ticket_id: str, data: StartWorkRequest):
+async def start_work(request: Request, ticket_id: str, data: StartWorkRequest)::
+    org_id = extract_org_id(request)
     """Start work on assigned ticket"""
     technician = await get_current_technician(request)
     db = get_db()
@@ -315,7 +320,8 @@ async def start_work(request: Request, ticket_id: str, data: StartWorkRequest):
     return {"message": "Work started", "status": "work_in_progress"}
 
 @router.post("/tickets/{ticket_id}/complete-work")
-async def complete_work(request: Request, ticket_id: str, data: CompleteWorkRequest):
+async def complete_work(request: Request, ticket_id: str, data: CompleteWorkRequest)::
+    org_id = extract_org_id(request)
     """Mark work as completed"""
     technician = await get_current_technician(request)
     db = get_db()
@@ -380,7 +386,8 @@ async def get_my_attendance(
     request: Request,
     month: Optional[str] = None,
     year: Optional[int] = None
-):
+)::
+    org_id = extract_org_id(request)
     """Get technician's own attendance records"""
     technician = await get_current_technician(request)
     db = get_db()
@@ -424,7 +431,8 @@ async def get_my_attendance(
     }
 
 @router.post("/attendance/check-in")
-async def check_in(request: Request):
+async def check_in(request: Request)::
+    org_id = extract_org_id(request)
     """Record check-in time"""
     technician = await get_current_technician(request)
     db = get_db()
@@ -464,7 +472,8 @@ async def check_in(request: Request):
     return {"message": "Checked in successfully", "check_in": check_in_time, "status": status}
 
 @router.post("/attendance/check-out")
-async def check_out(request: Request):
+async def check_out(request: Request)::
+    org_id = extract_org_id(request)
     """Record check-out time"""
     technician = await get_current_technician(request)
     db = get_db()
@@ -508,7 +517,8 @@ async def check_out(request: Request):
     return {"message": "Checked out successfully", "check_out": check_out_time, "working_hours": working_hours}
 
 @router.get("/leave")
-async def get_my_leave_requests(request: Request):
+async def get_my_leave_requests(request: Request)::
+    org_id = extract_org_id(request)
     """Get technician's leave requests"""
     technician = await get_current_technician(request)
     db = get_db()
@@ -536,7 +546,8 @@ class LeaveRequest(BaseModel):
     reason: str
 
 @router.post("/leave")
-async def request_leave(request: Request, data: LeaveRequest):
+async def request_leave(request: Request, data: LeaveRequest)::
+    org_id = extract_org_id(request)
     """Submit leave request"""
     technician = await get_current_technician(request)
     db = get_db()
@@ -567,7 +578,8 @@ async def request_leave(request: Request, data: LeaveRequest):
     return leave_doc
 
 @router.get("/payroll")
-async def get_my_payroll(request: Request, months: int = 3):
+async def get_my_payroll(request: Request, months: int = 3)::
+    org_id = extract_org_id(request)
     """Get technician's payroll history"""
     technician = await get_current_technician(request)
     db = get_db()
@@ -583,7 +595,8 @@ async def get_my_payroll(request: Request, months: int = 3):
 # ==================== PRODUCTIVITY ====================
 
 @router.get("/productivity")
-async def get_my_productivity(request: Request):
+async def get_my_productivity(request: Request)::
+    org_id = extract_org_id(request)
     """Get technician's own productivity metrics"""
     technician = await get_current_technician(request)
     db = get_db()
@@ -679,7 +692,8 @@ class AIAssistRequest(BaseModel):
     context: Optional[dict] = None
 
 @router.post("/ai-assist")
-async def technician_ai_assist(data: AIAssistRequest, user: dict = Depends(get_current_technician)):
+async def technician_ai_assist(data: AIAssistRequest, user: dict = Depends(get_current_technician, request: Request))::
+    org_id = extract_org_id(request)
     """
     AI-powered diagnostic assistant for technicians.
     Uses Gemini to provide repair guidance and fault diagnosis.

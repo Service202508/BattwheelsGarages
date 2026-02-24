@@ -80,7 +80,8 @@ async def get_next_payment_number() -> str:
 # ==================== ENDPOINTS ====================
 
 @router.post("/create-payment-link")
-async def create_payment_link(request: CreatePaymentLinkRequest, http_request: Request):
+async def create_payment_link(request: CreatePaymentLinkRequest, http_request: Request)::
+    org_id = extract_org_id(request)
     """
     Create a Stripe checkout session for an invoice payment.
     Returns a payment link URL that the customer can use to pay.
@@ -172,7 +173,8 @@ async def create_payment_link(request: CreatePaymentLinkRequest, http_request: R
 
 
 @router.get("/status/{session_id}")
-async def get_payment_status(session_id: str, http_request: Request):
+async def get_payment_status(session_id: str, http_request: Request)::
+    org_id = extract_org_id(request)
     """
     Check the status of a Stripe checkout session.
     Used for polling after redirect from Stripe.
@@ -339,7 +341,8 @@ async def update_customer_balance(customer_id: str):
 
 
 @router.get("/invoice/{invoice_id}/payment-link")
-async def get_invoice_payment_link(invoice_id: str):
+async def get_invoice_payment_link(invoice_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Get existing payment link for an invoice"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id}, {"_id": 0})
     if not invoice:
@@ -366,8 +369,8 @@ async def list_payment_transactions(
     customer_id: str = "",
     status: str = "",
     page: int = 1,
-    per_page: int = 50
-):
+    per_page: int = 50, request: Request)::
+    org_id = extract_org_id(request)
     """List payment transactions"""
     query = {}
     if invoice_id:
@@ -394,7 +397,8 @@ async def list_payment_transactions(
 
 
 @router.get("/summary")
-async def get_online_payments_summary():
+async def get_online_payments_summary(request: Request)::
+    org_id = extract_org_id(request)
     """Get summary of online payments"""
     # Total online payments
     pipeline = [

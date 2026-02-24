@@ -92,7 +92,7 @@ def calculate_next_date(current_date: datetime, frequency: str, repeat_every: in
 
 async def generate_invoice_number():
     """Generate sequential invoice number"""
-    count = await invoices_collection.count_documents({})
+    count = await invoices_collection.count_documents(org_query(org_id))
     return f"INV-{datetime.now().strftime('%Y%m')}-{str(count + 1).zfill(4)}"
 
 
@@ -149,7 +149,8 @@ async def create_invoice_from_recurring(recurring: dict) -> dict:
 # ==================== API ENDPOINTS ====================
 
 @router.post("")
-async def create_recurring_invoice(data: RecurringInvoiceCreate):
+async def create_recurring_invoice(data: RecurringInvoiceCreate, request: Request)::
+    org_id = extract_org_id(request)
     """Create a new recurring invoice profile"""
     # Validate customer exists
     customer = await contacts_collection.find_one(
@@ -209,8 +210,8 @@ async def list_recurring_invoices(
     status: Optional[str] = None,
     customer_id: Optional[str] = None,
     skip: int = 0,
-    limit: int = 50
-):
+    limit: int = 50, request: Request)::
+    org_id = extract_org_id(request)
     """List all recurring invoice profiles"""
     query = {}
     if status:
@@ -231,9 +232,10 @@ async def list_recurring_invoices(
 
 
 @router.get("/summary")
-async def get_recurring_summary():
+async def get_recurring_summary(request: Request)::
+    org_id = extract_org_id(request)
     """Get summary statistics for recurring invoices"""
-    total = await recurring_collection.count_documents({})
+    total = await recurring_collection.count_documents(org_query(org_id))
     active = await recurring_collection.count_documents({"status": "active"})
     stopped = await recurring_collection.count_documents({"status": "stopped"})
     expired = await recurring_collection.count_documents({"status": "expired"})
@@ -265,7 +267,8 @@ async def get_recurring_summary():
 
 
 @router.get("/{recurring_id}")
-async def get_recurring_invoice(recurring_id: str):
+async def get_recurring_invoice(recurring_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Get a specific recurring invoice profile"""
     profile = await recurring_collection.find_one(
         {"recurring_id": recurring_id}, {"_id": 0}
@@ -286,7 +289,8 @@ async def get_recurring_invoice(recurring_id: str):
 
 
 @router.put("/{recurring_id}")
-async def update_recurring_invoice(recurring_id: str, data: RecurringInvoiceUpdate):
+async def update_recurring_invoice(recurring_id: str, data: RecurringInvoiceUpdate, request: Request)::
+    org_id = extract_org_id(request)
     """Update a recurring invoice profile"""
     profile = await recurring_collection.find_one({"recurring_id": recurring_id})
     if not profile:
@@ -313,7 +317,8 @@ async def update_recurring_invoice(recurring_id: str, data: RecurringInvoiceUpda
 
 
 @router.post("/{recurring_id}/stop")
-async def stop_recurring_invoice(recurring_id: str):
+async def stop_recurring_invoice(recurring_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Stop a recurring invoice profile"""
     result = await recurring_collection.update_one(
         {"recurring_id": recurring_id},
@@ -326,7 +331,8 @@ async def stop_recurring_invoice(recurring_id: str):
 
 
 @router.post("/{recurring_id}/resume")
-async def resume_recurring_invoice(recurring_id: str):
+async def resume_recurring_invoice(recurring_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Resume a stopped recurring invoice profile"""
     profile = await recurring_collection.find_one({"recurring_id": recurring_id})
     if not profile:
@@ -355,7 +361,8 @@ async def resume_recurring_invoice(recurring_id: str):
 
 
 @router.post("/{recurring_id}/generate-now")
-async def generate_invoice_now(recurring_id: str, background_tasks: BackgroundTasks):
+async def generate_invoice_now(recurring_id: str, background_tasks: BackgroundTasks, request: Request)::
+    org_id = extract_org_id(request)
     """Manually generate an invoice from recurring profile"""
     profile = await recurring_collection.find_one(
         {"recurring_id": recurring_id}, {"_id": 0}
@@ -397,7 +404,8 @@ async def generate_invoice_now(recurring_id: str, background_tasks: BackgroundTa
 
 
 @router.post("/process-due")
-async def process_due_recurring_invoices(background_tasks: BackgroundTasks):
+async def process_due_recurring_invoices(background_tasks: BackgroundTasks, request: Request)::
+    org_id = extract_org_id(request)
     """Process all recurring invoices due today (scheduled job)"""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
@@ -461,7 +469,8 @@ async def process_due_recurring_invoices(background_tasks: BackgroundTasks):
 
 
 @router.delete("/{recurring_id}")
-async def delete_recurring_invoice(recurring_id: str):
+async def delete_recurring_invoice(recurring_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Delete a recurring invoice profile"""
     result = await recurring_collection.delete_one({"recurring_id": recurring_id})
     if result.deleted_count == 0:

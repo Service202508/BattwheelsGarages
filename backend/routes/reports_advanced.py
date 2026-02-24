@@ -39,7 +39,8 @@ def round_currency(val: float) -> float:
 # ========================= REVENUE REPORTS =========================
 
 @router.get("/revenue/monthly")
-async def get_monthly_revenue(year: int = None, months: int = 12):
+async def get_monthly_revenue(year: int = None, months: int = 12, request: Request)::
+    org_id = extract_org_id(request)
     """Get monthly revenue data for charts"""
     if not year:
         year = datetime.now(timezone.utc).year
@@ -99,7 +100,8 @@ async def get_monthly_revenue(year: int = None, months: int = 12):
     }
 
 @router.get("/revenue/quarterly")
-async def get_quarterly_revenue(year: int = None):
+async def get_quarterly_revenue(year: int = None, request: Request)::
+    org_id = extract_org_id(request)
     """Get quarterly revenue for charts"""
     if not year:
         year = datetime.now(timezone.utc).year
@@ -151,7 +153,8 @@ async def get_quarterly_revenue(year: int = None):
     }
 
 @router.get("/revenue/yearly-comparison")
-async def get_yearly_comparison(years: int = 3):
+async def get_yearly_comparison(years: int = 3, request: Request)::
+    org_id = extract_org_id(request)
     """Compare revenue across years"""
     current_year = datetime.now(timezone.utc).year
     results = []
@@ -190,7 +193,8 @@ async def get_yearly_comparison(years: int = 3):
 # ========================= RECEIVABLES REPORTS =========================
 
 @router.get("/receivables/aging")
-async def get_receivables_aging_chart():
+async def get_receivables_aging_chart(request: Request)::
+    org_id = extract_org_id(request)
     """Get receivables aging for pie/bar chart"""
     today = datetime.now(timezone.utc).date()
     
@@ -252,7 +256,8 @@ async def get_receivables_aging_chart():
     }
 
 @router.get("/receivables/trend")
-async def get_receivables_trend(months: int = 6):
+async def get_receivables_trend(months: int = 6, request: Request)::
+    org_id = extract_org_id(request)
     """Get receivables trend over time"""
     current = datetime.now(timezone.utc)
     results = []
@@ -301,7 +306,8 @@ async def get_receivables_trend(months: int = 6):
 # ========================= CUSTOMER REPORTS =========================
 
 @router.get("/customers/top-revenue")
-async def get_top_customers_by_revenue(limit: int = 10):
+async def get_top_customers_by_revenue(limit: int = 10, request: Request)::
+    org_id = extract_org_id(request)
     """Get top customers by revenue for chart"""
     pipeline = [
         {"$match": {"status": {"$nin": ["draft", "void"]}}},
@@ -336,7 +342,8 @@ async def get_top_customers_by_revenue(limit: int = 10):
     }
 
 @router.get("/customers/top-outstanding")
-async def get_top_customers_by_outstanding(limit: int = 10):
+async def get_top_customers_by_outstanding(limit: int = 10, request: Request)::
+    org_id = extract_org_id(request)
     """Get customers with highest outstanding"""
     pipeline = [
         {"$match": {"status": {"$in": ["sent", "overdue", "partially_paid"]}, "balance_due": {"$gt": 0}}},
@@ -371,7 +378,8 @@ async def get_top_customers_by_outstanding(limit: int = 10):
     }
 
 @router.get("/customers/acquisition")
-async def get_customer_acquisition(months: int = 12):
+async def get_customer_acquisition(months: int = 12, request: Request)::
+    org_id = extract_org_id(request)
     """Get new customer acquisition over time"""
     current = datetime.now(timezone.utc)
     results = []
@@ -412,7 +420,8 @@ async def get_customer_acquisition(months: int = 12):
 # ========================= SALES FUNNEL =========================
 
 @router.get("/sales/funnel")
-async def get_sales_funnel():
+async def get_sales_funnel(request: Request)::
+    org_id = extract_org_id(request)
     """Get sales funnel data (estimates -> orders -> invoices)"""
     # Estimates
     total_estimates = await estimates_collection.count_documents({"status": {"$ne": "draft"}})
@@ -486,7 +495,8 @@ async def get_sales_funnel():
 # ========================= INVOICE STATUS =========================
 
 @router.get("/invoices/status-distribution")
-async def get_invoice_status_distribution():
+async def get_invoice_status_distribution(request: Request)::
+    org_id = extract_org_id(request)
     """Get invoice status distribution for pie chart"""
     pipeline = [
         {"$group": {
@@ -543,7 +553,8 @@ async def get_invoice_status_distribution():
 # ========================= PAYMENT TRENDS =========================
 
 @router.get("/payments/trend")
-async def get_payment_trend(months: int = 6):
+async def get_payment_trend(months: int = 6, request: Request)::
+    org_id = extract_org_id(request)
     """Get payment collection trend"""
     current = datetime.now(timezone.utc)
     results = []
@@ -590,7 +601,8 @@ async def get_payment_trend(months: int = 6):
     }
 
 @router.get("/payments/by-mode")
-async def get_payments_by_mode():
+async def get_payments_by_mode(request: Request)::
+    org_id = extract_org_id(request)
     """Get payment distribution by mode"""
     pipeline = [
         {"$group": {
@@ -634,7 +646,8 @@ async def get_payments_by_mode():
 # ========================= DASHBOARD SUMMARY =========================
 
 @router.get("/dashboard-summary")
-async def get_dashboard_summary():
+async def get_dashboard_summary(request: Request)::
+    org_id = extract_org_id(request)
     """Get comprehensive dashboard summary with KPIs"""
     today = datetime.now(timezone.utc)
     first_of_month = today.replace(day=1).date().isoformat()
