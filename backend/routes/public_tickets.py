@@ -32,12 +32,20 @@ async def get_org_from_request(request: Request, db) -> str:
     # Extract subdomain: "workshopname.battwheels.com" → "workshopname"
     parts = host.split(".")
     if len(parts) >= 3:
-        subdomain = parts[0]
+        candidate = parts[0]
+        # Ignore known non-workshop prefixes (preview URLs, platform subdomains)
+        if candidate in ("www", "app", "api", "platform", "production-deploy-7", "audit-fixes-5"):
+            subdomain = None
+        else:
+            subdomain = candidate
     else:
-        # Fallback: check header (for direct API calls, mobile PWA, preview URLs)
+        subdomain = None
+
+    # Fallback: check header (for direct API calls, mobile PWA, preview URLs)
+    if not subdomain:
         subdomain = request.headers.get("X-Organization-Slug", None)
 
-    if not subdomain or subdomain in ("www", "app", "api", "platform", "production-deploy-7", "audit-fixes-5"):
+    if not subdomain:
         raise HTTPException(
             status_code=400,
             detail="Cannot determine workshop. Please use your workshop URL (e.g. yourworkshop.battwheels.com)."
