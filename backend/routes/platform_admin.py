@@ -523,3 +523,85 @@ def init_platform_admin_router(app_db):
     global db
     db = app_db
     return router
+
+
+# ==================== LEADS (DEMO REQUESTS) ====================
+
+LEAD_STATUSES = ["new", "called", "qualified", "closed_won", "closed_lost"]
+
+class LeadStatusUpdate(BaseModel):
+    status: str
+
+class LeadNotesUpdate(BaseModel):
+    notes: str
+
+
+@router.get("/leads")
+async def list_leads(
+    request: Request,
+    _=Depends(require_platform_admin),
+    status: Optional[str] = Query(None),
+):
+    """List all demo requests with summary stats. Platform admin only."""
+    now = datetime.now(timezone.utc)
+    week_ago = (now - timedelta(days=7)).isoformat()
+
+    query = {}
+    if status:
+        query["status"] = status
+
+    leads_raw = await db.demo_requests.find(query, {"_id": 0}).sort("submitted_at", -1).to_list(500)
+
+    # Summary stats
+    total = await db.demo_requests.count_documents({})
+    new_this_week = await db.demo_requests.count_documents({"submitted_at": {"$gte": week_ago}})
+    qualified = await db.demo_requests.count_documents({"status": "qualified"})
+    closed_won = await db.demo_requests.count_documents({"status": "closed_won"})
+    conversion_rate = round((closed_won / total) * 100, 1) if total > 0 else 0
+
+    return {
+        "leads": leads_raw,
+        "summary": {
+            "total": total,
+            "new_this_week": new_this_week,
+            "qualified": qualified,
+            "closed_won": closed_won,
+            "conversion_rate": conversion_rate,
+        }
+    }
+
+
+@router.patch("/leads/{lead_id}/status")
+async def update_lead_status(
+    lead_id: str,
+    data: LeadStatusUpdate,
+    _=Depends(require_platform_admin),
+):
+    """Update the status of a demo request lead."""
+    if data.status not in LEAD_STATUSES:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {LEAD_STATUSES}")
+
+    result = await db.demo_requests.update_one(
+        {"lead_id": lead_id},
+        {"$set": {"status": data.status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    return {"success": True, "lead_id": lead_id, "status": data.status}
+
+
+@router.patch("/leads/{lead_id}/notes")
+async def update_lead_notes(
+    lead_id: str,
+    data: LeadNotesUpdate,
+    _=Depends(require_platform_admin),
+):
+    """Save call notes for a demo request lead."""
+    result = await db.demo_requests.update_one(
+        {"lead_id": lead_id},
+        {"$set": {"notes": data.notes, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    return {"success": True, "lead_id": lead_id}
+
