@@ -80,7 +80,7 @@ async def get_next_payment_number(org_id: str) -> str:
 
 @router.post("/create-payment-link")
 async def create_payment_link(request: CreatePaymentLinkRequest, http_request: Request):
-    org_id = extract_org_id(request)
+    org_id = extract_org_id(http_request)
     """
     Create a Stripe checkout session for an invoice payment.
     Returns a payment link URL that the customer can use to pay.
@@ -135,6 +135,7 @@ async def create_payment_link(request: CreatePaymentLinkRequest, http_request: R
     transaction_id = generate_id("TXN")
     transaction_doc = {
         "transaction_id": transaction_id,
+        "organization_id": org_id,
         "session_id": session.session_id,
         "invoice_id": request.invoice_id,
         "invoice_number": invoice.get("invoice_number"),
