@@ -321,11 +321,13 @@ class TestFlow05CustomerVehicle:
     def test_create_contact(self):
         """POST /api/contacts-enhanced/ creates Rajesh Kumar"""
         assert state["token"], "No token from Flow 01"
+        import time as _t
+        unique_ts = int(_t.time())
         payload = {
             "contact_type": "customer",
             "name": "Rajesh Kumar",
-            "phone": "9876543210",
-            "email": "rajesh@test.com",
+            "phone": f"987654{unique_ts % 10000:04d}",
+            "email": f"rajesh_{unique_ts}@test.com",
             "city": "Delhi",
         }
         res = requests.post(
