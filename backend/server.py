@@ -6206,6 +6206,23 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# ==================== SECURITY HEADERS MIDDLEWARE ====================
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    """Inject security headers on every response to protect against common browser attacks."""
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "connect-src 'self' https://*.emergentagent.com https://*.battwheels.com; "
+        "frame-ancestors 'none';"
+    )
+    return response
+
 # ==================== CORS MIDDLEWARE ====================
 # Explicit allowed origins — never use wildcard in production
 # Set CORS_ORIGINS env var as comma-separated list of allowed origins
