@@ -156,7 +156,7 @@ class TestSelfServicePasswordChange:
         # Step 1: Change to new password
         res = requests.post(
             f"{BASE_URL}/api/auth/change-password",
-            json={"current_password": "admin", "new_password": "temppass123"},
+            json={"current_password": "admin1", "new_password": "temppass123"},
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {admin_token}"
@@ -177,26 +177,26 @@ class TestSelfServicePasswordChange:
         new_token = login_res.json().get("token")
         print(f"✓ Login with new password successful")
         
-        # Step 3: Revert password back to 'admin'
+        # Step 3: Revert password back to 'admin1' (6 chars min required)
         revert_res = requests.post(
             f"{BASE_URL}/api/auth/change-password",
-            json={"current_password": "temppass123", "new_password": "admin"},
+            json={"current_password": "temppass123", "new_password": "admin1"},
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {new_token}"
             }
         )
         assert revert_res.status_code == 200, f"Failed to revert password: {revert_res.status_code}"
-        print(f"✓ Password reverted back to 'admin'")
+        print(f"✓ Password reverted back to 'admin1'")
         
         # Step 4: Verify login with original password
         verify_res = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "admin"},
+            json={"email": "admin@battwheels.in", "password": "admin1"},
             headers={"Content-Type": "application/json"}
         )
         assert verify_res.status_code == 200, f"Login with original password failed: {verify_res.status_code}"
-        print(f"✓ Login with original password 'admin' confirmed working")
+        print(f"✓ Login with original password 'admin1' confirmed working")
 
 
 class TestAdminResetEmployeePassword:
