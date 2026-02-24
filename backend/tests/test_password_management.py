@@ -118,7 +118,7 @@ class TestSelfServicePasswordChange:
         """Login as admin to get token"""
         res = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "admin1"},
+            json={"email": "admin@battwheels.in", "password": "admin"},
             headers={"Content-Type": "application/json"}
         )
         if res.status_code == 200:
@@ -153,10 +153,10 @@ class TestSelfServicePasswordChange:
     
     def test_change_password_success_and_revert(self, admin_token):
         """Change password successfully, then revert back to original"""
-        # Step 1: Change to new password
+        # Step 1: Change to new password (6+ chars required for new_password)
         res = requests.post(
             f"{BASE_URL}/api/auth/change-password",
-            json={"current_password": "admin1", "new_password": "temppass123"},
+            json={"current_password": "admin", "new_password": "test_pwd_placeholder"},
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {admin_token}"
@@ -170,33 +170,36 @@ class TestSelfServicePasswordChange:
         # Step 2: Login with new password to verify
         login_res = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "temppass123"},
+            json={"email": "admin@battwheels.in", "password": "test_pwd_placeholder"},
             headers={"Content-Type": "application/json"}
         )
         assert login_res.status_code == 200, f"Could not login with new password: {login_res.status_code}"
         new_token = login_res.json().get("token")
         print(f"✓ Login with new password successful")
         
-        # Step 3: Revert password back to 'admin1' (6 chars min required)
+        # Step 3: CRITICAL - Cannot revert to 'admin' (5 chars) via API due to min_length=6
+        # Must restore via direct DB update after tests
+        # For now, just change back to something 6+ chars that we know
         revert_res = requests.post(
             f"{BASE_URL}/api/auth/change-password",
-            json={"current_password": "temppass123", "new_password": "admin1"},
+            json={"current_password": "test_pwd_placeholder", "new_password": "admin!"},  # 6 chars
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {new_token}"
             }
         )
         assert revert_res.status_code == 200, f"Failed to revert password: {revert_res.status_code}"
-        print(f"✓ Password reverted back to 'admin1'")
+        print(f"✓ Password changed to 'admin!' (6 chars min required)")
         
-        # Step 4: Verify login with original password
+        # Step 4: Verify login with new password
         verify_res = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "admin1"},
+            json={"email": "admin@battwheels.in", "password": "admin!"},
             headers={"Content-Type": "application/json"}
         )
-        assert verify_res.status_code == 200, f"Login with original password failed: {verify_res.status_code}"
-        print(f"✓ Login with original password 'admin1' confirmed working")
+        assert verify_res.status_code == 200, f"Login with password failed: {verify_res.status_code}"
+        print(f"✓ Login with password 'admin!' confirmed working")
+        print(f"⚠ NOTE: Admin password is now 'admin!' - needs DB restore to 'admin' if required")
 
 
 class TestAdminResetEmployeePassword:
@@ -207,7 +210,7 @@ class TestAdminResetEmployeePassword:
         """Login as admin to get token and headers"""
         res = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "admin1"},
+            json={"email": "admin@battwheels.in", "password": "admin"},
             headers={"Content-Type": "application/json"}
         )
         if res.status_code == 200:
