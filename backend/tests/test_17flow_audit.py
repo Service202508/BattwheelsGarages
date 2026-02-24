@@ -596,6 +596,7 @@ class TestFlow09CreateInvoice:
         )
         assert res.status_code == 200, f"Invoice GET failed: {res.text}"
         data = res.json()
+        # Response is {invoice: {...}}
         invoice = data.get("invoice", data)
         has_gst = (
             invoice.get("cgst_amount") is not None
@@ -603,6 +604,7 @@ class TestFlow09CreateInvoice:
             or invoice.get("tax_amount") is not None
             or invoice.get("total_tax") is not None
             or invoice.get("gst_amount") is not None
+            or invoice.get("total_tax_amount") is not None
         )
         assert has_gst, f"No GST amounts in invoice: {list(invoice.keys())}"
         print(f"PASS: Invoice has GST amounts")
