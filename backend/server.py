@@ -6339,25 +6339,35 @@ app.include_router(api_router)
 # No auth required — used by Kubernetes liveness probes and uptime monitors.
 @app.get("/api/health", tags=["Health"])
 async def health_check():
-    """
-    Health check endpoint. Verifies API and MongoDB connectivity.
-    Returns 200 if healthy, 503 if degraded.
-    """
+    """Health check endpoint. Verifies API, MongoDB connectivity, and env config."""
     import asyncio
+    issues = []
+    status_data = {"status": "healthy", "version": "2.0.0", "timestamp": datetime.now(timezone.utc).isoformat()}
+
+    # MongoDB
     try:
-        # Ping MongoDB with a 2-second timeout
-        await asyncio.wait_for(
-            db.command("ping"),
-            timeout=2.0
-        )
-        db_status = "ok"
+        await asyncio.wait_for(db.command("ping"), timeout=2.0)
+        status_data["mongodb"] = "connected"
     except Exception as e:
+        status_data["mongodb"] = "disconnected"
+        issues.append(f"MongoDB: {str(e)[:100]}")
+
+    # Critical env vars
+    required_vars = ["MONGO_URL", "JWT_SECRET_KEY"]
+    missing = [v for v in required_vars if not os.environ.get(v)]
+    if missing:
+        status_data["config"] = "incomplete"
+        issues.append(f"Missing env vars: {missing}")
+    else:
+        status_data["config"] = "complete"
+
+    if issues:
+        status_data["status"] = "degraded"
+        status_data["issues"] = issues
         from fastapi.responses import JSONResponse as _JSONResponse
-        return _JSONResponse(
-            status_code=503,
-            content={"status": "degraded", "db": "error", "detail": str(e)}
-        )
-    return {"status": "ok", "db": db_status, "version": "2.0.0"}
+        return _JSONResponse(status_code=503, content=status_data)
+
+    return status_data
 
 
 class ContactFormRequest(BaseModel):
