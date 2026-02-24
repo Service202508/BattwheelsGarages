@@ -34,7 +34,7 @@
     },
     "S1.06_cors_regression": {
       "status": "PASS (app-level)",
-      "details": "Application-level CORS (localhost:8001) correctly blocks arbitrary origins (returns 400 'Disallowed CORS origin', no wildcard). Allowed origin https://hardening-sprint-7.preview.emergentagent.com correctly echoed back. CORS_ORIGINS list has no '*' entries. Platform constraint: Cloudflare proxy adds '*' at ingress level for external URL."
+      "details": "Application-level CORS (localhost:8001) correctly blocks arbitrary origins (returns 400 'Disallowed CORS origin', no wildcard). Allowed origin https://security-overhaul-3.preview.emergentagent.com correctly echoed back. CORS_ORIGINS list has no '*' entries. Platform constraint: Cloudflare proxy adds '*' at ingress level for external URL."
     },
     "FN11.11_signup_regression": {
       "status": "PASS",
