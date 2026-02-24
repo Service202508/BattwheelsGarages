@@ -442,7 +442,7 @@ export default function Tickets({ user }) {
                   <div
                     key={ticket.ticket_id}
                     data-testid={`ticket-row-${ticket.ticket_id}`}
-                    className="p-4"
+                    className="p-4 w-full min-w-0"
                     style={{ background: "rgba(17,24,32,0.5)" }}
                   >
                     {/* Top row: ID + Priority + Status */}
