@@ -63,7 +63,8 @@ export default function Settings({ user }) {
       } else {
         toast.error(data.detail || "Failed to change password");
       }
-    } catch {
+    } catch (err) {
+      console.error("Change password error:", err);
       toast.error("Network error. Please try again.");
     } finally {
       setChangingPassword(false);
