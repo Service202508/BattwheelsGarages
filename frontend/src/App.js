@@ -12,6 +12,7 @@ import Docs from "@/pages/Docs";
 import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
 import Contact from "@/pages/Contact";
+import ResetPassword from "@/pages/ResetPassword";
 import Dashboard from "@/pages/Dashboard";
 import Tickets from "@/pages/Tickets";
 import NewTicket from "@/pages/NewTicket";
