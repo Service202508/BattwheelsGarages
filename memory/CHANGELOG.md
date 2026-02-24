@@ -1,97 +1,45 @@
-# Battwheels OS - Changelog
+# Battwheels OS — Changelog
 
-## February 21, 2026
+## Feb 24, 2026 — Hardening Sprint (Session 3)
+All 14 items implemented and verified:
 
-### SaaS Multi-Tenant Architecture - All Phases Complete (A-G)
-- **Status:** IMPLEMENTED AND TESTED (35/35 tests passed)
-- **Test Suites:** 
-  - `/app/backend/tests/test_tenant_isolation.py` (14 tests)
-  - `/app/backend/tests/test_phase_cde.py` (9 tests)
-  - `/app/backend/tests/test_phase_fg.py` (12 tests)
+### Multi-Tenancy (Item 1)
+- Fixed org_id stamps in master_data.py, invoice_payments.py, invoices_enhanced.py
+- 0 unscoped queries remaining in routes/
 
-#### Phase A - Tenant Context Foundation
-- TenantContext, TenantGuard, TenantRepository, TenantEventEmitter, TenantAuditService
-- TenantGuardMiddleware + exception handlers (403/400/429)
+### Security
+- **S5:** Password version in JWT (`pwd_v` field) — sessions invalidated on password change
+- **S2:** `is_active` DB check on every JWT validation — deactivated users blocked immediately
+- **S4:** Rate limiting verified: 5/min on login endpoint (already configured)
+- **S3:** PIL-based MIME validation added to file upload service
+- **S1:** Password reset tokens already using SHA-256 hash + 1h TTL (verified)
 
-#### Phase A+ - Route Migration (Core)
-- Tickets, vehicles, inventory, suppliers routes
+### Data Integrity
+- **D1:** Atomic inventory deduction via `find_one_and_update` with `$gte` floor check
+- **D3:** Unique compound index on `payroll_runs(organization_id, period)` — prevents duplicate runs
+- **Section 5:** Razorpay webhook atomicity — critical block pattern, notifications fail silently
 
-#### Phase B - Data Layer Hardening
-- 11,759 documents migrated across 134 collections
+### Operational
+- **O1:** Structured audit logging (`utils/audit.py`) wired to: ticket close, password change, payroll run, user removal, Razorpay payment (6+ endpoints)
+- **O2:** Enhanced health check — MongoDB ping + env var verification
+- **O3:** Bounded cursor iteration in tally_export, data_migration, platform_admin
 
-#### Phase C - RBAC Tenant Scoping
-- TenantRBACService with system/custom roles per-org
+### Architecture
+- **Section 7:** 17+ compound indexes auto-created on startup via `utils/indexes.py`
+- **Section 8:** Lifespan refactor — replaced all `@app.on_event` with `@asynccontextmanager`
+- **B1:** Indian FY (April-March) date defaults in BusinessReports.jsx + backend/frontend utilities
 
-#### Phase D - Event System Tenant Tagging
-- Event class with organization_id field
+### Testing
+- Full regression: 19/20 backend, 100% frontend (iteration_122.json)
 
-#### Phase E - Intelligence Layer Tenant Isolation
-- TenantVectorStorage, TenantAIService
+## Feb 24, 2026 — Session 2
+- API v1 versioning: auth at /api/auth/, business at /api/v1/
+- EFI feedback loop UI: Shadcn Dialog in JobCard.jsx
+- MongoDB schema validators on 7 collections
 
-#### Phase F - Token Vault (NEW)
-- `/app/backend/core/tenant/token_vault.py`
-- TenantTokenVault: Encrypted per-org token storage
-- PBKDF2 key derivation per organization
-- TenantZohoSyncService: Isolated Zoho sync
-
-#### Phase G - Observability & Governance (NEW)
-- `/app/backend/core/tenant/observability.py`
-- TenantObservabilityService: Activity logs, metrics, quotas
-- UsageQuota: Limit tracking with period reset
-- Data retention policy support
-
-#### Route Migration - Enhanced Modules (NEW)
-- invoices_enhanced.py migrated
-- estimates_enhanced.py migrated
-- contacts_enhanced.py migrated
-- items_enhanced.py migrated
-- sales_orders_enhanced.py migrated
-
----
-
-## February 20, 2026
-
-### Enterprise QA Audit Completed
-- **Audit Score:** 98% - APPROVED FOR PRODUCTION
-- **Backend Tests:** 100% (25/25 passed)
-- **Calculation Tests:** 100% (39/39 passed)
-- **Cross-Portal Tests:** 100% (11/11 passed)
-
-### Data Fixes
-- Fixed 7 invoices with null `grand_total` (set to 0)
-
-### Test Suite Created
-- `/app/backend/tests/test_enterprise_qa_audit.py` - 25 comprehensive tests
-- Covers: Auth, RBAC, Tickets, Invoices, Multi-tenant, EFI Intelligence
-
-### Audit Report
-- Full report: `/app/ENTERPRISE_QA_AUDIT_REPORT.md`
-- Test results: `/app/test_reports/iteration_78.json`
-
----
-
-## Previous Sessions
-
-### EFI Intelligence Engine (Phase 2)
-- Model-aware ranking service
-- Continuous learning loop
-- Failure cards with success rate tracking
-- Risk alerts and pattern detection
-
-### Workshop Dashboard Enhancement
-- Service Tickets tab with real-time metrics
-- Open tickets, Onsite/Workshop split
-- Average resolution time
-- 30-day summary stats
-
-### Zoho Books Integration
-- Real-time sync for invoices, estimates, expenses
-- GST compliance (CGST/SGST/IGST)
-- Multi-currency support
-
-### Core Modules
-- Tickets/Job Cards with full lifecycle
-- Estimates with line items and approval workflow
-- Invoices with payment allocation
-- Inventory management with stock tracking
-- AMC contract management
+## Feb 24, 2026 — Session 1
+- Master audit of 16 modules
+- Multi-tenancy hardening: 22 route files patched
+- Legacy data cleanup
+- Environment separation: dev/staging/prod
+- Password security reset
