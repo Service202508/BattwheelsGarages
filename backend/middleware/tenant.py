@@ -69,6 +69,7 @@ PUBLIC_ROUTES: List[str] = [
     r"^/api/organizations/signup$",
     r"^/api/organizations/register$",
     r"^/api/contact$",
+    r"^/api/book-demo$",
     r"^/api/organizations/accept-invite$",
     
     # Webhook endpoints (use different auth — signature verified inside handler)
