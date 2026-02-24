@@ -373,7 +373,7 @@ async def sync_from_zoho_contacts(request: Request):
     results = {"migrated": 0, "skipped": 0, "errors": []}
     
     # Find Zoho-synced contacts in legacy collection
-    zoho_contacts = await legacy_contacts_collection.find({"contact_id": {"$exists": True}}).to_list(None)
+    zoho_contacts = await legacy_contacts_collection.find({"contact_id": {"$exists": True}}).to_list(5000)
     
     for contact in zoho_contacts:
         try:
