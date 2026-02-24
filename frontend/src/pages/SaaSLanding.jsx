@@ -12,6 +12,12 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 const SaaSLanding = () => {
   const navigate = useNavigate();
   const [showSignup, setShowSignup] = useState(false);
+  const [showBookDemo, setShowBookDemo] = useState(false);
+  const [bookDemoSubmitted, setBookDemoSubmitted] = useState(false);
+  const [bookDemoLoading, setBookDemoLoading] = useState(false);
+  const [bookDemoData, setBookDemoData] = useState({
+    name: '', workshop_name: '', city: '', phone: '', vehicles_per_month: '<10'
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
