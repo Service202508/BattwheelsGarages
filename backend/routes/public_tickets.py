@@ -361,14 +361,17 @@ async def verify_ticket_payment(data: TicketPaymentVerify, background_tasks: Bac
 # ==================== PUBLIC TICKET TRACKING ====================
 
 @router.post("/tickets/lookup")
-async def lookup_ticket(data: TicketLookup):
-    """Look up ticket(s) by ID, phone, or email"""
+async def lookup_ticket(request: Request, data: TicketLookup):
+    """Look up ticket(s) by ID, phone, or email — scoped to the requesting workshop."""
     db = get_db()
-    
+
     if not data.ticket_id and not data.contact_number and not data.email:
         raise HTTPException(status_code=400, detail="Please provide ticket ID, phone number, or email")
-    
-    query = {}
+
+    # STEP 2 — scope every lookup to the workshop that owns the request
+    organization_id = await get_org_from_request(request, db)
+
+    query = {"organization_id": organization_id}
     if data.ticket_id:
         query["ticket_id"] = data.ticket_id
     elif data.contact_number:
