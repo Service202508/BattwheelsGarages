@@ -352,7 +352,8 @@ const JournalEntryModal = ({ isOpen, onClose, accounts, onSuccess }) => {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'X-Organization-ID': 'default'
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'X-Organization-ID': localStorage.getItem('organization_id') || ''
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -781,7 +782,10 @@ const AccountLedgerTab = ({ accounts }) => {
       if (params.toString()) url += `?${params.toString()}`;
 
       const response = await fetch(url, {
-        headers: { 'X-Organization-ID': 'default' },
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'X-Organization-ID': localStorage.getItem('organization_id') || ''
+        },
         credentials: 'include'
       });
       const data = await response.json();
