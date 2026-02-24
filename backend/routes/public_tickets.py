@@ -430,8 +430,11 @@ async def get_public_ticket(
         raise HTTPException(status_code=403, detail="Access denied. Please verify your contact details.")
     
     # Get estimate if exists
+    # STEP 3 — scope all linked data to the ticket's own org_id
+    org_id = ticket["organization_id"]
+
     estimate = await db.ticket_estimates.find_one(
-        {"ticket_id": ticket_id},
+        {"ticket_id": ticket_id, "organization_id": org_id},
         {"_id": 0}
     )
     
@@ -445,19 +448,19 @@ async def get_public_ticket(
     
     # Get invoice if exists
     invoice = await db.invoices.find_one(
-        {"ticket_id": ticket_id},
+        {"ticket_id": ticket_id, "organization_id": org_id},
         {"_id": 0, "invoice_id": 1, "invoice_number": 1, "total": 1, "balance": 1, "status": 1, "payment_link_url": 1}
     )
     
     # Get payments
     payments = await db.ticket_payments.find(
-        {"ticket_id": ticket_id},
+        {"ticket_id": ticket_id, "organization_id": org_id},
         {"_id": 0}
     ).sort("created_at", -1).to_list(50)
     
     # Get activities
     activities = await db.ticket_activities.find(
-        {"ticket_id": ticket_id},
+        {"ticket_id": ticket_id, "organization_id": org_id},
         {"_id": 0}
     ).sort("timestamp", -1).to_list(50)
     
