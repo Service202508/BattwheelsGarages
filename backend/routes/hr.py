@@ -473,7 +473,10 @@ async def generate_payroll(request: Request, month: str = None, year: int = None
     month = month or now.strftime("%B")
     year = year or now.year
     
-    return await service.generate_payroll(month, year, user.get("user_id"))
+    try:
+        return await service.generate_payroll(month, year, user.get("user_id"))
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))
 
 
 @router.get("/payroll/records")
