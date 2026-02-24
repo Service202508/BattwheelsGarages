@@ -1645,9 +1645,14 @@ async def reset_password(data: ResetPasswordRequest):
     
     # Update password
     new_hash = hash_password(data.new_password)
+    new_pwd_version = datetime.now(timezone.utc).timestamp()
     await db.users.update_one(
         {"user_id": token_doc["user_id"]},
-        {"$set": {"password_hash": new_hash, "password_changed_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {
+            "password_hash": new_hash,
+            "password_version": new_pwd_version,
+            "password_changed_at": datetime.now(timezone.utc).isoformat(),
+        }}
     )
     
     # Mark token as used
