@@ -399,8 +399,8 @@ class TestOPERATIONS:
         print(f"PASS OPERATIONS-03: inventory 200 paginated")
 
     def test_OPERATIONS04_contacts_enhanced_returns_200(self, admin_headers):
-        """OPERATIONS-04: GET /api/contacts-enhanced → 200"""
-        resp = requests.get(f"{BASE_URL}/api/contacts-enhanced",
+        """OPERATIONS-04: GET /api/contacts-enhanced → 200 (trailing slash avoids redirect)"""
+        resp = requests.get(f"{BASE_URL}/api/contacts-enhanced/",
                             headers=admin_headers, timeout=15)
         assert resp.status_code == 200, f"OPERATIONS-04: {resp.status_code}: {resp.text}"
         print(f"PASS OPERATIONS-04: contacts-enhanced 200")
