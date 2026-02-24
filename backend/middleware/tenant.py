@@ -56,6 +56,7 @@ PUBLIC_ROUTES: List[str] = [
     r"^/api/public/track$",
     r"^/api/public/estimate.*$",
     r"^/api/v1/public-tickets/.*$",
+    r"^/api/v1/public/.*$",
     
     # Public invoice/estimate view
     r"^/api/invoices/public/.*$",
