@@ -5356,14 +5356,14 @@ init_efi_router(db, efi_event_processor)
 init_notification_router(db)
 
 # Include EFI routes (core intelligence engine)
-api_router.include_router(efi_router)
-api_router.include_router(notification_router)
+v1_router.include_router(efi_router)
+v1_router.include_router(notification_router)
 
 # Include EFI Guided Execution routes (decision trees & diagnostics)
 try:
     from routes.efi_guided import router as efi_guided_router, init_router as init_efi_guided_router
     init_efi_guided_router(db)
-    api_router.include_router(efi_guided_router)
+    v1_router.include_router(efi_guided_router)
     logger.info("EFI Guided Execution router loaded")
 except Exception as e:
     logger.warning(f"Could not load EFI Guided router: {e}")
@@ -5371,7 +5371,7 @@ except Exception as e:
 # Include Customer Portal routes
 try:
     from routes.customer_portal import router as customer_router
-    api_router.include_router(customer_router)
+    v1_router.include_router(customer_router)
     logger.info("Customer Portal router included")
 except Exception as e:
     logger.warning(f"Could not load customer portal router: {e}")
@@ -5379,7 +5379,7 @@ except Exception as e:
 # Include AMC routes
 try:
     from routes.amc import router as amc_router
-    api_router.include_router(amc_router)
+    v1_router.include_router(amc_router)
     logger.info("AMC router included")
 except Exception as e:
     logger.warning(f"Could not load AMC router: {e}")
@@ -5387,7 +5387,7 @@ except Exception as e:
 # Include Zoho Books routes
 try:
     from routes.books import router as books_router
-    api_router.include_router(books_router)
+    v1_router.include_router(books_router)
     logger.info("Zoho Books router included")
 except Exception as e:
     logger.warning(f"Could not load Books router: {e}")
@@ -5395,7 +5395,7 @@ except Exception as e:
 # Include ERP routes (Zoho Books-like operations)
 try:
     from routes.erp import router as erp_router
-    api_router.include_router(erp_router)
+    v1_router.include_router(erp_router)
     logger.info("ERP router included")
 except Exception as e:
     logger.warning(f"Could not load ERP router: {e}")
@@ -5403,7 +5403,7 @@ except Exception as e:
 # Include Zoho API routes (comprehensive Zoho Books API)
 try:
     from routes.zoho_api import router as zoho_router
-    api_router.include_router(zoho_router)
+    v1_router.include_router(zoho_router)
     logger.info("Zoho API router included")
 except Exception as e:
     logger.warning(f"Could not load Zoho API router: {e}")
@@ -5411,7 +5411,7 @@ except Exception as e:
 # Include Notifications routes
 try:
     from routes.notifications import router as notifications_router
-    api_router.include_router(notifications_router)
+    v1_router.include_router(notifications_router)
     logger.info("Notifications router included")
 except Exception as e:
     logger.warning(f"Could not load Notifications router: {e}")
@@ -5420,7 +5420,7 @@ except Exception as e:
 try:
     from routes.uploads import router as uploads_router, init_upload_routes
     init_upload_routes(db)
-    api_router.include_router(uploads_router)
+    v1_router.include_router(uploads_router)
     logger.info("File Upload router included")
 except Exception as e:
     logger.warning(f"Could not load File Upload router: {e}")
@@ -5428,7 +5428,7 @@ except Exception as e:
 # Include Export routes (E-Invoice & Tally)
 try:
     from routes.export import router as export_router
-    api_router.include_router(export_router)
+    v1_router.include_router(export_router)
     logger.info("Export router included")
 except Exception as e:
     logger.warning(f"Could not load Export router: {e}")
@@ -5436,7 +5436,7 @@ except Exception as e:
 # Include Zoho Books Sync routes (Live API Integration)
 try:
     from routes.zoho_sync import router as zoho_sync_router
-    api_router.include_router(zoho_sync_router)
+    v1_router.include_router(zoho_sync_router)
     logger.info("Zoho Sync router included")
 except Exception as e:
     logger.warning(f"Could not load Zoho Sync router: {e}")
@@ -5444,42 +5444,42 @@ except Exception as e:
 # Include Zoho Extended routes (Recurring, Projects, Taxes, etc.)
 try:
     from routes.zoho_extended import router as zoho_extended_router
-    api_router.include_router(zoho_extended_router)
+    v1_router.include_router(zoho_extended_router)
     logger.info("Zoho Extended router included")
 except Exception as e:
     logger.warning(f"Could not load Zoho Extended router: {e}")
 
 # Include tickets routes (event-driven module)
 if tickets_router:
-    api_router.include_router(tickets_router)
+    v1_router.include_router(tickets_router)
     logger.info("Tickets router included")
 
 # Include inventory routes (event-driven module)
 if inventory_router:
-    api_router.include_router(inventory_router)
+    v1_router.include_router(inventory_router)
     logger.info("Inventory router included")
 
 # Include HR routes (event-driven module)
 if hr_router:
-    api_router.include_router(hr_router)
+    v1_router.include_router(hr_router)
     logger.info("HR router included")
 
 # Include productivity routes
 try:
     if productivity_router:
-        api_router.include_router(productivity_router)
+        v1_router.include_router(productivity_router)
         logger.info("Productivity router included")
 except:
     pass
 
 # Include import routes
 if import_router:
-    api_router.include_router(import_router)
+    v1_router.include_router(import_router)
 
 # Include Razorpay payment routes
 try:
     from routes.razorpay import router as razorpay_router
-    api_router.include_router(razorpay_router)
+    v1_router.include_router(razorpay_router)
     logger.info("Razorpay payment routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Razorpay routes: {e}")
@@ -5487,7 +5487,7 @@ except Exception as e:
 # Include E-Invoice IRN routes
 try:
     from routes.einvoice import router as einvoice_router
-    api_router.include_router(einvoice_router)
+    v1_router.include_router(einvoice_router)
     logger.info("E-Invoice IRN routes loaded")
 except Exception as e:
     logger.error(f"Failed to load E-Invoice routes: {e}")
@@ -5496,7 +5496,7 @@ except Exception as e:
 try:
     from routes.projects import router as projects_router, set_db as set_projects_db
     set_projects_db(db)
-    api_router.include_router(projects_router)
+    v1_router.include_router(projects_router)
     logger.info("Projects routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Projects routes: {e}")
@@ -5504,7 +5504,7 @@ except Exception as e:
 # Include Financial Reports routes
 try:
     from routes.reports import router as reports_router
-    api_router.include_router(reports_router)
+    v1_router.include_router(reports_router)
     logger.info("Financial reports routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Financial reports routes: {e}")
@@ -5512,7 +5512,7 @@ except Exception as e:
 # Include GST Compliance routes
 try:
     from routes.gst import router as gst_router
-    api_router.include_router(gst_router)
+    v1_router.include_router(gst_router)
     logger.info("GST compliance routes loaded")
 except Exception as e:
     logger.error(f"Failed to load GST routes: {e}")
@@ -5520,7 +5520,7 @@ except Exception as e:
 # Include Enhanced Items routes (Comprehensive Inventory Management)
 try:
     from routes.items_enhanced import router as items_enhanced_router
-    api_router.include_router(items_enhanced_router)
+    v1_router.include_router(items_enhanced_router)
     logger.info("Enhanced Items routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Enhanced Items routes: {e}")
@@ -5529,7 +5529,7 @@ except Exception as e:
 # This merges contacts_enhanced and customers_enhanced into a single source of truth
 try:
     from routes.contacts_enhanced import router as contacts_enhanced_router
-    api_router.include_router(contacts_enhanced_router)
+    v1_router.include_router(contacts_enhanced_router)
     logger.info("Enhanced Contacts v2 routes loaded (unified customer/vendor management)")
 except Exception as e:
     logger.error(f"Failed to load Enhanced Contacts v2 routes: {e}")
@@ -5537,7 +5537,7 @@ except Exception as e:
 # Include Contact Integration routes (Links contacts to transactions)
 try:
     from routes.contact_integration import router as contact_integration_router
-    api_router.include_router(contact_integration_router)
+    v1_router.include_router(contact_integration_router)
     logger.info("Contact Integration routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Contact Integration routes: {e}")
@@ -5545,7 +5545,7 @@ except Exception as e:
 # Include Enhanced Estimates routes
 try:
     from routes.estimates_enhanced import router as estimates_enhanced_router
-    api_router.include_router(estimates_enhanced_router)
+    v1_router.include_router(estimates_enhanced_router)
     logger.info("Enhanced Estimates routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Enhanced Estimates routes: {e}")
@@ -5553,7 +5553,7 @@ except Exception as e:
 # Include Enhanced Sales Orders routes
 try:
     from routes.sales_orders_enhanced import router as sales_orders_enhanced_router
-    api_router.include_router(sales_orders_enhanced_router)
+    v1_router.include_router(sales_orders_enhanced_router)
     logger.info("Enhanced Sales Orders routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Enhanced Sales Orders routes: {e}")
@@ -5561,7 +5561,7 @@ except Exception as e:
 # Include Enhanced Invoices routes
 try:
     from routes.invoices_enhanced import router as invoices_enhanced_router
-    api_router.include_router(invoices_enhanced_router)
+    v1_router.include_router(invoices_enhanced_router)
     logger.info("Enhanced Invoices routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Enhanced Invoices routes: {e}")
@@ -5569,7 +5569,7 @@ except Exception as e:
 # Include Payments Received routes (Zoho-style payment management)
 try:
     from routes.payments_received import router as payments_received_router
-    api_router.include_router(payments_received_router)
+    v1_router.include_router(payments_received_router)
     logger.info("Payments Received routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Payments Received routes: {e}")
@@ -5577,7 +5577,7 @@ except Exception as e:
 # Include Invoice Payments routes (Stripe integration)
 try:
     from routes.invoice_payments import router as invoice_payments_router
-    api_router.include_router(invoice_payments_router)
+    v1_router.include_router(invoice_payments_router)
     logger.info("Invoice Payments (Stripe) routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Invoice Payments routes: {e}")
@@ -5585,7 +5585,7 @@ except Exception as e:
 # Include Invoice Automation routes (Reminders, Late Fees, Auto Credits)
 try:
     from routes.invoice_automation import router as invoice_automation_router
-    api_router.include_router(invoice_automation_router)
+    v1_router.include_router(invoice_automation_router)
     logger.info("Invoice Automation routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Invoice Automation routes: {e}")
@@ -5593,7 +5593,7 @@ except Exception as e:
 # Include Recurring Invoices routes
 try:
     from routes.recurring_invoices import router as recurring_invoices_router
-    api_router.include_router(recurring_invoices_router)
+    v1_router.include_router(recurring_invoices_router)
     logger.info("Recurring Invoices routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Recurring Invoices routes: {e}")
@@ -5601,7 +5601,7 @@ except Exception as e:
 # Include Composite Items routes (Kits/Assemblies)
 try:
     from routes.composite_items import router as composite_items_router
-    api_router.include_router(composite_items_router)
+    v1_router.include_router(composite_items_router)
     logger.info("Composite Items routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Composite Items routes: {e}")
@@ -5609,7 +5609,7 @@ except Exception as e:
 # Include Inventory Adjustments V2 routes
 try:
     from routes.inventory_adjustments_v2 import router as inv_adj_v2_router
-    api_router.include_router(inv_adj_v2_router)
+    v1_router.include_router(inv_adj_v2_router)
     logger.info("Inventory Adjustments V2 routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Inventory Adjustments V2 routes: {e}")
@@ -5618,7 +5618,7 @@ except Exception as e:
 # Include Stripe Webhook routes
 try:
     from routes.stripe_webhook import router as stripe_webhook_router
-    api_router.include_router(stripe_webhook_router)
+    v1_router.include_router(stripe_webhook_router)
     logger.info("Stripe Webhook routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Stripe Webhook routes: {e}")
@@ -5626,7 +5626,7 @@ except Exception as e:
 # Include Customer Portal routes
 try:
     from routes.customer_portal import router as customer_portal_router
-    api_router.include_router(customer_portal_router)
+    v1_router.include_router(customer_portal_router)
     logger.info("Customer Portal routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Customer Portal routes: {e}")
@@ -5634,7 +5634,7 @@ except Exception as e:
 # Include Advanced Reports routes
 try:
     from routes.reports_advanced import router as reports_advanced_router
-    api_router.include_router(reports_advanced_router)
+    v1_router.include_router(reports_advanced_router)
     logger.info("Advanced Reports routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Advanced Reports routes: {e}")
@@ -5646,7 +5646,7 @@ except Exception as e:
 # Include Bills Enhanced routes
 try:
     from routes.bills_enhanced import router as bills_enhanced_router
-    api_router.include_router(bills_enhanced_router)
+    v1_router.include_router(bills_enhanced_router)
     logger.info("Bills Enhanced routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Bills Enhanced routes: {e}")
@@ -5654,7 +5654,7 @@ except Exception as e:
 # Include Inventory Enhanced routes (Variants, Bundles, Shipments, Returns)
 try:
     from routes.inventory_enhanced import router as inventory_enhanced_router
-    api_router.include_router(inventory_enhanced_router)
+    v1_router.include_router(inventory_enhanced_router)
     logger.info("Inventory Enhanced routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Inventory Enhanced routes: {e}")
@@ -5662,7 +5662,7 @@ except Exception as e:
 # Include Serial/Batch Tracking routes
 try:
     from routes.serial_batch_tracking import router as serial_batch_router
-    api_router.include_router(serial_batch_router)
+    v1_router.include_router(serial_batch_router)
     logger.info("Serial/Batch Tracking routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Serial/Batch Tracking routes: {e}")
@@ -5670,7 +5670,7 @@ except Exception as e:
 # Include PDF Templates routes
 try:
     from routes.pdf_templates import router as pdf_templates_router
-    api_router.include_router(pdf_templates_router)
+    v1_router.include_router(pdf_templates_router)
     logger.info("PDF Templates routes loaded")
 except Exception as e:
     logger.error(f"Failed to load PDF Templates routes: {e}")
@@ -5687,7 +5687,7 @@ try:
     
     # Initialize and include routes
     org_router = init_org_routes(db, get_current_user)
-    api_router.include_router(org_router)
+    v1_router.include_router(org_router)
     logger.info("Organization (Multi-Tenant) routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Organization routes: {e}")
@@ -5697,7 +5697,7 @@ except Exception as e:
 # Include Subscription routes (SaaS Plans & Billing)
 try:
     from routes.subscriptions import router as subscriptions_router
-    api_router.include_router(subscriptions_router)
+    v1_router.include_router(subscriptions_router)
     logger.info("Subscription routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Subscription routes: {e}")
@@ -5713,7 +5713,7 @@ try:
     
     # Initialize and include routes
     settings_router = init_settings_routes(db, get_current_user)
-    api_router.include_router(settings_router)
+    v1_router.include_router(settings_router)
     logger.info("Settings routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Settings routes: {e}")
@@ -5723,7 +5723,7 @@ except Exception as e:
 # Data Management Routes (Sanitization & Zoho Sync)
 try:
     from routes.data_management import router as data_management_router
-    api_router.include_router(data_management_router)
+    v1_router.include_router(data_management_router)
     logger.info("Data Management routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Data Management routes: {e}")
@@ -5733,7 +5733,7 @@ except Exception as e:
 # Financial Dashboard Routes (Zoho-style Home)
 try:
     from routes.financial_dashboard import router as financial_dashboard_router
-    api_router.include_router(financial_dashboard_router)
+    v1_router.include_router(financial_dashboard_router)
     logger.info("Financial Dashboard routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Financial Dashboard routes: {e}")
@@ -5743,7 +5743,7 @@ except Exception as e:
 # Time Tracking Routes
 try:
     from routes.time_tracking import router as time_tracking_router
-    api_router.include_router(time_tracking_router)
+    v1_router.include_router(time_tracking_router)
     logger.info("Time Tracking routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Time Tracking routes: {e}")
@@ -5753,7 +5753,7 @@ except Exception as e:
 # Documents Routes
 try:
     from routes.documents import router as documents_router
-    api_router.include_router(documents_router)
+    v1_router.include_router(documents_router)
     logger.info("Documents routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Documents routes: {e}")
@@ -5764,7 +5764,7 @@ except Exception as e:
 try:
     from routes.ticket_estimates import router as ticket_estimates_router, init_router as init_ticket_estimates_router
     init_ticket_estimates_router(db)
-    api_router.include_router(ticket_estimates_router)
+    v1_router.include_router(ticket_estimates_router)
     logger.info("Ticket-Estimate Integration routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Ticket-Estimate routes: {e}")
@@ -5774,7 +5774,7 @@ except Exception as e:
 # Stock Transfers Routes
 try:
     from routes.stock_transfers import router as stock_transfers_router
-    api_router.include_router(stock_transfers_router)
+    v1_router.include_router(stock_transfers_router)
     logger.info("Stock Transfers routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Stock Transfers routes: {e}")
@@ -5786,7 +5786,7 @@ except Exception as e:
 # Keeping file for reference but not loading to avoid route conflict
 # try:
 #     from routes.banking_module import router as banking_module_router
-#     api_router.include_router(banking_module_router)
+#     v1_router.include_router(banking_module_router)
 #     logger.info("Banking Module routes loaded")
 # except Exception as e:
 #     logger.error(f"Failed to load Banking Module routes: {e}")
@@ -5796,7 +5796,7 @@ except Exception as e:
 # Seed Utility Routes (for testing)
 try:
     from routes.seed_utility import router as seed_utility_router
-    api_router.include_router(seed_utility_router)
+    v1_router.include_router(seed_utility_router)
     logger.info("Seed Utility routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Seed Utility routes: {e}")
@@ -5806,7 +5806,7 @@ except Exception as e:
 # Master Data routes (Vehicle Categories, Models, Issue Suggestions)
 try:
     from routes.master_data import router as master_data_router
-    api_router.include_router(master_data_router)
+    v1_router.include_router(master_data_router)
     logger.info("Master Data routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Master Data routes: {e}")
@@ -5816,7 +5816,7 @@ except Exception as e:
 # Public Ticket routes (Public form submission, tracking, payments)
 try:
     from routes.public_tickets import router as public_tickets_router
-    api_router.include_router(public_tickets_router)
+    v1_router.include_router(public_tickets_router)
     logger.info("Public Tickets routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Public Tickets routes: {e}")
@@ -5826,7 +5826,7 @@ except Exception as e:
 # Role Permissions routes
 try:
     from routes.permissions import router as permissions_router
-    api_router.include_router(permissions_router)
+    v1_router.include_router(permissions_router)
     logger.info("Permissions routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Permissions routes: {e}")
@@ -5836,7 +5836,7 @@ except Exception as e:
 # Technician Portal routes
 try:
     from routes.technician_portal import router as technician_portal_router
-    api_router.include_router(technician_portal_router)
+    v1_router.include_router(technician_portal_router)
     logger.info("Technician Portal routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Technician Portal routes: {e}")
@@ -5846,7 +5846,7 @@ except Exception as e:
 # Business Customer Portal routes
 try:
     from routes.business_portal import router as business_portal_router
-    api_router.include_router(business_portal_router)
+    v1_router.include_router(business_portal_router)
     logger.info("Business Portal routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Business Portal routes: {e}")
@@ -5856,7 +5856,7 @@ except Exception as e:
 # Knowledge Brain AI routes (RAG-based)
 try:
     from routes.knowledge_brain import router as knowledge_brain_router
-    api_router.include_router(knowledge_brain_router)
+    v1_router.include_router(knowledge_brain_router)
     logger.info("Knowledge Brain AI routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Knowledge Brain routes: {e}")
@@ -5866,7 +5866,7 @@ except Exception as e:
 # Expert Queue routes (internal escalation system)
 try:
     from routes.expert_queue import router as expert_queue_router
-    api_router.include_router(expert_queue_router)
+    v1_router.include_router(expert_queue_router)
     logger.info("Expert Queue routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Expert Queue routes: {e}")
@@ -5876,7 +5876,7 @@ except Exception as e:
 # AI Guidance routes (EFI Guidance Layer - Hinglish technician mode)
 try:
     from routes.ai_guidance import router as ai_guidance_router
-    api_router.include_router(ai_guidance_router)
+    v1_router.include_router(ai_guidance_router)
     logger.info("AI Guidance (EFI Layer) routes loaded")
 except Exception as e:
     logger.error(f"Failed to load AI Guidance routes: {e}")
@@ -5886,7 +5886,7 @@ except Exception as e:
 # EFI Intelligence Engine routes (Model-Aware Ranking, Continuous Learning, Risk Alerts)
 try:
     from routes.efi_intelligence import router as efi_intelligence_router
-    api_router.include_router(efi_intelligence_router)
+    v1_router.include_router(efi_intelligence_router)
     logger.info("EFI Intelligence Engine routes loaded")
 except Exception as e:
     logger.error(f"Failed to load EFI Intelligence Engine routes: {e}")
@@ -5896,7 +5896,7 @@ except Exception as e:
 # Legacy AI Assistant routes (kept for compatibility)
 try:
     from routes.ai_assistant import router as ai_assistant_router
-    api_router.include_router(ai_assistant_router)
+    v1_router.include_router(ai_assistant_router)
     logger.info("AI Assistant routes loaded")
 except Exception as e:
     logger.error(f"Failed to load AI Assistant routes: {e}")
@@ -5905,7 +5905,7 @@ except Exception as e:
 
 try:
     from routes.data_integrity import router as data_integrity_router
-    api_router.include_router(data_integrity_router)
+    v1_router.include_router(data_integrity_router)
     logger.info("Data Integrity routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Data Integrity routes: {e}")
@@ -5916,7 +5916,7 @@ except Exception as e:
 try:
     from routes.journal_entries import router as journal_entries_router, init_router as init_journal_entries_router
     init_journal_entries_router(db)
-    api_router.include_router(journal_entries_router)
+    v1_router.include_router(journal_entries_router)
     logger.info("Journal Entries / Double-Entry Bookkeeping routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Journal Entries routes: {e}")
@@ -5927,7 +5927,7 @@ except Exception as e:
 try:
     from routes.organizations import router as organizations_router, init_organizations_router
     init_organizations_router(db)
-    api_router.include_router(organizations_router)
+    v1_router.include_router(organizations_router)
     logger.info("Organizations routes loaded (SaaS Cloud)")
 except Exception as e:
     logger.error(f"Failed to load Organizations routes: {e}")
@@ -5938,7 +5938,7 @@ except Exception as e:
 try:
     from routes.platform_admin import router as platform_admin_router, init_platform_admin_router
     init_platform_admin_router(db)
-    api_router.include_router(platform_admin_router)
+    v1_router.include_router(platform_admin_router)
     logger.info("Platform Admin routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Platform Admin routes: {e}")
@@ -5949,7 +5949,7 @@ except Exception as e:
 try:
     from routes.expenses import router as expenses_router, set_db as set_expenses_db
     set_expenses_db(db)
-    api_router.include_router(expenses_router)
+    v1_router.include_router(expenses_router)
     logger.info("Expenses routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Expenses routes: {e}")
@@ -5960,7 +5960,7 @@ except Exception as e:
 try:
     from routes.bills import router as bills_router, set_db as set_bills_db
     set_bills_db(db)
-    api_router.include_router(bills_router)
+    v1_router.include_router(bills_router)
     logger.info("Bills routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Bills routes: {e}")
@@ -5971,7 +5971,7 @@ except Exception as e:
 try:
     from routes.banking import router as banking_router, set_db as set_banking_db
     set_banking_db(db)
-    api_router.include_router(banking_router)
+    v1_router.include_router(banking_router)
     logger.info("Banking routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Banking routes: {e}")
@@ -5982,12 +5982,12 @@ except Exception as e:
 try:
     from routes.finance_dashboard import router as finance_dashboard_router, set_db as set_finance_dashboard_db
     set_finance_dashboard_db(db)
-    api_router.include_router(finance_dashboard_router)
+    v1_router.include_router(finance_dashboard_router)
 
     try:
         from routes.tally_export import router as tally_export_router, init_tally_export_router
         init_tally_export_router(db)
-        api_router.include_router(tally_export_router)
+        v1_router.include_router(tally_export_router)
         logger.info("Tally XML export router loaded")
     except Exception as e:
         logger.warning(f"Could not load Tally export router: {e}")
@@ -6001,7 +6001,7 @@ except Exception as e:
 try:
     from routes.insights import router as insights_router, init_insights_router
     init_insights_router(db)
-    api_router.include_router(insights_router)
+    v1_router.include_router(insights_router)
     logger.info("Data Insights routes loaded")
 except Exception as e:
     logger.error(f"Failed to load Data Insights routes: {e}")
@@ -6011,7 +6011,7 @@ except Exception as e:
 # ==================== SLA ROUTES ====================
 try:
     from routes.sla import router as sla_router
-    api_router.include_router(sla_router)
+    v1_router.include_router(sla_router)
     logger.info("SLA routes loaded")
 except Exception as e:
     logger.error(f"Failed to load SLA routes: {e}")
