@@ -14,45 +14,34 @@ Multi-tenant architecture with organization-level data isolation.
 - **Auth routes:** `/api/auth/...` (non-versioned)
 - **Business routes:** `/api/v1/...` (versioned)
 - **Public routes:** `/api/public/...` (non-versioned, no auth required)
-- **Frontend:** `API` constant for business, `AUTH_API` for auth
+- **Frontend:** `API` constant = `BACKEND_URL/api/v1`, `AUTH_API` = `BACKEND_URL/api`
 - **Lifespan:** `@asynccontextmanager` (no deprecated `on_event`)
 - **Startup:** SLA job + index migration + 23 compound indexes
 
-## Security Posture
-- Multi-tenancy: All route files hardened with org_id filtering
-- JWT: uses `JWT_SECRET` (64-char hex key) with `pwd_v` (password version)
-- JWT validation: checks `is_active` in DB on every request
-- Rate limiting: 10/min on login, 20/min on AI, 300/min standard
-- CORS: Locked to specific origin (not wildcard)
-
-## Audit History
+## Audit & Remediation History
 
 ### Grand Final Audit (2026-02-24)
-- **Verdict:** UNCONDITIONALLY APPROVED for commercial operation
-- **Migration:** 1,375 documents fixed across 111 tenant collections
-- **Tests:** 20/20 pytest PASS, frontend build PASS
+- org_id migration: 1,375 documents fixed
+- Verdict: APPROVED for single-tenant commercial operation
 
 ### Full System Audit (2026-02-24)
-- **System Stability:** 72/100
-- **Multi-Tenant Safety:** 78/100
-- **Financial Integrity:** 65/100
-- **Compliance Readiness:** 60/100
-- **4 CRITICAL findings:** RBAC v1 bypass, AI assistant no org_id, Zoho sync unscoped deletes, Journal posting no idempotency
-- **Full report:** /app/FULL_SYSTEM_AUDIT_REPORT.md
+- Scores: Stability 72/100, Multi-Tenant 78/100, Financial 65/100, Compliance 60/100
+- 4 CRITICAL, 7 HIGH, 6 STRUCTURAL findings
 
-## Test Credentials
-- Admin: admin@battwheels.in / Admin@12345 (org: Battwheels Garages)
-- Demo (dev DB): demo@voltmotors.in / Demo@12345
+### Remediation Blueprint (2026-02-24)
+- 4 CRITICAL fixes planned: RBAC v1 bypass, Zoho sync destructive ops, Journal idempotency, AI org scoping
+- Total: ~43 lines across 5 files, ~70 min implementation
+- Full report: `/app/CRITICAL_REMEDIATION_BLUEPRINT.md`
 
-## Post-Launch Roadmap (Updated Priority)
+## Immediate Roadmap (Priority Order)
 
-### CRITICAL (Before First Customer)
-- **C1:** Fix RBAC v1 pattern matching (patterns use `/api/` but routes are `/api/v1/`)
-- **C2:** Add org_id to `ai_assistant.py` (0 tenant scoping currently)
-- **C3:** Add org_id filter to Zoho sync destructive operations
-- **C4:** Add idempotency guard to journal entry posting
+### CRITICAL — Fix Now (~70 min total)
+1. **RBAC v1 Bypass** — Add path normalization in `middleware/rbac.py` `get_allowed_roles()` (~3 lines)
+2. **Zoho Sync Destructive Ops** — Add org_id filter to `delete_many({})` in `zoho_sync.py` (~15 lines)
+3. **Journal Idempotency** — Add `source_document_id` check + unique index in `double_entry_service.py` (~20 lines)
+4. **AI Assistant Org Scoping** — Add org_id extraction in `ai_assistant.py` (~5 lines)
 
-### P1 — Next Session
+### P1 — Next Development Session
 - **Credit Notes** (GST compliance)
 - **Period Locking** (prevent posting to closed periods)
 - **Audit log wiring** (13 remaining action types)
@@ -67,10 +56,13 @@ Multi-tenant architecture with organization-level data isolation.
 - Deferred revenue recognition
 - ITC eligibility validation
 - Feature gate enforcement on routes
-- GSTR-2A/2B reconciliation
+- server.py decomposition
 
 ### P4 — At Scale
 - Celery background jobs
 - Redis caching
-- server.py decomposition
 - Live WhatsApp credentials
+
+## Test Credentials
+- Admin: admin@battwheels.in / Admin@12345 (org: Battwheels Garages)
+- Demo (dev DB): demo@voltmotors.in / Demo@12345
