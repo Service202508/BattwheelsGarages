@@ -6,7 +6,6 @@ import {
   BarChart3, Globe, Brain, Cpu, Search, GitBranch, Compass, 
   FolderOpen, TrendingUp, Lock, Link2, Cloud, X
 } from 'lucide-react';
-import LogoVolt from '../assets/logo-volt.svg';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
