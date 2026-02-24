@@ -399,8 +399,7 @@ async def get_pending_learning(request: Request, limit: int = Query(50, le=200))
 
 
 @router.post("/learning/{entry_id}/review")
-async def review_learning_item("dismiss"
-    request: Request, entry_id: str, action: str, # "create_card", "update_card", notes: Optional[str] = None):
+async def review_learning_item(request: Request, entry_id: str, action: str, notes: Optional[str] = None):
     org_id = extract_org_id(request)
     """Review learning item - engineer approval"""
     user = await get_current_user(request)
