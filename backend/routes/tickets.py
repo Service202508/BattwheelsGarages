@@ -101,6 +101,7 @@ class TicketCloseRequest(BaseModel):
     resolution_outcome: str = "success"
     resolution_notes: Optional[str] = None
     selected_failure_card: Optional[str] = None
+    confirmed_fault: Optional[str] = None  # Technician-confirmed actual fault for EFI feedback
 
 
 class AssignTicketRequest(BaseModel):
