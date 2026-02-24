@@ -644,7 +644,15 @@ async def handle_razorpay_webhook(request: Request):
             {"razorpay_refund_id": refund_entity.get("id")},
             {"$set": {"status": "processed", "processed_at": datetime.now(timezone.utc).isoformat()}}
         )
-    
+
+    # Mark this (payment_id, event) pair as processed so duplicates are skipped
+    if payment_id and event:
+        await db.webhook_logs.update_one(
+            {"payment_id": payment_id, "event": event, "processed": False},
+            {"$set": {"processed": True, "processed_at": datetime.now(timezone.utc).isoformat()}},
+            upsert=False
+        )
+
     return {"status": "processed", "event": event}
 
 
