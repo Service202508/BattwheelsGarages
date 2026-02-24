@@ -205,7 +205,11 @@ async def list_employees(
 @router.get("/employees/{employee_id}")
 async def get_employee(employee_id: str, request: Request):
     service = get_service()
-    employee = await service.get_employee(employee_id)
+    org_id = await get_org_id(request, service.db)
+    query = {"employee_id": employee_id}
+    if org_id:
+        query["organization_id"] = org_id
+    employee = await service.db.employees.find_one(query, {"_id": 0})
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
     return employee
@@ -215,16 +219,27 @@ async def get_employee(employee_id: str, request: Request):
 async def update_employee(employee_id: str, data: EmployeeUpdateRequest, request: Request):
     service = get_service()
     user = await get_current_user(request, service.db)
-    
+    org_id = await get_org_id(request, service.db)
+
+    query = {"employee_id": employee_id}
+    if org_id:
+        query["organization_id"] = org_id
     updates = {k: v for k, v in data.model_dump().items() if v is not None}
-    return await service.update_employee(employee_id, updates, user.get("user_id"))
+    result = await service.db.employees.update_one(query, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    return await service.db.employees.find_one(query, {"_id": 0})
 
 
 @router.delete("/employees/{employee_id}")
 async def delete_employee(employee_id: str, request: Request):
     service = get_service()
+    org_id = await get_org_id(request, service.db)
+    query = {"employee_id": employee_id}
+    if org_id:
+        query["organization_id"] = org_id
     await service.db.employees.update_one(
-        {"employee_id": employee_id},
+        query,
         {"$set": {"status": "terminated", "terminated_at": datetime.now(timezone.utc).isoformat()}}
     )
     return {"message": "Employee terminated"}
@@ -233,8 +248,12 @@ async def delete_employee(employee_id: str, request: Request):
 @router.get("/employees/managers/list")
 async def list_managers(request: Request):
     service = get_service()
+    org_id = await get_org_id(request, service.db)
+    query = {"status": "active", "designation": {"$regex": "manager|lead|head", "$options": "i"}}
+    if org_id:
+        query["organization_id"] = org_id
     return await service.db.employees.find(
-        {"status": "active", "designation": {"$regex": "manager|lead|head", "$options": "i"}},
+        query,
         {"_id": 0, "employee_id": 1, "first_name": 1, "last_name": 1, "department": 1}
     ).to_list(100)
 
@@ -242,8 +261,12 @@ async def list_managers(request: Request):
 @router.get("/departments")
 async def list_departments(request: Request):
     service = get_service()
+    org_id = await get_org_id(request, service.db)
+    match_stage = {"$match": {"status": "active"}}
+    if org_id:
+        match_stage["$match"]["organization_id"] = org_id
     pipeline = [
-        {"$match": {"status": "active"}},
+        match_stage,
         {"$group": {"_id": "$department", "count": {"$sum": 1}}},
         {"$sort": {"count": -1}}
     ]
