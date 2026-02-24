@@ -2,8 +2,11 @@
 Battwheels OS - Public Ticket Routes
 Public-facing ticket submission, tracking, and payment integration
 No authentication required for these endpoints
+
+Multi-Tenancy: org resolution via subdomain (workshopname.battwheels.com)
+               with X-Organization-Slug header fallback for API/PWA clients.
 """
-from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Query, BackgroundTasks, Request
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime, timezone
@@ -14,6 +17,41 @@ def get_db():
     return db
 
 router = APIRouter(prefix="/public", tags=["Public Tickets"])
+
+
+# ==================== ORG RESOLUTION ====================
+
+async def get_org_from_request(request: Request, db) -> str:
+    """
+    Extract organization from subdomain.
+    workshopname.battwheels.com → look up org where slug = 'workshopname'
+    Falls back to X-Organization-Slug header for API clients and PWA.
+    """
+    host = request.headers.get("host", "")
+
+    # Extract subdomain: "workshopname.battwheels.com" → "workshopname"
+    parts = host.split(".")
+    if len(parts) >= 3:
+        subdomain = parts[0]
+    else:
+        # Fallback: check header (for direct API calls, mobile PWA, preview URLs)
+        subdomain = request.headers.get("X-Organization-Slug", None)
+
+    if not subdomain or subdomain in ("www", "app", "api", "platform", "production-deploy-7", "audit-fixes-5"):
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot determine workshop. Please use your workshop URL (e.g. yourworkshop.battwheels.com)."
+        )
+
+    org = await db.organizations.find_one(
+        {"slug": subdomain, "is_active": True},
+        {"_id": 0, "organization_id": 1, "name": 1}
+    )
+
+    if not org:
+        raise HTTPException(status_code=404, detail="Workshop not found or inactive.")
+
+    return org["organization_id"]
 
 
 # ==================== MODELS ====================
