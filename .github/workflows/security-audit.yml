@@ -25,14 +25,14 @@ jobs:
           pip install -r requirements.txt
           pip install pip-audit
 
-      - name: Run pip-audit (fail on HIGH/CRITICAL)
+      - name: Run pip-audit (fail on any unfixed vulnerability)
         working-directory: backend
         run: |
+          # Ignores ecdsa CVE-2024-23342 (GHSA-wj6h-64fc-37mp) — no upstream fix available.
+          # All other HIGH/CRITICAL findings will fail this job.
           pip-audit \
             --format=columns \
-            --severity high \
             --ignore-vuln GHSA-wj6h-64fc-37mp
-          # GHSA-wj6h-64fc-37mp = ecdsa CVE-2024-23342 (no upstream fix available, documented known issue)
 
   npm-audit:
     name: Frontend — npm audit
