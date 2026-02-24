@@ -60,6 +60,11 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(false);
   
+  // Close ticket dialog state
+  const [closeDialogOpen, setCloseDialogOpen] = useState(false);
+  const [closeResolution, setCloseResolution] = useState("");
+  const [closeConfirmedFault, setCloseConfirmedFault] = useState("");
+  
   // EFI Panel state
   const [efiPanelOpen, setEfiPanelOpen] = useState(true);
   const [efiMode, setEfiMode] = useState("guidance"); // "guidance" or "legacy"
