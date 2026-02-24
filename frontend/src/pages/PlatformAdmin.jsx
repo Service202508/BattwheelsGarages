@@ -426,6 +426,7 @@ export default function PlatformAdmin({ user }) {
           {[
             { id: "orgs",    label: "Organisations",    icon: Building2 },
             { id: "health",  label: "Revenue & Health", icon: TrendingUp },
+            { id: "leads",   label: "Leads",            icon: PhoneCall },
           ].map(tab => (
             <button
               key={tab.id}
