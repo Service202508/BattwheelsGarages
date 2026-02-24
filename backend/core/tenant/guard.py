@@ -428,11 +428,17 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         "/api/public/tickets/verify-payment",
         "/api/public/track",
         "/api/track-ticket",
+        "/api/v1/public-tickets/submit",
+        "/api/v1/public-tickets/lookup",
+        "/api/v1/public-tickets/track",
         
         # Master data (read-only public)
         "/api/master-data/vehicle-categories",
         "/api/master-data/vehicle-models",
         "/api/master-data/issue-suggestions",
+        "/api/v1/master-data/vehicle-categories",
+        "/api/v1/master-data/vehicle-models",
+        "/api/v1/master-data/issue-suggestions",
         "/api/org/roles",
         
         # Portal registration
