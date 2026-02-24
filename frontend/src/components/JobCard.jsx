@@ -115,7 +115,8 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
       });
       if (response.ok) {
         const data = await response.json();
-        setInventory(data);
+        // API returns {data: [...], pagination: {...}} — extract the array
+        setInventory(Array.isArray(data) ? data : (data.data || data.items || data.inventory || []));
       }
     } catch (error) {
       console.error("Failed to fetch inventory:", error);
