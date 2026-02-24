@@ -388,9 +388,10 @@ class TestOPERATIONS:
         print(f"PASS OPERATIONS-01: tickets paginated, keys={list(data.keys()) if isinstance(data, dict) else 'list'}")
 
     def test_OPERATIONS02_invoices_enhanced_returns_200(self, admin_headers):
-        """OPERATIONS-02: GET /api/invoices-enhanced → 200 (follow redirects)"""
-        resp = requests.get(f"{BASE_URL}/api/invoices-enhanced",
-                            headers=admin_headers, timeout=15, allow_redirects=True)
+        """OPERATIONS-02: GET /api/invoices-enhanced → 200 (follow redirects with auth)"""
+        session = requests.Session()
+        session.headers.update(admin_headers)
+        resp = session.get(f"{BASE_URL}/api/invoices-enhanced", timeout=15, allow_redirects=True)
         assert resp.status_code == 200, f"OPERATIONS-02: {resp.status_code}: {resp.text}"
         print(f"PASS OPERATIONS-02: invoices-enhanced 200")
 
