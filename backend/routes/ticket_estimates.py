@@ -167,7 +167,7 @@ class LockEstimateRequest(BaseModel):
 # ==================== TICKET → ESTIMATE ROUTES ====================
 
 @router.post("/tickets/{ticket_id}/estimate/ensure")
-async def ensure_ticket_estimate(ticket_id: str, request: Request):
+async def ensure_ticket_estimate(request: Request, ticket_id: str):
     """
     Ensure an estimate exists for a ticket.
     Creates if missing, returns existing if present.
@@ -194,7 +194,7 @@ async def ensure_ticket_estimate(ticket_id: str, request: Request):
 
 
 @router.get("/tickets/{ticket_id}/estimate")
-async def get_ticket_estimate(ticket_id: str, request: Request):
+async def get_ticket_estimate(request: Request, ticket_id: str):
     """Get estimate for a ticket with line items"""
     service = get_service()
     org_id = await get_org_id(request)
@@ -210,10 +210,8 @@ async def get_ticket_estimate(ticket_id: str, request: Request):
 # ==================== ESTIMATE LINE ITEM ROUTES ====================
 
 @router.post("/ticket-estimates/{estimate_id}/line-items")
-async def add_estimate_line_item(
-    estimate_id: str, 
-    data: LineItemCreateRequest,
-    request: Request
+async def add_estimate_line_item(request: Request, estimate_id: str, 
+    data: LineItemCreateRequest
 ):
     """Add a line item to an estimate"""
     service = get_service()
@@ -269,11 +267,9 @@ async def add_estimate_line_item(
 
 
 @router.patch("/ticket-estimates/{estimate_id}/line-items/{line_item_id}")
-async def update_estimate_line_item(
-    estimate_id: str,
+async def update_estimate_line_item(request: Request, estimate_id: str,
     line_item_id: str,
-    data: LineItemUpdateRequest,
-    request: Request
+    data: LineItemUpdateRequest
 ):
     """Update a line item"""
     service = get_service()
@@ -374,7 +370,7 @@ async def delete_estimate_line_item(
 # ==================== ESTIMATE STATUS ROUTES ====================
 
 @router.post("/ticket-estimates/{estimate_id}/approve")
-async def approve_estimate(estimate_id: str, request: Request):
+async def approve_estimate(request: Request, estimate_id: str):
     """Approve an estimate"""
     service = get_service()
     org_id = await get_org_id(request)
@@ -396,7 +392,7 @@ async def approve_estimate(estimate_id: str, request: Request):
 
 
 @router.post("/ticket-estimates/{estimate_id}/send")
-async def send_estimate(estimate_id: str, request: Request):
+async def send_estimate(request: Request, estimate_id: str):
     """Mark estimate as sent"""
     service = get_service()
     org_id = await get_org_id(request)
@@ -418,10 +414,8 @@ async def send_estimate(estimate_id: str, request: Request):
 
 
 @router.post("/ticket-estimates/{estimate_id}/lock")
-async def lock_estimate(
-    estimate_id: str, 
-    data: LockEstimateRequest,
-    request: Request
+async def lock_estimate(request: Request, estimate_id: str, 
+    data: LockEstimateRequest
 ):
     """Lock an estimate to prevent further edits"""
     service = get_service()
@@ -453,9 +447,7 @@ async def lock_estimate(
 
 
 @router.post("/ticket-estimates/{estimate_id}/unlock")
-async def unlock_estimate(
-    estimate_id: str, 
-    request: Request
+async def unlock_estimate(request: Request, estimate_id: str
 ):
     """Unlock an estimate to allow further edits (admin only)"""
     service = get_service()
@@ -486,7 +478,7 @@ async def unlock_estimate(
 
 
 @router.post("/ticket-estimates/{estimate_id}/convert-to-invoice")
-async def convert_estimate_to_invoice(estimate_id: str, request: Request):
+async def convert_estimate_to_invoice(request: Request, estimate_id: str):
     """
     Convert an approved estimate to an invoice.
     Only approved estimates can be converted.
@@ -516,7 +508,7 @@ async def convert_estimate_to_invoice(estimate_id: str, request: Request):
 
 
 @router.get("/ticket-estimates/{estimate_id}")
-async def get_estimate_by_id(estimate_id: str, request: Request):
+async def get_estimate_by_id(request: Request, estimate_id: str):
     """Get estimate by ID"""
     service = get_service()
     org_id = await get_org_id(request)
@@ -530,12 +522,7 @@ async def get_estimate_by_id(estimate_id: str, request: Request):
 
 
 @router.get("/ticket-estimates")
-async def list_ticket_estimates(
-    request: Request,
-    status: Optional[str] = None,
-    page: int = 1,
-    per_page: int = 20
-):
+async def list_ticket_estimates(request: Request, status: Optional[str] = None, page: int = 1, per_page: int = 20):
     """List all ticket estimates for organization"""
     service = get_service()
     org_id = await get_org_id(request)

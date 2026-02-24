@@ -100,7 +100,7 @@ class ContactCreate(BaseModel):
     custom_fields: Optional[List[Dict]] = []
 
 @router.post("/contacts")
-async def create_contact(contact: ContactCreate, request: Request):
+async def create_contact(request: Request, contact: ContactCreate):
     org_id = extract_org_id(request)
     """Create a new contact (customer or vendor)"""
     db = get_db()
@@ -126,14 +126,7 @@ async def create_contact(contact: ContactCreate, request: Request):
     return {"code": 0, "message": "Contact created successfully", "contact": contact_dict}
 
 @router.get("/contacts")
-async def list_contacts(
-    contact_type: str = "",
-    status: str = "active",
-    search_text: str = "",
-    page: int = 1,
-    per_page: int = 25,
-    sort_column: str = "contact_name",
-    sort_order: str = "ascending", request: Request):
+async def list_contacts(request: Request, contact_type: str = "", status: str = "active", search_text: str = "", page: int = 1, per_page: int = 25, sort_column: str = "contact_name", sort_order: str = "ascending"):
     org_id = extract_org_id(request)
     """List all contacts with filters"""
     db = get_db()
@@ -169,7 +162,7 @@ async def list_contacts(
 
 # Bulk Import Contacts - must be before {contact_id} route
 @router.post("/contacts/bulk-import")
-async def bulk_import_contacts(file: UploadFile = File(..., request: Request)):
+async def bulk_import_contacts(request: Request, file: UploadFile = File(...)):
     org_id = extract_org_id(request)
     """Bulk import contacts from CSV file."""
     import csv
@@ -247,7 +240,7 @@ async def bulk_import_contacts(file: UploadFile = File(..., request: Request)):
     }
 
 @router.get("/contacts/export")
-async def export_contacts(contact_type: str = "", request: Request):
+async def export_contacts(request: Request, contact_type: str = ""):
     org_id = extract_org_id(request)
     """Export contacts as CSV"""
     from fastapi.responses import StreamingResponse
@@ -305,7 +298,7 @@ async def get_contacts_import_template(request: Request):
     return StreamingResponse(iter([output.getvalue()]), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=contacts_import_template.csv"})
 
 @router.get("/contacts/{contact_id}")
-async def get_contact(contact_id: str, request: Request):
+async def get_contact(request: Request, contact_id: str):
     org_id = extract_org_id(request)
     """Get contact details"""
     db = get_db()
@@ -315,7 +308,7 @@ async def get_contact(contact_id: str, request: Request):
     return {"code": 0, "contact": contact}
 
 @router.put("/contacts/{contact_id}")
-async def update_contact(contact_id: str, contact: ContactCreate, request: Request):
+async def update_contact(request: Request, contact_id: str, contact: ContactCreate):
     org_id = extract_org_id(request)
     """Update contact details"""
     db = get_db()
@@ -326,7 +319,7 @@ async def update_contact(contact_id: str, contact: ContactCreate, request: Reque
     return {"code": 0, "message": "Contact updated successfully"}
 
 @router.delete("/contacts/{contact_id}")
-async def delete_contact(contact_id: str, request: Request):
+async def delete_contact(request: Request, contact_id: str):
     org_id = extract_org_id(request)
     """Delete a contact"""
     db = get_db()
@@ -336,7 +329,7 @@ async def delete_contact(contact_id: str, request: Request):
     return {"code": 0, "message": "Contact deleted successfully"}
 
 @router.post("/contacts/{contact_id}/active")
-async def mark_contact_active(contact_id: str, request: Request):
+async def mark_contact_active(request: Request, contact_id: str):
     org_id = extract_org_id(request)
     """Mark contact as active"""
     db = get_db()
@@ -349,7 +342,7 @@ async def mark_contact_active(contact_id: str, request: Request):
     return {"code": 0, "message": "Contact marked as active"}
 
 @router.post("/contacts/{contact_id}/inactive")
-async def mark_contact_inactive(contact_id: str, request: Request):
+async def mark_contact_inactive(request: Request, contact_id: str):
     org_id = extract_org_id(request)
     """Mark contact as inactive"""
     db = get_db()
@@ -362,7 +355,7 @@ async def mark_contact_inactive(contact_id: str, request: Request):
     return {"code": 0, "message": "Contact marked as inactive"}
 
 @router.post("/contacts/{contact_id}/portal/enable")
-async def enable_portal_access(contact_id: str, request: Request):
+async def enable_portal_access(request: Request, contact_id: str):
     org_id = extract_org_id(request)
     """Enable portal access for contact"""
     db = get_db()
@@ -389,7 +382,7 @@ class ContactPersonCreate(BaseModel):
     department: Optional[str] = ""
 
 @router.post("/contacts/{contact_id}/contactpersons")
-async def create_contact_person(contact_id: str, person: ContactPersonCreate, request: Request):
+async def create_contact_person(request: Request, contact_id: str, person: ContactPersonCreate):
     org_id = extract_org_id(request)
     """Create contact person"""
     db = get_db()
@@ -407,7 +400,7 @@ async def create_contact_person(contact_id: str, person: ContactPersonCreate, re
     return {"code": 0, "message": "Contact person created", "contact_person": person_dict}
 
 @router.get("/contacts/{contact_id}/contactpersons")
-async def list_contact_persons(contact_id: str, request: Request):
+async def list_contact_persons(request: Request, contact_id: str):
     org_id = extract_org_id(request)
     """List contact persons for a contact"""
     db = get_db()
@@ -416,7 +409,7 @@ async def list_contact_persons(contact_id: str, request: Request):
     return {"code": 0, "contact_persons": persons}
 
 @router.post("/contacts/{contact_id}/contactpersons/{person_id}/primary")
-async def mark_person_primary(contact_id: str, person_id: str, request: Request):
+async def mark_person_primary(request: Request, contact_id: str, person_id: str):
     org_id = extract_org_id(request)
     """Mark contact person as primary"""
     db = get_db()
@@ -459,7 +452,7 @@ class ItemCreate(BaseModel):
     custom_fields: Optional[List[Dict]] = []
 
 @router.post("/items")
-async def create_item(item: ItemCreate, request: Request):
+async def create_item(request: Request, item: ItemCreate):
     org_id = extract_org_id(request)
     """Create a new item"""
     db = get_db()
@@ -481,13 +474,7 @@ async def create_item(item: ItemCreate, request: Request):
     return {"code": 0, "message": "Item created successfully", "item": item_dict}
 
 @router.get("/items")
-async def list_items(
-    item_type: str = "",
-    product_type: str = "",
-    status: str = "active",
-    search_text: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_items(request: Request, item_type: str = "", product_type: str = "", status: str = "active", search_text: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List all items"""
     db = get_db()
@@ -513,7 +500,7 @@ async def list_items(
     }
 
 @router.post("/items/bulk-import")
-async def bulk_import_items(file: UploadFile = File(..., request: Request)):
+async def bulk_import_items(request: Request, file: UploadFile = File(...)):
     org_id = extract_org_id(request)
     """Bulk import items from CSV file."""
     import csv
@@ -576,7 +563,7 @@ async def bulk_import_items(file: UploadFile = File(..., request: Request)):
     }
 
 @router.get("/items/export")
-async def export_items(format: str = "csv", request: Request):
+async def export_items(request: Request, format: str = "csv"):
     org_id = extract_org_id(request)
     """Export all items as CSV"""
     from fastapi.responses import StreamingResponse
@@ -614,7 +601,7 @@ async def get_import_template(request: Request):
     return StreamingResponse(iter([output.getvalue()]), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=items_import_template.csv"})
 
 @router.get("/items/{item_id}")
-async def get_item(item_id: str, request: Request):
+async def get_item(request: Request, item_id: str):
     org_id = extract_org_id(request)
     """Get item details"""
     db = get_db()
@@ -624,7 +611,7 @@ async def get_item(item_id: str, request: Request):
     return {"code": 0, "item": item}
 
 @router.put("/items/{item_id}")
-async def update_item(item_id: str, item: ItemCreate, request: Request):
+async def update_item(request: Request, item_id: str, item: ItemCreate):
     org_id = extract_org_id(request)
     """Update item"""
     db = get_db()
@@ -635,7 +622,7 @@ async def update_item(item_id: str, item: ItemCreate, request: Request):
     return {"code": 0, "message": "Item updated successfully"}
 
 @router.delete("/items/{item_id}")
-async def delete_item(item_id: str, request: Request):
+async def delete_item(request: Request, item_id: str):
     org_id = extract_org_id(request)
     """Delete item"""
     db = get_db()
@@ -645,7 +632,7 @@ async def delete_item(item_id: str, request: Request):
     return {"code": 0, "message": "Item deleted successfully"}
 
 @router.post("/items/{item_id}/active")
-async def mark_item_active(item_id: str, request: Request):
+async def mark_item_active(request: Request, item_id: str):
     org_id = extract_org_id(request)
     """Mark item as active"""
     db = get_db()
@@ -653,7 +640,7 @@ async def mark_item_active(item_id: str, request: Request):
     return {"code": 0, "message": "Item marked as active"}
 
 @router.post("/items/{item_id}/inactive")
-async def mark_item_inactive(item_id: str, request: Request):
+async def mark_item_inactive(request: Request, item_id: str):
     org_id = extract_org_id(request)
     """Mark item as inactive"""
     db = get_db()
@@ -696,7 +683,7 @@ class EstimateCreate(BaseModel):
     custom_fields: Optional[List[Dict]] = []
 
 @router.post("/estimates")
-async def create_estimate(estimate: EstimateCreate, request: Request):
+async def create_estimate(request: Request, estimate: EstimateCreate):
     org_id = extract_org_id(request)
     """Create a new estimate"""
     db = get_db()
@@ -741,13 +728,7 @@ async def create_estimate(estimate: EstimateCreate, request: Request):
     return {"code": 0, "message": "Estimate created successfully", "estimate": estimate_dict}
 
 @router.get("/estimates")
-async def list_estimates(
-    status: str = "",
-    customer_id: str = "",
-    date_start: str = "",
-    date_end: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_estimates(request: Request, status: str = "", customer_id: str = "", date_start: str = "", date_end: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List all estimates"""
     db = get_db()
@@ -769,7 +750,7 @@ async def list_estimates(
     return {"code": 0, "estimates": estimates, "page_context": {"page": page, "per_page": per_page, "total": total}}
 
 @router.get("/estimates/{estimate_id}")
-async def get_estimate(estimate_id: str, request: Request):
+async def get_estimate(request: Request, estimate_id: str):
     org_id = extract_org_id(request)
     """Get estimate details"""
     db = get_db()
@@ -779,7 +760,7 @@ async def get_estimate(estimate_id: str, request: Request):
     return {"code": 0, "estimate": estimate}
 
 @router.put("/estimates/{estimate_id}")
-async def update_estimate(estimate_id: str, estimate: EstimateCreate, request: Request):
+async def update_estimate(request: Request, estimate_id: str, estimate: EstimateCreate):
     org_id = extract_org_id(request)
     """Update estimate"""
     db = get_db()
@@ -801,7 +782,7 @@ async def update_estimate(estimate_id: str, estimate: EstimateCreate, request: R
     return {"code": 0, "message": "Estimate updated successfully"}
 
 @router.delete("/estimates/{estimate_id}")
-async def delete_estimate(estimate_id: str, request: Request):
+async def delete_estimate(request: Request, estimate_id: str):
     org_id = extract_org_id(request)
     """Delete estimate"""
     db = get_db()
@@ -811,7 +792,7 @@ async def delete_estimate(estimate_id: str, request: Request):
     return {"code": 0, "message": "Estimate deleted successfully"}
 
 @router.post("/estimates/{estimate_id}/status/sent")
-async def mark_estimate_sent(estimate_id: str, request: Request):
+async def mark_estimate_sent(request: Request, estimate_id: str):
     org_id = extract_org_id(request)
     """Mark estimate as sent"""
     db = get_db()
@@ -824,7 +805,7 @@ async def mark_estimate_sent(estimate_id: str, request: Request):
     return {"code": 0, "message": "Estimate marked as sent"}
 
 @router.post("/estimates/{estimate_id}/status/accepted")
-async def mark_estimate_accepted(estimate_id: str, request: Request):
+async def mark_estimate_accepted(request: Request, estimate_id: str):
     org_id = extract_org_id(request)
     """Mark estimate as accepted"""
     db = get_db()
@@ -837,7 +818,7 @@ async def mark_estimate_accepted(estimate_id: str, request: Request):
     return {"code": 0, "message": "Estimate marked as accepted"}
 
 @router.post("/estimates/{estimate_id}/status/declined")
-async def mark_estimate_declined(estimate_id: str, request: Request):
+async def mark_estimate_declined(request: Request, estimate_id: str):
     org_id = extract_org_id(request)
     """Mark estimate as declined"""
     db = get_db()
@@ -850,7 +831,7 @@ async def mark_estimate_declined(estimate_id: str, request: Request):
     return {"code": 0, "message": "Estimate marked as declined"}
 
 @router.post("/estimates/{estimate_id}/lineitems/invoices")
-async def convert_estimate_to_invoice(estimate_id: str, request: Request):
+async def convert_estimate_to_invoice(request: Request, estimate_id: str):
     org_id = extract_org_id(request)
     """Convert estimate to invoice"""
     db = get_db()
@@ -908,7 +889,7 @@ async def convert_estimate_to_invoice(estimate_id: str, request: Request):
     return {"code": 0, "message": "Invoice created from estimate", "invoice": invoice_dict}
 
 @router.post("/estimates/{estimate_id}/lineitems/salesorders")
-async def convert_estimate_to_salesorder(estimate_id: str, request: Request):
+async def convert_estimate_to_salesorder(request: Request, estimate_id: str):
     org_id = extract_org_id(request)
     """Convert estimate to sales order"""
     db = get_db()
@@ -959,7 +940,7 @@ async def convert_estimate_to_salesorder(estimate_id: str, request: Request):
     return {"code": 0, "message": "Sales order created from estimate", "salesorder": so_dict}
 
 @router.post("/estimates/{estimate_id}/email")
-async def email_estimate(estimate_id: str, to_emails: str = "", subject: str = "", body: str = "", request: Request):
+async def email_estimate(request: Request, estimate_id: str, to_emails: str = "", subject: str = "", body: str = ""):
     org_id = extract_org_id(request)
     """Email estimate to customer"""
     db = get_db()
@@ -1004,7 +985,7 @@ Battwheels Team"""
     return {"code": 0, "message": "Estimate email queued", "email": {"to": to_emails, "subject": subject or default_subject}}
 
 @router.post("/estimates/{estimate_id}/clone")
-async def clone_estimate(estimate_id: str, request: Request):
+async def clone_estimate(request: Request, estimate_id: str):
     org_id = extract_org_id(request)
     """Create a copy of an existing estimate"""
     db = get_db()
@@ -1075,7 +1056,7 @@ class InvoiceCreate(BaseModel):
     custom_fields: Optional[List[Dict]] = []
 
 @router.post("/invoices")
-async def create_invoice(invoice: InvoiceCreate, request: Request):
+async def create_invoice(request: Request, invoice: InvoiceCreate):
     org_id = extract_org_id(request)
     """Create a new invoice"""
     db = get_db()
@@ -1133,13 +1114,7 @@ async def create_invoice(invoice: InvoiceCreate, request: Request):
     return {"code": 0, "message": "Invoice created successfully", "invoice": invoice_dict}
 
 @router.get("/invoices")
-async def list_invoices(
-    status: str = "",
-    customer_id: str = "",
-    date_start: str = "",
-    date_end: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_invoices(request: Request, status: str = "", customer_id: str = "", date_start: str = "", date_end: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List all invoices"""
     db = get_db()
@@ -1161,7 +1136,7 @@ async def list_invoices(
     return {"code": 0, "invoices": invoices, "page_context": {"page": page, "per_page": per_page, "total": total}}
 
 @router.get("/invoices/{invoice_id}")
-async def get_invoice(invoice_id: str, request: Request):
+async def get_invoice(request: Request, invoice_id: str):
     org_id = extract_org_id(request)
     """Get invoice details"""
     db = get_db()
@@ -1171,7 +1146,7 @@ async def get_invoice(invoice_id: str, request: Request):
     return {"code": 0, "invoice": invoice}
 
 @router.put("/invoices/{invoice_id}")
-async def update_invoice(invoice_id: str, invoice: InvoiceCreate, request: Request):
+async def update_invoice(request: Request, invoice_id: str, invoice: InvoiceCreate):
     org_id = extract_org_id(request)
     """Update invoice"""
     db = get_db()
@@ -1194,7 +1169,7 @@ async def update_invoice(invoice_id: str, invoice: InvoiceCreate, request: Reque
     return {"code": 0, "message": "Invoice updated successfully"}
 
 @router.delete("/invoices/{invoice_id}")
-async def delete_invoice(invoice_id: str, request: Request):
+async def delete_invoice(request: Request, invoice_id: str):
     org_id = extract_org_id(request)
     """Delete invoice"""
     db = get_db()
@@ -1212,7 +1187,7 @@ async def delete_invoice(invoice_id: str, request: Request):
     return {"code": 0, "message": "Invoice deleted successfully"}
 
 @router.post("/invoices/{invoice_id}/status/sent")
-async def mark_invoice_sent(invoice_id: str, request: Request):
+async def mark_invoice_sent(request: Request, invoice_id: str):
     org_id = extract_org_id(request)
     """Mark invoice as sent"""
     db = get_db()
@@ -1225,7 +1200,7 @@ async def mark_invoice_sent(invoice_id: str, request: Request):
     return {"code": 0, "message": "Invoice marked as sent"}
 
 @router.post("/invoices/{invoice_id}/status/void")
-async def void_invoice(invoice_id: str, request: Request):
+async def void_invoice(request: Request, invoice_id: str):
     org_id = extract_org_id(request)
     """Void an invoice"""
     db = get_db()
@@ -1246,7 +1221,7 @@ async def void_invoice(invoice_id: str, request: Request):
     return {"code": 0, "message": "Invoice voided successfully"}
 
 @router.post("/invoices/{invoice_id}/writeoff")
-async def write_off_invoice(invoice_id: str, amount: float = 0, request: Request):
+async def write_off_invoice(request: Request, invoice_id: str, amount: float = 0):
     org_id = extract_org_id(request)
     """Write off invoice balance"""
     db = get_db()
@@ -1276,7 +1251,7 @@ async def write_off_invoice(invoice_id: str, amount: float = 0, request: Request
     return {"code": 0, "message": f"Invoice written off for {write_off}"}
 
 @router.post("/invoices/{invoice_id}/payments")
-async def record_invoice_payment(invoice_id: str, amount: float, payment_mode: str = "cash", reference_number: str = "", date: str = "", request: Request):
+async def record_invoice_payment(request: Request, invoice_id: str, amount: float, payment_mode: str = "cash", reference_number: str = "", date: str = ""):
     org_id = extract_org_id(request)
     """Record a payment directly against an invoice"""
     db = get_db()
@@ -1329,7 +1304,7 @@ async def record_invoice_payment(invoice_id: str, amount: float, payment_mode: s
     return {"code": 0, "message": "Payment recorded", "payment": payment_dict, "invoice_balance": new_balance}
 
 @router.get("/invoices/{invoice_id}/payments")
-async def get_invoice_payments(invoice_id: str, request: Request):
+async def get_invoice_payments(request: Request, invoice_id: str):
     org_id = extract_org_id(request)
     """Get all payments applied to an invoice"""
     db = get_db()
@@ -1340,7 +1315,7 @@ async def get_invoice_payments(invoice_id: str, request: Request):
     return {"code": 0, "payments": payments}
 
 @router.post("/invoices/{invoice_id}/email")
-async def email_invoice(invoice_id: str, to_emails: str = "", cc_emails: str = "", subject: str = "", body: str = "", request: Request):
+async def email_invoice(request: Request, invoice_id: str, to_emails: str = "", cc_emails: str = "", subject: str = "", body: str = ""):
     org_id = extract_org_id(request)
     """Email invoice to customer"""
     db = get_db()
@@ -1400,7 +1375,7 @@ Battwheels Team"""
     }
 
 @router.post("/invoices/{invoice_id}/clone")
-async def clone_invoice(invoice_id: str, request: Request):
+async def clone_invoice(request: Request, invoice_id: str):
     org_id = extract_org_id(request)
     """Create a copy of an existing invoice"""
     db = get_db()
@@ -1437,7 +1412,7 @@ async def clone_invoice(invoice_id: str, request: Request):
     return {"code": 0, "message": "Invoice cloned", "invoice": new_invoice}
 
 @router.get("/invoices/{invoice_id}/pdf")
-async def get_invoice_pdf(invoice_id: str, format: str = "pdf", request: Request):
+async def get_invoice_pdf(request: Request, invoice_id: str, format: str = "pdf"):
     org_id = extract_org_id(request)
     """Generate PDF for invoice using WeasyPrint"""
     from fastapi.responses import Response
@@ -1471,7 +1446,7 @@ async def get_invoice_pdf(invoice_id: str, format: str = "pdf", request: Request
         raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
 
 @router.post("/invoices/bulk-action")
-async def bulk_invoice_action(invoice_ids: List[str], action: str, request: Request):
+async def bulk_invoice_action(request: Request, invoice_ids: List[str], action: str):
     org_id = extract_org_id(request)
     """Perform bulk action on multiple invoices"""
     db = get_db()
@@ -1543,7 +1518,7 @@ class SalesOrderCreate(BaseModel):
     custom_fields: Optional[List[Dict]] = []
 
 @router.post("/salesorders")
-async def create_salesorder(so: SalesOrderCreate, request: Request):
+async def create_salesorder(request: Request, so: SalesOrderCreate):
     org_id = extract_org_id(request)
     """Create a new sales order"""
     db = get_db()
@@ -1592,11 +1567,7 @@ async def create_salesorder(so: SalesOrderCreate, request: Request):
     return {"code": 0, "message": "Sales order created successfully", "salesorder": so_dict}
 
 @router.get("/salesorders")
-async def list_salesorders(
-    status: str = "",
-    customer_id: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_salesorders(request: Request, status: str = "", customer_id: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List all sales orders"""
     db = get_db()
@@ -1614,7 +1585,7 @@ async def list_salesorders(
     return {"code": 0, "salesorders": salesorders, "page_context": {"page": page, "per_page": per_page, "total": total}}
 
 @router.get("/salesorders/{so_id}")
-async def get_salesorder(so_id: str, request: Request):
+async def get_salesorder(request: Request, so_id: str):
     org_id = extract_org_id(request)
     """Get sales order details"""
     db = get_db()
@@ -1624,7 +1595,7 @@ async def get_salesorder(so_id: str, request: Request):
     return {"code": 0, "salesorder": so}
 
 @router.put("/salesorders/{so_id}")
-async def update_salesorder(so_id: str, so: SalesOrderCreate, request: Request):
+async def update_salesorder(request: Request, so_id: str, so: SalesOrderCreate):
     org_id = extract_org_id(request)
     """Update sales order"""
     db = get_db()
@@ -1646,7 +1617,7 @@ async def update_salesorder(so_id: str, so: SalesOrderCreate, request: Request):
     return {"code": 0, "message": "Sales order updated successfully"}
 
 @router.delete("/salesorders/{so_id}")
-async def delete_salesorder(so_id: str, request: Request):
+async def delete_salesorder(request: Request, so_id: str):
     org_id = extract_org_id(request)
     """Delete sales order"""
     db = get_db()
@@ -1656,7 +1627,7 @@ async def delete_salesorder(so_id: str, request: Request):
     return {"code": 0, "message": "Sales order deleted successfully"}
 
 @router.post("/salesorders/{so_id}/status/confirmed")
-async def confirm_salesorder(so_id: str, request: Request):
+async def confirm_salesorder(request: Request, so_id: str):
     org_id = extract_org_id(request)
     """Confirm sales order"""
     db = get_db()
@@ -1669,7 +1640,7 @@ async def confirm_salesorder(so_id: str, request: Request):
     return {"code": 0, "message": "Sales order confirmed"}
 
 @router.post("/salesorders/{so_id}/status/void")
-async def void_salesorder(so_id: str, request: Request):
+async def void_salesorder(request: Request, so_id: str):
     org_id = extract_org_id(request)
     """Void sales order"""
     db = get_db()
@@ -1682,7 +1653,7 @@ async def void_salesorder(so_id: str, request: Request):
     return {"code": 0, "message": "Sales order voided"}
 
 @router.post("/salesorders/{so_id}/invoices")
-async def convert_salesorder_to_invoice(so_id: str, request: Request):
+async def convert_salesorder_to_invoice(request: Request, so_id: str):
     org_id = extract_org_id(request)
     """Convert sales order to invoice"""
     db = get_db()
@@ -1765,7 +1736,7 @@ class PurchaseOrderCreate(BaseModel):
     custom_fields: Optional[List[Dict]] = []
 
 @router.post("/purchaseorders")
-async def create_purchaseorder(po: PurchaseOrderCreate, request: Request):
+async def create_purchaseorder(request: Request, po: PurchaseOrderCreate):
     org_id = extract_org_id(request)
     """Create a new purchase order"""
     db = get_db()
@@ -1811,11 +1782,7 @@ async def create_purchaseorder(po: PurchaseOrderCreate, request: Request):
     return {"code": 0, "message": "Purchase order created successfully", "purchaseorder": po_dict}
 
 @router.get("/purchaseorders")
-async def list_purchaseorders(
-    status: str = "",
-    vendor_id: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_purchaseorders(request: Request, status: str = "", vendor_id: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List all purchase orders"""
     db = get_db()
@@ -1833,7 +1800,7 @@ async def list_purchaseorders(
     return {"code": 0, "purchaseorders": purchaseorders, "page_context": {"page": page, "per_page": per_page, "total": total}}
 
 @router.get("/purchaseorders/{po_id}")
-async def get_purchaseorder(po_id: str, request: Request):
+async def get_purchaseorder(request: Request, po_id: str):
     org_id = extract_org_id(request)
     """Get purchase order details"""
     db = get_db()
@@ -1843,7 +1810,7 @@ async def get_purchaseorder(po_id: str, request: Request):
     return {"code": 0, "purchaseorder": po}
 
 @router.put("/purchaseorders/{po_id}")
-async def update_purchaseorder(po_id: str, po: PurchaseOrderCreate, request: Request):
+async def update_purchaseorder(request: Request, po_id: str, po: PurchaseOrderCreate):
     org_id = extract_org_id(request)
     """Update purchase order"""
     db = get_db()
@@ -1865,7 +1832,7 @@ async def update_purchaseorder(po_id: str, po: PurchaseOrderCreate, request: Req
     return {"code": 0, "message": "Purchase order updated successfully"}
 
 @router.delete("/purchaseorders/{po_id}")
-async def delete_purchaseorder(po_id: str, request: Request):
+async def delete_purchaseorder(request: Request, po_id: str):
     org_id = extract_org_id(request)
     """Delete purchase order"""
     db = get_db()
@@ -1875,7 +1842,7 @@ async def delete_purchaseorder(po_id: str, request: Request):
     return {"code": 0, "message": "Purchase order deleted successfully"}
 
 @router.post("/purchaseorders/{po_id}/status/issued")
-async def issue_purchaseorder(po_id: str, request: Request):
+async def issue_purchaseorder(request: Request, po_id: str):
     org_id = extract_org_id(request)
     """Mark purchase order as issued"""
     db = get_db()
@@ -1888,7 +1855,7 @@ async def issue_purchaseorder(po_id: str, request: Request):
     return {"code": 0, "message": "Purchase order issued"}
 
 @router.post("/purchaseorders/{po_id}/status/cancelled")
-async def cancel_purchaseorder(po_id: str, request: Request):
+async def cancel_purchaseorder(request: Request, po_id: str):
     org_id = extract_org_id(request)
     """Cancel purchase order"""
     db = get_db()
@@ -1901,7 +1868,7 @@ async def cancel_purchaseorder(po_id: str, request: Request):
     return {"code": 0, "message": "Purchase order cancelled"}
 
 @router.post("/purchaseorders/{po_id}/bills")
-async def convert_purchaseorder_to_bill(po_id: str, bill_number: str = "", request: Request):
+async def convert_purchaseorder_to_bill(request: Request, po_id: str, bill_number: str = ""):
     org_id = extract_org_id(request)
     """Convert purchase order to bill"""
     db = get_db()
@@ -1982,7 +1949,7 @@ class BillCreate(BaseModel):
     custom_fields: Optional[List[Dict]] = []
 
 @router.post("/bills")
-async def create_bill(bill: BillCreate, request: Request):
+async def create_bill(request: Request, bill: BillCreate):
     org_id = extract_org_id(request)
     """Create a new bill"""
     db = get_db()
@@ -2032,11 +1999,7 @@ async def create_bill(bill: BillCreate, request: Request):
     return {"code": 0, "message": "Bill created successfully", "bill": bill_dict}
 
 @router.get("/bills")
-async def list_bills(
-    status: str = "",
-    vendor_id: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_bills(request: Request, status: str = "", vendor_id: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List all bills"""
     db = get_db()
@@ -2054,7 +2017,7 @@ async def list_bills(
     return {"code": 0, "bills": bills, "page_context": {"page": page, "per_page": per_page, "total": total}}
 
 @router.get("/bills/{bill_id}")
-async def get_bill(bill_id: str, request: Request):
+async def get_bill(request: Request, bill_id: str):
     org_id = extract_org_id(request)
     """Get bill details"""
     db = get_db()
@@ -2064,7 +2027,7 @@ async def get_bill(bill_id: str, request: Request):
     return {"code": 0, "bill": bill}
 
 @router.put("/bills/{bill_id}")
-async def update_bill(bill_id: str, bill: BillCreate, request: Request):
+async def update_bill(request: Request, bill_id: str, bill: BillCreate):
     org_id = extract_org_id(request)
     """Update bill"""
     db = get_db()
@@ -2087,7 +2050,7 @@ async def update_bill(bill_id: str, bill: BillCreate, request: Request):
     return {"code": 0, "message": "Bill updated successfully"}
 
 @router.delete("/bills/{bill_id}")
-async def delete_bill(bill_id: str, request: Request):
+async def delete_bill(request: Request, bill_id: str):
     org_id = extract_org_id(request)
     """Delete bill"""
     db = get_db()
@@ -2105,7 +2068,7 @@ async def delete_bill(bill_id: str, request: Request):
     return {"code": 0, "message": "Bill deleted successfully"}
 
 @router.post("/bills/{bill_id}/status/void")
-async def void_bill(bill_id: str, request: Request):
+async def void_bill(request: Request, bill_id: str):
     org_id = extract_org_id(request)
     """Void a bill"""
     db = get_db()
@@ -2126,7 +2089,7 @@ async def void_bill(bill_id: str, request: Request):
     return {"code": 0, "message": "Bill voided successfully"}
 
 @router.post("/bills/{bill_id}/payments")
-async def record_bill_payment(bill_id: str, amount: float, payment_mode: str = "cash", reference_number: str = "", date: str = "", request: Request):
+async def record_bill_payment(request: Request, bill_id: str, amount: float, payment_mode: str = "cash", reference_number: str = "", date: str = ""):
     org_id = extract_org_id(request)
     """Record a payment directly against a bill"""
     db = get_db()
@@ -2177,7 +2140,7 @@ async def record_bill_payment(bill_id: str, amount: float, payment_mode: str = "
     return {"code": 0, "message": "Payment recorded", "payment": payment_dict, "bill_balance": new_balance}
 
 @router.get("/bills/{bill_id}/payments")
-async def get_bill_payments(bill_id: str, request: Request):
+async def get_bill_payments(request: Request, bill_id: str):
     org_id = extract_org_id(request)
     """Get all payments applied to a bill"""
     db = get_db()
@@ -2185,7 +2148,7 @@ async def get_bill_payments(bill_id: str, request: Request):
     return {"code": 0, "payments": payments}
 
 @router.post("/bills/{bill_id}/clone")
-async def clone_bill(bill_id: str, request: Request):
+async def clone_bill(request: Request, bill_id: str):
     org_id = extract_org_id(request)
     """Create a copy of an existing bill"""
     db = get_db()
@@ -2235,7 +2198,7 @@ class CreditNoteCreate(BaseModel):
     custom_fields: Optional[List[Dict]] = []
 
 @router.post("/creditnotes")
-async def create_creditnote(cn: CreditNoteCreate, request: Request):
+async def create_creditnote(request: Request, cn: CreditNoteCreate):
     org_id = extract_org_id(request)
     """Create a new credit note"""
     db = get_db()
@@ -2283,11 +2246,7 @@ async def create_creditnote(cn: CreditNoteCreate, request: Request):
     return {"code": 0, "message": "Credit note created successfully", "creditnote": cn_dict}
 
 @router.get("/creditnotes")
-async def list_creditnotes(
-    status: str = "",
-    customer_id: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_creditnotes(request: Request, status: str = "", customer_id: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List all credit notes"""
     db = get_db()
@@ -2305,7 +2264,7 @@ async def list_creditnotes(
     return {"code": 0, "creditnotes": creditnotes, "page_context": {"page": page, "per_page": per_page, "total": total}}
 
 @router.get("/creditnotes/{cn_id}")
-async def get_creditnote(cn_id: str, request: Request):
+async def get_creditnote(request: Request, cn_id: str):
     org_id = extract_org_id(request)
     """Get credit note details"""
     db = get_db()
@@ -2315,7 +2274,7 @@ async def get_creditnote(cn_id: str, request: Request):
     return {"code": 0, "creditnote": cn}
 
 @router.delete("/creditnotes/{cn_id}")
-async def delete_creditnote(cn_id: str, request: Request):
+async def delete_creditnote(request: Request, cn_id: str):
     org_id = extract_org_id(request)
     """Delete credit note"""
     db = get_db()
@@ -2333,7 +2292,7 @@ async def delete_creditnote(cn_id: str, request: Request):
     return {"code": 0, "message": "Credit note deleted successfully"}
 
 @router.post("/creditnotes/{cn_id}/invoices/{invoice_id}/apply")
-async def apply_creditnote_to_invoice(cn_id: str, invoice_id: str, amount: float, request: Request):
+async def apply_creditnote_to_invoice(request: Request, cn_id: str, invoice_id: str, amount: float):
     org_id = extract_org_id(request)
     """Apply credit note to invoice"""
     db = get_db()
@@ -2384,7 +2343,7 @@ async def apply_creditnote_to_invoice(cn_id: str, invoice_id: str, amount: float
     return {"code": 0, "message": f"Credit of {amount} applied to invoice"}
 
 @router.post("/creditnotes/{cn_id}/refund")
-async def refund_creditnote(cn_id: str, amount: float, request: Request):
+async def refund_creditnote(request: Request, cn_id: str, amount: float):
     org_id = extract_org_id(request)
     """Refund credit note balance to customer"""
     db = get_db()
@@ -2443,7 +2402,7 @@ class VendorCreditCreate(BaseModel):
     notes: Optional[str] = ""
 
 @router.post("/vendorcredits")
-async def create_vendorcredit(vc: VendorCreditCreate, request: Request):
+async def create_vendorcredit(request: Request, vc: VendorCreditCreate):
     org_id = extract_org_id(request)
     """Create a new vendor credit"""
     db = get_db()
@@ -2489,11 +2448,7 @@ async def create_vendorcredit(vc: VendorCreditCreate, request: Request):
     return {"code": 0, "message": "Vendor credit created successfully", "vendorcredit": vc_dict}
 
 @router.get("/vendorcredits")
-async def list_vendorcredits(
-    status: str = "",
-    vendor_id: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_vendorcredits(request: Request, status: str = "", vendor_id: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List all vendor credits"""
     db = get_db()
@@ -2511,7 +2466,7 @@ async def list_vendorcredits(
     return {"code": 0, "vendorcredits": vendorcredits, "page_context": {"page": page, "per_page": per_page, "total": total}}
 
 @router.get("/vendorcredits/{vc_id}")
-async def get_vendorcredit(vc_id: str, request: Request):
+async def get_vendorcredit(request: Request, vc_id: str):
     org_id = extract_org_id(request)
     """Get vendor credit details"""
     db = get_db()
@@ -2521,7 +2476,7 @@ async def get_vendorcredit(vc_id: str, request: Request):
     return {"code": 0, "vendorcredit": vc}
 
 @router.post("/vendorcredits/{vc_id}/bills/{bill_id}/apply")
-async def apply_vendorcredit_to_bill(vc_id: str, bill_id: str, amount: float, request: Request):
+async def apply_vendorcredit_to_bill(request: Request, vc_id: str, bill_id: str, amount: float):
     org_id = extract_org_id(request)
     """Apply vendor credit to bill"""
     db = get_db()
@@ -2585,7 +2540,7 @@ class CustomerPaymentCreate(BaseModel):
     invoice_ids: List[str] = []
 
 @router.post("/customerpayments")
-async def create_customer_payment(payment: CustomerPaymentCreate, request: Request):
+async def create_customer_payment(request: Request, payment: CustomerPaymentCreate):
     org_id = extract_org_id(request)
     """Record a customer payment"""
     db = get_db()
@@ -2652,10 +2607,7 @@ async def create_customer_payment(payment: CustomerPaymentCreate, request: Reque
     return {"code": 0, "message": "Payment recorded successfully", "payment": payment_dict}
 
 @router.get("/customerpayments")
-async def list_customer_payments(
-    customer_id: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_customer_payments(request: Request, customer_id: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List all customer payments"""
     db = get_db()
@@ -2671,7 +2623,7 @@ async def list_customer_payments(
     return {"code": 0, "customerpayments": payments, "page_context": {"page": page, "per_page": per_page, "total": total}}
 
 @router.get("/customerpayments/{payment_id}")
-async def get_customer_payment(payment_id: str, request: Request):
+async def get_customer_payment(request: Request, payment_id: str):
     org_id = extract_org_id(request)
     """Get customer payment details"""
     db = get_db()
@@ -2681,7 +2633,7 @@ async def get_customer_payment(payment_id: str, request: Request):
     return {"code": 0, "payment": payment}
 
 @router.delete("/customerpayments/{payment_id}")
-async def delete_customer_payment(payment_id: str, request: Request):
+async def delete_customer_payment(request: Request, payment_id: str):
     org_id = extract_org_id(request)
     """Delete customer payment"""
     db = get_db()
@@ -2732,7 +2684,7 @@ class VendorPaymentCreate(BaseModel):
     bill_ids: List[str] = []
 
 @router.post("/vendorpayments")
-async def create_vendor_payment(payment: VendorPaymentCreate, request: Request):
+async def create_vendor_payment(request: Request, payment: VendorPaymentCreate):
     org_id = extract_org_id(request)
     """Record a vendor payment"""
     db = get_db()
@@ -2799,10 +2751,7 @@ async def create_vendor_payment(payment: VendorPaymentCreate, request: Request):
     return {"code": 0, "message": "Payment recorded successfully", "payment": payment_dict}
 
 @router.get("/vendorpayments")
-async def list_vendor_payments(
-    vendor_id: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_vendor_payments(request: Request, vendor_id: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List all vendor payments"""
     db = get_db()
@@ -2818,7 +2767,7 @@ async def list_vendor_payments(
     return {"code": 0, "vendorpayments": payments, "page_context": {"page": page, "per_page": per_page, "total": total}}
 
 @router.get("/vendorpayments/{payment_id}")
-async def get_vendor_payment(payment_id: str, request: Request):
+async def get_vendor_payment(request: Request, payment_id: str):
     org_id = extract_org_id(request)
     """Get vendor payment details"""
     db = get_db()
@@ -2852,7 +2801,7 @@ class ExpenseCreate(BaseModel):
     custom_fields: Optional[List[Dict]] = []
 
 @router.post("/expenses")
-async def create_expense(expense: ExpenseCreate, request: Request):
+async def create_expense(request: Request, expense: ExpenseCreate):
     org_id = extract_org_id(request)
     """Create a new expense"""
     db = get_db()
@@ -2899,14 +2848,7 @@ async def create_expense(expense: ExpenseCreate, request: Request):
     return {"code": 0, "message": "Expense created successfully", "expense": expense_dict}
 
 @router.get("/expenses")
-async def list_expenses(
-    status: str = "",
-    expense_account_id: str = "",
-    vendor_id: str = "",
-    date_start: str = "",
-    date_end: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_expenses(request: Request, status: str = "", expense_account_id: str = "", vendor_id: str = "", date_start: str = "", date_end: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List all expenses"""
     db = get_db()
@@ -2940,7 +2882,7 @@ async def list_expenses(
     }
 
 @router.get("/expenses/{expense_id}")
-async def get_expense(expense_id: str, request: Request):
+async def get_expense(request: Request, expense_id: str):
     org_id = extract_org_id(request)
     """Get expense details"""
     db = get_db()
@@ -2950,7 +2892,7 @@ async def get_expense(expense_id: str, request: Request):
     return {"code": 0, "expense": expense}
 
 @router.put("/expenses/{expense_id}")
-async def update_expense(expense_id: str, expense: ExpenseCreate, request: Request):
+async def update_expense(request: Request, expense_id: str, expense: ExpenseCreate):
     org_id = extract_org_id(request)
     """Update expense"""
     db = get_db()
@@ -2969,7 +2911,7 @@ async def update_expense(expense_id: str, expense: ExpenseCreate, request: Reque
     return {"code": 0, "message": "Expense updated successfully"}
 
 @router.delete("/expenses/{expense_id}")
-async def delete_expense(expense_id: str, request: Request):
+async def delete_expense(request: Request, expense_id: str):
     org_id = extract_org_id(request)
     """Delete expense"""
     db = get_db()
@@ -2991,7 +2933,7 @@ class BankAccountCreate(BaseModel):
     opening_balance: float = 0
 
 @router.post("/bankaccounts")
-async def create_bank_account(account: BankAccountCreate, request: Request):
+async def create_bank_account(request: Request, account: BankAccountCreate):
     org_id = extract_org_id(request)
     """Create a new bank account"""
     db = get_db()
@@ -3012,7 +2954,7 @@ async def create_bank_account(account: BankAccountCreate, request: Request):
     return {"code": 0, "message": "Bank account created successfully", "bankaccount": account_dict}
 
 @router.get("/bankaccounts")
-async def list_bank_accounts(account_type: str = "", request: Request):
+async def list_bank_accounts(request: Request, account_type: str = ""):
     org_id = extract_org_id(request)
     """List all bank accounts"""
     db = get_db()
@@ -3026,7 +2968,7 @@ async def list_bank_accounts(account_type: str = "", request: Request):
     return {"code": 0, "bankaccounts": accounts}
 
 @router.get("/bankaccounts/{account_id}")
-async def get_bank_account(account_id: str, request: Request):
+async def get_bank_account(request: Request, account_id: str):
     org_id = extract_org_id(request)
     """Get bank account details"""
     db = get_db()
@@ -3036,7 +2978,7 @@ async def get_bank_account(account_id: str, request: Request):
     return {"code": 0, "bankaccount": account}
 
 @router.put("/bankaccounts/{account_id}")
-async def update_bank_account(account_id: str, account: BankAccountCreate, request: Request):
+async def update_bank_account(request: Request, account_id: str, account: BankAccountCreate):
     org_id = extract_org_id(request)
     """Update bank account"""
     db = get_db()
@@ -3050,7 +2992,7 @@ async def update_bank_account(account_id: str, account: BankAccountCreate, reque
     return {"code": 0, "message": "Bank account updated successfully"}
 
 @router.delete("/bankaccounts/{account_id}")
-async def delete_bank_account(account_id: str, request: Request):
+async def delete_bank_account(request: Request, account_id: str):
     org_id = extract_org_id(request)
     """Delete (deactivate) bank account"""
     db = get_db()
@@ -3076,7 +3018,7 @@ class BankTransactionCreate(BaseModel):
     category_name: Optional[str] = ""
 
 @router.post("/banktransactions")
-async def create_bank_transaction(txn: BankTransactionCreate, request: Request):
+async def create_bank_transaction(request: Request, txn: BankTransactionCreate):
     org_id = extract_org_id(request)
     """Create a bank transaction"""
     db = get_db()
@@ -3109,13 +3051,7 @@ async def create_bank_transaction(txn: BankTransactionCreate, request: Request):
     return {"code": 0, "message": "Transaction created successfully", "transaction": txn_dict}
 
 @router.get("/banktransactions")
-async def list_bank_transactions(
-    account_id: str = "",
-    status: str = "",
-    date_start: str = "",
-    date_end: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_bank_transactions(request: Request, account_id: str = "", status: str = "", date_start: str = "", date_end: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List bank transactions"""
     db = get_db()
@@ -3137,7 +3073,7 @@ async def list_bank_transactions(
     return {"code": 0, "transactions": transactions, "page_context": {"page": page, "per_page": per_page, "total": total}}
 
 @router.post("/banktransactions/{txn_id}/categorize")
-async def categorize_transaction(txn_id: str, category_id: str, category_name: str, request: Request):
+async def categorize_transaction(request: Request, txn_id: str, category_id: str, category_name: str):
     org_id = extract_org_id(request)
     """Categorize a bank transaction"""
     db = get_db()
@@ -3154,7 +3090,7 @@ async def categorize_transaction(txn_id: str, category_id: str, category_name: s
     return {"code": 0, "message": "Transaction categorized successfully"}
 
 @router.post("/banktransactions/{txn_id}/match")
-async def match_transaction(txn_id: str, reference_type: str, reference_id: str, request: Request):
+async def match_transaction(request: Request, txn_id: str, reference_type: str, reference_id: str):
     org_id = extract_org_id(request)
     """Match transaction to invoice/bill/payment"""
     db = get_db()
@@ -3182,7 +3118,7 @@ class ChartOfAccountCreate(BaseModel):
     is_user_created: bool = True
 
 @router.post("/chartofaccounts")
-async def create_chart_of_account(account: ChartOfAccountCreate, request: Request):
+async def create_chart_of_account(request: Request, account: ChartOfAccountCreate):
     org_id = extract_org_id(request)
     """Create a chart of account"""
     db = get_db()
@@ -3201,7 +3137,7 @@ async def create_chart_of_account(account: ChartOfAccountCreate, request: Reques
     return {"code": 0, "message": "Account created successfully", "account": account_dict}
 
 @router.get("/chartofaccounts")
-async def list_chart_of_accounts(account_type: str = "", request: Request):
+async def list_chart_of_accounts(request: Request, account_type: str = ""):
     org_id = extract_org_id(request)
     """List chart of accounts"""
     db = get_db()
@@ -3215,7 +3151,7 @@ async def list_chart_of_accounts(account_type: str = "", request: Request):
     return {"code": 0, "chartofaccounts": accounts}
 
 @router.get("/chartofaccounts/{account_id}")
-async def get_chart_of_account(account_id: str, request: Request):
+async def get_chart_of_account(request: Request, account_id: str):
     org_id = extract_org_id(request)
     """Get chart of account details"""
     db = get_db()
@@ -3225,7 +3161,7 @@ async def get_chart_of_account(account_id: str, request: Request):
     return {"code": 0, "account": account}
 
 @router.put("/chartofaccounts/{account_id}")
-async def update_chart_of_account(account_id: str, account: ChartOfAccountCreate, request: Request):
+async def update_chart_of_account(request: Request, account_id: str, account: ChartOfAccountCreate):
     org_id = extract_org_id(request)
     """Update chart of account"""
     db = get_db()
@@ -3236,7 +3172,7 @@ async def update_chart_of_account(account_id: str, account: ChartOfAccountCreate
     return {"code": 0, "message": "Account updated successfully"}
 
 @router.delete("/chartofaccounts/{account_id}")
-async def delete_chart_of_account(account_id: str, request: Request):
+async def delete_chart_of_account(request: Request, account_id: str):
     org_id = extract_org_id(request)
     """Delete (deactivate) chart of account"""
     db = get_db()
@@ -3268,7 +3204,7 @@ class JournalEntryCreate(BaseModel):
     custom_fields: Optional[List[Dict]] = []
 
 @router.post("/journals")
-async def create_journal_entry(journal: JournalEntryCreate, request: Request):
+async def create_journal_entry(request: Request, journal: JournalEntryCreate):
     org_id = extract_org_id(request)
     """Create a journal entry"""
     db = get_db()
@@ -3306,11 +3242,7 @@ async def create_journal_entry(journal: JournalEntryCreate, request: Request):
     return {"code": 0, "message": "Journal entry created successfully", "journal": journal_dict}
 
 @router.get("/journals")
-async def list_journal_entries(
-    date_start: str = "",
-    date_end: str = "",
-    page: int = 1,
-    per_page: int = 25, request: Request):
+async def list_journal_entries(request: Request, date_start: str = "", date_end: str = "", page: int = 1, per_page: int = 25):
     org_id = extract_org_id(request)
     """List journal entries"""
     db = get_db()
@@ -3328,7 +3260,7 @@ async def list_journal_entries(
     return {"code": 0, "journals": journals, "page_context": {"page": page, "per_page": per_page, "total": total}}
 
 @router.get("/journals/{journal_id}")
-async def get_journal_entry(journal_id: str, request: Request):
+async def get_journal_entry(request: Request, journal_id: str):
     org_id = extract_org_id(request)
     """Get journal entry details"""
     db = get_db()
@@ -3338,7 +3270,7 @@ async def get_journal_entry(journal_id: str, request: Request):
     return {"code": 0, "journal": journal}
 
 @router.delete("/journals/{journal_id}")
-async def delete_journal_entry(journal_id: str, request: Request):
+async def delete_journal_entry(request: Request, journal_id: str):
     org_id = extract_org_id(request)
     """Delete journal entry"""
     db = get_db()
@@ -3350,7 +3282,7 @@ async def delete_journal_entry(journal_id: str, request: Request):
 # ============== REPORTS MODULE ==============
 
 @router.get("/reports/balancesheet")
-async def get_balance_sheet(as_of_date: str = "", request: Request):
+async def get_balance_sheet(request: Request, as_of_date: str = ""):
     org_id = extract_org_id(request)
     """Get Balance Sheet report"""
     db = get_db()
@@ -3410,7 +3342,7 @@ async def get_balance_sheet(as_of_date: str = "", request: Request):
     }
 
 @router.get("/reports/profitandloss")
-async def get_profit_and_loss(start_date: str = "", end_date: str = "", request: Request):
+async def get_profit_and_loss(request: Request, start_date: str = "", end_date: str = ""):
     org_id = extract_org_id(request)
     """Get Profit & Loss report"""
     db = get_db()
@@ -3612,7 +3544,7 @@ async def get_payables_aging(request: Request):
     }
 
 @router.get("/reports/gst")
-async def get_gst_summary(start_date: str = "", end_date: str = "", request: Request):
+async def get_gst_summary(request: Request, start_date: str = "", end_date: str = ""):
     org_id = extract_org_id(request)
     """Get GST Summary for filing"""
     db = get_db()

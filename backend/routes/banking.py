@@ -151,9 +151,7 @@ async def get_summary(request: Request):
 
 
 @router.get("/accounts")
-async def list_accounts(
-    request: Request,
-    include_inactive: bool = Query(False)
+async def list_accounts(request: Request, include_inactive: bool = Query(False)
 ):
     """List all bank accounts"""
     service = get_service()
@@ -165,7 +163,7 @@ async def list_accounts(
 
 
 @router.post("/accounts")
-async def create_account(data: AccountCreate, request: Request):
+async def create_account(request: Request, data: AccountCreate):
     """Create a new bank account with opening balance journal entry"""
     from services.double_entry_service import get_double_entry_service, init_double_entry_service
     
@@ -201,7 +199,7 @@ async def create_account(data: AccountCreate, request: Request):
 
 
 @router.get("/accounts/{account_id}")
-async def get_account(account_id: str, request: Request):
+async def get_account(request: Request, account_id: str):
     """Get a single bank account"""
     service = get_service()
     
@@ -213,7 +211,7 @@ async def get_account(account_id: str, request: Request):
 
 
 @router.put("/accounts/{account_id}")
-async def update_account(account_id: str, data: AccountUpdate, request: Request):
+async def update_account(request: Request, account_id: str, data: AccountUpdate):
     """Update a bank account"""
     service = get_service()
     
@@ -227,10 +225,7 @@ async def update_account(account_id: str, data: AccountUpdate, request: Request)
 
 
 @router.get("/accounts/{account_id}/transactions")
-async def get_transactions(
-    account_id: str,
-    request: Request,
-    date_from: Optional[str] = Query(None),
+async def get_transactions(request: Request, account_id: str, date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
     category: Optional[str] = Query(None),
     reconciled: Optional[bool] = Query(None),
@@ -260,10 +255,8 @@ async def get_transactions(
 
 
 @router.post("/accounts/{account_id}/transactions")
-async def record_transaction(
-    account_id: str,
-    data: TransactionCreate,
-    request: Request
+async def record_transaction(request: Request, account_id: str,
+    data: TransactionCreate
 ):
     """Record a bank transaction"""
     service = get_service()
@@ -287,7 +280,7 @@ async def record_transaction(
 
 
 @router.get("/accounts/{account_id}/balance")
-async def get_balance(account_id: str, request: Request):
+async def get_balance(request: Request, account_id: str):
     """Get current balance for a bank account"""
     service = get_service()
     
@@ -305,7 +298,7 @@ async def get_balance(account_id: str, request: Request):
 
 
 @router.post("/accounts/{account_id}/recalculate")
-async def recalculate_balance(account_id: str, request: Request):
+async def recalculate_balance(request: Request, account_id: str):
     """Recalculate account balance from transactions"""
     service = get_service()
     
@@ -319,10 +312,7 @@ async def recalculate_balance(account_id: str, request: Request):
 
 
 @router.get("/accounts/{account_id}/monthly")
-async def get_monthly_summary(
-    account_id: str,
-    request: Request,
-    months: int = Query(6, ge=1, le=12)
+async def get_monthly_summary(request: Request, account_id: str, months: int = Query(6, ge=1, le=12)
 ):
     """Get transactions grouped by month"""
     service = get_service()
@@ -333,7 +323,7 @@ async def get_monthly_summary(
 
 
 @router.post("/reconcile")
-async def bulk_reconcile(data: ReconcileRequest, request: Request):
+async def bulk_reconcile(request: Request, data: ReconcileRequest):
     """Bulk reconcile transactions"""
     service = get_service()
     
@@ -348,10 +338,7 @@ async def bulk_reconcile(data: ReconcileRequest, request: Request):
 
 
 @router.post("/reconcile/{transaction_id}")
-async def reconcile_transaction(
-    transaction_id: str,
-    request: Request,
-    reconciled: bool = Query(True)
+async def reconcile_transaction(request: Request, transaction_id: str, reconciled: bool = Query(True)
 ):
     """Reconcile a single transaction"""
     service = get_service()
@@ -366,7 +353,7 @@ async def reconcile_transaction(
 
 
 @router.post("/transfer")
-async def transfer_funds(data: TransferRequest, request: Request):
+async def transfer_funds(request: Request, data: TransferRequest):
     """Transfer funds between two bank accounts"""
     from services.double_entry_service import get_double_entry_service, init_double_entry_service
     

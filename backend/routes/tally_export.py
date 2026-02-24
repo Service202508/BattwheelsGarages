@@ -103,9 +103,7 @@ def _build_tally_xml(entries: list, org_name: str) -> str:
 
 
 @router.get("/tally-xml")
-async def export_tally_xml(
-    request: Request,
-    date_from: str = Query(..., description="Start date YYYY-MM-DD"),
+async def export_tally_xml(request: Request, date_from: str = Query(..., description="Start date YYYY-MM-DD"),
     date_to: str = Query(..., description="End date YYYY-MM-DD"),
     ctx: TenantContext = Depends(tenant_context_required),
 ):

@@ -265,14 +265,14 @@ async def get_indian_states(request: Request):
     return {"code": 0, "states": states}
 
 @router.post("/validate-gstin")
-async def validate_gstin_endpoint(data: GSTINValidation, request: Request):
+async def validate_gstin_endpoint(request: Request, data: GSTINValidation):
     org_id = extract_org_id(request)
     """Validate GSTIN format and extract details"""
     result = validate_gstin(data.gstin)
     return {"code": 0 if result["valid"] else 1, **result}
 
 @router.post("/calculate")
-async def calculate_gst_endpoint(data: GSTCalculationRequest, request: Request):
+async def calculate_gst_endpoint(request: Request, data: GSTCalculationRequest):
     org_id = extract_org_id(request)
     """Calculate GST (CGST/SGST/IGST) based on place of supply"""
     result = calculate_gst(
@@ -299,7 +299,7 @@ async def get_organization_gst_settings(request: Request):
     return {"code": 0, "settings": settings}
 
 @router.put("/organization-settings")
-async def update_organization_gst_settings(settings: OrganizationGSTSettings, request: Request):
+async def update_organization_gst_settings(request: Request, settings: OrganizationGSTSettings):
     org_id = extract_org_id(request)
     """Update organization GST settings"""
     db = get_db()
@@ -326,9 +326,8 @@ async def update_organization_gst_settings(settings: OrganizationGSTSettings, re
 # ============== GSTR-1 REPORT ==============
 
 @router.get("/gstr1")
-async def get_gstr1_report(
-    month: str = "",  # Format: YYYY-MM
-    format: str = Query("json", enum=["json", "excel", "pdf"], request: Request)
+async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
+    format: str = Query("json", enum=["json", "excel", "pdf"])
 ):
     """
     GSTR-1 Report: Outward Supplies (Sales Invoices)
@@ -629,9 +628,8 @@ def generate_gstr1_pdf(data: dict, month: str, org_settings: dict) -> Response:
 # ============== GSTR-3B REPORT ==============
 
 @router.get("/gstr3b")
-async def get_gstr3b_report(
-    month: str = "",  # Format: YYYY-MM
-    format: str = Query("json", enum=["json", "excel", "pdf"], request: Request)
+async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
+    format: str = Query("json", enum=["json", "excel", "pdf"])
 ):
     """
     GSTR-3B Report: Summary Return
@@ -926,9 +924,7 @@ def generate_gstr3b_pdf(data: dict, month: str, org_settings: dict) -> Response:
 # ============== HSN SUMMARY ==============
 
 @router.get("/hsn-summary")
-async def get_hsn_summary(
-    month: str = "",
-    format: str = Query("json", enum=["json", "excel"], request: Request)
+async def get_hsn_summary(request: Request, month: str = "", format: str = Query("json", enum=["json", "excel"])
 ):
     """
     HSN-wise Summary of Outward Supplies

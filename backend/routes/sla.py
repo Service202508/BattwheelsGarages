@@ -128,7 +128,7 @@ async def get_sla_config(request: Request):
 
 
 @router.put("/config")
-async def update_sla_config(config: SLAConfig, request: Request):
+async def update_sla_config(request: Request, config: SLAConfig):
     """Update SLA configuration for the organization"""
     org_id = await get_org_id_from_request(request)
     db = get_db()
@@ -151,7 +151,7 @@ async def update_sla_config(config: SLAConfig, request: Request):
 
 
 @router.get("/status/{ticket_id}")
-async def get_ticket_sla_status(ticket_id: str, request: Request):
+async def get_ticket_sla_status(request: Request, ticket_id: str):
     """Get SLA status for a specific ticket"""
     db = get_db()
     ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
@@ -599,13 +599,7 @@ async def _send_reassignment_notifications(ticket: Dict, old_name: str, new_tech
 # ==================== BREACH REPORT ENDPOINT ====================
 
 @router.get("/breach-report")
-async def get_sla_breach_report(
-    request: Request,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
-    technician_id: Optional[str] = None,
-    priority: Optional[str] = None,
-):
+async def get_sla_breach_report(request: Request, start_date: Optional[str] = None, end_date: Optional[str] = None, technician_id: Optional[str] = None, priority: Optional[str] = None, ):
     """
     GET /api/sla/breach-report
     Returns all SLA breaches within a date range.
@@ -684,13 +678,7 @@ async def get_sla_breach_report(
 # ==================== SLA PERFORMANCE REPORT ====================
 
 @router.get("/performance-report")
-async def get_sla_performance_report(
-    request: Request,
-    date_from: Optional[str] = None,
-    date_to: Optional[str] = None,
-    page: int = 1,
-    limit: int = 25,
-):
+async def get_sla_performance_report(request: Request, date_from: Optional[str] = None, date_to: Optional[str] = None, page: int = 1, limit: int = 25, ):
     """
     GET /api/sla/performance-report
     Full SLA performance metrics: compliance rate, breach counts,

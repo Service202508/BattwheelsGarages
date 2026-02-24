@@ -985,17 +985,7 @@ async def create_contact(contact: ContactCreate, background_tasks: BackgroundTas
     return {"code": 0, "message": "Contact created", "contact": contact_doc}
 
 @router.get("/")
-async def list_contacts(
-    request: Request,
-    contact_type: Optional[str] = None,
-    search: Optional[str] = None,
-    status: Optional[str] = None,
-    gst_treatment: Optional[str] = None,
-    tag: Optional[str] = None,
-    has_outstanding: Optional[bool] = None,
-    sort_by: str = "name",
-    sort_order: str = "asc",
-    page: int = Query(1, ge=1),
+async def list_contacts(request: Request, contact_type: Optional[str] = None, search: Optional[str] = None, status: Optional[str] = None, gst_treatment: Optional[str] = None, tag: Optional[str] = None, has_outstanding: Optional[bool] = None, sort_by: str = "name", sort_order: str = "asc", page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1)
 ):
     """List contacts with filters and standardized pagination"""
@@ -1077,7 +1067,7 @@ async def list_contacts(
     }
 
 @router.get("/{contact_id}")
-async def get_contact(contact_id: str, request: Request):
+async def get_contact(request: Request, contact_id: str):
     """Get contact details with persons, addresses, balance, aging, and transactions"""
     # Get org context for multi-tenant scoping
     org_id = await get_org_id(request)

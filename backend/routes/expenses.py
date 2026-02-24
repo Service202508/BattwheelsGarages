@@ -172,7 +172,7 @@ async def list_categories(request: Request):
 
 
 @router.post("/categories")
-async def create_category(data: CategoryCreate, request: Request):
+async def create_category(request: Request, data: CategoryCreate):
     """Create a new expense category"""
     service = get_service()
     org_id = await get_org_id(request)
@@ -188,7 +188,7 @@ async def create_category(data: CategoryCreate, request: Request):
 
 
 @router.put("/categories/{category_id}")
-async def update_category(category_id: str, data: CategoryUpdate, request: Request):
+async def update_category(request: Request, category_id: str, data: CategoryUpdate):
     """Update an expense category"""
     service = get_service()
     
@@ -202,9 +202,7 @@ async def update_category(category_id: str, data: CategoryUpdate, request: Reque
 
 
 @router.get("")
-async def list_expenses(
-    request: Request,
-    status: Optional[str] = Query(None, description="Filter by status"),
+async def list_expenses(request: Request, status: Optional[str] = Query(None, description="Filter by status"),
     category_id: Optional[str] = Query(None),
     date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
@@ -250,7 +248,7 @@ async def list_expenses(
 
 
 @router.post("")
-async def create_expense(data: ExpenseCreate, request: Request):
+async def create_expense(request: Request, data: ExpenseCreate):
     """Create a new expense in DRAFT status"""
     service = get_service()
     org_id = await get_org_id(request)
@@ -280,9 +278,7 @@ async def create_expense(data: ExpenseCreate, request: Request):
 
 
 @router.get("/summary")
-async def get_expense_summary(
-    request: Request,
-    date_from: Optional[str] = Query(None),
+async def get_expense_summary(request: Request, date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None)
 ):
     """Get expense summary statistics"""
@@ -295,9 +291,7 @@ async def get_expense_summary(
 
 
 @router.get("/export")
-async def export_expenses(
-    request: Request,
-    status: Optional[str] = Query(None),
+async def export_expenses(request: Request, status: Optional[str] = Query(None),
     date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None)
 ):
@@ -360,7 +354,7 @@ async def export_expenses(
 
 
 @router.get("/{expense_id}")
-async def get_expense(expense_id: str, request: Request):
+async def get_expense(request: Request, expense_id: str):
     """Get a single expense by ID"""
     service = get_service()
     
@@ -377,7 +371,7 @@ async def get_expense(expense_id: str, request: Request):
 
 
 @router.put("/{expense_id}")
-async def update_expense(expense_id: str, data: ExpenseUpdate, request: Request):
+async def update_expense(request: Request, expense_id: str, data: ExpenseUpdate):
     """Update an expense (only DRAFT or REJECTED)"""
     service = get_service()
     
@@ -394,7 +388,7 @@ async def update_expense(expense_id: str, data: ExpenseUpdate, request: Request)
 
 
 @router.delete("/{expense_id}")
-async def delete_expense(expense_id: str, request: Request):
+async def delete_expense(request: Request, expense_id: str):
     """Delete an expense (only DRAFT)"""
     service = get_service()
     
@@ -411,7 +405,7 @@ async def delete_expense(expense_id: str, request: Request):
 # ==================== WORKFLOW ROUTES ====================
 
 @router.post("/{expense_id}/submit")
-async def submit_expense(expense_id: str, request: Request):
+async def submit_expense(request: Request, expense_id: str):
     """Submit expense for approval (DRAFT → SUBMITTED)"""
     service = get_service()
     
@@ -423,7 +417,7 @@ async def submit_expense(expense_id: str, request: Request):
 
 
 @router.post("/{expense_id}/approve")
-async def approve_expense(expense_id: str, request: Request):
+async def approve_expense(request: Request, expense_id: str):
     """
     Approve expense (SUBMITTED → APPROVED)
     Posts journal entry with ITC capture if eligible
@@ -458,7 +452,7 @@ async def approve_expense(expense_id: str, request: Request):
 
 
 @router.post("/{expense_id}/reject")
-async def reject_expense(expense_id: str, data: RejectRequest, request: Request):
+async def reject_expense(request: Request, expense_id: str, data: RejectRequest):
     """Reject expense (SUBMITTED → REJECTED)"""
     service = get_service()
     user_id = await get_current_user_id(request)
@@ -476,7 +470,7 @@ async def reject_expense(expense_id: str, data: RejectRequest, request: Request)
 
 
 @router.post("/{expense_id}/mark-paid")
-async def mark_expense_paid(expense_id: str, data: MarkPaidRequest, request: Request):
+async def mark_expense_paid(request: Request, expense_id: str, data: MarkPaidRequest):
     """
     Mark expense as paid (APPROVED → PAID)
     Posts payment journal entry
@@ -553,7 +547,7 @@ async def upload_receipt(request: Request, file: UploadFile = File(...)):
 
 
 @router.get("/receipts/{receipt_id}")
-async def get_receipt(receipt_id: str, request: Request):
+async def get_receipt(request: Request, receipt_id: str):
     """Get uploaded receipt"""
     from fastapi.responses import Response
     

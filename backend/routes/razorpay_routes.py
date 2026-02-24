@@ -159,7 +159,7 @@ async def get_razorpay_config(request: Request):
 
 
 @router.post("/config")
-async def save_razorpay_config(config: RazorpayConfig, request: Request):
+async def save_razorpay_config(request: Request, config: RazorpayConfig):
     """Save Razorpay configuration for the organization"""
     org_id = await get_org_id_from_request(request)
     
@@ -298,7 +298,7 @@ async def create_razorpay_order(request: Request, invoice_id: str):
 
 
 @router.post("/payment-link")
-async def create_payment_link(req: CreatePaymentLinkRequest, request: Request):
+async def create_payment_link(request: Request, req: CreatePaymentLinkRequest):
     """
     Create a Razorpay payment link for an invoice.
     Returns a shareable payment URL.
@@ -385,7 +385,7 @@ async def create_payment_link(req: CreatePaymentLinkRequest, request: Request):
 
 
 @router.get("/invoice/{invoice_id}/payment-status")
-async def get_invoice_payment_status(invoice_id: str, request: Request):
+async def get_invoice_payment_status(request: Request, invoice_id: str):
     """
     Get detailed payment status for an invoice.
     Shows Razorpay transaction details when paid.
@@ -615,7 +615,7 @@ async def process_refund_completed(refund: Dict, org_id: str):
 # ==================== REFUND ENDPOINTS ====================
 
 @router.post("/refund")
-async def initiate_refund(req: RefundRequest, request: Request):
+async def initiate_refund(request: Request, req: RefundRequest):
     """
     Initiate a refund for a payment.
     Can be full refund or partial refund.
@@ -678,12 +678,7 @@ async def initiate_refund(req: RefundRequest, request: Request):
 
 
 @router.get("/refunds")
-async def list_refunds(
-    request: Request,
-    invoice_id: str = None,
-    payment_id: str = None,
-    limit: int = 50
-):
+async def list_refunds(request: Request, invoice_id: str = None, payment_id: str = None, limit: int = 50):
     """List refunds for the organization"""
     org_id = await get_org_id_from_request(request)
     
@@ -702,7 +697,7 @@ async def list_refunds(
 
 
 @router.get("/refund/{refund_id}/status")
-async def get_refund_status(refund_id: str, request: Request):
+async def get_refund_status(request: Request, refund_id: str):
     """Get status of a specific refund"""
     org_id = await get_org_id_from_request(request)
     config = await get_org_razorpay_config(org_id)
@@ -795,12 +790,7 @@ async def verify_payment_signature(request: Request):
 # ==================== PAYMENT HISTORY ====================
 
 @router.get("/payments")
-async def list_payments(
-    request: Request,
-    invoice_id: str = None,
-    status: str = None,
-    limit: int = 50
-):
+async def list_payments(request: Request, invoice_id: str = None, status: str = None, limit: int = 50):
     """List payments for the organization"""
     org_id = await get_org_id_from_request(request)
     

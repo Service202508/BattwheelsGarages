@@ -106,7 +106,7 @@ async def get_current_user(request: Request, db) -> dict:
 
 # Routes
 @router.post("")
-async def create_inventory_item(data: InventoryCreateRequest, request: Request):
+async def create_inventory_item(request: Request, data: InventoryCreateRequest):
     service = get_service()
     user = await get_current_user(request, service.db)
     
@@ -122,11 +122,7 @@ async def create_inventory_item(data: InventoryCreateRequest, request: Request):
 
 
 @router.get("")
-async def list_inventory(
-    request: Request,
-    category: Optional[str] = None,
-    low_stock: bool = False,
-    page: int = Query(1, ge=1),
+async def list_inventory(request: Request, category: Optional[str] = None, low_stock: bool = False, page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1)
 ):
     """List inventory items with standardized pagination"""
@@ -162,7 +158,7 @@ async def list_inventory(
 
 
 @router.get("/{item_id}")
-async def get_inventory_item(item_id: str, request: Request):
+async def get_inventory_item(request: Request, item_id: str):
     service = get_service()
     item = await service.get_item(item_id)
     if not item:
@@ -171,7 +167,7 @@ async def get_inventory_item(item_id: str, request: Request):
 
 
 @router.put("/{item_id}")
-async def update_inventory_item(item_id: str, data: InventoryUpdateRequest, request: Request):
+async def update_inventory_item(request: Request, item_id: str, data: InventoryUpdateRequest):
     service = get_service()
     user = await get_current_user(request, service.db)
     
@@ -180,7 +176,7 @@ async def update_inventory_item(item_id: str, data: InventoryUpdateRequest, requ
 
 
 @router.delete("/{item_id}")
-async def delete_inventory_item(item_id: str, request: Request):
+async def delete_inventory_item(request: Request, item_id: str):
     service = get_service()
     await service.db.inventory.delete_one({"item_id": item_id})
     return {"message": "Item deleted"}
@@ -188,7 +184,7 @@ async def delete_inventory_item(item_id: str, request: Request):
 
 # Allocations
 @router.post("/allocations")
-async def create_allocation(data: AllocationRequest, request: Request):
+async def create_allocation(request: Request, data: AllocationRequest):
     service = get_service()
     user = await get_current_user(request, service.db)
     
@@ -213,7 +209,7 @@ async def list_allocations(request: Request, ticket_id: Optional[str] = None):
 
 
 @router.put("/allocations/{allocation_id}/use")
-async def use_allocation(allocation_id: str, data: UseAllocationRequest, request: Request):
+async def use_allocation(request: Request, allocation_id: str, data: UseAllocationRequest):
     service = get_service()
     user = await get_current_user(request, service.db)
     
@@ -232,7 +228,7 @@ async def use_allocation(allocation_id: str, data: UseAllocationRequest, request
 
 
 @router.put("/allocations/{allocation_id}/return")
-async def return_allocation(allocation_id: str, data: ReturnAllocationRequest, request: Request):
+async def return_allocation(request: Request, allocation_id: str, data: ReturnAllocationRequest):
     service = get_service()
     user = await get_current_user(request, service.db)
     
@@ -314,10 +310,7 @@ class StocktakeCreateRequest(BaseModel):
 
 
 @router.get("/stocktakes")
-async def list_stocktakes(
-    request: Request,
-    status: Optional[str] = None,
-):
+async def list_stocktakes(request: Request, status: Optional[str] = None, ):
     """GET /api/inventory/stocktakes — List stocktake sessions for org."""
     service = get_service()
     await get_current_user(request, service.db)
@@ -340,7 +333,7 @@ async def list_stocktakes(
 
 
 @router.post("/stocktakes")
-async def create_stocktake(data: StocktakeCreateRequest, request: Request):
+async def create_stocktake(request: Request, data: StocktakeCreateRequest):
     """POST /api/inventory/stocktakes — Create a new stocktake (physical count) session."""
     import uuid as _uuid
     service = get_service()

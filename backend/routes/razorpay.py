@@ -170,7 +170,7 @@ async def get_payment_config(request: Request):
 
 
 @router.post("/config")
-async def save_payment_config(config: RazorpayConfigUpdate, request: Request):
+async def save_payment_config(request: Request, config: RazorpayConfigUpdate):
     """Save organization-specific Razorpay configuration"""
     org_id = await get_org_id_from_request(request)
     if not org_id:
@@ -202,7 +202,7 @@ async def save_payment_config(config: RazorpayConfigUpdate, request: Request):
 
 
 @router.post("/create-order")
-async def create_payment_order(req: CreateOrderRequest, request: Request):
+async def create_payment_order(request: Request, req: CreateOrderRequest):
     """Create a Razorpay order for an invoice"""
     db = get_db()
     org_id = await get_org_id_from_request(request)
@@ -301,7 +301,7 @@ async def create_payment_order(req: CreateOrderRequest, request: Request):
 
 
 @router.post("/create-payment-link/{invoice_id}")
-async def create_invoice_payment_link(invoice_id: str, request: Request, expire_days: int = 30):
+async def create_invoice_payment_link(request: Request, invoice_id: str, expire_days: int = 30):
     """Create a shareable payment link for an invoice"""
     db = get_db()
     org_id = await get_org_id_from_request(request)
@@ -404,7 +404,7 @@ async def create_invoice_payment_link(invoice_id: str, request: Request, expire_
 
 
 @router.post("/verify")
-async def verify_payment(req: PaymentVerifyRequest, request: Request):
+async def verify_payment(request: Request, req: PaymentVerifyRequest):
     """Verify payment signature and update invoice"""
     db = get_db()
     org_id = await get_org_id_from_request(request)
@@ -889,7 +889,7 @@ class CreditNoteRefundRequest(BaseModel):
 
 
 @router.post("/razorpay/refund")
-async def initiate_credit_note_refund(req: CreditNoteRefundRequest, request: Request):
+async def initiate_credit_note_refund(request: Request, req: CreditNoteRefundRequest):
     """
     Initiate a Razorpay refund linked to a credit note.
 
@@ -1042,7 +1042,7 @@ async def initiate_credit_note_refund(req: CreditNoteRefundRequest, request: Req
 
 
 @router.get("/razorpay/refund/{refund_id}")
-async def get_refund_status(refund_id: str, request: Request):
+async def get_refund_status(request: Request, refund_id: str):
     """
     Get refund status. Checks Razorpay API for latest status and updates local record.
     Status: INITIATED → PROCESSED or FAILED
@@ -1105,7 +1105,7 @@ async def get_refund_status(refund_id: str, request: Request):
 
 
 @router.get("/check-razorpay/{invoice_id}")
-async def check_razorpay_payment(invoice_id: str, request: Request):
+async def check_razorpay_payment(request: Request, invoice_id: str):
     """
     Check if an invoice was paid via Razorpay.
     Returns payment details if found.

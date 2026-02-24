@@ -52,9 +52,7 @@ class EVIssueSuggestionCreate(BaseModel):
 # ==================== VEHICLE CATEGORIES ====================
 
 @router.get("/vehicle-categories")
-async def list_vehicle_categories(
-    active_only: bool = True,
-    ev_only: bool = False, request: Request):
+async def list_vehicle_categories(request: Request, active_only: bool = True, ev_only: bool = False):
     org_id = extract_org_id(request)
     """List all vehicle categories"""
     db = get_db()
@@ -68,7 +66,7 @@ async def list_vehicle_categories(
     return {"categories": categories, "total": len(categories)}
 
 @router.post("/vehicle-categories")
-async def create_vehicle_category(data: VehicleCategoryCreate, request: Request):
+async def create_vehicle_category(request: Request, data: VehicleCategoryCreate):
     org_id = extract_org_id(request)
     """Create a new vehicle category (admin only)"""
     db = get_db()
@@ -94,7 +92,7 @@ async def create_vehicle_category(data: VehicleCategoryCreate, request: Request)
     return category
 
 @router.put("/vehicle-categories/{category_id}")
-async def update_vehicle_category(category_id: str, data: VehicleCategoryCreate, request: Request):
+async def update_vehicle_category(request: Request, category_id: str, data: VehicleCategoryCreate):
     org_id = extract_org_id(request)
     """Update a vehicle category"""
     db = get_db()
@@ -110,7 +108,7 @@ async def update_vehicle_category(category_id: str, data: VehicleCategoryCreate,
     return await db.vehicle_categories.find_one({"category_id": category_id}, {"_id": 0})
 
 @router.delete("/vehicle-categories/{category_id}")
-async def delete_vehicle_category(category_id: str, request: Request):
+async def delete_vehicle_category(request: Request, category_id: str):
     org_id = extract_org_id(request)
     """Soft delete a vehicle category"""
     db = get_db()
@@ -126,11 +124,7 @@ async def delete_vehicle_category(category_id: str, request: Request):
 # ==================== VEHICLE MODELS (OEMs) ====================
 
 @router.get("/vehicle-models")
-async def list_vehicle_models(
-    category_code: Optional[str] = None,
-    oem: Optional[str] = None,
-    active_only: bool = True,
-    search: Optional[str] = None, request: Request):
+async def list_vehicle_models(request: Request, category_code: Optional[str] = None, oem: Optional[str] = None, active_only: bool = True, search: Optional[str] = None):
     org_id = extract_org_id(request)
     """List vehicle models with optional filtering"""
     db = get_db()
@@ -165,7 +159,7 @@ async def list_vehicle_models(
     }
 
 @router.get("/vehicle-models/oems")
-async def list_oems(category_code: Optional[str] = None, request: Request):
+async def list_oems(request: Request, category_code: Optional[str] = None):
     org_id = extract_org_id(request)
     """List distinct OEMs"""
     db = get_db()
@@ -177,7 +171,7 @@ async def list_oems(category_code: Optional[str] = None, request: Request):
     return {"oems": sorted(oems)}
 
 @router.post("/vehicle-models")
-async def create_vehicle_model(data: VehicleModelCreate, request: Request):
+async def create_vehicle_model(request: Request, data: VehicleModelCreate):
     org_id = extract_org_id(request)
     """Create a new vehicle model"""
     db = get_db()
@@ -203,7 +197,7 @@ async def create_vehicle_model(data: VehicleModelCreate, request: Request):
     return model
 
 @router.put("/vehicle-models/{model_id}")
-async def update_vehicle_model(model_id: str, data: VehicleModelCreate, request: Request):
+async def update_vehicle_model(request: Request, model_id: str, data: VehicleModelCreate):
     org_id = extract_org_id(request)
     """Update a vehicle model"""
     db = get_db()
@@ -219,7 +213,7 @@ async def update_vehicle_model(model_id: str, data: VehicleModelCreate, request:
     return await db.vehicle_models.find_one({"model_id": model_id}, {"_id": 0})
 
 @router.delete("/vehicle-models/{model_id}")
-async def delete_vehicle_model(model_id: str, request: Request):
+async def delete_vehicle_model(request: Request, model_id: str):
     org_id = extract_org_id(request)
     """Soft delete a vehicle model"""
     db = get_db()
@@ -235,11 +229,7 @@ async def delete_vehicle_model(model_id: str, request: Request):
 # ==================== EV ISSUE SUGGESTIONS ====================
 
 @router.get("/issue-suggestions")
-async def get_issue_suggestions(
-    category_code: Optional[str] = None,
-    model_id: Optional[str] = None,
-    issue_type: Optional[str] = None,
-    search: Optional[str] = None, request: Request):
+async def get_issue_suggestions(request: Request, category_code: Optional[str] = None, model_id: Optional[str] = None, issue_type: Optional[str] = None, search: Optional[str] = None):
     org_id = extract_org_id(request)
     """Get EV issue suggestions based on vehicle category/model"""
     db = get_db()
@@ -293,7 +283,7 @@ async def get_issue_suggestions(
     return {"suggestions": suggestions, "total": len(suggestions)}
 
 @router.post("/issue-suggestions")
-async def create_issue_suggestion(data: EVIssueSuggestionCreate, request: Request):
+async def create_issue_suggestion(request: Request, data: EVIssueSuggestionCreate):
     org_id = extract_org_id(request)
     """Create a new EV issue suggestion"""
     db = get_db()
@@ -315,7 +305,7 @@ async def create_issue_suggestion(data: EVIssueSuggestionCreate, request: Reques
     return suggestion
 
 @router.post("/issue-suggestions/{suggestion_id}/increment-usage")
-async def increment_suggestion_usage(suggestion_id: str, request: Request):
+async def increment_suggestion_usage(request: Request, suggestion_id: str):
     org_id = extract_org_id(request)
     """Increment usage count when a suggestion is selected"""
     db = get_db()

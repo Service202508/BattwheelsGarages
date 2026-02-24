@@ -163,13 +163,7 @@ async def get_technician_dashboard(request: Request):
 # ==================== MY TICKETS ====================
 
 @router.get("/tickets")
-async def get_my_tickets(
-    request: Request,
-    status: Optional[str] = None,
-    priority: Optional[str] = None,
-    limit: int = 50,
-    skip: int = 0
-):
+async def get_my_tickets(request: Request, status: Optional[str] = None, priority: Optional[str] = None, limit: int = 50, skip: int = 0):
     org_id = extract_org_id(request)
     """Get tickets assigned to the technician"""
     technician = await get_current_technician(request)
@@ -382,11 +376,7 @@ async def complete_work(request: Request, ticket_id: str, data: CompleteWorkRequ
 # ==================== PERSONAL HR ====================
 
 @router.get("/attendance")
-async def get_my_attendance(
-    request: Request,
-    month: Optional[str] = None,
-    year: Optional[int] = None
-):
+async def get_my_attendance(request: Request, month: Optional[str] = None, year: Optional[int] = None):
     org_id = extract_org_id(request)
     """Get technician's own attendance records"""
     technician = await get_current_technician(request)
@@ -692,7 +682,7 @@ class AIAssistRequest(BaseModel):
     context: Optional[dict] = None
 
 @router.post("/ai-assist")
-async def technician_ai_assist(data: AIAssistRequest, user: dict = Depends(get_current_technician, request: Request)):
+async def technician_ai_assist(request: Request, data: AIAssistRequest, user: dict = Depends(get_current_technician)):
     org_id = extract_org_id(request)
     """
     AI-powered diagnostic assistant for technicians.

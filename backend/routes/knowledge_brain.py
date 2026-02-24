@@ -392,13 +392,7 @@ async def get_source_details(
 # ==================== KNOWLEDGE BROWSING ====================
 
 @router.get("/knowledge/list")
-async def list_knowledge(
-    http_request: Request,
-    knowledge_type: Optional[str] = None,
-    subsystem: Optional[str] = None,
-    vehicle_make: Optional[str] = None,
-    status: Optional[str] = None,
-    limit: int = Query(20, le=100),
+async def list_knowledge(http_request: Request, knowledge_type: Optional[str] = None, subsystem: Optional[str] = None, vehicle_make: Optional[str] = None, status: Optional[str] = None, limit: int = Query(20, le=100),
     offset: int = 0
 ):
     """
@@ -438,12 +432,7 @@ async def list_knowledge(
 
 
 @router.get("/knowledge/failure-cards")
-async def list_failure_cards(
-    http_request: Request,
-    subsystem: Optional[str] = None,
-    vehicle_make: Optional[str] = None,
-    status: Optional[str] = "approved",
-    limit: int = Query(20, le=100),
+async def list_failure_cards(http_request: Request, subsystem: Optional[str] = None, vehicle_make: Optional[str] = None, status: Optional[str] = "approved", limit: int = Query(20, le=100),
     offset: int = 0
 ):
     """

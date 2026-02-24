@@ -173,9 +173,7 @@ async def get_current_user_id(request: Request) -> str:
 # ==================== PROJECT ROUTES ====================
 
 @router.get("")
-async def list_projects(
-    request: Request,
-    status: Optional[str] = Query(None),
+async def list_projects(request: Request, status: Optional[str] = Query(None),
     client_id: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1)
@@ -229,7 +227,7 @@ async def list_projects(
 
 
 @router.post("")
-async def create_project(data: ProjectCreate, request: Request):
+async def create_project(request: Request, data: ProjectCreate):
     """Create a new project"""
     service = get_service()
     org_id = await get_org_id(request)
@@ -255,7 +253,7 @@ async def create_project(data: ProjectCreate, request: Request):
 
 
 @router.get("/{project_id}")
-async def get_project(project_id: str, request: Request):
+async def get_project(request: Request, project_id: str):
     """Get project details"""
     service = get_service()
     
@@ -278,7 +276,7 @@ async def get_project(project_id: str, request: Request):
 
 
 @router.put("/{project_id}")
-async def update_project(project_id: str, data: ProjectUpdate, request: Request):
+async def update_project(request: Request, project_id: str, data: ProjectUpdate):
     """Update project"""
     service = get_service()
     
@@ -292,7 +290,7 @@ async def update_project(project_id: str, data: ProjectUpdate, request: Request)
 
 
 @router.delete("/{project_id}")
-async def delete_project(project_id: str, request: Request):
+async def delete_project(request: Request, project_id: str):
     """Delete (archive) project"""
     service = get_service()
     
@@ -306,10 +304,7 @@ async def delete_project(project_id: str, request: Request):
 # ==================== TASK ROUTES ====================
 
 @router.get("/{project_id}/tasks")
-async def list_tasks(
-    project_id: str,
-    request: Request,
-    status: Optional[str] = Query(None),
+async def list_tasks(request: Request, project_id: str, status: Optional[str] = Query(None),
     assigned_to: Optional[str] = Query(None)
 ):
     """List tasks for a project"""
@@ -321,7 +316,7 @@ async def list_tasks(
 
 
 @router.post("/{project_id}/tasks")
-async def create_task(project_id: str, data: TaskCreate, request: Request):
+async def create_task(request: Request, project_id: str, data: TaskCreate):
     """Create a task for a project"""
     service = get_service()
     user_id = await get_current_user_id(request)
@@ -347,7 +342,7 @@ async def create_task(project_id: str, data: TaskCreate, request: Request):
 
 
 @router.put("/{project_id}/tasks/{task_id}")
-async def update_task(project_id: str, task_id: str, data: TaskUpdate, request: Request):
+async def update_task(request: Request, project_id: str, task_id: str, data: TaskUpdate):
     """Update a task"""
     service = get_service()
     
@@ -361,7 +356,7 @@ async def update_task(project_id: str, task_id: str, data: TaskUpdate, request: 
 
 
 @router.delete("/{project_id}/tasks/{task_id}")
-async def delete_task(project_id: str, task_id: str, request: Request):
+async def delete_task(request: Request, project_id: str, task_id: str):
     """Delete a task"""
     service = get_service()
     
@@ -375,10 +370,7 @@ async def delete_task(project_id: str, task_id: str, request: Request):
 # ==================== TIME LOG ROUTES ====================
 
 @router.get("/{project_id}/time-logs")
-async def get_time_logs(
-    project_id: str,
-    request: Request,
-    employee_id: Optional[str] = Query(None),
+async def get_time_logs(request: Request, project_id: str, employee_id: Optional[str] = Query(None),
     start_date: Optional[str] = Query(None),
     end_date: Optional[str] = Query(None)
 ):
@@ -397,7 +389,7 @@ async def get_time_logs(
 
 
 @router.post("/{project_id}/time-log")
-async def log_time(project_id: str, data: TimeLogCreate, request: Request):
+async def log_time(request: Request, project_id: str, data: TimeLogCreate):
     """Log time against a project"""
     service = get_service()
     user_id = await get_current_user_id(request)
@@ -424,10 +416,7 @@ async def log_time(project_id: str, data: TimeLogCreate, request: Request):
 # ==================== EXPENSE ROUTES ====================
 
 @router.get("/{project_id}/expenses")
-async def get_expenses(
-    project_id: str, 
-    request: Request,
-    status: Optional[str] = Query(None, description="Filter by status: PENDING, APPROVED, REJECTED, PAID")
+async def get_expenses(request: Request, project_id: str, status: Optional[str] = Query(None, description="Filter by status: PENDING, APPROVED, REJECTED, PAID")
 ):
     """Get expenses for a project"""
     service = get_service()
@@ -446,7 +435,7 @@ async def get_expenses(
 
 
 @router.post("/{project_id}/expenses")
-async def add_expense(project_id: str, data: ExpenseCreate, request: Request):
+async def add_expense(request: Request, project_id: str, data: ExpenseCreate):
     """Add expense to a project (status: PENDING by default)"""
     service = get_service()
     user_id = await get_current_user_id(request)
@@ -470,11 +459,9 @@ async def add_expense(project_id: str, data: ExpenseCreate, request: Request):
 
 
 @router.post("/{project_id}/expenses/{expense_id}/approve")
-async def approve_expense(
-    project_id: str,
+async def approve_expense(request: Request, project_id: str,
     expense_id: str,
-    data: ExpenseApprovalRequest,
-    request: Request
+    data: ExpenseApprovalRequest
 ):
     """
     Approve or reject a project expense
@@ -570,10 +557,7 @@ async def approve_expense(
 # ==================== PROFITABILITY ====================
 
 @router.get("/{project_id}/profitability")
-async def get_profitability(
-    project_id: str,
-    request: Request,
-    employee_cost_rate: float = Query(500, description="Employee hourly cost rate")
+async def get_profitability(request: Request, project_id: str, employee_cost_rate: float = Query(500, description="Employee hourly cost rate")
 ):
     """Get project profitability analysis"""
     service = get_service()
@@ -589,7 +573,7 @@ async def get_profitability(
 # ==================== INVOICE GENERATION ====================
 
 @router.post("/{project_id}/invoice")
-async def generate_invoice(project_id: str, data: ProjectInvoiceRequest, request: Request):
+async def generate_invoice(request: Request, project_id: str, data: ProjectInvoiceRequest):
     """
     Generate invoice from project time logs with billing period and line item grouping
     
@@ -768,7 +752,7 @@ async def generate_invoice(project_id: str, data: ProjectInvoiceRequest, request
 
 # Legacy invoice generation endpoint
 @router.post("/{project_id}/invoice-legacy")
-async def generate_invoice_legacy(project_id: str, data: InvoiceGenerateRequest, request: Request):
+async def generate_invoice_legacy(request: Request, project_id: str, data: InvoiceGenerateRequest):
     """Generate invoice from project (legacy method)"""
     service = get_service()
     

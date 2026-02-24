@@ -43,9 +43,7 @@ class PortalPaymentRequest(BaseModel):
 def generate_session_token() -> str:
     return f"PS-{uuid.uuid4().hex}"
 
-async def get_session_token_from_request(
-    request: Request,
-    x_portal_session: Optional[str] = Header(None, alias="X-Portal-Session"),
+async def get_session_token_from_request(request: Request, x_portal_session: Optional[str] = Header(None, alias="X-Portal-Session"),
     session_token: Optional[str] = Query(None)
 ) -> str:
     """Extract session token from header or query parameter"""
