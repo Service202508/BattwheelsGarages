@@ -1,0 +1,130 @@
+{
+  "summary": "Full 17-Flow functional audit for Battwheels OS. Backend: 44/44 tests pass across all flows (registration, inventory, tickets, EFI, invoice, payment, payroll, Tally XML, Data Insights, Book Demo, Public ticket form). Fixed critical bug: POST /api/payments crashed with KeyError 'total_amount' on invoices created via invoices-enhanced API. Frontend: Homepage, Register, Dashboard, Data Insights, Book Demo modal, Public ticket form all load correctly. Mobile: /tickets page has horizontal overflow at 390px. Audit org ID: org_545d5b59ccf8",
+
+  "critical_bug_fixed": {
+    "endpoint": "POST /api/payments",
+    "bug": "KeyError: 'total_amount' at server.py line 2556 — invoices created via invoices-enhanced use 'grand_total' field but payment code accessed invoice['total_amount'] directly",
+    "fix": "Changed to: total = invoice.get('grand_total') or invoice.get('total_amount', 0) and current_paid = invoice.get('amount_paid', 0)",
+    "file": "/app/backend/server.py",
+    "severity": "CRITICAL — Every payment attempt resulted in HTTP 520 crash"
+  },
+
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /api/reports/gst-summary",
+        "issue": "Returns 404 in some contexts; alternate route /api/gst/summary works. May depend on whether journal entries exist for the period."
+      },
+      {
+        "endpoint": "POST /api/hr/payroll/generate",
+        "issue": "Payroll requires professional/enterprise plan. Starter plan orgs (new audit org) cannot run payroll — returns 403 with 'feature not available on starter plan'. This is by design but should be clearly surfaced in UI."
+      },
+      {
+        "endpoint": "GET /api/finance/export/tally-xml",
+        "issue": "Returns 404 if org has no journal entries. Requires date params. New org without ledger entries cannot export Tally XML."
+      }
+    ]
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Tickets page (mobile)",
+        "issue": "Horizontal overflow at 390px — scrollWidth=510px vs clientWidth=390px. Content div.p-4 is 476px wide starting at left:17px, extends to 493px. Main container missing overflow-x:hidden or responsive width fix.",
+        "selector": ".min-h-screen.bg-[#0D1317].flex",
+        "priority": "MEDIUM"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Data Insights - Daily Ticket Volume chart",
+        "issues": ["Chart area shows solid neon green block (tooltip/hover artifact in rendered screenshot). May be visual glitch in chart component rendering."]
+      },
+      {
+        "screen": "Mobile nav (/)",
+        "issues": ["On mobile, BOOK DEMO + FREE TRIAL buttons are both visible in nav alongside Login. Nav may look crowded on very small screens (390px) but still functional."]
+      }
+    ]
+  },
+
+  "flows_tested": {
+    "FLOW_01": "PASS — Signup creates org with free_trial plan, owner role, onboarding checklist visible",
+    "FLOW_02": "PASS — GSTIN and address saved and persist on GET",
+    "FLOW_03": "PASS — Technician invite endpoint works; technician blocked from payroll (403)",
+    "FLOW_04": "PASS — BMS Module and Brake Pad Set created with correct quantities",
+    "FLOW_05": "PASS — Contact created with unique ID; vehicle with owner_name+battery_capacity fields created",
+    "FLOW_06": "PASS — High priority ticket created with unique ID; dashboard stats API works",
+    "FLOW_07": "PASS — EFI AI diagnose returns diagnosis result; failure-cards loaded",
+    "FLOW_08": "PASS — Ticket updated to in_progress and resolved with resolution note",
+    "FLOW_09": "PASS — Invoice created with line items; GST amounts (cgst_total=459, sgst_total=459) calculated correctly; grand_total=6018",
+    "FLOW_10": "PASS — Payment recorded successfully (after critical bug fix); invoice status updated to paid",
+    "FLOW_11": "PASS — Trial Balance, P&L, GST Summary APIs all return 200",
+    "FLOW_12": "PASS — Tally XML export returns valid XML with ENVELOPE/TALLYMESSAGE structure (tested on admin org with ledger entries)",
+    "FLOW_13": "PASS — Employee Ravi Kumar created with first_name/last_name schema; payroll generated (tested on admin org with professional plan)",
+    "FLOW_14": "PASS — /submit-ticket loads without auth, form renders correctly, POST without org slug returns 422 (not 500)",
+    "FLOW_15": "PASS — All 6 Data Insights sections (Revenue, Workshop, Technician, EFI, Customer, Inventory) load at /insights",
+    "FLOW_16": "PASS — BOOK DEMO button in navbar; modal opens without login; form submits successfully; shows 'Request Received — Our team will call within 1 business day'",
+    "FLOW_17": "PARTIAL — Homepage/Register/Login/Inventory responsive at 390px. Tickets page has horizontal overflow (510px). Dashboard loads on mobile."
+  },
+
+  "gst_validation": {
+    "invoice_total": 6018,
+    "cgst": 459,
+    "sgst": 459,
+    "total_gst": 918,
+    "note": "GST correctly calculated at 18% on all 3 line items (BMS 3200 + Brake 650 + Labour 1250)"
+  },
+
+  "audit_org_cleanup": {
+    "org_id": "org_545d5b59ccf8",
+    "email": "auditfinal@battwheelstest.com",
+    "cleanup_command": "curl -X DELETE https://production-deploy-7.preview.emergentagent.com/api/platform/organizations/org_545d5b59ccf8 -H 'Authorization: Bearer <platform-admin-token>'"
+  },
+
+  "test_report_links": [
+    "/app/backend/tests/test_17flow_audit.py",
+    "/app/test_reports/pytest/17flow_audit_results.xml"
+  ],
+
+  "action_items": [
+    "CRITICAL BUG FIXED: POST /api/payments KeyError 'total_amount' — fix already applied in server.py",
+    "FIX: /tickets page CSS — add overflow-x:hidden to main container or fix p-4 div width on mobile (390px)",
+    "REVIEW: payroll starter plan gate — ensure UI shows upgrade prompt when payroll is feature-gated",
+    "REVIEW: GST summary route inconsistency — /api/reports/gst-summary vs /api/gst/summary",
+    "CLEANUP: Delete audit org org_545d5b59ccf8 after testing complete"
+  ],
+
+  "critical_code_review_comments": [
+    "server.py:2555-2556 — Direct dict access invoice['total_amount'] and invoice['amount_paid'] without .get() fallbacks. FIXED. But review entire payment flow for similar patterns.",
+    "server.py:record_payment — invoice_number accessed on line 2591 as invoice['invoice_number'] without .get() — potential KeyError if field missing in legacy invoices",
+    "hr.py — Payroll feature gated by plan type but no UI warning shown when starter plan tries to access payroll. Confirm UX is handled.",
+    "routes/organizations.py:signup — Returns plan_expires_at but test docs call it trial_ends_at — consider aliasing both fields for backward compatibility",
+    "public ticket form shows 'Battwheels Garages' branding even on preview URL — fallback org resolution is using first available org. Review org resolution logic for preview environments."
+  ],
+
+  "updated_files": [
+    "/app/backend/server.py (payment endpoint KeyError fix)",
+    "/app/backend/tests/test_17flow_audit.py (new comprehensive test file)"
+  ],
+
+  "success_rate": {
+    "backend": "100% (44/44 tests pass)",
+    "frontend": "85% (Book Demo, Register, Dashboard, Public ticket, Data Insights all work; mobile tickets overflow issue)"
+  },
+
+  "seed_data_creation": "Audit org org_545d5b59ccf8 (auditfinal@battwheelstest.com) created with: contacts, vehicles, tickets, inventory items, invoice, payment, employee records",
+
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+
+  "context_for_next_testing_agent": "All 17 flows tested end-to-end. Critical payment bug fixed. Key API differences vs documentation: (1) invoices-enhanced uses grand_total not total_amount; (2) employee create uses first_name/last_name not name; (3) inventory items use unit_price/cost_price/min_stock_level fields; (4) contacts-enhanced response nests contact in {code, message, contact: {...}}; (5) vehicle create requires owner_name+battery_capacity; (6) organizations.me not organizations.profile for profile route. Audit org org_545d5b59ccf8 should be purged.",
+
+  "rca_of_payment_bug": {
+    "issue": "POST /api/payments returned HTTP 520 (Cloudflare error masking internal 500)",
+    "root_cause": "server.py line 2556: invoice['total_amount'] — KeyError because invoices-enhanced API creates invoices with field 'grand_total' (not 'total_amount'), and invoice.get('amount_paid') was also risky if field missing",
+    "fix_applied": "Changed to: total = invoice.get('grand_total') or invoice.get('total_amount', 0); current_paid = invoice.get('amount_paid', 0)",
+    "additional_risk": "Line 2591 invoice['invoice_number'] still uses direct dict access — may fail if invoice_number field is absent"
+  }
+}
