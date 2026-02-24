@@ -6355,7 +6355,7 @@ async def health_check():
         issues.append(f"MongoDB: {str(e)[:100]}")
 
     # Critical env vars
-    required_vars = ["MONGO_URL", "JWT_SECRET_KEY"]
+    required_vars = ["MONGO_URL", "JWT_SECRET"]
     missing = [v for v in required_vars if not os.environ.get(v)]
     if missing:
         status_data["config"] = "incomplete"
