@@ -578,6 +578,14 @@ async def process_payment_captured(payment: Dict, org_id: str, invoice_id: str, 
                     logger.error(f"CRITICAL: Journal entry failed for payment {payment_id}: {e}")
                     # Do NOT re-raise — payment is recorded, journal can be reconciled later
 
+        # Audit log
+        try:
+            from utils.audit import log_audit, AuditAction
+            await log_audit(db, AuditAction.PAYMENT_RECORDED, org_id or "", "razorpay_webhook",
+                "invoice", invoice_id, {"amount": amount_inr, "razorpay_payment_id": payment_id})
+        except Exception:
+            pass
+
     except Exception as e:
         logger.error(f"CRITICAL: Failed to record payment {payment_id} for invoice {invoice_id}: {e}")
         raise HTTPException(status_code=500, detail="Payment recording failed")
