@@ -109,6 +109,15 @@ class FileUploadService:
                 detail=f"File too large. Maximum size: {MAX_FILE_SIZE // 1024 // 1024}MB"
             )
         
+        # Validate MIME type from content (not just extension)
+        try:
+            from PIL import Image
+            import io
+            img = Image.open(io.BytesIO(content))
+            img.verify()
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid image file. File appears to be corrupted or is not a valid image.")
+        
         # Generate unique filename
         filename = cls.generate_unique_filename(file.filename, org_id)
         
