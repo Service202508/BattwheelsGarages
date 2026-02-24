@@ -193,8 +193,8 @@ class TicketService:
         # Build ticket document
         ticket_doc = {
             "ticket_id": ticket_id,
-            "title": data.title,
-            "description": data.description,
+            "title": _strip_html(data.title),
+            "description": _strip_html(data.description),
             "category": data.category,
             "priority": data.priority,
             "status": TicketState.OPEN,
