@@ -1208,7 +1208,7 @@ async def get_form16_data(
             {"year": fy_start_year, "month": {"$in": ["April", "May", "June", "July", "August", "September", "October", "November", "December"]}},
             {"year": fy_end_year, "month": {"$in": ["January", "February", "March"]}}
         ],
-        "status": {"$in": ["processed", "paid"]}
+        "status": {"$in": ["generated", "processed", "paid"]}
     }, {"_id": 0}).to_list(12)
     
     if not payroll_records:
