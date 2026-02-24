@@ -770,7 +770,7 @@ async def create_shipment(request: Request, shipment: ShipmentCreate):
 
 @router.get("/shipments")
 async def list_shipments(request: Request, sales_order_id: Optional[str] = None, status: Optional[str] = None, page: int = Query(1, ge=1),
-    limit:: int = Query(25, ge=1)
+    limit: int = Query(25, ge=1)
 ):
     """List shipments with standardized pagination"""
     import math
@@ -930,7 +930,7 @@ async def create_return(request: Request, ret: ReturnCreate):
 
 @router.get("/returns")
 async def list_returns(request: Request, status: Optional[str] = None, page: int = Query(1, ge=1),
-    limit:: int = Query(25, ge=1)
+    limit: int = Query(25, ge=1)
 ):
     """List returns with standardized pagination"""
     import math
@@ -1040,7 +1040,7 @@ async def create_adjustment(request: Request, adjustment: StockAdjustmentCreate)
 
 @router.get("/adjustments")
 async def list_adjustments(request: Request, item_id: Optional[str] = None, warehouse_id: Optional[str] = None, page: int = Query(1, ge=1),
-    limit:: int = Query(25, ge=1)
+    limit: int = Query(25, ge=1)
 ):
     """List stock adjustments with standardized pagination"""
     import math
