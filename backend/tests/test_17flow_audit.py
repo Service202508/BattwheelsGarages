@@ -543,34 +543,32 @@ class TestFlow09CreateInvoice:
     def test_create_invoice(self):
         """POST /api/invoices-enhanced/ creates invoice"""
         assert state["token"], "No token from Flow 01"
+        # Invoice requires customer_id; use contact if available, else create one
+        customer_id = state.get("contact_id")
+        if not customer_id:
+            # Create contact on-the-fly
+            cr = requests.post(
+                f"{BASE_URL}/api/contacts-enhanced/",
+                json={"contact_type": "customer", "name": "Rajesh Kumar", "phone": "9876543210"},
+                headers=auth_headers(), timeout=10,
+            )
+            if cr.status_code in [200, 201]:
+                cdata = cr.json()
+                contact = cdata.get("contact", cdata)
+                customer_id = contact.get("contact_id") or contact.get("id")
+                state["contact_id"] = customer_id
+
+        assert customer_id, "Cannot create invoice without customer_id"
         payload = {
-            "customer_name": "Rajesh Kumar",
-            "customer_email": "rajesh@test.com",
+            "customer_id": customer_id,
             "invoice_date": "2026-02-01",
             "due_date": "2026-02-15",
             "line_items": [
-                {
-                    "description": "BMS Module",
-                    "quantity": 1,
-                    "unit_price": 3200,
-                    "tax_rate": 18,
-                },
-                {
-                    "description": "Brake Pad Set",
-                    "quantity": 1,
-                    "unit_price": 650,
-                    "tax_rate": 18,
-                },
-                {
-                    "description": "BMS Recalibration Labour",
-                    "quantity": 2.5,
-                    "unit_price": 500,
-                    "tax_rate": 18,
-                },
+                {"name": "BMS Module", "quantity": 1, "rate": 3200, "tax_rate": 18},
+                {"name": "Brake Pad Set", "quantity": 1, "rate": 650, "tax_rate": 18},
+                {"name": "BMS Recalibration Labour", "quantity": 2.5, "rate": 500, "tax_rate": 18},
             ],
         }
-        if state.get("contact_id"):
-            payload["contact_id"] = state["contact_id"]
         if state.get("ticket_id"):
             payload["ticket_id"] = state["ticket_id"]
 
@@ -582,7 +580,8 @@ class TestFlow09CreateInvoice:
         )
         data = res.json()
         assert res.status_code in [200, 201], f"Invoice create failed ({res.status_code}): {data}"
-        invoice_id = data.get("invoice_id") or data.get("id") or data.get("_id")
+        invoice = data.get("invoice", data)
+        invoice_id = invoice.get("invoice_id") or invoice.get("id") or data.get("invoice_id")
         assert invoice_id, f"No invoice_id: {data}"
         state["invoice_id"] = invoice_id
         print(f"PASS: Invoice created id={invoice_id}")
