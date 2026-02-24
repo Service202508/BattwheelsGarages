@@ -94,8 +94,39 @@ JWT_EXPIRATION_HOURS = 24 * 7
 if len(JWT_SECRET) < 32:
     logger.warning("JWT_SECRET is shorter than 32 characters - consider using a stronger secret")
 
+# ── Lifespan ──────────────────────────────────────────────
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # ── Startup ──
+    try:
+        from routes.sla import start_sla_background_job
+        start_sla_background_job()
+        logger.info("SLA background breach detection job started")
+    except Exception as e:
+        logger.warning(f"SLA background job failed to start: {e}")
+
+    try:
+        from migrations.add_org_id_indexes import run as run_index_migration
+        await run_index_migration()
+        logger.info("Index migration completed on startup")
+    except Exception as e:
+        logger.warning(f"Index migration failed on startup (non-fatal): {e}")
+
+    try:
+        from scripts.add_compound_indexes import ensure_compound_indexes
+        await ensure_compound_indexes(db)
+        logger.info("Compound indexes ensured on startup")
+    except Exception as e:
+        logger.warning(f"Compound index migration failed on startup (non-fatal): {e}")
+
+    logger.info("Battwheels OS started successfully")
+    yield
+    # ── Shutdown ──
+    client.close()
+    logger.info("Battwheels OS shut down cleanly")
+
 # Create the main app
-app = FastAPI(title="Battwheels OS API")
+app = FastAPI(title="Battwheels OS API", lifespan=lifespan)
 
 # Create routers with API prefix structure
 # /api       — auth, public, health (no version)
