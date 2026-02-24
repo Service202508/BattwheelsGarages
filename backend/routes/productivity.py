@@ -362,7 +362,7 @@ async def get_technician_detail(request: Request, technician_id: str):
     }
 
 @router.get("/leaderboard")
-async def get_productivity_leaderboard(request: Request, period: str = "month", metric: str = "tickets"  # tickets, revenue, rating):
+async def get_productivity_leaderboard(request: Request, period: str = "month", metric: str = "tickets"):
     org_id = extract_org_id(request)
     """Get top performing technicians"""
     user = await require_admin_or_manager(request)
