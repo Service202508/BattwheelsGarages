@@ -135,6 +135,7 @@ import PermissionsManager from "@/pages/settings/PermissionsManager";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api/v1`;
+export const AUTH_API = `${BACKEND_URL}/api`;
 
 // Re-export API utilities for convenience
 export { getAuthHeaders, getOrganizationId, setOrganizationId, apiFetch, apiGet, apiPost, apiPut, apiPatch, apiDelete } from '@/utils/api';
@@ -161,7 +162,7 @@ export const useAuth = () => {
         return;
       }
       
-      const response = await fetch(`${API}/auth/me`, {
+      const response = await fetch(`${AUTH_API}/auth/me`, {
         credentials: "include",
         headers: { Authorization: `Bearer ${token}` },
       });
