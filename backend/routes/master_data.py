@@ -54,8 +54,8 @@ class EVIssueSuggestionCreate(BaseModel):
 @router.get("/vehicle-categories")
 async def list_vehicle_categories(
     active_only: bool = True,
-    ev_only: bool = False
-):
+    ev_only: bool = False, request: Request)::
+    org_id = extract_org_id(request)
     """List all vehicle categories"""
     db = get_db()
     query = {}
@@ -68,7 +68,8 @@ async def list_vehicle_categories(
     return {"categories": categories, "total": len(categories)}
 
 @router.post("/vehicle-categories")
-async def create_vehicle_category(data: VehicleCategoryCreate):
+async def create_vehicle_category(data: VehicleCategoryCreate, request: Request)::
+    org_id = extract_org_id(request)
     """Create a new vehicle category (admin only)"""
     db = get_db()
     
@@ -93,7 +94,8 @@ async def create_vehicle_category(data: VehicleCategoryCreate):
     return category
 
 @router.put("/vehicle-categories/{category_id}")
-async def update_vehicle_category(category_id: str, data: VehicleCategoryCreate):
+async def update_vehicle_category(category_id: str, data: VehicleCategoryCreate, request: Request)::
+    org_id = extract_org_id(request)
     """Update a vehicle category"""
     db = get_db()
     
@@ -108,7 +110,8 @@ async def update_vehicle_category(category_id: str, data: VehicleCategoryCreate)
     return await db.vehicle_categories.find_one({"category_id": category_id}, {"_id": 0})
 
 @router.delete("/vehicle-categories/{category_id}")
-async def delete_vehicle_category(category_id: str):
+async def delete_vehicle_category(category_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Soft delete a vehicle category"""
     db = get_db()
     result = await db.vehicle_categories.update_one(
@@ -127,8 +130,8 @@ async def list_vehicle_models(
     category_code: Optional[str] = None,
     oem: Optional[str] = None,
     active_only: bool = True,
-    search: Optional[str] = None
-):
+    search: Optional[str] = None, request: Request)::
+    org_id = extract_org_id(request)
     """List vehicle models with optional filtering"""
     db = get_db()
     query = {}
@@ -162,7 +165,8 @@ async def list_vehicle_models(
     }
 
 @router.get("/vehicle-models/oems")
-async def list_oems(category_code: Optional[str] = None):
+async def list_oems(category_code: Optional[str] = None, request: Request)::
+    org_id = extract_org_id(request)
     """List distinct OEMs"""
     db = get_db()
     query = {"is_active": True}
@@ -173,7 +177,8 @@ async def list_oems(category_code: Optional[str] = None):
     return {"oems": sorted(oems)}
 
 @router.post("/vehicle-models")
-async def create_vehicle_model(data: VehicleModelCreate):
+async def create_vehicle_model(data: VehicleModelCreate, request: Request)::
+    org_id = extract_org_id(request)
     """Create a new vehicle model"""
     db = get_db()
     
@@ -198,7 +203,8 @@ async def create_vehicle_model(data: VehicleModelCreate):
     return model
 
 @router.put("/vehicle-models/{model_id}")
-async def update_vehicle_model(model_id: str, data: VehicleModelCreate):
+async def update_vehicle_model(model_id: str, data: VehicleModelCreate, request: Request)::
+    org_id = extract_org_id(request)
     """Update a vehicle model"""
     db = get_db()
     
@@ -213,7 +219,8 @@ async def update_vehicle_model(model_id: str, data: VehicleModelCreate):
     return await db.vehicle_models.find_one({"model_id": model_id}, {"_id": 0})
 
 @router.delete("/vehicle-models/{model_id}")
-async def delete_vehicle_model(model_id: str):
+async def delete_vehicle_model(model_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Soft delete a vehicle model"""
     db = get_db()
     result = await db.vehicle_models.update_one(
@@ -232,8 +239,8 @@ async def get_issue_suggestions(
     category_code: Optional[str] = None,
     model_id: Optional[str] = None,
     issue_type: Optional[str] = None,
-    search: Optional[str] = None
-):
+    search: Optional[str] = None, request: Request)::
+    org_id = extract_org_id(request)
     """Get EV issue suggestions based on vehicle category/model"""
     db = get_db()
     query = {"is_active": True}
@@ -286,7 +293,8 @@ async def get_issue_suggestions(
     return {"suggestions": suggestions, "total": len(suggestions)}
 
 @router.post("/issue-suggestions")
-async def create_issue_suggestion(data: EVIssueSuggestionCreate):
+async def create_issue_suggestion(data: EVIssueSuggestionCreate, request: Request)::
+    org_id = extract_org_id(request)
     """Create a new EV issue suggestion"""
     db = get_db()
     
@@ -307,7 +315,8 @@ async def create_issue_suggestion(data: EVIssueSuggestionCreate):
     return suggestion
 
 @router.post("/issue-suggestions/{suggestion_id}/increment-usage")
-async def increment_suggestion_usage(suggestion_id: str):
+async def increment_suggestion_usage(suggestion_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Increment usage count when a suggestion is selected"""
     db = get_db()
     await db.ev_issue_suggestions.update_one(
@@ -320,13 +329,14 @@ async def increment_suggestion_usage(suggestion_id: str):
 # ==================== SEED DATA ====================
 
 @router.post("/seed")
-async def seed_master_data():
+async def seed_master_data(request: Request)::
+    org_id = extract_org_id(request)
     """Seed initial master data for vehicle categories, models, and issue suggestions"""
     db = get_db()
     now = datetime.now(timezone.utc).isoformat()
     
     # Check if already seeded
-    existing_categories = await db.vehicle_categories.count_documents({})
+    existing_categories = await db.vehicle_categories.count_documents(org_query(org_id))
     if existing_categories > 0:
         return {"message": "Master data already exists", "categories": existing_categories}
     

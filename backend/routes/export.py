@@ -42,7 +42,8 @@ class EInvoiceConfig(BaseModel):
 DEFAULT_CONFIG = EInvoiceConfig()
 
 @router.get("/einvoice/{invoice_id}")
-async def generate_einvoice(invoice_id: str):
+async def generate_einvoice(invoice_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Generate GST e-invoice JSON for a given invoice"""
     db = get_db()
     
@@ -166,7 +167,8 @@ async def generate_einvoice(invoice_id: str):
     }
 
 @router.get("/einvoice/{invoice_id}/download")
-async def download_einvoice(invoice_id: str):
+async def download_einvoice(invoice_id: str, request: Request)::
+    org_id = extract_org_id(request)
     """Download e-invoice as JSON file"""
     result = await generate_einvoice(invoice_id)
     
@@ -183,7 +185,8 @@ async def download_einvoice(invoice_id: str):
 # ============== TALLY EXPORT ==============
 
 @router.get("/tally/invoices")
-async def export_invoices_to_tally(start_date: str = "", end_date: str = "", limit: int = 100):
+async def export_invoices_to_tally(start_date: str = "", end_date: str = "", limit: int = 100, request: Request)::
+    org_id = extract_org_id(request)
     """Export invoices in Tally-compatible XML format"""
     db = get_db()
     
@@ -266,7 +269,8 @@ async def export_invoices_to_tally(start_date: str = "", end_date: str = "", lim
     )
 
 @router.get("/tally/bills")
-async def export_bills_to_tally(start_date: str = "", end_date: str = "", limit: int = 100):
+async def export_bills_to_tally(start_date: str = "", end_date: str = "", limit: int = 100, request: Request)::
+    org_id = extract_org_id(request)
     """Export bills (purchases) in Tally-compatible XML format"""
     db = get_db()
     
@@ -343,7 +347,8 @@ async def export_bills_to_tally(start_date: str = "", end_date: str = "", limit:
     )
 
 @router.get("/tally/payments")
-async def export_payments_to_tally(start_date: str = "", end_date: str = "", limit: int = 100):
+async def export_payments_to_tally(start_date: str = "", end_date: str = "", limit: int = 100, request: Request)::
+    org_id = extract_org_id(request)
     """Export customer payments in Tally-compatible XML format"""
     db = get_db()
     
@@ -402,7 +407,8 @@ async def export_payments_to_tally(start_date: str = "", end_date: str = "", lim
     )
 
 @router.get("/tally/ledgers")
-async def export_ledgers_to_tally():
+async def export_ledgers_to_tally(request: Request)::
+    org_id = extract_org_id(request)
     """Export customer and vendor ledgers in Tally-compatible XML format"""
     db = get_db()
     
@@ -491,7 +497,8 @@ def format_date_for_tally(date_str: str) -> str:
 # ============== BULK EXPORT ==============
 
 @router.get("/bulk/invoices")
-async def bulk_export_invoices(format: str = "csv", start_date: str = "", end_date: str = ""):
+async def bulk_export_invoices(format: str = "csv", start_date: str = "", end_date: str = "", request: Request)::
+    org_id = extract_org_id(request)
     """Export invoices in CSV or Excel format"""
     db = get_db()
     
@@ -526,7 +533,8 @@ async def bulk_export_invoices(format: str = "csv", start_date: str = "", end_da
         return {"code": 0, "invoices": invoices, "count": len(invoices)}
 
 @router.get("/bulk/expenses")
-async def bulk_export_expenses(format: str = "csv", start_date: str = "", end_date: str = ""):
+async def bulk_export_expenses(format: str = "csv", start_date: str = "", end_date: str = "", request: Request)::
+    org_id = extract_org_id(request)
     """Export expenses in CSV format"""
     db = get_db()
     

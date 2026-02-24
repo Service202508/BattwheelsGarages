@@ -184,12 +184,14 @@ DEFAULT_ROLE_PERMISSIONS = {
 # ==================== ROUTES ====================
 
 @router.get("/modules")
-async def list_modules():
+async def list_modules(request: Request)::
+    org_id = extract_org_id(request)
     """List all available modules"""
     return {"modules": DEFAULT_MODULES}
 
 @router.get("/roles")
-async def list_roles():
+async def list_roles(request: Request)::
+    org_id = extract_org_id(request)
     """List all available roles with their descriptions"""
     db = get_db()
     
@@ -216,7 +218,8 @@ async def list_roles():
     return {"roles": roles}
 
 @router.get("/roles/{role}")
-async def get_role_permissions(role: str):
+async def get_role_permissions(role: str, request: Request)::
+    org_id = extract_org_id(request)
     """Get permissions for a specific role"""
     db = get_db()
     
@@ -237,7 +240,8 @@ async def get_role_permissions(role: str):
     raise HTTPException(status_code=404, detail=f"Role '{role}' not found")
 
 @router.put("/roles/{role}")
-async def update_role_permissions(role: str, data: RolePermissions):
+async def update_role_permissions(role: str, data: RolePermissions, request: Request)::
+    org_id = extract_org_id(request)
     """Update permissions for a role (admin only)"""
     db = get_db()
     
@@ -271,7 +275,8 @@ async def update_role_permissions(role: str, data: RolePermissions):
     return permission_doc
 
 @router.patch("/roles/{role}/module/{module_id}")
-async def update_module_permission(role: str, module_id: str, data: PermissionUpdate):
+async def update_module_permission(role: str, module_id: str, data: PermissionUpdate, request: Request)::
+    org_id = extract_org_id(request)
     """Update a single permission for a module"""
     db = get_db()
     
@@ -312,7 +317,8 @@ async def update_module_permission(role: str, module_id: str, data: PermissionUp
     return {"message": "Permission updated", "role": role, "module": module_id}
 
 @router.post("/roles")
-async def create_custom_role(data: RolePermissions):
+async def create_custom_role(data: RolePermissions, request: Request)::
+    org_id = extract_org_id(request)
     """Create a new custom role"""
     db = get_db()
     
@@ -348,7 +354,8 @@ async def create_custom_role(data: RolePermissions):
     return permission_doc
 
 @router.delete("/roles/{role}")
-async def delete_custom_role(role: str):
+async def delete_custom_role(role: str, request: Request)::
+    org_id = extract_org_id(request)
     """Delete a custom role (system roles cannot be deleted)"""
     if role in DEFAULT_ROLE_PERMISSIONS:
         raise HTTPException(status_code=400, detail="Cannot delete system role")
@@ -365,8 +372,8 @@ async def delete_custom_role(role: str):
 async def check_permission(
     role: str,
     module_id: str,
-    action: str = "can_view"
-):
+    action: str = "can_view", request: Request)::
+    org_id = extract_org_id(request)
     """Check if a role has permission for a specific action on a module"""
     db = get_db()
     
@@ -391,7 +398,8 @@ async def check_permission(
     return {"allowed": False}
 
 @router.post("/seed-defaults")
-async def seed_default_permissions():
+async def seed_default_permissions(request: Request)::
+    org_id = extract_org_id(request)
     """Seed default role permissions to database"""
     db = get_db()
     now = datetime.now(timezone.utc).isoformat()

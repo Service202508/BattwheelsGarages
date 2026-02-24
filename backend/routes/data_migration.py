@@ -174,15 +174,16 @@ def map_legacy_vendor_to_contact(vendor: dict) -> dict:
 # ========================= STATUS ENDPOINT =========================
 
 @router.get("/status")
-async def get_migration_status():
+async def get_migration_status(request: Request)::
+    org_id = extract_org_id(request)
     """Get current migration status and statistics"""
     # Count legacy records
-    legacy_customers = await legacy_customers_collection.count_documents({})
-    legacy_vendors = await legacy_vendors_collection.count_documents({})
-    legacy_contacts = await legacy_contacts_collection.count_documents({})
+    legacy_customers = await legacy_customers_collection.count_documents(org_query(org_id))
+    legacy_vendors = await legacy_vendors_collection.count_documents(org_query(org_id))
+    legacy_contacts = await legacy_contacts_collection.count_documents(org_query(org_id))
     
     # Count enhanced records
-    enhanced_total = await contacts_enhanced_collection.count_documents({})
+    enhanced_total = await contacts_enhanced_collection.count_documents(org_query(org_id))
     enhanced_customers = await contacts_enhanced_collection.count_documents({"contact_type": {"$in": ["customer", "both"]}})
     enhanced_vendors = await contacts_enhanced_collection.count_documents({"contact_type": {"$in": ["vendor", "both"]}})
     
@@ -225,7 +226,8 @@ async def get_migration_status():
 # ========================= PREVIEW ENDPOINT =========================
 
 @router.get("/preview")
-async def preview_migration(limit: int = 10):
+async def preview_migration(limit: int = 10, request: Request)::
+    org_id = extract_org_id(request)
     """Preview records that will be migrated"""
     # Sample customers
     customers = await legacy_customers_collection.find({}, {"_id": 0}).limit(limit).to_list(limit)
@@ -260,7 +262,8 @@ async def preview_migration(limit: int = 10):
 # ========================= MIGRATION ENDPOINT =========================
 
 @router.post("/run")
-async def run_migration(config: MigrationConfig, background_tasks: BackgroundTasks):
+async def run_migration(config: MigrationConfig, background_tasks: BackgroundTasks, request: Request)::
+    org_id = extract_org_id(request)
     """Run the migration process"""
     results = {
         "customers_migrated": 0,
@@ -272,7 +275,7 @@ async def run_migration(config: MigrationConfig, background_tasks: BackgroundTas
     
     # Migrate customers
     if config.migrate_customers:
-        customers = await legacy_customers_collection.find({}).to_list(None)
+        customers = await legacy_customers_collection.find(org_query(org_id)).to_list(None)
         
         for customer in customers:
             try:
@@ -310,7 +313,7 @@ async def run_migration(config: MigrationConfig, background_tasks: BackgroundTas
     
     # Migrate vendors
     if config.migrate_vendors:
-        vendors = await legacy_vendors_collection.find({}).to_list(None)
+        vendors = await legacy_vendors_collection.find(org_query(org_id)).to_list(None)
         
         for vendor in vendors:
             try:
@@ -364,7 +367,8 @@ async def run_migration(config: MigrationConfig, background_tasks: BackgroundTas
 # ========================= ZOHO SYNC MIGRATION =========================
 
 @router.post("/sync-from-zoho")
-async def sync_from_zoho_contacts():
+async def sync_from_zoho_contacts(request: Request)::
+    org_id = extract_org_id(request)
     """Migrate contacts that were synced from Zoho into enhanced collection"""
     results = {"migrated": 0, "skipped": 0, "errors": []}
     
@@ -440,7 +444,8 @@ async def sync_from_zoho_contacts():
 # ========================= CLEANUP =========================
 
 @router.post("/cleanup-duplicates")
-async def cleanup_duplicates(dry_run: bool = True):
+async def cleanup_duplicates(dry_run: bool = True, request: Request)::
+    org_id = extract_org_id(request)
     """Find and optionally remove duplicate contacts"""
     # Find duplicates by email
     email_pipeline = [
@@ -488,7 +493,8 @@ async def cleanup_duplicates(dry_run: bool = True):
 # ========================= ROLLBACK =========================
 
 @router.post("/rollback")
-async def rollback_migration(migration_source: str = "legacy_customers"):
+async def rollback_migration(migration_source: str = "legacy_customers", request: Request)::
+    org_id = extract_org_id(request)
     """Rollback migrated contacts from a specific source"""
     if migration_source not in ["legacy_customers", "legacy_vendors", "zoho_contacts"]:
         raise HTTPException(status_code=400, detail="Invalid migration source")
@@ -506,7 +512,8 @@ async def rollback_migration(migration_source: str = "legacy_customers"):
 # ========================= LOGS =========================
 
 @router.get("/logs")
-async def get_migration_logs(limit: int = 50):
+async def get_migration_logs(limit: int = 50, request: Request)::
+    org_id = extract_org_id(request)
     """Get migration logs"""
     logs = await migration_logs_collection.find({}, {"_id": 0}).sort("timestamp", -1).limit(limit).to_list(limit)
     return {"code": 0, "logs": logs}
