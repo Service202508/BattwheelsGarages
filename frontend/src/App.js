@@ -134,7 +134,7 @@ import BusinessReports from "@/pages/business/BusinessReports";
 import PermissionsManager from "@/pages/settings/PermissionsManager";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-export const API = `${BACKEND_URL}/api`;
+export const API = `${BACKEND_URL}/api/v1`;
 
 // Re-export API utilities for convenience
 export { getAuthHeaders, getOrganizationId, setOrganizationId, apiFetch, apiGet, apiPost, apiPut, apiPatch, apiDelete } from '@/utils/api';
