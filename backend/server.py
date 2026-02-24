@@ -6257,3 +6257,12 @@ async def startup_event():
         logger.info("SLA background breach detection job started")
     except Exception as e:
         logger.warning(f"SLA background job failed to start: {e}")
+
+    # Run idempotent index migration to ensure all collections have org_id indexes.
+    # Safe to run on every startup — skips indexes that already exist.
+    try:
+        from migrations.add_org_id_indexes import run as run_index_migration
+        await run_index_migration()
+        logger.info("Index migration completed on startup")
+    except Exception as e:
+        logger.warning(f"Index migration failed on startup (non-fatal): {e}")
