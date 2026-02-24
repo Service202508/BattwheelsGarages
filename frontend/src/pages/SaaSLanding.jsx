@@ -488,9 +488,9 @@ const SaaSLanding = () => {
           © 2026 Battwheels Services Private Limited · EFI Engine v2 · India
         </div>
         <ul className="flex gap-8">
-          {['Docs', 'Privacy', 'Terms', 'Contact'].map((link, idx) => (
-            <li key={idx}>
-              <a href="#" className="text-[11px] text-white/45 uppercase tracking-wider hover:text-[#C8FF00] transition">{link}</a>
+          {[['Docs', '/docs'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Contact', '/contact']].map(([label, href]) => (
+            <li key={label}>
+              <button onClick={() => navigate(href)} className="text-[11px] text-white/45 uppercase tracking-wider hover:text-[#C8FF00] transition font-mono">{label}</button>
             </li>
           ))}
         </ul>
