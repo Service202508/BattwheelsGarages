@@ -101,6 +101,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         r"^/api/payments/webhook$",
         r"^/api/organizations/signup$",
         r"^/api/organizations/register$",
+        r"^/api/contact$",
     ]
     
     def __init__(self, app, redis_url: str = None):

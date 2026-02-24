@@ -215,6 +215,7 @@ class RBACMiddleware(BaseHTTPMiddleware):
         r"^/api/customer-portal/auth.*",
         r"^/api/organizations/signup$",
         r"^/api/organizations/register$",
+        r"^/api/contact$",
         r"^/api/organizations/accept-invite$",
         r"^/api/platform/.*",
     ]

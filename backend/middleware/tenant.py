@@ -68,6 +68,7 @@ PUBLIC_ROUTES: List[str] = [
     # Public self-serve signup (no auth needed)
     r"^/api/organizations/signup$",
     r"^/api/organizations/register$",
+    r"^/api/contact$",
     r"^/api/organizations/accept-invite$",
     
     # Webhook endpoints (use different auth — signature verified inside handler)
