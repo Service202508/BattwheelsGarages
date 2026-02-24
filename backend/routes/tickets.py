@@ -196,7 +196,7 @@ async def list_tickets(
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(25, ge=1, le=100, description="Items per page (max 100)"),
     sort_by: Optional[str] = Query(None, description="Sort field"),
-    sort_order: str = Query("desc", regex="^(asc|desc)$", description="Sort order")
+    sort_order: str = Query("desc", pattern="^(asc|desc)$", description="Sort order")
 ):
     """
     List tickets with pagination and filtering
