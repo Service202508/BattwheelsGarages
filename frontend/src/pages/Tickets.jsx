@@ -120,27 +120,20 @@ export default function Tickets({ user }) {
 
   const fetchKPIs = useCallback(async () => {
     try {
-      const response = await fetch(`${API}/tickets`, {
+      const response = await fetch(`${API}/tickets/stats`, {
         credentials: "include",
         headers: getAuthHeaders(),
       });
       
       if (response.ok) {
-        const responseData = await response.json();
-        // Handle paginated {data:[...]} format, legacy {tickets:[...]} format, and plain array
-        const data = Array.isArray(responseData) ? responseData : (responseData.data || responseData.tickets || []);
-        const oneWeekAgo = new Date();
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-        
+        const stats = await response.json();
+        const byStatus = stats.by_status || {};
         setKpiData({
-          open: data.filter(t => t.status === "open").length,
-          technician_assigned: data.filter(t => t.status === "technician_assigned").length,
-          estimate_shared: data.filter(t => t.status === "estimate_shared").length,
-          in_progress: data.filter(t => t.status === "in_progress").length,
-          resolved_this_week: data.filter(t => 
-            t.status === "resolved" && 
-            new Date(t.updated_at) >= oneWeekAgo
-          ).length,
+          open: byStatus.open ?? stats.open ?? 0,
+          technician_assigned: byStatus.technician_assigned ?? 0,
+          estimate_shared: byStatus.estimate_shared ?? 0,
+          in_progress: byStatus.in_progress ?? stats.in_progress ?? 0,
+          resolved_this_week: (byStatus.resolved ?? 0) + (byStatus.closed ?? 0),
         });
       }
     } catch (error) {
