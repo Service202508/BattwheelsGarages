@@ -6276,6 +6276,8 @@ async def download_export(job_id: str, request: Request):
     )
 
 # Include main router
+# Nest v1_router under api_router: /api/v1/...
+api_router.include_router(v1_router)
 app.include_router(api_router)
 
 # ==================== HEALTH ENDPOINT ====================
