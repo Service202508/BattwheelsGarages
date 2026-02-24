@@ -362,20 +362,26 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
     const resolution = prompt("Enter resolution summary:");
     if (!resolution) return;
     
+    const confirmed_fault = prompt("Confirmed fault (for EFI learning — optional):");
+    
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
+      const closeData = { 
+        resolution: resolution,
+        resolution_outcome: "success",
+        resolution_notes: "Ticket closed after work completion"
+      };
+      if (confirmed_fault) {
+        closeData.confirmed_fault = confirmed_fault;
+      }
       const response = await fetch(`${API}/tickets/${localTicket.ticket_id}/close`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ 
-          resolution: resolution,
-          resolution_outcome: "success",
-          resolution_notes: "Ticket closed after work completion"
-        }),
+        body: JSON.stringify(closeData),
       });
       
       if (!response.ok) {
