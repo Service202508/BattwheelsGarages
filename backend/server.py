@@ -6591,7 +6591,7 @@ async def add_security_headers(request: Request, call_next):
 # Set CORS_ORIGINS env var as comma-separated list of allowed origins
 _cors_origins_raw = os.environ.get(
     "CORS_ORIGINS",
-    "https://battwheels.com,https://app.battwheels.com,https://secure-auth-suite-1.preview.emergentagent.com"
+    "https://battwheels.com,https://app.battwheels.com,https://efi-feedback-loop.preview.emergentagent.com"
 )
 _cors_origins = [o.strip() for o in _cors_origins_raw.split(",") if o.strip()]
 # Allow localhost variants for development
