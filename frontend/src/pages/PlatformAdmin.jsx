@@ -76,6 +76,12 @@ export default function PlatformAdmin({ user }) {
   const [lastAudit, setLastAudit] = useState(null);
   const [showAuditPanel, setShowAuditPanel] = useState(false);
 
+  // Leads state
+  const [leads, setLeads] = useState([]);
+  const [leadsSummary, setLeadsSummary] = useState(null);
+  const [leadsLoading, setLeadsLoading] = useState(false);
+  const [expandedNotes, setExpandedNotes] = useState({});
+
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
