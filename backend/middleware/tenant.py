@@ -67,11 +67,13 @@ PUBLIC_ROUTES: List[str] = [
     
     # Public self-serve signup (no auth needed)
     r"^/api/organizations/signup$",
+    r"^/api/organizations/register$",
     r"^/api/organizations/accept-invite$",
     
-    # Webhook endpoints (use different auth)
+    # Webhook endpoints (use different auth — signature verified inside handler)
     r"^/api/webhooks/.*$",
     r"^/api/razorpay/webhook$",
+    r"^/api/payments/webhook$",
     r"^/api/stripe/webhook$",
     
     # Platform admin routes (cross-tenant, use own auth check)
