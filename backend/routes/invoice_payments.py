@@ -174,7 +174,7 @@ async def create_payment_link(request: CreatePaymentLinkRequest, http_request: R
 
 @router.get("/status/{session_id}")
 async def get_payment_status(session_id: str, http_request: Request):
-    org_id = extract_org_id(request)
+    org_id = extract_org_id(http_request)
     """
     Check the status of a Stripe checkout session.
     Used for polling after redirect from Stripe.
