@@ -2559,8 +2559,8 @@ export default function EstimatesEnhanced() {
                   <Label>Estimate Date</Label>
                   <Input 
                     type="date" 
-                    value={editEstimate.estimate_date} 
-                    onChange={(e) => setEditEstimate({...editEstimate, estimate_date: e.target.value})}
+                    value={editEstimate.date} 
+                    onChange={(e) => setEditEstimate({...editEstimate, date: e.target.value})}
                   />
                 </div>
                 <div>
@@ -2766,16 +2766,16 @@ export default function EstimatesEnhanced() {
                 <div>
                   <Label>Customer Notes</Label>
                   <Textarea 
-                    value={editEstimate.customer_notes} 
-                    onChange={(e) => setEditEstimate({...editEstimate, customer_notes: e.target.value})}
+                    value={editEstimate.notes} 
+                    onChange={(e) => setEditEstimate({...editEstimate, notes: e.target.value})}
                     rows={2}
                   />
                 </div>
                 <div>
                   <Label>Terms & Conditions</Label>
                   <Textarea 
-                    value={editEstimate.terms_conditions} 
-                    onChange={(e) => setEditEstimate({...editEstimate, terms_conditions: e.target.value})}
+                    value={editEstimate.terms_and_conditions} 
+                    onChange={(e) => setEditEstimate({...editEstimate, terms_and_conditions: e.target.value})}
                     rows={2}
                   />
                 </div>
@@ -2788,7 +2788,8 @@ export default function EstimatesEnhanced() {
                     <Select value={editEstimate.discount_type} onValueChange={(v) => setEditEstimate({...editEstimate, discount_type: v})}>
                       <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="percentage">%</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="percent">%</SelectItem>
                         <SelectItem value="amount">₹</SelectItem>
                       </SelectContent>
                     </Select>
