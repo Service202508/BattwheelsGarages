@@ -154,6 +154,38 @@ export default function PlatformAdmin({ user }) {
     return () => clearTimeout(t);
   }, [search]);
 
+  async function fetchLeads() {
+    setLeadsLoading(true);
+    try {
+      const res = await fetch(`${API}/platform/leads`, { headers });
+      if (res.ok) {
+        const data = await res.json();
+        setLeads(data.leads || []);
+        setLeadsSummary(data.summary || null);
+      }
+    } finally {
+      setLeadsLoading(false);
+    }
+  }
+
+  async function updateLeadStatus(leadId, status) {
+    const res = await fetch(`${API}/platform/leads/${leadId}/status`, {
+      method: "PATCH", headers, body: JSON.stringify({ status })
+    });
+    if (res.ok) {
+      setLeads(prev => prev.map(l => l.lead_id === leadId ? { ...l, status } : l));
+      setLeadsSummary(null); // trigger re-fetch of summary on next visit
+    } else {
+      toast.error("Failed to update status");
+    }
+  }
+
+  async function saveLeadNotes(leadId, notes) {
+    await fetch(`${API}/platform/leads/${leadId}/notes`, {
+      method: "PATCH", headers, body: JSON.stringify({ notes })
+    });
+  }
+
   async function suspend(orgId, orgName) {
     if (!window.confirm(`Suspend "${orgName}"? All users will lose access.`)) return;
     setActionLoading(p => ({ ...p, [orgId]: "suspending" }));
