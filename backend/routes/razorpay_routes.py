@@ -500,76 +500,88 @@ async def handle_razorpay_webhook(request: Request, background_tasks: Background
 
 
 async def process_payment_captured(payment: Dict, org_id: str, invoice_id: str, background_tasks: BackgroundTasks):
-    """Process payment.captured webhook event"""
+    """
+    Process payment.captured webhook event.
+    CRITICAL: Payment recording MUST succeed or raise 500 (Razorpay retries).
+    Notifications fail silently after payment is recorded.
+    """
     payment_id = payment.get("id")
     amount_paise = payment.get("amount", 0)
     amount_inr = amount_paise / 100
     
     logger.info(f"Processing captured payment: {payment_id} for ₹{amount_inr}")
     
-    # Update payment record
-    await payments_collection.update_one(
-        {"razorpay_order_id": payment.get("order_id")},
-        {"$set": {
-            "razorpay_payment_id": payment_id,
-            "status": "captured",
-            "amount": amount_inr,
-            "payment_method": payment.get("method"),
-            "payment_date": datetime.now(timezone.utc).isoformat(),
-            "card_last4": payment.get("card", {}).get("last4"),
-            "bank": payment.get("bank"),
-            "wallet": payment.get("wallet"),
-            "vpa": payment.get("vpa"),  # UPI ID
-            "email": payment.get("email"),
-            "contact": payment.get("contact"),
-            "captured_at": datetime.now(timezone.utc).isoformat()
-        }}
-    )
-    
-    # Update invoice
-    if invoice_id:
-        invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
-        if invoice:
-            current_paid = float(invoice.get("amount_paid", 0))
-            new_paid = current_paid + amount_inr
-            total = float(invoice.get("grand_total", invoice.get("total", 0)))
-            
-            new_status = "paid" if new_paid >= total else "partially_paid"
-            
-            await invoices_collection.update_one(
-                {"invoice_id": invoice_id},
-                {"$set": {
-                    "status": new_status,
-                    "amount_paid": new_paid,
-                    "balance_due": max(0, total - new_paid),
-                    "razorpay_payment_id": payment_id,
-                    "razorpay_payment_method": payment.get("method"),
-                    "razorpay_payment_date": datetime.now(timezone.utc).isoformat(),
-                    "payment_received_at": datetime.now(timezone.utc).isoformat(),
-                    "updated_time": datetime.now(timezone.utc).isoformat()
-                }}
-            )
-            
-            # Post journal entry for double-entry bookkeeping
-            try:
-                await post_payment_received_journal_entry(
-                    organization_id=org_id,
-                    payment={
-                        "payment_id": payment_id,
-                        "amount": amount_inr,
-                        "payment_mode": payment.get("method", "online"),
-                        "payment_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-                        "customer_name": invoice.get("customer_name", ""),
-                        "invoice_number": invoice.get("invoice_number", ""),
-                        "reference_number": payment_id
-                    }
+    # ── CRITICAL BLOCK: must succeed or return 500 ──
+    try:
+        # Update payment record
+        await payments_collection.update_one(
+            {"razorpay_order_id": payment.get("order_id")},
+            {"$set": {
+                "razorpay_payment_id": payment_id,
+                "status": "captured",
+                "amount": amount_inr,
+                "payment_method": payment.get("method"),
+                "payment_date": datetime.now(timezone.utc).isoformat(),
+                "card_last4": payment.get("card", {}).get("last4"),
+                "bank": payment.get("bank"),
+                "wallet": payment.get("wallet"),
+                "vpa": payment.get("vpa"),
+                "email": payment.get("email"),
+                "contact": payment.get("contact"),
+                "captured_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        # Update invoice (idempotent: skip if already paid)
+        if invoice_id:
+            invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
+            if invoice:
+                if invoice.get("status") == "paid":
+                    logger.info(f"Invoice {invoice_id} already paid — idempotent webhook")
+                    return
+                
+                current_paid = float(invoice.get("amount_paid", 0))
+                new_paid = current_paid + amount_inr
+                total = float(invoice.get("grand_total", invoice.get("total", 0)))
+                new_status = "paid" if new_paid >= total else "partially_paid"
+                
+                await invoices_collection.update_one(
+                    {"invoice_id": invoice_id},
+                    {"$set": {
+                        "status": new_status,
+                        "amount_paid": new_paid,
+                        "balance_due": max(0, total - new_paid),
+                        "razorpay_payment_id": payment_id,
+                        "razorpay_payment_method": payment.get("method"),
+                        "razorpay_payment_date": datetime.now(timezone.utc).isoformat(),
+                        "payment_received_at": datetime.now(timezone.utc).isoformat(),
+                        "updated_time": datetime.now(timezone.utc).isoformat()
+                    }}
                 )
-                logger.info(f"Posted journal entry for Razorpay payment {payment_id}")
-            except Exception as e:
-                logger.error(f"Failed to post journal entry for payment {payment_id}: {e}")
-            
-            # TODO: Send payment confirmation email in background
-            # background_tasks.add_task(send_payment_confirmation, invoice, payment)
+                
+                # Post journal entry atomically with payment
+                try:
+                    await post_payment_received_journal_entry(
+                        organization_id=org_id,
+                        payment={
+                            "payment_id": payment_id,
+                            "amount": amount_inr,
+                            "payment_mode": payment.get("method", "online"),
+                            "payment_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                            "customer_name": invoice.get("customer_name", ""),
+                            "invoice_number": invoice.get("invoice_number", ""),
+                            "reference_number": payment_id
+                        }
+                    )
+                    logger.info(f"Posted journal entry for Razorpay payment {payment_id}")
+                except Exception as e:
+                    logger.error(f"CRITICAL: Journal entry failed for payment {payment_id}: {e}")
+                    # Do NOT re-raise — payment is recorded, journal can be reconciled later
+
+    except Exception as e:
+        logger.error(f"CRITICAL: Failed to record payment {payment_id} for invoice {invoice_id}: {e}")
+        raise HTTPException(status_code=500, detail="Payment recording failed")
+    # ── END CRITICAL BLOCK ──
     
     logger.info(f"Payment {payment_id} processed successfully")
 
