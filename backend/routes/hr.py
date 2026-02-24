@@ -501,8 +501,11 @@ async def list_payroll_records(
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
     service = get_service()
+    org_id = await get_org_id(request, service.db)
 
     query = {}
+    if org_id:
+        query["organization_id"] = org_id
     if month:
         query["month"] = month
     if year:
