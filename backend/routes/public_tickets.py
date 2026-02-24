@@ -673,16 +673,6 @@ async def send_ticket_notification(db, ticket_id: str, notification_type: str):
         if not customer_email:
             return
         
-        # Build email context
-        context = {
-            "ticket_id": ticket_id,
-            "customer_name": ticket.get("customer_name", "Customer"),
-            "vehicle_number": ticket.get("vehicle_number", "N/A"),
-            "issue_title": ticket.get("title", "Service Request"),
-            "priority": ticket.get("priority", "medium"),
-            "tracking_url": f"https://battwheels.com/track-ticket?id={ticket_id}&token={ticket.get('public_access_token', '')}"
-        }
-        
         # For now, just log - actual email sending requires RESEND_API_KEY
         import logging
         logger = logging.getLogger(__name__)
