@@ -1202,21 +1202,23 @@ async def list_estimates(
     }
 
 @router.get("/summary")
-async def get_estimates_summary():
+async def get_estimates_summary(request: Request):
     """Get estimates summary statistics"""
+    org_id = await get_org_id(request)
     today = datetime.now(timezone.utc).date().isoformat()
     
-    total = await estimates_collection.count_documents({})
-    draft = await estimates_collection.count_documents({"status": "draft"})
-    sent = await estimates_collection.count_documents({"status": "sent"})
-    customer_viewed = await estimates_collection.count_documents({"status": "customer_viewed"})
-    accepted = await estimates_collection.count_documents({"status": "accepted"})
-    declined = await estimates_collection.count_documents({"status": "declined"})
-    converted = await estimates_collection.count_documents({"status": "converted"})
-    expired = await estimates_collection.count_documents({
+    base = org_query(org_id)
+    total = await estimates_collection.count_documents(base)
+    draft = await estimates_collection.count_documents(org_query(org_id, {"status": "draft"}))
+    sent = await estimates_collection.count_documents(org_query(org_id, {"status": "sent"}))
+    customer_viewed = await estimates_collection.count_documents(org_query(org_id, {"status": "customer_viewed"}))
+    accepted = await estimates_collection.count_documents(org_query(org_id, {"status": "accepted"}))
+    declined = await estimates_collection.count_documents(org_query(org_id, {"status": "declined"}))
+    converted = await estimates_collection.count_documents(org_query(org_id, {"status": "converted"}))
+    expired = await estimates_collection.count_documents(org_query(org_id, {
         "status": {"$nin": ["accepted", "declined", "converted", "void"]},
         "expiry_date": {"$lt": today}
-    })
+    }))
     
     # Calculate totals
     pipeline = [
