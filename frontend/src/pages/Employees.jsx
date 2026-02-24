@@ -1418,6 +1418,55 @@ export default function Employees({ user }) {
         isSaving={saving}
         entityName="Employee"
       />
+
+      {/* Reset Password Dialog */}
+      <Dialog open={resetPasswordOpen} onOpenChange={setResetPasswordOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <KeyRound className="h-5 w-5 text-yellow-500" />
+              Reset Employee Password
+            </DialogTitle>
+            <DialogDescription>
+              Set a new login password for <span className="font-medium text-foreground">{resetPasswordTarget?.full_name || resetPasswordTarget?.work_email}</span>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="reset-new-pw">New Password</Label>
+              <Input
+                id="reset-new-pw"
+                type="password"
+                value={resetNewPassword}
+                onChange={(e) => setResetNewPassword(e.target.value)}
+                placeholder="Min 6 characters"
+                data-testid="admin-reset-new-password"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reset-confirm-pw">Confirm Password</Label>
+              <Input
+                id="reset-confirm-pw"
+                type="password"
+                value={resetConfirmPassword}
+                onChange={(e) => setResetConfirmPassword(e.target.value)}
+                placeholder="Re-enter password"
+                data-testid="admin-reset-confirm-password"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setResetPasswordOpen(false)}>Cancel</Button>
+            <Button
+              onClick={handleResetPassword}
+              disabled={resettingPassword || !resetNewPassword || !resetConfirmPassword}
+              data-testid="admin-reset-submit-btn"
+            >
+              {resettingPassword ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Resetting...</> : "Reset Password"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
