@@ -123,6 +123,7 @@ async def list_failure_cards(
 ):
     """List failure cards with filtering"""
     service = get_service()
+    org_id = request.headers.get("X-Organization-ID") or None
     
     return await service.list_failure_cards(
         status=status,
@@ -132,7 +133,8 @@ async def list_failure_cards(
         min_effectiveness=min_effectiveness,
         source_type=source_type,
         limit=limit,
-        skip=skip
+        skip=skip,
+        organization_id=org_id
     )
 
 
