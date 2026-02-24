@@ -532,7 +532,7 @@ async def seed_failure_data(request: Request):
 
 @router.get("/failure-cards")
 async def list_failure_cards(request: Request, subsystem: Optional[str] = None, limit: int = Query(50, le=200),
-    skip:: int = 0
+    skip: int = 0
 ):
     """List all failure cards with optional filtering"""
     await get_current_user(request)
@@ -579,7 +579,7 @@ async def get_failure_card(request: Request, failure_id: str):
 
 @router.post("/failure-cards/{failure_id}/step-image")
 async def upload_step_image(request: Request, failure_id: str, step_order: int = Form(...),
-    file:: UploadFile = File(...)
+    file: UploadFile = File(...)
 ):
     """Upload an image for a specific decision tree step"""
     await get_current_user(request)

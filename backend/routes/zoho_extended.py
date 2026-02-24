@@ -294,7 +294,7 @@ async def create_delivery_challan(request: Request, dc: DeliveryChallanCreate):
 
 @router.get("/delivery-challans")
 async def list_delivery_challans(request: Request, status: str = "", customer_id: str = "", page: int = Query(1, ge=1),
-    limit:: int = Query(25, ge=1)
+    limit: int = Query(25, ge=1)
 ):
     """List delivery challans with standardized pagination"""
     import math
