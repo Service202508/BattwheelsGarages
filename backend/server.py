@@ -1684,9 +1684,14 @@ async def admin_reset_employee_password(employee_id: str, data: AdminResetPasswo
         raise HTTPException(status_code=404, detail="No user account found for this employee's work email")
     
     new_hash = hash_password(data.new_password)
+    new_pwd_version = datetime.now(timezone.utc).timestamp()
     await db.users.update_one(
         {"user_id": user["user_id"]},
-        {"$set": {"password_hash": new_hash, "password_changed_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {
+            "password_hash": new_hash,
+            "password_version": new_pwd_version,
+            "password_changed_at": datetime.now(timezone.utc).isoformat(),
+        }}
     )
     
     logger.info(f"Admin {admin_user.user_id} reset password for employee {employee_id} (user {user['user_id']})")
