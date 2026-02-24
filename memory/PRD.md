@@ -48,7 +48,13 @@ Full-stack SaaS application (React + FastAPI + MongoDB) for EV workshop manageme
 - Org Admin: admin@battwheels.in / [RESET — see password manager]
 - Technician: tech@battwheels.in / [RESET — see password manager]
 - All passwords reset Feb 24 2026 to 20-char strong passwords
-- Credentials saved to /app/.credentials — transfer to password manager then delete
+
+### Master Integration Audit (Feb 24, 2026)
+- 13/13 modules passed (49/50 checks)
+- 3 CRITICAL multi-tenancy bugs found and FIXED in HR routes (employees/payroll leaked across orgs)
+- Trial Balance: BALANCED (DR=CR=Rs 2,40,954.00)
+- 0 cross-org contamination, 0 orphaned records
+- Full audit report: /app/AUDIT_REPORT.md
 
 ### Environment Separation (Feb 24, 2026)
 - Three-environment structure: production (`battwheels`), staging (`battwheels_staging`), development (`battwheels_dev`)
