@@ -1034,6 +1034,109 @@ export default function Login({ onLogin }) {
           </div>
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      {showForgotPassword && (
+        <div
+          style={{
+            position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(0,0,0,0.75)", zIndex: 9999,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            backdropFilter: "blur(4px)",
+          }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowForgotPassword(false); }}
+        >
+          <div
+            style={{
+              background: "#111820", borderRadius: 16, padding: 32,
+              width: "90%", maxWidth: 420,
+              border: "1px solid rgba(200,255,0,0.15)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+            }}
+          >
+            {forgotSent ? (
+              <div style={{ textAlign: "center" }}>
+                <div style={{
+                  width: 56, height: 56, borderRadius: "50%", margin: "0 auto 16px",
+                  background: "rgba(34,197,94,0.2)", display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <Mail style={{ width: 28, height: 28, color: "#22C55E" }} />
+                </div>
+                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "#F4F6F0", marginBottom: 8 }}>
+                  Check your email
+                </h3>
+                <p style={{ color: "rgba(244,246,240,0.55)", fontSize: 14, lineHeight: 1.6, marginBottom: 20 }}>
+                  If <strong style={{ color: "#C8FF00" }}>{forgotEmail}</strong> is registered, you'll receive a password reset link shortly. The link expires in 1 hour.
+                </p>
+                <button
+                  onClick={() => setShowForgotPassword(false)}
+                  style={{
+                    width: "100%", padding: "12px 0", borderRadius: 8,
+                    background: "rgba(200,255,0,0.1)", border: "1px solid rgba(200,255,0,0.3)",
+                    color: "#C8FF00", fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 600, cursor: "pointer",
+                  }}
+                  data-testid="forgot-done-btn"
+                >
+                  Back to Login
+                </button>
+              </div>
+            ) : (
+              <>
+                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "#F4F6F0", marginBottom: 4 }}>
+                  Forgot your password?
+                </h3>
+                <p style={{ color: "rgba(244,246,240,0.55)", fontSize: 14, marginBottom: 20 }}>
+                  Enter your email and we'll send you a reset link.
+                </p>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: "block", fontFamily: "'Syne', sans-serif", fontSize: 12, color: "rgba(244,246,240,0.55)", marginBottom: 6 }}>
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    placeholder="you@company.com"
+                    onKeyDown={(e) => e.key === "Enter" && handleForgotPassword()}
+                    style={{
+                      width: "100%", padding: "10px 14px", borderRadius: 8,
+                      background: "rgba(244,246,240,0.06)", border: "1px solid rgba(244,246,240,0.12)",
+                      color: "#F4F6F0", fontSize: 14, fontFamily: "'JetBrains Mono', monospace",
+                      outline: "none", boxSizing: "border-box",
+                    }}
+                    data-testid="forgot-email-input"
+                  />
+                </div>
+                <button
+                  onClick={handleForgotPassword}
+                  disabled={forgotLoading}
+                  style={{
+                    width: "100%", padding: "12px 0", borderRadius: 8,
+                    background: "#C8FF00", border: "none",
+                    color: "#080C0F", fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                    opacity: forgotLoading ? 0.6 : 1,
+                  }}
+                  data-testid="forgot-submit-btn"
+                >
+                  {forgotLoading ? "Sending..." : "Send Reset Link"}
+                </button>
+                <button
+                  onClick={() => setShowForgotPassword(false)}
+                  style={{
+                    width: "100%", padding: "10px 0", marginTop: 8, borderRadius: 8,
+                    background: "transparent", border: "1px solid rgba(244,246,240,0.12)",
+                    color: "rgba(244,246,240,0.55)", fontSize: 14, cursor: "pointer",
+                    fontFamily: "'Syne', sans-serif",
+                  }}
+                  data-testid="forgot-cancel-btn"
+                >
+                  Cancel
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
