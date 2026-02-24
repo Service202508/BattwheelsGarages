@@ -739,8 +739,7 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
         calc_item = calculate_line_item(item, is_igst, invoice.is_inclusive_tax)
         calc_item["line_item_id"] = generate_id("LI")
         calc_item["invoice_id"] = invoice_id
-        if org_id:
-            calc_item["organization_id"] = org_id
+        calc_item["organization_id"] = org_id
         calculated_items.append(calc_item)
     
     # Calculate invoice totals
