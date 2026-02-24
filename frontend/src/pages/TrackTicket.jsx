@@ -108,7 +108,7 @@ export default function TrackTicket() {
       
       const res = await fetch(`${API}/public/tickets/lookup`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getPublicHeaders(),
         body: JSON.stringify(body)
       });
       
