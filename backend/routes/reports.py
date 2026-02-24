@@ -1533,3 +1533,108 @@ async def get_inventory_valuation(
         "items": valuation_items,
     }
 
+
+# ==================== TRIAL BALANCE REPORT ====================
+
+@router.get("/trial-balance")
+async def get_trial_balance(
+    request: Request,
+    as_of_date: str = Query(None, description="Cut-off date YYYY-MM-DD (defaults to today)"),
+):
+    """
+    GET /api/reports/trial-balance
+    Aggregates all posted journal entry lines up to as_of_date and returns per-account
+    debit/credit totals.  Grand total debits MUST equal grand total credits (double-entry
+    invariant) — any mismatch is flagged as is_balanced=false.
+    """
+    db = get_db()
+
+    org_id = request.headers.get("X-Organization-ID", "")
+    if not org_id:
+        raise HTTPException(status_code=400, detail="X-Organization-ID header required")
+
+    # Determine cut-off date
+    if as_of_date:
+        try:
+            cutoff = datetime.strptime(as_of_date, "%Y-%m-%d").replace(
+                hour=23, minute=59, second=59, tzinfo=timezone.utc
+            )
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
+    else:
+        cutoff = datetime.now(timezone.utc)
+
+    match_stage = {
+        "organization_id": org_id,
+        "is_posted": True,
+    }
+    # Apply date filter if journal entry date is stored as string (ISO) or datetime
+    # We use $or to support both formats
+    match_stage["$or"] = [
+        {"entry_date": {"$lte": cutoff.isoformat()}},
+        {"entry_date": {"$lte": cutoff}},
+    ]
+
+    pipeline = [
+        {"$match": match_stage},
+        {"$unwind": "$lines"},
+        {
+            "$group": {
+                "_id": {
+                    "account_name": "$lines.account_name",
+                    "account_code": "$lines.account_code",
+                    "account_type": "$lines.account_type",
+                },
+                "total_debit": {"$sum": "$lines.debit_amount"},
+                "total_credit": {"$sum": "$lines.credit_amount"},
+            }
+        },
+        {"$sort": {"_id.account_code": 1}},
+    ]
+
+    raw_accounts = await db.journal_entries.aggregate(pipeline).to_list(5000)
+
+    accounts = []
+    grand_debit = 0.0
+    grand_credit = 0.0
+
+    for row in raw_accounts:
+        acct = row["_id"]
+        debit = round(float(row.get("total_debit", 0)), 2)
+        credit = round(float(row.get("total_credit", 0)), 2)
+        net = round(debit - credit, 2)
+        grand_debit += debit
+        grand_credit += credit
+
+        accounts.append({
+            "account_name": acct.get("account_name", "Unknown"),
+            "account_code": acct.get("account_code", ""),
+            "account_type": acct.get("account_type", ""),
+            "debit": debit,
+            "credit": credit,
+            "net_balance": net,
+            # Debit-normal: Asset, Expense; Credit-normal: Liability, Equity, Income
+            "normal_balance": (
+                "debit" if acct.get("account_type", "") in ("Asset", "Expense") else "credit"
+            ),
+        })
+
+    grand_debit = round(grand_debit, 2)
+    grand_credit = round(grand_credit, 2)
+    difference = round(abs(grand_debit - grand_credit), 2)
+    is_balanced = difference < 0.01  # allow 1-cent floating-point tolerance
+
+    return {
+        "report": "trial_balance",
+        "as_of_date": cutoff.strftime("%Y-%m-%d"),
+        "organization_id": org_id,
+        "is_balanced": is_balanced,
+        "difference": difference if not is_balanced else 0.0,
+        "summary": {
+            "total_debit": grand_debit,
+            "total_credit": grand_credit,
+            "account_count": len(accounts),
+        },
+        "accounts": accounts,
+    }
+
