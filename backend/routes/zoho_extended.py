@@ -11,6 +11,8 @@ from datetime import datetime, timezone, timedelta
 from dateutil.relativedelta import relativedelta
 import uuid
 import logging
+from utils.database import extract_org_id, org_query
+
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/zoho", tags=["zoho-extended"])

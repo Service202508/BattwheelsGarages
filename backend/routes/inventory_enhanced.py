@@ -11,6 +11,8 @@ import uuid
 import logging
 
 from core.subscriptions.entitlement import require_feature
+from utils.database import extract_org_id, org_query
+
 
 logger = logging.getLogger(__name__)
 

@@ -9,6 +9,8 @@ import motor.motor_asyncio
 import os
 
 from core.subscriptions.entitlement import require_feature
+from utils.database import extract_org_id, org_query
+
 
 router = APIRouter(
     prefix="/reports-advanced",

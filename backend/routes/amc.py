@@ -11,6 +11,8 @@ from pydantic import BaseModel, Field
 from datetime import datetime, timezone, timedelta
 import os
 import uuid
+from utils.database import extract_org_id, org_query
+
 
 # MongoDB connection — deferred to avoid module-level env var access at import time
 def get_db():
