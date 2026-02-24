@@ -6094,6 +6094,31 @@ async def download_export(job_id: str, request: Request):
 # Include main router
 app.include_router(api_router)
 
+# ==================== HEALTH ENDPOINT ====================
+# Must be registered AFTER api_router to avoid conflicts.
+# No auth required — used by Kubernetes liveness probes and uptime monitors.
+@app.get("/api/health", tags=["Health"])
+async def health_check():
+    """
+    Health check endpoint. Verifies API and MongoDB connectivity.
+    Returns 200 if healthy, 503 if degraded.
+    """
+    import asyncio
+    try:
+        # Ping MongoDB with a 2-second timeout
+        await asyncio.wait_for(
+            db.command("ping"),
+            timeout=2.0
+        )
+        db_status = "ok"
+    except Exception as e:
+        from fastapi.responses import JSONResponse as _JSONResponse
+        return _JSONResponse(
+            status_code=503,
+            content={"status": "degraded", "db": "error", "detail": str(e)}
+        )
+    return {"status": "ok", "db": db_status, "version": "2.0.0"}
+
 # ==================== MULTI-TENANT SYSTEM INITIALIZATION ====================
 # Phase A: Tenant Context Foundation
 # Initialize the SaaS multi-tenant isolation layer
