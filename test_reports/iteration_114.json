@@ -1,0 +1,100 @@
+{
+  "summary": "Regression test for FastAPI 0.110.1→0.132.0, starlette 0.37.2→0.52.1, motor 3.3.1→3.7.1, pymongo 4.5.0→4.16.0 upgrade. All 35 regression tests pass (100%). Covers all 10 checklist scenarios: health/startup, auth+DB reads, security headers, CORS, tenant isolation, trial balance aggregation, startup index migration hook, Form16 HR motor queries, webhook idempotency, and XSS sanitization.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "POST /api/auth/login (external URL)",
+        "issue": "Rate limiter (5/min per IP) triggered when making >5 rapid login calls from same test runner IP via external URL. Not a regression — this is working-as-designed. Test infrastructure fix: auth fixture uses internal URL (127.0.0.1) to obtain token, avoiding external rate limit bucket.",
+        "priority": "LOW"
+      },
+      {
+        "endpoint": "GET /api/tickets (no X-Organization-ID header, admin token)",
+        "issue": "TenantGuardMiddleware returns 200 (not 400) when admin user omits X-Organization-ID header. Admin's JWT already embeds org_id, so middleware resolves org from JWT. This is correct behavior, not a regression.",
+        "priority": "INFO"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "upgrade_regression_results": {
+    "1_health_smoke": {
+      "status": "PASS",
+      "details": "GET /api/health → 200, status=ok. FastAPI 0.132.0 + starlette 0.52.1 started correctly."
+    },
+    "2_auth_db_reads": {
+      "status": "PASS",
+      "details": "POST /api/auth/login → 200, token present (length>20), organizations array has 1+ entries. pymongo 4.16.0 / motor 3.7.1 DB reads confirmed working. Invalid creds correctly rejected with 401."
+    },
+    "3_security_headers": {
+      "status": "PASS",
+      "details": "All 4 required headers present on /api/health and /api/auth/login: X-Content-Type-Options=nosniff, X-Frame-Options=DENY, Strict-Transport-Security (max-age present), Content-Security-Policy (default-src present). SecurityHeadersMiddleware works correctly on starlette 0.52.1."
+    },
+    "4_cors_regression": {
+      "status": "PASS",
+      "details": "At app level (localhost:8001): arbitrary origin 'evil.example.com' NOT echoed in ACAO header. Configured origin correctly allowed. No wildcard ACAO for arbitrary origin at app level. CORSMiddleware API unchanged in starlette 0.52.1. Platform note: Cloudflare proxy adds ACAO:* at ingress for external URL (known platform constraint, not a code issue)."
+    },
+    "5_tenant_isolation": {
+      "status": "PASS",
+      "details": "GET /api/tickets with admin token + org header → 200, returns list. Unauthenticated access → 401. TenantGuardMiddleware (BaseHTTPMiddleware) works on starlette 0.52.1."
+    },
+    "6_trial_balance": {
+      "status": "PASS",
+      "details": "GET /api/reports/trial-balance → 200, is_balanced=true, summary present with total_debit/credit. MongoDB aggregation works on pymongo 4.16.0."
+    },
+    "7_startup_index_migration": {
+      "status": "PASS",
+      "details": "'Index migration completed on startup' found in /var/log/supervisor/backend.err.log. Migration module /app/backend/migrations/add_org_id_indexes.py exists with 'run' function. on_event('startup') fires correctly in FastAPI 0.132.0 (deprecated but still functional — no DeprecationWarning in logs for on_event itself)."
+    },
+    "8_form16_hr_motor": {
+      "status": "PASS",
+      "details": "GET /api/hr/payroll/form16/emp_7e79d8916b6b/2025-26 → 200. hr.py motor 3.7.1 queries work correctly."
+    },
+    "9_webhook_idempotency": {
+      "status": "PASS",
+      "details": "First webhook → status=processed. Duplicate webhook → status=already_processed. Different event (payment.failed) for same payment_id NOT treated as duplicate. HMAC-SHA256 signature with secret 'Ridhisha2023' correctly validated. razorpay.py motor 3.7.1 queries work."
+    },
+    "10_xss_sanitization": {
+      "status": "PASS",
+      "details": "<script>alert(1)</script> in title stored without <script> tags. <img onerror=alert(1)> in description has onerror stripped. Plain text preserved unchanged. _strip_html() in ticket_service.py works correctly."
+    }
+  },
+  "version_confirmation": {
+    "fastapi": "0.132.0",
+    "starlette": "0.52.1",
+    "motor": "3.7.1",
+    "pymongo": "4.16.0"
+  },
+  "deprecation_warnings_observed": [
+    "/app/backend/routes/tickets.py:199: FastAPIDeprecationWarning: `regex` has been deprecated, please use `pattern` instead — minor, non-breaking, should be fixed by changing `regex=` to `pattern=` in the Query parameter."
+  ],
+  "test_report_links": [
+    "/app/backend/tests/test_upgrade_regression.py",
+    "/app/test_reports/pytest/upgrade_regression_results.xml"
+  ],
+  "action_items": [
+    "MINOR: tickets.py line 199 — replace `regex=` with `pattern=` in Query parameter to resolve FastAPIDeprecationWarning. Non-blocking but should be cleaned up.",
+    "FUTURE: Consider migrating @app.on_event('startup') and @app.on_event('shutdown') to lifespan context manager (FastAPI recommended approach). Currently deprecated but still functional in 0.132.0 with no warnings in logs."
+  ],
+  "critical_code_review_comments": [
+    "tickets.py:199 — `regex` query param deprecated in favor of `pattern`. Not breaking but emits FastAPIDeprecationWarning on each server startup.",
+    "server.py uses @app.on_event() which is deprecated in favor of lifespan context manager. Still functional in 0.132.0 — no observed warnings in logs. Low priority migration item."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_upgrade_regression.py"
+  ],
+  "success_rate": {
+    "backend": "100% (35/35 tests pass)"
+  },
+  "test_credentials": {
+    "admin": "admin@battwheels.in / admin",
+    "tech": "tech@battwheels.in / tech123"
+  },
+  "seed_data_creation": "Webhook test creates entries in webhook_logs with pay_REGRESSION_*, pay_IDEMPOTENT_*, pay_DIFFEVENT_* payment IDs. XSS tests create 3 service tickets with TEST payloads. These can be cleaned up from DB.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Upgrade regression complete. All 35 tests pass. FastAPI 0.132.0 + starlette 0.52.1 + motor 3.7.1 + pymongo 4.16.0 confirmed working. Key test file: /app/backend/tests/test_upgrade_regression.py. Only known minor item: tickets.py:199 regex→pattern deprecation warning (non-breaking)."
+}
