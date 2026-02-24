@@ -11,6 +11,7 @@ All events are emitted from the service layer, not routes.
 
 Multi-Tenant: Uses TenantContext for strict org_id enforcement.
 """
+# TENANT GUARD: Every MongoDB query in this file MUST include {"organization_id": org_id} — no exceptions.
 from fastapi import APIRouter, HTTPException, Request, Query, Depends
 from typing import Optional, List
 from datetime import datetime, timezone
