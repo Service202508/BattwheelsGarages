@@ -327,6 +327,10 @@ async def close_ticket(request: Request, ticket_id: str, data: TicketCloseReques
             user_name=user.get("name", "System"),
             organization_id=ctx.org_id
         )
+        # Audit log
+        from utils.audit import log_audit, AuditAction
+        await log_audit(service.db, AuditAction.TICKET_CLOSED, ctx.org_id, user.get("user_id"),
+            "ticket", ticket_id, {"resolution": data.resolution, "confirmed_fault": data.confirmed_fault})
         return ticket
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
