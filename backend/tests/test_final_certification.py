@@ -109,28 +109,16 @@ def tech_headers(tech_token):
 def platform_admin_token():
     """
     Temporarily set is_platform_admin=True on admin user, login, reset.
-    Returns admin token (same user) which now has platform admin rights for the test.
+    Uses synchronous pymongo to avoid asyncio event-loop conflicts in pytest.
     """
-    client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
+    import pymongo
+    client = pymongo.MongoClient(MONGO_URL)
     db = client[DB_NAME]
 
-    async def _setup_and_get_token():
-        # Elevate admin user to platform admin
-        await db.users.update_one(
-            {"email": ADMIN_EMAIL},
-            {"$set": {"is_platform_admin": True}}
-        )
+    # Elevate admin user to platform admin
+    db.users.update_one({"email": ADMIN_EMAIL}, {"$set": {"is_platform_admin": True}})
 
-    async def _teardown():
-        # Reset platform admin flag after session
-        await db.users.update_one(
-            {"email": ADMIN_EMAIL},
-            {"$set": {"is_platform_admin": False}}
-        )
-
-    asyncio.run(_setup_and_get_token())
-
-    # Now login (or reuse token — but token doesn't carry is_platform_admin, require_platform_admin reads DB)
+    # Login to get token (require_platform_admin reads DB at request time)
     token = None
     for url in [INTERNAL_URL, BASE_URL]:
         try:
@@ -146,8 +134,9 @@ def platform_admin_token():
 
     yield token
 
-    # Cleanup
-    asyncio.run(_teardown())
+    # Cleanup — reset platform admin flag
+    db.users.update_one({"email": ADMIN_EMAIL}, {"$set": {"is_platform_admin": False}})
+    client.close()
 
 
 # ──────────────────────────────────────────────────────────
