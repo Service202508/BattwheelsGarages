@@ -789,10 +789,63 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
 
         {/* Close Ticket - Admin/Technician, when work is completed */}
         {(isTechnician || isAdmin) && localTicket.status === "work_completed" && (
-          <Button onClick={handleCloseTicket} disabled={loading} variant="default" data-testid="close-ticket-btn">
-            <XCircle className="mr-2 h-4 w-4" />
-            Close Ticket
-          </Button>
+          <Dialog open={closeDialogOpen} onOpenChange={setCloseDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="default" data-testid="close-ticket-btn">
+                <XCircle className="mr-2 h-4 w-4" />
+                Close Ticket
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md bg-slate-900 border-slate-700 text-slate-100">
+              <DialogHeader>
+                <DialogTitle>Close Ticket</DialogTitle>
+                <DialogDescription className="text-slate-400">
+                  Provide a resolution summary and optionally confirm the actual fault for EFI learning.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-2">
+                <div className="space-y-2">
+                  <Label htmlFor="close-resolution" className="text-slate-300">Resolution Summary *</Label>
+                  <Input
+                    id="close-resolution"
+                    data-testid="close-resolution-input"
+                    placeholder="Describe how the issue was resolved..."
+                    value={closeResolution}
+                    onChange={(e) => setCloseResolution(e.target.value)}
+                    className="bg-slate-800 border-slate-600 text-slate-100 placeholder:text-slate-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="close-confirmed-fault" className="text-slate-300">
+                    Confirmed Fault <span className="text-slate-500 font-normal">(optional — trains EFI predictions)</span>
+                  </Label>
+                  <Input
+                    id="close-confirmed-fault"
+                    data-testid="close-confirmed-fault-input"
+                    placeholder="e.g. BMS cell balancing failure"
+                    value={closeConfirmedFault}
+                    onChange={(e) => setCloseConfirmedFault(e.target.value)}
+                    className="bg-slate-800 border-slate-600 text-slate-100 placeholder:text-slate-500"
+                  />
+                  <p className="text-xs text-slate-500">
+                    This helps the EFI engine learn from real outcomes and improve future predictions.
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="outline" onClick={() => setCloseDialogOpen(false)} className="border-slate-600 text-slate-300">
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCloseTicket}
+                  disabled={loading || !closeResolution.trim()}
+                  data-testid="confirm-close-ticket-btn"
+                >
+                  {loading ? "Closing..." : "Close Ticket"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         )}
 
         {/* Generate Invoice - Admin/Technician, when Resolved or Work Completed */}
