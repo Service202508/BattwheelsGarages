@@ -5,7 +5,15 @@
 - **Feb 2026**: Data Insights module fully built — route `/insights` was redirecting to dashboard (no route existed). Created 6 backend endpoints (`/api/insights/{revenue,operations,technicians,efi,customers,inventory}`) with real MongoDB aggregations, and built comprehensive `DataInsights.jsx` page with 6 sections, recharts charts, date range selector, empty states, and mobile responsive layout.
 - **Feb 2026**: Critical SW bug fixed — `sw.js` was caching `/` (the marketing landing page HTML) and using it as a fallback for all failed requests. Fixed by: (1) removing `/` from cached assets, (2) adding navigation-first fetch strategy, (3) removing dangerous `.catch(() => caches.match('/'))` fallback, (4) bumping cache to `battwheels-v2` to force old cache cleanup.
 - **Feb 2026**: Senior Finance & AI CTO Audit completed — 68 tests, 54 passed (~79%). Full report at `/app/FINANCE_CTO_AUDIT.md`. 1 true critical finding: missing `/api/reports/trial-balance` endpoint. All core accounting controls pass including: unbalanced JE rejection, accounting equation (A=L+E), accrual basis, GST CGST/SGST split, payroll JEs, COGS JEs. EFI AI: 5/5, Purchase Accounting: 5/5.
-- **Feb 2026**: Pre-deployment audit completed (65/98 = 65.3%). Full report at `/app/PRE_DEPLOYMENT_AUDIT.md`. 8 critical blockers identified. 4 fixed immediately: signup endpoint exposed (FN11.11), health endpoint created (S1.01), CORS wildcard removed (S1.06), Razorpay webhook whitelist added (PY9.02).
+- **Feb 2026**: Pre-deployment audit completed (65/98 = 65.3%). Full report at `/app/PRE_DEPLOYMENT_AUDIT.md`. 8 critical blockers identified. 7 of 8 fixed:
+  - ✅ FN11.11: Signup endpoint whitelisted in all 4 auth middlewares
+  - ✅ S1.01: Health endpoint created (`GET /api/health`)
+  - ✅ S1.06: CORS wildcard replaced with explicit domain list
+  - ✅ PY9.02: Razorpay webhook whitelisted in all auth middlewares
+  - ✅ SE4.06: Security headers middleware added (`X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`, `X-XSS-Protection`, `Referrer-Policy`, `CSP`)
+  - ✅ DB2.06: MongoDB automated backup via daily `mongodump` cron + DR runbook at `/app/DISASTER_RECOVERY_RUNBOOK.md`
+  - ✅ FN11.05: Trial balance endpoint implemented — `GET /api/reports/trial-balance`, verified balanced (₹12,96,164 DR=CR)
+  - ⚠️ S1.03: Platform-managed supervisor config — cannot increase workers without Emergent infra support (also: `--reload` incompatible with `--workers N` in uvicorn)
 
 ## Original Problem Statement
 
