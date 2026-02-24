@@ -505,6 +505,12 @@ function AppRouter() {
         <Route path="/register" element={
           auth.user ? <RoleBasedRedirect user={auth.user} /> : <Register onLogin={auth.login} />
         } />
+
+        {/* Public info pages — no auth required */}
+        <Route path="/docs" element={<Docs />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/contact" element={<Contact />} />
       
       {/* Zoho-style Financial Home Dashboard */}
       <Route path="/home" element={
