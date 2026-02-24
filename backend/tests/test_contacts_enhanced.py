@@ -8,7 +8,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://efi-feedback-loop.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://hardening-sprint-7.preview.emergentagent.com')
 
 # Test data tracking
 created_tag_ids = []
