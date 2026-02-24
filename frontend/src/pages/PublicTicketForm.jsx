@@ -230,7 +230,7 @@ export default function PublicTicketForm() {
     if (!paymentDetails) return;
     if (paymentDetails.is_mock) {
       const res = await fetch(`${API}/public/tickets/verify-payment`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
+        method: "POST", headers: getPublicHeaders(),
         body: JSON.stringify({ ticket_id: ticketResult.ticket_id, razorpay_order_id: paymentDetails.order_id, razorpay_payment_id: `pay_mock_${Date.now()}`, razorpay_signature: "mock" })
       });
       if (res.ok) { setStep(3); toast.success("Payment successful!"); }
