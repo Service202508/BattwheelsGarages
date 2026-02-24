@@ -297,7 +297,31 @@ Checks for PostgreSQL/Redis/Railway have been adapted to the actual stack.
 
 ---
 
-## NON-CRITICAL FAILURES (Fix post-launch)
+## REMAINING NON-CRITICAL FAILURES (Post-Audit Remediation Feb 24, 2026)
+
+### CODE FIXED (in codebase, ships with deployment):
+| Check | Status | Change |
+|-------|--------|--------|
+| **DB2.04** Missing org_id indexes on 38 collections | ✅ FIXED | Migration `migrations/add_org_id_indexes.py` — 35 collections indexed, unique idempotency index on webhook_logs |
+| **PY9.03** Webhook idempotency | ✅ FIXED | Razorpay webhook checks `processed` flag before re-processing; `idx_webhook_logs_payment_event_unique` index prevents duplicate entries |
+| **SE4.05** XSS raw storage | ✅ FIXED | `_strip_html()` in `ticket_service.py` strips HTML tags from title/description/resolution at write time |
+| **SE4.04** No technician test credential | ✅ FIXED | `tech@battwheels.in` / `tech123` — confirmed login works, payroll returns 403 |
+| **FN11.10** Payslip PDF 404 | ✅ FIXED | Form16 status filter now includes `"generated"` (both JSON and PDF endpoints in `hr.py`) |
+| **SE4.12** Vulnerable dependencies | ✅ PARTIAL | `cryptography` → 46.0.5, `pillow` → 12.1.1 upgraded. **Known remaining**: starlette CVE (blocked by FastAPI 0.110.1 pin), pymongo CVE (motor compatibility), ecdsa CVE (no fix available) |
+| **BR7.05** No DR runbook | ✅ FIXED | `/app/DISASTER_RECOVERY_RUNBOOK.md` created |
+
+### INFRASTRUCTURE/EXTERNAL (action after production deployment):
+| Check | Action |
+|-------|--------|
+| S1.03 | Increase uvicorn workers to 4 — request from Emergent infra team |
+| DB2.08 | Enable MongoDB profiling on Atlas (production host) |
+| DB2.09 | Create scoped MongoDB Atlas user (production host) |
+| MN8.03 | Set up UptimeRobot pointing to `/api/health` |
+| MN8.04 | Configure Sentry error-rate alert rules |
+| EM10.01 | Verify battwheels.com DNS in Resend dashboard |
+| SC12.07 | Get Emergent/cloud infrastructure billing estimate |
+| starlette CVE | Upgrade FastAPI from 0.110.1 → latest (0.132.0) in a dedicated upgrade sprint |
+| pymongo CVE | Upgrade motor from 3.3.1 → 3.7.1 + pymongo 4.6.3+ in dedicated sprint |
 
 | Check | Issue | Remediation |
 |-------|-------|-------------|
