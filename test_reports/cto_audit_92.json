@@ -1,6 +1,6 @@
 {
   "timestamp": "2026-02-23T21:26:27.655342",
-  "target": "https://production-deploy-7.preview.emergentagent.com",
+  "target": "https://deploy-now-67.preview.emergentagent.com",
   "total_tests": 103,
   "passed": 103,
   "failed": 0,
