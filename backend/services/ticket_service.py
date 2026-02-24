@@ -143,6 +143,7 @@ class TicketCloseData(BaseModel):
     resolution_outcome: str = "success"  # success, failure, partial
     resolution_notes: Optional[str] = None
     selected_failure_card: Optional[str] = None
+    confirmed_fault: Optional[str] = None  # Technician-confirmed actual fault
 
 
 # ==================== TICKET SERVICE ====================
