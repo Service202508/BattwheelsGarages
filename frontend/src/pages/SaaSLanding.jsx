@@ -510,7 +510,7 @@ const SaaSLanding = () => {
               Start Your Free Trial
               <ArrowRight className="w-4 h-4" />
             </button>
-            <button onClick={() => navigate('/login')} className="px-10 py-4 text-sm font-semibold uppercase tracking-wide border border-white/10 hover:border-[#C8FF00] hover:text-[#C8FF00] transition rounded-sm">
+            <button onClick={() => setShowBookDemo(true)} className="px-10 py-4 text-sm font-semibold uppercase tracking-wide border border-white/10 hover:border-[#C8FF00] hover:text-[#C8FF00] transition rounded-sm" data-testid="cta-book-demo-btn">
               Request Enterprise Consultation
             </button>
           </div>
