@@ -968,6 +968,34 @@ export default function OrganizationSettings({ user }) {
                   <Label>Slug</Label>
                   <Input value={organization?.slug || ""} disabled className="bg-muted" />
                 </div>
+                {organization?.slug && (
+                  <div className="space-y-2 md:col-span-2">
+                    <Label>Customer Intake Form URL</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={`https://${organization.slug}.battwheels.com/submit-ticket`}
+                        disabled
+                        className="bg-muted font-mono text-sm"
+                        data-testid="public-form-url"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        data-testid="copy-public-form-url"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`https://${organization.slug}.battwheels.com/submit-ticket`);
+                          toast.success("Public form URL copied to clipboard");
+                        }}
+                      >
+                        Copy
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Share this URL with customers so their tickets land directly in your workshop dashboard.
+                    </p>
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label>Email</Label>
                   <Input 
