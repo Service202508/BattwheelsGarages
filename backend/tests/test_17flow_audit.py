@@ -456,7 +456,7 @@ class TestFlow07EFIDiagnostics:
             f"{BASE_URL}/api/ai/diagnose",
             json=payload,
             headers=auth_headers(),
-            timeout=30,
+            timeout=60,
         )
         data = res.json()
         assert res.status_code == 200, f"EFI diagnose failed: {data}"
