@@ -80,7 +80,7 @@
   "audit_org_cleanup": {
     "org_id": "org_545d5b59ccf8",
     "email": "auditfinal@battwheelstest.com",
-    "cleanup_command": "curl -X DELETE https://deploy-now-67.preview.emergentagent.com/api/platform/organizations/org_545d5b59ccf8 -H 'Authorization: Bearer <platform-admin-token>'"
+    "cleanup_command": "curl -X DELETE https://secure-auth-suite-1.preview.emergentagent.com/api/platform/organizations/org_545d5b59ccf8 -H 'Authorization: Bearer <platform-admin-token>'"
   },
 
   "test_report_links": [
