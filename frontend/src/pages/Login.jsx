@@ -876,12 +876,14 @@ export default function Login({ onLogin }) {
               <div style={{ textAlign: "right", marginTop: 8, ...anim(320) }}>
                 <span
                   className="bw-forgot"
+                  onClick={() => { setForgotEmail(loginData.email); setForgotSent(false); setShowForgotPassword(true); }}
                   style={{
                     fontFamily: "'Syne', sans-serif",
                     fontSize: 12,
                     color: "rgba(200,255,0,0.60)",
                     cursor: "pointer",
                   }}
+                  data-testid="forgot-password-link"
                 >
                   Forgot password?
                 </span>
