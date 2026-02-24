@@ -154,6 +154,10 @@ export default function PlatformAdmin({ user }) {
     return () => clearTimeout(t);
   }, [search]);
 
+  useEffect(() => {
+    if (activeTab === "leads") fetchLeads();
+  }, [activeTab]);
+
   async function fetchLeads() {
     setLeadsLoading(true);
     try {
