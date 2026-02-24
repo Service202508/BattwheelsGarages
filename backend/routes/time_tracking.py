@@ -515,7 +515,7 @@ async def convert_to_invoice(request: Request, entry_ids: List[str], customer_id
 # ==================== REPORTS ====================
 
 @router.get("/reports/summary")
-async def get_time_summary(request: Request, start_date: str = "", end_date: str = "", group_by: str = "user"  # user, ticket, task_type, date):
+async def get_time_summary(request: Request, start_date: str = "", end_date: str = "", group_by: str = "user"):
     """Get time tracking summary report"""
     org_id = await get_org_id(request)
     if not org_id:
