@@ -54,7 +54,8 @@ export default function Settings({ user }) {
           new_password: newPassword,
         }),
       });
-      const text = await res.text();
+      const resClone = res.clone();
+      const text = await resClone.text();
       let data = {};
       try { data = JSON.parse(text); } catch { /* non-JSON */ }
       if (res.ok) {
