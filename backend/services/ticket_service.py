@@ -22,10 +22,23 @@ from pydantic import BaseModel, Field
 import uuid
 import logging
 import hashlib
+import re
 
 from events import get_dispatcher, EventType, EventPriority
 
 logger = logging.getLogger(__name__)
+
+# ── XSS Sanitization ─────────────────────────────────────────────────────────
+_HTML_TAG_RE = re.compile(r'<[^>]+>')
+
+def _strip_html(value: Optional[str]) -> Optional[str]:
+    """Strip HTML/script tags from free-text fields at write time.
+    React auto-escapes on render, but we sanitize at ingestion so the
+    stored value is always clean (SE4.05 audit requirement)."""
+    if not value:
+        return value
+    return _HTML_TAG_RE.sub('', value).strip()
+# ─────────────────────────────────────────────────────────────────────────────
 
 
 # ==================== TICKET STATES ====================
