@@ -221,3 +221,40 @@ These rules are enforced by:
 
 Any PR adding a new route file to `/backend/routes/` MUST include the tenant isolation
 comment and MUST be reviewed against this checklist before merge.
+
+
+---
+
+## RULE 4 — Three-Environment Discipline
+
+Battwheels OS operates three environments. Every developer and every AI agent must know which environment they are in before making any change.
+
+### Environments
+
+| Environment | Database | Org | Purpose |
+|-------------|----------|-----|---------|
+| **production** | test_database | Battwheels Garages (real data) | Live customer use only |
+| **staging** | battwheels_staging | Battwheels Garages Staging | Pre-deploy testing |
+| **development** | battwheels_dev | Volt Motors Demo + Battwheels Dev | Feature development |
+
+### The One Rule
+**NEVER seed, modify, or delete data in the production database during development or testing.**
+- Production = `test_database` (DB_NAME from .env)
+- Staging = `battwheels_staging` database
+- Dev = `battwheels_dev` database
+
+### Promotion Path
+```
+Code change written -> tested in dev -> tested in staging -> deployed to production
+```
+
+### Demo Credentials (for sales demos — never show production)
+- Login: demo@voltmotors.in
+- Password: Demo@12345
+- Reseed anytime: `make seed-demo`
+
+### Dev Credentials (for internal testing only)
+- Login: dev@battwheels.internal
+- Password: DevTest@123
+- Reseed anytime: `make reseed-dev`
+
