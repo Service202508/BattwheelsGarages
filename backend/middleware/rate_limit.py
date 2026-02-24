@@ -98,6 +98,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     PUBLIC_PATTERNS = [
         r"^/api/public/.*$",
         r"^/api/webhooks/.*$",
+        r"^/api/payments/webhook$",
+        r"^/api/organizations/signup$",
+        r"^/api/organizations/register$",
     ]
     
     def __init__(self, app, redis_url: str = None):
