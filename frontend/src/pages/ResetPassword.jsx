@@ -34,7 +34,8 @@ export default function ResetPassword() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, new_password: newPassword }),
       });
-      const data = await res.json();
+      let data = {};
+      try { data = await res.json(); } catch { /* non-JSON response */ }
       if (res.ok) {
         setDone(true);
         toast.success("Password reset successfully!");
