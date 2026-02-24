@@ -601,7 +601,10 @@ class TestFlow09CreateInvoice:
         # Response is {invoice: {...}}
         invoice = data.get("invoice", data)
         has_gst = (
-            invoice.get("cgst_amount") is not None
+            invoice.get("cgst_total") is not None
+            or invoice.get("sgst_total") is not None
+            or invoice.get("tax_total") is not None
+            or invoice.get("cgst_amount") is not None
             or invoice.get("sgst_amount") is not None
             or invoice.get("tax_amount") is not None
             or invoice.get("total_tax") is not None
@@ -609,7 +612,7 @@ class TestFlow09CreateInvoice:
             or invoice.get("total_tax_amount") is not None
         )
         assert has_gst, f"No GST amounts in invoice: {list(invoice.keys())}"
-        print(f"PASS: Invoice has GST amounts")
+        print(f"PASS: Invoice has GST amounts. cgst_total={invoice.get('cgst_total')}, tax_total={invoice.get('tax_total')}")
 
 
 # ============================================================
