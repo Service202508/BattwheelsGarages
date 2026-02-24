@@ -211,8 +211,10 @@ class RBACMiddleware(BaseHTTPMiddleware):
     PUBLIC_PATTERNS = [
         r"^/api/public/.*",
         r"^/api/webhooks/.*",
+        r"^/api/payments/webhook$",
         r"^/api/customer-portal/auth.*",
         r"^/api/organizations/signup$",
+        r"^/api/organizations/register$",
         r"^/api/organizations/accept-invite$",
         r"^/api/platform/.*",
     ]
