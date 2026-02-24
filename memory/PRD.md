@@ -5,7 +5,13 @@
 - **Feb 2026**: Data Insights module fully built — route `/insights` was redirecting to dashboard (no route existed). Created 6 backend endpoints (`/api/insights/{revenue,operations,technicians,efi,customers,inventory}`) with real MongoDB aggregations, and built comprehensive `DataInsights.jsx` page with 6 sections, recharts charts, date range selector, empty states, and mobile responsive layout.
 - **Feb 2026**: Critical SW bug fixed — `sw.js` was caching `/` (the marketing landing page HTML) and using it as a fallback for all failed requests. Fixed by: (1) removing `/` from cached assets, (2) adding navigation-first fetch strategy, (3) removing dangerous `.catch(() => caches.match('/'))` fallback, (4) bumping cache to `battwheels-v2` to force old cache cleanup.
 - **Feb 2026**: Senior Finance & AI CTO Audit completed — 68 tests, 54 passed (~79%). Full report at `/app/FINANCE_CTO_AUDIT.md`. 1 true critical finding: missing `/api/reports/trial-balance` endpoint. All core accounting controls pass including: unbalanced JE rejection, accounting equation (A=L+E), accrual basis, GST CGST/SGST split, payroll JEs, COGS JEs. EFI AI: 5/5, Purchase Accounting: 5/5.
-- **Feb 2026**: Pre-deployment audit completed (65/98 = 65.3%). Full report at `/app/PRE_DEPLOYMENT_AUDIT.md`. 8 critical blockers identified. 7 of 8 fixed (100% test pass rate on 34 tests):
+- **Feb 2026**: P1 code audit fixes completed (24/24 tests pass):
+  - ✅ DB2.04: `migrations/add_org_id_indexes.py` — 35 collections indexed, unique webhook idempotency index
+  - ✅ PY9.03: Razorpay webhook idempotency — `processed` flag + pre-check, duplicate events return `already_processed`
+  - ✅ SE4.05: XSS sanitization — `_strip_html()` in `ticket_service.py` strips HTML tags at write time
+  - ✅ SE4.04: `tech@battwheels.in` / `tech123` test credential; payroll returns 403 for technician role
+  - ✅ FN11.10: Form16 PDF & JSON — status filter includes `"generated"` (was only `"processed"/"paid"`)
+  - ✅ SE4.12: `cryptography` → 46.0.5, `pillow` → 12.1.1; remaining CVEs documented as known blocked (starlette/FastAPI pin, pymongo/motor compatibility, ecdsa no-fix) 8 critical blockers identified. 7 of 8 fixed (100% test pass rate on 34 tests):
   - ✅ FN11.11: Signup endpoint whitelisted in all 4 auth middlewares
   - ✅ S1.01: Health endpoint created (`GET /api/health`)
   - ✅ S1.06: CORS wildcard replaced with explicit domain list (app-level)
