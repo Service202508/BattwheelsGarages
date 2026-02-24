@@ -56,11 +56,11 @@ class PaymentStatusRequest(BaseModel):
 def generate_id(prefix: str) -> str:
     return f"{prefix}-{uuid.uuid4().hex[:8].upper()}"
 
-async def get_next_payment_number() -> str:
+async def get_next_payment_number(org_id: str) -> str:
     """Generate next payment number for payments received"""
-    settings = await db["payment_settings"].find_one({"type": "numbering"})
+    settings = await db["payment_settings"].find_one({"type": "numbering", "organization_id": org_id})
     if not settings:
-        settings = {"type": "numbering", "prefix": "PMT", "next_number": 1}
+        settings = {"type": "numbering", "organization_id": org_id, "prefix": "PMT", "next_number": 1}
         await db["payment_settings"].insert_one(settings)
     
     prefix = settings.get("prefix", "PMT")
@@ -69,7 +69,7 @@ async def get_next_payment_number() -> str:
     payment_number = f"{prefix}-{next_num:05d}"
     
     await db["payment_settings"].update_one(
-        {"type": "numbering"},
+        {"type": "numbering", "organization_id": org_id},
         {"$set": {"next_number": next_num + 1}}
     )
     
