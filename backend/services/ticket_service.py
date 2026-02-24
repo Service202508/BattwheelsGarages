@@ -626,6 +626,67 @@ class TicketService:
         
         return await self.db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
     
+    # ==================== EFI FEEDBACK LOOP ====================
+    
+    async def _update_efi_platform_patterns(self, ticket: dict, close_data) -> None:
+        """Write anonymised confirmed-fault data to efi_platform_patterns.
+        This feeds back into the EFI intelligence engine across the platform."""
+        confirmed_fault = getattr(close_data, 'confirmed_fault', None) or ticket.get('confirmed_fault')
+        if not confirmed_fault:
+            return
+        
+        vehicle_model = (ticket.get("vehicle_model") or "").strip()
+        symptoms = (ticket.get("complaint") or ticket.get("title") or "").strip()
+        efi_suggested = (ticket.get("efi_fault") or "").strip()
+        
+        if not vehicle_model or not symptoms:
+            return
+        
+        try:
+            symptom_hash = hashlib.md5(
+                f"{vehicle_model}:{symptoms[:100].lower()}".encode()
+            ).hexdigest()[:16]
+            pattern_key = f"{vehicle_model}:{symptom_hash}"
+            
+            was_correct = bool(efi_suggested) and (
+                efi_suggested.lower() in confirmed_fault.lower() or
+                confirmed_fault.lower() in efi_suggested.lower()
+            )
+            
+            now = datetime.now(timezone.utc)
+            await self.db.efi_platform_patterns.update_one(
+                {"pattern_key": pattern_key},
+                {
+                    "$inc": {"occurrence_count": 1, "correct_count": 1 if was_correct else 0},
+                    "$set": {
+                        "vehicle_model": vehicle_model,
+                        "symptom_hash": symptom_hash,
+                        "confirmed_fault": confirmed_fault,
+                        "last_seen": now.isoformat(),
+                    },
+                    "$setOnInsert": {
+                        "pattern_key": pattern_key,
+                        "first_seen": now.isoformat(),
+                    }
+                },
+                upsert=True
+            )
+            
+            # Recalculate confidence score
+            pattern = await self.db.efi_platform_patterns.find_one(
+                {"pattern_key": pattern_key}, {"_id": 0}
+            )
+            if pattern and pattern.get("occurrence_count", 0) > 0:
+                confidence = pattern["correct_count"] / pattern["occurrence_count"]
+                await self.db.efi_platform_patterns.update_one(
+                    {"pattern_key": pattern_key},
+                    {"$set": {"confidence_score": round(confidence, 3)}}
+                )
+            
+            logger.info(f"EFI pattern updated: {pattern_key} (correct={was_correct})")
+        except Exception as e:
+            logger.warning(f"EFI pattern update failed: {e}")
+    
     # ==================== TICKET ASSIGNMENT ====================
     
     async def assign_ticket(
