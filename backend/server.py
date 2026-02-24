@@ -1647,8 +1647,10 @@ async def admin_reset_employee_password(employee_id: str, data: AdminResetPasswo
     """Admin resets an employee's login password"""
     admin_user = await require_admin(request)
     
-    # Find the employee in this org
+    # Find the employee — check org-scoped first, then fallback to unscoped (legacy data)
     employee = await db.employees.find_one({"employee_id": employee_id, "organization_id": ctx.org_id}, {"_id": 0})
+    if not employee:
+        employee = await db.employees.find_one({"employee_id": employee_id, "organization_id": {"$in": [None, ""]}}, {"_id": 0})
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
     
