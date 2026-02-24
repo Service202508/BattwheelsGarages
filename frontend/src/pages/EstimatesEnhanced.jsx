@@ -212,7 +212,7 @@ export default function EstimatesEnhanced() {
       if (statusFilter !== "all") url += `&status=${statusFilter}`;
       const res = await fetch(url, { headers });
       const data = await res.json();
-      setEstimates(data.estimates || []);
+      setEstimates(data.data || data.estimates || []);
     } catch (e) { console.error("Failed to fetch estimates:", e); }
   };
 
@@ -604,26 +604,32 @@ export default function EstimatesEnhanced() {
 
   // ========================= EDIT ESTIMATE =========================
   const handleOpenEdit = (estimate) => {
-    // Normalize line items to include discount_type if not present
+    // Normalize line items — handle both enhanced (quantity/rate) and ticket (qty/unit_price) formats
     const normalizedLineItems = (estimate.line_items || []).map(item => ({
       ...item,
+      quantity: item.quantity || item.qty || 1,
+      rate: item.rate || item.unit_price || 0,
       discount_type: item.discount_type || "percent",
       discount_percent: item.discount_percent || 0,
-      discount_value: item.discount_value || 0
+      discount_value: item.discount_value || item.discount || 0,
+      tax_percentage: item.tax_percentage || item.tax_rate || 18,
     }));
+    
+    // Map backend field names to edit form fields
+    const discountType = estimate.discount_type || "none";
     
     setEditEstimate({
       estimate_id: estimate.estimate_id,
+      is_ticket_estimate: estimate.is_ticket_estimate || false,
       reference_number: estimate.reference_number || "",
-      estimate_date: estimate.estimate_date || "",
+      date: estimate.date || "",
       expiry_date: estimate.expiry_date || "",
-      payment_terms: estimate.payment_terms || 30,
       line_items: normalizedLineItems,
-      discount_type: estimate.discount_type || "percentage",
+      discount_type: discountType === "none" ? "none" : discountType === "percent" ? "percent" : "amount",
       discount_value: estimate.discount_value || 0,
       shipping_charge: estimate.shipping_charge || 0,
-      customer_notes: estimate.customer_notes || "",
-      terms_conditions: estimate.terms_conditions || "",
+      notes: estimate.notes || "",
+      terms_and_conditions: estimate.terms_and_conditions || "",
       adjustment: estimate.adjustment || 0
     });
     // Reset edit search state
