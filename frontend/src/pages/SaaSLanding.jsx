@@ -6,7 +6,6 @@ import {
   BarChart3, Globe, Brain, Cpu, Search, GitBranch, Compass, 
   FolderOpen, TrendingUp, Lock, Link2, Cloud, X
 } from 'lucide-react';
-import LogoTransparent from '../assets/logo-transparent.svg';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
