@@ -6659,27 +6659,4 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type", "X-Organization-ID", "X-Requested-With", "Accept"],
 )
 
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
-
-
-@app.on_event("startup")
-async def startup_event():
-    """Application startup: initialize background jobs and monitoring"""
-    # Start SLA breach detection background job
-    try:
-        from routes.sla import start_sla_background_job
-        start_sla_background_job()
-        logger.info("SLA background breach detection job started")
-    except Exception as e:
-        logger.warning(f"SLA background job failed to start: {e}")
-
-    # Run idempotent index migration to ensure all collections have org_id indexes.
-    # Safe to run on every startup — skips indexes that already exist.
-    try:
-        from migrations.add_org_id_indexes import run as run_index_migration
-        await run_index_migration()
-        logger.info("Index migration completed on startup")
-    except Exception as e:
-        logger.warning(f"Index migration failed on startup (non-fatal): {e}")
+# Legacy on_event handlers removed — replaced by lifespan context manager above
