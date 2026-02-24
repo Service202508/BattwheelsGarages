@@ -10,9 +10,8 @@ from fastapi import HTTPException, Request
 from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorClient
 
-# Configuration
-SECRET_KEY = os.environ.get("SECRET_KEY", "battwheels-secret-key-change-in-production")
-JWT_SECRET = os.environ.get("JWT_SECRET", "battwheels-secret-key")
+# Configuration — use the same JWT_SECRET as server.py
+JWT_SECRET = os.environ.get("JWT_SECRET", "battwheels-secret")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
 
@@ -50,19 +49,11 @@ def create_access_token(data: dict) -> str:
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(to_encode, JWT_SECRET, algorithm=ALGORITHM)
 
 def decode_token(token: str) -> dict:
     """Decode and validate JWT token"""
     try:
-        # Try with SECRET_KEY first
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
-    except jwt.InvalidTokenError:
-        pass
-    
-    try:
-        # Try with JWT_SECRET (used in server.py)
         payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
         return payload
     except jwt.ExpiredSignatureError:
