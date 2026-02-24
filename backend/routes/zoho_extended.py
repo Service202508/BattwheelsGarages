@@ -38,7 +38,7 @@ class RecurringInvoiceCreate(BaseModel):
     terms: Optional[str] = ""
 
 @router.post("/recurring-invoices")
-async def create_recurring_invoice(ri: RecurringInvoiceCreate, request: Request)::
+async def create_recurring_invoice(ri: RecurringInvoiceCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a recurring invoice profile"""
     db = get_db()
@@ -81,7 +81,7 @@ async def create_recurring_invoice(ri: RecurringInvoiceCreate, request: Request)
     return {"code": 0, "message": "Recurring invoice created", "recurring_invoice": ri_dict}
 
 @router.get("/recurring-invoices")
-async def list_recurring_invoices(status: str = "", customer_id: str = "", request: Request)::
+async def list_recurring_invoices(status: str = "", customer_id: str = "", request: Request):
     org_id = extract_org_id(request)
     """List all recurring invoices"""
     db = get_db()
@@ -96,7 +96,7 @@ async def list_recurring_invoices(status: str = "", customer_id: str = "", reque
     return {"code": 0, "recurring_invoices": items}
 
 @router.get("/recurring-invoices/{ri_id}")
-async def get_recurring_invoice(ri_id: str, request: Request)::
+async def get_recurring_invoice(ri_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get recurring invoice details"""
     db = get_db()
@@ -106,7 +106,7 @@ async def get_recurring_invoice(ri_id: str, request: Request)::
     return {"code": 0, "recurring_invoice": ri}
 
 @router.post("/recurring-invoices/{ri_id}/stop")
-async def stop_recurring_invoice(ri_id: str, request: Request)::
+async def stop_recurring_invoice(ri_id: str, request: Request):
     org_id = extract_org_id(request)
     """Stop a recurring invoice"""
     db = get_db()
@@ -119,7 +119,7 @@ async def stop_recurring_invoice(ri_id: str, request: Request)::
     return {"code": 0, "message": "Recurring invoice stopped"}
 
 @router.post("/recurring-invoices/{ri_id}/resume")
-async def resume_recurring_invoice(ri_id: str, request: Request)::
+async def resume_recurring_invoice(ri_id: str, request: Request):
     org_id = extract_org_id(request)
     """Resume a stopped recurring invoice"""
     db = get_db()
@@ -132,7 +132,7 @@ async def resume_recurring_invoice(ri_id: str, request: Request)::
     return {"code": 0, "message": "Recurring invoice resumed"}
 
 @router.delete("/recurring-invoices/{ri_id}")
-async def delete_recurring_invoice(ri_id: str, request: Request)::
+async def delete_recurring_invoice(ri_id: str, request: Request):
     org_id = extract_org_id(request)
     """Delete a recurring invoice"""
     db = get_db()
@@ -142,7 +142,7 @@ async def delete_recurring_invoice(ri_id: str, request: Request)::
     return {"code": 0, "message": "Recurring invoice deleted"}
 
 @router.post("/recurring-invoices/generate")
-async def generate_due_invoices(request: Request)::
+async def generate_due_invoices(request: Request):
     org_id = extract_org_id(request)
     """Generate invoices for all due recurring profiles"""
     db = get_db()
@@ -251,7 +251,7 @@ class DeliveryChallanCreate(BaseModel):
     notes: Optional[str] = ""
 
 @router.post("/delivery-challans")
-async def create_delivery_challan(dc: DeliveryChallanCreate, request: Request)::
+async def create_delivery_challan(dc: DeliveryChallanCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a delivery challan"""
     db = get_db()
@@ -330,7 +330,7 @@ async def list_delivery_challans(
     }
 
 @router.get("/delivery-challans/{dc_id}")
-async def get_delivery_challan(dc_id: str, request: Request)::
+async def get_delivery_challan(dc_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get delivery challan details"""
     db = get_db()
@@ -340,7 +340,7 @@ async def get_delivery_challan(dc_id: str, request: Request)::
     return {"code": 0, "delivery_challan": dc}
 
 @router.post("/delivery-challans/{dc_id}/status/delivered")
-async def mark_challan_delivered(dc_id: str, request: Request)::
+async def mark_challan_delivered(dc_id: str, request: Request):
     org_id = extract_org_id(request)
     """Mark delivery challan as delivered"""
     db = get_db()
@@ -353,7 +353,7 @@ async def mark_challan_delivered(dc_id: str, request: Request)::
     return {"code": 0, "message": "Delivery challan marked as delivered"}
 
 @router.post("/delivery-challans/{dc_id}/convert-to-invoice")
-async def convert_challan_to_invoice(dc_id: str, request: Request)::
+async def convert_challan_to_invoice(dc_id: str, request: Request):
     org_id = extract_org_id(request)
     """Convert delivery challan to invoice"""
     db = get_db()
@@ -429,7 +429,7 @@ class RetainerInvoiceCreate(BaseModel):
     project_name: Optional[str] = ""
 
 @router.post("/retainer-invoices")
-async def create_retainer_invoice(ri: RetainerInvoiceCreate, request: Request)::
+async def create_retainer_invoice(ri: RetainerInvoiceCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a retainer invoice (advance payment)"""
     db = get_db()
@@ -467,7 +467,7 @@ async def create_retainer_invoice(ri: RetainerInvoiceCreate, request: Request)::
     return {"code": 0, "message": "Retainer invoice created", "retainer_invoice": ri_dict}
 
 @router.get("/retainer-invoices")
-async def list_retainer_invoices(status: str = "", customer_id: str = "", request: Request)::
+async def list_retainer_invoices(status: str = "", customer_id: str = "", request: Request):
     org_id = extract_org_id(request)
     """List all retainer invoices"""
     db = get_db()
@@ -482,7 +482,7 @@ async def list_retainer_invoices(status: str = "", customer_id: str = "", reques
     return {"code": 0, "retainer_invoices": items}
 
 @router.post("/retainer-invoices/{ri_id}/apply/{invoice_id}")
-async def apply_retainer_to_invoice(ri_id: str, invoice_id: str, amount: float, request: Request)::
+async def apply_retainer_to_invoice(ri_id: str, invoice_id: str, amount: float, request: Request):
     org_id = extract_org_id(request)
     """Apply retainer to an invoice"""
     db = get_db()
@@ -539,7 +539,7 @@ class ProjectCreate(BaseModel):
     end_date: Optional[str] = None
 
 @router.post("/projects")
-async def create_project(project: ProjectCreate, request: Request)::
+async def create_project(project: ProjectCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a new project"""
     db = get_db()
@@ -574,7 +574,7 @@ async def create_project(project: ProjectCreate, request: Request)::
     return {"code": 0, "message": "Project created", "project": project_dict}
 
 @router.get("/projects")
-async def list_projects(status: str = "", customer_id: str = "", request: Request)::
+async def list_projects(status: str = "", customer_id: str = "", request: Request):
     org_id = extract_org_id(request)
     """List all projects"""
     db = get_db()
@@ -589,7 +589,7 @@ async def list_projects(status: str = "", customer_id: str = "", request: Reques
     return {"code": 0, "projects": items}
 
 @router.get("/projects/{project_id}")
-async def get_project(project_id: str, request: Request)::
+async def get_project(project_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get project details"""
     db = get_db()
@@ -599,7 +599,7 @@ async def get_project(project_id: str, request: Request)::
     return {"code": 0, "project": project}
 
 @router.put("/projects/{project_id}")
-async def update_project(project_id: str, project: ProjectCreate, request: Request)::
+async def update_project(project_id: str, project: ProjectCreate, request: Request):
     org_id = extract_org_id(request)
     """Update project"""
     db = get_db()
@@ -612,7 +612,7 @@ async def update_project(project_id: str, project: ProjectCreate, request: Reque
     return {"code": 0, "message": "Project updated"}
 
 @router.post("/projects/{project_id}/status/{status}")
-async def update_project_status(project_id: str, status: str, request: Request)::
+async def update_project_status(project_id: str, status: str, request: Request):
     org_id = extract_org_id(request)
     """Update project status (active, on_hold, completed, cancelled)"""
     db = get_db()
@@ -641,7 +641,7 @@ class TimeEntryCreate(BaseModel):
     rate: float = 0
 
 @router.post("/time-entries")
-async def create_time_entry(entry: TimeEntryCreate, request: Request)::
+async def create_time_entry(entry: TimeEntryCreate, request: Request):
     org_id = extract_org_id(request)
     """Log time entry for a project"""
     db = get_db()
@@ -684,7 +684,7 @@ async def create_time_entry(entry: TimeEntryCreate, request: Request)::
     return {"code": 0, "message": "Time entry logged", "time_entry": entry_dict}
 
 @router.get("/time-entries")
-async def list_time_entries(project_id: str = "", user_id: str = "", is_billed: str = "", request: Request)::
+async def list_time_entries(project_id: str = "", user_id: str = "", is_billed: str = "", request: Request):
     org_id = extract_org_id(request)
     """List time entries"""
     db = get_db()
@@ -705,7 +705,7 @@ async def list_time_entries(project_id: str = "", user_id: str = "", is_billed: 
     return {"code": 0, "time_entries": items, "total_hours": total_hours, "total_cost": total_cost}
 
 @router.delete("/time-entries/{entry_id}")
-async def delete_time_entry(entry_id: str, request: Request)::
+async def delete_time_entry(entry_id: str, request: Request):
     org_id = extract_org_id(request)
     """Delete time entry"""
     db = get_db()
@@ -732,7 +732,7 @@ class TaxCreate(BaseModel):
     description: Optional[str] = ""
 
 @router.post("/taxes")
-async def create_tax(tax: TaxCreate, request: Request)::
+async def create_tax(tax: TaxCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a tax rate"""
     db = get_db()
@@ -750,7 +750,7 @@ async def create_tax(tax: TaxCreate, request: Request)::
     return {"code": 0, "message": "Tax created", "tax": tax_dict}
 
 @router.get("/taxes")
-async def list_taxes(request: Request)::
+async def list_taxes(request: Request):
     org_id = extract_org_id(request)
     """List all taxes"""
     db = get_db()
@@ -759,7 +759,7 @@ async def list_taxes(request: Request)::
     return {"code": 0, "taxes": items}
 
 @router.put("/taxes/{tax_id}")
-async def update_tax(tax_id: str, tax: TaxCreate, request: Request)::
+async def update_tax(tax_id: str, tax: TaxCreate, request: Request):
     org_id = extract_org_id(request)
     """Update tax"""
     db = get_db()
@@ -769,7 +769,7 @@ async def update_tax(tax_id: str, tax: TaxCreate, request: Request)::
     return {"code": 0, "message": "Tax updated"}
 
 @router.delete("/taxes/{tax_id}")
-async def delete_tax(tax_id: str, request: Request)::
+async def delete_tax(tax_id: str, request: Request):
     org_id = extract_org_id(request)
     """Delete (deactivate) tax"""
     db = get_db()
@@ -785,7 +785,7 @@ class TaxGroupCreate(BaseModel):
     description: Optional[str] = ""
 
 @router.post("/tax-groups")
-async def create_tax_group(group: TaxGroupCreate, request: Request)::
+async def create_tax_group(group: TaxGroupCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a tax group"""
     db = get_db()
@@ -809,7 +809,7 @@ async def create_tax_group(group: TaxGroupCreate, request: Request)::
     return {"code": 0, "message": "Tax group created", "tax_group": group_dict}
 
 @router.get("/tax-groups")
-async def list_tax_groups(request: Request)::
+async def list_tax_groups(request: Request):
     org_id = extract_org_id(request)
     """List all tax groups"""
     db = get_db()
@@ -827,7 +827,7 @@ class PaymentReminderCreate(BaseModel):
     email_body: str
 
 @router.post("/payment-reminders/templates")
-async def create_reminder_template(reminder: PaymentReminderCreate, request: Request)::
+async def create_reminder_template(reminder: PaymentReminderCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a payment reminder template"""
     db = get_db()
@@ -844,7 +844,7 @@ async def create_reminder_template(reminder: PaymentReminderCreate, request: Req
     return {"code": 0, "message": "Reminder template created", "reminder": reminder_dict}
 
 @router.get("/payment-reminders/templates")
-async def list_reminder_templates(request: Request)::
+async def list_reminder_templates(request: Request):
     org_id = extract_org_id(request)
     """List all reminder templates"""
     db = get_db()
@@ -853,7 +853,7 @@ async def list_reminder_templates(request: Request)::
     return {"code": 0, "reminder_templates": items}
 
 @router.post("/payment-reminders/send")
-async def send_payment_reminders(request: Request)::
+async def send_payment_reminders(request: Request):
     org_id = extract_org_id(request)
     """Send payment reminders for due invoices"""
     db = get_db()
@@ -898,7 +898,7 @@ async def send_payment_reminders(request: Request)::
     return {"code": 0, "message": f"Sent {reminders_sent} payment reminders"}
 
 @router.get("/payment-reminders/history")
-async def get_reminder_history(invoice_id: str = "", customer_id: str = "", request: Request)::
+async def get_reminder_history(invoice_id: str = "", customer_id: str = "", request: Request):
     org_id = extract_org_id(request)
     """Get payment reminder history"""
     db = get_db()
@@ -923,7 +923,7 @@ class InventoryAdjustmentCreate(BaseModel):
     line_items: List[Dict]  # [{item_id, item_name, quantity_adjusted, new_quantity}]
 
 @router.post("/inventory-adjustments")
-async def create_inventory_adjustment(adj: InventoryAdjustmentCreate, request: Request)::
+async def create_inventory_adjustment(adj: InventoryAdjustmentCreate, request: Request):
     org_id = extract_org_id(request)
     """Create an inventory adjustment"""
     db = get_db()
@@ -964,7 +964,7 @@ async def create_inventory_adjustment(adj: InventoryAdjustmentCreate, request: R
     return {"code": 0, "message": "Inventory adjustment created", "adjustment": adj_dict}
 
 @router.get("/inventory-adjustments")
-async def list_inventory_adjustments(reason: str = "", request: Request)::
+async def list_inventory_adjustments(reason: str = "", request: Request):
     org_id = extract_org_id(request)
     """List all inventory adjustments"""
     db = get_db()
@@ -977,7 +977,7 @@ async def list_inventory_adjustments(reason: str = "", request: Request)::
     return {"code": 0, "inventory_adjustments": items}
 
 @router.get("/inventory-adjustments/{adj_id}")
-async def get_inventory_adjustment(adj_id: str, request: Request)::
+async def get_inventory_adjustment(adj_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get inventory adjustment details"""
     db = get_db()
@@ -1016,7 +1016,7 @@ class PriceListUpdate(BaseModel):
     status: Optional[str] = None
 
 @router.post("/price-lists")
-async def create_price_list(pl: PriceListCreate, request: Request)::
+async def create_price_list(pl: PriceListCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a price list"""
     db = get_db()
@@ -1045,7 +1045,7 @@ async def create_price_list(pl: PriceListCreate, request: Request)::
 
 
 @router.get("/price-lists")
-async def list_price_lists(price_type: str = "", include_items: bool = True, request: Request)::
+async def list_price_lists(price_type: str = "", include_items: bool = True, request: Request):
     org_id = extract_org_id(request)
     """List all price lists with enriched item data"""
     db = get_db()
@@ -1096,7 +1096,7 @@ async def list_price_lists(price_type: str = "", include_items: bool = True, req
 
 
 @router.get("/price-lists/{pl_id}")
-async def get_price_list(pl_id: str, request: Request)::
+async def get_price_list(pl_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get single price list with enriched item data"""
     db = get_db()
@@ -1140,7 +1140,7 @@ async def get_price_list(pl_id: str, request: Request)::
 
 
 @router.put("/price-lists/{pl_id}")
-async def update_price_list(pl_id: str, update: PriceListUpdate, request: Request)::
+async def update_price_list(pl_id: str, update: PriceListUpdate, request: Request):
     org_id = extract_org_id(request)
     """Update price list details"""
     db = get_db()
@@ -1172,7 +1172,7 @@ async def update_price_list(pl_id: str, update: PriceListUpdate, request: Reques
 
 
 @router.delete("/price-lists/{pl_id}")
-async def delete_price_list(pl_id: str, request: Request)::
+async def delete_price_list(pl_id: str, request: Request):
     org_id = extract_org_id(request)
     """Soft delete a price list"""
     db = get_db()
@@ -1195,7 +1195,7 @@ async def add_item_to_price_list(
     custom_rate: Optional[float] = None,
     pricelist_rate: Optional[float] = None,
     discount: float = 0,
-    discount_type: str = "percentage", request: Request)::
+    discount_type: str = "percentage", request: Request):
     org_id = extract_org_id(request)
     """Add item with custom price to price list (Zoho compatible)"""
     db = get_db()
@@ -1260,7 +1260,7 @@ async def update_item_in_price_list(
     item_id: str,
     pricelist_rate: Optional[float] = None,
     discount: Optional[float] = None,
-    discount_type: Optional[str] = None, request: Request)::
+    discount_type: Optional[str] = None, request: Request):
     org_id = extract_org_id(request)
     """Update item pricing in price list"""
     db = get_db()
@@ -1296,7 +1296,7 @@ async def update_item_in_price_list(
     return {"code": 0, "message": "Item updated in price list"}
 
 @router.delete("/price-lists/{pl_id}/items/{item_id}")
-async def remove_item_from_price_list(pl_id: str, item_id: str, request: Request)::
+async def remove_item_from_price_list(pl_id: str, item_id: str, request: Request):
     org_id = extract_org_id(request)
     """Remove item from price list"""
     db = get_db()
@@ -1310,7 +1310,7 @@ async def remove_item_from_price_list(pl_id: str, item_id: str, request: Request
     return {"code": 0, "message": "Item removed from price list"}
 
 @router.get("/price-lists/{pl_id}/items/{item_id}/rate")
-async def get_item_rate_from_price_list(pl_id: str, item_id: str, request: Request)::
+async def get_item_rate_from_price_list(pl_id: str, item_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get item rate from a specific price list"""
     db = get_db()
@@ -1332,7 +1332,7 @@ async def get_item_rate_from_price_list(pl_id: str, item_id: str, request: Reque
 
 
 @router.get("/price-lists/{pl_id}/export")
-async def export_price_list_csv(pl_id: str, request: Request)::
+async def export_price_list_csv(pl_id: str, request: Request):
     org_id = extract_org_id(request)
     """Export price list items as CSV (Zoho Books compatible format)"""
     db = get_db()
@@ -1387,7 +1387,7 @@ async def export_price_list_csv(pl_id: str, request: Request)::
 
 
 @router.get("/price-lists/{pl_id}/export/template")
-async def get_price_list_import_template(pl_id: str, request: Request)::
+async def get_price_list_import_template(pl_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get CSV template for importing items to price list"""
     
@@ -1408,7 +1408,7 @@ ITEM-002,Sample Service,SKU002,active,false,500,450,10"""
 
 
 @router.post("/price-lists/{pl_id}/import")
-async def import_price_list_items(pl_id: str, request: Request)::
+async def import_price_list_items(pl_id: str, request: Request):
     org_id = extract_org_id(request)
     """Import items to price list from CSV (Zoho Books compatible format)"""
     db = get_db()
@@ -1510,7 +1510,7 @@ async def import_price_list_items(pl_id: str, request: Request)::
 
 
 @router.post("/price-lists/{pl_id}/sync-items")
-async def sync_price_list_with_items(pl_id: str, request: Request)::
+async def sync_price_list_with_items(pl_id: str, request: Request):
     org_id = extract_org_id(request)
     """Sync price list item data with current Items module data (real-time refresh)"""
     db = get_db()
@@ -1572,7 +1572,7 @@ async def sync_price_list_with_items(pl_id: str, request: Request)::
 
 
 @router.post("/price-lists/{pl_id}/bulk-add")
-async def bulk_add_items_to_price_list(pl_id: str, request: Request)::
+async def bulk_add_items_to_price_list(pl_id: str, request: Request):
     org_id = extract_org_id(request)
     """Bulk add items to price list with percentage markup/markdown"""
     db = get_db()
@@ -1649,7 +1649,7 @@ class DocumentCreate(BaseModel):
     description: Optional[str] = ""
 
 @router.post("/documents")
-async def create_document(doc: DocumentCreate, request: Request)::
+async def create_document(doc: DocumentCreate, request: Request):
     org_id = extract_org_id(request)
     """Attach a document to an entity"""
     db = get_db()
@@ -1666,7 +1666,7 @@ async def create_document(doc: DocumentCreate, request: Request)::
     return {"code": 0, "message": "Document attached", "document": doc_dict}
 
 @router.get("/documents")
-async def list_documents(entity_type: str = "", entity_id: str = "", request: Request)::
+async def list_documents(entity_type: str = "", entity_id: str = "", request: Request):
     org_id = extract_org_id(request)
     """List documents"""
     db = get_db()
@@ -1681,7 +1681,7 @@ async def list_documents(entity_type: str = "", entity_id: str = "", request: Re
     return {"code": 0, "documents": items}
 
 @router.delete("/documents/{doc_id}")
-async def delete_document(doc_id: str, request: Request)::
+async def delete_document(doc_id: str, request: Request):
     org_id = extract_org_id(request)
     """Delete a document"""
     db = get_db()
@@ -1709,7 +1709,7 @@ class OrganizationSettings(BaseModel):
     cin: Optional[str] = ""
 
 @router.get("/settings/organization")
-async def get_organization_settings(request: Request)::
+async def get_organization_settings(request: Request):
     org_id = extract_org_id(request)
     """Get organization settings"""
     db = get_db()
@@ -1719,7 +1719,7 @@ async def get_organization_settings(request: Request)::
     return {"code": 0, "settings": settings}
 
 @router.put("/settings/organization")
-async def update_organization_settings(settings: OrganizationSettings, request: Request)::
+async def update_organization_settings(settings: OrganizationSettings, request: Request):
     org_id = extract_org_id(request)
     """Update organization settings"""
     db = get_db()
@@ -1738,7 +1738,7 @@ class NumberSeriesSettings(BaseModel):
     suffix: Optional[str] = ""
 
 @router.get("/settings/number-series")
-async def get_number_series(request: Request)::
+async def get_number_series(request: Request):
     org_id = extract_org_id(request)
     """Get all number series settings"""
     db = get_db()
@@ -1747,7 +1747,7 @@ async def get_number_series(request: Request)::
     return {"code": 0, "number_series": items}
 
 @router.put("/settings/number-series/{entity_type}")
-async def update_number_series(entity_type: str, settings: NumberSeriesSettings, request: Request)::
+async def update_number_series(entity_type: str, settings: NumberSeriesSettings, request: Request):
     org_id = extract_org_id(request)
     """Update number series for an entity type"""
     db = get_db()
@@ -1780,7 +1780,7 @@ class RecurringExpenseCreate(BaseModel):
     project_id: Optional[str] = ""
 
 @router.post("/recurring-expenses")
-async def create_recurring_expense(re: RecurringExpenseCreate, request: Request)::
+async def create_recurring_expense(re: RecurringExpenseCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a recurring expense profile"""
     db = get_db()
@@ -1806,7 +1806,7 @@ async def create_recurring_expense(re: RecurringExpenseCreate, request: Request)
     return {"code": 0, "message": "Recurring expense created", "recurring_expense": re_dict}
 
 @router.get("/recurring-expenses")
-async def list_recurring_expenses(status: str = "", vendor_id: str = "", request: Request)::
+async def list_recurring_expenses(status: str = "", vendor_id: str = "", request: Request):
     org_id = extract_org_id(request)
     """List all recurring expenses"""
     db = get_db()
@@ -1821,7 +1821,7 @@ async def list_recurring_expenses(status: str = "", vendor_id: str = "", request
     return {"code": 0, "recurring_expenses": items}
 
 @router.post("/recurring-expenses/{re_id}/stop")
-async def stop_recurring_expense(re_id: str, request: Request)::
+async def stop_recurring_expense(re_id: str, request: Request):
     org_id = extract_org_id(request)
     """Stop a recurring expense"""
     db = get_db()
@@ -1834,7 +1834,7 @@ async def stop_recurring_expense(re_id: str, request: Request)::
     return {"code": 0, "message": "Recurring expense stopped"}
 
 @router.post("/recurring-expenses/{re_id}/resume")
-async def resume_recurring_expense(re_id: str, request: Request)::
+async def resume_recurring_expense(re_id: str, request: Request):
     org_id = extract_org_id(request)
     """Resume a stopped recurring expense"""
     db = get_db()
@@ -1847,7 +1847,7 @@ async def resume_recurring_expense(re_id: str, request: Request)::
     return {"code": 0, "message": "Recurring expense resumed"}
 
 @router.delete("/recurring-expenses/{re_id}")
-async def delete_recurring_expense(re_id: str, request: Request)::
+async def delete_recurring_expense(re_id: str, request: Request):
     org_id = extract_org_id(request)
     """Delete a recurring expense"""
     db = get_db()
@@ -1857,7 +1857,7 @@ async def delete_recurring_expense(re_id: str, request: Request)::
     return {"code": 0, "message": "Recurring expense deleted"}
 
 @router.post("/recurring-expenses/generate")
-async def generate_due_expenses(request: Request)::
+async def generate_due_expenses(request: Request):
     org_id = extract_org_id(request)
     """Generate expenses for all due recurring profiles"""
     db = get_db()
@@ -1928,7 +1928,7 @@ class ProjectTaskCreate(BaseModel):
     is_billable: bool = True
 
 @router.post("/projects/{project_id}/tasks")
-async def create_project_task(project_id: str, task: ProjectTaskCreate, request: Request)::
+async def create_project_task(project_id: str, task: ProjectTaskCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a task for a project"""
     db = get_db()
@@ -1949,7 +1949,7 @@ async def create_project_task(project_id: str, task: ProjectTaskCreate, request:
     return {"code": 0, "message": "Task created", "task": task_dict}
 
 @router.get("/projects/{project_id}/tasks")
-async def list_project_tasks(project_id: str, request: Request)::
+async def list_project_tasks(project_id: str, request: Request):
     org_id = extract_org_id(request)
     """List all tasks for a project"""
     db = get_db()
@@ -1958,7 +1958,7 @@ async def list_project_tasks(project_id: str, request: Request)::
     return {"code": 0, "tasks": items}
 
 @router.put("/projects/{project_id}/tasks/{task_id}")
-async def update_project_task(project_id: str, task_id: str, task: ProjectTaskCreate, request: Request)::
+async def update_project_task(project_id: str, task_id: str, task: ProjectTaskCreate, request: Request):
     org_id = extract_org_id(request)
     """Update a project task"""
     db = get_db()
@@ -1971,7 +1971,7 @@ async def update_project_task(project_id: str, task_id: str, task: ProjectTaskCr
     return {"code": 0, "message": "Task updated"}
 
 @router.delete("/projects/{project_id}/tasks/{task_id}")
-async def delete_project_task(project_id: str, task_id: str, request: Request)::
+async def delete_project_task(project_id: str, task_id: str, request: Request):
     org_id = extract_org_id(request)
     """Delete a project task"""
     db = get_db()
@@ -1991,7 +1991,7 @@ class OpeningBalanceCreate(BaseModel):
     notes: Optional[str] = ""
 
 @router.post("/opening-balances")
-async def create_opening_balance(ob: OpeningBalanceCreate, request: Request)::
+async def create_opening_balance(ob: OpeningBalanceCreate, request: Request):
     org_id = extract_org_id(request)
     """Set opening balance for a customer, vendor, or account"""
     db = get_db()
@@ -2030,7 +2030,7 @@ async def create_opening_balance(ob: OpeningBalanceCreate, request: Request)::
     return {"code": 0, "message": "Opening balance set", "opening_balance": ob_dict}
 
 @router.get("/opening-balances")
-async def list_opening_balances(entity_type: str = "", request: Request)::
+async def list_opening_balances(entity_type: str = "", request: Request):
     org_id = extract_org_id(request)
     """List all opening balances"""
     db = get_db()
@@ -2045,7 +2045,7 @@ async def list_opening_balances(entity_type: str = "", request: Request)::
 # ============== PAYMENT LINKS ==============
 
 @router.post("/invoices/{invoice_id}/payment-link")
-async def generate_payment_link(invoice_id: str, request: Request)::
+async def generate_payment_link(invoice_id: str, request: Request):
     org_id = extract_org_id(request)
     """Generate a payment link for an invoice"""
     db = get_db()
@@ -2093,7 +2093,7 @@ async def generate_payment_link(invoice_id: str, request: Request)::
     }
 
 @router.get("/payment-links")
-async def list_payment_links(status: str = "", customer_id: str = "", request: Request)::
+async def list_payment_links(status: str = "", customer_id: str = "", request: Request):
     org_id = extract_org_id(request)
     """List all payment links"""
     db = get_db()
@@ -2108,7 +2108,7 @@ async def list_payment_links(status: str = "", customer_id: str = "", request: R
     return {"code": 0, "payment_links": items}
 
 @router.post("/payment-links/{token}/pay")
-async def process_payment_link(token: str, payment_method: str = "card", request: Request)::
+async def process_payment_link(token: str, payment_method: str = "card", request: Request):
     org_id = extract_org_id(request)
     """Process payment via payment link (stub for integration)"""
     db = get_db()
@@ -2138,7 +2138,7 @@ class ExchangeRateCreate(BaseModel):
     effective_date: str
 
 @router.post("/settings/exchange-rates")
-async def set_exchange_rate(rate: ExchangeRateCreate, request: Request)::
+async def set_exchange_rate(rate: ExchangeRateCreate, request: Request):
     org_id = extract_org_id(request)
     """Set currency exchange rate"""
     db = get_db()
@@ -2155,7 +2155,7 @@ async def set_exchange_rate(rate: ExchangeRateCreate, request: Request)::
     return {"code": 0, "message": "Exchange rate set", "exchange_rate": rate_dict}
 
 @router.get("/settings/exchange-rates")
-async def list_exchange_rates(from_currency: str = "", to_currency: str = "", request: Request)::
+async def list_exchange_rates(from_currency: str = "", to_currency: str = "", request: Request):
     org_id = extract_org_id(request)
     """List exchange rates"""
     db = get_db()
@@ -2172,7 +2172,7 @@ async def list_exchange_rates(from_currency: str = "", to_currency: str = "", re
 # ============== AUDIT TRAIL / ACTIVITY LOG ==============
 
 @router.get("/activity-logs")
-async def list_activity_logs(entity_type: str = "", entity_id: str = "", user_id: str = "", page: int = 1, per_page: int = 50, request: Request)::
+async def list_activity_logs(entity_type: str = "", entity_id: str = "", user_id: str = "", page: int = 1, per_page: int = 50, request: Request):
     org_id = extract_org_id(request)
     """List activity logs for audit trail"""
     db = get_db()
@@ -2213,7 +2213,7 @@ async def log_activity(db, entity_type: str, entity_id: str, action: str, user_i
 # ============== SCHEDULED JOBS API ==============
 
 @router.post("/scheduler/run")
-async def run_scheduled_jobs(background_tasks: BackgroundTasks, job: str = "all", request: Request)::
+async def run_scheduled_jobs(background_tasks: BackgroundTasks, job: str = "all", request: Request):
     org_id = extract_org_id(request)
     """
     Trigger scheduled jobs manually or via cron.
@@ -2251,7 +2251,7 @@ async def run_scheduled_jobs(background_tasks: BackgroundTasks, job: str = "all"
     return {"code": 0, "message": f"Job '{job}' completed", "result": result}
 
 @router.get("/scheduler/status")
-async def get_scheduler_status(request: Request)::
+async def get_scheduler_status(request: Request):
     org_id = extract_org_id(request)
     """Get status of scheduled job executions"""
     db = get_db()
@@ -2290,7 +2290,7 @@ class RecurringBillCreate(BaseModel):
     notes: Optional[str] = ""
 
 @router.post("/recurring-bills")
-async def create_recurring_bill(rb: RecurringBillCreate, request: Request)::
+async def create_recurring_bill(rb: RecurringBillCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a recurring bill profile"""
     db = get_db()
@@ -2331,7 +2331,7 @@ async def create_recurring_bill(rb: RecurringBillCreate, request: Request)::
     return {"code": 0, "message": "Recurring bill created", "recurring_bill": {k: v for k, v in rb_dict.items() if k != "_id"}}
 
 @router.get("/recurring-bills")
-async def list_recurring_bills(status: str = "", vendor_id: str = "", request: Request)::
+async def list_recurring_bills(status: str = "", vendor_id: str = "", request: Request):
     org_id = extract_org_id(request)
     """List all recurring bills"""
     db = get_db()
@@ -2346,7 +2346,7 @@ async def list_recurring_bills(status: str = "", vendor_id: str = "", request: R
     return {"code": 0, "recurring_bills": items}
 
 @router.get("/recurring-bills/{rb_id}")
-async def get_recurring_bill(rb_id: str, request: Request)::
+async def get_recurring_bill(rb_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get recurring bill details"""
     db = get_db()
@@ -2356,7 +2356,7 @@ async def get_recurring_bill(rb_id: str, request: Request)::
     return {"code": 0, "recurring_bill": rb}
 
 @router.put("/recurring-bills/{rb_id}")
-async def update_recurring_bill(rb_id: str, update_data: Dict, request: Request)::
+async def update_recurring_bill(rb_id: str, update_data: Dict, request: Request):
     org_id = extract_org_id(request)
     """Update a recurring bill"""
     db = get_db()
@@ -2373,7 +2373,7 @@ async def update_recurring_bill(rb_id: str, update_data: Dict, request: Request)
     return {"code": 0, "message": "Recurring bill updated"}
 
 @router.post("/recurring-bills/{rb_id}/stop")
-async def stop_recurring_bill(rb_id: str, request: Request)::
+async def stop_recurring_bill(rb_id: str, request: Request):
     org_id = extract_org_id(request)
     """Stop a recurring bill"""
     db = get_db()
@@ -2386,7 +2386,7 @@ async def stop_recurring_bill(rb_id: str, request: Request)::
     return {"code": 0, "message": "Recurring bill stopped"}
 
 @router.post("/recurring-bills/{rb_id}/resume")
-async def resume_recurring_bill(rb_id: str, request: Request)::
+async def resume_recurring_bill(rb_id: str, request: Request):
     org_id = extract_org_id(request)
     """Resume a stopped recurring bill"""
     db = get_db()
@@ -2399,7 +2399,7 @@ async def resume_recurring_bill(rb_id: str, request: Request)::
     return {"code": 0, "message": "Recurring bill resumed"}
 
 @router.delete("/recurring-bills/{rb_id}")
-async def delete_recurring_bill(rb_id: str, request: Request)::
+async def delete_recurring_bill(rb_id: str, request: Request):
     org_id = extract_org_id(request)
     """Delete a recurring bill"""
     db = get_db()
@@ -2409,7 +2409,7 @@ async def delete_recurring_bill(rb_id: str, request: Request)::
     return {"code": 0, "message": "Recurring bill deleted"}
 
 @router.post("/recurring-bills/generate")
-async def generate_due_bills(request: Request)::
+async def generate_due_bills(request: Request):
     org_id = extract_org_id(request)
     """Generate bills for all due recurring profiles"""
     db = get_db()
@@ -2499,7 +2499,7 @@ class FixedAssetCreate(BaseModel):
     warranty_expiry: Optional[str] = None
 
 @router.post("/fixed-assets")
-async def create_fixed_asset(asset: FixedAssetCreate, request: Request)::
+async def create_fixed_asset(asset: FixedAssetCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a fixed asset"""
     db = get_db()
@@ -2551,7 +2551,7 @@ async def list_fixed_assets(
     status: str = "",
     asset_type: str = "",
     page: int = 1,
-    per_page: int = 50, request: Request)::
+    per_page: int = 50, request: Request):
     org_id = extract_org_id(request)
     """List all fixed assets"""
     db = get_db()
@@ -2573,7 +2573,7 @@ async def list_fixed_assets(
     }
 
 @router.get("/fixed-assets/summary")
-async def get_fixed_assets_summary(request: Request)::
+async def get_fixed_assets_summary(request: Request):
     org_id = extract_org_id(request)
     """Get summary of fixed assets"""
     db = get_db()
@@ -2625,7 +2625,7 @@ async def get_fixed_assets_summary(request: Request)::
     }
 
 @router.get("/fixed-assets/{asset_id}")
-async def get_fixed_asset(asset_id: str, request: Request)::
+async def get_fixed_asset(asset_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get fixed asset details"""
     db = get_db()
@@ -2635,7 +2635,7 @@ async def get_fixed_asset(asset_id: str, request: Request)::
     return {"code": 0, "fixed_asset": asset}
 
 @router.put("/fixed-assets/{asset_id}")
-async def update_fixed_asset(asset_id: str, update_data: Dict, request: Request)::
+async def update_fixed_asset(asset_id: str, update_data: Dict, request: Request):
     org_id = extract_org_id(request)
     """Update a fixed asset"""
     db = get_db()
@@ -2652,7 +2652,7 @@ async def update_fixed_asset(asset_id: str, update_data: Dict, request: Request)
     return {"code": 0, "message": "Fixed asset updated"}
 
 @router.delete("/fixed-assets/{asset_id}")
-async def delete_fixed_asset(asset_id: str, request: Request)::
+async def delete_fixed_asset(asset_id: str, request: Request):
     org_id = extract_org_id(request)
     """Delete a fixed asset"""
     db = get_db()
@@ -2662,7 +2662,7 @@ async def delete_fixed_asset(asset_id: str, request: Request)::
     return {"code": 0, "message": "Fixed asset deleted"}
 
 @router.post("/fixed-assets/{asset_id}/depreciate")
-async def record_depreciation(asset_id: str, period: str = "", amount: Optional[float] = None, request: Request)::
+async def record_depreciation(asset_id: str, period: str = "", amount: Optional[float] = None, request: Request):
     org_id = extract_org_id(request)
     """Record depreciation for an asset"""
     db = get_db()
@@ -2717,7 +2717,7 @@ async def record_depreciation(asset_id: str, period: str = "", amount: Optional[
     return {"code": 0, "message": "Depreciation recorded", "entry": entry}
 
 @router.post("/fixed-assets/{asset_id}/dispose")
-async def dispose_asset(asset_id: str, disposal_date: str, disposal_amount: float, reason: str = "", request: Request)::
+async def dispose_asset(asset_id: str, disposal_date: str, disposal_amount: float, reason: str = "", request: Request):
     org_id = extract_org_id(request)
     """Dispose/sell a fixed asset"""
     db = get_db()
@@ -2754,7 +2754,7 @@ async def dispose_asset(asset_id: str, disposal_date: str, disposal_amount: floa
     }
 
 @router.post("/fixed-assets/{asset_id}/write-off")
-async def write_off_asset(asset_id: str, reason: str = "", request: Request)::
+async def write_off_asset(asset_id: str, reason: str = "", request: Request):
     org_id = extract_org_id(request)
     """Write off a fixed asset"""
     db = get_db()
@@ -2794,7 +2794,7 @@ class CustomModuleCreate(BaseModel):
     icon: Optional[str] = "folder"
 
 @router.post("/custom-modules")
-async def create_custom_module(module: CustomModuleCreate, request: Request)::
+async def create_custom_module(module: CustomModuleCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a custom module definition"""
     db = get_db()
@@ -2822,7 +2822,7 @@ async def create_custom_module(module: CustomModuleCreate, request: Request)::
     return {"code": 0, "message": "Custom module created", "custom_module": {k: v for k, v in module_dict.items() if k != "_id"}}
 
 @router.get("/custom-modules")
-async def list_custom_modules(is_active: bool = True, request: Request)::
+async def list_custom_modules(is_active: bool = True, request: Request):
     org_id = extract_org_id(request)
     """List all custom modules"""
     db = get_db()
@@ -2832,7 +2832,7 @@ async def list_custom_modules(is_active: bool = True, request: Request)::
     return {"code": 0, "custom_modules": modules}
 
 @router.get("/custom-modules/{module_id}")
-async def get_custom_module(module_id: str, request: Request)::
+async def get_custom_module(module_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get custom module definition"""
     db = get_db()
@@ -2842,7 +2842,7 @@ async def get_custom_module(module_id: str, request: Request)::
     return {"code": 0, "custom_module": module}
 
 @router.put("/custom-modules/{module_id}")
-async def update_custom_module(module_id: str, update_data: Dict, request: Request)::
+async def update_custom_module(module_id: str, update_data: Dict, request: Request):
     org_id = extract_org_id(request)
     """Update a custom module"""
     db = get_db()
@@ -2859,7 +2859,7 @@ async def update_custom_module(module_id: str, update_data: Dict, request: Reque
     return {"code": 0, "message": "Custom module updated"}
 
 @router.delete("/custom-modules/{module_id}")
-async def delete_custom_module(module_id: str, request: Request)::
+async def delete_custom_module(module_id: str, request: Request):
     org_id = extract_org_id(request)
     """Deactivate a custom module (soft delete)"""
     db = get_db()
@@ -2872,7 +2872,7 @@ async def delete_custom_module(module_id: str, request: Request)::
     return {"code": 0, "message": "Custom module deactivated"}
 
 @router.post("/custom-modules/{module_id}/records")
-async def create_custom_record(module_id: str, record_data: Dict, request: Request)::
+async def create_custom_record(module_id: str, record_data: Dict, request: Request):
     org_id = extract_org_id(request)
     """Create a record in a custom module"""
     db = get_db()
@@ -2911,7 +2911,7 @@ async def list_custom_records(
     module_id: str,
     page: int = 1,
     per_page: int = 50,
-    search: str = "", request: Request)::
+    search: str = "", request: Request):
     org_id = extract_org_id(request)
     """List records in a custom module"""
     db = get_db()
@@ -2941,7 +2941,7 @@ async def list_custom_records(
     }
 
 @router.get("/custom-modules/{module_id}/records/{record_id}")
-async def get_custom_record(module_id: str, record_id: str, request: Request)::
+async def get_custom_record(module_id: str, record_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get a specific record"""
     db = get_db()
@@ -2958,7 +2958,7 @@ async def get_custom_record(module_id: str, record_id: str, request: Request)::
     return {"code": 0, "record": record}
 
 @router.put("/custom-modules/{module_id}/records/{record_id}")
-async def update_custom_record(module_id: str, record_id: str, update_data: Dict, request: Request)::
+async def update_custom_record(module_id: str, record_id: str, update_data: Dict, request: Request):
     org_id = extract_org_id(request)
     """Update a record in a custom module"""
     db = get_db()
@@ -2982,7 +2982,7 @@ async def update_custom_record(module_id: str, record_id: str, update_data: Dict
     return {"code": 0, "message": "Record updated"}
 
 @router.delete("/custom-modules/{module_id}/records/{record_id}")
-async def delete_custom_record(module_id: str, record_id: str, request: Request)::
+async def delete_custom_record(module_id: str, record_id: str, request: Request):
     org_id = extract_org_id(request)
     """Delete a record from a custom module"""
     db = get_db()

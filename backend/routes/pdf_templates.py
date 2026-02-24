@@ -204,7 +204,7 @@ async def ensure_default_templates():
 # ========================= ENDPOINTS =========================
 
 @router.get("/")
-async def list_templates(template_type: Optional[str] = None, request: Request)::
+async def list_templates(template_type: Optional[str] = None, request: Request):
     org_id = extract_org_id(request)
     """List all available templates"""
     await ensure_default_templates()
@@ -222,7 +222,7 @@ async def list_templates(template_type: Optional[str] = None, request: Request):
     }
 
 @router.get("/styles")
-async def list_available_styles(request: Request)::
+async def list_available_styles(request: Request):
     org_id = extract_org_id(request)
     """List available template styles"""
     return {
@@ -236,7 +236,7 @@ async def list_available_styles(request: Request)::
     }
 
 @router.get("/{template_id}")
-async def get_template(template_id: str, request: Request)::
+async def get_template(template_id: str, request: Request):
     org_id = extract_org_id(request)
     """Get template details"""
     template = await templates_collection.find_one({"template_id": template_id}, {"_id": 0})
@@ -246,7 +246,7 @@ async def get_template(template_id: str, request: Request)::
     return {"code": 0, "template": template}
 
 @router.post("/")
-async def create_template(data: PDFTemplateCreate, request: Request)::
+async def create_template(data: PDFTemplateCreate, request: Request):
     org_id = extract_org_id(request)
     """Create a custom template"""
     template_id = generate_id()
@@ -283,7 +283,7 @@ async def create_template(data: PDFTemplateCreate, request: Request)::
     return {"code": 0, "message": "Template created", "template": template_doc}
 
 @router.put("/{template_id}")
-async def update_template(template_id: str, data: PDFTemplateUpdate, request: Request)::
+async def update_template(template_id: str, data: PDFTemplateUpdate, request: Request):
     org_id = extract_org_id(request)
     """Update a template"""
     template = await templates_collection.find_one({"template_id": template_id})
@@ -317,7 +317,7 @@ async def update_template(template_id: str, data: PDFTemplateUpdate, request: Re
     return {"code": 0, "message": "Template updated"}
 
 @router.post("/{template_id}/duplicate")
-async def duplicate_template(template_id: str, new_name: str = "", request: Request)::
+async def duplicate_template(template_id: str, new_name: str = "", request: Request):
     org_id = extract_org_id(request)
     """Duplicate a template (useful for customizing system templates)"""
     template = await templates_collection.find_one({"template_id": template_id}, {"_id": 0})
@@ -339,7 +339,7 @@ async def duplicate_template(template_id: str, new_name: str = "", request: Requ
     return {"code": 0, "message": "Template duplicated", "template": new_template}
 
 @router.delete("/{template_id}")
-async def delete_template(template_id: str, request: Request)::
+async def delete_template(template_id: str, request: Request):
     org_id = extract_org_id(request)
     """Delete a custom template"""
     template = await templates_collection.find_one({"template_id": template_id})
@@ -354,7 +354,7 @@ async def delete_template(template_id: str, request: Request)::
     return {"code": 0, "message": "Template deleted"}
 
 @router.post("/{template_id}/set-default")
-async def set_default_template(template_id: str, request: Request)::
+async def set_default_template(template_id: str, request: Request):
     org_id = extract_org_id(request)
     """Set a template as default for its type"""
     template = await templates_collection.find_one({"template_id": template_id})
@@ -376,7 +376,7 @@ async def set_default_template(template_id: str, request: Request)::
     return {"code": 0, "message": f"Template '{template['name']}' set as default"}
 
 @router.get("/default/{template_type}")
-async def get_default_template(template_type: str, request: Request)::
+async def get_default_template(template_type: str, request: Request):
     org_id = extract_org_id(request)
     """Get the default template for a document type"""
     await ensure_default_templates()
@@ -401,7 +401,7 @@ async def get_default_template(template_type: str, request: Request)::
 # ========================= PREVIEW =========================
 
 @router.post("/preview")
-async def preview_template(template_id: str, sample_data: Dict = None, request: Request)::
+async def preview_template(template_id: str, sample_data: Dict = None, request: Request):
     org_id = extract_org_id(request)
     """Generate a preview HTML for a template"""
     template = await templates_collection.find_one({"template_id": template_id}, {"_id": 0})

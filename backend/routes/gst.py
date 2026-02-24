@@ -187,7 +187,7 @@ class GSTCalculationRequest(BaseModel):
 # ============== API ENDPOINTS ==============
 
 @router.get("/summary")
-async def get_gst_summary(request: Request)::
+async def get_gst_summary(request: Request):
     org_id = extract_org_id(request)
     """Get GST summary for current financial year"""
     db = get_db()
@@ -258,21 +258,21 @@ async def get_gst_summary(request: Request)::
     }
 
 @router.get("/states")
-async def get_indian_states(request: Request)::
+async def get_indian_states(request: Request):
     org_id = extract_org_id(request)
     """Get list of Indian states with GST codes"""
     states = [{"code": k, "name": v} for k, v in INDIAN_STATES.items()]
     return {"code": 0, "states": states}
 
 @router.post("/validate-gstin")
-async def validate_gstin_endpoint(data: GSTINValidation, request: Request)::
+async def validate_gstin_endpoint(data: GSTINValidation, request: Request):
     org_id = extract_org_id(request)
     """Validate GSTIN format and extract details"""
     result = validate_gstin(data.gstin)
     return {"code": 0 if result["valid"] else 1, **result}
 
 @router.post("/calculate")
-async def calculate_gst_endpoint(data: GSTCalculationRequest, request: Request)::
+async def calculate_gst_endpoint(data: GSTCalculationRequest, request: Request):
     org_id = extract_org_id(request)
     """Calculate GST (CGST/SGST/IGST) based on place of supply"""
     result = calculate_gst(
@@ -284,7 +284,7 @@ async def calculate_gst_endpoint(data: GSTCalculationRequest, request: Request):
     return {"code": 0, **result}
 
 @router.get("/organization-settings")
-async def get_organization_gst_settings(request: Request)::
+async def get_organization_gst_settings(request: Request):
     org_id = extract_org_id(request)
     """Get organization GST settings"""
     db = get_db()
@@ -299,7 +299,7 @@ async def get_organization_gst_settings(request: Request)::
     return {"code": 0, "settings": settings}
 
 @router.put("/organization-settings")
-async def update_organization_gst_settings(settings: OrganizationGSTSettings, request: Request)::
+async def update_organization_gst_settings(settings: OrganizationGSTSettings, request: Request):
     org_id = extract_org_id(request)
     """Update organization GST settings"""
     db = get_db()
@@ -329,7 +329,7 @@ async def update_organization_gst_settings(settings: OrganizationGSTSettings, re
 async def get_gstr1_report(
     month: str = "",  # Format: YYYY-MM
     format: str = Query("json", enum=["json", "excel", "pdf"], request: Request)
-)::
+):
     """
     GSTR-1 Report: Outward Supplies (Sales Invoices)
     Categories:
@@ -632,7 +632,7 @@ def generate_gstr1_pdf(data: dict, month: str, org_settings: dict) -> Response:
 async def get_gstr3b_report(
     month: str = "",  # Format: YYYY-MM
     format: str = Query("json", enum=["json", "excel", "pdf"], request: Request)
-)::
+):
     """
     GSTR-3B Report: Summary Return
     - 3.1: Outward supplies (from invoices)
@@ -929,7 +929,7 @@ def generate_gstr3b_pdf(data: dict, month: str, org_settings: dict) -> Response:
 async def get_hsn_summary(
     month: str = "",
     format: str = Query("json", enum=["json", "excel"], request: Request)
-)::
+):
     """
     HSN-wise Summary of Outward Supplies
     Required for GSTR-1 filing
