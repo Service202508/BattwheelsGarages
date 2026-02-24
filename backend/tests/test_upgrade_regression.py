@@ -116,19 +116,21 @@ class TestHealthSmoke:
 class TestAuthDBReads:
     """Confirms motor 3.7.1 + pymongo 4.16.0 DB reads work correctly"""
 
+    def _login(self, email=ADMIN_EMAIL, password=ADMIN_PASSWORD):
+        """Login via internal URL to avoid rate limiting on external URL in rapid test succession"""
+        resp = requests.post(f"{INTERNAL_URL}/api/auth/login", json={
+            "email": email, "password": password,
+        }, timeout=10)
+        return resp
+
     def test_login_returns_200(self):
-        resp = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": ADMIN_EMAIL,
-            "password": ADMIN_PASSWORD,
-        })
+        resp = self._login()
         assert resp.status_code == 200, f"Login failed: {resp.status_code} {resp.text}"
         print(f"PASS: login → 200 OK")
 
     def test_login_returns_token(self):
-        resp = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": ADMIN_EMAIL,
-            "password": ADMIN_PASSWORD,
-        })
+        resp = self._login()
+        assert resp.status_code == 200, f"Login failed: {resp.status_code}"
         data = resp.json()
         token = data.get("token") or data.get("access_token")
         assert token, f"No token in response: {data}"
@@ -137,10 +139,8 @@ class TestAuthDBReads:
 
     def test_login_returns_organizations_array(self):
         """Confirms MongoDB array reads work on motor 3.7.1"""
-        resp = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": ADMIN_EMAIL,
-            "password": ADMIN_PASSWORD,
-        })
+        resp = self._login()
+        assert resp.status_code == 200, f"Login failed: {resp.status_code}"
         data = resp.json()
         orgs = data.get("organizations")
         assert orgs is not None, f"'organizations' missing from login response: {list(data.keys())}"
@@ -149,10 +149,10 @@ class TestAuthDBReads:
         print(f"PASS: organizations array has {len(orgs)} entry/entries: {[o.get('name') for o in orgs]}")
 
     def test_login_invalid_credentials_rejected(self):
-        resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+        resp = requests.post(f"{INTERNAL_URL}/api/auth/login", json={
             "email": "bad@bad.com",
             "password": "wrong",
-        })
+        }, timeout=10)
         assert resp.status_code in (400, 401, 403), f"Expected 40x for bad creds, got {resp.status_code}"
         print(f"PASS: invalid credentials correctly rejected with {resp.status_code}")
 
