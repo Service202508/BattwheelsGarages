@@ -34,21 +34,28 @@ SYSTEM_COLLECTIONS = {
     "system_events",            # Platform-level
 }
 
-async def get_org_id(db):
-    """Get the single organization_id from the database."""
+async def get_org_id(db, explicit_org_id=None):
+    """Get the organization_id to stamp documents with."""
     orgs = await db.organizations.find({}, {"_id": 0, "organization_id": 1, "name": 1}).to_list(None)
     if len(orgs) == 0:
         raise ValueError("No organizations found in database")
+    
+    if explicit_org_id:
+        match = [o for o in orgs if o["organization_id"] == explicit_org_id]
+        if not match:
+            raise ValueError(f"org_id '{explicit_org_id}' not found in database")
+        return match[0]["organization_id"], match[0]["name"]
+    
     if len(orgs) > 1:
-        raise ValueError(f"Multiple organizations found ({len(orgs)}). This script is for single-org migration only.")
+        raise ValueError(f"Multiple organizations found ({len(orgs)}). Use --org-id to specify which one.")
     return orgs[0]["organization_id"], orgs[0]["name"]
 
 
-async def migrate(db_name: str, dry_run: bool):
+async def migrate(db_name: str, dry_run: bool, explicit_org_id: str = None):
     client = AsyncIOMotorClient(MONGO_URL)
     db = client[db_name]
 
-    org_id, org_name = await get_org_id(db)
+    org_id, org_name = await get_org_id(db, explicit_org_id)
     mode = "DRY RUN" if dry_run else "EXECUTE"
     
     print(f"\n{'='*70}")
@@ -143,6 +150,7 @@ if __name__ == "__main__":
     parser.add_argument("--db", required=True, help="Database name (battwheels or battwheels_dev)")
     parser.add_argument("--dry-run", action="store_true", help="Count only, don't modify")
     parser.add_argument("--execute", action="store_true", help="Actually stamp the documents")
+    parser.add_argument("--org-id", type=str, default=None, help="Explicit org_id (required when DB has multiple orgs)")
     args = parser.parse_args()
 
     if not args.dry_run and not args.execute:
@@ -152,4 +160,4 @@ if __name__ == "__main__":
         print("ERROR: Cannot specify both --dry-run and --execute")
         exit(1)
 
-    asyncio.run(migrate(args.db, dry_run=args.dry_run))
+    asyncio.run(migrate(args.db, dry_run=args.dry_run, explicit_org_id=args.org_id))
