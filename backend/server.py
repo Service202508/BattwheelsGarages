@@ -96,8 +96,11 @@ if len(JWT_SECRET) < 32:
 # Create the main app
 app = FastAPI(title="Battwheels OS API")
 
-# Create a router with the /api prefix
+# Create routers with API prefix structure
+# /api       — auth, public, health (no version)
+# /api/v1    — all business routes (versioned)
 api_router = APIRouter(prefix="/api")
+v1_router = APIRouter(prefix="/v1")
 
 # Security
 security = HTTPBearer(auto_error=False)
