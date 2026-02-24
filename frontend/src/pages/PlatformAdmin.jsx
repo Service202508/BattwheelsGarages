@@ -672,6 +672,67 @@ export default function PlatformAdmin({ user }) {
             </SectionCard>
           </div>
         )}
+        {/* ── TAB: LEADS ── */}
+        {activeTab === "leads" && (
+          <div className="space-y-5" data-testid="leads-tab">
+            {/* Summary row */}
+            {leadsSummary && (
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatCard icon={PhoneCall}    label="Total Leads"     value={leadsSummary.total}          color="blue" />
+                <StatCard icon={UserPlus}     label="New This Week"   value={leadsSummary.new_this_week}  color="amber" />
+                <StatCard icon={CheckCircle}  label="Qualified"       value={leadsSummary.qualified}      color="volt" />
+                <StatCard icon={TrendingUp}   label="Conversion Rate" value={`${leadsSummary.conversion_rate}%`} sub={`${leadsSummary.closed_won} closed won`} color="emerald" />
+              </div>
+            )}
+
+            {/* Leads table */}
+            <div className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl overflow-hidden">
+              <div className="p-5 border-b border-[rgba(255,255,255,0.07)] flex items-center justify-between">
+                <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                  <PhoneCall className="w-4 h-4 text-[#C8FF00]" />
+                  Demo Requests
+                </h3>
+                <button onClick={fetchLeads} className="text-xs text-[rgba(244,246,240,0.45)] hover:text-white flex items-center gap-1 transition" data-testid="refresh-leads-btn">
+                  <RefreshCw className="w-3 h-3" /> Refresh
+                </button>
+              </div>
+
+              {leadsLoading ? (
+                <div className="flex justify-center items-center h-40">
+                  <Loader2 className="w-6 h-6 animate-spin text-[rgba(244,246,240,0.35)]" />
+                </div>
+              ) : leads.length === 0 ? (
+                <div className="text-center py-16 text-[rgba(244,246,240,0.35)] text-sm">
+                  No demo requests yet. They'll appear here when prospects click "Book Demo".
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-[rgba(255,255,255,0.05)]">
+                        {["Date", "Name", "Workshop", "City", "Phone", "Fleet Size", "Status", "Notes"].map(h => (
+                          <th key={h} className="text-left text-xs font-medium text-[rgba(244,246,240,0.35)] px-4 py-3 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {leads.map(lead => (
+                        <LeadRow
+                          key={lead.lead_id}
+                          lead={lead}
+                          expanded={expandedNotes[lead.lead_id]}
+                          onToggleNotes={() => setExpandedNotes(prev => ({ ...prev, [lead.lead_id]: !prev[lead.lead_id] }))}
+                          onStatusChange={(status) => updateLeadStatus(lead.lead_id, status)}
+                          onNotesSave={(notes) => saveLeadNotes(lead.lead_id, notes)}
+                        />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
