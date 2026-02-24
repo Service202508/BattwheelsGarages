@@ -6671,4 +6671,4 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type", "X-Organization-ID", "X-Requested-With", "Accept"],
 )
 
-# Legacy on_event handlers removed — replaced by lifespan context manager above
+# Startup/shutdown handled by lifespan context manager
