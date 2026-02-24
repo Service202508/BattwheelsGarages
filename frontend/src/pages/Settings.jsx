@@ -54,17 +54,22 @@ export default function Settings({ user }) {
           new_password: newPassword,
         }),
       });
-      const resClone = res.clone();
-      const text = await resClone.text();
-      let data = {};
-      try { data = JSON.parse(text); } catch { /* non-JSON */ }
       if (res.ok) {
-        toast.success(data.message || "Password changed successfully");
+        toast.success("Password changed successfully");
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
       } else {
-        toast.error(data.detail || `Failed to change password (${res.status})`);
+        let errorMsg;
+        try {
+          const data = await res.clone().json();
+          errorMsg = data.detail;
+        } catch {
+          if (res.status === 401) errorMsg = "Current password is incorrect";
+          else if (res.status === 400) errorMsg = "Invalid request";
+          else errorMsg = `Request failed (${res.status})`;
+        }
+        toast.error(errorMsg || "Failed to change password");
       }
     } catch (err) {
       console.error("Change password error:", err);
