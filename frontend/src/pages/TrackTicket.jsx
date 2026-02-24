@@ -180,7 +180,8 @@ export default function TrackTicket() {
       const token = ticketDetails.ticket.public_access_token || localStorage.getItem(`ticket_token_${ticketId}`);
       
       const res = await fetch(`${API}/public/tickets/${ticketId}/approve-estimate?token=${token}`, {
-        method: "POST"
+        method: "POST",
+        headers: getPublicHeaders()
       });
       
       const data = await res.json();
