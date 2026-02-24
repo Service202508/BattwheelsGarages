@@ -16,7 +16,7 @@ async def verify():
         print("ERROR: MONGO_URL environment variable not set.")
         return
 
-    db_name = os.environ.get("DB_NAME", "test_database")
+    db_name = os.environ.get("DB_NAME", "battwheels")
     client = AsyncIOMotorClient(url)
     db = client[db_name]
 
