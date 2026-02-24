@@ -81,6 +81,7 @@ async def create_vehicle_category(request: Request, data: VehicleCategoryCreate)
     
     category = {
         "category_id": category_id,
+        "organization_id": org_id,
         **data.model_dump(),
         "sort_order": 0,
         "created_at": now,
@@ -186,6 +187,7 @@ async def create_vehicle_model(request: Request, data: VehicleModelCreate):
     
     model = {
         "model_id": model_id,
+        "organization_id": org_id,
         **data.model_dump(),
         "category_name": category.get("name"),
         "created_at": now,
@@ -293,6 +295,7 @@ async def create_issue_suggestion(request: Request, data: EVIssueSuggestionCreat
     
     suggestion = {
         "suggestion_id": suggestion_id,
+        "organization_id": org_id,
         **data.model_dump(),
         "usage_count": 0,
         "source": "manual",
