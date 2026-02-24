@@ -275,7 +275,7 @@ async def run_migration(request: Request, config: MigrationConfig, background_ta
     
     # Migrate customers
     if config.migrate_customers:
-        customers = await legacy_customers_collection.find(org_query(org_id)).to_list(None)
+        customers = await legacy_customers_collection.find(org_query(org_id)).to_list(5000)
         
         for customer in customers:
             try:
