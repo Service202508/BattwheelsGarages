@@ -781,6 +781,21 @@ async def remove_member(request: Request, user_id: str, ctx: TenantContext = Dep
         "user_id": user_id
     })
     
+    # Deactivate the user immediately (invalidates their JWT via is_active check)
+    await db.users.update_one(
+        {"user_id": user_id},
+        {"$set": {"is_active": False, "deactivated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    # Audit log
+    try:
+        from utils.audit import log_audit, AuditAction
+        removed_user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "email": 1})
+        await log_audit(db, AuditAction.USER_REMOVED, ctx.org_id, ctx.user_id,
+            "user", user_id, {"removed_email": removed_user.get("email") if removed_user else ""})
+    except Exception:
+        pass
+
     # Update org user count
     await db.organizations.update_one(
         {"organization_id": ctx.org_id},
