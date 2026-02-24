@@ -14,6 +14,9 @@ Tests 10 scenarios from upgrade regression checklist:
 9.  Webhook idempotency: duplicate razorpay webhook → already_processed
 10. XSS sanitization: <script> title stored clean
 """
+import hashlib
+import hmac
+import json
 import os
 import time
 import pytest
