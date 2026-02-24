@@ -125,6 +125,12 @@ function LeadRow({ lead, expanded, onToggleNotes, onStatusChange, onNotesSave })
   );
 }
 
+const ENV_CONFIG = {
+  production:  { label: "PRODUCTION",  color: "#EF4444", bg: "rgba(239,68,68,0.12)" },
+  staging:     { label: "STAGING",     color: "#F59E0B", bg: "rgba(245,158,11,0.12)" },
+  development: { label: "DEVELOPMENT", color: "#22C55E", bg: "rgba(34,197,94,0.12)" },
+};
+
 export default function PlatformAdmin({ user }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("orgs");
