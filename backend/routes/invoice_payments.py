@@ -245,6 +245,7 @@ async def process_successful_payment(transaction: dict, session_id: str):
     invoice_id = transaction.get("invoice_id")
     amount = transaction.get("amount", 0)
     customer_id = transaction.get("customer_id")
+    org_id = transaction.get("organization_id")
     
     # Get customer details
     customer = await contacts_collection.find_one({"contact_id": customer_id})
@@ -252,11 +253,12 @@ async def process_successful_payment(transaction: dict, session_id: str):
     
     # Create payment record in payments_received
     payment_id = generate_id("PAY")
-    payment_number = await get_next_payment_number()
+    payment_number = await get_next_payment_number(org_id or "")
     
     payment_doc = {
         "payment_id": payment_id,
         "payment_number": payment_number,
+        "organization_id": org_id,
         "customer_id": customer_id,
         "customer_name": customer_name,
         "payment_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
