@@ -168,7 +168,7 @@ Format your responses with:
 
         chat = LlmChat(
             api_key=api_key,
-            session_id=f"ai_{data.portal_type}_{uuid.uuid4().hex[:8]}",
+            session_id=f"ai_{org_id}_{data.portal_type}_{uuid.uuid4().hex[:8]}",
             system_message=system_message
         ).with_model("gemini", "gemini-3-flash-preview")
         
