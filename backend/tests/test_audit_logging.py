@@ -86,7 +86,7 @@ async def cleanup_audit_test_data(invoice_ids, payment_ids, cn_ids):
 def created_invoice():
     """Create a test invoice and return its data."""
     # First we need a valid customer
-    resp = requests.get(f"{BASE_URL}/api/v1/contacts?limit=1", headers=headers())
+    resp = requests.get(f"{BASE_URL}/api/v1/contacts-enhanced/", params={"limit": 1, "contact_type": "customer"}, headers=headers(), allow_redirects=True)
     contacts = resp.json().get("contacts", [])
     if not contacts:
         pytest.skip("No contacts available for invoice creation test")
