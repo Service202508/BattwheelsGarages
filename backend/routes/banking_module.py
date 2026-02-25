@@ -883,18 +883,19 @@ async def get_trial_balance(
 # ==================== DASHBOARD STATS ====================
 
 @router.get("/dashboard/stats")
-async def get_banking_dashboard_stats(organization_id: Optional[str] = None):
+async def get_banking_dashboard_stats(request: Request):
     """Get banking dashboard statistics"""
+    org_id = _get_org_id(request)
     now = datetime.now(timezone.utc)
     month_start = now.replace(day=1, hour=0, minute=0, second=0)
     
-    # Bank account totals
-    accounts = await bank_accounts_col.find({"is_active": True}, {"_id": 0}).to_list(50)
+    # Bank account totals — org-scoped
+    accounts = await bank_accounts_col.find({"is_active": True, "organization_id": org_id}, {"_id": 0}).to_list(50)
     total_balance = sum(a.get("current_balance", 0) for a in accounts)
     
-    # Monthly transactions
+    # Monthly transactions — org-scoped
     monthly_deposits = await bank_transactions_col.aggregate([
-        {"$match": {"transaction_type": {"$in": ["deposit", "transfer_in"]}, "transaction_date": {"$gte": month_start.strftime("%Y-%m-%d")}}},
+        {"$match": {"organization_id": org_id, "transaction_type": {"$in": ["deposit", "transfer_in"]}, "transaction_date": {"$gte": month_start.strftime("%Y-%m-%d")}}},
         {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
     ]).to_list(1)
     
