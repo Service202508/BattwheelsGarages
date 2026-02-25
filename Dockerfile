@@ -37,7 +37,7 @@ COPY docs/ ./docs/
 COPY --from=frontend-builder /app/frontend/build ./frontend/build
 
 # Environment defaults (overridden at runtime)
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app:/app/backend
 ENV PYTHONUNBUFFERED=1
 ENV ENVIRONMENT=production
 
