@@ -21,13 +21,38 @@ from datetime import datetime, timezone
 import uuid
 
 
-def transform_invoice(legacy_doc):
+async def transform_invoice(legacy_doc, db):
     """Transform a legacy invoices document to invoices_enhanced schema."""
     # Remove MongoDB _id before reinserting
     legacy_doc.pop("_id", None)
 
+    # Fix 1: Fetch line items from invoice_line_items collection
+    invoice_id = legacy_doc.get("invoice_id", "")
+    items = await db.invoice_line_items.find(
+        {"invoice_id": invoice_id}
+    ).to_list(None)
+    for item in items:
+        item.pop("_id", None)
+    line_items = items or legacy_doc.get("line_items", legacy_doc.get("items", []))
+
+    # Fix 2: Derive payment_status from existing financial fields
+    balance_due = legacy_doc.get("balance_due", 0)
+    amount_paid = legacy_doc.get("amount_paid", 0)
+    grand_total = legacy_doc.get("grand_total", legacy_doc.get("total", 0))
+    if balance_due == 0 and amount_paid > 0:
+        payment_status = "paid"
+    elif amount_paid > 0 and balance_due > 0:
+        payment_status = "partial"
+    else:
+        payment_status = legacy_doc.get("payment_status", "unpaid")
+
+    # Fix 3: Preserve original timestamp
+    created_at = (legacy_doc.get("created_at") or
+                  legacy_doc.get("created_time") or
+                  datetime.now(timezone.utc).isoformat())
+
     return {
-        "invoice_id": legacy_doc.get("invoice_id", f"inv-{uuid.uuid4().hex[:12]}"),
+        "invoice_id": invoice_id or f"inv-{uuid.uuid4().hex[:12]}",
         "invoice_number": legacy_doc.get("invoice_number", ""),
         "organization_id": legacy_doc.get("organization_id", ""),
         "customer_id": legacy_doc.get("customer_id", ""),
@@ -35,21 +60,34 @@ def transform_invoice(legacy_doc):
         "date": legacy_doc.get("date", legacy_doc.get("invoice_date", "")),
         "due_date": legacy_doc.get("due_date", ""),
         "status": legacy_doc.get("status", "draft"),
-        "line_items": legacy_doc.get("line_items", legacy_doc.get("items", [])),
+        "line_items": line_items,
         "subtotal": legacy_doc.get("subtotal", legacy_doc.get("sub_total", 0)),
         "total_discount": legacy_doc.get("total_discount", legacy_doc.get("discount", 0)),
         "total_tax": legacy_doc.get("total_tax", legacy_doc.get("tax_total", 0)),
-        "grand_total": legacy_doc.get("grand_total", legacy_doc.get("total", 0)),
-        "amount_paid": legacy_doc.get("amount_paid", 0),
-        "balance_due": legacy_doc.get("balance_due", legacy_doc.get("grand_total", legacy_doc.get("total", 0))),
-        "payment_status": legacy_doc.get("payment_status", "unpaid"),
+        "grand_total": grand_total,
+        "amount_paid": amount_paid,
+        "balance_due": balance_due,
+        "payment_status": payment_status,
         "notes": legacy_doc.get("notes", ""),
         "terms_and_conditions": legacy_doc.get("terms_and_conditions", ""),
         "gst_type": legacy_doc.get("gst_type", "intra_state"),
-        "created_at": legacy_doc.get("created_at", datetime.now(timezone.utc).isoformat()),
+        "created_at": created_at,
         "updated_at": datetime.now(timezone.utc).isoformat(),
         "migrated_from": "invoices",
         "migration_date": datetime.now(timezone.utc).isoformat(),
+        # Fix 4: Preserve all GST and financial fields
+        "total_cgst": legacy_doc.get("total_cgst", 0),
+        "total_sgst": legacy_doc.get("total_sgst", 0),
+        "total_igst": legacy_doc.get("total_igst", 0),
+        "place_of_supply": legacy_doc.get("place_of_supply", ""),
+        "customer_email": legacy_doc.get("customer_email", ""),
+        "customer_gstin": legacy_doc.get("customer_gstin", ""),
+        "estimate_id": legacy_doc.get("estimate_id", ""),
+        "estimate_number": legacy_doc.get("estimate_number", ""),
+        "shipping_charge": legacy_doc.get("shipping_charge", 0),
+        "adjustment": legacy_doc.get("adjustment", 0),
+        "paid_date": legacy_doc.get("paid_date", ""),
+        "payment_count": legacy_doc.get("payment_count", 0),
     }
 
 
