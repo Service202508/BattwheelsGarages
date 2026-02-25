@@ -372,7 +372,13 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
     
     # Get organization settings
     org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
-    org_state = org_settings.get("place_of_supply", "27")
+    org_state = org_settings.get("place_of_supply", "06")
+    
+    # Merge enhanced + legacy invoices
+    all_invoices = list(invoices) + list(legacy_invoices)
+    for inv in all_invoices:
+        if "invoice_date" not in inv:
+            inv["invoice_date"] = inv.get("date", "")
     
     # Categorize invoices
     b2b_invoices = []
