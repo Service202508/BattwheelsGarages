@@ -175,6 +175,7 @@ const navItems = [
       { name: "Financial Reports", path: "/reports", icon: BarChart3 },
       { name: "GST Returns", path: "/gst-reports", icon: FileText },
       { name: "Accounting", path: "/accounting", icon: Calculator },
+      { name: "Period Locks", path: "/period-locks", icon: Lock },
     ]
   },
   { 
