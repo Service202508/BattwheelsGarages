@@ -8,7 +8,7 @@ import os
 import logging
 import calendar
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from pydantic import BaseModel, Field, ConfigDict, EmailStr, validator
 from typing import List, Optional, Any
 import uuid
 from datetime import datetime, timezone, timedelta
