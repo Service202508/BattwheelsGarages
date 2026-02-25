@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_stocktakes_org_id","background":true}],"uuid":"957f0cf67dff49c5bdd1b4fe34c467c9","collectionName":"stocktakes","type":"collection"}

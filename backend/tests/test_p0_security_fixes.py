@@ -14,7 +14,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://production-hardened-2.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://atlas-migration-3.preview.emergentagent.com').rstrip('/')
 ORG_ID = "6996dcf072ffd2a2395fee7b"
 
 # Test credentials

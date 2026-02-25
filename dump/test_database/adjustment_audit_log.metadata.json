@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"organization_id_1"}],"uuid":"1c9d3d22b28c4156a5b6ccb056d97e23","collectionName":"adjustment_audit_log","type":"collection"}

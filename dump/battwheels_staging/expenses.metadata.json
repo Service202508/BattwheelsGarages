@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"},"category":{"$numberInt":"1"},"date":{"$numberInt":"-1"}},"name":"expenses_org_category_date","background":true}],"uuid":"34814e95df7e4010bda62d9cdc7b8e8a","collectionName":"expenses","type":"collection"}

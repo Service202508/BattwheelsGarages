@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"1bb406e4e27e4c14a8938f2d5eabee67","collectionName":"platform_audit_runs","type":"collection"}

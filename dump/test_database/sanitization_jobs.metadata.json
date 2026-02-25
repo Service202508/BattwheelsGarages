@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_sanitization_jobs_org_id","background":true}],"uuid":"25fb16a328f941ebba217671016aa53c","collectionName":"sanitization_jobs","type":"collection"}

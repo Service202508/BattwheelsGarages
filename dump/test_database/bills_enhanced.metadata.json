@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"organization_id_1"}],"uuid":"041cedf648b64f8a9e6d2dc7bd13ddb0","collectionName":"bills_enhanced","type":"collection"}

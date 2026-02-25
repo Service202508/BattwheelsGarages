@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_invoice_share_links_org_id","background":true}],"uuid":"73f4e5c0e76241bdad8da431870469da","collectionName":"invoice_share_links","type":"collection"}

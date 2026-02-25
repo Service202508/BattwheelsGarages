@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"organization_id_1"}],"uuid":"5b2256c15d39486ba8d09b401dc74f15","collectionName":"serial_batch_history","type":"collection"}

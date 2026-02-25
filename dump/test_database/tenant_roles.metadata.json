@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_tenant_roles_org_id","background":true}],"uuid":"2ce760076eeb4b23a2e465461d0294b0","collectionName":"tenant_roles","type":"collection"}

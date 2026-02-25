@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_razorpay_refunds_org_id","background":true}],"uuid":"124677b0727942319489369b13aa3cae","collectionName":"razorpay_refunds","type":"collection"}

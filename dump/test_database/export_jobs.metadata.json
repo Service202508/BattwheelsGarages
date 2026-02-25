@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_export_jobs_org_id","background":true}],"uuid":"aa0d6a8f01784bf19f277abc5ecdb8ef","collectionName":"export_jobs","type":"collection"}

@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_tds_challans_org_id","background":true}],"uuid":"b076511cf7704281951c122ee3a4c6f0","collectionName":"tds_challans","type":"collection"}

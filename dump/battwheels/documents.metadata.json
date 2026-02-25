@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_documents_org_id","background":true}],"uuid":"e859da127d3845c583a84460984bfd65","collectionName":"documents","type":"collection"}

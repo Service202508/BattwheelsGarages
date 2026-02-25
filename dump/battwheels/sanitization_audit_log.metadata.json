@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_sanitization_audit_log_org_id","background":true}],"uuid":"93abf2c49a5e489fbf0144439c1f91c1","collectionName":"sanitization_audit_log","type":"collection"}

@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"},"quota_type":{"$numberInt":"1"}},"name":"organization_id_1_quota_type_1","unique":true}],"uuid":"50d426ac0a3645b0a4d1f0b70a8728bf","collectionName":"tenant_quotas","type":"collection"}

@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_recurring_bills_org_id","background":true}],"uuid":"59b3376fce704b99a343d2c7ec53b437","collectionName":"recurring_bills","type":"collection"}

@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_invoice_comments_org_id","background":true}],"uuid":"2177553f299f46f9952d3eb53faecafa","collectionName":"invoice_comments","type":"collection"}

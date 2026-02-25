@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_composite_items_org_id","background":true}],"uuid":"14a751411ad2406aaa487ab7168341bd","collectionName":"composite_items","type":"collection"}

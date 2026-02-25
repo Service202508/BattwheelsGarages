@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"3567ed7efb394044af6a137e475f0970","collectionName":"efi_events","type":"collection"}

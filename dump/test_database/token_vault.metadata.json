@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_token_vault_org_id","background":true}],"uuid":"1bc32d2e7c0c428c9032b55eb80f392b","collectionName":"token_vault","type":"collection"}

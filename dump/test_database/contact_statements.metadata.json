@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_contact_statements_org_id","background":true}],"uuid":"8751a2081d724abea5a40651b7aba5df","collectionName":"contact_statements","type":"collection"}
