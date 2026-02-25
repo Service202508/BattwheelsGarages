@@ -20,6 +20,7 @@ from dataclasses import dataclass, field, asdict
 from enum import Enum
 import uuid
 import logging
+from utils.audit_log import log_financial_action
 
 logger = logging.getLogger(__name__)
 
