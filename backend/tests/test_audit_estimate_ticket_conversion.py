@@ -32,7 +32,7 @@ class TestAuditEstimateTicketConversion:
     @pytest.fixture(scope="class")
     def auth_headers(self):
         """Get auth token and return headers"""
-        login_url = f"{BASE_URL}/api/v1/auth/login"
+        login_url = f"{BASE_URL}/api/auth/login"
         response = requests.post(login_url, json={
             "email": "demo@voltmotors.in",
             "password": "Demo@12345"
