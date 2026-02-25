@@ -6405,17 +6405,23 @@ app.include_router(api_router)
 # No auth required — used by Kubernetes liveness probes and uptime monitors.
 @app.get("/api/health", tags=["Health"])
 async def health_check():
-    """Health check endpoint. Verifies API, MongoDB connectivity, and env config."""
-    import asyncio
+    """Comprehensive health check for deployment monitoring. Returns 200 if healthy, 503 if degraded."""
+    import asyncio, time
+    start = time.time()
     issues = []
-    status_data = {"status": "healthy", "version": "2.0.0", "timestamp": datetime.now(timezone.utc).isoformat()}
+    status_data = {
+        "status": "healthy",
+        "version": "2.0.0",
+        "environment": os.environ.get("ENVIRONMENT", "unknown"),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
 
     # MongoDB
     try:
         await asyncio.wait_for(db.command("ping"), timeout=2.0)
-        status_data["mongodb"] = "connected"
+        status_data["database"] = "connected"
     except Exception as e:
-        status_data["mongodb"] = "disconnected"
+        status_data["database"] = "disconnected"
         issues.append(f"MongoDB: {str(e)[:100]}")
 
     # Critical env vars
@@ -6426,6 +6432,8 @@ async def health_check():
         issues.append(f"Missing env vars: {missing}")
     else:
         status_data["config"] = "complete"
+
+    status_data["response_time_ms"] = round((time.time() - start) * 1000, 2)
 
     if issues:
         status_data["status"] = "degraded"
