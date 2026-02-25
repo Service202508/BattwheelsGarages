@@ -1842,6 +1842,39 @@ export default function InvoicesEnhanced() {
 
                 {/* Available Credits */}
                 {selectedInvoice.balance_due > 0 && selectedInvoice.available_credits?.length > 0 && (
+
+                {/* Credit Notes for this Invoice */}
+                {invoiceCreditNotes.length > 0 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <h4 className="font-medium mb-3 flex items-center gap-2 text-[#FF8C00]"><FileText className="h-4 w-4" /> Credit Notes ({invoiceCreditNotes.length})</h4>
+                      <div className="space-y-2">
+                        {invoiceCreditNotes.map(cn => (
+                          <div 
+                            key={cn.credit_note_id} 
+                            className="flex justify-between items-center bg-[rgba(255,140,0,0.06)] p-3 rounded-lg cursor-pointer hover:bg-[rgba(255,140,0,0.10)] transition-colors"
+                            onClick={() => { setSelectedCreditNote(cn); setShowCNViewDialog(true); }}
+                            data-testid={`credit-note-${cn.credit_note_id}`}
+                          >
+                            <div>
+                              <p className="font-medium text-[#FF8C00]">{cn.credit_note_number}</p>
+                              <p className="text-xs text-[rgba(244,246,240,0.45)]">{cn.created_at?.slice(0, 10)} — {cn.reason}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-medium">{formatCurrency(cn.total)}</p>
+                              <Badge className={cn.status === "issued" ? "bg-[rgba(59,158,255,0.10)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]" : cn.status === "applied" ? "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.25)]" : "bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.25)]"}>
+                                {cn.status === "issued" ? "Issued" : cn.status === "applied" ? "Applied" : cn.status === "refunded" ? "Refunded" : cn.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Available Credits - original */}
                   <>
                     <Separator />
                     <div>
