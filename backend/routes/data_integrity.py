@@ -3,7 +3,7 @@ Battwheels OS - Data Integrity API Routes
 Endpoints for auditing and repairing data integrity issues
 """
 
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Request
 from pydantic import BaseModel
 from typing import Optional, List, Dict
 from datetime import datetime, timezone
