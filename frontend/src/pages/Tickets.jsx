@@ -559,10 +559,19 @@ export default function Tickets({ user }) {
       <Dialog open={!!selectedTicket} onOpenChange={(open) => !open && handleCloseDialog()}>
         <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0" data-testid="job-card-dialog">
           <DialogHeader className="px-6 pt-6 pb-4 border-b flex-shrink-0">
-            <DialogTitle>Job Card / Service Ticket</DialogTitle>
-            <DialogDescription>
-              Manage all aspects of the service ticket from assignment to resolution.
-            </DialogDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle>Job Card / Service Ticket</DialogTitle>
+                <DialogDescription>
+                  Manage all aspects of the service ticket from assignment to resolution.
+                </DialogDescription>
+              </div>
+              {selectedTicket && (
+                <Link to={`/tickets/${selectedTicket.ticket_id}`} className="text-xs text-[#C8FF00] hover:underline font-mono" data-testid="view-full-page-link">
+                  Open Full Page →
+                </Link>
+              )}
+            </div>
           </DialogHeader>
           <div className="flex-1 overflow-y-auto min-h-0">
             {detailsLoading ? (
