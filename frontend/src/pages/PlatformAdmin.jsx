@@ -156,9 +156,20 @@ export default function PlatformAdmin({ user }) {
   const [leadsSummary, setLeadsSummary] = useState(null);
   const [leadsLoading, setLeadsLoading] = useState(false);
   const [expandedNotes, setExpandedNotes] = useState({});
+  const [backendEnv, setBackendEnv] = useState(null);
 
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+
+  async function fetchEnvironment() {
+    try {
+      const res = await fetch(`${API}/platform/environment`, { headers });
+      if (res.ok) {
+        const data = await res.json();
+        setBackendEnv(data.environment);
+      }
+    } catch (e) { /* fallback to frontend env */ }
+  }
 
   async function fetchMetrics() {
     const res = await fetch(`${API}/platform/metrics`, { headers });
