@@ -6735,16 +6735,18 @@ async def add_security_headers(request: Request, call_next):
     return response
 
 # ==================== CORS MIDDLEWARE ====================
-# Explicit allowed origins — never use wildcard in production
-# Set CORS_ORIGINS env var as comma-separated list of allowed origins
-_cors_origins_raw = os.environ.get(
-    "CORS_ORIGINS",
-    "https://battwheels.com,https://app.battwheels.com,https://hardened-api.preview.emergentagent.com"
-)
-_cors_origins = [o.strip() for o in _cors_origins_raw.split(",") if o.strip()]
-# Allow localhost variants for development
-if os.environ.get("NODE_ENV") != "production":
-    _cors_origins += ["http://localhost:3000", "http://localhost:3001"]
+# Production: restricted to known domains via CORS_ORIGINS env var
+# Development: permissive (localhost + Emergent preview)
+_environment = os.environ.get("ENVIRONMENT", "development")
+if _environment == "development":
+    _cors_origins = ["*"]
+else:
+    _cors_origins_raw = os.environ.get(
+        "CORS_ORIGINS",
+        "https://battwheels.com,https://app.battwheels.com"
+    )
+    _cors_origins = [o.strip() for o in _cors_origins_raw.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
