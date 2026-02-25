@@ -30,7 +30,7 @@ if (SENTRY_DSN) {
 if ('serviceWorker' in navigator) {
   if (process.env.NODE_ENV === 'production') {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
+      navigator.serviceWorker.register('/service-worker.js')
         .then((reg) => console.log('SW registered:', reg.scope))
         .catch((err) => console.warn('SW registration failed:', err));
     });
