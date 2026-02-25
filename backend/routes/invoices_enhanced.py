@@ -1135,6 +1135,12 @@ async def update_invoice(invoice_id: str, update: InvoiceUpdate, request: Reques
     if not existing:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
+    # Period lock check on invoice_date
+    org_id = await get_org_id(request) if request else None
+    check_date = existing.get("invoice_date") or existing.get("date", "")
+    if org_id and check_date:
+        await check_period_lock(org_id, check_date)
+    
     # Capture before_snapshot for audit (strip _id)
     before_snapshot = {k: v for k, v in existing.items() if k != "_id"}
     
