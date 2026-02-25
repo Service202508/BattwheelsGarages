@@ -24,6 +24,7 @@ from core.tenant.context import TenantContext, tenant_context_required, optional
 
 # Import double-entry posting hooks
 from services.posting_hooks import post_invoice_journal_entry
+from utils.audit_log import log_financial_action
 
 logger = logging.getLogger(__name__)
 
