@@ -66,6 +66,14 @@ export const apiFetch = async (url, options = {}) => {
 
   // ── Global interceptors ──────────────────────────────────
 
+  // 401 Token expired or invalid — redirect to login
+  if (response.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("organization_id");
+    window.location.href = "/login?reason=session_expired";
+    return response;
+  }
+
   // 409 Period Locked
   if (response.status === 409) {
     try {
