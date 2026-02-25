@@ -767,126 +767,135 @@ class DisconnectRequest(BaseModel):
     confirm: bool = False
 
 @router.post("/disconnect-and-purge")
-async def disconnect_and_purge(request: DisconnectRequest):
+async def disconnect_and_purge(request: Request, body: DisconnectRequest):
     """
-    Disconnect from Zoho Books and purge ALL synced data.
+    Disconnect from Zoho Books and purge synced data FOR THIS ORGANIZATION ONLY.
     This is a destructive operation that cannot be undone.
     """
-    if not request.confirm:
+    if not body.confirm:
         return {
             "code": 1,
             "message": "Confirmation required. Set confirm=true to proceed."
         }
     
+    # CRITICAL: Get org_id from authenticated tenant context
+    org_id = getattr(request.state, "tenant_org_id", None)
+    if not org_id:
+        raise HTTPException(status_code=400, detail="Organization context required")
+    
+    # Environment gate: block in production unless explicitly enabled
+    env = os.environ.get("ENVIRONMENT", "development")
+    if env == "production" and not os.environ.get("ALLOW_PRODUCTION_PURGE"):
+        raise HTTPException(
+            status_code=403,
+            detail="Purge operations blocked in production. Set ALLOW_PRODUCTION_PURGE=1 to override."
+        )
+    
     db = get_db()
     purge_stats = {}
     
     try:
-        logger.info("Starting Zoho Books disconnect and data purge...")
+        logger.info(f"Starting Zoho Books disconnect and data purge for org {org_id}...")
         
-        # Collections to purge (Zoho synced data)
+        # ALL collections are scoped by organization_id.
+        # Collections with Zoho source get an additional source filter.
         collections_to_purge = [
-            # Primary business data
-            ("contacts", {"source": "zoho_books"}),
-            ("contacts_enhanced", {"source": "zoho_books"}),
-            ("customers", {"source": "zoho_books"}),
-            ("suppliers", {"source": "zoho_books"}),
-            ("items", {"source": "zoho_books"}),
-            ("invoices", {"source": "zoho_books"}),
-            ("invoices_enhanced", {"source": "zoho_books"}),
-            ("estimates", {"source": "zoho_books"}),
-            ("estimates_enhanced", {"source": "zoho_books"}),
-            ("bills", {"source": "zoho_books"}),
-            ("bills_enhanced", {"source": "zoho_books"}),
-            ("expenses", {"source": "zoho_books"}),
-            ("purchaseorders", {"source": "zoho_books"}),
-            ("purchase_orders", {"source": "zoho_books"}),
-            ("purchase_orders_enhanced", {"source": "zoho_books"}),
-            ("salesorders", {"source": "zoho_books"}),
-            ("sales_orders", {"source": "zoho_books"}),
-            ("salesorders_enhanced", {"source": "zoho_books"}),
-            ("creditnotes", {"source": "zoho_books"}),
-            ("vendorcredits", {"source": "zoho_books"}),
-            ("customerpayments", {"source": "zoho_books"}),
-            ("vendorpayments", {"source": "zoho_books"}),
-            ("payments", {"source": "zoho_books"}),
-            ("bankaccounts", {"source": "zoho_books"}),
-            ("bank_accounts", {"source": "zoho_books"}),
+            # Primary business data (source-filtered + org-scoped)
+            ("contacts", {"organization_id": org_id, "source": "zoho_books"}),
+            ("contacts_enhanced", {"organization_id": org_id, "source": "zoho_books"}),
+            ("customers", {"organization_id": org_id, "source": "zoho_books"}),
+            ("suppliers", {"organization_id": org_id, "source": "zoho_books"}),
+            ("items", {"organization_id": org_id, "source": "zoho_books"}),
+            ("invoices", {"organization_id": org_id, "source": "zoho_books"}),
+            ("invoices_enhanced", {"organization_id": org_id, "source": "zoho_books"}),
+            ("estimates", {"organization_id": org_id, "source": "zoho_books"}),
+            ("estimates_enhanced", {"organization_id": org_id, "source": "zoho_books"}),
+            ("bills", {"organization_id": org_id, "source": "zoho_books"}),
+            ("bills_enhanced", {"organization_id": org_id, "source": "zoho_books"}),
+            ("expenses", {"organization_id": org_id, "source": "zoho_books"}),
+            ("purchaseorders", {"organization_id": org_id, "source": "zoho_books"}),
+            ("purchase_orders", {"organization_id": org_id, "source": "zoho_books"}),
+            ("purchase_orders_enhanced", {"organization_id": org_id, "source": "zoho_books"}),
+            ("salesorders", {"organization_id": org_id, "source": "zoho_books"}),
+            ("sales_orders", {"organization_id": org_id, "source": "zoho_books"}),
+            ("salesorders_enhanced", {"organization_id": org_id, "source": "zoho_books"}),
+            ("creditnotes", {"organization_id": org_id, "source": "zoho_books"}),
+            ("vendorcredits", {"organization_id": org_id, "source": "zoho_books"}),
+            ("customerpayments", {"organization_id": org_id, "source": "zoho_books"}),
+            ("vendorpayments", {"organization_id": org_id, "source": "zoho_books"}),
+            ("payments", {"organization_id": org_id, "source": "zoho_books"}),
+            ("bankaccounts", {"organization_id": org_id, "source": "zoho_books"}),
+            ("bank_accounts", {"organization_id": org_id, "source": "zoho_books"}),
             
-            # Line items and related data
-            ("invoice_line_items", {}),
-            ("estimate_line_items", {}),
-            ("bill_line_items", {}),
-            ("salesorder_line_items", {}),
-            ("po_line_items", {}),
+            # Line items and related data (org-scoped only)
+            ("invoice_line_items", {"organization_id": org_id}),
+            ("estimate_line_items", {"organization_id": org_id}),
+            ("bill_line_items", {"organization_id": org_id}),
+            ("salesorder_line_items", {"organization_id": org_id}),
+            ("po_line_items", {"organization_id": org_id}),
             
-            # History and audit logs for synced data
-            ("invoice_history", {}),
-            ("estimate_history", {}),
-            ("bill_history", {}),
-            ("salesorder_history", {}),
-            ("contact_history", {}),
-            ("item_history", {}),
+            # History and audit logs (org-scoped only)
+            ("invoice_history", {"organization_id": org_id}),
+            ("estimate_history", {"organization_id": org_id}),
+            ("bill_history", {"organization_id": org_id}),
+            ("salesorder_history", {"organization_id": org_id}),
+            ("contact_history", {"organization_id": org_id}),
+            ("item_history", {"organization_id": org_id}),
             
-            # Sync-related collections
-            ("sync_logs", {}),
-            ("sync_status", {}),
-            ("sync_events", {}),
-            ("sync_jobs", {}),
+            # Sync-related collections (org-scoped)
+            ("sync_logs", {"organization_id": org_id}),
+            ("sync_status", {"organization_id": org_id}),
+            ("sync_events", {"organization_id": org_id}),
+            ("sync_jobs", {"organization_id": org_id}),
             
-            # Books-specific collections
-            ("books_customers", {}),
-            ("books_invoices", {}),
-            ("books_payments", {}),
-            ("books_vendors", {}),
+            # Books-specific collections (org-scoped)
+            ("books_customers", {"organization_id": org_id}),
+            ("books_invoices", {"organization_id": org_id}),
+            ("books_payments", {"organization_id": org_id}),
+            ("books_vendors", {"organization_id": org_id}),
             
-            # Item-related from sync
-            ("item_prices", {"source": "zoho_books"}),
-            ("item_stock", {}),
-            ("item_stock_locations", {}),
-            ("item_batch_numbers", {}),
-            ("item_serial_numbers", {}),
-            ("item_serial_batches", {}),
+            # Item-related from sync (source + org scoped)
+            ("item_prices", {"organization_id": org_id, "source": "zoho_books"}),
+            ("item_stock", {"organization_id": org_id}),
+            ("item_stock_locations", {"organization_id": org_id}),
+            ("item_batch_numbers", {"organization_id": org_id}),
+            ("item_serial_numbers", {"organization_id": org_id}),
+            ("item_serial_batches", {"organization_id": org_id}),
             
-            # Payments and financial data
-            ("payments_received", {}),
-            ("payment_history", {}),
-            ("invoice_payments", {}),
-            ("bill_payments", {}),
+            # Payments and financial data (org-scoped)
+            ("payments_received", {"organization_id": org_id}),
+            ("payment_history", {"organization_id": org_id}),
+            ("invoice_payments", {"organization_id": org_id}),
+            ("bill_payments", {"organization_id": org_id}),
         ]
         
-        # Perform the purge
+        # Perform the purge — every query is org-scoped
         for collection_name, filter_query in collections_to_purge:
             try:
-                if filter_query:
-                    # Delete only Zoho-sourced records
-                    result = await db[collection_name].delete_many(filter_query)
-                else:
-                    # Delete all records in collection
-                    result = await db[collection_name].delete_many({})
-                
+                result = await db[collection_name].delete_many(filter_query)
                 if result.deleted_count > 0:
                     purge_stats[collection_name] = result.deleted_count
-                    logger.info(f"Purged {result.deleted_count} records from {collection_name}")
+                    logger.info(f"Purged {result.deleted_count} records from {collection_name} for org {org_id}")
             except Exception as e:
                 logger.warning(f"Error purging {collection_name}: {e}")
         
-        # Clear any backup collections
+        # Clear backup collections scoped to this org (delete docs, never drop)
         all_collections = await db.list_collection_names()
-        backup_count = 0
+        backup_deleted = 0
         for coll in all_collections:
             if coll.startswith("_backup_"):
                 try:
-                    await db.drop_collection(coll)
-                    backup_count += 1
+                    r = await db[coll].delete_many({"organization_id": org_id})
+                    backup_deleted += r.deleted_count
                 except Exception:
                     pass
-        if backup_count > 0:
-            purge_stats["backup_collections_dropped"] = backup_count
+        if backup_deleted > 0:
+            purge_stats["backup_records_deleted"] = backup_deleted
         
-        # Log the disconnect event
+        # Log the disconnect event (org-scoped)
         await db.sync_logs.insert_one({
             "sync_id": f"DISCONNECT-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
+            "organization_id": org_id,
             "type": "disconnect_and_purge",
             "status": "completed",
             "started_at": datetime.now(timezone.utc).isoformat(),
@@ -894,16 +903,16 @@ async def disconnect_and_purge(request: DisconnectRequest):
             "purge_stats": purge_stats
         })
         
-        logger.info(f"Zoho Books disconnect completed. Stats: {purge_stats}")
+        logger.info(f"Zoho Books disconnect completed for org {org_id}. Stats: {purge_stats}")
         
         return {
             "code": 0,
             "status": "success",
-            "message": "Zoho Books disconnected and data purged successfully",
+            "message": f"Zoho Books disconnected and data purged for organization {org_id}",
             "purge_stats": purge_stats
         }
     
     except Exception as e:
-        logger.error(f"Disconnect and purge failed: {e}")
+        logger.error(f"Disconnect and purge failed for org {org_id}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
