@@ -770,12 +770,30 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     input_sgst = 0
     input_igst = 0
     
+    # Reverse Charge Mechanism (RCM) — Section 3.1(d)
+    rcm_taxable = 0
+    rcm_cgst = 0
+    rcm_sgst = 0
+    rcm_igst = 0
+    
     for bill in bills:
         subtotal = bill.get("sub_total", 0) or bill.get("subtotal", 0) or 0
         tax_total = bill.get("tax_total", 0) or (bill.get("total", 0) - subtotal)
         vendor_gstin = bill.get("vendor_gstin", "") or bill.get("gst_no", "")
         vendor_state = vendor_gstin[:2] if vendor_gstin and len(vendor_gstin) >= 2 else org_state
+        is_rcm = bill.get("reverse_charge", False) or bill.get("is_reverse_charge", False)
         
+        if is_rcm:
+            # RCM: recipient pays tax — appears in Section 3.1(d) as outward liability
+            # and simultaneously available as ITC in Section 4
+            rcm_taxable += subtotal
+            if vendor_state == org_state:
+                rcm_cgst += tax_total / 2
+                rcm_sgst += tax_total / 2
+            else:
+                rcm_igst += tax_total
+        
+        # All bills contribute to ITC (including RCM bills, since RCM tax paid = ITC available)
         input_taxable += subtotal
         
         if vendor_state == org_state:
@@ -787,6 +805,13 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     for exp in expenses:
         amount = exp.get("amount", 0)
         tax_amount = exp.get("tax_amount", 0) or amount * 0.18  # Assume 18% if not specified
+        is_rcm = exp.get("reverse_charge", False) or exp.get("is_reverse_charge", False)
+        
+        if is_rcm:
+            rcm_taxable += amount
+            rcm_cgst += tax_amount / 2
+            rcm_sgst += tax_amount / 2
+        
         input_taxable += amount
         input_cgst += tax_amount / 2
         input_sgst += tax_amount / 2
