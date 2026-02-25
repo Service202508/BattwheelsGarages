@@ -2745,6 +2745,26 @@ export default function InvoicesEnhanced() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Credit Note Create Modal */}
+      <CreditNoteCreateModal
+        open={showCNCreateDialog}
+        onOpenChange={setShowCNCreateDialog}
+        invoice={selectedInvoice}
+        headers={headers}
+        onCreated={(cn) => {
+          fetchInvoiceDetail(selectedInvoice.invoice_id);
+          fetchInvoices();
+        }}
+      />
+
+      {/* Credit Note View Modal */}
+      <CreditNoteViewModal
+        open={showCNViewDialog}
+        onOpenChange={setShowCNViewDialog}
+        creditNote={selectedCreditNote}
+        headers={headers}
+      />
     </div>
   );
 }
