@@ -12,8 +12,8 @@ import os
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-# Import from main server (will be moved to separate modules)
-SECRET_KEY = os.environ.get("SECRET_KEY", "battwheels-secret-key-change-in-production")
+# UNIFIED JWT CONFIG: Single source — JWT_SECRET env var (same as server.py and utils/auth.py)
+JWT_SECRET = os.environ.get("JWT_SECRET")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
 
