@@ -1186,7 +1186,8 @@ async def create_estimate(estimate: EstimateCreate, background_tasks: Background
     
     # Audit: estimate.created
     from utils.audit import log_audit, AuditAction
-    await log_audit(db, AuditAction.ESTIMATE_CREATED, org_id, user_id,
+    _est_org = estimate_doc.get("organization_id", "")
+    await log_audit(db, AuditAction.ESTIMATE_CREATED, _est_org, "",
         "estimate", estimate_id, {"estimate_number": estimate_number, "customer": estimate.customer_id, "total": totals.get("total", 0)})
     
     # Remove _id from response
