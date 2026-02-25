@@ -279,6 +279,11 @@ async def create_expense(request: Request, data: ExpenseCreate):
         notes=data.notes
     )
     
+    # Audit: expense.created
+    from utils.audit import log_audit, AuditAction
+    await log_audit(service.db, AuditAction.EXPENSE_CREATED, org_id, user_id,
+        "expense", expense.get("expense_id", ""), {"amount": data.amount, "vendor": data.vendor_name, "category": data.category_id})
+    
     return {"code": 0, "message": "Expense created", "expense": expense}
 
 
