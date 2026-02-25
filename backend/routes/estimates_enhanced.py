@@ -1130,6 +1130,11 @@ async def create_estimate(estimate: EstimateCreate, background_tasks: Background
     # Add history entry
     await add_estimate_history(estimate_id, "created", f"Estimate {estimate_number} created")
     
+    # Audit: estimate.created
+    from utils.audit import log_audit, AuditAction
+    await log_audit(db, AuditAction.ESTIMATE_CREATED, org_id, user_id,
+        "estimate", estimate_id, {"estimate_number": estimate_number, "customer": estimate.customer_id, "total": totals.get("total", 0)})
+    
     # Remove _id from response
     estimate_doc.pop("_id", None)
     estimate_doc["line_items"] = [{k: v for k, v in item.items() if k != "_id"} for item in processed_items]
