@@ -13,6 +13,7 @@ from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
+from services.period_lock_service import check_period_lock
 from datetime import datetime, timezone, timedelta
 import os
 import logging
@@ -171,6 +172,11 @@ async def create_journal_entry(request: Request, data: JournalEntryCreate
     """Create a new manual journal entry"""
     org_id = await get_org_id(request)
     user_id = await get_current_user_id(request)
+    
+    # Period lock check on entry_date
+    if data.entry_date:
+        await check_period_lock(org_id, data.entry_date)
+    
     service = get_service()
     
     # Convert lines to dict format
@@ -231,6 +237,11 @@ async def reverse_journal_entry(request: Request, entry_id: str,
     """Create a reversal entry for an existing journal entry"""
     org_id = await get_org_id(request)
     user_id = await get_current_user_id(request)
+    
+    # Period lock check on reversal_date
+    if data.reversal_date:
+        await check_period_lock(org_id, data.reversal_date)
+    
     service = get_service()
     
     success, message, reversal = await service.reverse_journal_entry(
