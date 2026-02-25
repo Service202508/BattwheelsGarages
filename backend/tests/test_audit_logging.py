@@ -97,7 +97,7 @@ def created_invoice():
         "line_items": [{"item_name": "Audit Test Item", "quantity": 1, "rate": 1000, "tax_rate": 18}],
         "payment_terms": 30,
     }
-    resp = requests.post(f"{BASE_URL}/api/v1/invoices-enhanced", json=payload, headers=headers())
+    resp = requests.post(f"{BASE_URL}/api/v1/invoices-enhanced/", json=payload, headers=headers(), allow_redirects=True)
     assert resp.status_code == 200, f"Invoice create failed: {resp.text}"
     data = resp.json()
     assert data["code"] == 0
