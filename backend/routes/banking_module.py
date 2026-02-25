@@ -827,17 +827,16 @@ async def get_cash_flow_report(
 
 @router.get("/reports/trial-balance")
 async def get_trial_balance(
+    request: Request,
     as_of_date: Optional[str] = None,
-    organization_id: Optional[str] = None
 ):
     """Generate Trial Balance report"""
+    org_id = _get_org_id(request)
     now = datetime.now(timezone.utc)
     if not as_of_date:
         as_of_date = now.strftime("%Y-%m-%d")
     
-    query = {"is_active": True}
-    if organization_id:
-        query["organization_id"] = organization_id
+    query = {"is_active": True, "organization_id": org_id}
     
     accounts = await chart_of_accounts_col.find(query, {"_id": 0}).sort("account_code", 1).to_list(500)
     
