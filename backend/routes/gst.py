@@ -385,7 +385,7 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
     b2c_large = []
     b2c_small = []
     
-    for inv in invoices:
+    for inv in all_invoices:
         customer_gstin = inv.get("customer_gstin", "") or inv.get("gst_no", "")
         customer_state = inv.get("place_of_supply", org_state)
         
