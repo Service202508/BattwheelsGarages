@@ -6,6 +6,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from contextlib import asynccontextmanager
 import os
 import logging
+import json as _json_log
+import sys
 import calendar
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr, validator
@@ -23,12 +25,32 @@ from core.tenant.context import TenantContext, tenant_context_required, optional
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# Configure logging (must be before validation)
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+# ==================== STRUCTURED JSON LOGGING ====================
+class JSONFormatter(logging.Formatter):
+    """Structured JSON log formatter for production log aggregation."""
+    def format(self, record):
+        log_entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "level": record.levelname,
+            "message": record.getMessage(),
+            "module": record.module,
+            "environment": os.environ.get("ENVIRONMENT", "development"),
+        }
+        if record.exc_info:
+            log_entry["exception"] = self.formatException(record.exc_info)
+        return _json_log.dumps(log_entry)
+
+_environment = os.environ.get("ENVIRONMENT", "development")
+_log_handler = logging.StreamHandler(sys.stdout)
+if _environment in ("production", "staging"):
+    _log_handler.setFormatter(JSONFormatter())
+    _log_level = logging.INFO
+else:
+    _log_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+    _log_level = logging.DEBUG
+
+logging.basicConfig(level=_log_level, handlers=[_log_handler], force=True)
+logger = logging.getLogger("battwheels")
 
 # ==================== SENTRY MONITORING ====================
 def _scrub_sensitive_data(event, hint):
@@ -92,19 +114,34 @@ if not check_and_report():
     # Don't exit in development/preview - just warn
     logger.warning("Continuing with defaults - this may cause issues in production")
 
-# MongoDB connection
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(mongo_url)
+# MongoDB connection with pooling configured for Atlas M0 (500 connection limit)
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+client = AsyncIOMotorClient(
+    MONGO_URL,
+    maxPoolSize=10,
+    minPoolSize=2,
+    maxIdleTimeMS=30000,
+    serverSelectionTimeoutMS=5000,
+    connectTimeoutMS=10000,
+    socketTimeoutMS=30000,
+)
 db = client[os.environ.get('DB_NAME', 'battwheels_db')]
 
-# JWT Configuration
+# JWT Configuration — unified expiry across the app
 JWT_SECRET = os.environ.get('JWT_SECRET', 'battwheels-secret')
 JWT_ALGORITHM = "HS256"
-JWT_EXPIRATION_HOURS = 24 * 7
+JWT_EXPIRY_HOURS = int(os.environ.get("JWT_EXPIRY_HOURS", "24"))
 
-# Warn if JWT secret is weak
-if len(JWT_SECRET) < 32:
-    logger.warning("JWT_SECRET is shorter than 32 characters - consider using a stronger secret")
+# Validate JWT_SECRET — abort in production if weak/missing
+_env = os.environ.get("ENVIRONMENT", "development")
+if _env == "production":
+    if JWT_SECRET == "battwheels-secret" or len(JWT_SECRET) < 32:
+        logger.critical("FATAL: JWT_SECRET is not set or is too weak for production.")
+        logger.critical("Set JWT_SECRET to a random string of at least 32 characters.")
+        logger.critical("Generate one with: python3 -c \"import secrets; print(secrets.token_hex(32))\"")
+        sys.exit(1)
+elif len(JWT_SECRET) < 16:
+    logger.warning("JWT_SECRET is weak. Use at least 32 chars in production.")
 
 # ── Lifespan ──────────────────────────────────────────────
 @asynccontextmanager
@@ -1174,7 +1211,7 @@ def create_token(user_id: str, email: str, role: str, org_id: str = None, passwo
         "email": email,
         "role": role,
         "pwd_v": password_version,
-        "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS)
+        "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRY_HOURS)
     }
     if org_id:
         payload["org_id"] = org_id

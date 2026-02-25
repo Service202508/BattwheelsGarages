@@ -12,10 +12,10 @@ import os
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-# UNIFIED JWT CONFIG: Single source — JWT_SECRET env var (same as server.py and utils/auth.py)
+# UNIFIED JWT CONFIG: Single source — env vars (same as server.py)
 JWT_SECRET = os.environ.get("JWT_SECRET")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_HOURS = 24
+JWT_EXPIRY_HOURS = int(os.environ.get("JWT_EXPIRY_HOURS", "24"))
 
 # Models
 class UserLogin(BaseModel):
@@ -51,7 +51,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
+    expire = datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRY_HOURS)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, JWT_SECRET, algorithm=ALGORITHM)
 
@@ -84,7 +84,7 @@ async def login(credentials: UserLogin, response: Response):
         httponly=True,
         secure=False,
         samesite="lax",
-        max_age=ACCESS_TOKEN_EXPIRE_HOURS * 3600
+        max_age=JWT_EXPIRY_HOURS * 3600
     )
     
     # Store session
