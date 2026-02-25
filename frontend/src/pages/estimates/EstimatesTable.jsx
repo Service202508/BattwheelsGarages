@@ -1,6 +1,7 @@
 /**
- * EstimatesTable — Main listing table, summary cards, funnel, and Ticket Estimates tab.
- * Extracted from EstimatesEnhanced.jsx lines 1085-1487.
+ * EstimatesTable — Main listing content, summary cards, funnel, and Ticket Estimates tab.
+ * The Tabs wrapper is managed by the parent (index.jsx).
+ * This component renders Estimates and Ticket-Estimates TabsContent.
  */
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,20 +18,7 @@ import { EstimateStatusBadge } from "@/components/estimates";
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
 
-export function EstimatesTable({ state, handlers }) {
-  const {
-    activeTab, setActiveTab, estimates, ticketEstimates, summary, funnel, loading,
-    search, setSearch, statusFilter, setStatusFilter, selectedIds,
-    showEditDialog, editEstimate,
-  } = state;
-
-  const {
-    fetchEstimates, fetchEstimateDetail, handleClone, handleExport,
-    setShowImportDialog, setShowBulkActionDialog, setShowCustomFieldsDialog,
-    setShowTemplateDialog, setShowPreferencesDialog, fetchCustomFields,
-    fetchPdfTemplates, fetchPreferences, toggleSelectAll, toggleSelect,
-    handleOpenEdit, setShowEditDialog,
-  } = handlers;
+export function EstimatesSummary({ summary, funnel, setStatusFilter, fetchEstimates }) {
 
   return (
     <>
