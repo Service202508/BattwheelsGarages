@@ -2134,6 +2134,162 @@ async def update_estimate_status(estimate_id: str, status_update: StatusUpdate):
     
     return {"code": 0, "message": f"Status updated to {new_status}", "conversion": conversion_result}
 
+
+@router.post("/{estimate_id}/convert-to-ticket")
+async def convert_estimate_to_ticket(estimate_id: str, request: Request = None):
+    """
+    Convert an accepted estimate into a service ticket.
+    
+    Core business flow: Customer accepts estimate → Workshop creates ticket
+    to schedule the actual repair/service work.
+    
+    The estimate must be in 'accepted' or 'sent' status.
+    Line items from the estimate become the estimated cost on the ticket.
+    """
+    estimate = await estimates_collection.find_one({"estimate_id": estimate_id})
+    if not estimate:
+        raise HTTPException(status_code=404, detail="Estimate not found")
+    
+    if estimate.get("status") not in ["accepted", "sent"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot convert estimate in '{estimate.get('status')}' status. Must be 'accepted' or 'sent'."
+        )
+    
+    # Check if already converted to a ticket
+    if estimate.get("converted_to", "").startswith("ticket:"):
+        raise HTTPException(
+            status_code=409,
+            detail=f"Estimate already converted to ticket: {estimate.get('converted_to')}"
+        )
+    
+    org_id = await get_org_id(request) if request else estimate.get("organization_id")
+    
+    # Get estimate line items for cost summary
+    line_items = await estimate_items_collection.find(
+        {"estimate_id": estimate_id}, {"_id": 0}
+    ).to_list(100)
+    
+    total_cost = estimate.get("grand_total", 0) or estimate.get("total", 0) or 0
+    
+    # Build description from estimate details
+    parts_summary = []
+    labor_cost = 0
+    parts_cost = 0
+    for item in line_items:
+        item_name = item.get("name", item.get("item_name", "Item"))
+        qty = item.get("quantity", 1)
+        rate = item.get("rate", 0)
+        item_type = item.get("item_type", "").lower()
+        if "labor" in item_type or "labour" in item_type or "service" in item_type:
+            labor_cost += rate * qty
+        else:
+            parts_cost += rate * qty
+        parts_summary.append(f"- {item_name} x{qty} @ {rate}")
+    
+    description_parts = [
+        f"Converted from Estimate {estimate.get('estimate_number', estimate_id)}",
+        f"Customer: {estimate.get('customer_name', 'N/A')}",
+    ]
+    if estimate.get("subject"):
+        description_parts.append(f"Subject: {estimate['subject']}")
+    if estimate.get("notes"):
+        description_parts.append(f"Notes: {estimate['notes']}")
+    if parts_summary:
+        description_parts.append(f"\nEstimated items:\n" + "\n".join(parts_summary))
+    
+    description = "\n".join(description_parts)
+    
+    # Generate ticket ID
+    ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
+    now = datetime.now(timezone.utc)
+    
+    ticket_doc = {
+        "ticket_id": ticket_id,
+        "organization_id": org_id or "",
+        "title": estimate.get("subject") or f"Service for Estimate {estimate.get('estimate_number', '')}",
+        "description": description,
+        "status": "open",
+        "priority": "medium",
+        "category": estimate.get("category", "general_service"),
+        "customer_id": estimate.get("customer_id", ""),
+        "customer_name": estimate.get("customer_name", ""),
+        "customer_type": "individual",
+        "contact_number": estimate.get("customer_phone", ""),
+        "customer_email": estimate.get("customer_email", ""),
+        "vehicle_number": estimate.get("vehicle_number", ""),
+        "vehicle_model": estimate.get("vehicle_model", ""),
+        "estimated_cost": total_cost,
+        "parts_cost": parts_cost,
+        "labor_cost": labor_cost,
+        "resolution_type": "workshop",
+        "source_estimate_id": estimate_id,
+        "source_estimate_number": estimate.get("estimate_number", ""),
+        "created_by": "",
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat(),
+    }
+    
+    # Extract user info if available
+    if request:
+        try:
+            from core.tenant.guard import TenantContext
+            ctx = getattr(request.state, "tenant_ctx", None)
+            if ctx:
+                ticket_doc["created_by"] = ctx.user_id
+        except Exception:
+            pass
+    
+    # Insert ticket
+    await db["tickets"].insert_one(ticket_doc)
+    ticket_doc.pop("_id", None)
+    
+    # Link estimate line items as ticket estimate items
+    for item in line_items:
+        ticket_item = {
+            "ticket_id": ticket_id,
+            "line_item_id": generate_id("TLI"),
+            "item_id": item.get("item_id", ""),
+            "name": item.get("name", item.get("item_name", "")),
+            "quantity": item.get("quantity", 1),
+            "rate": item.get("rate", 0),
+            "amount": item.get("amount", 0),
+            "tax_percentage": item.get("tax_percentage", 0),
+            "tax_amount": item.get("tax_amount", 0),
+            "source_estimate_id": estimate_id,
+            "created_at": now.isoformat(),
+        }
+        await db["ticket_estimate_line_items"].insert_one(ticket_item)
+    
+    # Update estimate status to converted
+    await estimates_collection.update_one(
+        {"estimate_id": estimate_id},
+        {"$set": {
+            "status": "converted",
+            "converted_to": f"ticket:{ticket_id}",
+            "converted_date": now.date().isoformat(),
+            "updated_time": now.isoformat(),
+        }}
+    )
+    
+    await add_estimate_history(
+        estimate_id, "converted_to_ticket",
+        f"Converted to Ticket {ticket_id}"
+    )
+    
+    # Audit: estimate.converted_to_ticket
+    from utils.audit import log_audit, AuditAction
+    await log_audit(db, AuditAction.ESTIMATE_CONVERTED_TO_TICKET, org_id or "", "",
+        "estimate", estimate_id, {"ticket_id": ticket_id, "total_cost": total_cost})
+    
+    return {
+        "code": 0,
+        "message": f"Estimate {estimate.get('estimate_number', '')} converted to Ticket {ticket_id}",
+        "ticket": ticket_doc,
+        "estimate_status": "converted",
+    }
+
+
 @router.post("/{estimate_id}/send")
 async def send_estimate(estimate_id: str, email_to: Optional[str] = None, message: str = ""):
     """Send estimate to customer (mocked)"""
