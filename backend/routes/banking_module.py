@@ -702,17 +702,16 @@ async def get_profit_loss_report(
 
 @router.get("/reports/balance-sheet")
 async def get_balance_sheet_report(
+    request: Request,
     as_of_date: Optional[str] = None,
-    organization_id: Optional[str] = None
 ):
     """Generate Balance Sheet report"""
+    org_id = _get_org_id(request)
     now = datetime.now(timezone.utc)
     if not as_of_date:
         as_of_date = now.strftime("%Y-%m-%d")
     
-    query = {"is_active": True}
-    if organization_id:
-        query["organization_id"] = organization_id
+    query = {"is_active": True, "organization_id": org_id}
     
     # Get accounts by type
     assets = await chart_of_accounts_col.find({**query, "account_type": "asset"}, {"_id": 0}).to_list(100)
