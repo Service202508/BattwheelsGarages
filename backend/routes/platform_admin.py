@@ -488,6 +488,13 @@ async def revoke_platform_admin(request: Request, data: MakeAdminRequest, _=Depe
     return {"success": True, "message": f"Platform admin revoked from {data.email}"}
 
 
+@router.get("/environment")
+async def get_platform_environment(request: Request, _=Depends(require_platform_admin)):
+    """Return the current deployment environment (production/staging/development)"""
+    env = os.environ.get("ENVIRONMENT", "development")
+    return {"environment": env}
+
+
 def init_platform_admin_router(app_db):
     global db
     db = app_db
