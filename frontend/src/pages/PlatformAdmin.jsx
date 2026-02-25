@@ -348,7 +348,7 @@ export default function PlatformAdmin({ user }) {
               <p className="text-xs text-[rgba(244,246,240,0.35)]">Battwheels OS — Operator Dashboard</p>
             </div>
             {(() => {
-              const env = process.env.REACT_APP_ENVIRONMENT || "production";
+              const env = backendEnv || process.env.REACT_APP_ENVIRONMENT || "production";
               const cfg = ENV_CONFIG[env] || ENV_CONFIG.production;
               return (
                 <span
