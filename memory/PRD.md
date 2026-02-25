@@ -70,7 +70,7 @@ Battwheels OS is a full-stack SaaS platform (React/FastAPI/MongoDB) for EV servi
 ## Prioritized Backlog
 
 ### P0 (Week 1 Remaining)
-- **Day 5: C-03 Period Locking** — Design document only, no code. Awaiting user confirmation to proceed.
+- **Day 5: C-03 Period Locking** — Design document delivered at `/app/docs/PERIOD_LOCKING_DESIGN.md`. No code. Awaiting user confirmation.
 
 ### P0 (Week 2)
 - **H-NEW-01 (HIGH):** `organization_settings.find_one({})` in `gst.py` line 715 — unscoped, returns first org's settings. Must scope by org_id.
