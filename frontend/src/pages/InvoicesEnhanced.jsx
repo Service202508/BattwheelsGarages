@@ -213,8 +213,20 @@ export default function InvoicesEnhanced() {
       const data = await res.json();
       setSelectedInvoice(data.invoice);
       setShowDetailDialog(true);
+      // Also fetch credit notes for this invoice
+      fetchInvoiceCreditNotes(invoiceId);
     } catch (e) {
       toast.error("Failed to fetch invoice details");
+    }
+  };
+
+  const fetchInvoiceCreditNotes = async (invoiceId) => {
+    try {
+      const res = await fetch(`${API}/credit-notes/?invoice_id=${invoiceId}`, { headers });
+      const data = await res.json();
+      setInvoiceCreditNotes(data.credit_notes || []);
+    } catch {
+      setInvoiceCreditNotes([]);
     }
   };
 
