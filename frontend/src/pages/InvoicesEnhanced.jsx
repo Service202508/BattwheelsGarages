@@ -98,6 +98,12 @@ export default function InvoicesEnhanced() {
   // History state
   const [history, setHistory] = useState([]);
   
+  // Credit Note state
+  const [showCNCreateDialog, setShowCNCreateDialog] = useState(false);
+  const [showCNViewDialog, setShowCNViewDialog] = useState(false);
+  const [selectedCreditNote, setSelectedCreditNote] = useState(null);
+  const [invoiceCreditNotes, setInvoiceCreditNotes] = useState([]);
+  
   // Send email state
   const [sendEmail, setSendEmail] = useState("");
   const [sendMessage, setSendMessage] = useState("");
