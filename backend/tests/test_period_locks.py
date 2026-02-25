@@ -151,9 +151,9 @@ class TestPeriodLockOperations:
             f"{BASE_URL}/api/v1/period-locks/unlock?period={TEST_PERIOD}",
             json={"reason": "short", "window_hours": 72}
         )
-        assert response.status_code == 400, f"Should require longer reason: {response.text}"
-        if response.status_code == 400:
-            print("Correctly rejected short unlock reason")
+        # 400 or 422 both indicate validation failure
+        assert response.status_code in [400, 422], f"Should require longer reason: {response.text}"
+        print("Correctly rejected short unlock reason")
     
     def test_unlock_period_success(self, api_client):
         """POST /api/v1/period-locks/unlock - Unlock with valid reason"""
