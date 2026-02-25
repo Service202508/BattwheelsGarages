@@ -19,6 +19,7 @@ from io import BytesIO
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
+from utils.audit_log import log_financial_action
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/credit-notes", tags=["credit-notes"])
