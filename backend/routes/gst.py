@@ -712,18 +712,26 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
     org_state = org_settings.get("place_of_supply", "27")
     
-    # OUTWARD SUPPLIES (Invoices)
-    invoices = await db.invoices.find(
-        {"date": {"$gte": start_date, "$lt": end_date}, "status": {"$in": ["sent", "paid", "partial", "overdue"]}},
-        {"_id": 0}
-    ).to_list(10000)
+    # OUTWARD SUPPLIES (Invoices) — org-scoped from both collections
+    inv_query = org_query(request, {
+        "invoice_date": {"$gte": start_date, "$lt": end_date},
+        "status": {"$in": ["sent", "paid", "partial", "overdue"]}
+    })
+    invoices_enh = await db.invoices_enhanced.find(inv_query, {"_id": 0}).to_list(10000)
+    
+    legacy_query = org_query(request, {
+        "date": {"$gte": start_date, "$lt": end_date},
+        "status": {"$in": ["sent", "paid", "partial", "overdue"]}
+    })
+    invoices_leg = await db.invoices.find(legacy_query, {"_id": 0}).to_list(10000)
+    all_3b_invoices = list(invoices_enh) + list(invoices_leg)
     
     outward_taxable = 0
     outward_cgst = 0
     outward_sgst = 0
     outward_igst = 0
     
-    for inv in invoices:
+    for inv in all_3b_invoices:
         subtotal = inv.get("sub_total", 0) or inv.get("subtotal", 0) or 0
         tax_total = inv.get("tax_total", 0) or (inv.get("total", 0) - subtotal)
         customer_gstin = inv.get("customer_gstin", "") or inv.get("gst_no", "")
