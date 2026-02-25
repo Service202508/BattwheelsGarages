@@ -155,7 +155,7 @@ class TestAuditEstimateTicketConversion:
         audit_entry = mongo_client["audit_logs"].find_one({
             "action": "estimate.status_changed",
             "resource_id": estimate_id,
-            "details.new_status": "sent"
+            "details.to": "sent"
         })
         
         assert audit_entry is not None, "No audit entry for estimate.status_changed (draft→sent)"
