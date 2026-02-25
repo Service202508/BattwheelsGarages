@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TabsContent } from "@/components/ui/tabs";
 import { Plus, Package, Settings, IndianRupee } from "lucide-react";
 import { EstimateLineItemRow } from "@/components/estimates";
-import { AutoSaveIndicator, DraftRecoveryBanner } from "@/components/shared/FormPersistence";
+import { AutoSaveIndicator, DraftRecoveryBanner } from "@/components/UnsavedChangesDialog";
 
 export function EstimateModal({ state, handlers }) {
   const {

@@ -15,7 +15,7 @@ import {
   FileUp, ListChecks, AlertTriangle, Edit, Plus, LayoutTemplate, Package,
   Trash2, IndianRupee, Percent
 } from "lucide-react";
-import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/shared/FormPersistence";
+import { AutoSaveIndicator, DraftRecoveryBanner, FormCloseConfirmDialog } from "@/components/UnsavedChangesDialog";
 
 export function SendDialog({ open, onOpenChange, sendEmail, setSendEmail, sendMessage, setSendMessage, onSend }) {
   return (

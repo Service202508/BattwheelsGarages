@@ -14,10 +14,8 @@ import {
   CheckCircle, ArrowRightLeft, Ticket, AlertTriangle, Send, Package
 } from "lucide-react";
 import { EstimateStatusBadge } from "@/components/estimates";
-import { StatCard, StatCardGrid } from "@/components/shared/StatCard";
-import { TableSkeleton } from "@/components/shared/LoadingSkeletons";
-import { EmptyState } from "@/components/shared/EmptyState";
-import { ResponsiveTable } from "@/components/shared/ResponsiveTable";
+import { StatCard, StatCardGrid, formatCurrencyCompact as _fcc } from "@/components/ui/stat-card";
+import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
 
 const formatCurrencyCompact = (v) => {
   if (v >= 10000000) return `₹${(v / 10000000).toFixed(1)}Cr`;
