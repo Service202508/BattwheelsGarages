@@ -286,8 +286,16 @@ class TestP04JournalIdempotency:
         
         data = response.json()
         
-        # Check if trial balance is available
-        if "totals" in data:
+        # Check is_balanced flag
+        if "is_balanced" in data:
+            assert data["is_balanced"] == True, f"Trial balance NOT balanced: {data}"
+            
+            summary = data.get("summary", {})
+            total_debit = summary.get("total_debit", 0)
+            total_credit = summary.get("total_credit", 0)
+            
+            print(f"PASS: Trial balance is BALANCED (DR={total_debit:,.2f}, CR={total_credit:,.2f})")
+        elif "totals" in data:
             totals = data["totals"]
             total_debit = totals.get("total_debit", 0)
             total_credit = totals.get("total_credit", 0)
