@@ -288,7 +288,9 @@ async def get_organization_gst_settings(request: Request):
     org_id = extract_org_id(request)
     """Get organization GST settings"""
     db = get_db()
-    settings = await db.organization_settings.find_one({}, {"_id": 0})
+    settings = await db.organization_settings.find_one(
+        org_query(org_id, {}), {"_id": 0}
+    )
     if not settings:
         settings = {
             "gstin": "",
@@ -370,8 +372,10 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
     })
     legacy_invoices = await db.invoices.find(legacy_query, {"_id": 0}).to_list(10000)
     
-    # Get organization settings
-    org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
+    # Get organization settings — org-scoped
+    org_settings = await db.organization_settings.find_one(
+        org_query(org_id, {}), {"_id": 0}
+    ) or {}
     org_state = org_settings.get("place_of_supply", "06")
     
     # Merge enhanced + legacy invoices
@@ -711,8 +715,10 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     # Extract org context — every query in this function MUST include org_id
     org_id = extract_org_id(request)
     
-    # Get organization settings
-    org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
+    # Get organization settings — org-scoped
+    org_settings = await db.organization_settings.find_one(
+        org_query(org_id, {}), {"_id": 0}
+    ) or {}
     org_state = org_settings.get("place_of_supply", "27")
     
     # OUTWARD SUPPLIES (Invoices) — org-scoped from both collections
