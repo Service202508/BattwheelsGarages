@@ -227,6 +227,13 @@ async def create_credit_note(request: Request, body: CreateCreditNoteRequest):
     
     logger.info(f"Credit note {cn_number} created for invoice {invoice.get('invoice_number')} in org {org_id}")
     
+    # Audit log: credit_note CREATE
+    await log_financial_action(
+        org_id=org_id, action="CREATE", entity_type="credit_note",
+        entity_id=cn_id, request=request,
+        before_snapshot=None, after_snapshot=credit_note,
+    )
+    
     return {
         "status": "success",
         "credit_note": credit_note,
