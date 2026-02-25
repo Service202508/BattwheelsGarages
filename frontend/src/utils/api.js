@@ -56,6 +56,18 @@ export const apiFetch = async (url, options = {}) => {
   
   const response = await fetch(url, mergedOptions);
 
+  // Intercept 409 period locked globally
+  if (response.status === 409) {
+    try {
+      const cloned = response.clone();
+      const body = await cloned.json();
+      const detail = body?.detail;
+      if (detail && typeof detail === "object" && detail.code === "PERIOD_LOCKED") {
+        window.dispatchEvent(new CustomEvent("period_locked", { detail }));
+      }
+    } catch (_) {}
+  }
+
   // Intercept 403 feature_not_available globally
   if (response.status === 403) {
     try {
