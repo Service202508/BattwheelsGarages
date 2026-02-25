@@ -2119,6 +2119,12 @@ async def update_estimate_status(estimate_id: str, status_update: StatusUpdate):
         f"Status changed from '{current_status}' to '{new_status}'" + (f": {status_update.reason}" if status_update.reason else "")
     )
     
+    # Audit: estimate.status_changed
+    from utils.audit import log_audit, AuditAction
+    org_id = estimate.get("organization_id", "")
+    await log_audit(db, AuditAction.ESTIMATE_STATUS_CHANGED, org_id, "",
+        "estimate", estimate_id, {"from": current_status, "to": new_status, "reason": status_update.reason})
+    
     # Handle auto-conversion for accepted status
     conversion_result = None
     if new_status == "accepted":
