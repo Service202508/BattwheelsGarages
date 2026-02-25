@@ -775,25 +775,26 @@ async def get_balance_sheet_report(
 
 @router.get("/reports/cash-flow")
 async def get_cash_flow_report(
+    request: Request,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
-    organization_id: Optional[str] = None
 ):
     """Generate Cash Flow report"""
+    org_id = _get_org_id(request)
     now = datetime.now(timezone.utc)
     if not start_date:
         start_date = (now - timedelta(days=30)).strftime("%Y-%m-%d")
     if not end_date:
         end_date = now.strftime("%Y-%m-%d")
     
-    # Get bank transactions by type
+    # Get bank transactions by type — org-scoped
     deposits = await bank_transactions_col.aggregate([
-        {"$match": {"transaction_type": {"$in": ["deposit", "transfer_in"]}, "transaction_date": {"$gte": start_date, "$lte": end_date}}},
+        {"$match": {"organization_id": org_id, "transaction_type": {"$in": ["deposit", "transfer_in"]}, "transaction_date": {"$gte": start_date, "$lte": end_date}}},
         {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
     ]).to_list(1)
     
     withdrawals = await bank_transactions_col.aggregate([
-        {"$match": {"transaction_type": {"$in": ["withdrawal", "transfer_out"]}, "transaction_date": {"$gte": start_date, "$lte": end_date}}},
+        {"$match": {"organization_id": org_id, "transaction_type": {"$in": ["withdrawal", "transfer_out"]}, "transaction_date": {"$gte": start_date, "$lte": end_date}}},
         {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
     ]).to_list(1)
     
