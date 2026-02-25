@@ -182,6 +182,11 @@ async def create_ticket(request: Request, data: TicketCreateRequest, ctx: Tenant
         user_name=user.get("name", "System")
     )
     
+    # Audit: ticket.created
+    from utils.audit import log_audit, AuditAction
+    await log_audit(service.db, AuditAction.TICKET_CREATED, ctx.org_id, user.get("user_id"),
+        "ticket", ticket.get("ticket_id", ""), {"customer": data.customer_name, "category": data.category})
+    
     return ticket
 
 
