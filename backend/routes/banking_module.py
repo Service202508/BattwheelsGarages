@@ -13,6 +13,7 @@ Features:
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
+from services.period_lock_service import check_period_lock
 from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 import motor.motor_asyncio
@@ -250,6 +251,11 @@ async def update_bank_account(request: Request, account_id: str, updates: Dict[s
 async def create_bank_transaction(request: Request, txn: BankTransactionCreate):
     """Record a bank transaction"""
     org_id = _get_org_id(request)
+    
+    # Period lock check on transaction_date
+    if txn.transaction_date:
+        await check_period_lock(org_id, txn.transaction_date)
+    
     txn_id = f"bt_{uuid.uuid4().hex[:12]}"
     txn_number = await get_next_number("TXN", org_id)
     now = datetime.now(timezone.utc)
@@ -341,8 +347,16 @@ async def list_bank_transactions(
 
 
 @router.post("/transactions/{txn_id}/reconcile")
-async def reconcile_transaction(txn_id: str):
+async def reconcile_transaction(txn_id: str, request: Request = None):
     """Mark a transaction as reconciled"""
+    # Period lock check on transaction_date
+    txn = await bank_transactions_col.find_one({"transaction_id": txn_id})
+    if txn:
+        org_id = txn.get("organization_id", "")
+        check_date = txn.get("transaction_date", "")
+        if org_id and check_date:
+            await check_period_lock(org_id, check_date)
+    
     result = await bank_transactions_col.update_one(
         {"transaction_id": txn_id},
         {
