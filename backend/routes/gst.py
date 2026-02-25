@@ -708,6 +708,9 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     except:
         raise HTTPException(status_code=400, detail="Invalid month format. Use YYYY-MM")
     
+    # Extract org context — every query in this function MUST include org_id
+    org_id = extract_org_id(request)
+    
     # Get organization settings
     org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
     org_state = org_settings.get("place_of_supply", "27")
@@ -745,14 +748,14 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         else:
             outward_igst += tax_total
     
-    # INPUT TAX CREDIT (Bills + Expenses)
+    # INPUT TAX CREDIT (Bills + Expenses) — org-scoped
     bills = await db.bills.find(
-        {"date": {"$gte": start_date, "$lt": end_date}},
+        org_query(org_id, {"date": {"$gte": start_date, "$lt": end_date}}),
         {"_id": 0}
     ).to_list(10000)
     
     expenses = await db.expenses.find(
-        {"expense_date": {"$gte": start_date, "$lt": end_date}},
+        org_query(org_id, {"expense_date": {"$gte": start_date, "$lt": end_date}}),
         {"_id": 0}
     ).to_list(10000)
     
