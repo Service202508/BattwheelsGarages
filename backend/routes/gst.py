@@ -840,9 +840,11 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     cn_value = sum(cn.get("total", 0) for cn in cn_list)
     
     # Adjust net liability by deducting CN tax
-    net_cgst = max(0, outward_cgst - input_cgst - cn_cgst)
-    net_sgst = max(0, outward_sgst - input_sgst - cn_sgst)
-    net_igst = max(0, outward_igst - input_igst - cn_igst)
+    net_cgst = max(0, total_output_cgst - input_cgst - cn_cgst)
+    net_sgst = max(0, total_output_sgst - input_sgst - cn_sgst)
+    net_igst = max(0, total_output_igst - input_igst - cn_igst)
+    
+    rcm_total_tax = rcm_cgst + rcm_sgst + rcm_igst
     
     report_data = {
         "period": month,
@@ -856,6 +858,14 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
             "total_tax": round(outward_cgst + outward_sgst + outward_igst - cn_tax_total, 2),
             "gross_outward": round(outward_taxable, 2),
             "cn_adjustment": round(cn_taxable, 2)
+        },
+        "section_3_1_d": {
+            "description": "Inward supplies liable to reverse charge",
+            "taxable_value": round(rcm_taxable, 2),
+            "cgst": round(rcm_cgst, 2),
+            "sgst": round(rcm_sgst, 2),
+            "igst": round(rcm_igst, 2),
+            "total_tax": round(rcm_total_tax, 2)
         },
         "section_3_2": {
             "description": "Unregistered supplies (B2C)",
@@ -894,9 +904,10 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
             }
         },
         "summary": {
-            "total_output_tax": round(outward_cgst + outward_sgst + outward_igst - cn_tax_total, 2),
+            "total_output_tax": round(outward_cgst + outward_sgst + outward_igst + rcm_total_tax - cn_tax_total, 2),
             "total_input_tax": round(input_cgst + input_sgst + input_igst, 2),
-            "net_tax_payable": round(net_cgst + net_sgst + net_igst, 2)
+            "net_tax_payable": round(net_cgst + net_sgst + net_igst, 2),
+            "rcm_tax_liability": round(rcm_total_tax, 2)
         }
     }
     
