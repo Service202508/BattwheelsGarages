@@ -39,8 +39,17 @@ async def ai_diagnose(request: Request, data: AIQueryRequest):
     """
     Unified AI Assistant endpoint for all portals.
     Routes queries to Gemini with portal-specific context.
+    Tenant-scoped: uses organization_id from authenticated context.
     """
     from emergentintegrations.llm.chat import LlmChat, UserMessage
+    
+    # CRITICAL: Extract tenant context from TenantGuardMiddleware
+    org_id = getattr(request.state, "tenant_org_id", None)
+    user_id = getattr(request.state, "tenant_user_id", None)
+    user_role = getattr(request.state, "tenant_user_role", "viewer")
+    
+    if not org_id:
+        raise HTTPException(status_code=400, detail="Organization context required")
     
     api_key = os.environ.get('EMERGENT_LLM_KEY')
     if not api_key:
@@ -51,10 +60,13 @@ async def ai_diagnose(request: Request, data: AIQueryRequest):
         )
     
     try:
-        # Get user info from token if available
+        # Get user name from database (NOT from request body — prevents spoofing)
+        db = get_db()
         user_name = "User"
-        if data.context:
-            user_name = data.context.get("user_name", "User")
+        if user_id:
+            user_doc = await db.users.find_one({"user_id": user_id}, {"_id": 0, "name": 1})
+            if user_doc:
+                user_name = user_doc.get("name", "User")
         
         # Portal-specific system prompts
         portal_prompts = {
