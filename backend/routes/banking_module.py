@@ -39,6 +39,15 @@ reconciliation_col = db["bank_reconciliations"]
 counters_col = db["counters"]
 
 
+def _get_org_id(request: Request) -> str:
+    """Extract org_id from tenant middleware context. Raises 400 if missing."""
+    org_id = getattr(request.state, "tenant_org_id", None)
+    if not org_id:
+        from fastapi import HTTPException as _H
+        raise _H(status_code=400, detail="Organization context required")
+    return org_id
+
+
 # ==================== MODELS ====================
 
 class BankAccountCreate(BaseModel):
