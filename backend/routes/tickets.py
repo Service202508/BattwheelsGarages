@@ -536,6 +536,11 @@ async def assign_ticket(request: Request, ticket_id: str, data: AssignTicketRequ
             user_id=user.get("user_id"),
             user_name=user.get("name", "System")
         )
+        # Audit: ticket.assigned
+        from utils.audit import log_audit, AuditAction
+        org_id = ticket.get("organization_id", "")
+        await log_audit(service.db, AuditAction.TICKET_ASSIGNED, org_id, user.get("user_id"),
+            "ticket", ticket_id, {"technician_id": data.technician_id})
         return ticket
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
