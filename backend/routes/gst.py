@@ -817,9 +817,14 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         input_sgst += tax_amount / 2
     
     # NET TAX LIABILITY
-    net_cgst = max(0, outward_cgst - input_cgst)
-    net_sgst = max(0, outward_sgst - input_sgst)
-    net_igst = max(0, outward_igst - input_igst)
+    # Outward liability includes: regular outward supplies + RCM (Section 3.1d)
+    total_output_cgst = outward_cgst + rcm_cgst
+    total_output_sgst = outward_sgst + rcm_sgst
+    total_output_igst = outward_igst + rcm_igst
+    
+    net_cgst = max(0, total_output_cgst - input_cgst)
+    net_sgst = max(0, total_output_sgst - input_sgst)
+    net_igst = max(0, total_output_igst - input_igst)
     
     # Credit Notes (reduce output liability) — org-scoped, proper GST breakdown
     cn_query_3b = org_query(org_id, {
