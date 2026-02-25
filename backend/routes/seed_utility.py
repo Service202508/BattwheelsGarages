@@ -28,13 +28,8 @@ db = client[DB_NAME]
 
 router = APIRouter(prefix="/seed", tags=["Data Seeding"])
 
-
-@router.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
-async def seed_env_gate(path: str):
-    """Block all seed endpoints in production."""
-    env = os.environ.get("ENVIRONMENT", "development")
-    if env == "production":
-        raise HTTPException(status_code=403, detail="Seed endpoints are disabled in production")
+# Environment gate: all seed endpoints check this
+_SEED_ALLOWED = os.environ.get("ENVIRONMENT", "development") != "production"
 
 # Sample data
 WAREHOUSE_NAMES = [
