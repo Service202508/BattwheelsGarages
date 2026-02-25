@@ -1,109 +1,60 @@
 # Battwheels OS — Product Requirements Document
 
-## Product Overview
-Battwheels OS is a full-stack SaaS platform (React/FastAPI/MongoDB) for EV service management. Multi-tenant architecture, double-entry accounting, GST compliance, HR/Payroll, inventory management, AI diagnostics, fleet management, and Zoho Books integration.
+## Problem Statement
+Full-stack SaaS platform (React/FastAPI/MongoDB) for EV workshop management. The platform underwent a comprehensive "Grand Final Audit" identifying production-readiness gaps. A strict "Week 1" and "Week 2" remediation plan was created and is being executed.
 
-## Core Architecture
-- **Frontend:** React + Shadcn UI
-- **Backend:** FastAPI (Python 3.11)
-- **Database:** MongoDB (Motor async driver)
-- **Auth:** JWT-based + Emergent Google Auth
-- **AI:** Gemini 3 Flash (Emergent LLM Key)
-- **Integrations:** Razorpay, Stripe (test), Resend, Sentry, WeasyPrint, WhatsApp (MOCKED)
+## Architecture
+- **Frontend**: React (CRA) + Shadcn/UI + TailwindCSS
+- **Backend**: FastAPI + MongoDB (Motor) + Multi-tenant (TenantGuard)
+- **Auth**: JWT + Emergent Google Auth
+- **Integrations**: Resend (email), Razorpay, Stripe (test), Gemini (Emergent LLM), Sentry, WhatsApp (mocked)
 
-## Multi-Tenancy
-- TenantGuardMiddleware enforces org_id on all non-public routes
-- RBACMiddleware enforces role-based access control (path normalization fixed)
-- All collections scoped by `organization_id`
+## What's Been Implemented
 
----
+### Week 1 (Complete)
+- [x] JWT unification
+- [x] Dead code removal
+- [x] Route scoping
+- [x] GSTR credit note inclusion (C-06)
+- [x] Audit logging for financial mutations (C-05)
+- [x] Period-locking design document (C-03)
 
-## Completed Work
+### Week 2 (Complete — Feb 25, 2026)
+- [x] **M-NEW-02**: Fixed `user_role` in audit entries (field mismatch: `user_role` → `tenant_user_role`)
+- [x] **H-NEW-01**: Fixed 3 unscoped `organization_settings` queries in `gst.py`
+- [x] **Estimates Chain**: Verified end-to-end (Create → Edit → Save → Convert to Invoice). Both reported bugs (edit modal, save error) are NOT reproducible — chain working correctly
+- [x] **Password Reset — 3 Flows**:
+  - Flow 1: Admin resets employee password (`POST /api/v1/employees/{id}/reset-password`)
+  - Flow 2: Self-service password change (`POST /api/auth/change-password`)
+  - Flow 3: Forgot password via email with Resend (`POST /api/auth/forgot-password` + `POST /api/auth/reset-password`)
+  - Password strength validation (8+ chars, uppercase, number, special char)
+  - Tokens stored as SHA-256 hashes, 1-hour TTL, one-time use
+  - Audit logging for admin password resets
+  - DB indexes: token_hash (unique), user_id, expires_at (TTL)
+- [x] **TicketDetail Standalone Page**: Full-page view at `/tickets/:ticketId` with 6 sections (Customer/Vehicle, Service, Costs, Activity Timeline, Status/Actions, Invoice)
+- [x] **HR Dashboard**: Landing page at `/hr` with KPI cards, attendance summary, leave requests, payroll table, quick links
+- [x] **Environment Badge**: Platform Admin header shows PRODUCTION/STAGING/DEVELOPMENT badge fetched from backend
+- [x] **PWA Service Worker**: `service-worker.js` created with network-first strategy, registered in `index.js`
 
-### Week 1 Remediation — Day 4: C-05 Audit Logging (2026-02-25) — VERIFIED 13/13
-- **Utility:** `utils/audit_log.py` — `log_financial_action()` with full schema
-- **Schema:** org_id, user_id, user_role, action (CREATE/UPDATE/VOID/DELETE), entity_type, entity_id, timestamp (UTC), ip_address, before_snapshot, after_snapshot
-- **Mutation points covered:**
-  - Invoice CREATE/UPDATE/VOID (`routes/invoices_enhanced.py`)
-  - Payment CREATE (`routes/invoices_enhanced.py`)
-  - Credit Note CREATE (`routes/credit_notes.py`)
-  - Journal Entry CREATE (`services/double_entry_service.py`)
-- **before_snapshot:** null for CREATE, full document for UPDATE/VOID
-- **IP extraction:** From X-Forwarded-For (K8s ingress) or direct client
+## Test Coverage
+- `test_audit_logging.py`: 15 tests (including 2 new for user_role)
+- `test_gstr3b_credit_notes.py`: 15 tests
+- `test_password_reset.py`: 9 tests
+- `test_week2_features.py`: 15 tests (created by testing agent)
+- **Total: 54 tests**
 
-### Week 1 Remediation — Day 3: C-06 GSTR Credit Note Inclusion (2026-02-25) — VERIFIED 15/15 + Staging
-- **Root bug:** All 6 `org_query(request, ...)` calls in `gst.py` passed Request object instead of org_id string — BSON serialization failure, complete tenant scoping bypass
-- **Fix:** `org_query(org_id, ...)` in all 8 GSTR-1 + GSTR-3B queries; added `org_id = extract_org_id(request)` to GSTR-3B function; org-scoped bills/expenses queries
-- **Credit note logic validated:** CN subtotals reduce section_3_1 taxable_value; CGST/SGST/IGST adjusted separately; partial CNs deduct only CN amount; cross-period CNs treated by CN date
-- **Staging validation:** Two separate orgs ran without error, figures differ per org, no cross-org contamination
+## Remaining/Future Tasks
 
-### Week 1 Remediation — Days 1-2 (2026-02-25)
-- **C-01:** JWT secret unification + bcrypt password hashing
-- **C-04:** Dead tenant middleware tombstoned
-- **C-02:** Route scoping audit — fixed banking_module.py, data_integrity.py, seed_utility.py
-
-### P1: Credit Notes — GST Compliance (2026-02-25) — VERIFIED 15/15 + Frontend
-- **Backend:** Full CRUD at `/api/v1/credit-notes/` (POST create, GET list, GET single, GET PDF)
-- **Journal Templates:**
-  - Outstanding invoice: DEBIT Sales Revenue + GST Payable, CREDIT Accounts Receivable
-  - Paid invoice: DEBIT Sales Revenue + GST Payable, CREDIT Refund Payable (code 2410)
-- **Validation:** Rejects DRAFT invoices, exceeds-total, exceeds-remaining, GST treatment matches original
-- **PDF:** WeasyPrint with full GST breakdown (CGST/SGST or IGST), prominent "CREDIT NOTE" label
-- **Sequence:** Atomic CN-00001 format via sequences collection
-- **Frontend:** CreditNoteCreateModal + CreditNoteViewModal, accessible from invoice detail
-- **Indexes:** org_date, org_invoice, unique org_number on credit_notes collection
-- **Trial balance BALANCED after all CN postings**
-
-### P0 Security Fixes (2026-02-25) — ALL VERIFIED 17/17
-1. **RBAC Bypass Fix** — Path normalization in `middleware/rbac.py`
-2. **Zoho Sync Guard** — All destructive ops scoped by org_id + env gate
-3. **AI Tenant Scoping** — org_id/user_id from request.state, session org-scoped
-4. **Journal Idempotency** — Application check + unique sparse index
-
-### Previous Session
-- Data integrity migration (1,172 documents fixed)
-- Public route fix, JWT secret unification, compound indexes
-- Comprehensive security audits
-
----
-
-## Prioritized Backlog
-
-### P0 (Week 1 Remaining)
-- **Day 5: C-03 Period Locking** — Design document delivered at `/app/docs/PERIOD_LOCKING_DESIGN.md`. No code. Awaiting user confirmation.
-
-### P0 (Week 2)
-- **H-NEW-01 (HIGH):** `organization_settings.find_one({})` in `gst.py` line 715 — unscoped, returns first org's settings. Must scope by org_id.
-- **H-01:** Banking module cross-tenant — partially fixed, needs full verification
-
-### P1
-- HIGH severity audit findings (broken estimate-to-invoice chain, etc.)
-- **M-NEW-01 (MEDIUM):** No reverse-charge filtering in GSTR-3B outward liability
-
-### P2
-- Refactor `EstimatesEnhanced.jsx` (2900+ lines)
-- Consolidate 5 redundant auth middleware files into 1
-
-### P3
+### P1 — Upcoming
+- Refactor `EstimatesEnhanced.jsx` (2,900+ lines)
 - Configure live WhatsApp credentials
-- Implement Celery for background jobs
 
-### P4
-- E2E Playwright tests
-- Logo swap
+### P2 — Backlog
+- Period locking implementation (design doc exists at `/app/docs/PERIOD_LOCKING_DESIGN.md`)
+- Enhanced reporting and analytics
+- Mobile-responsive optimization
 
----
-
-## Key Files
-- `/app/backend/utils/audit_log.py` — Financial audit logging utility
-- `/app/backend/routes/gst.py` — GSTR-1 and GSTR-3B with credit note inclusion (C-06 fix)
-- `/app/backend/routes/credit_notes.py` — Credit notes CRUD + PDF + journal posting
-- `/app/backend/routes/invoices_enhanced.py` — Invoice CRUD with audit logging
-- `/app/backend/middleware/rbac.py` — RBAC with path normalization
-- `/app/backend/services/double_entry_service.py` — Journal entries with idempotency + audit logging
-- `/app/frontend/src/components/CreditNoteModal.jsx` — Create + View modals
-- `/app/FINDINGS_TRACKER.md` — Active findings from Week 1 remediation
-
-## Test Credentials
-- Admin: `admin@battwheels.in` / `Admin@12345`
-- Org ID: `6996dcf072ffd2a2395fee7b`
+## Key Credentials
+- **Admin**: admin@battwheels.in / Admin@12345
+- **Dev**: dev@battwheels.internal / DevTest@123
+- **Org ID**: 6996dcf072ffd2a2395fee7b
