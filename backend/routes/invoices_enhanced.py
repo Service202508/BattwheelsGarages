@@ -25,6 +25,7 @@ from core.tenant.context import TenantContext, tenant_context_required, optional
 # Import double-entry posting hooks
 from services.posting_hooks import post_invoice_journal_entry
 from utils.audit_log import log_financial_action
+from services.period_lock_service import check_period_lock
 
 logger = logging.getLogger(__name__)
 
@@ -716,6 +717,11 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
     """Create a new invoice"""
     # Get org context for multi-tenant scoping
     org_id = await get_org_id(request) if request else None
+    
+    # Period lock check on invoice_date
+    invoice_date = invoice.invoice_date or datetime.now(timezone.utc).date().isoformat()
+    if org_id:
+        await check_period_lock(org_id, invoice_date)
     
     # Validate customer
     customer_query = org_query(org_id, {"contact_id": invoice.customer_id})
