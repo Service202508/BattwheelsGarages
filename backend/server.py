@@ -1547,19 +1547,44 @@ async def logout(request: Request, response: Response):
 
 # ==================== PASSWORD MANAGEMENT ====================
 
+def _validate_password_strength(v: str) -> str:
+    import re
+    if len(v) < 8:
+        raise ValueError("Password must be at least 8 characters")
+    if not re.search(r"[A-Z]", v):
+        raise ValueError("Password must contain at least one uppercase letter")
+    if not re.search(r"\d", v):
+        raise ValueError("Password must contain at least one number")
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>_\-+=\[\]\\;'/`~]", v):
+        raise ValueError("Password must contain at least one special character")
+    return v
+
+
 class ChangePasswordRequest(BaseModel):
     current_password: str
-    new_password: str = Field(..., min_length=6)
+    new_password: str = Field(..., min_length=8)
+
+    @validator("new_password")
+    def validate_new_password(cls, v):
+        return _validate_password_strength(v)
 
 class ForgotPasswordRequest(BaseModel):
     email: str
 
 class ResetPasswordRequest(BaseModel):
     token: str
-    new_password: str = Field(..., min_length=6)
+    new_password: str = Field(..., min_length=8)
+
+    @validator("new_password")
+    def validate_new_password(cls, v):
+        return _validate_password_strength(v)
 
 class AdminResetPasswordRequest(BaseModel):
-    new_password: str = Field(..., min_length=6)
+    new_password: str = Field(..., min_length=8)
+
+    @validator("new_password")
+    def validate_new_password(cls, v):
+        return _validate_password_strength(v)
 
 
 @api_router.post("/auth/change-password")
