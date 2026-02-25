@@ -15,6 +15,7 @@ import os
 
 # Import double-entry posting hooks
 from services.posting_hooks import post_payment_received_journal_entry
+from services.period_lock_service import check_period_lock
 
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
 DB_NAME = os.environ.get("DB_NAME", "battwheels")
@@ -383,6 +384,12 @@ async def get_customer_invoices_for_payment(customer_id: str):
 @router.post("/")
 async def record_payment(payment: PaymentRecordCreate, background_tasks: BackgroundTasks):
     """Record a new payment"""
+    # Period lock check on payment_date
+    payment_date = payment.payment_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    org_id = payment.organization_id if hasattr(payment, 'organization_id') else None
+    if org_id:
+        await check_period_lock(org_id, payment_date)
+    
     # Validate customer
     customer = await contacts_collection.find_one({"contact_id": payment.customer_id})
     if not customer:
@@ -915,6 +922,12 @@ async def delete_payment(payment_id: str):
     payment = await payments_collection.find_one({"payment_id": payment_id})
     if not payment:
         raise HTTPException(status_code=404, detail="Payment not found")
+    
+    # Period lock check on original payment_date
+    check_date = payment.get("payment_date", "")
+    org_id = payment.get("organization_id", "")
+    if org_id and check_date:
+        await check_period_lock(org_id, check_date)
     
     customer_id = payment.get("customer_id")
     
