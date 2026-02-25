@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_custom_test_vehicle_tracking_org_id","background":true}],"uuid":"4409e91a369a4317a3046822420ec5cb","collectionName":"custom_test_vehicle_tracking","type":"collection"}

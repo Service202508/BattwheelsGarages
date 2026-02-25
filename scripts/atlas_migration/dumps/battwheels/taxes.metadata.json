@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"287a546bf86c4b02a484bebf8da518e3","collectionName":"taxes","type":"collection"}

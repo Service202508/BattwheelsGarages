@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"28e5f48abda44c3a8fe8bd6d9f357b3a","collectionName":"technician_action_logs","type":"collection"}

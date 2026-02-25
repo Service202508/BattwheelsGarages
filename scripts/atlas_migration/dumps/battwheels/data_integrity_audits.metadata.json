@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"94852919fb444522b3ef08df264bbaa0","collectionName":"data_integrity_audits","type":"collection"}

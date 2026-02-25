@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_project_time_logs_org_id","background":true}],"uuid":"50cc7d5d694d4b38bfbedf62a251042f","collectionName":"project_time_logs","type":"collection"}

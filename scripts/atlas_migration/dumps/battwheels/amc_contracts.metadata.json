@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"7eec3528ee0f4d1d9429a47b41006091","collectionName":"amc_contracts","type":"collection"}

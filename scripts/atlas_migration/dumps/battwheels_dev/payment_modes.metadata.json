@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_payment_modes_org_id","background":true}],"uuid":"a168f4b66aef4d02a72d2c7bcd82120f","collectionName":"payment_modes","type":"collection"}

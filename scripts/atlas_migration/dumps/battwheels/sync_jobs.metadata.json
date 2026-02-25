@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_sync_jobs_org_id","background":true}],"uuid":"ac9ec3021ecb4d258cc8ca74f14537c0","collectionName":"sync_jobs","type":"collection"}

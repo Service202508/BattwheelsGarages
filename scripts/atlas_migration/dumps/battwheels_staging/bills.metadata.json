@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"},"status":{"$numberInt":"1"},"created_at":{"$numberInt":"-1"}},"name":"bills_org_status_date","background":true}],"uuid":"e412cc22b9a240e0b20ae43568ec25f0","collectionName":"bills","type":"collection"}

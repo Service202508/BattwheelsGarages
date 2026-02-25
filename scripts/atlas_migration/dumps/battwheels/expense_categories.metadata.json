@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_expense_categories_org_id","background":true}],"uuid":"2c6cf5fe4a584f968f8bc9d62b4bd253","collectionName":"expense_categories","type":"collection"}

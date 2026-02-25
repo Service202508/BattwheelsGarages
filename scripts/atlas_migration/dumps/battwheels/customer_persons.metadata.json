@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"organization_id":{"$numberInt":"1"}},"name":"idx_customer_persons_org_id","background":true}],"uuid":"85157e7deb964cc294f9aa5451078389","collectionName":"customer_persons","type":"collection"}

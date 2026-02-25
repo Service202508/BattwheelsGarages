@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"cd17a7bb675a41678ca17263f325bb03","collectionName":"late_fee_settings","type":"collection"}
