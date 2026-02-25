@@ -14,7 +14,7 @@ import {
   CheckCircle, ArrowRightLeft, Ticket, AlertTriangle, Send, Package
 } from "lucide-react";
 import { EstimateStatusBadge } from "@/components/estimates";
-import { StatCard, StatCardGrid, formatCurrencyCompact as _fcc } from "@/components/ui/stat-card";
+import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
 
 const formatCurrencyCompact = (v) => {
