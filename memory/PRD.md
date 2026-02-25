@@ -18,76 +18,56 @@ Database: MongoDB (battwheels=prod, battwheels_dev=dev, battwheels_staging=stagi
 
 ## What's Been Implemented
 
-### Week 1 (Complete)
-- Unified JWT auth system
-- Initial audit logging framework
-- Base multi-tenant architecture
+### Week 1-2 (Complete)
+- Unified JWT auth, audit logging, multi-tenant architecture
+- Password reset flows, TicketDetail/HRDashboard pages
+- Environment badge, PWA service worker, docs (SOP, CODING_STANDARDS)
 
-### Week 2 (Complete)
-- 3 password reset flows with tests
-- TicketDetail.jsx and HRDashboard.jsx pages
-- Environment badge + PWA service worker
-- ENVIRONMENT_SOP.md and CODING_STANDARDS.md
+### Week 3 Emergency + Prompt 1 (Complete)
+- Fixed backend .env to point to battwheels_dev
+- Created INCIDENTS.md, migration scripts, provisioned battwheels_staging
 
-### Pre-Week 3 Production Safety (Complete — 2026-02-25)
-- Production contamination assessment and cleanup
-- Added Rule 8 (Customers Are Sacrosanct) to ENVIRONMENT_SOP.md
-- Created "Battwheels OS Internal" org for production testing
-
-### Week 3 Prompt 1: Infrastructure Scaffolding (Complete — 2026-02-25)
-- Created /app/docs/INCIDENTS.md, /app/scripts/migrations/ directory
-- Provisioned battwheels_staging database
-
-### Week 3 Prompt 2: Period Locking (Complete — 2026-02-25)
-- Backend service, API routes, middleware on 8 route files, frontend UI
-- 409 PERIOD_LOCKED global handler in apiFetch
+### Week 3 Prompt 2: Period Locking (Complete)
+- Full period locking system with backend service, API, middleware, and frontend UI
 - 17/17 tests passed
 
-### Week 3 Prompt 3: Audit Log Coverage + Estimate→Ticket (Complete — 2026-02-25)
-- Fixed audit_log.py to write to audit_logs collection
-- 14 new audit points across the application
+### Week 3 Prompt 3: Audit Log + Estimate→Ticket (Complete)
+- Fixed audit_log.py (correct collection + schema), 14 new audit points
 - Estimate→Ticket conversion flow
 - 13/13 tests passed
 
 ### Week 3 Prompt 4: Security Hardening (Complete — 2026-02-25)
-- **CSRF Protection (Double Submit Cookie pattern):**
-  - Backend middleware: `/app/backend/middleware/csrf.py`
-  - Sets `csrf_token` cookie (HttpOnly=false, Secure, SameSite=none)
-  - Validates `X-CSRF-Token` header matches cookie for mutation methods
-  - Bearer-token auth requests bypass CSRF (per OWASP — Authorization header can't be forged cross-origin)
-  - Defense-in-depth: validates CSRF if header IS provided even with bearer token
-  - Exempt paths: /api/auth/, /api/public/, /api/webhooks/, /api/health, /api/contact, /api/book-demo
-- **Input Sanitization (bleach):**
-  - Backend middleware: `/app/backend/middleware/sanitize.py`
-  - Strips ALL HTML tags from JSON string inputs on POST/PUT/PATCH
-  - Uses `bleach.clean(strip=True)` — recursive for nested objects/arrays
-  - Prevents stored XSS attacks
-- **Frontend apiFetch integration:**
-  - Extended existing unified API client (`/app/frontend/src/utils/api.js`)
-  - `getCookie()` helper reads csrf_token from document.cookie
-  - Auto-injects `X-CSRF-Token` header on POST/PUT/PATCH/DELETE
-  - Auto-refreshes CSRF cookie on CSRF_MISSING/CSRF_INVALID errors
-- **Middleware order:** Request → CSRF → TenantGuard → RBAC → Sanitization → RateLimit → Route
-- **CORS updated:** Added `X-CSRF-Token` to allowed headers
-- **Testing:** 16/16 tests passed (100% backend + frontend)
+- **CSRF Protection:** Double Submit Cookie pattern (`/app/backend/middleware/csrf.py`)
+  - Cookie: `csrf_token`, Header: `X-CSRF-Token`, validates match on mutations
+  - Bearer-token auth bypasses CSRF (per OWASP)
+  - Exempt paths: /api/auth/, /api/public/, /api/webhooks/, etc.
+- **Input Sanitization:** `bleach` middleware (`/app/backend/middleware/sanitize.py`)
+  - Strips ALL HTML tags from JSON inputs on POST/PUT/PATCH
+  - Fixed Starlette body caching issue (`request._body` override)
+- **Frontend:** Extended `apiFetch` wrapper with CSRF token injection
+- **Middleware order:** CSRF → TenantGuard → RBAC → Sanitization → RateLimit
+- 16/16 tests passed
 
-## Prioritized Backlog
-
-### P0 (Next)
-- **Prompt 5:** Refactor monolithic EstimatesEnhanced.jsx (2966 lines → smaller components) + GST calculation bug fix
-  - USER REQUESTED: Come back before starting Prompt 5 for additional instructions about preserving Estimate→Ticket conversion button
-
-### P2 (Technical Debt)
-- Consolidate audit_log vs audit_logs dual-collection issue
-- Consolidate invoices vs invoices_enhanced dual-collection issue
-- Fix empty password hash bug in seed scripts
-- Recover/reset platform-admin@battwheels.in password
-
-## Credentials Registry
-- admin@battwheels.in / q56*09ps4ltWR96MVPvO (prod)
-- internal@battwheels.in / lbC9qFOmjbJapYtUp^h1 (prod internal)
-- demo@voltmotors.in / Demo@12345 (dev)
-- dev@battwheels.internal / DevTest@123 (dev)
+### Week 3 Prompt 5: EstimatesEnhanced Refactor + GSTR-3B Fix (Complete — 2026-02-25)
+- **Refactored 2966-line monolith into 8 files (2226 total lines):**
+  - `EstimatesEnhanced.jsx` → 6-line re-export wrapper
+  - `estimates/index.jsx` → 122-line orchestrator with Tabs wrapper
+  - `estimates/useEstimates.js` → 809-line custom hook (ALL state + handlers)
+  - `estimates/EstimatesTable.jsx` → 217 lines (summary, table, ticket estimates)
+  - `estimates/EstimateDetail.jsx` → 73 lines (detail dialog)
+  - `estimates/EstimateActions.jsx` → 138 lines (action buttons, ticket banner, converted_to)
+  - `estimates/EstimateModal.jsx` → 267 lines (create new form)
+  - `estimates/EstimateDialogs.jsx` → 600 lines (all secondary dialogs)
+- **Convert to Ticket flow preserved in EstimateActions.jsx:**
+  - Linked Service Ticket banner (lines 31-43)
+  - Open Job Card button (line 38)
+  - Converted To display (line 112-117)
+- **GSTR-3B Reverse Charge Fix:**
+  - Added Section 3.1(d) for inward supplies liable to reverse charge
+  - RCM bills/expenses tracked with `reverse_charge` flag
+  - `rcm_tax_liability` added to summary
+  - Net tax calculation includes RCM as outward liability
+- 16/17 backend tests passed (94%), compilation clean (no errors)
 
 ## Key Environment Rules
 1. Development uses DB_NAME=battwheels_dev
@@ -97,3 +77,17 @@ Database: MongoDB (battwheels=prod, battwheels_dev=dev, battwheels_staging=stagi
 5. Period locks enforced on all financial write endpoints
 6. CSRF Double Submit Cookie enforced on all mutation endpoints
 7. Input sanitization (bleach) strips HTML from all JSON inputs
+
+## Prioritized Backlog
+
+### P2 (Technical Debt)
+- Consolidate audit_log vs audit_logs dual-collection issue
+- Consolidate invoices vs invoices_enhanced dual-collection issue
+- Fix empty password hash bug in seed scripts
+- Recover/reset platform-admin@battwheels.in password
+
+## Credentials
+- admin@battwheels.in / q56*09ps4ltWR96MVPvO (prod)
+- internal@battwheels.in / lbC9qFOmjbJapYtUp^h1 (prod internal)
+- demo@voltmotors.in / Demo@12345 (dev)
+- dev@battwheels.internal / DevTest@123 (dev)
