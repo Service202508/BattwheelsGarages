@@ -55,7 +55,7 @@ class CreateCreditNoteRequest(BaseModel):
 async def get_next_cn_number(db, organization_id: str) -> str:
     """Atomic sequence number via sequences collection. Format: CN-00001"""
     result = await db.sequences.find_one_and_update(
-        {"_id": f"credit_note_{organization_id}"},
+        {"sequence_id": f"credit_note_{organization_id}", "organization_id": organization_id},
         {"$inc": {"seq": 1}},
         upsert=True,
         return_document=True
