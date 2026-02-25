@@ -150,7 +150,7 @@ async def migrate():
             continue
 
         try:
-            enhanced = transform_invoice(legacy_doc)
+            enhanced = await transform_invoice(legacy_doc, db)
             await db.invoices_enhanced.insert_one(enhanced)
             migrated += 1
             print(f"    MIGRATED: {inv_num} ({enhanced.get('customer_name', 'unknown')})")
