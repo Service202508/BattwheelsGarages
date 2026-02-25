@@ -258,3 +258,5 @@ Code change written -> tested in dev -> tested in staging -> deployed to product
 - Password: DevTest@123
 - Reseed anytime: `make reseed-dev`
 
+
+Rule 5: Before every session, read /app/ENVIRONMENT_SOP.md and complete the Session Start Protocol.
