@@ -30,45 +30,58 @@ Database: MongoDB (battwheels=prod, battwheels_dev=dev, battwheels_staging=stagi
 - ENVIRONMENT_SOP.md and CODING_STANDARDS.md
 
 ### Pre-Week 3 Production Safety (Complete — 2026-02-25)
-- **Step 1:** Production contamination assessment (read-only)
-- **Step 2:** Surgical cleanup of 6 test users, 4 test invoices, 2 test business_customers, 1 test audit entry, 1 test contact. Fixed org=None for 4 real staff users
-- **Step 3:** Added Rule 8 (Customers Are Sacrosanct) to ENVIRONMENT_SOP.md + Rule 6 to CODING_STANDARDS.md
-- **Step 4:** Created "Battwheels OS Internal" org (slug: battwheels-internal) for production testing
-- **Emergency:** Fixed DB_NAME from battwheels→battwheels_dev, ENVIRONMENT from production→development
+- Production contamination assessment and cleanup
+- Added Rule 8 (Customers Are Sacrosanct) to ENVIRONMENT_SOP.md
+- Created "Battwheels OS Internal" org for production testing
 
 ### Week 3 Prompt 1: Infrastructure Scaffolding (Complete — 2026-02-25)
-- Created /app/docs/INCIDENTS.md with 3 initial incidents documented
-- Created /app/scripts/migrations/ directory with README.md and migration_template.py
-- Provisioned battwheels_staging database (34 collections, 28 indexes, empty)
+- Created /app/docs/INCIDENTS.md, /app/scripts/migrations/ directory
+- Provisioned battwheels_staging database
 
 ### Week 3 Prompt 2: Period Locking (Complete — 2026-02-25)
-- **Backend service:** services/period_lock_service.py — lock, unlock, extend, auto-relock, fiscal year bulk lock
-- **Backend routes:** routes/period_locks.py — 8 API endpoints
-- **Middleware integration:** check_period_lock() added to 8 route files (invoices_enhanced, credit_notes, journal_entries, payments_received, bills_enhanced, bills, expenses, banking_module, hr)
-- **Frontend:** PeriodLocks.jsx — 12-month grid UI with lock/unlock/extend/fiscal year dialogs
-- **Indexes:** 2 new indexes on period_locks collection
-- **Global error handling:** 409 PERIOD_LOCKED intercepted in apiFetch
-- **Testing:** 17/17 pass
+- Backend service, API routes, middleware on 8 route files, frontend UI
+- 409 PERIOD_LOCKED global handler in apiFetch
+- 17/17 tests passed
 
 ### Week 3 Prompt 3: Audit Log Coverage + Estimate→Ticket (Complete — 2026-02-25)
-- **Audit log fix:** utils/audit_log.py now writes to audit_logs (not audit_log)
-- **14 new audit points:** ticket.created, ticket.assigned, estimate.created, estimate.status_changed, estimate.converted_to_ticket, bill.created, expense.created, bank_transaction.created, bank_transaction.reconciled, contact.created, contact.updated, payroll.run, journal_entry.reversed, estimate.converted_to_invoice
-- **Estimate→Ticket flow:** POST /estimates-enhanced/{id}/convert-to-ticket — converts accepted estimates to service tickets with full data mapping
-- **Testing:** 13/13 pass
+- Fixed audit_log.py to write to audit_logs collection
+- 14 new audit points across the application
+- Estimate→Ticket conversion flow
+- 13/13 tests passed
+
+### Week 3 Prompt 4: Security Hardening (Complete — 2026-02-25)
+- **CSRF Protection (Double Submit Cookie pattern):**
+  - Backend middleware: `/app/backend/middleware/csrf.py`
+  - Sets `csrf_token` cookie (HttpOnly=false, Secure, SameSite=none)
+  - Validates `X-CSRF-Token` header matches cookie for mutation methods
+  - Bearer-token auth requests bypass CSRF (per OWASP — Authorization header can't be forged cross-origin)
+  - Defense-in-depth: validates CSRF if header IS provided even with bearer token
+  - Exempt paths: /api/auth/, /api/public/, /api/webhooks/, /api/health, /api/contact, /api/book-demo
+- **Input Sanitization (bleach):**
+  - Backend middleware: `/app/backend/middleware/sanitize.py`
+  - Strips ALL HTML tags from JSON string inputs on POST/PUT/PATCH
+  - Uses `bleach.clean(strip=True)` — recursive for nested objects/arrays
+  - Prevents stored XSS attacks
+- **Frontend apiFetch integration:**
+  - Extended existing unified API client (`/app/frontend/src/utils/api.js`)
+  - `getCookie()` helper reads csrf_token from document.cookie
+  - Auto-injects `X-CSRF-Token` header on POST/PUT/PATCH/DELETE
+  - Auto-refreshes CSRF cookie on CSRF_MISSING/CSRF_INVALID errors
+- **Middleware order:** Request → CSRF → TenantGuard → RBAC → Sanitization → RateLimit → Route
+- **CORS updated:** Added `X-CSRF-Token` to allowed headers
+- **Testing:** 16/16 tests passed (100% backend + frontend)
 
 ## Prioritized Backlog
 
 ### P0 (Next)
-- **Prompt 4:** CSRF protection + input sanitization (bleach)
+- **Prompt 5:** Refactor monolithic EstimatesEnhanced.jsx (2966 lines → smaller components) + GST calculation bug fix
+  - USER REQUESTED: Come back before starting Prompt 5 for additional instructions about preserving Estimate→Ticket conversion button
 
-### P1
-- **Prompt 5:** EstimatesEnhanced.jsx refactor (2966 lines → smaller components) + GST calculation bug fix
-
-### P2 (Flagged)
+### P2 (Technical Debt)
 - Consolidate audit_log vs audit_logs dual-collection issue
-- Fix empty password hash bug in seed scripts
 - Consolidate invoices vs invoices_enhanced dual-collection issue
-- Address org=None for some contacts_enhanced query patterns
+- Fix empty password hash bug in seed scripts
+- Recover/reset platform-admin@battwheels.in password
 
 ## Credentials Registry
 - admin@battwheels.in / q56*09ps4ltWR96MVPvO (prod)
@@ -82,3 +95,5 @@ Database: MongoDB (battwheels=prod, battwheels_dev=dev, battwheels_staging=stagi
 3. Customer orgs are sacrosanct (Rule 8)
 4. All audit logging writes to audit_logs collection
 5. Period locks enforced on all financial write endpoints
+6. CSRF Double Submit Cookie enforced on all mutation endpoints
+7. Input sanitization (bleach) strips HTML from all JSON inputs
