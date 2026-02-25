@@ -9,7 +9,7 @@ import os
 import uuid
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://hardened-api.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://production-hardened-2.preview.emergentagent.com')
 
 # Test data tracking
 created_ids = {
