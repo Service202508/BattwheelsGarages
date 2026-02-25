@@ -69,6 +69,17 @@ Battwheels OS is a full-stack SaaS platform (React/FastAPI/MongoDB) for EV servi
 
 ## Prioritized Backlog
 
+### P0 (Week 1 Remaining)
+- **Day 5: C-03 Period Locking** — Design document only, no code. Awaiting user confirmation to proceed.
+
+### P0 (Week 2)
+- **H-NEW-01 (HIGH):** `organization_settings.find_one({})` in `gst.py` line 715 — unscoped, returns first org's settings. Must scope by org_id.
+- **H-01:** Banking module cross-tenant — partially fixed, needs full verification
+
+### P1
+- HIGH severity audit findings (broken estimate-to-invoice chain, etc.)
+- **M-NEW-01 (MEDIUM):** No reverse-charge filtering in GSTR-3B outward liability
+
 ### P2
 - Refactor `EstimatesEnhanced.jsx` (2900+ lines)
 - Consolidate 5 redundant auth middleware files into 1
