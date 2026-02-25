@@ -1,14 +1,17 @@
 /**
  * API Utilities for Multi-Tenant Support
- * Provides helper functions to add organization context to API calls
+ * Unified API client — auth, org context, CSRF, period-lock & feature-gate handling.
  */
 
-// Get the current organization ID from localStorage
-export const getOrganizationId = () => {
-  return localStorage.getItem("organization_id");
-};
+// ─── Cookie helper ──────────────────────────────────────────
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+  return match ? decodeURIComponent(match[2]) : null;
+}
 
-// Set the current organization ID in localStorage
+// ─── Organization helpers ───────────────────────────────────
+export const getOrganizationId = () => localStorage.getItem("organization_id");
+
 export const setOrganizationId = (orgId) => {
   if (orgId) {
     localStorage.setItem("organization_id", orgId);
@@ -17,31 +20,37 @@ export const setOrganizationId = (orgId) => {
   }
 };
 
-// Get standard headers with authentication and organization context
+// ─── Header builder ─────────────────────────────────────────
 export const getAuthHeaders = (includeOrgId = true) => {
-  const headers = {
-    "Content-Type": "application/json",
-  };
-  
+  const headers = { "Content-Type": "application/json" };
+
   const token = localStorage.getItem("token");
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-  
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   if (includeOrgId) {
     const orgId = getOrganizationId();
-    if (orgId) {
-      headers["X-Organization-ID"] = orgId;
-    }
+    if (orgId) headers["X-Organization-ID"] = orgId;
   }
-  
+
   return headers;
 };
 
-// Wrapper for fetch that automatically includes auth and org headers
+// Methods that mutate state — require CSRF token
+const UNSAFE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
+// ─── Core fetch wrapper ─────────────────────────────────────
 export const apiFetch = async (url, options = {}) => {
   const defaultHeaders = getAuthHeaders(options.includeOrgId !== false);
-  
+
+  // Inject CSRF token for unsafe methods (Double Submit Cookie pattern)
+  const method = (options.method || "GET").toUpperCase();
+  if (UNSAFE_METHODS.has(method)) {
+    const csrfToken = getCookie("csrf_token");
+    if (csrfToken) {
+      defaultHeaders["X-CSRF-Token"] = csrfToken;
+    }
+  }
+
   const mergedOptions = {
     ...options,
     credentials: "include",
@@ -50,13 +59,14 @@ export const apiFetch = async (url, options = {}) => {
       ...options.headers,
     },
   };
-  
-  // Remove custom option before passing to fetch
+
   delete mergedOptions.includeOrgId;
-  
+
   const response = await fetch(url, mergedOptions);
 
-  // Intercept 409 period locked globally
+  // ── Global interceptors ──────────────────────────────────
+
+  // 409 Period Locked
   if (response.status === 409) {
     try {
       const cloned = response.clone();
@@ -68,7 +78,7 @@ export const apiFetch = async (url, options = {}) => {
     } catch (_) {}
   }
 
-  // Intercept 403 feature_not_available globally
+  // 403 Feature not available
   if (response.status === 403) {
     try {
       const cloned = response.clone();
@@ -77,9 +87,19 @@ export const apiFetch = async (url, options = {}) => {
       if (detail && typeof detail === "object" && detail.error === "feature_not_available") {
         window.dispatchEvent(new CustomEvent("feature_not_available", { detail }));
       }
-    } catch (_) {
-      // JSON parse failed — not a feature_not_available response, pass through
-    }
+    } catch (_) {}
+  }
+
+  // 403 CSRF token errors — refresh token and optionally retry
+  if (response.status === 403) {
+    try {
+      const cloned = response.clone();
+      const body = await cloned.json();
+      if (body?.code === "CSRF_MISSING" || body?.code === "CSRF_INVALID") {
+        // Fetch a fresh CSRF cookie from a safe GET endpoint
+        await fetch(url.replace(/\/api\/.*/, "/api/health"), { credentials: "include" });
+      }
+    } catch (_) {}
   }
 
   return response;
