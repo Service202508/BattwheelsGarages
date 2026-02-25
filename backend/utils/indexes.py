@@ -116,4 +116,12 @@ async def ensure_compound_indexes(db):
         unique=True,
         name="credit_notes_org_number_unique", background=True)
 
-    logger.info("Compound indexes ensured (26 total)")
+    # Period Locks indexes
+    await db.period_locks.create_index(
+        [("organization_id", 1), ("period", 1)],
+        unique=True, name="period_locks_org_period_unique", background=True)
+    await db.period_locks.create_index(
+        [("status", 1), ("unlock_expires_at", 1)],
+        name="period_locks_status_expiry", background=True)
+
+    logger.info("Compound indexes ensured (28 total)")

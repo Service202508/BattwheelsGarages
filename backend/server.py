@@ -6114,6 +6114,16 @@ try:
 except Exception as e:
     logger.error(f"Failed to load SLA routes: {e}")
 
+# ==================== PERIOD LOCKS ROUTES ====================
+try:
+    from routes.period_locks import router as period_locks_router
+    v1_router.include_router(period_locks_router)
+    logger.info("Period Locks routes loaded")
+except Exception as e:
+    logger.error(f"Failed to load Period Locks routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # ==================== AUDIT LOG API ROUTES ====================
 @v1_router.get("/audit-logs")
 async def get_audit_logs(
