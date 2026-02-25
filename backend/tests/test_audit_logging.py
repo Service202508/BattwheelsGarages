@@ -94,7 +94,7 @@ def created_invoice():
 
     payload = {
         "customer_id": customer_id,
-        "line_items": [{"item_name": "Audit Test Item", "quantity": 1, "rate": 1000, "tax_rate": 18}],
+        "line_items": [{"name": "Audit Test Item", "quantity": 1, "rate": 1000, "tax_rate": 18}],
         "payment_terms": 30,
     }
     resp = requests.post(f"{BASE_URL}/api/v1/invoices-enhanced/", json=payload, headers=headers(), allow_redirects=True)
