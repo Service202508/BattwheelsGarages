@@ -1,10 +1,12 @@
 /**
  * Estimates — Thin orchestrator that wires the useEstimates hook to all sub-components.
- * This is a pure extraction refactor of EstimatesEnhanced.jsx (2966 lines → ~60 lines).
+ * Manages the top-level Tabs wrapper so all TabsContent children share context.
  * Zero logic changes — all state and handlers live in useEstimates.js.
  */
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Ticket } from "lucide-react";
 import { useEstimates } from "./useEstimates";
-import { EstimatesTable } from "./EstimatesTable";
+import { EstimatesSummary, EstimatesTabContent, TicketEstimatesTabContent } from "./EstimatesTable";
 import { EstimateDetail } from "./EstimateDetail";
 import { EstimateModal } from "./EstimateModal";
 import {
@@ -16,17 +18,26 @@ import {
 export default function Estimates() {
   const hook = useEstimates();
 
-  // Build handler bundles for each sub-component
+  const summaryHandlers = {
+    setStatusFilter: hook.setStatusFilter, fetchEstimates: hook.fetchEstimates,
+    handleExport: hook.handleExport, setShowImportDialog: hook.setShowImportDialog,
+    setShowBulkActionDialog: hook.setShowBulkActionDialog,
+    setShowCustomFieldsDialog: hook.setShowCustomFieldsDialog,
+    setShowTemplateDialog: hook.setShowTemplateDialog,
+    setShowPreferencesDialog: hook.setShowPreferencesDialog,
+    fetchCustomFields: hook.fetchCustomFields, fetchPdfTemplates: hook.fetchPdfTemplates,
+    fetchPreferences: hook.fetchPreferences,
+  };
+
   const tableHandlers = {
-    fetchEstimates: hook.fetchEstimates, fetchEstimateDetail: hook.fetchEstimateDetail,
-    handleClone: hook.handleClone, handleExport: hook.handleExport,
-    setShowImportDialog: hook.setShowImportDialog, setShowBulkActionDialog: hook.setShowBulkActionDialog,
-    setShowCustomFieldsDialog: hook.setShowCustomFieldsDialog, setShowTemplateDialog: hook.setShowTemplateDialog,
-    setShowPreferencesDialog: hook.setShowPreferencesDialog, fetchCustomFields: hook.fetchCustomFields,
-    fetchPdfTemplates: hook.fetchPdfTemplates, fetchPreferences: hook.fetchPreferences,
+    setStatusFilter: hook.setStatusFilter, fetchEstimates: hook.fetchEstimates,
+    fetchEstimateDetail: hook.fetchEstimateDetail, handleClone: hook.handleClone,
     toggleSelectAll: hook.toggleSelectAll, toggleSelect: hook.toggleSelect,
-    handleOpenEdit: hook.handleOpenEdit, setShowEditDialog: hook.setShowEditDialog,
-    setActiveTab: hook.setActiveTab, setStatusFilter: hook.setStatusFilter,
+    setActiveTab: hook.setActiveTab,
+  };
+
+  const ticketHandlers = {
+    fetchEstimateDetail: hook.fetchEstimateDetail, handleOpenEdit: hook.handleOpenEdit,
   };
 
   const detailHandlers = {
@@ -64,10 +75,25 @@ export default function Estimates() {
 
   return (
     <div className="space-y-6 p-6" data-testid="estimates-page">
-      <EstimatesTable state={hook} handlers={tableHandlers} />
+      {/* Summary + Quick Actions (above Tabs) */}
+      <EstimatesSummary state={hook} handlers={summaryHandlers} />
 
-      <EstimateModal state={hook} handlers={createHandlers} />
+      {/* Single Tabs wrapper — all TabsContent must be children of this */}
+      <Tabs value={hook.activeTab} onValueChange={hook.setActiveTab}>
+        <TabsList className="bg-[#111820] border border-[rgba(255,255,255,0.07)] p-1">
+          <TabsTrigger value="estimates" className="data-[state=active]:bg-[rgba(200,255,0,0.10)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-b-2 data-[state=active]:border-b-[#C8FF00] text-[rgba(244,246,240,0.45)]">Estimates</TabsTrigger>
+          <TabsTrigger value="ticket-estimates" className="flex items-center gap-1 data-[state=active]:bg-[rgba(200,255,0,0.10)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-b-2 data-[state=active]:border-b-[#C8FF00] text-[rgba(244,246,240,0.45)]">
+            <Ticket className="h-4 w-4" /> Ticket Estimates ({hook.ticketEstimates.length})
+          </TabsTrigger>
+          <TabsTrigger value="create" className="data-[state=active]:bg-[rgba(200,255,0,0.10)] data-[state=active]:text-[#C8FF00] data-[state=active]:border-b-2 data-[state=active]:border-b-[#C8FF00] text-[rgba(244,246,240,0.45)]">Create New</TabsTrigger>
+        </TabsList>
 
+        <EstimatesTabContent state={hook} handlers={tableHandlers} />
+        <TicketEstimatesTabContent state={hook} handlers={ticketHandlers} />
+        <EstimateModal state={hook} handlers={createHandlers} />
+      </Tabs>
+
+      {/* Detail Dialog */}
       <EstimateDetail
         open={hook.showDetailDialog}
         onOpenChange={hook.setShowDetailDialog}
