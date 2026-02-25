@@ -104,4 +104,16 @@ async def ensure_compound_indexes(db):
         [("organization_id", 1), ("category", 1), ("date", -1)],
         name="expenses_org_category_date", background=True)
 
-    logger.info("Compound indexes ensured (23 total)")
+    # Credit Notes indexes
+    await db.credit_notes.create_index(
+        [("organization_id", 1), ("created_at", -1)],
+        name="credit_notes_org_date", background=True)
+    await db.credit_notes.create_index(
+        [("organization_id", 1), ("original_invoice_id", 1)],
+        name="credit_notes_org_invoice", background=True)
+    await db.credit_notes.create_index(
+        [("organization_id", 1), ("credit_note_number", 1)],
+        unique=True,
+        name="credit_notes_org_number_unique", background=True)
+
+    logger.info("Compound indexes ensured (26 total)")
