@@ -229,7 +229,7 @@ export default function PlatformAdmin({ user }) {
 
   async function load() {
     setLoading(true);
-    await Promise.all([fetchMetrics(), fetchOrgs(), fetchHealth(), fetchAuditStatus()]);
+    await Promise.all([fetchMetrics(), fetchOrgs(), fetchHealth(), fetchAuditStatus(), fetchEnvironment()]);
     setLoading(false);
   }
 
