@@ -95,12 +95,15 @@ Battwheels OS is a full-stack SaaS platform (React/FastAPI/MongoDB) for EV servi
 ---
 
 ## Key Files
+- `/app/backend/utils/audit_log.py` — Financial audit logging utility
+- `/app/backend/routes/gst.py` — GSTR-1 and GSTR-3B with credit note inclusion (C-06 fix)
 - `/app/backend/routes/credit_notes.py` — Credit notes CRUD + PDF + journal posting
+- `/app/backend/routes/invoices_enhanced.py` — Invoice CRUD with audit logging
 - `/app/backend/middleware/rbac.py` — RBAC with path normalization
-- `/app/backend/services/double_entry_service.py` — Journal entries with idempotency
+- `/app/backend/services/double_entry_service.py` — Journal entries with idempotency + audit logging
 - `/app/frontend/src/components/CreditNoteModal.jsx` — Create + View modals
+- `/app/FINDINGS_TRACKER.md` — Active findings from Week 1 remediation
 
 ## Test Credentials
-- Admin: `admin@battwheels.in` / `TestPass@123`
-- Technician: `tech@battwheels.in` / `TestPass@123`
+- Admin: `admin@battwheels.in` / `Admin@12345`
 - Org ID: `6996dcf072ffd2a2395fee7b`
