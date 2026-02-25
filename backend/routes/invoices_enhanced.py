@@ -855,6 +855,14 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
         item.pop("_id", None)
         cleaned_items.append(item)
     invoice_doc["line_items"] = cleaned_items
+
+    # Audit log: invoice CREATE
+    await log_financial_action(
+        org_id=org_id, action="CREATE", entity_type="invoice",
+        entity_id=invoice_id, request=request,
+        before_snapshot=None, after_snapshot=invoice_doc,
+    )
+
     return {"code": 0, "message": "Invoice created", "invoice": invoice_doc}
 
 @router.get("")
