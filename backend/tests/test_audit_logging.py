@@ -194,5 +194,23 @@ class TestJournalEntryAudit:
             assert entry["after_snapshot"] is not None
 
 
+class TestUserRolePopulated:
+    """M-NEW-02: Verify user_role is correctly populated from TenantGuard."""
+
+    def test_user_role_not_empty(self, created_invoice):
+        """After fix, user_role must not be empty/null in audit entries."""
+        entry = run_async(get_latest_audit("invoice", "CREATE", created_invoice["invoice_id"]))
+        assert entry is not None, "No audit entry found"
+        assert entry["user_role"], f"user_role is empty: {entry['user_role']!r}"
+        assert entry["user_role"] != "unknown", "user_role should not be 'unknown' for authenticated admin"
+
+    def test_user_role_is_valid_role(self, created_invoice):
+        """user_role should be one of the valid org roles."""
+        valid_roles = {"admin", "owner", "manager", "technician", "accountant", "viewer", "hr_manager"}
+        entry = run_async(get_latest_audit("invoice", "CREATE", created_invoice["invoice_id"]))
+        assert entry is not None, "No audit entry found"
+        assert entry["user_role"] in valid_roles, f"Unexpected role: {entry['user_role']}"
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
