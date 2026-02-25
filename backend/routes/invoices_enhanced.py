@@ -1123,11 +1123,14 @@ async def get_invoice_pdf(request: Request, invoice_id: str):
 
 
 @router.put("/{invoice_id}")
-async def update_invoice(invoice_id: str, update: InvoiceUpdate):
+async def update_invoice(invoice_id: str, update: InvoiceUpdate, request: Request = None):
     """Update invoice (only drafts can be fully edited)"""
     existing = await invoices_collection.find_one({"invoice_id": invoice_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Capture before_snapshot for audit (strip _id)
+    before_snapshot = {k: v for k, v in existing.items() if k != "_id"}
     
     if existing.get("status") not in ["draft"]:
         # Only allow limited updates for non-draft invoices
