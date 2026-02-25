@@ -563,6 +563,15 @@ async def create_bill(bill: BillCreate, background_tasks: BackgroundTasks):
     
     await add_bill_history(bill_id, "created", f"Bill {bill_number} created")
     
+    # Audit: bill.created
+    from utils.audit import log_audit, AuditAction
+    from motor.motor_asyncio import AsyncIOMotorClient
+    _aclient = AsyncIOMotorClient(os.environ.get("MONGO_URL"))
+    _adb = _aclient[os.environ.get("DB_NAME")]
+    bill_org_id = bill_doc.get("organization_id", "")
+    await log_audit(_adb, AuditAction.BILL_CREATED, bill_org_id, "",
+        "bill", bill_id, {"bill_number": bill_number, "vendor": bill.vendor_id, "total": bill_doc.get("total", 0)})
+    
     bill_doc.pop("_id", None)
     for item in calculated_items:
         item.pop("_id", None)
