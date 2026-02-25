@@ -73,7 +73,7 @@ SYSTEM_ACCOUNTS = {
     "PF_EMPLOYER_PAYABLE": {"name": "Employer PF Payable", "type": AccountType.LIABILITY, "code": "2331"},
     "ESI_PAYABLE": {"name": "ESI Payable", "type": AccountType.LIABILITY, "code": "2340"},
     "PROFESSIONAL_TAX_PAYABLE": {"name": "Professional Tax Payable", "type": AccountType.LIABILITY, "code": "2350"},
-    "REFUND_PAYABLE": {"name": "Refund Payable", "type": AccountType.LIABILITY, "code": "2400"},
+    "REFUND_PAYABLE": {"name": "Refund Payable", "type": AccountType.LIABILITY, "code": "2410"},
     
     # Equity
     "RETAINED_EARNINGS": {"name": "Retained Earnings", "type": AccountType.EQUITY, "code": "3100"},
