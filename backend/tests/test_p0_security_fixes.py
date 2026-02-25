@@ -274,8 +274,8 @@ class TestP04JournalIdempotency:
             "X-Organization-ID": ORG_ID
         }
         
-        # Get trial balance
-        response = requests.get(f"{BASE_URL}/api/v1/finance/trial-balance", headers=headers)
+        # Get trial balance (correct endpoint path)
+        response = requests.get(f"{BASE_URL}/api/v1/reports/trial-balance", headers=headers)
         
         if response.status_code == 404:
             # Endpoint may not exist or no journal entries yet
