@@ -289,6 +289,14 @@ async def create_bank_transaction(request: Request, txn: BankTransactionCreate):
     is_credit = txn.transaction_type in ["deposit", "transfer_in"]
     await update_account_balance(txn.bank_account_id, txn.amount, is_credit)
     
+    # Audit: bank_transaction.created
+    from utils.audit import log_audit, AuditAction
+    import motor.motor_asyncio
+    _aclient = motor.motor_asyncio.AsyncIOMotorClient(os.environ.get("MONGO_URL"))
+    _adb = _aclient[os.environ.get("DB_NAME")]
+    await log_audit(_adb, AuditAction.BANK_TRANSACTION_CREATED, org_id, "",
+        "bank_transaction", txn_id, {"type": txn.transaction_type, "amount": txn.amount, "account": txn.bank_account_id})
+    
     txn_doc.pop("_id", None)
     return {"code": 0, "transaction": txn_doc}
 
