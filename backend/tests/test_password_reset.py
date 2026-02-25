@@ -212,12 +212,19 @@ class TestForgotPassword:
                 )
                 assert resp.status_code == 200, f"Reset failed: {resp.text}"
 
-                # Login with new password
-                resp2 = await client.post(f"{AUTH}/login", json={"email": ADMIN_EMAIL, "password": STRONG_PASSWORD})
-                assert resp2.status_code == 200, f"Login with new password failed"
+                # Login with new password (with retry for rate limit)
+                await asyncio.sleep(1)
+                resp2 = None
+                for _ in range(3):
+                    resp2 = await client.post(f"{AUTH}/login", json={"email": ADMIN_EMAIL, "password": STRONG_PASSWORD})
+                    if resp2.status_code != 429:
+                        break
+                    await asyncio.sleep(2)
+                assert resp2.status_code == 200, f"Login with new password failed: {resp2.status_code}"
 
                 # Change password back
                 new_token = resp2.json()["token"]
+                await asyncio.sleep(1)
                 resp3 = await client.post(
                     f"{AUTH}/change-password",
                     headers={"Authorization": f"Bearer {new_token}"},
