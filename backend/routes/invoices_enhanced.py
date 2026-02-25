@@ -1712,6 +1712,16 @@ async def record_payment(invoice_id: str, payment: PaymentCreate, request: Reque
     await update_contact_balance(invoice["customer_id"])
     
     payment_doc.pop("_id", None)
+
+    # Audit log: payment CREATE
+    before_inv = {k: v for k, v in invoice.items() if k != "_id"}
+    after_inv = await invoices_collection.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    await log_financial_action(
+        org_id=invoice.get("organization_id", ""), action="CREATE", entity_type="payment",
+        entity_id=payment_id, request=request,
+        before_snapshot=before_inv, after_snapshot={"payment": payment_doc, "invoice_after": after_inv},
+    )
+
     return {
         "code": 0,
         "message": "Payment recorded",
