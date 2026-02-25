@@ -840,6 +840,57 @@ async def convert_to_invoice_internal(estimate_id: str, auto_send: bool = False)
     
     return {"invoice_id": invoice_id, "invoice_number": invoice_number}
 
+
+async def convert_to_ticket_internal(estimate_id: str):
+    """Internal conversion from estimate to ticket (used by auto-convert)"""
+    estimate = await estimates_collection.find_one({"estimate_id": estimate_id})
+    if not estimate:
+        return None
+
+    line_items = await estimate_items_collection.find({"estimate_id": estimate_id}, {"_id": 0}).to_list(100)
+    total_cost = estimate.get("grand_total", 0) or estimate.get("total", 0) or 0
+    ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
+    now = datetime.now(timezone.utc)
+    org_id = estimate.get("organization_id", "")
+
+    ticket_doc = {
+        "ticket_id": ticket_id,
+        "organization_id": org_id,
+        "title": estimate.get("subject") or f"Service for Estimate {estimate.get('estimate_number', '')}",
+        "description": f"Auto-converted from Estimate {estimate.get('estimate_number', estimate_id)}",
+        "status": "open",
+        "priority": "medium",
+        "category": estimate.get("category", "general_service"),
+        "customer_id": estimate.get("customer_id", ""),
+        "customer_name": estimate.get("customer_name", ""),
+        "estimated_cost": total_cost,
+        "source_estimate_id": estimate_id,
+        "source_estimate_number": estimate.get("estimate_number", ""),
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat(),
+    }
+
+    await db["tickets"].insert_one(ticket_doc)
+
+    await estimates_collection.update_one(
+        {"estimate_id": estimate_id},
+        {"$set": {
+            "status": "converted",
+            "converted_to": f"ticket:{ticket_id}",
+            "converted_date": now.date().isoformat(),
+            "updated_time": now.isoformat()
+        }}
+    )
+
+    await add_estimate_history(estimate_id, "auto_converted", f"Auto-converted to Ticket {ticket_id}")
+
+    from utils.audit import log_audit, AuditAction
+    await log_audit(db, AuditAction.ESTIMATE_CONVERTED_TO_TICKET, org_id, "",
+        "estimate", estimate_id, {"ticket_id": ticket_id, "auto": True})
+
+    return {"ticket_id": ticket_id}
+
+
 async def convert_to_sales_order_internal(estimate_id: str):
     """Internal conversion to sales order"""
     estimate = await estimates_collection.find_one({"estimate_id": estimate_id})
