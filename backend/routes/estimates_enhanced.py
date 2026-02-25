@@ -2212,7 +2212,8 @@ async def convert_estimate_to_ticket(estimate_id: str, request: Request = None):
         )
     
     # Check if already converted to a ticket
-    if estimate.get("converted_to", "").startswith("ticket:"):
+    converted_to = estimate.get("converted_to") or ""
+    if converted_to.startswith("ticket:"):
         raise HTTPException(
             status_code=409,
             detail=f"Estimate already converted to ticket: {estimate.get('converted_to')}"
