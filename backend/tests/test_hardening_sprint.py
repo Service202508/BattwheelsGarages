@@ -23,7 +23,7 @@ import json
 import time
 import jwt
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://gst-report-update.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://remediation-sprint.preview.emergentagent.com').rstrip('/')
 AUTH_API = f"{BASE_URL}/api/auth"
 API_V1 = f"{BASE_URL}/api/v1"
 JWT_SECRET = 'dc882baf3526e6c823dff37afda712d6eafccce2341d9e22a462f79ec140e610'
