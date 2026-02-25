@@ -2124,6 +2124,19 @@ export default function InvoicesEnhanced() {
                   {/* Clone */}
                   <Button variant="outline" size="sm" onClick={() => handleCloneInvoice(selectedInvoice.invoice_id)}><Copy className="h-4 w-4 mr-1" /> Clone</Button>
                   
+                  {/* Issue Credit Note - not for draft or cancelled */}
+                  {selectedInvoice.status !== "draft" && selectedInvoice.status !== "cancelled" && selectedInvoice.status !== "void" && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setShowCNCreateDialog(true)}
+                      className="text-[#FF8C00] border-[rgba(255,140,0,0.3)] hover:bg-[rgba(255,140,0,0.08)]"
+                      data-testid="issue-credit-note-btn"
+                    >
+                      <Minus className="h-4 w-4 mr-1" /> Credit Note
+                    </Button>
+                  )}
+                  
                   {/* Void - not for cancelled */}
                   {selectedInvoice.status !== "void" && selectedInvoice.status !== "paid" && selectedInvoice.status !== "cancelled" && (
                     <Button variant="outline" size="sm" onClick={() => handleVoidInvoice(selectedInvoice.invoice_id)}><Ban className="h-4 w-4 mr-1" /> Void</Button>
