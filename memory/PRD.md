@@ -20,6 +20,28 @@ Battwheels OS is a full-stack SaaS platform (React/FastAPI/MongoDB) for EV servi
 
 ## Completed Work
 
+### Week 1 Remediation — Day 4: C-05 Audit Logging (2026-02-25) — VERIFIED 13/13
+- **Utility:** `utils/audit_log.py` — `log_financial_action()` with full schema
+- **Schema:** org_id, user_id, user_role, action (CREATE/UPDATE/VOID/DELETE), entity_type, entity_id, timestamp (UTC), ip_address, before_snapshot, after_snapshot
+- **Mutation points covered:**
+  - Invoice CREATE/UPDATE/VOID (`routes/invoices_enhanced.py`)
+  - Payment CREATE (`routes/invoices_enhanced.py`)
+  - Credit Note CREATE (`routes/credit_notes.py`)
+  - Journal Entry CREATE (`services/double_entry_service.py`)
+- **before_snapshot:** null for CREATE, full document for UPDATE/VOID
+- **IP extraction:** From X-Forwarded-For (K8s ingress) or direct client
+
+### Week 1 Remediation — Day 3: C-06 GSTR Credit Note Inclusion (2026-02-25) — VERIFIED 15/15 + Staging
+- **Root bug:** All 6 `org_query(request, ...)` calls in `gst.py` passed Request object instead of org_id string — BSON serialization failure, complete tenant scoping bypass
+- **Fix:** `org_query(org_id, ...)` in all 8 GSTR-1 + GSTR-3B queries; added `org_id = extract_org_id(request)` to GSTR-3B function; org-scoped bills/expenses queries
+- **Credit note logic validated:** CN subtotals reduce section_3_1 taxable_value; CGST/SGST/IGST adjusted separately; partial CNs deduct only CN amount; cross-period CNs treated by CN date
+- **Staging validation:** Two separate orgs ran without error, figures differ per org, no cross-org contamination
+
+### Week 1 Remediation — Days 1-2 (2026-02-25)
+- **C-01:** JWT secret unification + bcrypt password hashing
+- **C-04:** Dead tenant middleware tombstoned
+- **C-02:** Route scoping audit — fixed banking_module.py, data_integrity.py, seed_utility.py
+
 ### P1: Credit Notes — GST Compliance (2026-02-25) — VERIFIED 15/15 + Frontend
 - **Backend:** Full CRUD at `/api/v1/credit-notes/` (POST create, GET list, GET single, GET PDF)
 - **Journal Templates:**
