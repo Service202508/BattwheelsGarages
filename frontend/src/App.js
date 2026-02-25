@@ -1023,6 +1023,13 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/hr" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "hr_manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <HRDashboard user={auth.user} />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/attendance" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
