@@ -1681,6 +1681,12 @@ async def record_payment(invoice_id: str, payment: PaymentCreate, request: Reque
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
+    # Period lock check on payment_date
+    org_id = await get_org_id(request) if request else None
+    payment_date = payment.payment_date or datetime.now(timezone.utc).date().isoformat()
+    if org_id:
+        await check_period_lock(org_id, payment_date)
+    
     if invoice.get("status") in ["void", "paid"]:
         raise HTTPException(status_code=400, detail=f"Cannot record payment for {invoice.get('status')} invoice")
     
