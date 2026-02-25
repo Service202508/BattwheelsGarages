@@ -1574,6 +1574,14 @@ async def void_invoice(invoice_id: str, reason: str = "", request: Request = Non
     await add_invoice_history(invoice_id, "voided", f"Invoice voided. Reason: {reason or 'Not specified'}")
     await update_contact_balance(invoice["customer_id"])
     
+    # Audit log: invoice VOID
+    voided = await invoices_collection.find_one({"invoice_id": invoice_id}, {"_id": 0})
+    await log_financial_action(
+        org_id=invoice.get("organization_id", ""), action="VOID", entity_type="invoice",
+        entity_id=invoice_id, request=request,
+        before_snapshot=before_snapshot, after_snapshot=voided,
+    )
+    
     return {"code": 0, "message": "Invoice voided"}
 
 @router.post("/{invoice_id}/clone")
