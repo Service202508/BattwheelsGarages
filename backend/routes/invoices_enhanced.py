@@ -1179,6 +1179,14 @@ async def update_invoice(invoice_id: str, update: InvoiceUpdate, request: Reques
     await add_invoice_history(invoice_id, "updated", "Invoice details updated")
     
     updated = await invoices_collection.find_one({"invoice_id": invoice_id}, {"_id": 0})
+
+    # Audit log: invoice UPDATE
+    await log_financial_action(
+        org_id=existing.get("organization_id", ""), action="UPDATE", entity_type="invoice",
+        entity_id=invoice_id, request=request,
+        before_snapshot=before_snapshot, after_snapshot=updated,
+    )
+
     return {"code": 0, "message": "Invoice updated", "invoice": updated}
 
 @router.delete("/{invoice_id}")
