@@ -255,6 +255,11 @@ async def reverse_journal_entry(request: Request, entry_id: str,
     if not success:
         raise HTTPException(status_code=400, detail=message)
     
+    # Audit: journal_entry.reversed
+    from utils.audit import log_audit, AuditAction
+    await log_audit(service.db, AuditAction.JOURNAL_ENTRY_REVERSED, org_id, user_id,
+        "journal_entry", entry_id, {"reversal_date": data.reversal_date, "reason": data.reason})
+    
     return {"code": 0, "message": message, "reversal_entry": reversal}
 
 
