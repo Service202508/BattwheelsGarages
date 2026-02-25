@@ -17,13 +17,6 @@ import { EstimateStatusBadge } from "@/components/estimates";
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
 
-const formatCurrencyCompact = (v) => {
-  if (v >= 10000000) return `₹${(v / 10000000).toFixed(1)}Cr`;
-  if (v >= 100000) return `₹${(v / 100000).toFixed(1)}L`;
-  if (v >= 1000) return `₹${(v / 1000).toFixed(1)}K`;
-  return `₹${v.toLocaleString('en-IN')}`;
-};
-
 export function EstimatesTable({ state, handlers }) {
   const {
     activeTab, setActiveTab, estimates, ticketEstimates, summary, funnel, loading,
