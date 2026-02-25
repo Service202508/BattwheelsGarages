@@ -55,6 +55,8 @@ ITEM_TEMPLATES = [
 @router.post("/warehouses")
 async def seed_warehouses(count: int = 5, organization_id: Optional[str] = None):
     """Seed test warehouses"""
+    if not _SEED_ALLOWED:
+        raise HTTPException(status_code=403, detail="Seed endpoints disabled in production")
     now = datetime.now(timezone.utc)
     created = []
     
