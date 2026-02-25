@@ -378,6 +378,15 @@ async def reconcile_transaction(txn_id: str, request: Request = None):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Transaction not found")
     
+    # Audit: bank_transaction.reconciled
+    from utils.audit import log_audit, AuditAction
+    import motor.motor_asyncio
+    _aclient = motor.motor_asyncio.AsyncIOMotorClient(os.environ.get("MONGO_URL"))
+    _adb = _aclient[os.environ.get("DB_NAME")]
+    if txn:
+        await log_audit(_adb, AuditAction.BANK_RECONCILED, txn.get("organization_id", ""), "",
+            "bank_transaction", txn_id, {"reconciled": True})
+    
     return {"code": 0, "message": "Transaction reconciled"}
 
 
