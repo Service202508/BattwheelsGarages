@@ -1,178 +1,165 @@
 <analysis>**original_problem_statement:**
-The user initiated a Grand Final Audit to find production-readiness gaps, leading to the discovery of several critical P0 issues. The agent fixed the first round of issues and built a Credit Notes feature. A second, more comprehensive audit was performed, generating a detailed report () and a strict Week 1 and Week 2 remediation plan.
+The user has initiated a Week 3 Execution Plan to elevate the platform's production readiness score from 7.5/10 to a perfect 10/10. This plan was formulated after a detailed Master Deep Verification Audit and a subsequent Alignment Check against a provided architecture map. The audit revealed several critical gaps, most notably that the backend environment was incorrectly pointing to the production database.
 
-The agent successfully completed all Week 1 tasks (JWT unification, dead code removal, route scoping, GSTR credit note inclusion, audit logging for financial mutations, and a period-locking design document). The agent then fixed the first priority of Week 2 (H-NEW-01 unscoped query).
+The Week 3 plan consists of an immediate EMERGENCY PROMPT to fix the environment and assess data contamination, followed by 5 detailed prompts to implement critical features like Period Locking, complete the audit log coverage, build a missing Estimate-to-Ticket workflow, perform security hardening (CSRF, sanitization), and refactor a large frontend component.
 
-The user then commanded a massive, read-only Master Deep Verification Audit across 17 phases to get a complete integrity check of the entire platform. The agent executed this audit and provided a detailed report, which identified several remaining gaps.
-
-The agent is now tasked with executing the rest of the Week 2 plan, which consists of 5 detailed prompts to address the most critical findings from the audit.
+Before starting the plan, the user requested a credential verification, which revealed that the  password is lost and needs to be reset.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a mature full-stack SaaS (React/FastAPI/MongoDB) that has undergone extensive hardening and auditing.
-- **Week 1 Plan (Completed):** All 5 critical tasks are done, including fixing GSTR reports (), implementing a complete financial audit logging system (), and producing a design document for period locking ().
-- **Week 2 Plan (Started):** The first priority item,  (unscoped query in ), has been fixed and tested.
-- **Master Audit (Completed):** A comprehensive, 17-phase, read-only audit has been performed, generating a . This report is the current source of truth for the platform's state and remaining gaps.
-
-The codebase is stable, with a regression suite of 28 passing tests covering the recent fixes.
+- A mature full-stack SaaS application (React/FastAPI/MongoDB).
+- Week 1 and Week 2 remediation plans are fully completed. This includes a unified JWT system, financial audit logging, and a complete password reset feature (3 flows).
+- A comprehensive  document that governs development practices.
+- A detailed Week 3 execution plan (5 prompts + 1 emergency prompt) provided by the user.
+- **Critical Misconfiguration:** The  file currently points  to the production  database instead of the development  database.
 
 **Last working item**:
--   **Last item agent was working:** The user has provided a series of 5 detailed prompts for the Week 2 execution plan. The agent is about to start **Prompt 1 of 5: M-NEW-02 - Fix user_role in Audit Entries**. This is a high-priority bug identified during the audit where the  field in audit logs is empty due to a field name mismatch.
--   **Status:** NOT STARTED
--   **Agent Testing Done:** N
--   **Which testing method agent to use?** Backend testing agent. The task requires modifying  to add a new test case that asserts the  is correctly populated in a new audit log entry.
+-   **Last item agent was working:** The agent performed a read-only credential verification as requested by the user. This investigation confirmed that the  password is lost and unrecoverable, as it was changed in a previous session but never documented. The agent also confirmed that the  and  users exist only in the  database and are currently unable to log in because of the  misconfiguration.
+-   **Status:** BLOCKED
+-   **Agent Testing Done:** N/A (Read-only investigation)
+-   **Which testing method agent to use?** Manual  and  scripts as defined in the EMERGENCY PROMPT.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
-The user has mandated a strict Week 2 plan.
-
--   **Issue 1 (P0): M-NEW-02: Fix user_role in Audit Entries**
-    -   Description: The  is empty in all audit log entries because  reads  while  writes .
-    -   Status: NOT STARTED (This is the very next task).
--   **Issue 2 (P1): Broken estimates chain**
-    -   Description: The estimate-to-invoice workflow is broken. The edit modal doesn't load line items, and there's a save error. The full chain (Estimate -> Ticket -> Invoice -> Accounting) needs to be fixed and verified.
-    -   Status: NOT STARTED
--   **Issue 3 (P0): Password Reset (3 flows)**
-    -   Description: A critical release blocker. The platform is missing all password reset functionality. Three flows must be implemented: admin reset, employee self-service, and a forgot-password-via-email flow using Resend.
-    -   Status: NOT STARTED
+-   **Issue 1 (P0): EMERGENCY PROMPT - Fix  and Assess Production Contamination.** The  file points  to the production  database. This must be fixed immediately, and production must be checked for any test data created during Week 2.
+-   **Issue 2 (P0): Lost  password.** The password was changed and never recorded. The agent cannot log in as the platform admin to perform necessary tasks.
+-   **Issue 3 (P0): Prompt 2 of 5 (Week 3) - Period Locking Implementation.** A critical financial integrity feature that needs to be built from the ground up based on an existing design document.
+-   **Issue 4 (P1): Prompt 1 of 5 (Week 3) - Infrastructure Scaffolding.** Create missing , migrations directory, and provision the empty staging database.
+-   **Issue 5 (P1): Prompt 3 of 5 (Week 3) - Audit Log Coverage + Estimate→Ticket Flow.** Add 14 new audit points and build the missing core business workflow for converting estimates to tickets.
+-   **Issue 6 (P1): Prompt 4 of 5 (Week 3) - Security Hardening (CSRF + Input Sanitization).** Implement CSRF protection and sanitize all user text inputs.
+-   **Issue 7 (P1): Prompt 5 of 5 (Week 3) - EstimatesEnhanced Refactor + Final Polish.** Refactor a 2,966-line frontend component and fix a GST calculation bug.
 
 **Issues Detail:**
--   **Issue 1: M-NEW-02: Fix user_role in Audit Entries**
+-   **Issue 1: EMERGENCY PROMPT - Fix  and Assess Production Contamination**
     -   **Next debug checklist:**
-        1.  Modify  to read  with a fallback.
-        2.  Add a new test to  to create a financial record and assert that the corresponding audit log entry contains the correct .
-        3.  Run the full test suite (28 existing + 1 new test) to ensure no regressions.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a high-priority gap in the audit trail. Fixing it ensures every financial action is correctly attributed to the user and their role, which is essential for security and compliance.
+        1.  Follow the user's EMERGENCY PROMPT step-by-step.
+        2.  Run the provided Python script to assess contamination in the  (production) database.
+        3.  Use  to change  to  and  to  in .
+        4.  Run the cleanup script to identify (but not yet delete) any test orgs in production.
+        5.  Run  to confirm the main production org is intact.
+    -   **Why fix this issue and what will be achieved with the fix?** This is the highest priority. It prevents further corruption of production data and aligns the development environment with the mandatory .
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
     -   **Should Test backend/both after fix?** Backend.
     -   **Blocked on other issue:** None.
--   **Issue 2: Broken estimates chain**
+-   **Issue 2: Lost  password**
     -   **Next debug checklist:**
-        1.  **Backend:** Trace the data flow from  through  to  to ensure line items are passed correctly.
-        2.  **Frontend:** Debug  to correctly populate line items in the edit modal and fix the save error on update.
-        3.  **E2E Test:** Manually execute the full chain in the preview environment to verify the fix.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a core business workflow. Fixing it will unblock a primary user journey for service-based businesses using the platform.
-    -   **Status:** NOT STARTED
+        1.  Ask the user for a new desired password for .
+        2.  During the EMERGENCY PROMPT, after assessing damage, write a one-time script to connect to the  (production) DB and update the user's password hash with the new one (using ).
+        3.  Document this manual intervention in the newly created .
+    -   **Why fix this issue and what will be achieved with the fix?** The platform admin role is required for certain setup and verification tasks. Regaining access is essential.
+    -   **Status:** BLOCKED (awaiting password from user)
     -   **Is recurring issue?** N
-    -   **Should Test backend/both after fix?** Both.
-    -   **Blocked on other issue:** None.
--   **Issue 3: Password Reset (3 flows)**
-    -   **Next debug checklist:**
-        1.  Create a new  collection with TTL indexes.
-        2.  Implement  and  endpoints, ensuring tokens are hashed.
-        3.  Integrate with Resend for the email flow.
-        4.  Implement  and .
-        5.  Build the corresponding frontend pages: , , and UI elements in Settings and the HR user list.
-        6.  Write a comprehensive test suite covering all success and failure cases for the 3 flows.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a non-negotiable, critical feature for any production application, required for basic user account management and security.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test backend/both after fix?** Both.
-    -   **Blocked on other issue:** None.
+    -   **Should Test backend/both after fix?** Backend.
+    -   **Blocked on other issue:** User input.
 
 **In progress Task List**:
--   **Task 1: Complete Week 2 Remediation Plan**
-    -   **Where to resume:** Start with **Prompt 1 of 5: M-NEW-02 - Fix user_role in Audit Entries**.
-    -   **What will be achieved with this?** This will close out the highest priority gaps identified in the master audit, including a critical release blocker (password reset), making the platform significantly closer to being production-ready.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Both, depending on the specific task.
-    -   **Blocked on something:** None.
+-   **Task 1: Execute Week 3 Plan**
+    -   **Where to resume:** Acknowledge the user's confirmation. Ask for the new password for . Then, begin with the **EMERGENCY PROMPT**. After that is complete and verified, proceed sequentially through Prompts 1-5 of the Week 3 plan.
+    -   **What will be achieved with this?** The platform will become production-ready (10/10 score) by fixing all critical infrastructure, security, and feature gaps.
+    -   **Status:** NOT STARTED
+    -   **Should Test frontend/backend/both after fix?** Both.
+    -   **Blocked on something:** User decision on the new password for .
 
 **Upcoming and Future Tasks**
-**Upcoming Tasks (From Week 2 Plan):**
-*   **P1: TicketDetail Standalone Page:** Create a dedicated, full-page view for tickets at  to replace or supplement the current modal view.
-*   **P1: HR Dashboard Page:** Create a unified HR overview page at  to act as a central hub for HR-related KPIs and navigation.
-*   **P2: Environment Badge in Platform Admin:** Add a prominent visual indicator in the Platform Admin UI to show whether the user is in a , , or  environment.
-*   **P2: PWA Service Worker:** Implement a service worker to enable PWA installation and offline caching capabilities.
-
-**Future Tasks (From Audit Report):**
-*   **P2: Refactor :** This 2,900+ line component has significant technical debt.
-*   **P3: Configure Live WhatsApp Credentials:** The WhatsApp integration is currently mocked.
+**Upcoming Tasks (Week 3 Plan):**
+-   **P0:** **(Emergency)** Fix  file and assess production data contamination.
+-   **P0:** **(Emergency)** Reset lost  password.
+-   **P1:** **(Prompt 1)** Create ,  directory, and provision the  database.
+-   **P0:** **(Prompt 2)** Implement Period Locking feature (backend service, routes, middleware, and frontend UI).
+-   **P1:** **(Prompt 3)** Extend audit log coverage to 14 new points and create the Estimate-to-Ticket conversion workflow.
+-   **P1:** **(Prompt 4)** Implement CSRF protection and input sanitization.
+-   **P2:** **(Prompt 5)** Refactor the monolithic  component and fix a GST calculation bug.
 
 **Completed work in this session**
-- **Master Deep Verification Audit:**
-    - Performed a 17-phase, read-only audit of the entire codebase and database.
-    - Generated a comprehensive  detailing the platform's state and identifying 7 key gaps.
-- **Week 1 Remediation Plan (Completed):**
-    - **C-06:** Fixed GSTR-3B report to include credit notes in . Created .
-    - **C-05:** Implemented a financial audit logging system in  and integrated it into 7 mutation points. Created .
-    - **C-03:** Created the period locking design document at .
-- **Week 2 Remediation Plan (Started):**
-    - Added a required note to .
-    - **H-NEW-01:** Fixed 3 unscoped  queries in  and ran full regression tests.
+-   **Week 2 Plan:** Successfully completed all 5 prompts, delivering:
+    -   Fix for  in audit logs.
+    -   Verification of the (already working) estimates chain.
+    -   Full implementation of 3 password reset flows with tests.
+    -   New  and  pages.
+    -   Environment badge and PWA service worker implementation.
+-   **Documentation:** Created  and updated .
+-   **Auditing:** Performed a read-only alignment check and production readiness gap analysis, which successfully identified the critical  misconfiguration.
+-   **Verification:** Completed a user-requested credential audit, identifying the lost  password.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Deep Auditing:** Performing comprehensive, read-only system integrity checks to verify platform state against requirements.
--   **Strict Remediation Planning:** Following a user-defined, prioritized, multi-day plan to fix critical audit findings in a specific order.
--   **Financial Audit Logging:** Capturing immutable records of all financial mutations (create, update, void) with before/after snapshots for non-repudiation.
--   **Design Documentation:** Creating formal design documents (in Markdown) to specify functionality, data models, and edge cases before implementation.
--   **Test-Driven Remediation:** Writing specific tests to reproduce bugs and validate fixes, and running full regression suites to prevent breaking changes.
+-   **Strict Environment Discipline:** Adherence to the  with separate dev, staging, and production databases.
+-   **Period Locking:** A financial control to prevent edits in closed accounting periods, enforced via middleware.
+-   **Security Hardening:**
+    -   **CSRF Protection:** Using the Double Submit Cookie pattern for SPAs.
+    -   **Input Sanitization:** Using  to prevent XSS attacks on all user-submitted text.
+-   **Comprehensive Audit Logging:** Creating an immutable trail for all significant operational and financial mutations.
+-   **Monolith Refactoring:** Breaking down large React components into smaller, maintainable pieces using hooks for state management.
 
 **key DB schema**
--   ****: { , , , , , , , , ,  }
--   ** (to be created)**: { , , ,  }
+-   ****: { , , , , , , ... }
+-   ****: { , , ,  }
+-   ** (to be created)**: { , , , , , , ,  }
 
 **All files of reference**
--    (Conceptual, generated in chat): **[CRITICAL]** The definitive source of truth on the platform's current state and remaining gaps.
--   User Prompts for Week 2 (in chat history): **[CRITICAL]** The exact execution plan to follow.
--   : **[IN PROGRESS]** File to be modified for the next task (M-NEW-02).
--   : Test file to be extended for M-NEW-02.
--   : Completed design document.
--   : Recently fixed for GSTR reports and unscoped queries.
--   : To be fixed as part of the broken estimates chain task.
+-   : **[CRITICAL]** Needs immediate correction from  to .
+-   : The governing document for all development practices.
+-   : The blueprint for the Period Locking feature.
+-   User Prompts for Week 3 (in chat history): The exact execution plan to follow.
 
 **Critical Info for New Agent**
--   **Follow The Plan:** You MUST follow the user's Week 2 plan, executing the 5 prompts in the specified order. Do not deviate.
--   **Current Task:** Start with **Prompt 1: M-NEW-02 (Fix  in audit logs)**. The root cause (field name mismatch) is already identified. The fix is a one-line change in  and adding a new test.
--   **Audit Report is Gospel:** The  is your guide to the platform's current health. The Week 2 plan directly addresses its critical findings.
--   **Hard Release Blocker:** The password reset feature (Prompt 3) is a non-negotiable blocker for release. It requires significant backend and frontend work.
+-   **STOP! READ THIS FIRST:** The backend is currently configured to use the **PRODUCTION** database (). Your absolute first priority is to execute the **EMERGENCY PROMPT** provided by the user. Do not write any other code until you have:
+    1.  Assessed production for test data.
+    2.  Corrected  to point to .
+    3.  Verified the environment is now correctly set to development.
+-   **PASSWORD RESET NEEDED:** The  password is lost. You must ask the user for a new password and perform a one-time manual update on the production database to restore access. Document this action in .
+-   **FOLLOW THE PLAN:** The user has provided a strict, sequential Week 3 plan. Execute the prompts in the specified order (Emergency -> Prompt 1 -> Prompt 2 -> ...). The goal is to achieve a 10/10 production-readiness score.
 
 **documents and test reports created in this job**
 -   
 -   
--   
--   
--   Test reports for both suites show 28/28 tests passing.
+-    (Shows 100% pass rate for Week 2 verification)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Provided the massive, 17-phase Master Deep Verification Audit script.
-2.  **Agent:** Executed Phase 1 of the audit.
-3.  **Agent:** Executed Phase 2 of the audit.
-4.  **Agent:** Executed Phase 3 of the audit.
-5.  **Agent:** Executed Phases 4-17 of the audit.
-6.  **Agent:** Delivered the complete , summarizing all findings.
-7.  **User:** Re-sent the audit script (likely a platform glitch or restart).
-8.  **Agent:** Re-delivered the already-compiled .
-9.  **User:** Provided the detailed, 5-prompt execution plan for Week 2, starting with M-NEW-02.
-10. **Agent:** Acknowledged the plan and stated it was starting with Prompt 1 (M-NEW-02).
+1.  **User:** Provided the detailed, 5-prompt Week 3 execution plan.
+2.  **Agent:** Acknowledged the plan.
+3.  **User:** Asked for login passwords.
+4.  **Agent:** Provided all known credentials from the handoff summary.
+5.  **User:** Instructed the agent to not start development, but to perform a read-only verification of credentials from specific files and the database. Confirmed the Week 3 plan is correct and should be started after credentials are sorted.
+6.  **Agent:** Began the read-only investigation.
+7.  **Agent:** Searched for credential files.
+8.  **Agent:** Checked the database for user existence and password hashes.
+9.  **Agent:** Reported the findings:  password is lost, and / users can't log in due to the  misconfiguration pointing to production.
+10. **User:** (Pending) Needs to provide the new password for  and give the final go-ahead to start the EMERGENCY PROMPT.
 
 **Project Health Check:**
 -   **Broken:**
-    -   **Password Reset:** The entire feature is missing. (CRITICAL - P0)
-    -   **Estimates Module:** The edit modal and save functionality are broken. (HIGH - P1)
-    -   **Audit Log :** Field is empty in all entries. (HIGH - P1, current task)
+    -   **Environment Configuration:**  points to the production DB, violating the SOP. (CRITICAL)
+    -   **Platform Admin Access:** Password is lost. (CRITICAL)
+    -   **Period Locking:** Feature is entirely missing. (CRITICAL)
+    -   **Estimate-to-Ticket Workflow:** A core business process is missing. (HIGH)
 -   **Mocked:**
     -    (awaiting live credentials).
 
 **3rd Party Integrations**
--   , , , , ,  (Emergent LLM Key),  (Test), , , ,  (awaiting keys).
+-    (Email)
+-    (Monitoring)
+-    (Payments)
+-    (Payments - Test Mode)
+-    (via Emergent LLM Key)
+-    (Mocked)
+-    (to be installed for sanitization)
 
 **Testing status**
--   **Testing agent used after significant changes:** YES.
+-   **Testing agent used after significant changes:** YES, successfully verified the entire Week 2 plan.
 -   **Troubleshoot agent used after agent stuck in loop:** NO.
--   **Test files created:**
-    -    (15 tests)
-    -    (13 tests)
--   **Known regressions:** None. The full regression suite of 28 tests is passing.
+-   **Test files created:**  and others during Week 2.
+-   **Known regressions:** None from Week 2. The status of the full test suite (~2000+ tests) is unknown and needs triage.
 
 **Credentials to test flow:**
--   **Demo Org:**  / 
--   **Dev Org:**  / 
+-   **:**  (Production user)
+-   **:** **LOCKED OUT** - Requires password reset.
+-   **:**  (Will work **after**  is fixed)
+-   **:**  (Will work **after**  is fixed)
 
 **What agent forgot to execute**
-The agent is correctly following the user's detailed, multi-step remediation plan and has not missed any instructions. The audit revealed features that were never implemented (like password reset), which are now correctly scheduled in the Week 2 plan.</analysis>
+The agent has followed all instructions meticulously and has not forgotten to execute any tasks. It correctly identified the critical environment misconfiguration and the lost password, and is now appropriately blocked waiting for user guidance before proceeding.</analysis>
