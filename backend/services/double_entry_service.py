@@ -39,6 +39,7 @@ class EntryType(str, Enum):
     DEPRECIATION = "DEPRECIATION"
     OPENING = "OPENING"
     ADJUSTMENT = "ADJUSTMENT"
+    CREDIT_NOTE = "CREDIT_NOTE"
 
 
 class AccountType(str, Enum):
@@ -72,6 +73,7 @@ SYSTEM_ACCOUNTS = {
     "PF_EMPLOYER_PAYABLE": {"name": "Employer PF Payable", "type": AccountType.LIABILITY, "code": "2331"},
     "ESI_PAYABLE": {"name": "ESI Payable", "type": AccountType.LIABILITY, "code": "2340"},
     "PROFESSIONAL_TAX_PAYABLE": {"name": "Professional Tax Payable", "type": AccountType.LIABILITY, "code": "2350"},
+    "REFUND_PAYABLE": {"name": "Refund Payable", "type": AccountType.LIABILITY, "code": "2400"},
     
     # Equity
     "RETAINED_EARNINGS": {"name": "Retained Earnings", "type": AccountType.EQUITY, "code": "3100"},
@@ -350,7 +352,8 @@ class DoubleEntryService:
             EntryType.PAYROLL: "JE-PAY",
             EntryType.DEPRECIATION: "JE-DEP",
             EntryType.OPENING: "JE-OPN",
-            EntryType.ADJUSTMENT: "JE-ADJ"
+            EntryType.ADJUSTMENT: "JE-ADJ",
+            EntryType.CREDIT_NOTE: "JE-CN"
         }
         prefix = prefix_map.get(entry_type, "JE")
         
