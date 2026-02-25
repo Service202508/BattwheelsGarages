@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { StatCard, StatCardGrid, formatCurrencyCompact } from "@/components/ui/stat-card";
 import { ResponsiveTable, EmptyState, TableSkeleton } from "@/components/ui/data-display";
+import { CreditNoteCreateModal, CreditNoteViewModal } from "@/components/CreditNoteModal";
 import PageHeader from "@/components/PageHeader";
 import { API } from "@/App";
 import { useFormPersistence } from "@/hooks/useFormPersistence";
