@@ -787,28 +787,40 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     net_sgst = max(0, outward_sgst - input_sgst)
     net_igst = max(0, outward_igst - input_igst)
     
-    # Credit Notes (reduce liability)
-    credit_notes = await db.creditnotes.find(
-        {"date": {"$gte": start_date, "$lt": end_date}},
-        {"_id": 0}
-    ).to_list(1000)
-    cn_total = sum(cn.get("total", 0) for cn in credit_notes)
-    cn_tax = cn_total * 0.18 / 1.18  # Extract tax from total
+    # Credit Notes (reduce output liability) — org-scoped, proper GST breakdown
+    cn_query_3b = org_query(request, {
+        "created_at": {"$gte": start_date, "$lt": end_date},
+        "status": {"$ne": "cancelled"}
+    })
+    cn_list = await db.credit_notes.find(cn_query_3b, {"_id": 0}).to_list(1000)
+    cn_taxable = sum(cn.get("subtotal", 0) for cn in cn_list)
+    cn_cgst = sum(cn.get("cgst_amount", 0) for cn in cn_list)
+    cn_sgst = sum(cn.get("sgst_amount", 0) for cn in cn_list)
+    cn_igst = sum(cn.get("igst_amount", 0) for cn in cn_list)
+    cn_tax_total = cn_cgst + cn_sgst + cn_igst
+    cn_value = sum(cn.get("total", 0) for cn in cn_list)
+    
+    # Adjust net liability by deducting CN tax
+    net_cgst = max(0, outward_cgst - input_cgst - cn_cgst)
+    net_sgst = max(0, outward_sgst - input_sgst - cn_sgst)
+    net_igst = max(0, outward_igst - input_igst - cn_igst)
     
     report_data = {
         "period": month,
         "filing_status": "draft",
         "section_3_1": {
-            "description": "Outward taxable supplies",
-            "taxable_value": round(outward_taxable, 2),
-            "cgst": round(outward_cgst, 2),
-            "sgst": round(outward_sgst, 2),
-            "igst": round(outward_igst, 2),
-            "total_tax": round(outward_cgst + outward_sgst + outward_igst, 2)
+            "description": "Outward taxable supplies (net of credit notes)",
+            "taxable_value": round(outward_taxable - cn_taxable, 2),
+            "cgst": round(outward_cgst - cn_cgst, 2),
+            "sgst": round(outward_sgst - cn_sgst, 2),
+            "igst": round(outward_igst - cn_igst, 2),
+            "total_tax": round(outward_cgst + outward_sgst + outward_igst - cn_tax_total, 2),
+            "gross_outward": round(outward_taxable, 2),
+            "cn_adjustment": round(cn_taxable, 2)
         },
         "section_3_2": {
             "description": "Unregistered supplies (B2C)",
-            "total_interstate": round(outward_igst, 2)
+            "total_interstate": round(outward_igst - cn_igst, 2)
         },
         "section_4": {
             "description": "Eligible ITC (Input Tax Credit)",
@@ -833,13 +845,17 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         },
         "adjustments": {
             "credit_notes": {
-                "count": len(credit_notes),
-                "total": round(cn_total, 2),
-                "tax_adjustment": round(cn_tax, 2)
+                "count": len(cn_list),
+                "taxable_value": round(cn_taxable, 2),
+                "cgst": round(cn_cgst, 2),
+                "sgst": round(cn_sgst, 2),
+                "igst": round(cn_igst, 2),
+                "total_tax": round(cn_tax_total, 2),
+                "total_value": round(cn_value, 2)
             }
         },
         "summary": {
-            "total_output_tax": round(outward_cgst + outward_sgst + outward_igst, 2),
+            "total_output_tax": round(outward_cgst + outward_sgst + outward_igst - cn_tax_total, 2),
             "total_input_tax": round(input_cgst + input_sgst + input_igst, 2),
             "net_tax_payable": round(net_cgst + net_sgst + net_igst, 2)
         }
