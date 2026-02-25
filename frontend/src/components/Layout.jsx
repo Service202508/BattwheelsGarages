@@ -51,6 +51,7 @@ import {
   PieChart,
   Banknote,
   UserCircle,
+  Lock,
   Briefcase,
   LayoutGrid,
   Hash,
