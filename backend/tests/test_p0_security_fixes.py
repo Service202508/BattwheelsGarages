@@ -34,7 +34,7 @@ class TestAuthTokens:
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         if response.status_code == 200:
-            return response.json().get("access_token")
+            return response.json().get("token")  # API returns 'token' not 'access_token'
         return None
     
     @staticmethod
@@ -44,7 +44,7 @@ class TestAuthTokens:
             json={"email": TECH_EMAIL, "password": TECH_PASSWORD}
         )
         if response.status_code == 200:
-            return response.json().get("access_token")
+            return response.json().get("token")  # API returns 'token' not 'access_token'
         return None
 
 
