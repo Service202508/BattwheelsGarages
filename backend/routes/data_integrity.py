@@ -26,7 +26,7 @@ def get_integrity_service():
 # ============== REQUEST/RESPONSE MODELS ==============
 
 class AuditRequest(BaseModel):
-    organization_id: Optional[str] = None
+    organization_id: Optional[str] = None  # Ignored — org comes from auth context
 
 
 class RepairRequest(BaseModel):
