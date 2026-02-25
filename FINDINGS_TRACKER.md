@@ -1,0 +1,14 @@
+# Findings Tracker
+## Active findings discovered during Week 1 remediation
+
+### H-NEW-01 (HIGH) — Unscoped `organization_settings` query in GST module
+- **File:** `backend/routes/gst.py` line 715
+- **Issue:** `organization_settings.find_one({})` returns the first org's settings regardless of caller. Must be scoped by `organization_id`.
+- **Discovered:** Day 3 (C-06 fix)
+- **Scheduled:** Week 2
+
+### M-NEW-01 (MEDIUM) — No reverse-charge filtering in GSTR-3B
+- **File:** `backend/routes/gst.py`
+- **Issue:** GSTR-3B outward liability calculation does not exclude reverse-charge transactions. No current data risk, but must be addressed before reverse-charge transactions are entered.
+- **Discovered:** Day 3 (C-06 fix)
+- **Scheduled:** Before reverse-charge feature goes live
