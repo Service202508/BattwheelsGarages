@@ -13,6 +13,7 @@ import uuid
 import logging
 from datetime import datetime, timezone
 from decimal import Decimal
+from services.period_lock_service import check_period_lock
 from typing import Optional
 from io import BytesIO
 
@@ -107,6 +108,10 @@ async def create_credit_note(request: Request, body: CreateCreditNoteRequest):
     user_id = getattr(request.state, "tenant_user_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization context required")
+    
+    # Period lock check on CN date (not the referenced invoice date)
+    cn_date = body.credit_note_date if hasattr(body, 'credit_note_date') and body.credit_note_date else datetime.now(timezone.utc).date().isoformat()
+    await check_period_lock(org_id, cn_date)
     
     db = get_db()
     
