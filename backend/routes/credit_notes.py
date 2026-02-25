@@ -20,10 +20,13 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-from utils.db import get_db
-
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/credit-notes", tags=["credit-notes"])
+
+
+def get_db():
+    from server import db
+    return db
 
 
 # ========================= MODELS =========================
