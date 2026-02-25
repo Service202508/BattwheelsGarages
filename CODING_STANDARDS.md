@@ -260,3 +260,9 @@ Code change written -> tested in dev -> tested in staging -> deployed to product
 
 
 Rule 5: Before every session, read /app/ENVIRONMENT_SOP.md and complete the Session Start Protocol.
+
+## Rule 6 — Customer Orgs Are Sacrosanct
+Every organisation in production except `battwheels-internal` is a customer.
+Customer data is never manipulated directly by scripts, migrations, or DB access.
+Features reach customers through code deployment only.
+Full details: /app/ENVIRONMENT_SOP.md Rule 8.

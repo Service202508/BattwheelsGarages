@@ -170,6 +170,45 @@ The agent NEVER declares "done" and NEVER promotes without this checklist comple
 
 ---
 
+## RULE 8 — CUSTOMERS ARE SACROSANCT
+
+Battwheels Garages and every future customer organisation are independent tenants
+of Battwheels OS. Their data belongs to them. The platform owner has technical
+access but no right to manipulate customer data directly under any normal circumstance.
+
+**The agent must NEVER:**
+- Run scripts that write, update, or delete records in a customer org's data
+- Seed, reset, or manipulate a customer org's records directly via DB
+- Use a customer org as a development or testing environment
+- Apply data migrations that alter customer content
+  (structure-only schema changes are permitted during deployment)
+
+**New features reach customers exclusively through code deployment:**
+1. Code written and tested in battwheels_dev (Volt Motors demo org)
+2. Code verified in battwheels_staging
+3. Code deployed to production
+4. All customer orgs (including Battwheels Garages) receive the update on next login
+5. No one touches their database directly at any point in this process
+
+**Operational tasks for customer orgs must use the application layer only:**
+- Password resets → use the forgot-password flow (/forgot-password)
+- Data corrections → use the Platform Admin panel (/platform-admin)
+- Support issues → the customer uses the UI; never bypass via direct DB
+
+**The ONLY org in production the agent may interact with directly is:**
+- Name: Battwheels OS Internal
+- Slug: battwheels-internal
+- Purpose: Platform-level production testing, without touching any customer data
+- All other production orgs are customer-owned and untouchable by the agent
+
+**If a task requires touching a customer org's data directly:**
+- Stop immediately
+- Explain what needs to happen and why
+- Wait for explicit written approval from D
+- Document the action in /app/docs/INCIDENTS.md before and after
+
+---
+
 ## ENVIRONMENT REFERENCE CARD
 
 ```
