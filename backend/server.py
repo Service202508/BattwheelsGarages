@@ -6766,7 +6766,11 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; "
-        "connect-src 'self' https://*.emergentagent.com https://*.battwheels.com; "
+        "script-src 'self'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: blob: https:; "
+        "font-src 'self' data: https:; "
+        "connect-src 'self' https://*.emergentagent.com https://*.battwheels.com https://*.railway.app; "
         "frame-ancestors 'none';"
     )
     return response
