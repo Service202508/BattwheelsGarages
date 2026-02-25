@@ -6762,12 +6762,13 @@ app.add_middleware(
 # Mount it so FastAPI serves both API routes and the SPA from one container.
 import pathlib as _pathlib
 _frontend_build = _pathlib.Path(__file__).parent.parent / "frontend" / "build"
-if _frontend_build.is_dir():
+_frontend_static = _frontend_build / "static"
+if _frontend_build.is_dir() and _frontend_static.is_dir():
     from starlette.staticfiles import StaticFiles
     from starlette.responses import FileResponse as _FileResponse
 
     # Serve static assets (JS, CSS, images)
-    app.mount("/static", StaticFiles(directory=str(_frontend_build / "static")), name="frontend-static")
+    app.mount("/static", StaticFiles(directory=str(_frontend_static)), name="frontend-static")
 
     # SPA catch-all: any non-API path returns index.html for client-side routing
     @app.get("/{full_path:path}")
