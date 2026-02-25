@@ -357,14 +357,14 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
     
     # Fetch invoices for the period — from invoices_enhanced (primary collection), org-scoped
     org_id = extract_org_id(request)
-    inv_query = org_query(request, {
+    inv_query = org_query(org_id, {
         "invoice_date": {"$gte": start_date, "$lt": end_date},
         "status": {"$in": ["sent", "paid", "partial", "overdue"]}
     })
     invoices = await db.invoices_enhanced.find(inv_query, {"_id": 0}).to_list(10000)
     
     # Also fetch from legacy invoices collection (Zoho-synced)
-    legacy_query = org_query(request, {
+    legacy_query = org_query(org_id, {
         "date": {"$gte": start_date, "$lt": end_date},
         "status": {"$in": ["sent", "paid", "partial", "overdue"]}
     })
@@ -444,7 +444,7 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
         }
     
     # Credit/Debit Notes for CDNR (Section 9A/34 of GSTR-1) — org-scoped
-    cn_query = org_query(request, {
+    cn_query = org_query(org_id, {
         "created_at": {"$gte": start_date, "$lt": end_date},
         "status": {"$ne": "cancelled"}
     })
@@ -713,13 +713,13 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     org_state = org_settings.get("place_of_supply", "27")
     
     # OUTWARD SUPPLIES (Invoices) — org-scoped from both collections
-    inv_query = org_query(request, {
+    inv_query = org_query(org_id, {
         "invoice_date": {"$gte": start_date, "$lt": end_date},
         "status": {"$in": ["sent", "paid", "partial", "overdue"]}
     })
     invoices_enh = await db.invoices_enhanced.find(inv_query, {"_id": 0}).to_list(10000)
     
-    legacy_query = org_query(request, {
+    legacy_query = org_query(org_id, {
         "date": {"$gte": start_date, "$lt": end_date},
         "status": {"$in": ["sent", "paid", "partial", "overdue"]}
     })
@@ -788,7 +788,7 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     net_igst = max(0, outward_igst - input_igst)
     
     # Credit Notes (reduce output liability) — org-scoped, proper GST breakdown
-    cn_query_3b = org_query(request, {
+    cn_query_3b = org_query(org_id, {
         "created_at": {"$gte": start_date, "$lt": end_date},
         "status": {"$ne": "cancelled"}
     })
