@@ -19,9 +19,15 @@ RUN yarn build
 FROM python:3.11-slim
 WORKDIR /app
 
-# System dependencies
+# System dependencies (includes WeasyPrint libs for PDF generation)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libpangoft2-1.0-0 \
+    libharfbuzz0b \
+    libcairo2 \
+    libgdk-pixbuf2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Python dependencies
