@@ -443,11 +443,49 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
             "invoice_value": sum(i["invoice_value"] for i in inv_list)
         }
     
-    # Credit Notes
-    credit_notes = await db.creditnotes.find(
-        {"date": {"$gte": start_date, "$lt": end_date}},
-        {"_id": 0}
-    ).to_list(1000)
+    # Credit/Debit Notes for CDNR (Section 9A/34 of GSTR-1) — org-scoped
+    cn_query = org_query(request, {
+        "created_at": {"$gte": start_date, "$lt": end_date},
+        "status": {"$ne": "cancelled"}
+    })
+    credit_notes = await db.credit_notes.find(cn_query, {"_id": 0}).to_list(1000)
+    
+    # Build CDNR entries with proper GST breakdown
+    cdnr_entries = []
+    for cn in credit_notes:
+        cn_data = {
+            "credit_note_number": cn.get("credit_note_number", ""),
+            "credit_note_date": cn.get("created_at", "")[:10],
+            "original_invoice_number": cn.get("original_invoice_number", ""),
+            "customer_name": cn.get("customer_name", ""),
+            "customer_gstin": cn.get("customer_gstin", ""),
+            "reason": cn.get("reason", ""),
+            "taxable_value": cn.get("subtotal", 0),
+            "cgst": cn.get("cgst_amount", 0),
+            "sgst": cn.get("sgst_amount", 0),
+            "igst": cn.get("igst_amount", 0),
+            "total_tax": cn.get("gst_amount", 0),
+            "note_value": cn.get("total", 0),
+            "note_type": "Credit Note",
+            "gst_treatment": cn.get("gst_treatment", "cgst_sgst"),
+        }
+        cdnr_entries.append(cn_data)
+    
+    cdnr_summary = {
+        "count": len(cdnr_entries),
+        "taxable_value": sum(e["taxable_value"] for e in cdnr_entries),
+        "cgst": sum(e["cgst"] for e in cdnr_entries),
+        "sgst": sum(e["sgst"] for e in cdnr_entries),
+        "igst": sum(e["igst"] for e in cdnr_entries),
+        "total_tax": sum(e["total_tax"] for e in cdnr_entries),
+        "total_value": sum(e["note_value"] for e in cdnr_entries),
+    }
+    
+    # Net adjustments: grand_total should subtract credit note amounts
+    cn_taxable = cdnr_summary["taxable_value"]
+    cn_cgst = cdnr_summary["cgst"]
+    cn_sgst = cdnr_summary["sgst"]
+    cn_igst = cdnr_summary["igst"]
     
     report_data = {
         "period": month,
@@ -465,15 +503,16 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
             "invoices": b2c_small
         },
         "cdnr": {
-            "count": len(credit_notes),
-            "total": sum(cn.get("total", 0) for cn in credit_notes)
+            "summary": cdnr_summary,
+            "notes": cdnr_entries
         },
         "grand_total": {
-            "taxable_value": aggregate(b2b_invoices)["taxable_value"] + aggregate(b2c_large)["taxable_value"] + aggregate(b2c_small)["taxable_value"],
-            "cgst": aggregate(b2b_invoices)["cgst"] + aggregate(b2c_large)["cgst"] + aggregate(b2c_small)["cgst"],
-            "sgst": aggregate(b2b_invoices)["sgst"] + aggregate(b2c_large)["sgst"] + aggregate(b2c_small)["sgst"],
-            "igst": aggregate(b2b_invoices)["igst"] + aggregate(b2c_large)["igst"] + aggregate(b2c_small)["igst"],
-            "total_invoices": len(b2b_invoices) + len(b2c_large) + len(b2c_small)
+            "taxable_value": aggregate(b2b_invoices)["taxable_value"] + aggregate(b2c_large)["taxable_value"] + aggregate(b2c_small)["taxable_value"] - cn_taxable,
+            "cgst": aggregate(b2b_invoices)["cgst"] + aggregate(b2c_large)["cgst"] + aggregate(b2c_small)["cgst"] - cn_cgst,
+            "sgst": aggregate(b2b_invoices)["sgst"] + aggregate(b2c_large)["sgst"] + aggregate(b2c_small)["sgst"] - cn_sgst,
+            "igst": aggregate(b2b_invoices)["igst"] + aggregate(b2c_large)["igst"] + aggregate(b2c_small)["igst"] - cn_igst,
+            "total_invoices": len(b2b_invoices) + len(b2c_large) + len(b2c_small),
+            "total_credit_notes": len(cdnr_entries)
         }
     }
     
