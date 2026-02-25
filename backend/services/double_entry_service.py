@@ -395,6 +395,21 @@ class DoubleEntryService:
         # Ensure system accounts exist
         await self.ensure_system_accounts(organization_id)
         
+        # IDEMPOTENCY CHECK: Prevent duplicate journal entries for the same source document
+        if source_document_id:
+            existing = await self.journal_entries.find_one({
+                "organization_id": organization_id,
+                "source_document_id": source_document_id,
+                "source_document_type": source_document_type,
+                "is_reversed": False
+            }, {"_id": 0})
+            if existing:
+                logger.info(
+                    f"Idempotency guard: journal entry already exists for "
+                    f"{source_document_type} {source_document_id} in org {organization_id}"
+                )
+                return True, "Journal entry already exists (idempotent)", existing
+        
         # Build entry lines with account details
         entry_lines = []
         for line_data in lines:
