@@ -81,3 +81,49 @@ This file is append-only. Never edit or delete existing entries.
   - dev@battwheels.internal login: SUCCESS
   - Production database not affected (read-only verification)
 - **Rollback plan:** Revert .env values (not desired — the fix is correct)
+
+### INC-004 — Drop empty audit_log collection (production)
+- **Date:** 2026-02-25 12:19 UTC
+- **Performed by:** Agent (with explicit human approval)
+- **Environment:** production
+- **Affected org:** All (collection-level change)
+- **Action taken:**
+  - Dropped the empty `audit_log` collection (0 documents) from `battwheels` database
+  - The correct collection `audit_logs` (31 records) was verified intact before and after
+- **Reason:** `audit_log` (without 's') was a Week 2 artifact. All code writes to `audit_logs`. Empty collection caused confusion.
+- **Approved by:** D (script code reviewed line-by-line before execution)
+- **Verification:**
+  - Pre-check confirmed 0 documents in `audit_log`
+  - Post-check assertion confirmed collection no longer exists
+  - `audit_logs` (31 records) unaffected
+  - verify_prod_org.py: CLEAN
+- **Rollback plan:** Collection was empty — no data to restore
+
+### INC-005 — Migrate invoices to invoices_enhanced (production)
+- **Date:** 2026-02-25 12:19 UTC
+- **Performed by:** Agent (with explicit human approval)
+- **Environment:** production
+- **Affected org:** battwheels-garages
+- **Action taken:**
+  - Migrated 1 record (INV-00001, Rajesh Kumar, grand_total=18880.0) from `invoices` to `invoices_enhanced`
+  - Line items fetched from `invoice_line_items` collection (2 items)
+  - `payment_status` derived as "paid" (balance_due=0, amount_paid=18880)
+  - Original `created_at` preserved from `created_time` field
+  - All GST fields preserved (total_igst=2880.0, place_of_supply=MH)
+  - Additional fields preserved: customer_email, estimate_id, estimate_number, shipping_charge, adjustment, paid_date, payment_count
+- **Reason:** Consolidate legacy `invoices` collection into the enhanced schema used by all current code.
+- **Approved by:** D (raw production document reviewed, dry-run preview approved, transform function updated with 4 fixes before execution)
+- **Verification:**
+  - Dry-run preview of INV-00001 reviewed and approved before execution
+  - Post-migration verification: all 7 critical fields confirmed correct
+  - verify_prod_org.py: CLEAN
+- **Rollback plan:** Delete migrated record from `invoices_enhanced` where `migrated_from: "invoices"`
+
+### INC-005a — invoices collection preservation decision
+- **Date:** 2026-02-25 12:19 UTC
+- **Decision by:** D
+- **Environment:** production
+- **Status:** PENDING — Original `invoices` collection (1 record, INV-00001) intentionally preserved
+- **Reason:** Migration to `invoices_enhanced` is complete and verified, but the original collection is kept as a safety net until D explicitly approves dropping it.
+- **Action required:** When ready, run `db.invoices.drop()` on production and log as INC-006.
+- **No expiry** — this is a manual decision, not a timed cleanup.
