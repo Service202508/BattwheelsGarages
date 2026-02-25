@@ -31,9 +31,19 @@ def run_async(coro):
 
 
 async def admin_login():
-    async with httpx.AsyncClient(timeout=15) as client:
-        resp = await client.post(f"{AUTH}/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
-        return resp.json().get("token", "")
+    """Login with retry for rate limiting."""
+    import time
+    for attempt in range(3):
+        async with httpx.AsyncClient(timeout=15) as client:
+            resp = await client.post(f"{AUTH}/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+            if resp.status_code == 429:
+                await asyncio.sleep(2)
+                continue
+            data = resp.json()
+            token = data.get("token", "")
+            if token:
+                return token
+    raise RuntimeError("Failed to login after retries")
 
 
 async def get_org_id(token):
