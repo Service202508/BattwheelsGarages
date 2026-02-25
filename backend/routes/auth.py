@@ -33,11 +33,21 @@ class TokenResponse(BaseModel):
     token: str
     user: dict
 
+import bcrypt as _bcrypt
+
 def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode()).hexdigest()
+    return _bcrypt.hashpw(password.encode(), _bcrypt.gensalt()).decode()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return hash_password(plain_password) == hashed_password
+    if not hashed_password:
+        return False
+    try:
+        if hashed_password.startswith("$2b$") or hashed_password.startswith("$2a$"):
+            return _bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
+    except Exception:
+        pass
+    # Legacy SHA256 fallback
+    return hashlib.sha256(plain_password.encode()).hexdigest() == hashed_password
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
