@@ -229,7 +229,7 @@ class ImportMapping(BaseModel):
 class EstimatePreferences(BaseModel):
     # Automation settings
     auto_convert_on_accept: bool = False
-    auto_convert_to: str = "draft_invoice"  # draft_invoice, open_invoice, sales_order
+    auto_convert_to: str = "draft_invoice"  # draft_invoice, open_invoice, sales_order, ticket
     auto_send_converted: bool = False
     # Quote acceptance settings
     allow_public_accept: bool = True
@@ -746,6 +746,9 @@ async def auto_convert_estimate(estimate_id: str, preferences: dict):
         return result
     elif convert_to == "sales_order":
         result = await convert_to_sales_order_internal(estimate_id)
+        return result
+    elif convert_to == "ticket":
+        result = await convert_to_ticket_internal(estimate_id)
         return result
     
     return None
