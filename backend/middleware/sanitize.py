@@ -91,7 +91,10 @@ class SanitizationMiddleware(BaseHTTPMiddleware):
                 sanitized = sanitize_value(data)
                 sanitized_bytes = json.dumps(sanitized).encode("utf-8")
 
-                # Replace the receive callable so downstream sees the sanitized body
+                # Clear Starlette's cached body and replace the receive callable
+                # so downstream middleware/routes see the sanitized version
+                request._body = sanitized_bytes
+
                 async def receive():
                     return {"type": "http.request", "body": sanitized_bytes}
 
