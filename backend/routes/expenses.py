@@ -13,6 +13,7 @@ Author: Battwheels OS
 from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
+from services.period_lock_service import check_period_lock
 from datetime import datetime, timezone
 import logging
 import base64
@@ -253,6 +254,10 @@ async def create_expense(request: Request, data: ExpenseCreate):
     service = get_service()
     org_id = await get_org_id(request)
     user_id = await get_current_user_id(request)
+    
+    # Period lock check on expense_date
+    if data.expense_date:
+        await check_period_lock(org_id, data.expense_date)
     
     expense = await service.create_expense(
         org_id=org_id,
