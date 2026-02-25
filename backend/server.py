@@ -1698,7 +1698,12 @@ async def reset_password(data: ResetPasswordRequest):
     if not token_doc:
         raise HTTPException(status_code=400, detail="Invalid or expired reset link")
     
-    if datetime.now(timezone.utc) > token_doc["expires_at"]:
+    # Compare expiry — handle both naive and aware datetimes from MongoDB
+    expires_at = token_doc["expires_at"]
+    now_utc = datetime.now(timezone.utc)
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    if now_utc > expires_at:
         await db.password_reset_tokens.update_one({"_id": token_doc["_id"]}, {"$set": {"used": True}})
         raise HTTPException(status_code=400, detail="Reset link has expired. Please request a new one.")
     
