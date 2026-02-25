@@ -473,16 +473,13 @@ async def get_reconciliation_history(
 
 @router.get("/chart-of-accounts")
 async def list_chart_of_accounts(
+    request: Request,
     account_type: Optional[str] = None,
     is_active: bool = True,
-    organization_id: Optional[str] = None
 ):
     """List chart of accounts with hierarchy"""
-    query = {"is_active": is_active}
-    if account_type:
-        query["account_type"] = account_type
-    if organization_id:
-        query["organization_id"] = organization_id
+    org_id = _get_org_id(request)
+    query = {"is_active": is_active, "organization_id": org_id}
     
     accounts = await chart_of_accounts_col.find(query, {"_id": 0}).sort("account_code", 1).to_list(500)
     
