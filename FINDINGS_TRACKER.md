@@ -12,3 +12,9 @@
 - **Issue:** `TenantGuardMiddleware` sets `request.state.tenant_user_id` but does not set `request.state.user_role`. Audit log entries have empty `user_role` field.
 - **Discovered:** Day 4 (C-05 fix)
 - **Scheduled:** Week 2
+
+### M-NEW-01 (MEDIUM) — No reverse-charge filtering in GSTR-3B
+- **File:** `backend/routes/gst.py`
+- **Issue:** GSTR-3B outward liability calculation does not exclude reverse-charge transactions. No current data risk, but must be addressed before reverse-charge transactions are entered.
+- **Discovered:** Day 3 (C-06 fix)
+- **Scheduled:** Before reverse-charge feature goes live
