@@ -78,8 +78,14 @@ class CSRFMiddleware(BaseHTTPMiddleware):
             self._ensure_csrf_cookie(request, response)
             return response
 
-        # For unsafe methods, validate the double-submit
-        if method in UNSAFE_METHODS:
+        # Bearer-token authenticated requests are inherently CSRF-safe
+        # because attackers cannot forge the Authorization header cross-origin.
+        # Only cookie-only sessions need double-submit cookie validation.
+        auth_header = request.headers.get("authorization", "")
+        has_bearer = auth_header.startswith("Bearer ") and len(auth_header) > 10
+
+        # For unsafe methods WITHOUT bearer token, validate the double-submit
+        if method in UNSAFE_METHODS and not has_bearer:
             cookie_token = request.cookies.get(CSRF_COOKIE_NAME)
             header_token = request.headers.get(CSRF_HEADER_NAME)
 
@@ -96,6 +102,20 @@ class CSRFMiddleware(BaseHTTPMiddleware):
                     status_code=403,
                     content={"detail": "CSRF token invalid", "code": "CSRF_INVALID"},
                 )
+
+        # For unsafe methods WITH bearer token, also validate CSRF if the
+        # X-CSRF-Token header is provided (defense-in-depth for apiFetch users).
+        # But don't block if it's missing — the bearer token itself is sufficient.
+        if method in UNSAFE_METHODS and has_bearer:
+            header_token = request.headers.get(CSRF_HEADER_NAME)
+            cookie_token = request.cookies.get(CSRF_COOKIE_NAME)
+            if header_token and cookie_token:
+                if not secrets.compare_digest(cookie_token, header_token):
+                    logger.warning(f"CSRF: token mismatch (bearer+csrf) on {method} {path}")
+                    return JSONResponse(
+                        status_code=403,
+                        content={"detail": "CSRF token invalid", "code": "CSRF_INVALID"},
+                    )
 
         # Proceed with the request
         response = await call_next(request)
