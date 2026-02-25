@@ -355,11 +355,20 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
     except:
         raise HTTPException(status_code=400, detail="Invalid month format. Use YYYY-MM")
     
-    # Fetch invoices for the period
-    invoices = await db.invoices.find(
-        {"date": {"$gte": start_date, "$lt": end_date}, "status": {"$in": ["sent", "paid", "partial", "overdue"]}},
-        {"_id": 0}
-    ).to_list(10000)
+    # Fetch invoices for the period — from invoices_enhanced (primary collection), org-scoped
+    org_id = extract_org_id(request)
+    inv_query = org_query(request, {
+        "invoice_date": {"$gte": start_date, "$lt": end_date},
+        "status": {"$in": ["sent", "paid", "partial", "overdue"]}
+    })
+    invoices = await db.invoices_enhanced.find(inv_query, {"_id": 0}).to_list(10000)
+    
+    # Also fetch from legacy invoices collection (Zoho-synced)
+    legacy_query = org_query(request, {
+        "date": {"$gte": start_date, "$lt": end_date},
+        "status": {"$in": ["sent", "paid", "partial", "overdue"]}
+    })
+    legacy_invoices = await db.invoices.find(legacy_query, {"_id": 0}).to_list(10000)
     
     # Get organization settings
     org_settings = await db.organization_settings.find_one({}, {"_id": 0}) or {}
