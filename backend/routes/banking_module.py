@@ -247,14 +247,15 @@ async def update_bank_account(request: Request, account_id: str, updates: Dict[s
 # ==================== BANK TRANSACTIONS ====================
 
 @router.post("/transactions")
-async def create_bank_transaction(txn: BankTransactionCreate):
+async def create_bank_transaction(request: Request, txn: BankTransactionCreate):
     """Record a bank transaction"""
+    org_id = _get_org_id(request)
     txn_id = f"bt_{uuid.uuid4().hex[:12]}"
-    txn_number = await get_next_number("TXN", txn.organization_id)
+    txn_number = await get_next_number("TXN", org_id)
     now = datetime.now(timezone.utc)
     
-    # Verify bank account exists
-    account = await bank_accounts_col.find_one({"bank_account_id": txn.bank_account_id})
+    # Verify bank account exists and belongs to this org
+    account = await bank_accounts_col.find_one({"bank_account_id": txn.bank_account_id, "organization_id": org_id})
     if not account:
         raise HTTPException(status_code=400, detail="Bank account not found")
     
@@ -271,7 +272,7 @@ async def create_bank_transaction(txn: BankTransactionCreate):
         "payee": txn.payee,
         "category_id": txn.category_id,
         "is_reconciled": txn.is_reconciled,
-        "organization_id": txn.organization_id,
+        "organization_id": org_id,
         "created_at": now.isoformat(),
         "updated_at": now.isoformat(),
     }
@@ -288,6 +289,7 @@ async def create_bank_transaction(txn: BankTransactionCreate):
 
 @router.get("/transactions")
 async def list_bank_transactions(
+    request: Request,
     bank_account_id: Optional[str] = None,
     transaction_type: Optional[str] = None,
     is_reconciled: Optional[bool] = None,
@@ -298,10 +300,11 @@ async def list_bank_transactions(
 ):
     """List bank transactions with standardized pagination"""
     import math
+    org_id = _get_org_id(request)
     if limit > 100:
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
-    query = {}
+    query = {"organization_id": org_id}
     if bank_account_id:
         query["bank_account_id"] = bank_account_id
     if transaction_type:
