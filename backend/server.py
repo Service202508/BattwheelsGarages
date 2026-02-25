@@ -6734,3 +6734,24 @@ app.add_middleware(
 )
 
 # Startup/shutdown handled by lifespan context manager
+
+# ==================== STATIC FRONTEND SERVING (Production) ====================
+# In Docker production builds, the frontend is pre-built to /app/frontend/build.
+# Mount it so FastAPI serves both API routes and the SPA from one container.
+import pathlib as _pathlib
+_frontend_build = _pathlib.Path(__file__).parent.parent / "frontend" / "build"
+if _frontend_build.is_dir():
+    from starlette.staticfiles import StaticFiles
+    from starlette.responses import FileResponse as _FileResponse
+
+    # Serve static assets (JS, CSS, images)
+    app.mount("/static", StaticFiles(directory=str(_frontend_build / "static")), name="frontend-static")
+
+    # SPA catch-all: any non-API path returns index.html for client-side routing
+    @app.get("/{full_path:path}")
+    async def _spa_fallback(full_path: str):
+        return _FileResponse(str(_frontend_build / "index.html"))
+
+    logger.info(f"Frontend static files mounted from {_frontend_build}")
+else:
+    logger.info("No frontend build found — API-only mode (dev environment)")
