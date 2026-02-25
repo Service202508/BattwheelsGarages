@@ -189,6 +189,8 @@ The `create_journal_entry()` and `reverse_journal_entry()` methods accept `entry
 ### `services/posting_hooks.py` (Internal)
 All 6 posting functions (`post_invoice_journal_entry`, `post_payment_journal_entry`, `post_bill_journal_entry`, `post_bill_payment_journal_entry`, `post_expense_journal_entry`, `post_payroll_journal_entry`) derive their `entry_date` from the parent document. Since the parent document's creation endpoint already checks the lock, these do not need a separate check — the lock is enforced at the entry point.
 
+> **PREREQUISITE NOTE:** Service-layer enforcement must be added before any background job or scheduled task is introduced that calls financial mutation functions directly. This is a hard prerequisite for the Celery backlog item. Route-level enforcement alone is insufficient when mutations can be triggered outside the HTTP request cycle (e.g., cron-based recurring invoice generation, scheduled payroll runs, async bank reconciliation). Before any such task is implemented, `check_period_lock()` must be called inside the service-layer functions or within the task itself.
+
 ---
 
 ## 6. Data Model
