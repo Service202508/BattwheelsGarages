@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from pydantic import BaseModel
 import logging
 
+from services.period_lock_service import check_period_lock
 from services.hr_service import (
     HRService,
     get_hr_service,
@@ -472,6 +473,15 @@ async def generate_payroll(request: Request, month: str = None, year: int = None
     now = datetime.now(timezone.utc)
     month = month or now.strftime("%B")
     year = year or now.year
+    
+    # Period lock check on payroll month
+    org_id = await get_org_id(request, service.db)
+    month_names = {"january":"01","february":"02","march":"03","april":"04","may":"05","june":"06",
+                   "july":"07","august":"08","september":"09","october":"10","november":"11","december":"12"}
+    month_num = month_names.get(month.lower(), "01")
+    payroll_period = f"{year}-{month_num}"
+    if org_id:
+        await check_period_lock(org_id, f"{payroll_period}-01")
     
     try:
         return await service.generate_payroll(month, year, user.get("user_id"))
