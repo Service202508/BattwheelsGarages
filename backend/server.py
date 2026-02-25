@@ -6663,18 +6663,13 @@ try:
     logger.info("TenantGuardMiddleware database reference set")
     
     # IMPORTANT: Middleware execution order is LIFO (last added = first to run)
-    # We want: Request -> RateLimit -> RBAC -> TenantGuard -> Route
-    # So we add in reverse order: TenantGuard, RBAC, RateLimit
-    
-    # Add Rate Limiting middleware (runs LAST - after auth is established)
+    # Desired: Request -> CSRF -> TenantGuard -> RBAC -> Sanitization -> RateLimit -> Route
+    # So we add in reverse order:
+
+    # Add Rate Limiting middleware (runs LAST)
     from middleware.rate_limit import RateLimitMiddleware
     app.add_middleware(RateLimitMiddleware)
     logger.info("RateLimitMiddleware added - API rate limiting ACTIVE")
-
-    # Add CSRF protection (Double Submit Cookie)
-    from middleware.csrf import CSRFMiddleware
-    app.add_middleware(CSRFMiddleware)
-    logger.info("CSRFMiddleware added - CSRF protection ACTIVE")
 
     # Add input sanitization (bleach XSS stripping)
     from middleware.sanitize import SanitizationMiddleware
@@ -6688,9 +6683,14 @@ try:
     logger.info("RBACMiddleware added - Role-based access control ENFORCEMENT ACTIVE")
     
     # Add tenant guard middleware (ENFORCES tenant context on all requests)
-    # This runs FIRST, sets tenant context and role on request.state
+    # This runs AFTER CSRF, sets tenant context and role on request.state
     app.add_middleware(TenantGuardMiddleware)
     logger.info("TenantGuardMiddleware added - Multi-tenant isolation ENFORCEMENT ACTIVE")
+
+    # Add CSRF protection — runs FIRST (outermost), blocks forged requests early
+    from middleware.csrf import CSRFMiddleware
+    app.add_middleware(CSRFMiddleware)
+    logger.info("CSRFMiddleware added - CSRF protection ACTIVE")
     
 except Exception as e:
     logger.error(f"Failed to initialize multi-tenant system: {e}")
