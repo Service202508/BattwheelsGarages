@@ -465,6 +465,14 @@ class DoubleEntryService:
         
         logger.info(f"Created journal entry {reference_number} for org {organization_id}")
         
+        # Audit log: journal_entry CREATE
+        await log_financial_action(
+            org_id=organization_id, action="CREATE", entity_type="journal_entry",
+            entity_id=entry_dict.get("entry_id", reference_number),
+            before_snapshot=None, after_snapshot=entry_dict,
+            user_id=created_by,
+        )
+        
         return True, "Journal entry created successfully", entry_dict
     
     async def reverse_journal_entry(
