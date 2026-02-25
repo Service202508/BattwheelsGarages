@@ -1,0 +1,10 @@
+version: '3.9'
+
+services:
+  app:
+    restart: always
+    environment:
+      - ENVIRONMENT=production
+      - DB_NAME=battwheels
+    command: uvicorn backend.server:app --host 0.0.0.0 --port 8000 --workers 2
+    volumes: []
