@@ -900,15 +900,15 @@ async def get_banking_dashboard_stats(request: Request):
     ]).to_list(1)
     
     monthly_withdrawals = await bank_transactions_col.aggregate([
-        {"$match": {"transaction_type": {"$in": ["withdrawal", "transfer_out"]}, "transaction_date": {"$gte": month_start.strftime("%Y-%m-%d")}}},
+        {"$match": {"organization_id": org_id, "transaction_type": {"$in": ["withdrawal", "transfer_out"]}, "transaction_date": {"$gte": month_start.strftime("%Y-%m-%d")}}},
         {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
     ]).to_list(1)
     
-    # Unreconciled count
-    unreconciled = await bank_transactions_col.count_documents({"is_reconciled": False})
+    # Unreconciled count — org-scoped
+    unreconciled = await bank_transactions_col.count_documents({"organization_id": org_id, "is_reconciled": False})
     
-    # Recent reconciliations
-    recent_recons = await reconciliation_col.find({}, {"_id": 0}).sort("created_at", -1).limit(5).to_list(5)
+    # Recent reconciliations — org-scoped
+    recent_recons = await reconciliation_col.find({"organization_id": org_id}, {"_id": 0}).sort("created_at", -1).limit(5).to_list(5)
     
     return {
         "code": 0,
