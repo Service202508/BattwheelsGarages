@@ -48,11 +48,14 @@ class RefIntegrityRepairRequest(BaseModel):
 # ============== AUDIT ENDPOINTS ==============
 
 @router.post("/audit")
-async def run_data_audit(request: AuditRequest, background_tasks: BackgroundTasks):
+async def run_data_audit(http_request: Request, request: AuditRequest, background_tasks: BackgroundTasks):
     """
-    Run comprehensive data integrity audit
-    Checks field completeness, referential integrity, and data quality
+    Run comprehensive data integrity audit.
+    Scoped to the caller's organization via auth context.
     """
+    org_id = getattr(http_request.state, "tenant_org_id", None)
+    if not org_id:
+        raise HTTPException(status_code=400, detail="Organization context required")
     service = get_integrity_service()
     
     try:
