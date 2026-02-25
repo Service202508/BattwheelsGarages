@@ -1755,7 +1755,7 @@ async def admin_reset_employee_password(employee_id: str, data: AdminResetPasswo
     
     logger.info(f"Admin {admin_user.user_id} reset password for employee {employee_id} (user {user['user_id']})")
     from utils.audit_log import log_financial_action
-    await log_financial_action(request, "admin_password_reset", "user", user["user_id"], after_snapshot={"employee_id": employee_id, "employee_name": employee.get("full_name", "")})
+    await log_financial_action(org_id=ctx.org_id, action="admin_password_reset", entity_type="user", entity_id=user["user_id"], request=request, after_snapshot={"employee_id": employee_id, "employee_name": employee.get("full_name", "")})
     return {"message": f"Password reset successfully for {employee.get('full_name', work_email)}"}
 
 
