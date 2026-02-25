@@ -260,8 +260,11 @@ class RBACMiddleware(BaseHTTPMiddleware):
             logger.info(f"RBAC: No role found for path {path} - letting through for auth check")
             return await call_next(request)  # Let other middleware handle auth
         
+        # Normalize path: strip /v1 prefix so /api/v1/hr/... matches /api/hr/... patterns
+        normalized_path = re.sub(r'^/api/v1/', '/api/', path)
+        
         # Check route permissions
-        allowed_roles = get_allowed_roles(path)
+        allowed_roles = get_allowed_roles(normalized_path)
         
         if allowed_roles is None:
             # Route not in permissions map - allow authenticated users
