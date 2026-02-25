@@ -982,6 +982,15 @@ async def create_contact(contact: ContactCreate, background_tasks: BackgroundTas
         background_tasks.add_task(mock_send_email, contact.email, "Welcome to Battwheels", f"Dear {contact.name}, Welcome!")
     
     contact_doc.pop("_id", None)
+    
+    # Audit: contact.created
+    from utils.audit import log_audit, AuditAction
+    from motor.motor_asyncio import AsyncIOMotorClient
+    _aclient = AsyncIOMotorClient(os.environ.get("MONGO_URL"))
+    _adb = _aclient[os.environ.get("DB_NAME")]
+    await log_audit(_adb, AuditAction.CONTACT_CREATED, org_id or "", "",
+        "contact", contact_doc.get("contact_id", ""), {"name": contact.name, "type": contact.contact_type})
+    
     return {"code": 0, "message": "Contact created", "contact": contact_doc}
 
 @router.get("/")
