@@ -1182,6 +1182,15 @@ async def update_contact(contact_id: str, contact: ContactUpdate):
     
     await add_contact_history(contact_id, "updated", "Contact details updated")
     
+    # Audit: contact.updated
+    from utils.audit import log_audit, AuditAction
+    from motor.motor_asyncio import AsyncIOMotorClient
+    _aclient = AsyncIOMotorClient(os.environ.get("MONGO_URL"))
+    _adb = _aclient[os.environ.get("DB_NAME")]
+    org_id = existing.get("organization_id", "")
+    await log_audit(_adb, AuditAction.CONTACT_UPDATED, org_id, "",
+        "contact", contact_id, {"fields_changed": list(update_data.keys())})
+    
     updated = await contacts_collection.find_one({"contact_id": contact_id}, {"_id": 0})
     return {"code": 0, "message": "Contact updated", "contact": updated}
 
