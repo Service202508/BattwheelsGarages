@@ -38,8 +38,8 @@ async def ensure_compound_indexes(db):
     await db.journal_entries.create_index(
         [("organization_id", 1), ("source_document_id", 1), ("source_document_type", 1)],
         unique=True,
-        partialFilterExpression={"source_document_id": {"$ne": ""}},
-        name="unique_source_document_per_org", background=True)
+        sparse=True,
+        name="unique_source_document_per_org_sparse", background=True)
 
     await db.contacts.create_index(
         [("organization_id", 1), ("name", 1)],
