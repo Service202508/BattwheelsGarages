@@ -1755,7 +1755,7 @@ async def record_payment(invoice_id: str, payment: PaymentCreate, request: Reque
     }
 
 @router.delete("/{invoice_id}/payments/{payment_id}")
-async def delete_payment(invoice_id: str, payment_id: str):
+async def delete_payment(invoice_id: str, payment_id: str, request: Request = None):
     """Delete a payment (reverses the payment)"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
     if not invoice:
@@ -1764,6 +1764,12 @@ async def delete_payment(invoice_id: str, payment_id: str):
     payment = await invoice_payments_collection.find_one({"payment_id": payment_id, "invoice_id": invoice_id})
     if not payment:
         raise HTTPException(status_code=404, detail="Payment not found")
+    
+    # Period lock check on original payment_date
+    org_id = await get_org_id(request) if request else None
+    check_date = payment.get("payment_date", "")
+    if org_id and check_date:
+        await check_period_lock(org_id, check_date)
     
     # Delete payment
     await invoice_payments_collection.delete_one({"payment_id": payment_id})
