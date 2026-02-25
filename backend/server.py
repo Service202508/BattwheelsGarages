@@ -57,16 +57,28 @@ if SENTRY_DSN:
     try:
         import sentry_sdk
         from sentry_sdk.integrations.fastapi import FastApiIntegration
+
+        _current_env = os.environ.get("ENVIRONMENT", "development")
+
+        def _before_send(event, hint):
+            """Only send events in production/staging. Scrub sensitive data."""
+            if _current_env == "development":
+                return None  # Suppress all events in dev
+            return _scrub_sensitive_data(event, hint)
+
         sentry_sdk.init(
             dsn=SENTRY_DSN,
             integrations=[FastApiIntegration()],
             traces_sample_rate=0.1,
             profiles_sample_rate=0.1,
-            environment=os.environ.get("ENVIRONMENT", "development"),
+            environment=_current_env,
             release=os.environ.get("APP_VERSION", "1.0.0"),
-            before_send=_scrub_sensitive_data,
+            before_send=_before_send,
         )
-        logger.info("Sentry monitoring initialized")
+        if _current_env == "development":
+            logger.info("Sentry initialized but SUPPRESSED in development (events discarded)")
+        else:
+            logger.info(f"Sentry monitoring active for environment={_current_env}")
     except Exception as _sentry_err:
         logger.warning(f"Sentry initialization failed: {_sentry_err}")
 else:
