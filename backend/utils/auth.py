@@ -11,7 +11,7 @@ from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # Configuration — use the same JWT_SECRET as server.py
-JWT_SECRET = os.environ.get("JWT_SECRET", "battwheels-secret")
+JWT_SECRET = os.environ.get("JWT_SECRET")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
 
