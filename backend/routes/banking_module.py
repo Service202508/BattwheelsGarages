@@ -202,10 +202,11 @@ async def list_bank_accounts(
 
 
 @router.get("/accounts/{account_id}")
-async def get_bank_account(account_id: str):
+async def get_bank_account(request: Request, account_id: str):
     """Get bank account details with recent transactions"""
+    org_id = _get_org_id(request)
     account = await bank_accounts_col.find_one(
-        {"bank_account_id": account_id},
+        {"bank_account_id": account_id, "organization_id": org_id},
         {"_id": 0}
     )
     
@@ -214,7 +215,7 @@ async def get_bank_account(account_id: str):
     
     # Get recent transactions
     transactions = await bank_transactions_col.find(
-        {"bank_account_id": account_id},
+        {"bank_account_id": account_id, "organization_id": org_id},
         {"_id": 0}
     ).sort("transaction_date", -1).limit(20).to_list(20)
     
@@ -223,21 +224,23 @@ async def get_bank_account(account_id: str):
 
 
 @router.put("/accounts/{account_id}")
-async def update_bank_account(account_id: str, updates: Dict[str, Any]):
+async def update_bank_account(request: Request, account_id: str, updates: Dict[str, Any]):
     """Update bank account"""
+    org_id = _get_org_id(request)
     updates["updated_at"] = datetime.now(timezone.utc).isoformat()
     updates.pop("bank_account_id", None)
     updates.pop("_id", None)
+    updates.pop("organization_id", None)
     
     result = await bank_accounts_col.update_one(
-        {"bank_account_id": account_id},
+        {"bank_account_id": account_id, "organization_id": org_id},
         {"$set": updates}
     )
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Bank account not found")
     
-    updated = await bank_accounts_col.find_one({"bank_account_id": account_id}, {"_id": 0})
+    updated = await bank_accounts_col.find_one({"bank_account_id": account_id, "organization_id": org_id}, {"_id": 0})
     return {"code": 0, "bank_account": updated}
 
 
