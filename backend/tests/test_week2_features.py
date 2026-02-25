@@ -123,8 +123,10 @@ class TestEstimatesEnhancedChain:
         resp = requests.get(f"{V1_API}/estimates-enhanced/", headers=headers(token), timeout=15)
         assert resp.status_code == 200, f"GET estimates failed: {resp.text}"
         data = resp.json()
-        assert "estimates" in data, "Response missing 'estimates' key"
-        print(f"✓ GET estimates returned {len(data['estimates'])} estimates")
+        # API returns 'data' key, not 'estimates'
+        assert "data" in data or "estimates" in data, "Response missing 'data' or 'estimates' key"
+        estimates = data.get("data") or data.get("estimates", [])
+        print(f"✓ GET estimates returned {len(estimates)} estimates")
 
     def test_get_estimate_detail_has_line_items(self):
         """GET /api/v1/estimates-enhanced/{id} returns line_items."""
@@ -133,7 +135,8 @@ class TestEstimatesEnhancedChain:
 
         # Get list first
         resp = requests.get(f"{V1_API}/estimates-enhanced/", headers=headers(token), timeout=15)
-        estimates = resp.json().get("estimates", [])
+        data = resp.json()
+        estimates = data.get("data") or data.get("estimates", [])
         if not estimates:
             pytest.skip("No estimates available")
 
@@ -151,7 +154,8 @@ class TestEstimatesEnhancedChain:
         assert token, "Failed to login"
 
         resp = requests.get(f"{V1_API}/estimates-enhanced/", headers=headers(token), timeout=15)
-        estimates = resp.json().get("estimates", [])
+        data = resp.json()
+        estimates = data.get("data") or data.get("estimates", [])
         if not estimates:
             pytest.skip("No estimates available")
 
@@ -320,7 +324,7 @@ class TestEnvironmentBadge:
             token = login_admin()
 
         resp = requests.get(
-            f"{BASE_URL}/api/platform/environment",
+            f"{V1_API}/platform/environment",
             headers={"Authorization": f"Bearer {token}"},
             timeout=15
         )
@@ -407,7 +411,10 @@ class TestHRDashboardEndpoints:
         assert resp.status_code in [200, 404], f"HR attendance failed: {resp.status_code}: {resp.text}"
         if resp.status_code == 200:
             data = resp.json()
-            print(f"✓ HR attendance endpoint works, keys: {list(data.keys())}")
+            if isinstance(data, dict):
+                print(f"✓ HR attendance endpoint works, keys: {list(data.keys())}")
+            else:
+                print(f"✓ HR attendance endpoint works, returned list with {len(data)} items")
         else:
             print("✓ HR attendance endpoint exists (returned 404 - no data)")
 
