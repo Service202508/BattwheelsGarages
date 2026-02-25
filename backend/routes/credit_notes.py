@@ -318,16 +318,8 @@ async def post_credit_note_journal(db, org_id: str, cn: dict, is_paid: bool, use
     service = DoubleEntryService(db)
     await service.ensure_system_accounts(org_id)
     
-    # Ensure Refund Payable account exists
+    # Get accounts (Refund Payable 2400 is created by ensure_system_accounts)
     refund_account = await service.get_account_by_code(org_id, "2400")
-    if not refund_account:
-        from services.double_entry_service import AccountType
-        await service.create_account(
-            org_id, "Refund Payable", AccountType.LIABILITY, "2400",
-            description="Amounts owed to customers as refunds from credit notes"
-        )
-        refund_account = await service.get_account_by_code(org_id, "2400")
-    
     sales_account = await service.get_account_by_code(org_id, "4100")
     ar_account = await service.get_account_by_code(org_id, "1100")
     cgst_account = await service.get_account_by_code(org_id, "2210")
