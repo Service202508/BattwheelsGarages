@@ -484,7 +484,12 @@ async def generate_payroll(request: Request, month: str = None, year: int = None
         await check_period_lock(org_id, f"{payroll_period}-01")
     
     try:
-        return await service.generate_payroll(month, year, user.get("user_id"))
+        result = await service.generate_payroll(month, year, user.get("user_id"))
+        # Audit: payroll.run
+        from utils.audit import log_audit, AuditAction
+        await log_audit(service.db, AuditAction.PAYROLL_RUN, org_id or "", user.get("user_id"),
+            "payroll", payroll_period, {"month": month, "year": year})
+        return result
     except ValueError as e:
         raise HTTPException(status_code=409, detail=str(e))
 
