@@ -268,7 +268,7 @@ class RBACMiddleware(BaseHTTPMiddleware):
         
         if allowed_roles is None:
             # Route not in permissions map - allow authenticated users
-            logger.info(f"RBAC: Route {path} not in map, allowing {user_role}")
+            logger.info(f"RBAC: Route {path} (normalized: {normalized_path}) not in map, allowing {user_role}")
             return await call_next(request)
         
         # Check if user's role is authorized
