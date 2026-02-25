@@ -6670,7 +6670,17 @@ try:
     from middleware.rate_limit import RateLimitMiddleware
     app.add_middleware(RateLimitMiddleware)
     logger.info("RateLimitMiddleware added - API rate limiting ACTIVE")
-    
+
+    # Add CSRF protection (Double Submit Cookie)
+    from middleware.csrf import CSRFMiddleware
+    app.add_middleware(CSRFMiddleware)
+    logger.info("CSRFMiddleware added - CSRF protection ACTIVE")
+
+    # Add input sanitization (bleach XSS stripping)
+    from middleware.sanitize import SanitizationMiddleware
+    app.add_middleware(SanitizationMiddleware)
+    logger.info("SanitizationMiddleware added - Input sanitization ACTIVE")
+
     # Add RBAC middleware (ENFORCES role-based access on all requests)
     # This runs AFTER TenantGuardMiddleware sets the role
     from middleware.rbac import RBACMiddleware
@@ -6720,7 +6730,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_origins=_cors_origins,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
-    allow_headers=["Authorization", "Content-Type", "X-Organization-ID", "X-Requested-With", "Accept"],
+    allow_headers=["Authorization", "Content-Type", "X-Organization-ID", "X-Requested-With", "Accept", "X-CSRF-Token"],
 )
 
 # Startup/shutdown handled by lifespan context manager
