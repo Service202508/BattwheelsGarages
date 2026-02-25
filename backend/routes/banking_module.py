@@ -123,8 +123,12 @@ async def update_account_balance(bank_account_id: str, amount: float, is_credit:
 # ==================== BANK ACCOUNTS ====================
 
 @router.post("/accounts")
-async def create_bank_account(account: BankAccountCreate):
+async def create_bank_account(request: Request, account: BankAccountCreate):
     """Create a new bank account"""
+    org_id = getattr(request.state, "tenant_org_id", None)
+    if not org_id:
+        raise HTTPException(status_code=400, detail="Organization context required")
+    
     account_id = f"ba_{uuid.uuid4().hex[:12]}"
     now = datetime.now(timezone.utc)
     
@@ -142,7 +146,7 @@ async def create_bank_account(account: BankAccountCreate):
         "description": account.description,
         "is_primary": account.is_primary,
         "is_active": True,
-        "organization_id": account.organization_id,
+        "organization_id": org_id,
         "created_at": now.isoformat(),
         "updated_at": now.isoformat(),
     }
@@ -150,7 +154,7 @@ async def create_bank_account(account: BankAccountCreate):
     # If marked as primary, unmark others
     if account.is_primary:
         await bank_accounts_col.update_many(
-            {"organization_id": account.organization_id, "is_primary": True},
+            {"organization_id": org_id, "is_primary": True},
             {"$set": {"is_primary": False}}
         )
     
