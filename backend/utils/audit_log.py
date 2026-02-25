@@ -27,7 +27,7 @@ def _extract_request_context(request: Optional[Request]) -> dict:
         return {"user_id": "", "user_role": "", "ip_address": ""}
 
     user_id = getattr(request.state, "tenant_user_id", "") or ""
-    user_role = getattr(request.state, "user_role", "") or ""
+    user_role = getattr(request.state, "tenant_user_role", None) or getattr(request.state, "user_role", "unknown")
 
     # IP from X-Forwarded-For (Kubernetes ingress) or direct client
     ip_address = ""
