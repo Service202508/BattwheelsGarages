@@ -5497,6 +5497,14 @@ try:
 except Exception as e:
     logger.warning(f"Could not load Zoho Sync router: {e}")
 
+# Include Credit Notes routes
+try:
+    from routes.credit_notes import router as credit_notes_router
+    v1_router.include_router(credit_notes_router)
+    logger.info("Credit Notes router included")
+except Exception as e:
+    logger.warning(f"Could not load Credit Notes router: {e}")
+
 # Include Zoho Extended routes (Recurring, Projects, Taxes, etc.)
 try:
     from routes.zoho_extended import router as zoho_extended_router
