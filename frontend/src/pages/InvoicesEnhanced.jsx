@@ -1840,9 +1840,6 @@ export default function InvoicesEnhanced() {
                   </>
                 )}
 
-                {/* Available Credits */}
-                {selectedInvoice.balance_due > 0 && selectedInvoice.available_credits?.length > 0 && (
-
                 {/* Credit Notes for this Invoice */}
                 {invoiceCreditNotes.length > 0 && (
                   <>
@@ -1874,7 +1871,8 @@ export default function InvoicesEnhanced() {
                   </>
                 )}
 
-                {/* Available Credits - original */}
+                {/* Available Credits */}
+                {selectedInvoice.balance_due > 0 && selectedInvoice.available_credits?.length > 0 && (
                   <>
                     <Separator />
                     <div>
