@@ -13,6 +13,7 @@ import logging
 # Import double-entry posting hooks
 from services.posting_hooks import post_bill_journal_entry, post_bill_payment_journal_entry
 from services.inventory_service import get_inventory_service
+from services.period_lock_service import check_period_lock
 
 logger = logging.getLogger(__name__)
 
@@ -502,6 +503,12 @@ async def create_bill(bill: BillCreate, background_tasks: BackgroundTasks):
     if vendor.get("contact_type") == "customer":
         raise HTTPException(status_code=400, detail="Cannot create bill for customer-only contact")
     
+    # Period lock check on bill_date
+    bill_date = bill.bill_date or datetime.now(timezone.utc).date().isoformat()
+    org_id = bill.organization_id if hasattr(bill, 'organization_id') else None
+    if org_id:
+        await check_period_lock(org_id, bill_date)
+    
     bill_id = generate_id("BILL")
     bill_number = bill.bill_number or await get_next_bill_number()
     
@@ -686,6 +693,12 @@ async def update_bill(bill_id: str, update: BillUpdate):
     existing = await bills_collection.find_one({"bill_id": bill_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Bill not found")
+    
+    # Period lock check on bill_date
+    check_date = existing.get("bill_date", "")
+    org_id = existing.get("organization_id", "")
+    if org_id and check_date:
+        await check_period_lock(org_id, check_date)
     
     if existing.get("status") not in ["draft"]:
         allowed = {"vendor_notes"}
