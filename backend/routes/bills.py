@@ -13,6 +13,7 @@ Author: Battwheels OS
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
+from services.period_lock_service import check_period_lock
 from datetime import datetime, timezone
 import logging
 import jwt
@@ -258,6 +259,10 @@ async def create_bill(request: Request, data: BillCreate):
     service = get_service()
     org_id = await get_org_id(request)
     user_id = await get_current_user_id(request)
+    
+    # Period lock check on bill_date
+    if data.bill_date:
+        await check_period_lock(org_id, data.bill_date)
     
     # Convert line items to dicts
     line_items = [item.dict() for item in data.line_items]
