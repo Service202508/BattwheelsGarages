@@ -1657,7 +1657,7 @@ async def get_invoice_payments(invoice_id: str):
     }
 
 @router.post("/{invoice_id}/payments")
-async def record_payment(invoice_id: str, payment: PaymentCreate):
+async def record_payment(invoice_id: str, payment: PaymentCreate, request: Request = None):
     """Record a payment against invoice"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
     if not invoice:
