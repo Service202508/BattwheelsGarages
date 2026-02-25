@@ -1543,11 +1543,14 @@ async def mark_invoice_sent(invoice_id: str):
     return {"code": 0, "message": "Invoice marked as sent"}
 
 @router.post("/{invoice_id}/void")
-async def void_invoice(invoice_id: str, reason: str = ""):
+async def void_invoice(invoice_id: str, reason: str = "", request: Request = None):
     """Void an invoice"""
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Capture before_snapshot for audit
+    before_snapshot = {k: v for k, v in invoice.items() if k != "_id"}
     
     if invoice.get("status") == "void":
         raise HTTPException(status_code=400, detail="Invoice is already void")
