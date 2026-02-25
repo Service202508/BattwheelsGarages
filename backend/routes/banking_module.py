@@ -633,11 +633,12 @@ async def list_journal_entries(
 
 @router.get("/reports/profit-loss")
 async def get_profit_loss_report(
+    request: Request,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
-    organization_id: Optional[str] = None
 ):
     """Generate Profit & Loss report"""
+    org_id = _get_org_id(request)
     now = datetime.now(timezone.utc)
     if not start_date:
         start_date = (now - timedelta(days=365)).strftime("%Y-%m-%d")
@@ -645,9 +646,7 @@ async def get_profit_loss_report(
         end_date = now.strftime("%Y-%m-%d")
     
     # Get income and expense accounts with balances
-    query = {"is_active": True}
-    if organization_id:
-        query["organization_id"] = organization_id
+    query = {"is_active": True, "organization_id": org_id}
     
     # Get income accounts
     income_query = {**query, "account_type": "income"}
