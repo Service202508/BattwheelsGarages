@@ -166,16 +166,18 @@ async def create_bank_account(request: Request, account: BankAccountCreate):
 
 @router.get("/accounts")
 async def list_bank_accounts(
+    request: Request,
     account_type: Optional[str] = None,
     is_active: bool = True,
-    organization_id: Optional[str] = None
 ):
-    """List all bank accounts"""
-    query = {"is_active": is_active}
+    """List all bank accounts (org-scoped via auth context)"""
+    org_id = getattr(request.state, "tenant_org_id", None)
+    if not org_id:
+        raise HTTPException(status_code=400, detail="Organization context required")
+    
+    query = {"is_active": is_active, "organization_id": org_id}
     if account_type:
         query["account_type"] = account_type
-    if organization_id:
-        query["organization_id"] = organization_id
     
     accounts = await bank_accounts_col.find(query, {"_id": 0}).sort("account_name", 1).to_list(100)
     
