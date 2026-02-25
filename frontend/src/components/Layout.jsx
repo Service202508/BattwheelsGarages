@@ -191,6 +191,7 @@ const navItems = [
     icon: Briefcase,
     defaultOpen: false,
     items: [
+      { name: "HR Dashboard", path: "/hr", icon: Briefcase },
       { name: "Employees", path: "/employees", icon: Users },
       { name: "Attendance", path: "/attendance", icon: Clock },
       { name: "Leave Management", path: "/leave", icon: Calendar },
