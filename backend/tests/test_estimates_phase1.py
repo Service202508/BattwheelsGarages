@@ -9,7 +9,7 @@ import os
 import time
 import io
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://readiness-check-21.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://sprint-verified.preview.emergentagent.com')
 
 # Test data storage
 test_data = {
