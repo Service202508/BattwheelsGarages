@@ -6386,9 +6386,9 @@ app.include_router(api_router)
 @app.get("/api/health", tags=["Health"])
 async def health_check():
     """Health check endpoint. Verifies API, MongoDB connectivity, and env config."""
-    import asyncio
+    from config.platform import PLATFORM_VERSION, RELEASE_DATE
     issues = []
-    status_data = {"status": "healthy", "version": "2.0.0", "timestamp": datetime.now(timezone.utc).isoformat()}
+    status_data = {"status": "healthy", "version": PLATFORM_VERSION, "release_date": RELEASE_DATE, "timestamp": datetime.now(timezone.utc).isoformat()}
 
     # MongoDB
     try:
