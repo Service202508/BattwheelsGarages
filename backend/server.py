@@ -138,6 +138,7 @@ V1_ROUTES = [
     "routes.auth_main", "routes.entity_crud", "routes.inventory_api",
     "routes.sales_finance_api", "routes.operations_api",
     "routes.period_locks",
+    "routes.delivery_challans", "routes.vendor_credits",
 ]
 
 # API-level routes (mounted at /api/...)
