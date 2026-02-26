@@ -40,6 +40,17 @@ export default function TicketDetail({ user }) {
   const [estimateLoading, setEstimateLoading] = useState(false);
   const [creatingEstimate, setCreatingEstimate] = useState(false);
   const orgId = user?.current_organization?.organization_id;
+  
+  // Failure Card modal state
+  const [failureCardModal, setFailureCardModal] = useState(false);
+  const [failureCard, setFailureCard] = useState(null);
+  const [failureCardForm, setFailureCardForm] = useState({
+    confirmed_root_cause: "",
+    efi_suggestion_correct: "",
+    resolution_steps: "",
+    technician_notes: "",
+  });
+  const [failureCardSubmitting, setFailureCardSubmitting] = useState(false);
 
   const headers = {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
