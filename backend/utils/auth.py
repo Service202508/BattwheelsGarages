@@ -142,9 +142,9 @@ async def get_current_user(request: Request, db) -> dict:
     
     return user
 
-async def require_auth(request: Request, db) -> dict:
-    """Require any authenticated user"""
-    return await get_current_user(request, db)
+async def require_auth(request: Request, db=None) -> dict:
+    """Require any authenticated user. Uses module db if not passed."""
+    return await get_current_user(request, db or _db)
 
 async def require_admin(request: Request, db) -> dict:
     """Require admin role"""
