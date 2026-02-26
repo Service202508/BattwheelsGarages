@@ -224,7 +224,56 @@ export default function TicketDetail({ user }) {
             </CardContent>
           </Card>
 
-          {/* Section 6: Activity Timeline */}
+          {/* Section 4: Estimate */}
+          <Card className="bg-zinc-900/60 border-zinc-800" data-testid="ticket-estimate-section">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-zinc-300 flex items-center gap-2"><FileText className="w-4 h-4" /> Estimate</CardTitle>
+                {estimate && (
+                  <Badge className={estimate.status === "approved" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : estimate.status === "sent" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : "bg-zinc-500/20 text-zinc-400 border-zinc-500/30"} data-testid="estimate-status-badge">
+                    {estimate.status || "Draft"}
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              {estimateLoading ? (
+                <div className="flex items-center justify-center py-4"><Loader2 className="w-5 h-5 animate-spin text-zinc-400" /></div>
+              ) : estimate ? (
+                <div className="space-y-3" data-testid="estimate-details">
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div><span className="text-zinc-500">Estimate #</span><p className="text-zinc-200 font-mono">{estimate.estimate_number || estimate.estimate_id}</p></div>
+                    <div><span className="text-zinc-500">Total</span><p className="text-[#C8FF00] font-mono font-bold">{estimate.grand_total != null ? `₹${Number(estimate.grand_total).toLocaleString("en-IN")}` : "—"}</p></div>
+                  </div>
+                  {estimate.line_items && estimate.line_items.length > 0 && (
+                    <div className="border-t border-zinc-800 pt-2">
+                      <p className="text-xs text-zinc-500 mb-2">{estimate.line_items.length} line item(s)</p>
+                      {estimate.line_items.slice(0, 3).map((item, i) => (
+                        <div key={i} className="flex justify-between text-xs text-zinc-400 py-1">
+                          <span>{item.description || item.name || `Item ${i + 1}`}</span>
+                          <span className="font-mono">₹{Number(item.amount || item.total || 0).toLocaleString("en-IN")}</span>
+                        </div>
+                      ))}
+                      {estimate.line_items.length > 3 && <p className="text-xs text-zinc-600">+ {estimate.line_items.length - 3} more</p>}
+                    </div>
+                  )}
+                  <Button variant="outline" size="sm" className="w-full border-zinc-700 text-zinc-300" onClick={() => navigate(`/estimates?id=${estimate.estimate_id}`)} data-testid="view-full-estimate-btn">
+                    View Full Estimate
+                  </Button>
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-zinc-500 text-sm mb-3">No estimate created for this ticket yet</p>
+                  <Button size="sm" onClick={handleCreateEstimate} disabled={creatingEstimate} className="bg-[#C8FF00] text-black hover:bg-[#b8ef00]" data-testid="create-estimate-btn">
+                    {creatingEstimate ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                    Create Estimate
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Section 5: Activity Timeline */}
           <Card className="bg-zinc-900/60 border-zinc-800" data-testid="ticket-activity-section">
             <CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-zinc-300 flex items-center gap-2"><Activity className="w-4 h-4" /> Activity Timeline</CardTitle></CardHeader>
             <CardContent>
