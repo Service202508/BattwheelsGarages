@@ -1446,9 +1446,9 @@ class DoubleEntryService:
             account_type = row["_id"].get("account_type", "unknown")
             
             account_data = {
-                "account_id": row["_id"]["account_id"],
-                "account_name": row["_id"]["account_name"],
-                "account_code": row["_id"]["account_code"]
+                "account_id": row["_id"].get("account_id", ""),
+                "account_name": row["_id"].get("account_name", "Unknown"),
+                "account_code": row["_id"].get("account_code", "")
             }
             
             if account_type == AccountType.ASSET.value:
