@@ -501,6 +501,11 @@ async def create_bill(bill: BillCreate, background_tasks: BackgroundTasks):
         raise HTTPException(status_code=404, detail="Vendor not found")
     if vendor.get("contact_type") == "customer":
         raise HTTPException(status_code=400, detail="Cannot create bill for customer-only contact")
+
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
+    bill_date_str = bill.bill_date or datetime.now(timezone.utc).date().isoformat()
+    await enforce_period_lock(contacts_collection.database, vendor.get("organization_id", ""), bill_date_str)
     
     bill_id = generate_id("BILL")
     bill_number = bill.bill_number or await get_next_bill_number()
