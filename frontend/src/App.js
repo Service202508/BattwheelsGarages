@@ -506,6 +506,9 @@ function AppRouter() {
         {/* Public Ticket Tracking - No Auth Required */}
         <Route path="/track-ticket" element={<TrackTicket />} />
 
+        {/* Forgot Password - Public */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
         <Route path="/login" element={
           auth.user ? <RoleBasedRedirect user={auth.user} /> : <Login onLogin={auth.login} />
         } />
