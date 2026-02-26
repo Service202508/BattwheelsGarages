@@ -116,6 +116,49 @@ export default function TicketDetail({ user }) {
   };
 
   const handleStatusUpdate = async (newStatus) => {
+    // If closing/resolving, show failure card modal first
+    if (newStatus === "closed" || newStatus === "resolved") {
+      setStatusUpdating(true);
+      try {
+        // First update the ticket status
+        const res = await fetch(`${API}/tickets/${ticketId}`, {
+          method: "PUT",
+          headers,
+          body: JSON.stringify({ status: newStatus }),
+        });
+        if (!res.ok) throw new Error("Update failed");
+        const updated = await res.json();
+        setTicket(updated);
+        toast.success(`Status updated to ${STATUS_CONFIG[newStatus]?.label || newStatus}`);
+        fetchActivities();
+
+        // Fetch failure card for this ticket
+        try {
+          const fcRes = await fetch(`${API}/failure-cards?ticket_id=${ticketId}`, { headers });
+          if (fcRes.ok) {
+            const fcData = await fcRes.json();
+            const cards = Array.isArray(fcData) ? fcData : fcData.data || [];
+            if (cards.length > 0) {
+              setFailureCard(cards[0]);
+              setFailureCardForm({
+                confirmed_root_cause: cards[0].confirmed_root_cause || cards[0].initial_diagnosis || "",
+                efi_suggestion_correct: "",
+                resolution_steps: cards[0].resolution_steps || "",
+                technician_notes: cards[0].technician_notes || "",
+              });
+            }
+          }
+        } catch (e) {
+          console.warn("Failure card fetch failed:", e);
+        }
+        setFailureCardModal(true);
+      } catch (err) {
+        toast.error("Failed to update status");
+      }
+      setStatusUpdating(false);
+      return;
+    }
+
     setStatusUpdating(true);
     try {
       const res = await fetch(`${API}/tickets/${ticketId}`, {
@@ -132,6 +175,30 @@ export default function TicketDetail({ user }) {
       toast.error("Failed to update status");
     }
     setStatusUpdating(false);
+  };
+
+  const handleFailureCardSubmit = async () => {
+    if (!failureCard) return;
+    setFailureCardSubmitting(true);
+    try {
+      const res = await fetch(`${API}/failure-cards/${failureCard.failure_card_id}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({
+          confirmed_root_cause: failureCardForm.confirmed_root_cause,
+          efi_suggestion_correct: failureCardForm.efi_suggestion_correct === "yes",
+          resolution_steps: failureCardForm.resolution_steps,
+          technician_notes: failureCardForm.technician_notes,
+          status: "completed",
+        }),
+      });
+      if (!res.ok) throw new Error("Update failed");
+      toast.success("Failure card completed — data fed to EFI brain");
+      setFailureCardModal(false);
+    } catch (err) {
+      toast.error("Failed to update failure card");
+    }
+    setFailureCardSubmitting(false);
   };
 
   const handleAddNote = async () => {
