@@ -77,6 +77,7 @@ def decode_token_safe(token: str) -> Optional[dict]:
     try:
         return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
     except Exception:
+        return None
 
 
 def create_token(user_id: str, email: str, role: str, org_id: str = None, password_version: float = 0) -> str:
@@ -85,8 +86,6 @@ def create_token(user_id: str, email: str, role: str, org_id: str = None, passwo
     if org_id:
         payload["org_id"] = org_id
     return create_access_token(payload)
-
-        return None
 
 
 async def get_current_user_from_request(request: Request) -> dict:
