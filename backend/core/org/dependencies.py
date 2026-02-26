@@ -28,13 +28,8 @@ async def get_user_id_from_request(request: Request) -> Optional[str]:
     
     if auth_header.startswith("Bearer "):
         token = auth_header.split(" ")[1]
-        try:
-            payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-            return payload.get("user_id")
-        except jwt.ExpiredSignatureError:
-            raise HTTPException(status_code=401, detail="Token expired")
-        except jwt.InvalidTokenError:
-            raise HTTPException(status_code=401, detail="Invalid token")
+        payload = decode_token(token)
+        return payload.get("user_id")
     
     # Check session cookie
     session_token = request.cookies.get("session_token")
