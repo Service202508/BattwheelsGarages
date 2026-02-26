@@ -1,6 +1,7 @@
 from utils.helpers import create_ledger_entry, generate_po_number, generate_invoice_number, generate_sales_number
 from utils.auth import require_auth, create_token, hash_password
 from pydantic import BaseModel
+from typing import List
 """
 Battwheels OS - Inventory & Purchase Order Routes (extracted from server.py)
 Inventory CRUD, Allocations, Purchase Orders, Services, Stocktakes
