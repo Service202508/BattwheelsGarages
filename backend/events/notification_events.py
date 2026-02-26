@@ -58,7 +58,7 @@ def register_notification_handlers(dispatcher: EventDispatcher, db, notification
                 "priority": ticket.get("priority"),
                 "vehicle": f"{ticket.get('vehicle_make', '')} {ticket.get('vehicle_model', '')}"
             },
-            "status": "logged",
+            "status": "logged", "organization_id": ticket.get("organization_id", ""),
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         
@@ -178,7 +178,7 @@ def register_notification_handlers(dispatcher: EventDispatcher, db, notification
             "recipient": "network",
             "failure_id": failure_id,
             "data": {"event": "card_approved_for_network"},
-            "status": "logged",
+            "status": "logged", "organization_id": ticket.get("organization_id", ""),
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         
