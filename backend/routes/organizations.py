@@ -294,15 +294,13 @@ async def signup_organization(data: OrganizationCreate):
         logger.warning(f"Failed to initialize RBAC roles: {e}")
     
     # Create JWT token
-    import jwt
-    JWT_SECRET = os.environ.get("JWT_SECRET", "battwheels-secret-key")
-    token = jwt.encode({
+    from utils.auth import create_access_token
+    token = create_access_token({
         "user_id": user_id,
         "email": data.admin_email,
         "role": "admin",
         "org_id": org_id,
-        "exp": datetime.now(timezone.utc) + timedelta(days=7)
-    }, JWT_SECRET, algorithm="HS256")
+    })
     
     # Log activity
     try:
@@ -643,15 +641,13 @@ async def accept_invitation(data: InviteAccept):
     )
     
     # Create JWT token
-    import jwt
-    JWT_SECRET = os.environ.get("JWT_SECRET", "battwheels-secret-key")
-    token = jwt.encode({
+    from utils.auth import create_access_token
+    token = create_access_token({
         "user_id": user_id,
         "email": invite["email"],
         "role": invite["role"],
         "org_id": invite["organization_id"],
-        "exp": datetime.now(timezone.utc) + timedelta(days=7)
-    }, JWT_SECRET, algorithm="HS256")
+    })
     
     # Get org details
     org = await db.organizations.find_one(

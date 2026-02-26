@@ -80,16 +80,12 @@ async def get_current_user(request: Request, db) -> dict:
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
         token = auth_header.split(" ")[1]
-        import jwt
-        import os
-        try:
-            JWT_SECRET = os.environ.get('JWT_SECRET', 'battwheels-secret')
-            payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        from utils.auth import decode_token_safe
+        payload = decode_token_safe(token)
+        if payload and payload.get("user_id"):
             user = await db.users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
             if user:
                 return user
-        except Exception:
-            pass
     
     raise HTTPException(status_code=401, detail="Not authenticated")
 
