@@ -920,7 +920,11 @@ async def delete_payment(payment_id: str):
     payment = await payments_collection.find_one({"payment_id": payment_id})
     if not payment:
         raise HTTPException(status_code=404, detail="Payment not found")
-    
+
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
+    await enforce_period_lock(payments_collection.database, payment.get("organization_id", ""), payment.get("payment_date", ""))
+
     customer_id = payment.get("customer_id")
     
     # Delete payment
