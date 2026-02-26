@@ -276,6 +276,45 @@ async def submit_public_ticket(request: Request, data: PublicTicketCreate, backg
     # Store ticket
     await db.tickets.insert_one(ticket_doc)
     
+    # Auto-link or create contact
+    or_conditions = [{"phone": data.contact_number}]
+    if data.email:
+        or_conditions.append({"email": data.email})
+    
+    existing_contact = await db.contacts.find_one(
+        {"organization_id": organization_id, "$or": or_conditions},
+        {"_id": 0, "contact_id": 1}
+    )
+    
+    if existing_contact:
+        # Link ticket to existing contact
+        await db.tickets.update_one(
+            {"ticket_id": ticket_id},
+            {"$set": {"customer_id": existing_contact["contact_id"]}}
+        )
+    else:
+        # Create a new contact for this customer
+        new_contact_id = f"cnt_{uuid.uuid4().hex[:12]}"
+        new_contact = {
+            "contact_id": new_contact_id,
+            "organization_id": organization_id,
+            "name": data.customer_name,
+            "contact_type": data.customer_type or "individual",
+            "phone": data.contact_number,
+            "email": data.email,
+            "company_name": data.business_name,
+            "gstin": data.gst_number,
+            "source": "public_ticket_form",
+            "status": "active",
+            "created_at": now.isoformat(),
+            "updated_at": now.isoformat(),
+        }
+        await db.contacts.insert_one(new_contact)
+        await db.tickets.update_one(
+            {"ticket_id": ticket_id},
+            {"$set": {"customer_id": new_contact_id}}
+        )
+    
     # Get stored ticket without _id
     stored_ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
     
