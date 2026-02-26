@@ -72,6 +72,10 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Migration runner failed: {e}")
 
+    # Init shared helpers
+    from utils.helpers import init_helpers
+    init_helpers(db)
+
     # Ensure indexes
     try:
         from utils.indexes import ensure_compound_indexes
