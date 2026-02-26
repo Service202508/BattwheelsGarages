@@ -77,6 +77,15 @@ def decode_token_safe(token: str) -> Optional[dict]:
     try:
         return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
     except Exception:
+
+
+def create_token(user_id: str, email: str, role: str, org_id: str = None, password_version: float = 0) -> str:
+    """Compatibility wrapper for create_access_token with named params."""
+    payload = {"user_id": user_id, "email": email, "role": role, "pwd_v": password_version}
+    if org_id:
+        payload["org_id"] = org_id
+    return create_access_token(payload)
+
         return None
 
 
