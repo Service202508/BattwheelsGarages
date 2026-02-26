@@ -194,13 +194,14 @@ class TestPhase4EstimateInTicketDetail:
         print(f"✓ Ticket created for estimate test: {pytest.test_ticket_id}")
     
     def test_02_ensure_estimate_for_ticket(self):
-        """Create estimate for ticket via ensure endpoint"""
+        """Create estimate for ticket via ensure endpoint - /api/v1/tickets/{id}/estimate/ensure"""
         ticket_id = getattr(pytest, 'test_ticket_id', None)
         if not ticket_id:
             pytest.skip("No ticket_id from previous test")
         
+        # Correct route: /api/v1/tickets/{ticket_id}/estimate/ensure
         response = session.post(
-            f"{BASE_URL}/api/v1/ticket-estimates/tickets/{ticket_id}/estimate/ensure",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/estimate/ensure",
             headers=AUTH_HEADERS
         )
         # May return 200 or 201
@@ -213,19 +214,21 @@ class TestPhase4EstimateInTicketDetail:
         print(f"✓ Estimate created/ensured for ticket: {pytest.test_estimate_id}")
     
     def test_03_get_estimate_for_ticket(self):
-        """Get estimate linked to ticket"""
+        """Get estimate linked to ticket - /api/v1/tickets/{id}/estimate"""
         ticket_id = getattr(pytest, 'test_ticket_id', None)
         if not ticket_id:
             pytest.skip("No ticket_id from previous test")
         
+        # Correct route: /api/v1/tickets/{ticket_id}/estimate
         response = session.get(
-            f"{BASE_URL}/api/v1/ticket-estimates/tickets/{ticket_id}/estimate",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/estimate",
             headers=AUTH_HEADERS
         )
         assert response.status_code == 200, f"Get estimate failed: {response.text}"
         data = response.json()
-        assert data.get("estimate_id") or data.get("ticket_id") == ticket_id
-        print(f"✓ Estimate fetched for ticket - status: {data.get('status', 'draft')}")
+        estimate = data.get("estimate", data)
+        assert estimate.get("estimate_id") or estimate.get("ticket_id") == ticket_id
+        print(f"✓ Estimate fetched for ticket - status: {estimate.get('status', 'draft')}")
 
 
 class TestPhase5FailureCards:
@@ -351,8 +354,8 @@ class TestPublicEndpoints:
     """Test public endpoints - Note: subdomain routing won't work in preview"""
     
     def test_01_public_vehicle_categories(self):
-        """GET /api/v1/public/vehicle-categories - public form master data"""
-        response = session.get(f"{BASE_URL}/api/v1/public/vehicle-categories")
+        """GET /api/public/vehicle-categories - public form master data (no /v1 prefix)"""
+        response = session.get(f"{BASE_URL}/api/public/vehicle-categories")
         assert response.status_code == 200
         data = response.json()
         
@@ -361,8 +364,8 @@ class TestPublicEndpoints:
         print(f"✓ Public vehicle categories accessible - {len(categories)} categories")
     
     def test_02_public_service_charges(self):
-        """GET /api/v1/public/service-charges - service fee info"""
-        response = session.get(f"{BASE_URL}/api/v1/public/service-charges")
+        """GET /api/public/service-charges - service fee info (no /v1 prefix)"""
+        response = session.get(f"{BASE_URL}/api/public/service-charges")
         assert response.status_code == 200
         data = response.json()
         
@@ -372,8 +375,8 @@ class TestPublicEndpoints:
         print(f"✓ Public service charges accessible - visit fee: ₹{data['visit_fee']['amount']}")
     
     def test_03_customer_lookup_requires_subdomain(self):
-        """GET /api/v1/public/customer-lookup - requires subdomain (expected 400)"""
-        response = session.get(f"{BASE_URL}/api/v1/public/customer-lookup?phone=9999999999")
+        """GET /api/public/customer-lookup - requires subdomain (expected 400)"""
+        response = session.get(f"{BASE_URL}/api/public/customer-lookup?phone=9999999999")
         # This should fail with 400 because we can't test subdomain routing
         assert response.status_code == 400, f"Expected 400 for missing subdomain, got {response.status_code}"
         print(f"✓ Customer lookup correctly requires subdomain context")
