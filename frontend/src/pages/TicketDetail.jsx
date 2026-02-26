@@ -34,6 +34,9 @@ export default function TicketDetail({ user }) {
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [newNote, setNewNote] = useState("");
   const [addingNote, setAddingNote] = useState(false);
+  const [estimate, setEstimate] = useState(null);
+  const [estimateLoading, setEstimateLoading] = useState(false);
+  const [creatingEstimate, setCreatingEstimate] = useState(false);
   const orgId = user?.current_organization?.organization_id;
 
   const headers = {
