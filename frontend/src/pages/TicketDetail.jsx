@@ -69,10 +69,38 @@ export default function TicketDetail({ user }) {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      await Promise.all([fetchTicket(), fetchActivities()]);
+      await Promise.all([fetchTicket(), fetchActivities(), fetchEstimate()]);
       setLoading(false);
     })();
   }, [fetchTicket, fetchActivities]);
+
+  const fetchEstimate = async () => {
+    setEstimateLoading(true);
+    try {
+      const res = await fetch(`${API}/ticket-estimates/tickets/${ticketId}/estimate`, { headers });
+      if (res.ok) {
+        const data = await res.json();
+        setEstimate(data);
+      }
+    } catch (err) { /* no estimate yet */ }
+    setEstimateLoading(false);
+  };
+
+  const handleCreateEstimate = async () => {
+    setCreatingEstimate(true);
+    try {
+      const res = await fetch(`${API}/ticket-estimates/tickets/${ticketId}/estimate/ensure`, {
+        method: "POST", headers
+      });
+      if (!res.ok) throw new Error("Failed to create estimate");
+      const data = await res.json();
+      setEstimate(data.estimate || data);
+      toast.success("Estimate created and linked to ticket");
+    } catch (err) {
+      toast.error("Failed to create estimate");
+    }
+    setCreatingEstimate(false);
+  };
 
   const handleStatusUpdate = async (newStatus) => {
     setStatusUpdating(true);
