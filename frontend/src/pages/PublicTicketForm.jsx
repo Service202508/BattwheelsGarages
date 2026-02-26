@@ -498,7 +498,7 @@ export default function PublicTicketForm() {
                       <div className="max-h-48 overflow-y-auto">
                         {aiSuggestions.slice(0, 4).map((s, i) => (
                           <button key={i} onClick={() => handleSuggestionSelect(s)} className="w-full px-4 py-3 text-left hover:bg-[rgba(200,255,0,0.08)] transition-colors border-b border-gray-100 last:border-b-0 flex items-center justify-between group">
-                            <span className="text-sm text-gray-700 font-medium">{s.title}</span>
+                            <span className="text-sm text-[rgba(244,246,240,0.7)] font-medium">{s.title}</span>
                             <ChevronRight className="w-4 h-4 text-[rgba(244,246,240,0.20)] group-hover:text-[#C8FF00] text-500 transition-colors" />
                           </button>
                         ))}
