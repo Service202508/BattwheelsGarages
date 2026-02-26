@@ -107,9 +107,14 @@ async def create_credit_note(request: Request, body: CreateCreditNoteRequest):
     user_id = getattr(request.state, "tenant_user_id", None)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization context required")
-    
+
     db = get_db()
-    
+
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
+    cn_date = body.credit_note_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    await enforce_period_lock(db, org_id, cn_date)
+
     # 1. Fetch original invoice
     invoice = await db.invoices_enhanced.find_one(
         {"invoice_id": body.original_invoice_id, "organization_id": org_id},
