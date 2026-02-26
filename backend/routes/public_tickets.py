@@ -111,6 +111,52 @@ class TicketLookup(BaseModel):
     email: Optional[str] = None
 
 
+# ==================== CUSTOMER AUTO-DETECTION ====================
+
+@router.get("/customer-lookup")
+async def customer_lookup(request: Request, phone: Optional[str] = None, email: Optional[str] = None):
+    """
+    Public endpoint: Check if a customer exists in the org's contacts.
+    Returns non-sensitive info to pre-fill the form.
+    Org resolved from subdomain/slug header.
+    """
+    if not phone and not email:
+        raise HTTPException(status_code=400, detail="Provide phone or email")
+    
+    db = get_db()
+    org_id = await get_org_from_request(request, db)
+    
+    or_conditions = []
+    if phone:
+        or_conditions.append({"phone": phone})
+    if email:
+        or_conditions.append({"email": email})
+    
+    existing_contact = await db.contacts.find_one(
+        {"organization_id": org_id, "$or": or_conditions},
+        {"_id": 0, "contact_id": 1, "name": 1, "customer_type": 1, "contact_type": 1,
+         "phone": 1, "email": 1, "company_name": 1}
+    )
+    
+    if existing_contact:
+        # Look up vehicles linked to this contact
+        vehicles = await db.vehicles.find(
+            {"organization_id": org_id, "customer_id": existing_contact.get("contact_id")},
+            {"_id": 0, "registration_number": 1, "vehicle_category": 1, "make": 1, "model": 1}
+        ).to_list(20)
+        
+        return {
+            "known_customer": True,
+            "customer_name": existing_contact.get("name", ""),
+            "customer_type": existing_contact.get("customer_type", existing_contact.get("contact_type", "individual")),
+            "contact_id": existing_contact.get("contact_id"),
+            "company_name": existing_contact.get("company_name"),
+            "vehicles": [v.get("registration_number", "") for v in vehicles]
+        }
+    
+    return {"known_customer": False}
+
+
 # ==================== PUBLIC TICKET SUBMISSION ====================
 
 @router.post("/tickets/submit")
