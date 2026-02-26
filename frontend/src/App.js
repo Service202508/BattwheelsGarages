@@ -1080,7 +1080,7 @@ function AppRouter() {
         </ProtectedRoute>
       } />
       <Route path="/productivity" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "hr"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <TechnicianProductivity user={auth.user} />
           </Layout>
