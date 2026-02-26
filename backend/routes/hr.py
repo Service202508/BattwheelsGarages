@@ -322,12 +322,21 @@ async def get_my_attendance(request: Request, limit: int = 30):
 @router.get("/attendance/all")
 async def get_all_attendance(request: Request, date: Optional[str] = None, department: Optional[str] = None):
     service = get_service()
+    user = await get_current_user(request, service.db)
+    user_role = user.get("role", "")
     
     query = {}
     if date:
         query["date"] = date
     
-    if department:
+    # Employee-level isolation: non-HR/admin roles see only own data
+    if user_role not in ("owner", "org_admin", "admin", "hr", "manager"):
+        employee = await service.get_employee_by_user(user.get("user_id"))
+        if employee:
+            query["employee_id"] = employee["employee_id"]
+        else:
+            return []
+    elif department:
         employees = await service.db.employees.find(
             {"department": department}, {"employee_id": 1}
         ).to_list(1000)
