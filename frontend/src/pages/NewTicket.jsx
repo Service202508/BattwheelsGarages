@@ -574,8 +574,7 @@ export default function NewTicket({ user }) {
             </div>
 
             {/* Location (for on-site service) */}
-            {formData.resolution_type === "onsite" && (
-              <div className="space-y-4">
+            <div className="space-y-4">
                 <div className="flex items-center gap-2 text-lg font-semibold">
                   <MapPin className="h-5 w-5 text-primary" />
                   <span>Service Location</span>
