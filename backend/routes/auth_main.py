@@ -13,6 +13,7 @@ import logging
 from utils.auth import (
     JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRY_HOURS,
     create_access_token, decode_token, hash_password, verify_password,
+    create_token, require_auth,
 )
 from schemas.models import UserCreate, UserLogin, User, UserUpdate
 from pydantic import BaseModel, EmailStr
