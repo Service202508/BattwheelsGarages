@@ -112,7 +112,7 @@ V1_ROUTES = [
     "routes.credit_notes", "routes.payments_received", "routes.recurring_invoices",
     "routes.serial_batch_tracking", "routes.composite_items", "routes.stock_transfers",
     "routes.hr", "routes.gst", "routes.reports", "routes.reports_advanced",
-    "routes.journal_entries", "routes.chart_of_accounts",
+    "routes.journal_entries",
     "routes.inventory", "routes.inventory_adjustments_v2",
     "routes.amc", "routes.documents", "routes.uploads", "routes.pdf_templates",
     "routes.notifications", "routes.subscriptions", "routes.time_tracking",
