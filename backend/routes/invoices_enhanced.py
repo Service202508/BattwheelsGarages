@@ -1207,7 +1207,11 @@ async def delete_invoice(invoice_id: str, force: bool = False):
     invoice = await invoices_collection.find_one({"invoice_id": invoice_id})
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
-    
+
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
+    await enforce_period_lock(invoices_collection.database, invoice.get("organization_id", ""), invoice.get("invoice_date", ""))
+
     # Check for payments
     payment_count = await invoice_payments_collection.count_documents({"invoice_id": invoice_id})
     
