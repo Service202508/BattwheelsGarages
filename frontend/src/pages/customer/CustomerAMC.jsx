@@ -208,7 +208,7 @@ export default function CustomerAMC({ user }) {
             {availablePlans.map((plan) => (
               <Card 
                 key={plan.plan_id} 
-                className={`overflow-hidden hover:shadow-lg transition-shadow ${
+                className={`overflow-hidden hover:border-[rgba(255,255,255,0.12)] transition-all ${
                   plan.tier === 'premium' ? 'ring-2 ring-purple-500' : ''
                 }`}
               >

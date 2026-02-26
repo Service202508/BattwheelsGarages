@@ -80,7 +80,7 @@ export default function CustomerVehicles({ user }) {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {vehicles.map((vehicle) => (
-            <Card key={vehicle.vehicle_id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card key={vehicle.vehicle_id} className="overflow-hidden hover:border-[rgba(255,255,255,0.12)] transition-all">
               {/* Vehicle Header */}
               <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-4 text-white">
                 <div className="flex items-center justify-between">

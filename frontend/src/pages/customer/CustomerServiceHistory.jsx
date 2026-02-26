@@ -157,7 +157,7 @@ export default function CustomerServiceHistory({ user }) {
             return (
               <Card 
                 key={service.ticket_id}
-                className="hover:shadow-md transition-shadow cursor-pointer"
+                className="hover:border-[rgba(255,255,255,0.12)] transition-all cursor-pointer"
                 onClick={() => fetchServiceDetail(service.ticket_id)}
               >
                 <CardContent className="p-4">

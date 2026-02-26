@@ -99,7 +99,7 @@ export default function CustomerDashboard({ user }) {
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:border-[rgba(255,255,255,0.12)] transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-[rgba(244,246,240,0.35)]">My Vehicles</CardTitle>
             <Car className="h-5 w-5 text-[#C8FF00] text-500" />
@@ -112,7 +112,7 @@ export default function CustomerDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:border-[rgba(255,255,255,0.12)] transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-[rgba(244,246,240,0.35)]">Active Services</CardTitle>
             <Clock className="h-5 w-5 text-blue-500" />
@@ -125,7 +125,7 @@ export default function CustomerDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:border-[rgba(255,255,255,0.12)] transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-[rgba(244,246,240,0.35)]">Total Services</CardTitle>
             <ClipboardList className="h-5 w-5 text-purple-500" />
@@ -138,7 +138,7 @@ export default function CustomerDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className={`hover:shadow-md transition-shadow ${dashboard?.pending_amount > 0 ? 'border-orange-200 bg-[rgba(255,140,0,0.08)]' : ''}`}>
+        <Card className={`hover:border-[rgba(255,255,255,0.12)] transition-all ${dashboard?.pending_amount > 0 ? 'border-orange-200 bg-[rgba(255,140,0,0.08)]' : ''}`}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-[rgba(244,246,240,0.35)]">Pending Amount</CardTitle>
             <CreditCard className={`h-5 w-5 ${dashboard?.pending_amount > 0 ? 'text-orange-500' : 'text-[rgba(244,246,240,0.45)]'}`} />
@@ -153,7 +153,7 @@ export default function CustomerDashboard({ user }) {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:border-[rgba(255,255,255,0.12)] transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-[rgba(244,246,240,0.35)]">Active AMC</CardTitle>
             <Shield className="h-5 w-5 text-[#C8FF00] text-500" />
