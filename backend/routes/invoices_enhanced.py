@@ -1133,7 +1133,14 @@ async def update_invoice(invoice_id: str, update: InvoiceUpdate, request: Reques
     existing = await invoices_collection.find_one({"invoice_id": invoice_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Invoice not found")
-    
+
+    # Period lock check — check both existing date and new date
+    from utils.period_lock import enforce_period_lock
+    org_id = existing.get("organization_id", "")
+    await enforce_period_lock(invoices_collection.database, org_id, existing.get("invoice_date", ""))
+    if update.invoice_date:
+        await enforce_period_lock(invoices_collection.database, org_id, update.invoice_date)
+
     # Capture before_snapshot for audit (strip _id)
     before_snapshot = {k: v for k, v in existing.items() if k != "_id"}
     
