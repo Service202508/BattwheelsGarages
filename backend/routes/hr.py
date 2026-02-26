@@ -508,6 +508,7 @@ async def list_payroll_records(request: Request, month: Optional[str] = None, ye
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
     service = get_service()
+    user = await get_current_user(request, service.db)
     org_id = await get_org_id(request, service.db)
 
     query = {}
@@ -517,6 +518,14 @@ async def list_payroll_records(request: Request, month: Optional[str] = None, ye
         query["month"] = month
     if year:
         query["year"] = year
+
+    # Employee data isolation: non-HR/admin see only own payroll
+    if _is_self_only(user):
+        employee = await service.get_employee_by_user(user.get("user_id"))
+        if employee:
+            query["employee_id"] = employee["employee_id"]
+        else:
+            return {"data": [], "pagination": {"page": 1, "limit": limit, "total_count": 0, "total_pages": 1, "has_next": False, "has_prev": False}}
 
     total = await service.db.payroll.count_documents(query)
     skip = (page - 1) * limit
