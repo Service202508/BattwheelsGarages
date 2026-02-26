@@ -113,6 +113,7 @@ class TicketCreateData(BaseModel):
     customer_email: Optional[str] = None
     issue_type: Optional[str] = None
     resolution_type: str = "workshop"
+    ticket_type: str = "onsite"  # "onsite" or "workshop" — auto-set by backend
     incident_location: Optional[str] = None
     attachments_count: int = 0
     estimated_cost: Optional[float] = None
