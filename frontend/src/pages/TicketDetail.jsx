@@ -177,7 +177,7 @@ export default function TicketDetail({ user }) {
               <div className="grid grid-cols-3 gap-4">
                 <div><span className="text-zinc-500">Category</span><p className="text-zinc-200">{ticket.category || "—"}</p></div>
                 <div><span className="text-zinc-500">Issue Type</span><p className="text-zinc-200">{ticket.issue_type || "—"}</p></div>
-                <div><span className="text-zinc-500">Resolution Type</span><p className="text-zinc-200">{ticket.resolution_type || "—"}</p></div>
+                <div><span className="text-zinc-500">Ticket Type</span><p className="text-zinc-200 capitalize">{ticket.ticket_type || "—"}</p></div>
               </div>
             </CardContent>
           </Card>
