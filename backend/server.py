@@ -5446,6 +5446,7 @@ init_notification_router(db)
 
 # Include EFI routes (core intelligence engine)
 v1_router.include_router(efi_router)
+v1_router.include_router(failure_cards_router)
 v1_router.include_router(notification_router)
 
 # Include EFI Guided Execution routes (decision trees & diagnostics)
