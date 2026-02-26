@@ -106,7 +106,7 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/technicians$":              ["org_admin", "admin", "owner", "manager", "dispatcher"],
     
     # ============ PLATFORM ADMIN (Battwheels operator only) ============
-    r"^/api/platform/.*$":              ["org_admin", "admin", "owner", "manager", "accountant", "technician", "viewer"],
+    r"^/api/platform/.*$":              ["owner", "admin"],
     
     # ============ DOCUMENT MANAGEMENT ============
     r"^/api/documents/.*$":         ["org_admin", "admin", "owner", "manager", "technician"],
@@ -220,7 +220,6 @@ class RBACMiddleware(BaseHTTPMiddleware):
         r"^/api/contact$",
         r"^/api/book-demo$",
         r"^/api/organizations/accept-invite$",
-        r"^/api/platform/.*",
     ]
     
     def __init__(self, app):
