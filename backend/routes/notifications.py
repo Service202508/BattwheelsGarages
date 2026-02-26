@@ -68,6 +68,8 @@ async def list_notifications(request: Request, user_id: str = "", role: str = ""
     """List notifications with filters"""
     db = get_db()
     query = {"is_archived": False}
+    if org_id:
+        query["organization_id"] = org_id
     
     if user_id:
         query["$or"] = [{"user_id": user_id}, {"user_id": ""}, {"user_id": {"$exists": False}}]
