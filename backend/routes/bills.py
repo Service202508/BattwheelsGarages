@@ -108,7 +108,8 @@ async def get_org_id(request: Request) -> str:
     if auth_header and auth_header.startswith("Bearer "):
         try:
             token = auth_header.split(" ")[1]
-            payload = jwt.decode(token, options={"verify_signature": False})
+            from utils.auth import decode_token
+            payload = decode_token(token)
             if payload.get("org_id"):
                 return payload.get("org_id")
         except:
