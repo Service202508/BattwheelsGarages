@@ -56,10 +56,18 @@ export default function BalanceSheet() {
     </Card>
   );
 
-  const totalAssets = data?.assets?.reduce((sum, a) => sum + (a.balance || a.amount || 0), 0) || 0;
-  const totalLiabilities = data?.liabilities?.reduce((sum, a) => sum + (a.balance || a.amount || 0), 0) || 0;
-  const totalEquity = data?.equity?.reduce((sum, a) => sum + (a.balance || a.amount || 0), 0) || 0;
-  const isBalanced = Math.abs(totalAssets - (totalLiabilities + totalEquity)) < 0.01;
+  // Handle both API formats: { accounts: [], total: } or direct array
+  const getAccounts = (section) => Array.isArray(section) ? section : (section?.accounts || []);
+  const getTotal = (section, accounts) => section?.total ?? accounts.reduce((sum, a) => sum + (a.balance || a.amount || 0), 0);
+  
+  const assetsAccounts = getAccounts(data?.assets);
+  const liabilitiesAccounts = getAccounts(data?.liabilities);
+  const equityAccounts = getAccounts(data?.equity);
+  
+  const totalAssets = getTotal(data?.assets, assetsAccounts);
+  const totalLiabilities = getTotal(data?.liabilities, liabilitiesAccounts);
+  const totalEquity = getTotal(data?.equity, equityAccounts) + (data?.equity?.retained_earnings || 0);
+  const isBalanced = data?.is_balanced ?? Math.abs(totalAssets - (totalLiabilities + totalEquity)) < 0.01;
 
   return (
     <div data-testid="balance-sheet-page" className="min-h-screen bg-[#0B0B0F] text-[#F4F6F0] p-6 space-y-6">
