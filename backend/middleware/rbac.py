@@ -47,13 +47,13 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/journal.*$":            ["org_admin", "admin", "owner", "accountant"],
     r"^/api/chart-of-accounts.*$":  ["org_admin", "admin", "owner", "accountant"],
     
-    # ============ HR/PAYROLL (Admin Only) ============
-    r"^/api/hr/payroll.*$":         ["org_admin", "admin", "owner"],
-    r"^/api/hr/employees.*$":       ["org_admin", "admin", "owner", "manager"],
-    r"^/api/hr/attendance.*$":      ["org_admin", "admin", "owner", "manager"],
-    r"^/api/hr/leave.*$":           ["org_admin", "admin", "owner", "manager"],
-    r"^/api/hr/.*$":                ["org_admin", "admin", "owner"],
-    r"^/api/payroll/.*$":           ["org_admin", "admin", "owner"],
+    # ============ HR/PAYROLL (Admin + HR) ============
+    r"^/api/hr/payroll.*$":         ["org_admin", "admin", "owner", "hr"],
+    r"^/api/hr/employees.*$":       ["org_admin", "admin", "owner", "manager", "hr"],
+    r"^/api/hr/attendance.*$":      ["org_admin", "admin", "owner", "manager", "hr", "technician", "accountant"],
+    r"^/api/hr/leave.*$":           ["org_admin", "admin", "owner", "manager", "hr", "technician", "accountant"],
+    r"^/api/hr/.*$":                ["org_admin", "admin", "owner", "hr"],
+    r"^/api/payroll/.*$":           ["org_admin", "admin", "owner", "hr"],
     
     # ============ INVOICING ============
     r"^/api/invoices/.*$":          ["org_admin", "admin", "owner", "accountant", "manager"],
