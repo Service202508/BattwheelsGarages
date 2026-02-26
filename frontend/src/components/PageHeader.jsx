@@ -123,7 +123,7 @@ export function PageHeaderWithStats({
           {stats.map((stat, index) => (
             <div 
               key={index}
-              className="bg-[#111820] rounded-xl p-4 border border-[rgba(255,255,255,0.07)] shadow-sm hover:shadow-md transition-shadow"
+              className="bg-[#111820] rounded-xl p-4 border border-[rgba(255,255,255,0.07)] hover:border-[rgba(255,255,255,0.12)] transition-all"
             >
               <div className="flex items-center gap-3">
                 {stat.icon && (
