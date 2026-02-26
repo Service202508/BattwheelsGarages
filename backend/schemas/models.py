@@ -945,3 +945,7 @@ class DashboardStats(BaseModel):
         "pickup": 0,
         "remote": 0,
         "avg_resolution_time_hours": 0.0,
+        "onsite_resolution_percentage": 0.0,
+        "total_resolved_30d": 0,
+        "total_onsite_resolved_30d": 0
+    })
