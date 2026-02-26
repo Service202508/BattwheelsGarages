@@ -1,6 +1,6 @@
 """
 Battwheels OS - Data Integrity & Referential Completeness Service
-Ensures consistent data relationships and field completeness across all Zoho Books clone modules
+Ensures consistent data relationships and field completeness across all Battwheels OS modules
 """
 
 import asyncio
@@ -609,7 +609,7 @@ class DataIntegrityService:
         return repairs
     
     async def normalize_invoice_fields(self, organization_id: Optional[str] = None) -> Dict:
-        """Normalize invoice fields from Zoho format to standard format"""
+        """Normalize invoice fields from legacy format to standard format"""
         filter_query = {}
         if organization_id:
             filter_query["organization_id"] = organization_id
@@ -697,15 +697,15 @@ class DataIntegrityService:
         return {"estimates_normalized": updates_made}
     
     async def sync_customer_references(self, organization_id: Optional[str] = None) -> Dict:
-        """Synchronize customer references between Zoho-synced contacts and local IDs"""
+        """Synchronize customer references between contacts and local IDs"""
         filter_query = {}
         if organization_id:
             filter_query["organization_id"] = organization_id
         
-        # Build customer ID mapping (zoho_contact_id -> local contact_id)
+        # Build customer ID mapping (legacy_contact_id -> local contact_id)
         customer_map = {}
-        async for contact in self.db.contacts.find({}, {"contact_id": 1, "zoho_contact_id": 1}):
-            zoho_id = contact.get("zoho_contact_id")
+        async for contact in self.db.contacts.find({}, {"contact_id": 1, "legacy_contact_id": 1}):
+            zoho_id = contact.get("legacy_contact_id")
             local_id = contact.get("contact_id")
             if zoho_id and local_id:
                 customer_map[zoho_id] = local_id

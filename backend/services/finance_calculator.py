@@ -80,7 +80,7 @@ def calculate_line_item(
     unit: str = "pcs"
 ) -> LineItemCalc:
     """
-    Calculate line item totals following Zoho Books logic.
+    Calculate line item totals following standard accounting logic.
     
     Rules:
     1. Base amount = quantity * rate
@@ -183,7 +183,7 @@ def calculate_invoice_totals(
     round_to: int = 1
 ) -> InvoiceTotals:
     """
-    Calculate invoice-level totals following Zoho Books logic.
+    Calculate invoice-level totals following standard accounting logic.
     
     Order of operations:
     1. Sum line item subtotals
