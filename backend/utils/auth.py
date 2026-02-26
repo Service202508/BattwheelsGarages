@@ -1,6 +1,10 @@
 """
-Battwheels OS - Authentication Utilities
-Shared auth helpers for all routes
+Battwheels OS - CANONICAL Authentication Module
+=================================================
+This is the SINGLE source of truth for JWT creation, decoding,
+and password hashing across the entire application.
+
+DO NOT create JWT functions anywhere else. Import from here.
 """
 import os
 import jwt
@@ -10,12 +14,15 @@ from fastapi import HTTPException, Request
 from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorClient
 
-# Configuration — use the same JWT_SECRET as server.py
+# ==================== JWT CONFIGURATION (SINGLE SOURCE) ====================
 JWT_SECRET = os.environ.get("JWT_SECRET")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_HOURS = 24
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRY_HOURS = int(os.environ.get("JWT_EXPIRY_HOURS", "168"))  # 7 days default
 
-# Get database connection
+# Legacy alias
+ALGORITHM = JWT_ALGORITHM
+
+# Module-level database connection (used by get_current_user_from_request)
 MONGO_URL = os.environ.get("MONGO_URL")
 DB_NAME = os.environ.get("DB_NAME")
 _client = AsyncIOMotorClient(MONGO_URL)
@@ -45,21 +52,32 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return sha256_hash == hashed_password
 
 def create_access_token(data: dict) -> str:
-    """Create JWT access token"""
+    """
+    Create JWT access token. CANONICAL token creator.
+    data MUST include: user_id, role. SHOULD include: org_id.
+    """
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
+    expire = datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRY_HOURS)
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, JWT_SECRET, algorithm=ALGORITHM)
+    return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
 
 def decode_token(token: str) -> dict:
-    """Decode and validate JWT token"""
+    """Decode and validate JWT token. Raises HTTPException on failure."""
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
-        return payload
+        return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
+
+def decode_token_safe(token: str) -> Optional[dict]:
+    """Decode JWT without raising. Returns None on any error. For middleware use."""
+    try:
+        return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except Exception:
+        return None
 
 
 async def get_current_user_from_request(request: Request) -> dict:
