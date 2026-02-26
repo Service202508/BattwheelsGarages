@@ -25,9 +25,10 @@ logger = logging.getLogger(__name__)
 # Role hierarchy (higher roles inherit lower role permissions)
 ROLE_HIERARCHY = {
     "org_admin": ["org_admin", "manager", "accountant", "technician", "dispatcher", "viewer"],
-    "owner": ["owner", "org_admin", "manager", "accountant", "technician", "dispatcher", "viewer"],
-    "admin": ["admin", "org_admin", "manager", "accountant", "technician", "dispatcher", "viewer"],
+    "owner": ["owner", "org_admin", "manager", "accountant", "hr", "technician", "dispatcher", "viewer"],
+    "admin": ["admin", "org_admin", "manager", "accountant", "hr", "technician", "dispatcher", "viewer"],
     "manager": ["manager", "technician", "dispatcher", "viewer"],
+    "hr": ["hr", "viewer"],
     "accountant": ["accountant", "viewer"],
     "technician": ["technician", "viewer"],
     "dispatcher": ["dispatcher", "viewer"],
