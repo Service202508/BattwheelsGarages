@@ -1024,35 +1024,35 @@ function AppRouter() {
         </ProtectedRoute>
       } />
       <Route path="/hr" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "hr_manager"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "hr_manager", "hr"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <HRDashboard user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/attendance" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager", "hr", "accountant"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Attendance user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/leave" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "technician", "manager", "hr", "accountant"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <LeaveManagement user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/payroll" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "hr"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Payroll user={auth.user} />
           </Layout>
         </ProtectedRoute>
       } />
       <Route path="/employees" element={
-        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager", "hr"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
             <Employees user={auth.user} />
           </Layout>
