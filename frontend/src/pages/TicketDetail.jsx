@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock, User, Car, FileText, DollarSign, Activity, AlertTriangle, CheckCircle, Wrench, Loader2, Send, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Clock, User, Car, FileText, DollarSign, Activity, AlertTriangle, CheckCircle, Wrench, Loader2, Send, Plus, Trash2, Brain, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { API } from "../App";
 
