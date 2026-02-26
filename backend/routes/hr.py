@@ -140,6 +140,15 @@ async def get_current_user(request: Request, db) -> dict:
     raise HTTPException(status_code=401, detail="Not authenticated")
 
 
+# Data isolation roles — users in these roles can only see their own data
+SELF_ONLY_ROLES = {"technician", "accountant", "dispatcher", "viewer"}
+
+def _is_self_only(user: dict) -> bool:
+    """Check if user should only see their own data (not HR/admin/owner)"""
+    role = user.get("role", "viewer")
+    return role in SELF_ONLY_ROLES
+
+
 # ==================== EMPLOYEE ROUTES ====================
 
 @router.post("/employees")
