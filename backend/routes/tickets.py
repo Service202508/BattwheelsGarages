@@ -70,7 +70,6 @@ class TicketCreateRequest(BaseModel):
     contact_number: Optional[str] = None
     customer_email: Optional[str] = None
     issue_type: Optional[str] = None
-    resolution_type: str = "workshop"
     incident_location: Optional[str] = None
     attachments_count: int = 0
     estimated_cost: Optional[float] = None
