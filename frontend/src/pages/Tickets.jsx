@@ -69,6 +69,9 @@ export default function Tickets({ user }) {
       if (statusFilter && statusFilter !== "resolved_this_week") {
         params.append("status", statusFilter);
       }
+      if (ticketTypeFilter) {
+        params.append("ticket_type", ticketTypeFilter);
+      }
       if (searchTerm) {
         params.append("search", searchTerm);
       }
