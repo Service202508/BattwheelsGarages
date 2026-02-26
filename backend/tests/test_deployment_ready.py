@@ -8,7 +8,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://env-baseline-check.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://failure-card-modal.preview.emergentagent.com')
 ORG_ID = "org_71f0df814d6d"
 HEADERS = {
     "Content-Type": "application/json",

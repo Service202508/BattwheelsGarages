@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 import os
 import sys
 
-BASE_URL = os.environ.get('API_BASE_URL', 'https://env-baseline-check.preview.emergentagent.com')
+BASE_URL = os.environ.get('API_BASE_URL', 'https://failure-card-modal.preview.emergentagent.com')
 API_URL = f"{BASE_URL}/api"
 
 # Test credentials
