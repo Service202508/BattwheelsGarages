@@ -438,6 +438,58 @@ export default function TicketDetail({ user }) {
             </CardContent>
           </Card>
 
+          {/* Failure Card Indicator */}
+          {(ticket.status === "closed" || ticket.status === "resolved") && (
+            <Card className="bg-zinc-900/60 border-zinc-800 border-l-2 border-l-amber-500" data-testid="ticket-failure-card-section">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-zinc-300 flex items-center gap-2">
+                  <Brain className="w-4 h-4 text-amber-400" /> Failure Card
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {failureCard && failureCard.status === "completed" ? (
+                  <div className="space-y-2 text-sm">
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">Completed</Badge>
+                    <p className="text-zinc-400 text-xs mt-1">Resolution data fed to EFI brain</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30" data-testid="failure-card-draft-badge">Draft — Needs Review</Badge>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full border-amber-500/40 text-amber-400 hover:bg-amber-500/10 mt-2"
+                      onClick={() => {
+                        if (!failureCard) {
+                          fetch(`${API}/failure-cards?ticket_id=${ticketId}`, { headers })
+                            .then(r => r.json())
+                            .then(d => {
+                              const cards = Array.isArray(d) ? d : d.data || [];
+                              if (cards.length > 0) {
+                                setFailureCard(cards[0]);
+                                setFailureCardForm({
+                                  confirmed_root_cause: cards[0].confirmed_root_cause || cards[0].initial_diagnosis || "",
+                                  efi_suggestion_correct: "",
+                                  resolution_steps: cards[0].resolution_steps || "",
+                                  technician_notes: cards[0].technician_notes || "",
+                                });
+                              }
+                              setFailureCardModal(true);
+                            });
+                        } else {
+                          setFailureCardModal(true);
+                        }
+                      }}
+                      data-testid="failure-card-complete-btn"
+                    >
+                      <Brain className="w-3 h-3 mr-1" /> Complete Failure Card
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           {/* Quick Details */}
           <Card className="bg-zinc-900/60 border-zinc-800" data-testid="ticket-quick-details">
             <CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-zinc-300">Quick Details</CardTitle></CardHeader>
