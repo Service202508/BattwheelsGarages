@@ -612,7 +612,6 @@ export default function NewTicket({ user }) {
                     <p className="text-xs">Enter address above</p>
                   </div>
                 </div>
-              </div>
             </div>
 
             {/* File Attachments */}
