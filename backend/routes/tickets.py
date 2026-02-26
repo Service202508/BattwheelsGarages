@@ -205,6 +205,7 @@ async def list_tickets(request: Request, ctx: TenantContext = Depends(tenant_con
     status: Optional[str] = Query(None, description="Filter by status"),
     priority: Optional[str] = Query(None, description="Filter by priority"),
     category: Optional[str] = Query(None, description="Filter by category"),
+    ticket_type: Optional[str] = Query(None, description="Filter by ticket type: onsite or workshop"),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(25, ge=1, le=100, description="Items per page (max 100)"),
     sort_by: Optional[str] = Query(None, description="Sort field"),
@@ -239,6 +240,7 @@ async def list_tickets(request: Request, ctx: TenantContext = Depends(tenant_con
         status=status,
         priority=priority,
         category=category,
+        ticket_type=ticket_type,
         limit=limit,
         skip=skip,
         organization_id=ctx.org_id
