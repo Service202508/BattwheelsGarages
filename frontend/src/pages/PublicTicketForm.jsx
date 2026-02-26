@@ -194,11 +194,11 @@ export default function PublicTicketForm() {
     if (!formData.contact_number) { toast.error("Please enter contact number"); return false; }
     if (!formData.title) { toast.error("Please describe the issue"); return false; }
     if (!formData.description) { toast.error("Please provide issue details"); return false; }
-    if (formData.resolution_type === "onsite" && !formData.incident_location) { toast.error("Please enter location"); return false; }
+    if (formData.incident_location && formData.incident_location.trim()) { /* location provided */ }
     return true;
   };
 
-  const requiresPayment = () => formData.customer_type === "individual" && formData.resolution_type === "onsite";
+  const requiresPayment = () => formData.customer_type === "individual" && formData.include_visit_fee;
   const calculateTotal = () => !requiresPayment() ? 0 : serviceCharges.visit_fee + (formData.include_diagnostic_fee ? serviceCharges.diagnostic_fee : 0);
 
   const handleSubmit = async () => {
