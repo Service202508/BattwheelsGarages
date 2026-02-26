@@ -984,6 +984,7 @@ async def create_contact(contact: ContactCreate, background_tasks: BackgroundTas
     contact_doc.pop("_id", None)
     return {"code": 0, "message": "Contact created", "contact": contact_doc}
 
+@router.get("")
 @router.get("/")
 async def list_contacts(request: Request, contact_type: Optional[str] = None, search: Optional[str] = None, status: Optional[str] = None, gst_treatment: Optional[str] = None, tag: Optional[str] = None, has_outstanding: Optional[bool] = None, sort_by: str = "name", sort_order: str = "asc", page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1)

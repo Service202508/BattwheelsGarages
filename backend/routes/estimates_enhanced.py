@@ -1136,6 +1136,7 @@ async def create_estimate(estimate: EstimateCreate, background_tasks: Background
     
     return {"code": 0, "message": "Estimate created", "estimate": estimate_doc}
 
+@router.get("")
 @router.get("/")
 async def list_estimates(
     status: Optional[str] = None,
