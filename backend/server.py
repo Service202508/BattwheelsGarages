@@ -5353,6 +5353,7 @@ async def root():
 # ==================== EV FAILURE INTELLIGENCE (EFI) ENGINE ====================
 
 from routes.failure_intelligence import router as efi_router, init_router as init_efi_router
+from routes.failure_cards import router as failure_cards_router
 from services.notification_service import router as notification_router, init_router as init_notification_router
 
 # Import event processor for EFI workflows
