@@ -551,6 +551,10 @@ async def create_chart_account(account: ChartOfAccountCreate):
 @router.post("/journal-entries")
 async def create_journal_entry(entry: JournalEntryCreate):
     """Create a journal entry (must be balanced)"""
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
+    await enforce_period_lock(journal_entries_col.database, entry.organization_id, entry.entry_date)
+
     entry_id = f"je_{uuid.uuid4().hex[:12]}"
     entry_number = await get_next_number("JE", entry.organization_id)
     now = datetime.now(timezone.utc)
