@@ -1012,6 +1012,7 @@ class TicketService:
         status: Optional[str] = None,
         priority: Optional[str] = None,
         category: Optional[str] = None,
+        ticket_type: Optional[str] = None,
         limit: int = 100,
         skip: int = 0,
         organization_id: Optional[str] = None
@@ -1031,6 +1032,8 @@ class TicketService:
             query["priority"] = priority
         if category:
             query["category"] = category
+        if ticket_type and ticket_type in ("onsite", "workshop"):
+            query["ticket_type"] = ticket_type
         
         # Role-based filtering
         if user_role == "customer":
