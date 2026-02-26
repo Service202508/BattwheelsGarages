@@ -137,8 +137,8 @@ async def submit_public_ticket(request: Request, data: PublicTicketCreate, backg
     ticket_id = f"tkt_{uuid.uuid4().hex[:12]}"
     now = datetime.now(timezone.utc)
     
-    # Determine if payment is required
-    requires_payment = data.customer_type == "individual" and data.resolution_type == "onsite"
+    # Determine if payment is required (visit fee for individual customers requesting onsite)
+    requires_payment = data.customer_type == "individual" and data.include_visit_fee
     
     # Calculate fees
     visit_fee = 299 if data.include_visit_fee else 0
