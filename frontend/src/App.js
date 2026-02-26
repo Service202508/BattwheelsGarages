@@ -339,8 +339,8 @@ const ProtectedRoute = ({ children, user, loading, allowedRoles = null }) => {
     return null;
   }
 
-  // Role-based access check
-  if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
+  // Role-based access check (owner has access to everything)
+  if (allowedRoles && currentUser.role !== "owner" && !allowedRoles.includes(currentUser.role)) {
     // Redirect based on role
     if (currentUser.role === "customer") {
       return <Navigate to="/customer" replace />;
