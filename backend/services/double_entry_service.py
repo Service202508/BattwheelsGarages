@@ -1219,9 +1219,9 @@ class DoubleEntryService:
             grand_total_credit += credit_balance
             
             accounts.append({
-                "account_id": row["_id"]["account_id"],
-                "account_name": row["_id"]["account_name"],
-                "account_code": row["_id"]["account_code"],
+                "account_id": row["_id"].get("account_id", ""),
+                "account_name": row["_id"].get("account_name", "Unknown"),
+                "account_code": row["_id"].get("account_code", ""),
                 "account_type": account_type,
                 "total_debit": float(debit),
                 "total_credit": float(credit),
