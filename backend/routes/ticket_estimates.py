@@ -65,8 +65,8 @@ async def get_current_user_from_token(request: Request) -> Optional[Dict[str, An
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
         token = auth_header.split(" ")[1]
-        try:
-            payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = decode_token_safe(token)
+        if payload:
             # The JWT payload already contains user_id, email, role
             # Return it directly - role is in the token
             user_from_token = {

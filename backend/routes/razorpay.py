@@ -93,10 +93,6 @@ async def get_org_id_from_request(request: Request) -> str:
                         )
                         if membership:
                             org_id = membership.get("organization_id")
-            except jwt.ExpiredSignatureError:
-                pass
-            except jwt.InvalidTokenError:
-                pass
     
     # Priority 3: Session cookie fallback
     if not org_id:
