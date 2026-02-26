@@ -9,7 +9,6 @@ Author: Battwheels OS
 
 from fastapi import APIRouter, Request, HTTPException
 import logging
-import jwt
 
 from services.finance_dashboard_service import (
     init_finance_dashboard_service,

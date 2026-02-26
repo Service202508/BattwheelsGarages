@@ -15,7 +15,6 @@ from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 import logging
-import jwt
 
 from services.bills_service import (
     init_bills_service,

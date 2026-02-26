@@ -15,7 +15,6 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime, timezone
 import logging
-import jwt
 
 from services.banking_service import (
     init_banking_service,

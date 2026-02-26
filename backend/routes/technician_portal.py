@@ -6,7 +6,6 @@ from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
-import jwt
 import os
 from utils.database import extract_org_id, org_query
 
@@ -18,7 +17,6 @@ def get_db():
 router = APIRouter(prefix="/technician", tags=["Technician Portal"])
 
 SECRET_KEY = None  # REMOVED — use utils.auth canonical JWT
-ALGORITHM = "HS256"
 
 
 async def get_current_technician(request: Request):
@@ -48,9 +46,9 @@ async def get_current_technician(request: Request):
             raise HTTPException(status_code=401, detail="User not found")
         
         return user
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
+    except HTTPException:
+        raise
+    except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 

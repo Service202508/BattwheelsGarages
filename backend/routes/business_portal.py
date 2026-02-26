@@ -6,7 +6,6 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
-import jwt
 import os
 import uuid
 
@@ -17,7 +16,6 @@ def get_db():
 router = APIRouter(prefix="/business", tags=["Business Portal"])
 
 SECRET_KEY = None  # REMOVED — use utils.auth canonical JWT
-ALGORITHM = "HS256"
 
 
 async def get_business_customer(request: Request):
@@ -53,9 +51,9 @@ async def get_business_customer(request: Request):
         )
         
         return user, business
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
+    except HTTPException:
+        raise
+    except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
