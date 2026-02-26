@@ -16,7 +16,7 @@ from utils.auth import (
     create_token, require_auth,
 )
 from schemas.models import UserCreate, UserLogin, User, UserUpdate
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, validator
 
 logger = logging.getLogger(__name__)
 
