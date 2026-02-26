@@ -164,6 +164,7 @@ const navItems = [
       { name: "Journal Entries", path: "/journal-entries", icon: BookOpen },
       { name: "Trial Balance", path: "/trial-balance", icon: Scale },
       { name: "Opening Balances", path: "/opening-balances", icon: Landmark },
+      { name: "Period Locks", path: "/period-locks", icon: Lock },
     ]
   },
   { 
