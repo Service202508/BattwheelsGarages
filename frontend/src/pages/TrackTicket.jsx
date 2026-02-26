@@ -391,7 +391,7 @@ export default function TrackTicket() {
               </div>
               <div>
                 <p className="text-slate-400 text-xs">Service Type</p>
-                <p className="text-white font-medium capitalize">{ticket.resolution_type?.replace("_", " ")}</p>
+                <p className="text-white font-medium capitalize">{ticket.ticket_type?.replace("_", " ")}</p>
               </div>
               <div>
                 <p className="text-slate-400 text-xs">Created</p>

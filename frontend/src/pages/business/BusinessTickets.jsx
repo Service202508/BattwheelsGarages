@@ -52,7 +52,7 @@ export default function BusinessTickets({ user }) {
     description: "",
     issue_type: "",
     priority: "medium",
-    resolution_type: "workshop",
+    ticket_type: "workshop",
     incident_location: ""
   });
 
@@ -123,7 +123,7 @@ export default function BusinessTickets({ user }) {
           description: "",
           issue_type: "",
           priority: "medium",
-          resolution_type: "workshop",
+          ticket_type: "workshop",
           incident_location: ""
         });
         fetchTickets();
@@ -308,9 +308,9 @@ export default function BusinessTickets({ user }) {
                             <Calendar className="h-4 w-4" />
                             <span>{formatDate(ticket.created_at)}</span>
                           </div>
-                          {ticket.resolution_type && (
+                          {ticket.ticket_type && (
                             <Badge variant="outline" className="text-xs">
-                              {ticket.resolution_type.replace(/_/g, ' ')}
+                              {ticket.ticket_type.replace(/_/g, ' ')}
                             </Badge>
                           )}
                         </div>
@@ -429,8 +429,8 @@ export default function BusinessTickets({ user }) {
               <div className="space-y-2">
                 <Label>Resolution Type</Label>
                 <Select 
-                  value={formData.resolution_type}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, resolution_type: value }))}
+                  value={formData.ticket_type}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, ticket_type: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
@@ -444,7 +444,7 @@ export default function BusinessTickets({ user }) {
               </div>
             </div>
             
-            {formData.resolution_type === "on_site" && (
+            {formData.ticket_type === "on_site" && (
               <div className="space-y-2">
                 <Label>Location</Label>
                 <Input

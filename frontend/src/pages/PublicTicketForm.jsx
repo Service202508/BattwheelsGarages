@@ -89,7 +89,7 @@ export default function PublicTicketForm() {
     description: "",
     issue_type: "general",
     priority: "medium",
-    resolution_type: "onsite",
+    ticket_type: "onsite",
     incident_location: "",
     location_lat: null,
     location_lng: null,

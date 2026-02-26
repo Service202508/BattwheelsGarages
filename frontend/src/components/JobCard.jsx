@@ -582,7 +582,7 @@ export default function JobCard({ ticket, user, onUpdate, onClose }) {
               </div>
               <div>
                 <p className="text-muted-foreground">Resolution Type</p>
-                <p className="font-semibold capitalize">{localTicket.resolution_type?.replace("_", " ") || "Workshop"}</p>
+                <p className="font-semibold capitalize">{localTicket.ticket_type?.replace("_", " ") || "Workshop"}</p>
               </div>
               <div>
                 <p className="text-muted-foreground">Issue Type</p>

@@ -283,11 +283,11 @@ export default function TechnicianTickets({ user }) {
                     </div>
                     
                     {/* Resolution Type & Location */}
-                    {(ticket.resolution_type || ticket.incident_location) && (
+                    {(ticket.ticket_type || ticket.incident_location) && (
                       <div className="flex items-center gap-4 mt-3 text-sm">
-                        {ticket.resolution_type && (
+                        {ticket.ticket_type && (
                           <Badge variant="outline" className="border-[rgba(255,255,255,0.07)] border-700 text-slate-400">
-                            {ticket.resolution_type.replace(/_/g, ' ')}
+                            {ticket.ticket_type.replace(/_/g, ' ')}
                           </Badge>
                         )}
                         {ticket.incident_location && (
