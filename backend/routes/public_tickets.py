@@ -145,7 +145,7 @@ async def submit_public_ticket(request: Request, data: PublicTicketCreate, backg
     diagnostic_fee = 199 if data.include_diagnostic_fee else 0
     total_fee = visit_fee + diagnostic_fee
     
-    # If Individual + OnSite without visit fee selected, force visit fee
+    # If Individual + visit fee selected, ensure fee is calculated
     if requires_payment and not data.include_visit_fee:
         visit_fee = 299
         data.include_visit_fee = True
