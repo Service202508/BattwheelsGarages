@@ -172,6 +172,10 @@ async def create_journal_entry(request: Request, data: JournalEntryCreate
     org_id = await get_org_id(request)
     user_id = await get_current_user_id(request)
     service = get_service()
+
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
+    await enforce_period_lock(service.db, org_id, data.entry_date)
     
     # Convert lines to dict format
     lines = [
@@ -232,6 +236,10 @@ async def reverse_journal_entry(request: Request, entry_id: str,
     org_id = await get_org_id(request)
     user_id = await get_current_user_id(request)
     service = get_service()
+
+    # Period lock check on reversal date
+    from utils.period_lock import enforce_period_lock
+    await enforce_period_lock(service.db, org_id, data.reversal_date)
     
     success, message, reversal = await service.reverse_journal_entry(
         organization_id=org_id,
