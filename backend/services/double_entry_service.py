@@ -1348,7 +1348,7 @@ class DoubleEntryService:
         for row in results:
             debit = Decimal(str(row["total_debit"]))
             credit = Decimal(str(row["total_credit"]))
-            account_type = row["_id"]["account_type"]
+            account_type = row["_id"].get("account_type", "unknown")
             
             account_data = {
                 "account_id": row["_id"]["account_id"],
@@ -1443,7 +1443,7 @@ class DoubleEntryService:
         for row in results:
             debit = Decimal(str(row["total_debit"]))
             credit = Decimal(str(row["total_credit"]))
-            account_type = row["_id"]["account_type"]
+            account_type = row["_id"].get("account_type", "unknown")
             
             account_data = {
                 "account_id": row["_id"]["account_id"],
