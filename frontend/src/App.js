@@ -102,6 +102,9 @@ import DataInsights from "@/pages/DataInsights";
 import TicketDetail from "@/pages/TicketDetail";
 import HRDashboard from "@/pages/HRDashboard";
 import PeriodLocks from "@/pages/PeriodLocks";
+import BalanceSheet from "@/pages/BalanceSheet";
+import ProfitLoss from "@/pages/ProfitLoss";
+import ForgotPassword from "@/pages/ForgotPassword";
 
 // Customer Portal Pages
 import CustomerLayout from "@/components/CustomerLayout";
