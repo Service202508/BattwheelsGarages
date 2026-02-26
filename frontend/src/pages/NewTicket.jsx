@@ -31,13 +31,6 @@ const fallbackIssueTypes = [
   { value: "other", label: "Other" },
 ];
 
-const resolutionTypes = [
-  { value: "workshop", label: "Workshop Visit (Bring vehicle to us)" },
-  { value: "onsite", label: "On-Site Service (We come to you)" },
-  { value: "pickup", label: "Pickup & Drop (We pick up your vehicle)" },
-  { value: "remote", label: "Remote Diagnosis (Software/OTA)" },
-];
-
 const customerTypes = [
   { value: "individual", label: "Individual" },
   { value: "business", label: "Business/OEM/Fleet Operator" },
