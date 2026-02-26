@@ -542,24 +542,6 @@ export default function NewTicket({ user }) {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="resolution_type">Resolution Type</Label>
-                  <Select
-                    value={formData.resolution_type}
-                    onValueChange={(value) => setFormData({ ...formData, resolution_type: value })}
-                  >
-                    <SelectTrigger className="bg-background/50" data-testid="resolution-type-select">
-                      <SelectValue placeholder="Select resolution type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {resolutionTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
                   <Label htmlFor="priority">Priority</Label>
                   <Select
                     value={formData.priority}
