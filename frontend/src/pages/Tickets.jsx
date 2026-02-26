@@ -120,7 +120,7 @@ export default function Tickets({ user }) {
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, searchTerm]);
+  }, [statusFilter, ticketTypeFilter, searchTerm]);
 
   const fetchKPIs = useCallback(async () => {
     try {
