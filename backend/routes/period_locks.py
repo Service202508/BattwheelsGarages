@@ -136,8 +136,8 @@ async def unlock_period(request: Request, lock_id: str):
     db = get_db()
 
     role = user.get("role", "")
-    if role not in ("platform_admin", "super_admin", "owner"):
-        raise HTTPException(status_code=403, detail="Only platform super-admin or owner can unlock financial periods")
+    if role not in ("platform_admin", "super_admin"):
+        raise HTTPException(status_code=403, detail="Only platform super-admin can unlock financial periods")
 
     lock = await db.period_locks.find_one({"lock_id": lock_id}, {"_id": 0})
     if not lock:
