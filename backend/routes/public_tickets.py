@@ -193,7 +193,7 @@ async def submit_public_ticket(request: Request, data: PublicTicketCreate, backg
         
         # Issue details
         "issue_type": data.issue_type,
-        "resolution_type": data.resolution_type,
+        "ticket_type": "onsite",  # Public form submissions are always onsite
         
         # Location
         "incident_location": data.incident_location,
