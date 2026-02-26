@@ -426,6 +426,16 @@ export default function Tickets({ user }) {
                       >
                         <TableCell className="font-mono text-sm">{ticket.ticket_id}</TableCell>
                         <TableCell>
+                          <Badge 
+                            className={ticket.ticket_type === "workshop" 
+                              ? "bg-[rgba(59,158,255,0.15)] text-[#3B9EFF] border border-[rgba(59,158,255,0.25)]" 
+                              : "bg-[rgba(200,255,0,0.10)] text-[#C8FF00] border border-[rgba(200,255,0,0.20)]"}
+                            data-testid={`ticket-type-${ticket.ticket_id}`}
+                          >
+                            {ticket.ticket_type === "workshop" ? "Workshop" : "Onsite"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
                           <div>
                             <p className="font-medium">{ticket.customer_name || "N/A"}</p>
                             <p className="text-xs text-muted-foreground">{ticket.contact_number || ""}</p>
