@@ -691,7 +691,13 @@ async def update_bill(bill_id: str, update: BillUpdate):
     existing = await bills_collection.find_one({"bill_id": bill_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Bill not found")
-    
+
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
+    await enforce_period_lock(bills_collection.database, existing.get("organization_id", ""), existing.get("bill_date", ""))
+    if update.bill_date:
+        await enforce_period_lock(bills_collection.database, existing.get("organization_id", ""), update.bill_date)
+
     if existing.get("status") not in ["draft"]:
         allowed = {"vendor_notes"}
         update_dict = {k: v for k, v in update.dict().items() if v is not None and k in allowed}
@@ -735,7 +741,11 @@ async def delete_bill(bill_id: str, force: bool = False):
     bill = await bills_collection.find_one({"bill_id": bill_id})
     if not bill:
         raise HTTPException(status_code=404, detail="Bill not found")
-    
+
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
+    await enforce_period_lock(bills_collection.database, bill.get("organization_id", ""), bill.get("bill_date", ""))
+
     payment_count = await bill_payments_collection.count_documents({"bill_id": bill_id})
     
     if payment_count > 0:
