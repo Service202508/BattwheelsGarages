@@ -117,9 +117,9 @@ export default function BalanceSheet() {
           </Card>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <Section title="Assets" items={data?.assets || []} icon={TrendingUp} color="text-[#C8FF00]" />
-            <Section title="Liabilities" items={data?.liabilities || []} icon={TrendingDown} color="text-orange-400" />
-            <Section title="Equity" items={data?.equity || []} icon={FileText} color="text-blue-400" />
+            <Section title="Assets" items={assetsAccounts} icon={TrendingUp} color="text-[#C8FF00]" />
+            <Section title="Liabilities" items={liabilitiesAccounts} icon={TrendingDown} color="text-orange-400" />
+            <Section title="Equity" items={equityAccounts} icon={FileText} color="text-blue-400" />
           </div>
         </>
       )}
