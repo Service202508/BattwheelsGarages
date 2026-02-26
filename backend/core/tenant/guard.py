@@ -621,7 +621,8 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         
         try:
             jwt_secret = self.get_jwt_secret()
-            payload = pyjwt.decode(token, jwt_secret, algorithms=[self.JWT_ALGORITHM])
+            from utils.auth import JWT_ALGORITHM
+            payload = pyjwt.decode(token, jwt_secret, algorithms=[JWT_ALGORITHM])
             logger.debug(f"JWT decoded: user_id={payload.get('user_id')}, org_id={payload.get('org_id')}")
             return payload.get("user_id"), payload.get("org_id"), payload.get("role")
         except pyjwt.ExpiredSignatureError:
