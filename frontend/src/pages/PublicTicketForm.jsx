@@ -278,7 +278,7 @@ export default function PublicTicketForm() {
 
   const StyledInput = ({ className = "", ...props }) => (
     <Input
-      className={`h-12 bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded text-[#F4F6F0] text-base placeholder:text-gray-400 transition-all duration-200 ${className}`}
+      className={`h-12 bg-[#14141B] border-2 border-[rgba(244,246,240,0.12)] focus:border-[rgba(200,255,0,0.50)] focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded text-[#F4F6F0] text-base placeholder:text-[rgba(244,246,240,0.3)] transition-all duration-200 ${className}`}
       {...props}
     />
   );
@@ -335,7 +335,7 @@ export default function PublicTicketForm() {
               ].map((b, i) => (
                 <div key={i} className={`flex items-center gap-2 px-4 py-2 bg-[#111820] rounded-full shadow-sm border border-gray-100`}>
                   <b.icon className={`w-4 h-4 text-${b.color}-500`} strokeWidth={2} />
-                  <span className="text-xs font-medium text-gray-700">{b.label}</span>
+                  <span className="text-xs font-medium text-[rgba(244,246,240,0.7)]">{b.label}</span>
                 </div>
               ))}
             </motion.div>
@@ -389,9 +389,9 @@ export default function PublicTicketForm() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Category <span className="text-[#C8FF00] text-500">*</span></Label>
+                  <Label className="text-sm font-medium text-[rgba(244,246,240,0.7)]">Category <span className="text-[#C8FF00] text-500">*</span></Label>
                   <Select value={formData.vehicle_category} onValueChange={(v) => setFormData(prev => ({ ...prev, vehicle_category: v, vehicle_model_id: "", vehicle_model_name: "", vehicle_oem: "" }))}>
-                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] rounded text-[#F4F6F0]" data-testid="vehicle-category-select">
+                    <SelectTrigger className="h-12 bg-[#14141B] border-2 border-[rgba(244,246,240,0.12)] focus:border-[rgba(200,255,0,0.50)] rounded text-[#F4F6F0]" data-testid="vehicle-category-select">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#111820] border-gray-200 rounded border border-[rgba(255,255,255,0.13)]">
@@ -412,9 +412,9 @@ export default function PublicTicketForm() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Model (OEM)</Label>
+                  <Label className="text-sm font-medium text-[rgba(244,246,240,0.7)]">Model (OEM)</Label>
                   <Select value={formData.vehicle_model_id} onValueChange={handleModelSelect} disabled={!formData.vehicle_category}>
-                    <SelectTrigger className="h-12 bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] rounded text-[#F4F6F0] disabled:opacity-50" data-testid="vehicle-model-select">
+                    <SelectTrigger className="h-12 bg-[#14141B] border-2 border-[rgba(244,246,240,0.12)] focus:border-[rgba(200,255,0,0.50)] rounded text-[#F4F6F0] disabled:opacity-50" data-testid="vehicle-model-select">
                       <SelectValue placeholder="Select model" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#111820] border-gray-200 rounded border border-[rgba(255,255,255,0.13)] max-h-60">
@@ -431,7 +431,7 @@ export default function PublicTicketForm() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">Vehicle Number <span className="text-[#C8FF00] text-500">*</span></Label>
+                <Label className="text-sm font-medium text-[rgba(244,246,240,0.7)]">Vehicle Number <span className="text-[#C8FF00] text-500">*</span></Label>
                 <StyledInput placeholder="MH12AB1234" value={formData.vehicle_number} onChange={(e) => setFormData(prev => ({ ...prev, vehicle_number: e.target.value.toUpperCase() }))} className="uppercase tracking-widest font-mono text-lg" data-testid="vehicle-number-input" />
               </div>
             </div>
@@ -443,11 +443,11 @@ export default function PublicTicketForm() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Full Name <span className="text-[#C8FF00] text-500">*</span></Label>
+                  <Label className="text-sm font-medium text-[rgba(244,246,240,0.7)]">Full Name <span className="text-[#C8FF00] text-500">*</span></Label>
                   <StyledInput placeholder="Enter your name" value={formData.customer_name} onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))} data-testid="customer-name-input" />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Phone Number <span className="text-[#C8FF00] text-500">*</span></Label>
+                  <Label className="text-sm font-medium text-[rgba(244,246,240,0.7)]">Phone Number <span className="text-[#C8FF00] text-500">*</span></Label>
                   <div className="flex">
                     <div className="flex items-center px-4 bg-[rgba(200,255,0,0.08)] border-2 border-r-0 border-[rgba(200,255,0,0.20)] rounded-l-xl text-sm font-semibold text-[#C8FF00] text-700">+91</div>
                     <StyledInput type="tel" placeholder="9876543210" value={formData.contact_number} onChange={(e) => setFormData(prev => ({ ...prev, contact_number: e.target.value }))} className="rounded-l-none" data-testid="contact-number-input" />
@@ -455,7 +455,7 @@ export default function PublicTicketForm() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">Email <span className="text-gray-400">(Optional)</span></Label>
+                <Label className="text-sm font-medium text-[rgba(244,246,240,0.7)]">Email <span className="text-gray-400">(Optional)</span></Label>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <StyledInput type="email" placeholder="you@example.com" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} className="pl-12" data-testid="email-input" />
@@ -464,11 +464,11 @@ export default function PublicTicketForm() {
               {formData.customer_type === "business" && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700">Business Name</Label>
+                    <Label className="text-sm font-medium text-[rgba(244,246,240,0.7)]">Business Name</Label>
                     <StyledInput placeholder="Company name" value={formData.business_name} onChange={(e) => setFormData(prev => ({ ...prev, business_name: e.target.value }))} data-testid="business-name-input" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700">GSTIN</Label>
+                    <Label className="text-sm font-medium text-[rgba(244,246,240,0.7)]">GSTIN</Label>
                     <StyledInput placeholder="22AAAAA0000A1Z5" value={formData.gst_number} onChange={(e) => setFormData(prev => ({ ...prev, gst_number: e.target.value.toUpperCase() }))} className="uppercase font-mono" data-testid="gst-number-input" />
                   </div>
                 </motion.div>
@@ -482,7 +482,7 @@ export default function PublicTicketForm() {
             <div className="space-y-4">
               <div className="space-y-2 relative">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium text-gray-700">Issue <span className="text-[#C8FF00] text-500">*</span></Label>
+                  <Label className="text-sm font-medium text-[rgba(244,246,240,0.7)]">Issue <span className="text-[#C8FF00] text-500">*</span></Label>
                   {aiLoading && <span className="flex items-center gap-1.5 text-xs text-[#C8FF00] text-600"><Loader2 className="w-3 h-3 animate-spin" />Analyzing...</span>}
                 </div>
                 <StyledInput placeholder="e.g., Battery not charging, motor noise..." value={formData.title} onChange={(e) => handleTitleChange(e.target.value)} onFocus={() => { if (aiSuggestions.length > 0) setShowAiSuggestions(true); }} data-testid="issue-title-input" />
@@ -509,13 +509,13 @@ export default function PublicTicketForm() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">Detailed Description <span className="text-[#C8FF00] text-500">*</span></Label>
-                <Textarea placeholder="Describe symptoms, when it started, error codes..." value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} className="min-h-[120px] bg-gray-50 border-2 border-gray-200 focus:border-[rgba(200,255,0,0.50)] focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded text-[#F4F6F0] placeholder:text-gray-400 resize-none" data-testid="description-input" />
+                <Label className="text-sm font-medium text-[rgba(244,246,240,0.7)]">Detailed Description <span className="text-[#C8FF00] text-500">*</span></Label>
+                <Textarea placeholder="Describe symptoms, when it started, error codes..." value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} className="min-h-[120px] bg-[#14141B] border-2 border-[rgba(244,246,240,0.12)] focus:border-[rgba(200,255,0,0.50)] focus:bg-[#111820] focus:ring-4 focus:ring-emerald-500/10 rounded text-[#F4F6F0] placeholder:text-[rgba(244,246,240,0.3)] resize-none" data-testid="description-input" />
               </div>
 
               {/* Priority */}
               <div className="space-y-3">
-                <Label className="text-sm font-medium text-gray-700">Priority Level</Label>
+                <Label className="text-sm font-medium text-[rgba(244,246,240,0.7)]">Priority Level</Label>
                 <div className="flex flex-wrap gap-2">
                   {priorities.map((p) => {
                     const isSelected = formData.priority === p.value;
@@ -637,7 +637,7 @@ export default function PublicTicketForm() {
               <p className="text-gray-500 mt-1">Confirm your service booking</p>
             </div>
             <div className="p-6 space-y-4">
-              <div className="p-4 bg-gray-50 rounded space-y-3">
+              <div className="p-4 bg-[#14141B] rounded space-y-3">
                 <div className="flex justify-between text-sm"><span className="text-gray-500">Ticket ID</span><span className="text-[#C8FF00] text-600 font-mono font-bold">{ticketResult?.ticket_id}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-gray-500">Visit Charges</span><span className="text-[#F4F6F0] font-medium">₹{paymentDetails?.visit_fee}</span></div>
                 {paymentDetails?.diagnostic_fee > 0 && <div className="flex justify-between text-sm"><span className="text-gray-500">Diagnostic</span><span className="text-[#F4F6F0] font-medium">₹{paymentDetails?.diagnostic_fee}</span></div>}
@@ -688,11 +688,11 @@ export default function PublicTicketForm() {
                 { icon: Brain, text: "EFI Intelligence is analyzing your issue", color: "purple" }
               ].map((item, i) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.1 }}
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded">
+                  className="flex items-center gap-3 p-3 bg-[#14141B] rounded">
                   <div className={`w-8 h-8 rounded-lg bg-${item.color}-100 flex items-center justify-center`}>
                     <item.icon className={`w-4 h-4 text-${item.color}-600`} />
                   </div>
-                  <p className="text-sm text-gray-700 font-medium">{item.text}</p>
+                  <p className="text-sm text-[rgba(244,246,240,0.7)] font-medium">{item.text}</p>
                 </motion.div>
               ))}
             </div>
@@ -701,7 +701,7 @@ export default function PublicTicketForm() {
               <Button onClick={() => navigate(`/track-ticket?id=${ticketResult?.ticket_id}`)} className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded hover:shadow-[0_0_20px_rgba(16,185,129,0.30)]" data-testid="track-ticket-btn">
                 Track Your Ticket<ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <Button variant="outline" onClick={() => { setStep(1); setFormData({ ...formData, title: "", description: "" }); }} className="w-full h-12 border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded">
+              <Button variant="outline" onClick={() => { setStep(1); setFormData({ ...formData, title: "", description: "" }); }} className="w-full h-12 border-[rgba(244,246,240,0.15)] hover:bg-[rgba(244,246,240,0.05)] text-[rgba(244,246,240,0.7)] font-medium rounded">
                 Submit Another Request
               </Button>
             </div>
