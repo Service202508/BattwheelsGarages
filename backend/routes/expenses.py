@@ -252,6 +252,10 @@ async def create_expense(request: Request, data: ExpenseCreate):
     service = get_service()
     org_id = await get_org_id(request)
     user_id = await get_current_user_id(request)
+
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
+    await enforce_period_lock(service.db, org_id, data.expense_date)
     
     expense = await service.create_expense(
         org_id=org_id,
