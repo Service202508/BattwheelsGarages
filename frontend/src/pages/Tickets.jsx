@@ -405,6 +405,7 @@ export default function Tickets({ user }) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Ticket ID</TableHead>
+                      <TableHead>Type</TableHead>
                       <TableHead>Customer</TableHead>
                       <TableHead>Vehicle</TableHead>
                       <TableHead>Issue</TableHead>
