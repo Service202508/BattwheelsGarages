@@ -55,14 +55,18 @@ export default function ProfitLoss() {
     );
   };
 
-  const revenue = data?.revenue || data?.income || [];
-  const cogs = data?.cost_of_goods_sold || data?.cogs || [];
-  const expenses = data?.expenses || data?.operating_expenses || [];
-  const totalRevenue = revenue.reduce((s, a) => s + (a.balance || a.amount || 0), 0);
-  const totalCogs = cogs.reduce((s, a) => s + (a.balance || a.amount || 0), 0);
-  const totalExpenses = expenses.reduce((s, a) => s + (a.balance || a.amount || 0), 0);
+  // Handle both API formats: { accounts: [], total: } or direct array
+  const getAccounts = (section) => Array.isArray(section) ? section : (section?.accounts || []);
+  const getTotal = (section, accounts) => section?.total ?? accounts.reduce((s, a) => s + (a.balance || a.amount || 0), 0);
+  
+  const revenue = getAccounts(data?.revenue || data?.income);
+  const cogs = getAccounts(data?.cost_of_goods_sold || data?.cogs);
+  const expenses = getAccounts(data?.expenses || data?.operating_expenses);
+  const totalRevenue = getTotal(data?.revenue || data?.income, revenue);
+  const totalCogs = getTotal(data?.cost_of_goods_sold || data?.cogs, cogs);
+  const totalExpenses = getTotal(data?.expenses || data?.operating_expenses, expenses);
   const grossProfit = totalRevenue - totalCogs;
-  const netProfit = grossProfit - totalExpenses;
+  const netProfit = data?.net_profit ?? (grossProfit - totalExpenses);
 
   return (
     <div data-testid="profit-loss-page" className="min-h-screen bg-[#0B0B0F] text-[#F4F6F0] p-6 space-y-6">
