@@ -5,16 +5,15 @@ Provides FastAPI dependencies for multi-tenant data isolation
 from fastapi import Request, HTTPException, Depends
 from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
-import jwt
-import os
 import logging
+
+# JWT — canonical source
+from utils.auth import decode_token, JWT_SECRET, JWT_ALGORITHM
 
 logger = logging.getLogger(__name__)
 
 # Database reference (set during init)
 _db: Optional[AsyncIOMotorDatabase] = None
-JWT_SECRET = os.environ.get('JWT_SECRET', 'battwheels-secret')
-JWT_ALGORITHM = "HS256"
 
 
 def init_org_dependencies(database: AsyncIOMotorDatabase):
