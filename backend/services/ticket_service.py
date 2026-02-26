@@ -219,6 +219,7 @@ class TicketService:
             # Issue details
             "issue_type": data.issue_type or data.category,
             "resolution_type": data.resolution_type,
+            "ticket_type": data.ticket_type,  # "onsite" or "workshop"
             "incident_location": data.incident_location,
             
             # Attachments
