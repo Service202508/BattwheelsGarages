@@ -514,6 +514,101 @@ export default function TicketDetail({ user }) {
           </Card>
         </div>
       </div>
+
+      {/* Failure Card Completion Modal */}
+      <Dialog open={failureCardModal} onOpenChange={(open) => !open && setFailureCardModal(false)}>
+        <DialogContent className="bg-zinc-900 border-zinc-700 text-zinc-200 max-w-lg" data-testid="failure-card-modal">
+          <DialogHeader>
+            <DialogTitle className="text-[#C8FF00] font-mono flex items-center gap-2">
+              <Brain className="w-5 h-5" /> Complete Failure Card
+            </DialogTitle>
+            <p className="text-xs text-zinc-500 mt-1">This data improves the EFI diagnostic AI</p>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            {failureCard?.initial_diagnosis && (
+              <div className="bg-zinc-800/50 p-3 rounded border border-zinc-700">
+                <Label className="text-xs text-zinc-500">EFI Initial Diagnosis</Label>
+                <p className="text-sm text-zinc-300 mt-1">{failureCard.initial_diagnosis}</p>
+              </div>
+            )}
+
+            <div>
+              <Label className="text-xs text-zinc-400" htmlFor="fc-root-cause">Confirmed Root Cause *</Label>
+              <Textarea
+                id="fc-root-cause"
+                className="bg-zinc-800 border-zinc-700 text-zinc-200 mt-1"
+                placeholder="What was the actual root cause?"
+                value={failureCardForm.confirmed_root_cause}
+                onChange={(e) => setFailureCardForm(p => ({ ...p, confirmed_root_cause: e.target.value }))}
+                data-testid="fc-root-cause-input"
+              />
+            </div>
+
+            <div>
+              <Label className="text-xs text-zinc-400">Was the EFI suggestion correct?</Label>
+              <Select
+                value={failureCardForm.efi_suggestion_correct}
+                onValueChange={(v) => setFailureCardForm(p => ({ ...p, efi_suggestion_correct: v }))}
+              >
+                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-200 mt-1" data-testid="fc-efi-correct-select">
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="yes">Yes — EFI was correct</SelectItem>
+                  <SelectItem value="no">No — Different root cause</SelectItem>
+                  <SelectItem value="partial">Partial — Partially correct</SelectItem>
+                  <SelectItem value="na">N/A — No EFI suggestion</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-xs text-zinc-400" htmlFor="fc-resolution">Resolution Steps</Label>
+              <Textarea
+                id="fc-resolution"
+                className="bg-zinc-800 border-zinc-700 text-zinc-200 mt-1"
+                placeholder="What steps resolved the issue?"
+                value={failureCardForm.resolution_steps}
+                onChange={(e) => setFailureCardForm(p => ({ ...p, resolution_steps: e.target.value }))}
+                data-testid="fc-resolution-input"
+              />
+            </div>
+
+            <div>
+              <Label className="text-xs text-zinc-400" htmlFor="fc-notes">Additional Notes</Label>
+              <Textarea
+                id="fc-notes"
+                className="bg-zinc-800 border-zinc-700 text-zinc-200 mt-1"
+                placeholder="Any additional observations..."
+                value={failureCardForm.technician_notes}
+                onChange={(e) => setFailureCardForm(p => ({ ...p, technician_notes: e.target.value }))}
+                data-testid="fc-notes-input"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setFailureCardModal(false)}
+              className="text-zinc-400 hover:text-zinc-200"
+              data-testid="fc-dismiss-btn"
+            >
+              Save as Draft
+            </Button>
+            <Button
+              onClick={handleFailureCardSubmit}
+              disabled={failureCardSubmitting || !failureCardForm.confirmed_root_cause}
+              className="bg-[#C8FF00] text-black hover:bg-[#C8FF00]/80 font-medium"
+              data-testid="fc-submit-btn"
+            >
+              {failureCardSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Brain className="w-4 h-4 mr-1" />}
+              Complete & Feed EFI
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
