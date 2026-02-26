@@ -119,6 +119,14 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Compound index migration failed on startup (non-fatal): {e}")
 
+    # Run database migrations
+    try:
+        from migrations.runner import run_migrations
+        await run_migrations(db)
+        logger.info("Database migrations completed")
+    except Exception as e:
+        logger.warning(f"Database migrations failed (non-fatal): {e}")
+
     logger.info("Battwheels OS started successfully")
     yield
     # ── Shutdown ──
