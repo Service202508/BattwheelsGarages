@@ -482,10 +482,18 @@ async def calculate_payroll(request: Request, employee_id: str, month: str = Non
 async def generate_payroll(request: Request, month: str = None, year: int = None, _: None = Depends(require_feature("hr_payroll"))):
     service = get_service()
     user = await get_current_user(request, service.db)
-    
+
     now = datetime.now(timezone.utc)
     month = month or now.strftime("%B")
     year = year or now.year
+
+    # Period lock check — payroll maps to a specific month/year
+    from utils.period_lock import enforce_period_lock
+    import calendar
+    month_num = list(calendar.month_name).index(month) if isinstance(month, str) and month in calendar.month_name else now.month
+    payroll_date = f"{year}-{month_num:02d}-01"
+    org_id = await get_org_id(request, service.db)
+    await enforce_period_lock(service.db, org_id, payroll_date)
     
     try:
         return await service.generate_payroll(month, year, user.get("user_id"))
