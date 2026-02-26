@@ -452,7 +452,7 @@ How can I help you today?`,
           <Button
             onClick={() => sendMessage()}
             disabled={loading || !input.trim()}
-            className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 border-0 shadow-lg shadow-emerald-500/25"
+            className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 border-0"
             data-testid="ai-send-btn"
           >
             {loading ? (

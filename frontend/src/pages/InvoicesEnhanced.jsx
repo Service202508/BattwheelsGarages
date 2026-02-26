@@ -1691,7 +1691,7 @@ export default function InvoicesEnhanced() {
                             {/* QR Code */}
                             {irnQrCode && (
                               <div className="flex items-start gap-4 pt-2">
-                                <div className="p-2 bg-white rounded">
+                                <div className="p-2 bg-[#F4F6F0] rounded">
                                   <img src={irnQrCode} alt="E-Invoice QR Code" className="w-32 h-32" />
                                 </div>
                                 <div className="flex-1">

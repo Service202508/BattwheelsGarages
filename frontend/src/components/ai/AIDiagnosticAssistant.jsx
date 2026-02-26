@@ -255,7 +255,7 @@ Please provide:
             {/* Live indicator dot */}
             <div className="absolute -top-1 -right-1 w-3 h-3">
               <span className="absolute inline-flex h-full w-full rounded-full bg-[#C8FF00] opacity-75 animate-ping" />
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#C8FF00] shadow-lg shadow-[rgba(200,255,0,0.5)]" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#C8FF00]" />
             </div>
           </div>
           <div>
@@ -400,7 +400,7 @@ Please provide:
             <Button
               onClick={handleGetDiagnosis}
               disabled={loading || !issueDescription.trim()}
-              className="w-full h-12 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold rounded shadow-lg shadow-[rgba(200,255,0,0.2)]"
+              className="w-full h-12 bg-[#C8FF00] hover:bg-[#d4ff1a] text-[#080C0F] font-bold rounded"
               data-testid="get-diagnosis-btn"
             >
               {loading ? (
