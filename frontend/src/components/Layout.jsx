@@ -459,6 +459,11 @@ const SidebarContent = ({ user, collapsed, setCollapsed, onLogout, onClose }) =>
             {!collapsed && <span className="ml-2 text-sm font-medium">Logout</span>}
           </Button>
         </div>
+        {!collapsed && (
+          <p className="text-[10px] text-[rgba(244,246,240,0.2)] text-center mt-2 font-mono" data-testid="version-footer">
+            Battwheels OS v2.5.0
+          </p>
+        )}
       </div>
     </div>
   );
