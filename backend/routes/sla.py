@@ -58,21 +58,14 @@ class SLAConfig(BaseModel):
 
 async def get_org_id_from_request(request: Request) -> str:
     """Extract organization ID from JWT or header"""
-    import jwt
-    import os
+    from utils.auth import decode_token_safe
     org_id = request.headers.get("X-Organization-ID")
     if not org_id:
         auth_header = request.headers.get("Authorization", "")
         if auth_header.startswith("Bearer "):
-            try:
-                payload = jwt.decode(
-                    auth_header.split(" ")[1],
-                    os.environ.get("JWT_SECRET", "battwheels-secret"),
-                    algorithms=["HS256"]
-                )
+            payload = decode_token_safe(auth_header.split(" ")[1])
+            if payload:
                 org_id = payload.get("org_id")
-            except Exception:
-                pass
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     return org_id

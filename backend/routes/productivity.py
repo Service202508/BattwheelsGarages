@@ -45,8 +45,7 @@ class ProductivitySummary(BaseModel):
 async def get_current_user_from_request(request: Request):
     org_id = extract_org_id(request)
     """Extract current user from request"""
-    import jwt
-    JWT_SECRET = os.environ.get('JWT_SECRET', 'battwheels-secret')
+    from utils.auth import decode_token_safe
     
     session_token = request.cookies.get("session_token")
     if session_token:
@@ -59,13 +58,11 @@ async def get_current_user_from_request(request: Request):
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
         token = auth_header.split(" ")[1]
-        try:
-            payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        payload = decode_token_safe(token)
+        if payload and payload.get("user_id"):
             user = await db.users.find_one({"user_id": payload["user_id"]}, {"_id": 0})
             if user:
                 return user
-        except:
-            pass
     return None
 
 async def require_admin_or_manager(request: Request):
