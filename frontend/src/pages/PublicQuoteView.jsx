@@ -258,7 +258,7 @@ export default function PublicQuoteView() {
           <CardContent className="p-6 space-y-6">
             {/* Customer & Date Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-[#14141B] rounded-lg p-4">
                 <p className="text-xs text-gray-500 uppercase mb-1">Bill To</p>
                 <p className="font-semibold text-lg">{estimate?.customer_name}</p>
                 {estimate?.customer_email && (
@@ -268,7 +268,7 @@ export default function PublicQuoteView() {
                   <p className="text-gray-600 text-sm font-mono">GSTIN: {estimate?.customer_gstin}</p>
                 )}
               </div>
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-[#14141B] rounded-lg p-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-xs text-gray-500 uppercase">Date</p>
@@ -377,15 +377,15 @@ export default function PublicQuoteView() {
                 <Separator />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {estimate?.terms_and_conditions && (
-                    <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="bg-[#14141B] rounded-lg p-4">
                       <p className="text-xs text-gray-500 uppercase mb-2">Terms & Conditions</p>
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap">{estimate?.terms_and_conditions}</p>
+                      <p className="text-sm text-[rgba(244,246,240,0.7)] whitespace-pre-wrap">{estimate?.terms_and_conditions}</p>
                     </div>
                   )}
                   {estimate?.notes && (
-                    <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="bg-[#14141B] rounded-lg p-4">
                       <p className="text-xs text-gray-500 uppercase mb-2">Notes</p>
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap">{estimate?.notes}</p>
+                      <p className="text-sm text-[rgba(244,246,240,0.7)] whitespace-pre-wrap">{estimate?.notes}</p>
                     </div>
                   )}
                 </div>
@@ -404,7 +404,7 @@ export default function PublicQuoteView() {
                     {attachments.map((att) => (
                       <div 
                         key={att.attachment_id} 
-                        className="flex items-center justify-between bg-gray-50 rounded-lg p-3 cursor-pointer hover:bg-[rgba(255,255,255,0.05)]"
+                        className="flex items-center justify-between bg-[#14141B] rounded-lg p-3 cursor-pointer hover:bg-[rgba(255,255,255,0.05)]"
                         onClick={() => handleDownloadAttachment(att.attachment_id, att.filename)}
                       >
                         <div className="flex items-center gap-2">
