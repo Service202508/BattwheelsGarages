@@ -6395,6 +6395,7 @@ app.include_router(api_router)
 async def health_check():
     """Health check endpoint. Verifies API, MongoDB connectivity, and env config."""
     from config.platform import PLATFORM_VERSION, RELEASE_DATE
+    import asyncio
     issues = []
     status_data = {"status": "healthy", "version": PLATFORM_VERSION, "release_date": RELEASE_DATE, "timestamp": datetime.now(timezone.utc).isoformat()}
 
