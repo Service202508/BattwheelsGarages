@@ -47,6 +47,7 @@ export default function Tickets({ user }) {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState(null);
+  const [ticketTypeFilter, setTicketTypeFilter] = useState(null); // null = all, "onsite", "workshop"
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [page, setPage] = useState(1);
