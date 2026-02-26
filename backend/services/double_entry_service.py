@@ -145,8 +145,8 @@ class JournalEntry:
     organization_id: str = ""
     created_by: str = ""
     entry_type: EntryType = EntryType.JOURNAL
-    source_document_id: str = ""
-    source_document_type: str = ""
+    source_document_id: str = None
+    source_document_type: str = None
     is_posted: bool = True
     is_reversed: bool = False
     reversed_entry_id: str = ""
@@ -374,8 +374,8 @@ class DoubleEntryService:
         description: str,
         lines: List[Dict],
         entry_type: EntryType = EntryType.JOURNAL,
-        source_document_id: str = "",
-        source_document_type: str = "",
+        source_document_id: str = None,
+        source_document_type: str = None,
         created_by: str = "",
         is_posted: bool = True
     ) -> Tuple[bool, str, Optional[Dict]]:

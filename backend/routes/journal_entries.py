@@ -69,8 +69,8 @@ class JournalEntryCreate(BaseModel):
     description: str = Field(..., min_length=1)
     lines: List[JournalLineCreate] = Field(..., min_items=2)
     entry_type: str = "JOURNAL"
-    source_document_id: str = ""
-    source_document_type: str = ""
+    source_document_id: Optional[str] = None
+    source_document_type: Optional[str] = None
     is_posted: bool = True
 
 
@@ -199,8 +199,8 @@ async def create_journal_entry(request: Request, data: JournalEntryCreate
         description=data.description,
         lines=lines,
         entry_type=entry_type,
-        source_document_id=data.source_document_id,
-        source_document_type=data.source_document_type,
+        source_document_id=data.source_document_id or None,
+        source_document_type=data.source_document_type or None,
         created_by=user_id,
         is_posted=data.is_posted
     )
