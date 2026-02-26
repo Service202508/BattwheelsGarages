@@ -12,7 +12,7 @@ from schemas.models import (
     InventoryItem, InventoryCreate, InventoryUpdate,
     MaterialAllocation, MaterialAllocationCreate,
     PurchaseOrder, PurchaseOrderCreate, PurchaseOrderUpdate, PurchaseOrderItem,
-    StockReceiving, StocktakeCreateModel,
+    StockReceiving,
     ServiceOffering, ServiceOfferingCreate,
 )
 from core.tenant.context import TenantContext, tenant_context_required
