@@ -46,14 +46,6 @@ const customerTypes = [
   { value: "business", label: "Business / Fleet", icon: Building2, desc: "Company or Fleet" },
 ];
 
-// Resolution types
-const resolutionTypes = [
-  { value: "workshop", label: "Workshop Visit", desc: "Visit our service center", icon: Wrench },
-  { value: "onsite", label: "Doorstep Service", desc: "We come to you", icon: MapPin },
-  { value: "pickup", label: "Pickup & Drop", desc: "We handle transport", icon: Truck },
-  { value: "remote", label: "Remote Fix", desc: "OTA / Software", icon: Zap },
-];
-
 // Priority levels
 const priorities = [
   { value: "low", label: "Low", desc: "Can wait", bgColor: "bg-[rgba(200,255,0,0.08)]", textColor: "text-[#C8FF00] text-700", borderColor: "border-[rgba(200,255,0,0.20)]", activeBg: "bg-[rgba(200,255,0,0.08)]0" },
