@@ -4,18 +4,18 @@ Battwheels OS - Authentication Routes
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel, EmailStr
 from typing import Optional
-from datetime import datetime, timezone, timedelta
-import jwt
+from datetime import datetime, timezone
 import uuid
-import hashlib
 import os
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+# CANONICAL JWT — single source from utils/auth
+from utils.auth import (
+    JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRY_HOURS,
+    create_access_token, decode_token,
+    hash_password, verify_password,
+)
 
-# UNIFIED JWT CONFIG: Single source — JWT_SECRET env var (same as server.py and utils/auth.py)
-JWT_SECRET = os.environ.get("JWT_SECRET")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_HOURS = 24
+router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 # Models
 class UserLogin(BaseModel):
@@ -32,28 +32,6 @@ class UserRegister(BaseModel):
 class TokenResponse(BaseModel):
     token: str
     user: dict
-
-import bcrypt as _bcrypt
-
-def hash_password(password: str) -> str:
-    return _bcrypt.hashpw(password.encode(), _bcrypt.gensalt()).decode()
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    if not hashed_password:
-        return False
-    try:
-        if hashed_password.startswith("$2b$") or hashed_password.startswith("$2a$"):
-            return _bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
-    except Exception:
-        pass
-    # Legacy SHA256 fallback
-    return hashlib.sha256(plain_password.encode()).hexdigest() == hashed_password
-
-def create_access_token(data: dict) -> str:
-    to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, JWT_SECRET, algorithm=ALGORITHM)
 
 # These will be injected from main app
 db = None
