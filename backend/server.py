@@ -5348,7 +5348,7 @@ async def get_migration_status(request: Request):
 # Root endpoint
 @v1_router.get("/")
 async def root():
-    return {"message": "Battwheels OS API", "version": "2.0.0"}
+    return {"message": "Battwheels OS API", "version": "2.5.0"}
 
 # ==================== EV FAILURE INTELLIGENCE (EFI) ENGINE ====================
 
