@@ -16,12 +16,13 @@ def get_db():
 
 router = APIRouter(prefix="/business", tags=["Business Portal"])
 
-SECRET_KEY = os.environ.get("JWT_SECRET", "battwheels-secret")
+SECRET_KEY = None  # REMOVED — use utils.auth canonical JWT
 ALGORITHM = "HS256"
 
 
 async def get_business_customer(request: Request):
     """Extract business customer info from token"""
+    from utils.auth import decode_token
     token = request.cookies.get("session_token")
     if not token:
         auth_header = request.headers.get("Authorization")
@@ -32,7 +33,7 @@ async def get_business_customer(request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = decode_token(token)
         user_id = payload.get("user_id")
         role = payload.get("role")
         
