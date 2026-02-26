@@ -86,7 +86,7 @@ export default function Bills() {
 
   const fetchBills = async () => {
     try {
-      let url = `${API}/bills?limit=100`;
+      let url = `${API}/bills-enhanced?limit=100`;
       if (activeTab !== "all") url += `&status=${activeTab.toUpperCase()}`;
       if (dateFrom) url += `&date_from=${dateFrom}`;
       if (dateTo) url += `&date_to=${dateTo}`;
@@ -103,7 +103,7 @@ export default function Bills() {
 
   const fetchVendorAging = async () => {
     try {
-      const res = await fetch(`${API}/bills/aging/vendor`, { headers: getHeaders() });
+      const res = await fetch(`${API}/bills-enhanced/aging/vendor`, { headers: getHeaders() });
       const data = await res.json();
       setVendorAging({ vendors: data.vendors || [], totals: data.totals || {} });
     } catch (err) {
@@ -113,7 +113,7 @@ export default function Bills() {
 
   const fetchBillDetails = async (billId) => {
     try {
-      const res = await fetch(`${API}/bills/${billId}`, { headers: getHeaders() });
+      const res = await fetch(`${API}/bills-enhanced/${billId}`, { headers: getHeaders() });
       const data = await res.json();
       if (data.bill) {
         setSelectedBill(data.bill);
@@ -180,7 +180,7 @@ export default function Bills() {
     }
     
     try {
-      const res = await fetch(`${API}/bills`, {
+      const res = await fetch(`${API}/bills-enhanced`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({
@@ -207,7 +207,7 @@ export default function Bills() {
 
   const handleApprove = async (bill) => {
     try {
-      const res = await fetch(`${API}/bills/${bill.bill_id}/approve`, {
+      const res = await fetch(`${API}/bills-enhanced/${bill.bill_id}/approve`, {
         method: "POST",
         headers: getHeaders()
       });
@@ -235,7 +235,7 @@ export default function Bills() {
     if (paymentData.amount > selectedBill.balance_due) return toast.error("Amount exceeds balance due");
     
     try {
-      const res = await fetch(`${API}/bills/${selectedBill.bill_id}/record-payment`, {
+      const res = await fetch(`${API}/bills-enhanced/${selectedBill.bill_id}/record-payment`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(paymentData)
@@ -259,7 +259,7 @@ export default function Bills() {
 
   const handleExport = async () => {
     try {
-      let url = `${API}/bills/export?`;
+      let url = `${API}/bills-enhanced/export?`;
       if (activeTab !== "all") url += `status=${activeTab.toUpperCase()}&`;
       if (dateFrom) url += `date_from=${dateFrom}&`;
       if (dateTo) url += `date_to=${dateTo}`;
