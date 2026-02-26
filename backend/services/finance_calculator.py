@@ -1,5 +1,5 @@
 # Finance Calculator Service
-# Centralized calculation engine for Zoho-parity financial computations
+# Centralized calculation engine for Battwheels financial computations
 # Ensures consistent rounding, tax calculation, and discount application
 
 from decimal import Decimal, ROUND_HALF_UP

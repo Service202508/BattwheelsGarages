@@ -115,7 +115,6 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/pdf-templates/.*$":     ["org_admin", "admin", "owner", "accountant"],
     
     # ============ INTEGRATIONS ============
-    r"^/api/zoho.*$":               ["org_admin", "admin", "owner", "accountant"],
     r"^/api/razorpay/.*$":          ["org_admin", "admin", "owner", "accountant"],
     r"^/api/stripe/.*$":            ["org_admin", "admin", "owner", "accountant"],
     r"^/api/einvoice/.*$":          ["org_admin", "admin", "owner", "accountant"],

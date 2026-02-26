@@ -62,7 +62,7 @@ class EstimateStatus:
     VOID = "void"
 
 
-class ZohoSyncStatus:
+class _DeprecatedSyncStatus:
     NOT_SYNCED = "not_synced"
     QUEUED = "queued"
     SYNCED = "synced"
@@ -177,7 +177,7 @@ class TicketEstimateService:
             
             # Zoho sync (Phase 4 - not used yet)
             "zoho_estimate_id": None,
-            "zoho_sync_status": ZohoSyncStatus.NOT_SYNCED,
+            "zoho_sync_status": "not_synced",
             "zoho_last_synced_at": None,
             
             # Optimistic concurrency

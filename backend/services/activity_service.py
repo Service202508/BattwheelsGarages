@@ -1,5 +1,5 @@
 # Activity Log Service
-# Unified activity tracking for all modules - Zoho Books parity
+# Unified activity tracking for all modules - Activity tracking
 # Provides consistent history logging and activity feeds
 
 from datetime import datetime, timezone
@@ -10,7 +10,7 @@ import uuid
 
 # MongoDB connection
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "zoho_books_clone")
+DB_NAME = os.environ.get("DB_NAME", "battwheels_dev")
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
@@ -20,7 +20,7 @@ activity_log_collection = db["activity_logs"]
 # ========================= ACTIVITY TYPES =========================
 
 class ActivityType:
-    """Standard activity types matching Zoho Books"""
+    """Standard activity types matching Battwheels"""
     # Document lifecycle
     CREATED = "created"
     UPDATED = "updated"
