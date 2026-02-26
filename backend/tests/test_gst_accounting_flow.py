@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 # Use public URL from environment
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
-    BASE_URL = "https://failure-card-modal.preview.emergentagent.com"
+    BASE_URL = "https://readiness-check-21.preview.emergentagent.com"
 
 # Test credentials
 TEST_EMAIL = "admin@battwheels.in"

@@ -10,7 +10,7 @@ import httpx
 from datetime import datetime, timezone
 import os
 
-BASE_URL = os.environ.get('API_BASE_URL', 'https://failure-card-modal.preview.emergentagent.com')
+BASE_URL = os.environ.get('API_BASE_URL', 'https://readiness-check-21.preview.emergentagent.com')
 API_URL = f"{BASE_URL}/api"
 
 # Test credentials
