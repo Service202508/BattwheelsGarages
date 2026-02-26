@@ -49,6 +49,7 @@ async def create_notification(request: Request, notification: NotificationCreate
     
     notification_dict = {
         "notification_id": notification_id,
+        "organization_id": org_id,
         **notification.dict(),
         "is_read": False,
         "is_archived": False,
