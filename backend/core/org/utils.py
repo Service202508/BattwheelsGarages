@@ -33,14 +33,13 @@ async def get_user_org_id(request: Request, db: AsyncIOMotorDatabase) -> str:
         if not auth_header.startswith("Bearer "):
             raise HTTPException(status_code=401, detail="Authentication required")
         
-        # Decode token to get user_id
-        import jwt
-        import os
+        # Decode token using canonical JWT module
+        from utils.auth import decode_token
         token = auth_header.split(" ")[1]
         try:
-            payload = jwt.decode(token, os.environ.get("SECRET_KEY", "battwheels_secret_key"), algorithms=["HS256"])
+            payload = decode_token(token)
             user_id = payload.get("user_id")
-        except:
+        except Exception:
             raise HTTPException(status_code=401, detail="Invalid token")
     else:
         user_id = user.user_id if hasattr(user, 'user_id') else user.get('user_id')
