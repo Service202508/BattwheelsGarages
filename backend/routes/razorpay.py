@@ -15,13 +15,11 @@ import os
 import json
 import logging
 import razorpay
-import jwt
 
 logger = logging.getLogger(__name__)
 
-# JWT config
-JWT_SECRET = os.environ.get('JWT_SECRET', 'battwheels-secret')
-JWT_ALGORITHM = "HS256"
+# JWT config — use canonical source
+from utils.auth import decode_token_safe
 
 def get_db():
     from server import db
@@ -81,8 +79,8 @@ async def get_org_id_from_request(request: Request) -> str:
         auth_header = request.headers.get("Authorization", "")
         if auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
-            try:
-                payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            payload = decode_token_safe(token)
+            if payload:
                 org_id = payload.get("org_id")
                 
                 # If no org_id in token, look up user's membership

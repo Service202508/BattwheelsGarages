@@ -17,8 +17,9 @@ from fastapi import APIRouter, HTTPException, Request, Query
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 import logging
-import jwt
 import os
+
+from utils.auth import decode_token_safe
 
 from services.ticket_estimate_service import (
     TicketEstimateService,
@@ -36,9 +37,6 @@ router = APIRouter(tags=["Ticket Estimates"])
 
 _service: Optional[TicketEstimateService] = None
 _db = None  # Store database reference
-
-JWT_SECRET = os.environ.get("JWT_SECRET", "REDACTED_JWT_SECRET")
-JWT_ALGORITHM = "HS256"
 
 
 def init_router(database):
