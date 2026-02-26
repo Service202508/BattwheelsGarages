@@ -1079,6 +1079,7 @@ async def get_migration_status(request: Request):
 # Root endpoint
 @router.get("/")
 async def root():
+    return {"status": "ok", "service": "battwheels"}
 
 @router.get("/audit-logs")
 async def get_audit_logs(
