@@ -62,7 +62,7 @@ async def login(credentials: UserLogin, response: Response):
         httponly=True,
         secure=False,
         samesite="lax",
-        max_age=ACCESS_TOKEN_EXPIRE_HOURS * 3600
+        max_age=JWT_EXPIRY_HOURS * 3600
     )
     
     # Store session
@@ -210,7 +210,7 @@ async def google_auth(request: Request, response: Response):
         httponly=True,
         secure=False,
         samesite="lax",
-        max_age=ACCESS_TOKEN_EXPIRE_HOURS * 3600
+        max_age=JWT_EXPIRY_HOURS * 3600
     )
     
     user_response = {k: v for k, v in user.items() if k not in ["password_hash", "_id"]}
