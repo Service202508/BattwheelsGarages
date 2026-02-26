@@ -94,7 +94,7 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     # ============ REPORTS ============
     r"^/api/reports/.*$":           ["org_admin", "admin", "owner", "accountant", "manager"],
     r"^/api/gst/.*$":               ["org_admin", "admin", "owner", "accountant"],
-    r"^/api/productivity/.*$":      ["org_admin", "admin", "owner", "manager"],
+    r"^/api/productivity/.*$":      ["org_admin", "admin", "owner", "manager", "hr"],
     
     # ============ SETTINGS/ADMIN ============
     r"^/api/organizations/settings.*$": ["org_admin", "admin", "owner"],
