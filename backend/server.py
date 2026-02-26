@@ -85,13 +85,16 @@ mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ.get('DB_NAME', 'battwheels_db')]
 
-# JWT Configuration
-JWT_SECRET = os.environ.get('JWT_SECRET', 'battwheels-secret')
-JWT_ALGORITHM = "HS256"
-JWT_EXPIRATION_HOURS = 24 * 7
+# JWT — import from canonical source (utils/auth.py)
+from utils.auth import (
+    JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRY_HOURS,
+    create_access_token, decode_token, decode_token_safe,
+    hash_password as _auth_hash_password,
+    verify_password as _auth_verify_password,
+)
+JWT_EXPIRATION_HOURS = JWT_EXPIRY_HOURS  # backward compat alias
 
-# Warn if JWT secret is weak
-if len(JWT_SECRET) < 32:
+if JWT_SECRET and len(JWT_SECRET) < 32:
     logger.warning("JWT_SECRET is shorter than 32 characters - consider using a stronger secret")
 
 # ── Lifespan ──────────────────────────────────────────────
