@@ -209,6 +209,8 @@ async def apply_vendor_credit(request: Request, credit_id: str):
         "description": f"Vendor Credit {credit.get('credit_note_number', '')} applied",
         "reference": credit_id,
         "source": "vendor_credit",
+        "source_document_id": credit_id,
+        "source_document_type": "vendor_credit",
         "lines": [
             {"account_name": "Vendor Payable", "debit_amount": credit["amount"], "credit_amount": 0},
             {"account_name": "Purchase Returns", "debit_amount": 0, "credit_amount": credit["amount"]},
