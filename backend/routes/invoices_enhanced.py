@@ -716,7 +716,12 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
     """Create a new invoice"""
     # Get org context for multi-tenant scoping
     org_id = await get_org_id(request) if request else None
-    
+
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
+    inv_date = invoice.invoice_date or datetime.now(timezone.utc).date().isoformat()
+    await enforce_period_lock(invoices_collection.database, org_id, inv_date)
+
     # Validate customer
     customer_query = org_query(org_id, {"contact_id": invoice.customer_id})
     customer = await contacts_collection.find_one(customer_query)
