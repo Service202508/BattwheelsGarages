@@ -1161,23 +1161,22 @@ class DashboardStats(BaseModel):
 # ==================== AUTH HELPERS ====================
 
 def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    return _auth_hash_password(password)
 
 def verify_password(password: str, hashed: str) -> bool:
-    return bcrypt.checkpw(password.encode(), hashed.encode())
+    return _auth_verify_password(password, hashed)
 
 def create_token(user_id: str, email: str, role: str, org_id: str = None, password_version: float = 0) -> str:
-    """Create JWT token with optional organization context and password version"""
+    """Create JWT token — delegates to canonical utils/auth.create_access_token"""
     payload = {
         "user_id": user_id,
         "email": email,
         "role": role,
         "pwd_v": password_version,
-        "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS)
     }
     if org_id:
         payload["org_id"] = org_id
-    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    return create_access_token(payload)
 
 async def get_current_user(request: Request) -> Optional[User]:
     session_token = request.cookies.get("session_token")
