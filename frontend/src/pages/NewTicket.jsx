@@ -82,7 +82,6 @@ export default function NewTicket({ user }) {
     // Complaint Specifics
     title: "",
     issue_type: "general",
-    resolution_type: "workshop",
     priority: "medium",
     description: "",
     // Location
