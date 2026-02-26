@@ -168,12 +168,28 @@ async def create_ticket(request: Request, data: TicketCreateRequest, ctx: Tenant
     - Triggers AI matching to suggest failure cards
     - Returns created ticket
     - Requires tenant context (X-Organization-ID header or user membership)
+    - ticket_type is auto-set: "onsite" if customer_id is linked, "workshop" otherwise
     """
     service = get_service()
     user = await get_current_user(request, service.db)
     
+    # Auto-detect ticket_type based on creation context
+    user_role = user.get("role", "")
+    has_customer = bool(data.customer_id or data.customer_name or data.contact_number or data.customer_email)
+    
+    if user_role in ("customer", "fleet_customer"):
+        ticket_type = "onsite"
+    elif has_customer:
+        ticket_type = "onsite"  # Created on behalf of customer
+    else:
+        ticket_type = "workshop"  # Internal workshop job
+    
     # Use tenant context for org_id (strict enforcement)
-    create_data = TicketCreateData(**data.model_dump(), organization_id=ctx.org_id)
+    create_data = TicketCreateData(
+        **data.model_dump(),
+        organization_id=ctx.org_id,
+        ticket_type=ticket_type
+    )
     
     ticket = await service.create_ticket(
         data=create_data,
