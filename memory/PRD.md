@@ -1,97 +1,106 @@
 # Battwheels OS — Product Requirements Document
 
 ## Problem Statement
-Full-stack SaaS platform (React/FastAPI/MongoDB) for EV workshop management. Multi-tenant architecture serving Battwheels Garages and future customers.
+Full-stack SaaS platform (React/FastAPI/MongoDB) for EV workshop management. Multi-tenant architecture with AI-powered EV Failure Intelligence (EFI) diagnostics + full business operations (accounting, GST, HR, inventory, service management).
 
 ## Architecture
 - **Frontend**: React 19 (CRA + CRACO) + Shadcn/UI + TailwindCSS + Framer Motion
 - **Backend**: FastAPI 0.132.0 + MongoDB (Motor) + Multi-tenant (TenantGuard)
-- **Auth**: JWT (dual system — server.py 7d + utils/auth.py 1d) + Emergent Google Auth
-- **Integrations**: Resend (email), Razorpay (LIVE keys!), Stripe (test), Gemini (Emergent LLM), Sentry, WhatsApp (coded but unconfigured), E-Invoice (sandbox)
+- **Auth**: JWT (dual system in server.py + utils/auth.py) + Emergent Google Auth
+- **Integrations**: Resend, Razorpay, Stripe (test), Gemini (Emergent LLM), Sentry, WhatsApp (coded, unconfigured), E-Invoice (sandbox)
+- **Design**: Dark + Volt (#080C0F background, #C8FF00 accent)
 
-## Current State (Post Self-Audit, Feb 2026)
-- **DB_NAME**: `battwheels` (PRODUCTION) — **MUST be changed to `battwheels_dev`**
-- **ENVIRONMENT**: `production` — **MUST be changed to `development`**
-- **Production Readiness Score**: 4/10
-- **Total Endpoints**: ~700+ across 64+ route files
-- **Total Lines of Code**: ~304,667
-- **File Count**: 327 .py, 189 .jsx, 23 .js, 45 .md
+## Current State: v2.5.0 (Feb 26, 2026)
 
-## What's Working End-to-End
-- Login/Registration, Ticket CRUD, Public Ticket Submission
-- Invoice Creation with GST + PDF, Estimate Create/Convert
-- Contact Management, EFI Diagnostic, Items Management
-- Expense Management, GST Reports (GSTR-1, GSTR-3B)
-- HR Attendance, Leave Management, Password Reset (all 3 flows)
-- RBAC + Tenant Isolation enforcement
+### Architectural Evolution Sprint — COMPLETED
+All 6 phases verified (25/25 backend tests + full frontend verification):
 
-## Critical Issues (P0)
-1. DB_NAME points to production database
-2. Razorpay uses LIVE keys in development
-3. 12/13 users missing organization_id
-4. Trial Balance returns 0/0 (broken)
-5. Two JWT systems with different expiry
+**Phase 1 — Two Ticket Types** ✅
+- `ticket_type` field: "onsite" (customer-linked) or "workshop" (internal)
+- Auto-detection by backend based on creation context
+- `resolution_type` removed from all forms
+- Filter tabs (All/Onsite/Workshop) on Tickets page
+- Type badges on each ticket row
 
-## Implementation History
+**Phase 2 — RBAC HR Role** ✅
+- "hr" role added to ROLE_HIERARCHY
+- HR role can access: HR Dashboard, Employees, Attendance, Leave, Payroll, Productivity
+- HR role blocked from: Tickets, Finance, Invoices, Inventory, Contacts
+- Employee-level data isolation on attendance endpoint
+- Frontend sidebar filters sections by role
 
-### Week 1 (Complete)
-- JWT unification, dead code removal, route scoping
-- GSTR credit note inclusion, audit logging, period-locking design doc
+**Phase 3 — Public Form Enhancement** ✅
+- Customer auto-detection endpoint: GET /api/public/customer-lookup?phone=X
+- Auto-link or create contact on ticket submission
+- resolution_type removed from public form
 
-### Week 2 (Complete — Feb 25, 2026)
-- Fixed user_role in audit entries
-- Verified estimates chain end-to-end
-- Password reset (3 flows) with validation + audit logging
-- TicketDetail page, HR Dashboard, Environment Badge, PWA Service Worker
+**Phase 4 — Estimate in Ticket Detail** ✅
+- Estimate section embedded in TicketDetail page
+- Create, view, navigate to full estimate from ticket context
+- Reuses existing estimate endpoints (ticket_estimates)
 
-### Self-Audit (Feb 26, 2026)
-- Complete 16-section codebase audit delivered
-- Identified all critical issues, dead code, missing features
+**Phase 5 — Failure Card Pipeline** ✅
+- failure_cards collection with indexes
+- Auto-creation on ticket close
+- CRUD API: POST/GET/PUT/GET-by-ticket
+- Anonymised brain feed to efi_platform_patterns
+- Strips org/customer/technician data before feeding
+
+**Phase 6 — Feature Flags + Version + Migrations** ✅
+- Feature flag system (off/canary/percentage/on)
+- Platform admin CRUD for flags
+- Version tracking: v2.5.0 in /api/health and frontend footer
+- Migration system: runner.py + 4 migration files
+- Runs on startup, tracks in migrations collection
+
+### Environment
+- **DB_NAME**: `battwheels_dev` (development)
+- **ENVIRONMENT**: `development`
+- **MONGO_URL**: `mongodb://localhost:27017` (local Emergent)
 
 ## Prioritized Backlog
 
-### P0 — Emergency
-- [ ] Fix DB_NAME to `battwheels_dev`, ENVIRONMENT to `development`
-- [ ] Assess production DB contamination
-- [ ] Fix Razorpay to test keys for development
-- [ ] Fix 12 users missing organization_id
-- [ ] Fix Trial Balance (journal entry schema mismatch)
+### P0 — Critical
+- [ ] Fix Trial Balance (returns 0/0 — journal entry schema mismatch)
+- [ ] Fix 109 chart_of_accounts with None type
+- [ ] Unify JWT system (dual system with different expiry)
+- [ ] Fix 12 users missing organization_id (in production DB)
 
 ### P1 — High Priority
 - [ ] Implement Period Locking (design doc exists)
-- [ ] Fix 109 chart_of_accounts with None type
 - [ ] Implement CSRF Protection
-- [ ] Unify JWT system (remove duplicate)
 - [ ] Add input sanitization middleware
 - [ ] Complete audit log coverage across all modules
 - [ ] Estimate → Ticket conversion flow
-- [ ] Create INCIDENTS.md, scripts/migrations/
+- [ ] SLA Automation
+- [ ] Form 16 PDF generation
+- [ ] Failure card completion modal (UI flow on ticket close)
 
 ### P2 — Medium Priority
 - [ ] Refactor EstimatesEnhanced.jsx (2,966 lines)
 - [ ] Refactor server.py (6,716 lines, 50+ inline models)
-- [ ] Remove/archive Zoho dead code (242 endpoints, 6,654 lines)
-- [ ] Remove duplicate razorpay.py (keep razorpay_routes.py)
-- [ ] Clean dead files (Banking_old.jsx.bak, Bills_old.jsx.bak, empty root files)
+- [ ] Remove/archive Zoho dead code (242 endpoints)
+- [ ] Remove duplicate razorpay.py
+- [ ] Clean dead files (Banking_old.jsx.bak, etc.)
 - [ ] Fix reverse charge in GSTR-3B
-- [ ] Provision battwheels_staging database
+- [ ] Customer Portal full backend scoping
+- [ ] Fleet/Business Portal aggregated view
 
 ### P3 — Future
 - [ ] GSTR-2A Reconciliation
 - [ ] E-way Bills
 - [ ] PF/ESI Challan generation
-- [ ] Deployment config (Dockerfile, CI/CD)
-- [ ] Security headers (X-Frame-Options, HSTS, etc.)
+- [ ] Dockerfile / railway.toml / CI/CD
+- [ ] Security headers (X-Frame-Options, HSTS)
 - [ ] Global 401 handling in frontend
-- [ ] Live WhatsApp credential configuration
 - [ ] Redis-backed rate limiting
+- [ ] EFI Layer 2 (Org Context) implementation
 
 ## Key Credentials
-- **Admin**: admin@battwheels.in / Admin@12345
-- **Platform Admin**: platform-admin@battwheels.in / PASSWORD LOST
-- **Org ID**: 6996dcf072ffd2a2395fee7b
+- **Demo**: demo@voltmotors.in / Demo@12345 (owner, demo-volt-motors-001)
+- **Dev**: dev@battwheels.internal / DevTest@123 (owner, dev-internal-testing-001)
 
 ## Test Coverage
-- 105+ test files in backend/tests/
-- 125+ iteration JSON reports in test_reports/
-- Key test suites: password_reset (9), week2_features (15), audit_logging (15), gstr3b (15)
+- test_battwheels_evolution_sprint.py — 25 tests covering all 6 phases
+- 105+ legacy test files in backend/tests/
+- 126 iteration JSON reports in test_reports/
