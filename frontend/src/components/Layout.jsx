@@ -232,7 +232,18 @@ const NavSection = ({ section, user, collapsed, onClose, openSections, toggleSec
   const hasActiveItem = section.items.some(item => location.pathname === item.path);
   
   // Filter out admin-only items for non-admin users
-  const visibleItems = section.items.filter(item => !item.adminOnly || user?.role === "admin");
+  // Also filter sections by role: HR only sees HR & Payroll section
+  const userRole = user?.role || "";
+  const isAdminLevel = ["owner", "org_admin", "admin"].includes(userRole);
+  const isHR = userRole === "hr";
+  
+  // HR role: only show HR & Payroll section (+ Settings limited)
+  if (isHR) {
+    const hrSections = ["HR & Payroll"];
+    if (!hrSections.includes(section.section) && section.section !== "Settings") return null;
+  }
+  
+  const visibleItems = section.items.filter(item => !item.adminOnly || isAdminLevel);
   
   if (visibleItems.length === 0) return null;
 
