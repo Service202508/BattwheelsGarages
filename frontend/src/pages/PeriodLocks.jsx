@@ -21,7 +21,7 @@ export default function PeriodLocks({ user }) {
   const fetchLocks = useCallback(async () => {
     try {
       const res = await fetch(`${API}/api/v1/finance/period-locks`, {
-        headers: { Authorization: `Bearer ${user?.token}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       const data = await res.json();
       setLocks(data.data || []);
@@ -40,7 +40,7 @@ export default function PeriodLocks({ user }) {
     try {
       const res = await fetch(`${API}/api/v1/finance/period-locks`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user?.token}` },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ period_month: selectedMonth, period_year: selectedYear, lock_reason: lockReason })
       });
       const data = await res.json();
