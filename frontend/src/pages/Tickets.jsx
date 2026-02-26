@@ -283,6 +283,26 @@ export default function Tickets({ user }) {
         </div>
       </div>
 
+      {/* Ticket Type Filter Tabs */}
+      <div className="flex items-center gap-2" data-testid="ticket-type-filter">
+        {[
+          { key: null, label: "All Tickets" },
+          { key: "onsite", label: "Onsite" },
+          { key: "workshop", label: "Workshop" },
+        ].map((tab) => (
+          <Button
+            key={tab.key || "all"}
+            variant={ticketTypeFilter === tab.key ? "default" : "outline"}
+            size="sm"
+            onClick={() => { setTicketTypeFilter(tab.key); setPage(1); }}
+            data-testid={`filter-${tab.key || "all"}`}
+            className={ticketTypeFilter === tab.key ? "" : "border-white/10 text-muted-foreground"}
+          >
+            {tab.label}
+          </Button>
+        ))}
+      </div>
+
       {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <Card 
