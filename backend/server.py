@@ -131,7 +131,7 @@ V1_ROUTES = [
     "routes.master_data", "routes.permissions", "routes.platform_admin",
     "routes.seed_utility", "routes.sla", "routes.insights",
     "routes.finance_dashboard", "routes.tally_export",
-    "routes.expenses", "routes.bills", "routes.banking",
+    "routes.expenses", "routes.banking",
     "routes.banking_module",
     "routes.financial_dashboard", "routes.organizations",
     # Extracted from server.py inline routes
