@@ -166,6 +166,8 @@ const navItems = [
       { name: "Trial Balance", path: "/trial-balance", icon: Scale },
       { name: "Opening Balances", path: "/opening-balances", icon: Landmark },
       { name: "Period Locks", path: "/period-locks", icon: Lock },
+      { name: "Balance Sheet", path: "/balance-sheet", icon: FileText },
+      { name: "Profit & Loss", path: "/profit-loss", icon: BarChart3 },
     ]
   },
   { 
