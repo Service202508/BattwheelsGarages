@@ -268,7 +268,6 @@ export default function NewTicket({ user }) {
         customer_email: formData.email,
         // Service details
         issue_type: formData.issue_type,
-        resolution_type: formData.resolution_type,
         incident_location: formData.incident_location,
         attachments_count: attachments.length,
       };
