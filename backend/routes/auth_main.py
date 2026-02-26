@@ -450,3 +450,32 @@ async def reset_password(data: ResetPasswordRequest):
 
 
 @router.post("/employees/{employee_id}/reset-password")
+async def admin_reset_employee_password(employee_id: str, request: Request):
+    """Admin/Owner resets an employee's password"""
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    from utils.auth import decode_token
+    token = auth_header.split(" ")[1]
+    payload = decode_token(token)
+    if payload.get("role") not in ["owner", "admin", "org_admin"]:
+        raise HTTPException(status_code=403, detail="Only admins can reset passwords")
+    
+    employee = await db.users.find_one({"user_id": employee_id})
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    
+    import secrets
+    temp_password = secrets.token_urlsafe(12)
+    new_hash = hash_password(temp_password)
+    
+    await db.users.update_one(
+        {"user_id": employee_id},
+        {"$set": {
+            "password_hash": new_hash,
+            "password_version": datetime.now(timezone.utc).timestamp(),
+            "must_change_password": True,
+        }}
+    )
+    
+    return {"message": "Password reset successfully", "temporary_password": temp_password}
