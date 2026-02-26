@@ -88,9 +88,6 @@ class PublicTicketCreate(BaseModel):
     issue_type: str
     priority: str = "medium"
     
-    # Resolution
-    resolution_type: str  # "workshop", "onsite", "pickup", "remote"
-    
     # Location (for onsite)
     incident_location: Optional[str] = None
     location_lat: Optional[float] = None
