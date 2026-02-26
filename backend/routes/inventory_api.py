@@ -1,3 +1,4 @@
+from utils.auth import require_auth, create_token, hash_password
 """
 Battwheels OS - Inventory & Purchase Order Routes (extracted from server.py)
 Inventory CRUD, Allocations, Purchase Orders, Services, Stocktakes

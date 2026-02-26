@@ -1,3 +1,4 @@
+from utils.auth import require_auth, create_token, hash_password
 """
 Battwheels OS - Operations Routes (extracted from server.py)
 Dashboard, Alerts, AI Diagnose, Seed, Migration, Audit Logs, Survey, Export

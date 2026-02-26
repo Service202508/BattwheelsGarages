@@ -1,3 +1,4 @@
+from utils.auth import require_auth, create_token, hash_password
 """
 Battwheels OS - Entity CRUD Routes (extracted from server.py)
 Users, Technicians, Suppliers, Vehicles, Customers
