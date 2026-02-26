@@ -532,37 +532,11 @@ export default function PublicTicketForm() {
             </div>
           </SectionCard>
 
-          {/* Service Type */}
+          {/* Service Location */}
           <SectionCard>
-            <SectionHeader icon={Wrench} title="Service Type" subtitle="How would you like to be serviced?" />
-            <div className="grid grid-cols-2 gap-3">
-              {resolutionTypes.map((r) => {
-                const Icon = r.icon;
-                const isSelected = formData.resolution_type === r.value;
-                return (
-                  <motion.button key={r.value} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setFormData(prev => ({ ...prev, resolution_type: r.value }))}
-                    className={`p-4 rounded border-2 transition-all duration-200 text-left ${isSelected ? "border-[rgba(200,255,0,0.50)] bg-gradient-to-br from-emerald-50 to-teal-50" : "border-gray-200 bg-[#111820] hover:border-gray-300"}`}
-                    data-testid={`resolution-${r.value}`}>
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 ${isSelected ? "bg-gradient-to-br from-emerald-500 to-teal-500" : "bg-[rgba(255,255,255,0.05)]"}`}>
-                      <Icon className={`w-5 h-5 ${isSelected ? "text-white" : "text-gray-500"}`} strokeWidth={2} />
-                    </div>
-                    <p className={`font-semibold text-sm ${isSelected ? "text-[#C8FF00] text-700" : "text-[#F4F6F0]"}`}>{r.label}</p>
-                    <p className="text-xs text-gray-500 mt-1">{r.desc}</p>
-                  </motion.button>
-                );
-              })}
-            </div>
+            <SectionHeader icon={MapPin} title="Service Location" subtitle="Where is the vehicle?" />
+            <LocationPicker value={formData.incident_location ? { address: formData.incident_location, lat: formData.location_lat, lng: formData.location_lng } : null} onChange={(loc) => setFormData(prev => ({ ...prev, incident_location: loc.address, location_lat: loc.lat, location_lng: loc.lng }))} placeholder="Tap to select location" buttonText="Open Map" />
           </SectionCard>
-
-          {/* Location for On-Site */}
-          {formData.resolution_type === "onsite" && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}>
-              <SectionCard>
-                <SectionHeader icon={MapPin} title="Service Location" subtitle="Where should we come?" />
-                <LocationPicker value={formData.incident_location ? { address: formData.incident_location, lat: formData.location_lat, lng: formData.location_lng } : null} onChange={(loc) => setFormData(prev => ({ ...prev, incident_location: loc.address, location_lat: loc.lat, location_lng: loc.lng }))} placeholder="Tap to select location" buttonText="Open Map" />
-              </SectionCard>
-            </motion.div>
-          )}
 
           {/* Payment */}
           {requiresPayment() && (
