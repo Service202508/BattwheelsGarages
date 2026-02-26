@@ -183,7 +183,7 @@ const OrganizationSwitcher = ({ onSwitch, user }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-72 bg-slate-800 border border-[rgba(255,255,255,0.07)] rounded-xl shadow-xl z-50 overflow-hidden">
+        <div className="absolute top-full left-0 mt-2 w-72 bg-slate-800 border border-[rgba(255,255,255,0.07)] rounded-xl z-50 overflow-hidden">
           <div className="p-2 border-b border-[rgba(255,255,255,0.07)]">
             <p className="text-xs font-medium text-slate-400 px-2 py-1">YOUR ORGANIZATIONS</p>
           </div>

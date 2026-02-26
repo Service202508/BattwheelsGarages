@@ -87,14 +87,14 @@ export default function BusinessLayout({ children, user, onLogout }) {
         {/* Sidebar */}
         <aside className={`
           fixed lg:sticky top-0 left-0 z-40 h-screen w-72 bg-[#111820] border-r border-[rgba(255,255,255,0.07)] border-200
-          transform transition-transform duration-200 ease-in-out shadow-lg lg:shadow-none
+          transform transition-transform duration-200 ease-in-out lg:shadow-none
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
           <div className="flex flex-col h-full">
             {/* Logo & Business Info */}
             <div className="hidden lg:block px-6 py-5 border-b border-[rgba(255,255,255,0.07)] border-200">
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                   <Building2 className="h-7 w-7 text-white" />
                 </div>
                 <div>
@@ -112,7 +112,7 @@ export default function BusinessLayout({ children, user, onLogout }) {
             {/* Quick Action */}
             <div className="px-4 py-3 border-b border-[rgba(255,255,255,0.07)] border-200">
               <Link to="/business/tickets/new">
-                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30">
+                <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
                   <Plus className="h-4 w-4 mr-2" />
                   Raise Service Ticket
                 </Button>

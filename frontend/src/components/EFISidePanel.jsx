@@ -229,7 +229,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
     return (
       <button
         onClick={onToggle}
-        className="fixed right-0 top-1/2 -translate-y-1/2 z-50 bg-primary text-primary-foreground p-3 rounded-l-lg shadow-lg hover:bg-primary/90 transition-all"
+        className="fixed right-0 top-1/2 -translate-y-1/2 z-50 bg-primary text-primary-foreground p-3 rounded-l-lg hover:bg-primary/90 transition-all"
         data-testid="efi-toggle-btn"
       >
         <Brain className="h-5 w-5" />
@@ -239,7 +239,7 @@ export default function EFISidePanel({ ticket, user, isOpen, onToggle, onEstimat
   }
 
   return (
-    <div className="w-[400px] border-l bg-background shadow-xl flex flex-col h-full" data-testid="efi-side-panel">
+    <div className="w-[400px] border-l bg-background flex flex-col h-full" data-testid="efi-side-panel">
       {/* Header */}
       <div className="p-4 border-b bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
         <div className="flex items-center justify-between">
