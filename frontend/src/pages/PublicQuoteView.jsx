@@ -164,7 +164,7 @@ export default function PublicQuoteView() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0B0B0F] flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin text-[#0B462F] mx-auto mb-4" />
           <p className="text-gray-600">Loading estimate...</p>
@@ -176,7 +176,7 @@ export default function PublicQuoteView() {
   // Password required
   if (passwordRequired) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0B0B0F] flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <Lock className="h-12 w-12 text-[#0B462F] mx-auto mb-4" />
@@ -206,7 +206,7 @@ export default function PublicQuoteView() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0B0B0F] flex items-center justify-center p-4">
         <Card className="w-full max-w-md text-center">
           <CardContent className="pt-6">
             <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
@@ -220,7 +220,7 @@ export default function PublicQuoteView() {
 
   // Main estimate view
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-[#0B0B0F] py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="bg-[#0B462F] text-white rounded-t-xl p-6">
