@@ -377,7 +377,16 @@ async def get_expense(request: Request, expense_id: str):
 async def update_expense(request: Request, expense_id: str, data: ExpenseUpdate):
     """Update an expense (only DRAFT or REJECTED)"""
     service = get_service()
-    
+    org_id = await get_org_id(request)
+
+    # Period lock check — on existing expense date and new date if changed
+    from utils.period_lock import enforce_period_lock
+    existing = await service.db.expenses.find_one({"expense_id": expense_id}, {"_id": 0, "expense_date": 1})
+    if existing:
+        await enforce_period_lock(service.db, org_id, existing.get("expense_date", ""))
+    if data.expense_date:
+        await enforce_period_lock(service.db, org_id, data.expense_date)
+
     try:
         updates = {k: v for k, v in data.dict().items() if v is not None}
         expense = await service.update_expense(expense_id, updates)
@@ -394,7 +403,14 @@ async def update_expense(request: Request, expense_id: str, data: ExpenseUpdate)
 async def delete_expense(request: Request, expense_id: str):
     """Delete an expense (only DRAFT)"""
     service = get_service()
-    
+    org_id = await get_org_id(request)
+
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
+    existing = await service.db.expenses.find_one({"expense_id": expense_id}, {"_id": 0, "expense_date": 1})
+    if existing:
+        await enforce_period_lock(service.db, org_id, existing.get("expense_date", ""))
+
     try:
         deleted = await service.delete_expense(expense_id)
         if not deleted:
