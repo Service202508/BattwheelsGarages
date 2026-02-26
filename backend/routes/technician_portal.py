@@ -17,13 +17,14 @@ def get_db():
 
 router = APIRouter(prefix="/technician", tags=["Technician Portal"])
 
-SECRET_KEY = os.environ.get("JWT_SECRET", "battwheels-secret")
+SECRET_KEY = None  # REMOVED — use utils.auth canonical JWT
 ALGORITHM = "HS256"
 
 
 async def get_current_technician(request: Request):
     org_id = extract_org_id(request)
     """Extract technician info from token"""
+    from utils.auth import decode_token
     token = request.cookies.get("session_token")
     if not token:
         auth_header = request.headers.get("Authorization")
@@ -34,7 +35,7 @@ async def get_current_technician(request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = decode_token(token)
         user_id = payload.get("user_id")
         role = payload.get("role")
         
