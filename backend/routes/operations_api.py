@@ -170,34 +170,34 @@ async def get_dashboard_stats(request: Request):
     available_technicians = await db.users.count_documents({"role": "technician", "is_active": True})
     
     # ==================== SERVICE TICKET STATS ====================
-    # Count open tickets by resolution_type
+    # Count open tickets by ticket_type
     open_onsite = await db.tickets.count_documents({
         **org_filter,
         "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]},
-        "resolution_type": "onsite"
+        "ticket_type": "onsite"
     })
     
     open_workshop = await db.tickets.count_documents({
         **org_filter,
         "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]},
         "$or": [
-            {"resolution_type": "workshop"},
-            {"resolution_type": {"$exists": False}},
-            {"resolution_type": None},
-            {"resolution_type": ""}
+            {"ticket_type": "workshop"},
+            {"ticket_type": {"$exists": False}},
+            {"ticket_type": None},
+            {"ticket_type": ""}
         ]
     })
     
     open_pickup = await db.tickets.count_documents({
         **org_filter,
         "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]},
-        "resolution_type": "pickup"
+        "ticket_type": "pickup"
     })
     
     open_remote = await db.tickets.count_documents({
         **org_filter,
         "status": {"$in": ["open", "in_progress", "work_in_progress", "assigned"]},
-        "resolution_type": "remote"
+        "ticket_type": "remote"
     })
     
     # Calculate average resolution time for resolved/closed tickets
@@ -209,7 +209,7 @@ async def get_dashboard_stats(request: Request):
             "status": {"$in": ["resolved", "closed"]},
             "resolved_at": {"$ne": None}
         },
-        {"_id": 0, "created_at": 1, "resolved_at": 1, "resolution_type": 1}
+        {"_id": 0, "created_at": 1, "resolved_at": 1, "ticket_type": 1}
     ).to_list(500)
     
     avg_repair_time = 0.0
@@ -223,7 +223,7 @@ async def get_dashboard_stats(request: Request):
         try:
             created = t.get("created_at")
             resolved = t.get("resolved_at")
-            res_type = t.get("resolution_type", "")
+            res_type = t.get("ticket_type", "")
             
             if isinstance(created, str):
                 created = datetime.fromisoformat(created.replace("Z", "+00:00"))

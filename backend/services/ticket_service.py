@@ -112,7 +112,6 @@ class TicketCreateData(BaseModel):
     contact_number: Optional[str] = None
     customer_email: Optional[str] = None
     issue_type: Optional[str] = None
-    resolution_type: str = "workshop"
     ticket_type: str = "onsite"  # "onsite" or "workshop" — auto-set by backend
     incident_location: Optional[str] = None
     attachments_count: int = 0
@@ -218,7 +217,6 @@ class TicketService:
             
             # Issue details
             "issue_type": data.issue_type or data.category,
-            "resolution_type": data.resolution_type,
             "ticket_type": data.ticket_type,  # "onsite" or "workshop"
             "incident_location": data.incident_location,
             

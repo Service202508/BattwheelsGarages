@@ -402,7 +402,6 @@ class BusinessTicketCreate(BaseModel):
     description: str
     issue_type: str
     priority: str = "medium"
-    resolution_type: str = "workshop"
     incident_location: Optional[str] = None
 
 @router.post("/tickets")
@@ -452,7 +451,6 @@ async def create_business_ticket(request: Request, data: BusinessTicketCreate):
         "customer_id": business["business_id"],
         "customer_name": business["business_name"],
         "business_id": business["business_id"],
-        "resolution_type": data.resolution_type,
         "incident_location": data.incident_location,
         "source": "business_portal",
         "created_by": user["user_id"],

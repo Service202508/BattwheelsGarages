@@ -566,7 +566,6 @@ async def get_public_ticket(
             "vehicle_model": ticket.get("vehicle_model"),
             "vehicle_oem": ticket.get("vehicle_oem"),
             "vehicle_category_name": ticket.get("vehicle_category_name"),
-            "resolution_type": ticket.get("resolution_type"),
             "incident_location": ticket.get("incident_location"),
             "customer_name": ticket.get("customer_name"),
             "assigned_technician_name": ticket.get("assigned_technician_name"),

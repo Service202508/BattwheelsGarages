@@ -601,7 +601,7 @@ async def create_invoice_from_ticket(ticket_id: str, request: Request):
     line_items = []
     
     # Add visit charges if onsite
-    if ticket.get("resolution_type") == "onsite":
+    if ticket.get("ticket_type") == "onsite":
         line_items.append(InvoiceLineItem(
             description="CUSTOMER COMPLAINT VISIT CHARGES",
             hsn_sac=HSN_CODES["visit_charges"],

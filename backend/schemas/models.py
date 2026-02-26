@@ -724,7 +724,6 @@ class Ticket(BaseModel):
     description: str
     category: str
     issue_type: Optional[str] = None
-    resolution_type: Optional[str] = None  # workshop, onsite, pickup, remote
     priority: str = "medium"
     status: str = "open"
     # Location
@@ -769,7 +768,6 @@ class TicketCreate(BaseModel):
     description: str
     category: str
     issue_type: Optional[str] = None
-    resolution_type: Optional[str] = None
     priority: str = "medium"
     # Location
     incident_location: Optional[str] = None
@@ -784,7 +782,6 @@ class TicketUpdate(BaseModel):
     resolution: Optional[str] = None
     priority: Optional[str] = None
     estimated_cost: Optional[float] = None
-    resolution_type: Optional[str] = None
     incident_location: Optional[str] = None
     estimated_items: Optional[dict] = None  # {parts: [], services: []}
     actual_items: Optional[dict] = None  # {parts: [], services: []}
