@@ -387,6 +387,11 @@ async def record_payment(payment: PaymentRecordCreate, background_tasks: Backgro
     customer = await contacts_collection.find_one({"contact_id": payment.customer_id})
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
+
+    # Period lock check
+    from utils.period_lock import enforce_period_lock
+    payment_date_str = payment.payment_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    await enforce_period_lock(contacts_collection.database, customer.get("organization_id", ""), payment_date_str)
     
     payment_id = generate_id("PAY")
     payment_number = await get_next_payment_number()
