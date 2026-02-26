@@ -145,11 +145,11 @@ async def get_org_id(request: Request) -> str:
     try:
         auth_header = request.headers.get("authorization", "")
         if auth_header.startswith("Bearer "):
-            import jwt
-            import os
+            from utils.auth import decode_token_safe
             token = auth_header.split(" ")[1]
-            payload = jwt.decode(token, os.environ.get("JWT_SECRET", "battwheels-secret"), algorithms=["HS256"])
-            return payload.get("org_id", "")
+            payload = decode_token_safe(token)
+            if payload:
+                return payload.get("org_id", "")
     except:
         pass
     return ""
@@ -160,11 +160,11 @@ async def get_current_user_id(request: Request) -> str:
     try:
         auth_header = request.headers.get("authorization", "")
         if auth_header.startswith("Bearer "):
-            import jwt
-            import os
+            from utils.auth import decode_token_safe
             token = auth_header.split(" ")[1]
-            payload = jwt.decode(token, os.environ.get("JWT_SECRET", "battwheels-secret"), algorithms=["HS256"])
-            return payload.get("user_id", "")
+            payload = decode_token_safe(token)
+            if payload:
+                return payload.get("user_id", "")
     except:
         pass
     return ""

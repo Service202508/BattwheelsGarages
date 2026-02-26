@@ -83,8 +83,6 @@ async def get_current_user_from_token(request: Request) -> Optional[Dict[str, An
             
             # Return token data if DB lookup failed
             return user_from_token
-        except Exception as e:
-            logger.warning(f"JWT decode error: {e}")
     
     # Try session cookie
     session_token = request.cookies.get("session_token")

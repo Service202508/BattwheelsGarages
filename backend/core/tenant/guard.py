@@ -597,7 +597,7 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
     
     async def _extract_jwt_claims(self, request: Request) -> tuple:
         """Extract user_id, org_id, role from JWT"""
-        import jwt as pyjwt
+        from utils.auth import decode_token, JWT_ALGORITHM
         
         token = None
         
@@ -620,16 +620,14 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
             return None, None, None
         
         try:
-            jwt_secret = self.get_jwt_secret()
-            from utils.auth import JWT_ALGORITHM
-            payload = pyjwt.decode(token, jwt_secret, algorithms=[JWT_ALGORITHM])
+            payload = decode_token(token)
             logger.debug(f"JWT decoded: user_id={payload.get('user_id')}, org_id={payload.get('org_id')}")
             return payload.get("user_id"), payload.get("org_id"), payload.get("role")
-        except pyjwt.ExpiredSignatureError:
-            logger.warning("JWT expired")
-            raise HTTPException(status_code=401, detail="Token expired")
-        except pyjwt.InvalidTokenError as e:
-            logger.warning(f"JWT invalid: {e}")
+        except HTTPException as e:
+            if "expired" in str(e.detail).lower():
+                logger.warning("JWT expired")
+                raise
+            logger.warning(f"JWT invalid: {e.detail}")
             return None, None, None
     
     async def _resolve_org_id(self, request: Request, user_id: str, token_org_id: str) -> str:
