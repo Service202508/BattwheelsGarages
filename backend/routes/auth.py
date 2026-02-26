@@ -53,26 +53,9 @@ async def login(credentials: UserLogin, response: Response):
     if not user.get("is_active", True):
         raise HTTPException(status_code=401, detail="Account is deactivated")
     
-    token = create_access_token({"user_id": user["user_id"], "role": user["role"]})
-    
-    # Set cookie
-    response.set_cookie(
-        key="session_token",
-        value=token,
-        httponly=True,
-        secure=False,
-        samesite="lax",
-        max_age=JWT_EXPIRY_HOURS * 3600
-    )
-    
-    # Store session
-    await db.sessions.insert_one({
-        "session_token": token,
-        "user_id": user["user_id"],
-        "created_at": datetime.now(timezone.utc).isoformat()
-    })
-    
-    user_response = {k: v for k, v in user.items() if k != "password_hash"}
+    # Include org_id in token if user has exactly 1 org
+    token_data = {"user_id": user["user_id"], "role": user["role"], "email": user.get("email", "")}
+    current_org_id = None
     
     # Fetch user's organizations for multi-org support
     organizations = []
@@ -96,15 +79,42 @@ async def login(credentials: UserLogin, response: Response):
                     "plan_type": org.get("plan_type", "free"),
                     "role": m["role"]
                 })
+        
+        if len(organizations) >= 1:
+            current_org_id = organizations[0]["organization_id"]
+            token_data["org_id"] = current_org_id
+            # Use the role from membership, not user record
+            token_data["role"] = organizations[0]["role"]
     except Exception:
-        # If org fetch fails, continue without orgs
         pass
+    
+    token = create_access_token(token_data)
+    
+    # Set cookie
+    response.set_cookie(
+        key="session_token",
+        value=token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=JWT_EXPIRY_HOURS * 3600
+    )
+    
+    # Store session
+    await db.sessions.insert_one({
+        "session_token": token,
+        "user_id": user["user_id"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    user_response = {k: v for k, v in user.items() if k != "password_hash"}
     
     return {
         "token": token, 
         "user": user_response,
         "organizations": organizations,
-        "organization": organizations[0] if len(organizations) == 1 else None
+        "organization": organizations[0] if len(organizations) == 1 else None,
+        "current_organization": current_org_id
     }
 
 @router.post("/register")
