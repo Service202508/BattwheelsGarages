@@ -579,3 +579,85 @@ async def update_lead_notes(
         raise HTTPException(status_code=404, detail="Lead not found")
     return {"success": True, "lead_id": lead_id}
 
+
+
+# ==================== FEATURE FLAGS ====================
+
+class FeatureFlagCreate(BaseModel):
+    feature_key: str
+    name: str
+    description: str = ""
+    status: str = "off"  # off | canary | percentage | on
+    canary_org_ids: List[str] = []
+    percentage: int = 0
+    version_introduced: str = ""
+
+class FeatureFlagUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+    canary_org_ids: Optional[List[str]] = None
+    percentage: Optional[int] = None
+
+
+@router.get("/feature-flags")
+async def list_feature_flags(_=Depends(require_platform_admin)):
+    """List all feature flags (platform admin only)"""
+    flags = await db.feature_flags.find({}, {"_id": 0}).to_list(100)
+    return {"data": flags}
+
+
+@router.post("/feature-flags")
+async def create_feature_flag(data: FeatureFlagCreate, _=Depends(require_platform_admin)):
+    """Create a new feature flag"""
+    existing = await db.feature_flags.find_one({"feature_key": data.feature_key})
+    if existing:
+        raise HTTPException(status_code=409, detail="Feature flag with this key already exists")
+    
+    flag = {
+        **data.model_dump(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.feature_flags.insert_one(flag)
+    flag.pop("_id", None)
+    return flag
+
+
+@router.put("/feature-flags/{key}")
+async def update_feature_flag(key: str, data: FeatureFlagUpdate, _=Depends(require_platform_admin)):
+    """Update a feature flag"""
+    update_fields = {k: v for k, v in data.model_dump().items() if v is not None}
+    update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.feature_flags.update_one(
+        {"feature_key": key},
+        {"$set": update_fields}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Feature flag not found")
+    
+    updated = await db.feature_flags.find_one({"feature_key": key}, {"_id": 0})
+    return updated
+
+
+@router.delete("/feature-flags/{key}")
+async def delete_feature_flag(key: str, _=Depends(require_platform_admin)):
+    """Delete a feature flag"""
+    result = await db.feature_flags.delete_one({"feature_key": key})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Feature flag not found")
+    return {"success": True, "deleted": key}
+
+
+# ==================== VERSION ====================
+
+@router.get("/version")
+async def get_platform_version():
+    """Public endpoint: Returns platform version info"""
+    from config.platform import PLATFORM_VERSION, RELEASE_DATE, CHANGELOG_URL
+    return {
+        "version": PLATFORM_VERSION,
+        "release_date": RELEASE_DATE,
+        "changelog_url": CHANGELOG_URL,
+    }
