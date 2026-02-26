@@ -16,7 +16,7 @@ from schemas.models import (
     LeaveType, LeaveBalance, LeaveRequest, LeaveRequestCreate, LeaveApproval,
     PayrollRecord,
 )
-from core.tenant.dependencies import tenant_context_required, TenantContext
+from core.tenant.context import TenantContext, tenant_context_required
 
 logger = logging.getLogger(__name__)
 

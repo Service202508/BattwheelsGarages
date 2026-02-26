@@ -10,7 +10,7 @@ import os
 import logging
 
 from schemas.models import AIQuery, AIResponse, Alert, DashboardStats
-from core.tenant.dependencies import tenant_context_required, TenantContext
+from core.tenant.context import TenantContext, tenant_context_required
 
 logger = logging.getLogger(__name__)
 

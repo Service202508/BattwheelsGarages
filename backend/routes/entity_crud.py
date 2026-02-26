@@ -13,7 +13,7 @@ from schemas.models import (
     UserUpdate, Supplier, SupplierCreate, SupplierUpdate,
     Vehicle, VehicleCreate, Customer, CustomerCreate, CustomerUpdate,
 )
-from core.tenant.dependencies import tenant_context_required, TenantContext
+from core.tenant.context import TenantContext, tenant_context_required
 
 logger = logging.getLogger(__name__)
 

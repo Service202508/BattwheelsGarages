@@ -14,7 +14,7 @@ from schemas.models import (
     Payment, PaymentCreate, LedgerEntry, AccountSummary, CostAllocation,
     ChartOfAccount,
 )
-from core.tenant.dependencies import tenant_context_required, TenantContext
+from core.tenant.context import TenantContext, tenant_context_required
 
 logger = logging.getLogger(__name__)
 
