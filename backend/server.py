@@ -137,6 +137,7 @@ V1_ROUTES = [
     # Extracted from server.py inline routes
     "routes.auth_main", "routes.entity_crud", "routes.inventory_api",
     "routes.sales_finance_api", "routes.operations_api",
+    "routes.period_locks",
 ]
 
 # API-level routes (mounted at /api/...)
