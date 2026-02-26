@@ -613,7 +613,7 @@ export default function NewTicket({ user }) {
                   </div>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* File Attachments */}
             <div className="space-y-4">
