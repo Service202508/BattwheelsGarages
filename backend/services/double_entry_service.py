@@ -1211,7 +1211,7 @@ class DoubleEntryService:
             # Determine debit/credit balance based on net balance direction.
             # Rule: if net (DR-CR) > 0 → show in Debit column; if < 0 → show in Credit column.
             # This applies uniformly to all account types to prevent double-counting.
-            account_type = row["_id"]["account_type"]
+            account_type = row["_id"].get("account_type", "unknown")
             debit_balance = net_balance if net_balance > 0 else Decimal("0")
             credit_balance = abs(net_balance) if net_balance < 0 else Decimal("0")
             
