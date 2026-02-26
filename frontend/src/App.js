@@ -685,6 +685,20 @@ function AppRouter() {
           </Layout>
         </ProtectedRoute>
       } />
+      <Route path="/balance-sheet" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <BalanceSheet />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/profit-loss" element={
+        <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
+          <Layout user={auth.user} onLogout={auth.logout}>
+            <ProfitLoss />
+          </Layout>
+        </ProtectedRoute>
+      } />
       <Route path="/accountant" element={
         <ProtectedRoute user={auth.user} loading={auth.loading} allowedRoles={["admin", "manager"]}>
           <Layout user={auth.user} onLogout={auth.logout}>
