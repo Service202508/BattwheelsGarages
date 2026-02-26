@@ -348,6 +348,53 @@ async def close_ticket(request: Request, ticket_id: str, data: TicketCloseReques
         from utils.audit import log_audit, AuditAction
         await log_audit(service.db, AuditAction.TICKET_CLOSED, ctx.org_id, user.get("user_id"),
             "ticket", ticket_id, {"resolution": data.resolution, "confirmed_fault": data.confirmed_fault})
+        
+        # Auto-create failure card for EFI brain
+        try:
+            from routes.failure_cards import router as _fc_router
+            fc_card_id = f"fc_{__import__('uuid').uuid4().hex[:12]}"
+            from datetime import timezone as _tz
+            now_iso = datetime.now(_tz.utc).isoformat()
+            
+            failure_card = {
+                "card_id": fc_card_id,
+                "organization_id": ctx.org_id,
+                "ticket_id": ticket_id,
+                "ticket_type": ticket.get("ticket_type", "onsite"),
+                "vehicle_category": ticket.get("vehicle_type") or ticket.get("vehicle_category"),
+                "vehicle_make": ticket.get("vehicle_oem") or ticket.get("vehicle_make"),
+                "vehicle_model": ticket.get("vehicle_model"),
+                "vehicle_year": ticket.get("vehicle_year"),
+                "issue_title": ticket.get("title"),
+                "issue_description": ticket.get("description"),
+                "dtc_codes": ticket.get("error_codes_reported", []),
+                "fault_category": ticket.get("category"),
+                "root_cause": data.resolution or "",
+                "diagnosis_steps": [],
+                "resolution_steps": [],
+                "parts_used": [],
+                "labour_hours": None,
+                "resolution_successful": data.outcome in ("fixed", "resolved", True),
+                "efi_suggested_fault": ticket.get("efi_suggested_fault"),
+                "efi_confidence": ticket.get("efi_confidence"),
+                "efi_was_correct": None,
+                "technician_id": ticket.get("assigned_technician_id"),
+                "closed_by": user.get("user_id"),
+                "closed_at": now_iso,
+                "created_at": now_iso,
+                "anonymised": False,
+                "fed_to_brain_at": None,
+            }
+            # Only create if one doesn't already exist
+            existing_fc = await service.db.failure_cards.find_one(
+                {"organization_id": ctx.org_id, "ticket_id": ticket_id}
+            )
+            if not existing_fc:
+                await service.db.failure_cards.insert_one(failure_card)
+                ticket["failure_card_id"] = fc_card_id
+        except Exception as e:
+            logger.warning(f"Failed to create failure card for ticket {ticket_id}: {e}")
+        
         return ticket
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
