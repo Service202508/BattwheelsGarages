@@ -1100,7 +1100,7 @@ class TicketEstimateService:
         description: str,
         user_id: str,
         user_name: str,
-        organization_id: str = ""
+        organization_id: str
     ):
         """Log estimate history entry"""
         await self.estimate_history.insert_one({
