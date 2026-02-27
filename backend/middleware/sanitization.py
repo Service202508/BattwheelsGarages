@@ -22,6 +22,9 @@ SANITIZE_BYPASS_PREFIXES = (
     "/docs",
     "/openapi.json",
     "/redoc",
+    "/api/auth/",
+    "/api/v1/auth/",
+    "/api/v1/organizations/signup",
 )
 
 
