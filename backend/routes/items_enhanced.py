@@ -2457,49 +2457,50 @@ async def get_inventory_valuation(request: Request):
 # ============== BULK ACTIONS (MUST BE BEFORE /{item_id}) ==============
 
 @router.post("/bulk-action")
-async def perform_bulk_action(request: BulkActionRequest):
+async def perform_bulk_action(bulk_request: BulkActionRequest, request: Request):
     """Perform bulk actions on multiple items"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    if not request.item_ids:
+    if not bulk_request.item_ids:
         raise HTTPException(status_code=400, detail="No items selected")
     
     results = {"success": 0, "failed": 0, "errors": []}
     
-    for item_id in request.item_ids:
+    for item_id in bulk_request.item_ids:
         try:
-            if request.action == "activate":
+            if bulk_request.action == "activate":
                 await db.items.update_one(
-                    {"item_id": item_id},
+                    {"item_id": item_id, "organization_id": org_id},
                     {"$set": {"is_active": True, "status": "active", "updated_time": datetime.now(timezone.utc).isoformat()}}
                 )
                 await log_item_history(db, item_id, "activated", {}, "System")
                 results["success"] += 1
                 
-            elif request.action == "deactivate":
+            elif bulk_request.action == "deactivate":
                 await db.items.update_one(
-                    {"item_id": item_id},
+                    {"item_id": item_id, "organization_id": org_id},
                     {"$set": {"is_active": False, "status": "inactive", "updated_time": datetime.now(timezone.utc).isoformat()}}
                 )
                 await log_item_history(db, item_id, "deactivated", {}, "System")
                 results["success"] += 1
                 
-            elif request.action == "delete":
+            elif bulk_request.action == "delete":
                 # Check for transactions
-                invoice_count = await db.invoices.count_documents({"line_items.item_id": item_id})
-                bill_count = await db.bills.count_documents({"line_items.item_id": item_id})
+                invoice_count = await db.invoices.count_documents({"line_items.item_id": item_id, "organization_id": org_id})
+                bill_count = await db.bills.count_documents({"line_items.item_id": item_id, "organization_id": org_id})
                 
                 if invoice_count > 0 or bill_count > 0:
                     results["errors"].append(f"Item {item_id} has transactions, cannot delete")
                     results["failed"] += 1
                 else:
-                    await db.item_stock_locations.delete_many({"item_id": item_id})
-                    await db.item_prices.delete_many({"item_id": item_id})
-                    await db.items.delete_one({"item_id": item_id})
+                    await db.item_stock_locations.delete_many({"item_id": item_id, "organization_id": org_id})
+                    await db.item_prices.delete_many({"item_id": item_id, "organization_id": org_id})
+                    await db.items.delete_one({"item_id": item_id, "organization_id": org_id})
                     results["success"] += 1
                     
-            elif request.action == "clone":
-                item = await db.items.find_one({"item_id": item_id}, {"_id": 0})
+            elif bulk_request.action == "clone":
+                item = await db.items.find_one({"item_id": item_id, "organization_id": org_id}, {"_id": 0})
                 if item:
                     new_id = f"I-{uuid.uuid4().hex[:12].upper()}"
                     item["item_id"] = new_id
@@ -2732,9 +2733,10 @@ async def get_import_template():
     )
 
 @router.post("/import")
-async def import_items(file: UploadFile = File(...), overwrite_existing: bool = False):
+async def import_items(request: Request, file: UploadFile = File(...), overwrite_existing: bool = False):
     """Import items from CSV file"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     if not file.filename.endswith(('.csv', '.CSV')):
         raise HTTPException(status_code=400, detail="Only CSV files are supported")
@@ -2766,9 +2768,9 @@ async def import_items(file: UploadFile = File(...), overwrite_existing: bool = 
             # Check if exists
             existing = None
             if sku:
-                existing = await db.items.find_one({"sku": sku})
+                existing = await db.items.find_one({"sku": sku, "organization_id": org_id})
             if not existing:
-                existing = await db.items.find_one({"name": name})
+                existing = await db.items.find_one({"name": name, "organization_id": org_id})
             
             item_data = {
                 "name": name,
@@ -2788,7 +2790,7 @@ async def import_items(file: UploadFile = File(...), overwrite_existing: bool = 
             
             if existing:
                 if overwrite_existing:
-                    await db.items.update_one({"item_id": existing["item_id"]}, {"$set": item_data})
+                    await db.items.update_one({"item_id": existing["item_id"], "organization_id": org_id}, {"$set": item_data})
                     await log_item_history(db, existing["item_id"], "updated", {"source": "import"}, "System")
                     results["updated"] += 1
                 else:
@@ -2796,6 +2798,7 @@ async def import_items(file: UploadFile = File(...), overwrite_existing: bool = 
             else:
                 item_id = f"I-{uuid.uuid4().hex[:12].upper()}"
                 item_data["item_id"] = item_id
+                item_data["organization_id"] = org_id
                 item_data["rate"] = item_data["sales_rate"]
                 item_data["hsn_or_sac"] = item_data["hsn_code"] or item_data["sac_code"]
                 item_data["initial_stock"] = float(row.get("initial_stock", 0) or 0)
@@ -2860,11 +2863,12 @@ async def get_all_item_history(
 # ============== VALUE ADJUSTMENTS (MUST BE BEFORE /{item_id}) ==============
 
 @router.post("/value-adjustments")
-async def create_value_adjustment(adj: ValueAdjustmentCreate):
+async def create_value_adjustment(adj: ValueAdjustmentCreate, request: Request):
     """Create inventory value adjustment"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    item = await db.items.find_one({"item_id": adj.item_id})
+    item = await db.items.find_one({"item_id": adj.item_id, "organization_id": org_id})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
@@ -2879,6 +2883,7 @@ async def create_value_adjustment(adj: ValueAdjustmentCreate):
     
     adj_dict = {
         "adjustment_id": adj_id,
+        "organization_id": org_id,
         "item_id": adj.item_id,
         "item_name": item.get("name", ""),
         "warehouse_id": adj.warehouse_id,
@@ -2901,7 +2906,7 @@ async def create_value_adjustment(adj: ValueAdjustmentCreate):
     
     # Update item rate
     await db.items.update_one(
-        {"item_id": adj.item_id},
+        {"item_id": adj.item_id, "organization_id": org_id},
         {"$set": {
             "purchase_rate": adj.new_value_per_unit,
             "updated_time": datetime.now(timezone.utc).isoformat()
@@ -2920,11 +2925,12 @@ async def create_value_adjustment(adj: ValueAdjustmentCreate):
 # ============== PREFERENCES & CUSTOM FIELDS (MUST BE BEFORE /{item_id}) ==============
 
 @router.get("/preferences")
-async def get_item_preferences():
+async def get_item_preferences(request: Request):
     """Get module preferences"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    prefs = await db.item_preferences.find_one({"type": "items_module"}, {"_id": 0})
+    prefs = await db.item_preferences.find_one({"type": "items_module", "organization_id": org_id}, {"_id": 0})
     if not prefs:
         prefs = ItemPreferences().dict()
         prefs["type"] = "items_module"
@@ -2936,16 +2942,18 @@ async def get_item_preferences():
     return {"code": 0, "preferences": prefs}
 
 @router.put("/preferences")
-async def update_item_preferences(prefs: ItemPreferences):
+async def update_item_preferences(prefs: ItemPreferences, request: Request):
     """Update module preferences"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     prefs_dict = prefs.dict()
     prefs_dict["type"] = "items_module"
+    prefs_dict["organization_id"] = org_id
     prefs_dict["updated_time"] = datetime.now(timezone.utc).isoformat()
     
     await db.item_preferences.update_one(
-        {"type": "items_module"},
+        {"type": "items_module", "organization_id": org_id},
         {"$set": prefs_dict},
         upsert=True
     )
