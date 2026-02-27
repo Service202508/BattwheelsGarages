@@ -688,7 +688,7 @@ class TicketEstimateService:
         await self._log_history(
             estimate_id, "sent",
             "Estimate sent to customer",
-            user_id, user_name
+            user_id, user_name, organization_id
         )
         
         # Update ticket status
