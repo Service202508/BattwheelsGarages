@@ -1264,10 +1264,11 @@ async def list_item_adjustments(
     }
 
 @router.get("/adjustments/{adj_id}")
-async def get_item_adjustment(adj_id: str):
+async def get_item_adjustment(adj_id: str, request: Request):
     """Get adjustment details"""
     db = get_db()
-    adj = await db.item_adjustments.find_one({"adjustment_id": adj_id}, {"_id": 0})
+    org_id = extract_org_id(request)
+    adj = await db.item_adjustments.find_one({"adjustment_id": adj_id, "organization_id": org_id}, {"_id": 0})
     if not adj:
         raise HTTPException(status_code=404, detail="Adjustment not found")
     return {"code": 0, "adjustment": adj}
@@ -1275,11 +1276,12 @@ async def get_item_adjustment(adj_id: str):
 # ============== PRICE LISTS (MUST BE BEFORE /{item_id}) ==============
 
 @router.post("/price-lists")
-async def create_price_list(price_list: PriceListCreate):
+async def create_price_list(price_list: PriceListCreate, request: Request):
     """Create a price list"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    existing = await db.price_lists.find_one({"name": price_list.name})
+    existing = await db.price_lists.find_one({"name": price_list.name, "organization_id": org_id})
     if existing:
         raise HTTPException(status_code=400, detail="Price list with this name already exists")
     
@@ -1287,6 +1289,7 @@ async def create_price_list(price_list: PriceListCreate):
     
     pl_dict = {
         "pricelist_id": pl_id,
+        "organization_id": org_id,
         "name": price_list.name,
         "description": price_list.description,
         "discount_percentage": price_list.discount_percentage,
@@ -1360,12 +1363,13 @@ async def get_price_list(pricelist_id: str, request: Request):
     return {"code": 0, "price_list": pl}
 
 @router.put("/price-lists/{pricelist_id}")
-async def update_price_list(pricelist_id: str, price_list: PriceListCreate):
+async def update_price_list(pricelist_id: str, price_list: PriceListCreate, request: Request):
     """Update price list"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     result = await db.price_lists.update_one(
-        {"pricelist_id": pricelist_id},
+        {"pricelist_id": pricelist_id, "organization_id": org_id},
         {"$set": {
             "name": price_list.name,
             "description": price_list.description,
@@ -1382,14 +1386,15 @@ async def update_price_list(pricelist_id: str, price_list: PriceListCreate):
     return {"code": 0, "message": "Price list updated"}
 
 @router.delete("/price-lists/{pricelist_id}")
-async def delete_price_list(pricelist_id: str):
+async def delete_price_list(pricelist_id: str, request: Request):
     """Delete price list"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Delete associated item prices
-    await db.item_prices.delete_many({"price_list_id": pricelist_id})
+    await db.item_prices.delete_many({"price_list_id": pricelist_id, "organization_id": org_id})
     
-    result = await db.price_lists.delete_one({"pricelist_id": pricelist_id})
+    result = await db.price_lists.delete_one({"pricelist_id": pricelist_id, "organization_id": org_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Price list not found")
     
@@ -1398,14 +1403,16 @@ async def delete_price_list(pricelist_id: str):
 # ============== ITEM PRICES (MUST BE BEFORE /{item_id}) ==============
 
 @router.post("/prices")
-async def create_item_price(price: ItemPriceCreate):
+async def create_item_price(price: ItemPriceCreate, request: Request):
     """Set item price for a price list"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Check if exists
     existing = await db.item_prices.find_one({
         "item_id": price.item_id,
-        "price_list_id": price.price_list_id
+        "price_list_id": price.price_list_id,
+        "organization_id": org_id
     })
     
     if existing:
@@ -1443,12 +1450,14 @@ async def get_item_prices(item_id: str, request: Request):
     return {"code": 0, "prices": prices}
 
 @router.delete("/prices/{item_id}/{price_list_id}")
-async def delete_item_price(item_id: str, price_list_id: str):
+async def delete_item_price(item_id: str, price_list_id: str, request: Request):
     """Delete item price from a price list"""
     db = get_db()
+    org_id = extract_org_id(request)
     result = await db.item_prices.delete_one({
         "item_id": item_id,
-        "price_list_id": price_list_id
+        "price_list_id": price_list_id,
+        "organization_id": org_id
     })
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Item price not found")
@@ -1457,25 +1466,26 @@ async def delete_item_price(item_id: str, price_list_id: str):
 # ============== PHASE 2: CONTACT PRICE LIST ASSOCIATION ==============
 
 @router.post("/contact-price-lists")
-async def assign_price_list_to_contact(assignment: ContactPriceListAssign):
+async def assign_price_list_to_contact(assignment: ContactPriceListAssign, request: Request):
     """Assign sales/purchase price list to a customer/vendor"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Verify contact exists
-    contact = await db.contacts_enhanced.find_one({"contact_id": assignment.contact_id})
+    contact = await db.contacts_enhanced.find_one({"contact_id": assignment.contact_id, "organization_id": org_id})
     if not contact:
-        contact = await db.contacts.find_one({"contact_id": assignment.contact_id})
+        contact = await db.contacts.find_one({"contact_id": assignment.contact_id, "organization_id": org_id})
     if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")
     
     # Verify price lists exist
     if assignment.sales_price_list_id:
-        pl = await db.price_lists.find_one({"pricelist_id": assignment.sales_price_list_id})
+        pl = await db.price_lists.find_one({"pricelist_id": assignment.sales_price_list_id, "organization_id": org_id})
         if not pl:
             raise HTTPException(status_code=404, detail="Sales price list not found")
     
     if assignment.purchase_price_list_id:
-        pl = await db.price_lists.find_one({"pricelist_id": assignment.purchase_price_list_id})
+        pl = await db.price_lists.find_one({"pricelist_id": assignment.purchase_price_list_id, "organization_id": org_id})
         if not pl:
             raise HTTPException(status_code=404, detail="Purchase price list not found")
     
@@ -1488,12 +1498,12 @@ async def assign_price_list_to_contact(assignment: ContactPriceListAssign):
     
     # Try both collections
     result = await db.contacts_enhanced.update_one(
-        {"contact_id": assignment.contact_id},
+        {"contact_id": assignment.contact_id, "organization_id": org_id},
         {"$set": update_data}
     )
     if result.matched_count == 0:
         await db.contacts.update_one(
-            {"contact_id": assignment.contact_id},
+            {"contact_id": assignment.contact_id, "organization_id": org_id},
             {"$set": update_data}
         )
     
