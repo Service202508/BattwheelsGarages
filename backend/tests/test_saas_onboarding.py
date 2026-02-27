@@ -32,7 +32,7 @@ class TestSaaSLandingAPI:
         """Test that API is reachable via any endpoint"""
         # Use the login endpoint to check API is up
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "test@test.com", "password": "wrong"},
             timeout=10
         )
@@ -65,7 +65,7 @@ class TestOrganizationSignup:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/organizations/signup",
+            f"{BASE_URL}/api/v1/organizations/signup",
             json=signup_data,
             timeout=10
         )
@@ -105,7 +105,7 @@ class TestOrganizationSignup:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/organizations/signup",
+            f"{BASE_URL}/api/v1/organizations/signup",
             json=signup_data,
             timeout=10
         )
@@ -127,7 +127,7 @@ class TestLoginWithOrganizations:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json=login_data,
             timeout=10
         )
@@ -168,7 +168,7 @@ class TestLoginWithOrganizations:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json=login_data,
             timeout=10
         )
@@ -184,7 +184,7 @@ class TestMyOrganizations:
     def auth_token(self):
         """Get auth token for tests"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
             timeout=10
         )
@@ -195,7 +195,7 @@ class TestMyOrganizations:
     def test_my_organizations_returns_user_orgs(self, auth_token):
         """Test that my-organizations returns user's organizations"""
         response = requests.get(
-            f"{BASE_URL}/api/organizations/my-organizations",
+            f"{BASE_URL}/api/v1/organizations/my-organizations",
             headers={"Authorization": f"Bearer {auth_token}"},
             timeout=10
         )
@@ -222,7 +222,7 @@ class TestMyOrganizations:
     def test_my_organizations_requires_auth(self):
         """Test that my-organizations requires authentication"""
         response = requests.get(
-            f"{BASE_URL}/api/organizations/my-organizations",
+            f"{BASE_URL}/api/v1/organizations/my-organizations",
             timeout=10
         )
         
@@ -237,7 +237,7 @@ class TestSwitchOrganization:
     def auth_and_orgs(self):
         """Get auth token and organizations"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
             timeout=10
         )
@@ -261,7 +261,7 @@ class TestSwitchOrganization:
         target_org_id = orgs[0]["organization_id"]
         
         response = requests.post(
-            f"{BASE_URL}/api/auth/switch-organization",
+            f"{BASE_URL}/api/v1/auth/switch-organization",
             headers={"Authorization": f"Bearer {token}"},
             json={"organization_id": target_org_id},
             timeout=10
@@ -284,7 +284,7 @@ class TestSwitchOrganization:
         token = auth_and_orgs["token"]
         
         response = requests.post(
-            f"{BASE_URL}/api/auth/switch-organization",
+            f"{BASE_URL}/api/v1/auth/switch-organization",
             headers={"Authorization": f"Bearer {token}"},
             json={"organization_id": "org_invalid_12345"},
             timeout=10
@@ -297,7 +297,7 @@ class TestSwitchOrganization:
     def test_switch_organization_requires_auth(self):
         """Test that switch-organization requires authentication"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/switch-organization",
+            f"{BASE_URL}/api/v1/auth/switch-organization",
             json={"organization_id": "org_test123"},
             timeout=10
         )
@@ -313,7 +313,7 @@ class TestXOrganizationIDHeader:
     def auth_with_org(self):
         """Get auth token with organization"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
             timeout=10
         )
@@ -375,7 +375,7 @@ class TestAuthMe:
         """Test that /auth/me returns current user"""
         # Login first
         login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
             timeout=10
         )
@@ -385,7 +385,7 @@ class TestAuthMe:
         
         # Get current user
         response = requests.get(
-            f"{BASE_URL}/api/auth/me",
+            f"{BASE_URL}/api/v1/auth/me",
             headers={"Authorization": f"Bearer {token}"},
             timeout=10
         )
@@ -401,7 +401,7 @@ class TestAuthMe:
     
     def test_auth_me_without_token_returns_401(self):
         """Test that /auth/me without token returns 401"""
-        response = requests.get(f"{BASE_URL}/api/auth/me", timeout=10)
+        response = requests.get(f"{BASE_URL}/api/v1/auth/me", timeout=10)
         
         assert response.status_code == 401, f"Expected 401 without auth, got {response.status_code}"
         print("PASS: /auth/me requires authentication")
