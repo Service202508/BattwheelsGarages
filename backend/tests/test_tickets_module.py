@@ -216,7 +216,7 @@ class TestTicketCRUD:
         for ticket in data["data"]:
             assert ticket["status"] == "open"
         
-        print(f"✓ Filtered tickets by status=open: {len(data['tickets'])} results")
+        print(f"✓ Filtered tickets by status=open: {len(data['data'])} results")
     
     def test_list_tickets_with_priority_filter(self, auth_headers):
         """Test GET /api/v1/tickets?priority=high - Filter by priority"""
@@ -230,7 +230,7 @@ class TestTicketCRUD:
         for ticket in data["data"]:
             assert ticket["priority"] == "high"
         
-        print(f"✓ Filtered tickets by priority=high: {len(data['tickets'])} results")
+        print(f"✓ Filtered tickets by priority=high: {len(data['data'])} results")
     
     def test_list_tickets_with_category_filter(self, auth_headers):
         """Test GET /api/v1/tickets?category=battery - Filter by category"""
@@ -244,7 +244,7 @@ class TestTicketCRUD:
         for ticket in data["data"]:
             assert ticket["category"] == "battery"
         
-        print(f"✓ Filtered tickets by category=battery: {len(data['tickets'])} results")
+        print(f"✓ Filtered tickets by category=battery: {len(data['data'])} results")
     
     def test_get_single_ticket(self, auth_headers, test_ticket_id):
         """Test GET /api/v1/tickets/{id} - Get single ticket"""
