@@ -11,9 +11,9 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "test_pwd_placeholder"
+ADMIN_PASSWORD = "DevTest@123"
 TECH_EMAIL = "deepak@battwheelsgarages.in"
-TECH_PASSWORD = "tech123"
+TECH_PASSWORD = "DevTest@123"
 
 
 class TestAuthentication:

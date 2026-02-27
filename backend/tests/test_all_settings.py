@@ -63,7 +63,7 @@ class TestSettingsAuth:
         """Login and get auth token"""
         login_res = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert login_res.status_code == 200, f"Login failed: {login_res.text}"
         
@@ -135,7 +135,7 @@ class TestModuleSettings:
         """Login and get auth token"""
         login_res = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert login_res.status_code == 200
         
@@ -205,7 +205,7 @@ class TestCustomizationSettings:
         """Login and get auth token"""
         login_res = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert login_res.status_code == 200
         
@@ -246,7 +246,7 @@ class TestPermissions:
         # Login first
         login_res = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         token = login_res.json().get("token")
         

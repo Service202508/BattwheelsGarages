@@ -24,7 +24,7 @@ class TestAuth:
         """Test admin login with provided credentials"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert response.status_code == 200
         data = response.json()
@@ -38,7 +38,7 @@ class TestAuth:
         """Test technician login with provided credentials"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "deepak@battwheelsgarages.in",
-            "password": "tech123"
+            "password": "DevTest@123"
         })
         assert response.status_code == 200
         data = response.json()
@@ -62,7 +62,7 @@ def admin_token():
     """Get admin authentication token"""
     response = requests.post(f"{BASE_URL}/api/auth/login", json={
         "email": "admin@battwheels.in",
-        "password": "test_pwd_placeholder"
+        "password": "DevTest@123"
     })
     if response.status_code == 200:
         return response.json().get("token")

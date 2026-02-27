@@ -16,9 +16,9 @@ ORG_ID = "org_71f0df814d6d"
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "test_pwd_placeholder"
+ADMIN_PASSWORD = "DevTest@123"
 TECH_EMAIL = "deepak@battwheelsgarages.in"
-TECH_PASSWORD = "tech123"
+TECH_PASSWORD = "DevTest@123"
 
 
 @pytest.fixture(scope="module")

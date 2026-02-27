@@ -21,7 +21,7 @@ class TestHealthAndAuth:
         """Admin login - admin@battwheels.in"""
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "dev@battwheels.internal",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         print(f"Admin login: {res.status_code}")
         assert res.status_code == 200
@@ -52,7 +52,7 @@ class TestPermissionsAPI:
         """Get admin auth token"""
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "dev@battwheels.internal",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         if res.status_code != 200:
             pytest.skip("Admin login failed")
@@ -348,7 +348,7 @@ class TestTechnicianPortalAPI:
         """Get admin token"""
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "dev@battwheels.internal",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         if res.status_code != 200:
             pytest.skip("Admin login failed")
@@ -372,7 +372,7 @@ class TestBusinessPortalAPI:
         """Get admin token for testing"""
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "dev@battwheels.internal",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         if res.status_code != 200:
             pytest.skip("Admin login failed")
@@ -479,7 +479,7 @@ class TestSeedDefaults:
     def admin_token(self):
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "dev@battwheels.internal",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         if res.status_code != 200:
             pytest.skip("Admin login failed")

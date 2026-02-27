@@ -21,7 +21,7 @@ def auth_token():
     """Get admin auth token for all tests"""
     response = requests.post(f"{BASE_URL}/api/auth/login", json={
         "email": "admin@battwheels.in",
-        "password": "test_pwd_placeholder"
+        "password": "DevTest@123"
     })
     assert response.status_code == 200, f"Login failed: {response.text}"
     return response.json()["token"]
@@ -42,7 +42,7 @@ class TestAuthentication:
         """Test admin login with valid credentials"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert response.status_code == 200
         data = response.json()

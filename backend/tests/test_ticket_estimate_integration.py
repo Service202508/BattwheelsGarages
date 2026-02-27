@@ -20,7 +20,7 @@ if not BASE_URL:
 
 # Test credentials from main agent
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "test_pwd_placeholder"
+ADMIN_PASSWORD = "DevTest@123"
 ORGANIZATION_ID = "org_71f0df814d6d"
 TEST_TICKET_ID = "tkt_796dbcc03efa"  # Existing test ticket
 TEST_ESTIMATE_ID = "est_f3c7baf128ab"  # Existing test estimate

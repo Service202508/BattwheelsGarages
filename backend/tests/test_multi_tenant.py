@@ -9,7 +9,7 @@ from datetime import datetime
 
 BASE_URL = os.environ.get("TEST_API_URL", "http://localhost:8001/api")
 ADMIN_EMAIL = "dev@battwheels.internal"
-ADMIN_PASSWORD = "test_pwd_placeholder"
+ADMIN_PASSWORD = "DevTest@123"
 TECH_EMAIL = "deepak@battwheelsgarages.in"
 TECH_PASSWORD = "DevTest@123"
 

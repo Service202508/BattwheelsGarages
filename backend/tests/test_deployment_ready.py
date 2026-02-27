@@ -23,7 +23,7 @@ class TestLoginAPI:
         """Login with admin credentials should succeed"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         }, headers={"Content-Type": "application/json"})
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -216,7 +216,7 @@ class TestTicketsAPI:
         """Get auth token for authenticated requests"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         if response.status_code == 200:
             self.auth_headers = {

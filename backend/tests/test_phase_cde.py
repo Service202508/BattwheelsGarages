@@ -16,7 +16,7 @@ import os
 
 BASE_URL = "http://localhost:8001/api"
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "test_pwd_placeholder"
+ADMIN_PASSWORD = "DevTest@123"
 
 
 class TestPhaseC_RBAC:

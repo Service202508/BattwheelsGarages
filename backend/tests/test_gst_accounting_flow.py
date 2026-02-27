@@ -18,9 +18,9 @@ if not BASE_URL:
 
 # Test credentials
 TEST_EMAIL = "admin@battwheels.in"
-TEST_PASSWORD = "test_pwd_placeholder"
+TEST_PASSWORD = "DevTest@123"
 # Organization ID for multi-tenant scoping (Battwheels Garages - has the test tickets)
-TEST_ORG_ID = "6996dcf072ffd2a2395fee7b"
+TEST_ORG_ID = "dev-internal-testing-001"
 
 
 class TestGSTAccountingFlow:

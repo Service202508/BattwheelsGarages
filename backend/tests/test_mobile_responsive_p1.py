@@ -16,7 +16,7 @@ BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 # Credentials
 ORG_ADMIN_EMAIL = "admin@battwheels.in"
 ORG_ADMIN_PASS = "admin"
-ORG_ID = "6996dcf072ffd2a2395fee7b"
+ORG_ID = "dev-internal-testing-001"
 PLATFORM_ADMIN_EMAIL = "platform-admin@battwheels.in"
 PLATFORM_ADMIN_PASS = "admin"
 

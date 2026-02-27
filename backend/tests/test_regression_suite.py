@@ -15,7 +15,7 @@ import os
 # Configuration
 BASE_URL = os.environ.get("TEST_API_URL", "http://localhost:8001/api")
 TEST_EMAIL = "admin@battwheels.in"
-TEST_PASSWORD = "test_pwd_placeholder"
+TEST_PASSWORD = "DevTest@123"
 
 # ========================= FIXTURES =========================
 

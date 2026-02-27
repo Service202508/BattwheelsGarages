@@ -18,7 +18,7 @@ class TestAuthSetup:
         """Get authentication token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         if response.status_code == 200:
             return response.json().get("token")
@@ -37,7 +37,7 @@ class TestAuthSetup:
         """Verify login works"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert response.status_code == 200
         data = response.json()
@@ -55,7 +55,7 @@ class TestFinancialDashboardAPIs:
         """Get authenticated headers"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         token = response.json().get("token")
         return {
@@ -215,7 +215,7 @@ class TestFinancialDashboardAPIs:
         # Get auth token first
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         token = response.json().get("token")
         
@@ -239,7 +239,7 @@ class TestTimeTrackingAPIs:
         """Get authenticated headers"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         token = response.json().get("token")
         return {
@@ -443,7 +443,7 @@ class TestDocumentsAPIs:
         """Get authenticated headers"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         token = response.json().get("token")
         return {

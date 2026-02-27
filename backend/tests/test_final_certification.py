@@ -33,8 +33,8 @@ DB_NAME = os.environ.get("DB_NAME", "test_database")
 ADMIN_EMAIL = "admin@battwheels.in"
 ADMIN_PASSWORD = "admin"
 TECH_EMAIL = "tech@battwheels.in"
-TECH_PASSWORD = "tech123"
-ADMIN_ORG_ID = "6996dcf072ffd2a2395fee7b"
+TECH_PASSWORD = "DevTest@123"
+ADMIN_ORG_ID = "dev-internal-testing-001"
 RAZORPAY_WEBHOOK_SECRET = "REDACTED_WEBHOOK_SECRET"
 
 # Required security headers

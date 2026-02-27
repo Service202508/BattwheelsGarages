@@ -215,7 +215,7 @@ class TestFlow03InviteTeam:
         """Tech user cannot access payroll endpoint → 403/401"""
         login_res = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "tech@battwheels.in", "password": "tech123"},
+            json={"email": "tech@battwheels.in", "password": "DevTest@123"},
             timeout=10,
         )
         assert login_res.status_code == 200, "Tech login failed"

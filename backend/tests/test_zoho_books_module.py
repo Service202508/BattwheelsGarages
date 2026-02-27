@@ -17,7 +17,7 @@ class TestAuthentication:
         """Test admin login with valid credentials"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert response.status_code == 200
         data = response.json()
@@ -43,7 +43,7 @@ class TestCustomers:
         """Get authentication token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json().get("token")
     
@@ -120,7 +120,7 @@ class TestServices:
         """Get authentication token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json().get("token")
     
@@ -173,7 +173,7 @@ class TestParts:
         """Get authentication token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json().get("token")
     
@@ -213,7 +213,7 @@ class TestInvoices:
         """Get authentication token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json().get("token")
     
@@ -304,7 +304,7 @@ class TestAnalytics:
         """Get authentication token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json().get("token")
     
@@ -346,7 +346,7 @@ class TestVendors:
         """Get authentication token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json().get("token")
     
@@ -371,7 +371,7 @@ class TestChartOfAccounts:
         """Get authentication token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json().get("token")
     

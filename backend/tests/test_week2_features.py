@@ -25,7 +25,7 @@ V1_API = f"{BASE_URL}/api/v1"
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
 ADMIN_PASSWORD = "Admin@12345"
-ORG_ID = "6996dcf072ffd2a2395fee7b"
+ORG_ID = "dev-internal-testing-001"
 STRONG_PASSWORD = "NewSecure@123"
 
 

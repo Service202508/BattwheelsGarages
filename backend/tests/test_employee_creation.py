@@ -19,7 +19,7 @@ class TestEmployeeCreation:
         """Login as admin and get token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert response.status_code == 200, f"Admin login failed: {response.text}"
         data = response.json()
@@ -34,7 +34,7 @@ class TestEmployeeCreation:
         """Test admin can login successfully"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert response.status_code == 200, f"Admin login failed: {response.text}"
         data = response.json()
@@ -230,7 +230,7 @@ class TestEmployeeValidation:
         """Login as admin and get token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         if response.status_code != 200:
             pytest.skip("Admin login failed")

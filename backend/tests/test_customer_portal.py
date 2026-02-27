@@ -32,7 +32,7 @@ class TestCustomerAuth:
         """Test admin can login with valid credentials"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert response.status_code == 200, f"Admin login failed: {response.text}"
         
@@ -318,7 +318,7 @@ class TestAdminAMCManagement:
         """Get admin token for tests"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         if response.status_code != 200:
             pytest.skip("Admin login failed - skipping admin AMC tests")
@@ -382,7 +382,7 @@ class TestRoleBasedAccess:
         # Login as admin
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         if response.status_code != 200:
             pytest.skip("Admin login failed")

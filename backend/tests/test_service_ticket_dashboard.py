@@ -23,7 +23,7 @@ class TestServiceTicketDashboard:
         """Setup - get auth token"""
         login_response = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "test_pwd_placeholder"}
+            json={"email": "admin@battwheels.in", "password": "DevTest@123"}
         )
         if login_response.status_code == 200:
             self.token = login_response.json().get("token")
@@ -242,7 +242,7 @@ class TestDashboardStatsDataVerification:
         """Setup - get auth token"""
         login_response = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "test_pwd_placeholder"}
+            json={"email": "admin@battwheels.in", "password": "DevTest@123"}
         )
         if login_response.status_code == 200:
             self.token = login_response.json().get("token")
@@ -306,7 +306,7 @@ class TestServiceTicketCreationAndStats:
         """Setup - get auth token"""
         login_response = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "test_pwd_placeholder"}
+            json={"email": "admin@battwheels.in", "password": "DevTest@123"}
         )
         if login_response.status_code == 200:
             self.token = login_response.json().get("token")

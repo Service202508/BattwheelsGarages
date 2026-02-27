@@ -14,7 +14,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 BASE_URL = "http://localhost:8001/api"
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "test_pwd_placeholder"
+ADMIN_PASSWORD = "DevTest@123"
 
 
 class TestPhaseF_TokenVault:

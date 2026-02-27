@@ -31,7 +31,7 @@ INTERNAL_URL = "http://localhost:8001"  # used only for CORS app-level test
 
 ADMIN_EMAIL = "admin@battwheels.in"
 ADMIN_PASSWORD = "admin"
-ADMIN_ORG_ID = "6996dcf072ffd2a2395fee7b"  # Battwheels Garages
+ADMIN_ORG_ID = "dev-internal-testing-001"  # Battwheels Garages
 
 # Security headers required on every /api response
 REQUIRED_SECURITY_HEADERS = {

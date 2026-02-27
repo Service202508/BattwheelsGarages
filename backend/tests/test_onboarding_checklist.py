@@ -26,7 +26,7 @@ def new_org_headers():
 def battwheels_headers():
     return {
         "Authorization": f"Bearer {BATTWHEELS_TOKEN}",
-        "x-organization-id": "6996dcf072ffd2a2395fee7b",
+        "x-organization-id": "dev-internal-testing-001",
         "Content-Type": "application/json"
     }
 

@@ -18,7 +18,7 @@ BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 MONGO_URL = os.environ["MONGO_URL"]
 DB_NAME = os.environ["DB_NAME"]
 
-ORG_ID = "6996dcf072ffd2a2395fee7b"
+ORG_ID = "dev-internal-testing-001"
 ADMIN_EMAIL = "admin@battwheels.in"
 ADMIN_PASSWORD = "Admin@12345"
 

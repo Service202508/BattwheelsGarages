@@ -12,7 +12,7 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 # Test credentials
 BUSINESS_CREDS = {"email": "business@bluwheelz.co.in", "password": "business123"}
-TECHNICIAN_CREDS = {"email": "deepak@battwheelsgarages.in", "password": "tech123"}
+TECHNICIAN_CREDS = {"email": "deepak@battwheelsgarages.in", "password": "DevTest@123"}
 
 
 class TestAIIssueSuggestions:

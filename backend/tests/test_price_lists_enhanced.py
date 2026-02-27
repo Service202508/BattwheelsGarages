@@ -22,7 +22,7 @@ def auth_token(api_client):
     """Get authentication token"""
     response = api_client.post(f"{BASE_URL}/api/auth/login", json={
         "email": "admin@battwheels.in",
-        "password": "test_pwd_placeholder"
+        "password": "DevTest@123"
     })
     if response.status_code == 200:
         token = response.json().get("token")

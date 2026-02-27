@@ -18,7 +18,7 @@ if not BASE_URL:
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "test_pwd_placeholder"
+ADMIN_PASSWORD = "DevTest@123"
 ORGANIZATION_ID = "org_71f0df814d6d"
 
 # Track test resources

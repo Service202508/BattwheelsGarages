@@ -29,7 +29,7 @@ def auth_headers():
     """Login and get auth token for all tests"""
     login_res = requests.post(f"{BASE_URL}/api/auth/login", json={
         "email": "admin@battwheels.in",
-        "password": "test_pwd_placeholder"
+        "password": "DevTest@123"
     })
     assert login_res.status_code == 200, f"Login failed: {login_res.text}"
     

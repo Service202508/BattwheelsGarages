@@ -14,7 +14,7 @@ if not BASE_URL:
 
 # Test credentials
 TEST_EMAIL = "admin@battwheels.in"
-TEST_PASSWORD = "test_pwd_placeholder"
+TEST_PASSWORD = "DevTest@123"
 
 
 @pytest.fixture(scope="module")

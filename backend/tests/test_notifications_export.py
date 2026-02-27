@@ -23,7 +23,7 @@ class TestNotificationAPI:
         # Login to get token
         login_res = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert login_res.status_code == 200, f"Login failed: {login_res.text}"
         token = login_res.json().get("token")
@@ -203,7 +203,7 @@ class TestExportAPI:
         # Login
         login_res = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert login_res.status_code == 200
         token = login_res.json().get("token")
@@ -433,7 +433,7 @@ class TestNotificationEventTriggers:
         
         login_res = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert login_res.status_code == 200
         token = login_res.json().get("token")
@@ -519,7 +519,7 @@ class TestCleanup:
         
         login_res = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         token = login_res.json().get("token")
         self.session.headers.update({"Authorization": f"Bearer {token}"})

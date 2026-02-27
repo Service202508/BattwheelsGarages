@@ -17,7 +17,7 @@ class TestAuth:
         """Get JWT token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert response.status_code == 200, f"Login failed: {response.text}"
         data = response.json()
@@ -36,7 +36,7 @@ class TestAuth:
         """Test login with valid credentials"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         assert response.status_code == 200
         data = response.json()
@@ -61,7 +61,7 @@ class TestDashboard:
     def auth_token(self):
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json()["token"]
     
@@ -91,7 +91,7 @@ class TestItems:
     def auth_token(self):
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json()["token"]
     
@@ -144,7 +144,7 @@ class TestInventoryEnhanced:
     def auth_token(self):
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json()["token"]
     
@@ -229,7 +229,7 @@ class TestSalesOrders:
     def auth_token(self):
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json()["token"]
     
@@ -266,7 +266,7 @@ class TestTimeTracking:
     def auth_token(self):
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json()["token"]
     
@@ -296,7 +296,7 @@ class TestDocuments:
     def auth_token(self):
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json()["token"]
     
@@ -329,7 +329,7 @@ class TestCustomerPortal:
         """Get admin auth token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json()["token"]
     
@@ -447,7 +447,7 @@ class TestContactsAndInvoices:
     def auth_token(self):
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         return response.json()["token"]
     

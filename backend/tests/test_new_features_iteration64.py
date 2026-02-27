@@ -48,7 +48,7 @@ class TestOrganizationSettingsExportImport:
         """Login and get auth token"""
         login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         if login_response.status_code == 200:
             return login_response.json().get("token")
@@ -140,7 +140,7 @@ class TestCustomerPortalTickets:
         # Login as admin to create contact with portal access
         login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         if login_response.status_code != 200:
             pytest.skip("Cannot login as admin")
@@ -385,7 +385,7 @@ class TestOrganizationSwitcher:
         """Login and get auth headers"""
         login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@battwheels.in",
-            "password": "test_pwd_placeholder"
+            "password": "DevTest@123"
         })
         if login_response.status_code == 200:
             token = login_response.json().get("token")

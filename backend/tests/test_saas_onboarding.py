@@ -22,7 +22,7 @@ if not BASE_URL:
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
-ADMIN_PASSWORD = "test_pwd_placeholder"
+ADMIN_PASSWORD = "DevTest@123"
 
 
 class TestSaaSLandingAPI:

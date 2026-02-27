@@ -14,7 +14,7 @@ import json
 from datetime import datetime
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
-ORG_ID = "6996dcf072ffd2a2395fee7b"
+ORG_ID = "dev-internal-testing-001"
 
 # ==================== AUTH FIXTURE ====================
 

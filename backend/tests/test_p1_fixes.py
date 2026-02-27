@@ -384,7 +384,7 @@ class TestSE404RBACTechnician:
         """Login as tech@battwheels.in must return HTTP 200"""
         resp = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "tech@battwheels.in",
-            "password": "tech123"
+            "password": "DevTest@123"
         })
         print(f"Tech login: {resp.status_code}, {resp.text[:200]}")
         assert resp.status_code == 200, f"Tech login failed: {resp.text}"
