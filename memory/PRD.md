@@ -1,49 +1,78 @@
 # Battwheels OS — Product Requirements Document
 
 ## Original Problem Statement
-Battwheels OS is a multi-tenant SaaS platform for automotive workshop management. The platform includes features for ticket management, invoicing, GST compliance, credit notes, banking, HR/payroll, RBAC, subscription management, and more.
+Battwheels OS is a SaaS platform for EV garages and service centers. The platform provides multi-tenant organization management, ticketing, invoicing, inventory, HR, GST compliance, and AI-powered diagnostics.
 
-## Current Phase
-**Phase 2.5: Beta Launch Gate Sprint — COMPLETED**
+## Architecture
+- **Frontend:** React (port 3000)
+- **Backend:** FastAPI (port 8001)
+- **Database:** MongoDB (3 environments: battwheels, battwheels_staging, battwheels_dev)
+- **Auth:** JWT + bcrypt password hashing
 
-## Phase 2.5 Results (Feb 27, 2026)
-- **Task 1 (Signup Flow):** FIXED — role assignment bug (admin→owner), UserContext auth wrapper
-- **Task 2 (GSTR-3B CN Tests):** FIXED — 15/15 passing
-- **Task 3 (Test Rewrites):** COMPLETED — 30 tests fixed, 63%→86.1% pass rate (321/373)
-- **Overall Score:** 78-80/100 → **86/100** — BETA GATE PASSED
+## Three-Environment Discipline
+| Environment | Database | Purpose |
+|---|---|---|
+| Development | battwheels_dev | All new code, experiments, testing |
+| Staging | battwheels_staging | Pre-release QA gate |
+| Production | battwheels | Live data, real customers |
 
-## Key Fixes Applied
-1. Fixed role assignment in organizations.py (admin→owner for new signups)
-2. Introduced UserContext wrapper in auth middleware for consistent auth access
-3. Fixed entity_crud.py NameError for require_technician_or_admin
-4. Fixed period-lock date issues in test_credit_notes_p1.py
-5. Updated stale test endpoints from /api/v1/bills/* to /api/v1/bills-enhanced/*
-6. Fixed password validation assertions in test_password_management.py
-7. Fixed role leakage ("DevTest@123"→"admin") in test_rbac_portals.py
-8. Fixed endpoint paths in test_razorpay_integration.py
-9. Fixed pagination response handling in test_tenant_isolation.py
-10. Updated plan feature assertions in test_subscription_entitlements_api.py
+## SaaS Architecture (Post-Reset)
+- **Production:** 1 user (platform-admin@battwheels.in), 0 orgs, 0 customers
+- **Staging:** Mirrors production (1 platform-admin, 0 orgs)
+- **Dev:** Volt Motors demo org with sample data (DO NOT TOUCH)
+- Customers sign up through the self-serve signup flow
+
+## What's Been Implemented
+
+### Sprint: Beta Launch Gate (COMPLETED - 2026-02-27)
+- Test suite pass rate: 86.4% (322 passed, 0 failed, 51 skipped)
+- Readiness score: 86/100
+- Fixed all critical bugs in signup flow, GST compliance, RBAC
+
+### Credential Security Audit (COMPLETED - 2026-02-27)
+- All 13 production passwords reset with strong bcrypt hashes
+- Temporary test accounts cleaned from dev DB
+
+### Production Reset — Clean Slate for SaaS Launch (COMPLETED - 2026-02-27)
+- Phase 0: Session start protocol — all 5 checks passed
+- Phase 1: Full production audit — 223 collections, 2,222 documents catalogued
+- Phase 2: Production wiped — all data deleted, platform-admin preserved
+- Phase 3: Platform admin login verified (BUG FIXED: bleach sanitization corrupting passwords with & character)
+- Phase 4: End-to-end signup flow tested and verified (signup, login, module access, PA visibility)
+- Phase 5: Dev environment verified untouched
+- Phase 6: Staging set up to mirror production
+- Phase 7: Final state report generated
+
+### Bugs Fixed During Reset
+1. **Sanitization middleware corrupting passwords:** `bleach.clean()` was converting `&` to `&amp;` in password fields. Fixed by adding auth/signup endpoints to `SANITIZE_BYPASS_PREFIXES` in `middleware/sanitization.py`.
+2. **Password field leak in login response:** Login response was exposing a stale `password` field (bcrypt hash). Fixed by adding `"password"` to the exclusion filter in `routes/auth.py`.
 
 ## Prioritized Backlog
 
-### P0 — Phase 3 (Pending User Approval)
-- Await reviewer approval of Beta Gate Sprint report
+### P0 — Critical
+- None currently blocking
 
-### P1 — High Priority
+### P1 — High Priority (Tech Debt)
 - H-01/H-02: Implement pagination for 435+ unbounded database queries
-- H-07: Seed staging database for proper QA environment
+- H-07: Seed battwheels_staging database for proper QA environment
 
 ### P2 — Medium Priority
-- Address remaining Medium/Low audit items
-- Fix 52 skipped tests that need fixture data
+- Address 51 skipped tests (missing data fixtures for Form16, starter plans, technician portal)
+- Address remaining Medium/Low priority audit items
 
-## Architecture
-- Backend: FastAPI + MongoDB
-- Frontend: React
-- Auth: JWT-based with UserContext wrapper
-- Multi-tenant: Organization-scoped with X-Organization-ID header
-- Integrations: Razorpay (payments), Resend (email), bleach (XSS sanitization)
+### P3 — Future
+- WhatsApp integration (currently mocked)
+- End-to-end verification for Form16, live Razorpay
+- Full staging promotion workflow
 
-## Test Status
-- Core suite: 321 passed, 0 failed, 52 skipped (86.1%)
-- Signup: 15/15, GSTR-3B: 15/15, Credit Notes: 16/16
+## Key Credentials
+- **Dev:** demo@voltmotors.in, dev@battwheels.internal (DevTest@123)
+- **Production:** platform-admin@battwheels.in (v4Nx6^3Xh&uPWwxK9HOs)
+- **Staging:** platform-admin@battwheels.in (same password as production)
+
+## 3rd Party Integrations
+- Razorpay (payment processing)
+- Resend (email)
+- bcrypt (password hashing)
+- bleach (input sanitization)
+- Sentry (error monitoring)
