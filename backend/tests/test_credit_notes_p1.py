@@ -391,6 +391,7 @@ class TestCreditNoteRBAC:
         payload = {
             "original_invoice_id": OUTSTANDING_INVOICE_ID,
             "reason": "Test - technician should be blocked",
+            "credit_note_date": "2026-03-15",
             "line_items": [
                 {"name": "Test", "quantity": 1, "rate": 100, "tax_rate": 18}
             ]
