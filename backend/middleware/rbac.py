@@ -208,18 +208,31 @@ class RBACMiddleware(BaseHTTPMiddleware):
         "/api/auth/login", "/api/auth/register", "/api/auth/session",
         "/api/auth/logout", "/api/auth/me", "/api/auth/google",
         "/api/auth/forgot-password", "/api/auth/reset-password",
+        "/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/session",
+        "/api/v1/auth/logout", "/api/v1/auth/me",
+        "/api/v1/auth/forgot-password", "/api/v1/auth/reset-password",
     }
     
     PUBLIC_PATTERNS = [
         r"^/api/public/.*",
+        r"^/api/v1/public/.*",
         r"^/api/webhooks/.*",
+        r"^/api/v1/webhooks/.*",
         r"^/api/payments/webhook$",
+        r"^/api/v1/payments/webhook$",
+        r"^/api/v1/razorpay/webhook$",
         r"^/api/customer-portal/auth.*",
+        r"^/api/v1/customer-portal/auth.*",
         r"^/api/organizations/signup$",
+        r"^/api/v1/organizations/signup$",
         r"^/api/organizations/register$",
+        r"^/api/v1/organizations/register$",
         r"^/api/contact$",
         r"^/api/book-demo$",
         r"^/api/organizations/accept-invite$",
+        r"^/api/v1/organizations/accept-invite$",
+        r"^/api/v1/subscriptions/plans$",
+        r"^/api/v1/subscriptions/plans/compare$",
     ]
     
     def __init__(self, app):
