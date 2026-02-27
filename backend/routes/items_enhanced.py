@@ -1620,20 +1620,21 @@ async def calculate_line_item_prices(request: LineItemPriceRequest):
 # ============== PHASE 2: BULK PRICE SETTING ==============
 
 @router.post("/price-lists/{pricelist_id}/set-prices")
-async def bulk_set_prices(pricelist_id: str, request: BulkItemPriceSet):
+async def bulk_set_prices(pricelist_id: str, price_data: BulkItemPriceSet, request: Request):
     """Set prices for multiple items in a price list"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    pl = await db.price_lists.find_one({"pricelist_id": pricelist_id})
+    pl = await db.price_lists.find_one({"pricelist_id": pricelist_id, "organization_id": org_id})
     if not pl:
         raise HTTPException(status_code=404, detail="Price list not found")
     
     results = {"updated": 0, "created": 0, "errors": []}
     
     # If percentage method, apply to all items
-    if request.pricing_method == "percentage" and request.percentage != 0:
+    if price_data.pricing_method == "percentage" and price_data.percentage != 0:
         # H-02: hard cap, Sprint 3 for cursor pagination
-        items = await db.items.find({"is_active": True}, {"_id": 0}).to_list(500)
+        items = await db.items.find({"is_active": True, "organization_id": org_id}, {"_id": 0}).to_list(500)
         
         for item in items:
             base_rate = item.get("sales_rate", 0) or item.get("rate", 0)
@@ -1641,7 +1642,8 @@ async def bulk_set_prices(pricelist_id: str, request: BulkItemPriceSet):
             
             existing = await db.item_prices.find_one({
                 "item_id": item["item_id"],
-                "price_list_id": pricelist_id
+                "price_list_id": pricelist_id,
+                "organization_id": org_id
             })
             
             if existing:
