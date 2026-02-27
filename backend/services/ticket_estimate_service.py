@@ -449,7 +449,7 @@ class TicketEstimateService:
         await self._log_history(
             estimate_id, "line_item_added",
             f"Added {item_data.type}: {item_data.name}" + (" (inventory reserved)" if inventory_reserved else ""),
-            user_id, user_name
+            user_id, user_name, organization_id
         )
         
         # Return updated estimate
