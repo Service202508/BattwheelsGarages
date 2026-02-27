@@ -9,7 +9,7 @@ import uuid
 
 pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://readiness-checkpoint.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://production-readiness-7.preview.emergentagent.com').rstrip('/')
 
 
 class TestSearchSortFilter:

@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 import os
 import sys
 
-BASE_URL = os.environ.get('API_BASE_URL', 'https://readiness-checkpoint.preview.emergentagent.com')
+BASE_URL = os.environ.get('API_BASE_URL', 'https://production-readiness-7.preview.emergentagent.com')
 API_URL = f"{BASE_URL}/api"
 ORG_ID = "6996dcf072ffd2a2395fee7b"  # Battwheels Garages production org
 
