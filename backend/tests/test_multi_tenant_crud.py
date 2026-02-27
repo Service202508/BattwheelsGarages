@@ -34,7 +34,7 @@ class TestAuthentication:
     
     def test_admin_login_success(self):
         """Admin login should return valid token and user info"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -51,7 +51,7 @@ class TestAuthentication:
     
     def test_technician_login_success(self):
         """Technician login should return valid token"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TECH_EMAIL,
             "password": TECH_PASSWORD
         })
@@ -64,7 +64,7 @@ class TestAuthentication:
     
     def test_invalid_credentials_returns_401(self):
         """Invalid credentials should return 401"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "invalid@test.com",
             "password": "wrong_pwd_placeholder"
         })
@@ -92,7 +92,7 @@ class TestTicketsCRUD:
     @pytest.fixture
     def auth_headers(self):
         """Get authentication headers with org context"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -103,7 +103,7 @@ class TestTicketsCRUD:
     def org_id(self, auth_headers):
         """Get user's organization ID from auth/me or by querying org"""
         # Try to get org membership
-        response = requests.get(f"{BASE_URL}/api/auth/me", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/auth/me", headers=auth_headers)
         if response.status_code == 200:
             user_data = response.json()
             # Check if we need to fetch org separately
@@ -113,7 +113,7 @@ class TestTicketsCRUD:
     
     def test_list_tickets(self, auth_headers):
         """List tickets should return tickets for user's org"""
-        response = requests.get(f"{BASE_URL}/api/tickets", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/tickets", headers=auth_headers)
         
         assert response.status_code == 200, f"Failed to list tickets: {response.text}"
         data = response.json()
@@ -137,7 +137,7 @@ class TestTicketsCRUD:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             json=ticket_data,
             headers=auth_headers
         )
@@ -151,7 +151,7 @@ class TestTicketsCRUD:
         # Verify ticket was created by fetching it
         ticket_id = created["ticket_id"]
         get_response = requests.get(
-            f"{BASE_URL}/api/tickets/{ticket_id}",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}",
             headers=auth_headers
         )
         assert get_response.status_code == 200
@@ -169,7 +169,7 @@ class TestTicketsCRUD:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             json=ticket_data,
             headers=auth_headers
         )
@@ -186,7 +186,7 @@ class TestTicketsCRUD:
         }
         
         update_response = requests.put(
-            f"{BASE_URL}/api/tickets/{ticket_id}",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}",
             json=update_data,
             headers=auth_headers
         )
@@ -199,7 +199,7 @@ class TestTicketsCRUD:
     def test_ticket_stats_scoped_to_org(self, auth_headers):
         """Ticket stats should be scoped to organization"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets/stats",
+            f"{BASE_URL}/api/v1/tickets/stats",
             headers=auth_headers
         )
         
@@ -216,7 +216,7 @@ class TestVehiclesCRUD:
     @pytest.fixture
     def auth_headers(self):
         """Get authentication headers"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -225,7 +225,7 @@ class TestVehiclesCRUD:
     
     def test_list_vehicles(self, auth_headers):
         """List vehicles should return vehicles for user's org"""
-        response = requests.get(f"{BASE_URL}/api/vehicles", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/vehicles", headers=auth_headers)
         
         assert response.status_code == 200, f"Failed to list vehicles: {response.text}"
         vehicles = response.json()
@@ -244,7 +244,7 @@ class TestVehiclesCRUD:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/vehicles",
+            f"{BASE_URL}/api/v1/vehicles",
             json=vehicle_data,
             headers=auth_headers
         )
@@ -258,7 +258,7 @@ class TestVehiclesCRUD:
         # Verify vehicle was created by fetching it
         vehicle_id = created["vehicle_id"]
         get_response = requests.get(
-            f"{BASE_URL}/api/vehicles/{vehicle_id}",
+            f"{BASE_URL}/api/v1/vehicles/{vehicle_id}",
             headers=auth_headers
         )
         assert get_response.status_code == 200
@@ -266,7 +266,7 @@ class TestVehiclesCRUD:
     def test_get_vehicle_not_found_returns_404(self, auth_headers):
         """Getting non-existent vehicle should return 404"""
         response = requests.get(
-            f"{BASE_URL}/api/vehicles/veh_nonexistent123",
+            f"{BASE_URL}/api/v1/vehicles/veh_nonexistent123",
             headers=auth_headers
         )
         
@@ -279,7 +279,7 @@ class TestInventoryCRUD:
     @pytest.fixture
     def auth_headers(self):
         """Get authentication headers"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -288,7 +288,7 @@ class TestInventoryCRUD:
     
     def test_list_inventory(self, auth_headers):
         """List inventory should return items for user's org"""
-        response = requests.get(f"{BASE_URL}/api/inventory", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/inventory", headers=auth_headers)
         
         assert response.status_code == 200, f"Failed to list inventory: {response.text}"
         items = response.json()
@@ -306,7 +306,7 @@ class TestInventoryCRUD:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/inventory",
+            f"{BASE_URL}/api/v1/inventory",
             json=item_data,
             headers=auth_headers
         )
@@ -321,7 +321,7 @@ class TestInventoryCRUD:
         # Verify item was created by fetching it
         item_id = created["item_id"]
         get_response = requests.get(
-            f"{BASE_URL}/api/inventory/{item_id}",
+            f"{BASE_URL}/api/v1/inventory/{item_id}",
             headers=auth_headers
         )
         assert get_response.status_code == 200
@@ -338,7 +338,7 @@ class TestInventoryCRUD:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/inventory",
+            f"{BASE_URL}/api/v1/inventory",
             json=item_data,
             headers=auth_headers
         )
@@ -355,7 +355,7 @@ class TestInventoryCRUD:
         }
         
         update_response = requests.put(
-            f"{BASE_URL}/api/inventory/{item_id}",
+            f"{BASE_URL}/api/v1/inventory/{item_id}",
             json=update_data,
             headers=auth_headers
         )
@@ -378,7 +378,7 @@ class TestInventoryCRUD:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/inventory",
+            f"{BASE_URL}/api/v1/inventory",
             json=item_data,
             headers=auth_headers
         )
@@ -390,7 +390,7 @@ class TestInventoryCRUD:
         
         # Delete should work for admin
         delete_response = requests.delete(
-            f"{BASE_URL}/api/inventory/{item_id}",
+            f"{BASE_URL}/api/v1/inventory/{item_id}",
             headers=auth_headers
         )
         
@@ -404,7 +404,7 @@ class TestSuppliersCRUD:
     @pytest.fixture
     def auth_headers(self):
         """Get authentication headers"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -413,7 +413,7 @@ class TestSuppliersCRUD:
     
     def test_list_suppliers(self, auth_headers):
         """List suppliers should return suppliers for user's org"""
-        response = requests.get(f"{BASE_URL}/api/suppliers", headers=auth_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/suppliers", headers=auth_headers)
         
         assert response.status_code == 200, f"Failed to list suppliers: {response.text}"
         suppliers = response.json()
@@ -431,7 +431,7 @@ class TestSuppliersCRUD:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/suppliers",
+            f"{BASE_URL}/api/v1/suppliers",
             json=supplier_data,
             headers=auth_headers
         )
@@ -445,7 +445,7 @@ class TestSuppliersCRUD:
         # Verify supplier was created by fetching it
         supplier_id = created["supplier_id"]
         get_response = requests.get(
-            f"{BASE_URL}/api/suppliers/{supplier_id}",
+            f"{BASE_URL}/api/v1/suppliers/{supplier_id}",
             headers=auth_headers
         )
         assert get_response.status_code == 200
@@ -460,7 +460,7 @@ class TestSuppliersCRUD:
         }
         
         create_response = requests.post(
-            f"{BASE_URL}/api/suppliers",
+            f"{BASE_URL}/api/v1/suppliers",
             json=supplier_data,
             headers=auth_headers
         )
@@ -477,7 +477,7 @@ class TestSuppliersCRUD:
         }
         
         update_response = requests.put(
-            f"{BASE_URL}/api/suppliers/{supplier_id}",
+            f"{BASE_URL}/api/v1/suppliers/{supplier_id}",
             json=update_data,
             headers=auth_headers
         )
@@ -491,7 +491,7 @@ class TestInvalidOrgIdHandling:
     @pytest.fixture
     def auth_headers(self):
         """Get authentication headers"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -505,7 +505,7 @@ class TestInvalidOrgIdHandling:
             "X-Organization-ID": f"org_invalid_{uuid.uuid4().hex[:8]}"
         }
         
-        response = requests.get(f"{BASE_URL}/api/tickets", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/tickets", headers=headers)
         
         # Should be 400 or 403 (access denied), NOT 500 (server error)
         assert response.status_code in [200, 400, 403], \
@@ -523,7 +523,7 @@ class TestInvalidOrgIdHandling:
             "X-Organization-ID": "not-a-valid-id"
         }
         
-        response = requests.get(f"{BASE_URL}/api/tickets", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/v1/tickets", headers=headers)
         
         # Should NOT be 500
         assert response.status_code != 500, \
@@ -536,7 +536,7 @@ class TestTechnicianPermissions:
     @pytest.fixture
     def tech_headers(self):
         """Get technician authentication headers"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TECH_EMAIL,
             "password": TECH_PASSWORD
         })
@@ -545,7 +545,7 @@ class TestTechnicianPermissions:
     
     def test_technician_can_list_tickets(self, tech_headers):
         """Technician should be able to list tickets"""
-        response = requests.get(f"{BASE_URL}/api/tickets", headers=tech_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/tickets", headers=tech_headers)
         assert response.status_code == 200
     
     def test_technician_can_create_ticket(self, tech_headers):
@@ -558,7 +558,7 @@ class TestTechnicianPermissions:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             json=ticket_data,
             headers=tech_headers
         )
@@ -567,7 +567,7 @@ class TestTechnicianPermissions:
     
     def test_technician_can_view_inventory(self, tech_headers):
         """Technician should be able to view inventory"""
-        response = requests.get(f"{BASE_URL}/api/inventory", headers=tech_headers)
+        response = requests.get(f"{BASE_URL}/api/v1/inventory", headers=tech_headers)
         assert response.status_code == 200
 
 
