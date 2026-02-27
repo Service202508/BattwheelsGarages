@@ -51,9 +51,9 @@ async def get_user(user_id: str, request: Request):
 @router.put("/users/{user_id}")
 async def update_user(user_id: str, update: UserUpdate, request: Request):
     current_user = await require_auth(request)
-    if current_user.user_id != user_id and current_user.role != "admin":
+    if current_user.get("user_id") != user_id and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Cannot update other users")
-    if update.role and current_user.role != "admin":
+    if update.role and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Only admins can change roles")
     
     update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
