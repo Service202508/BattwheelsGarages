@@ -76,7 +76,7 @@ ORGB_INV_TOTAL = 5900.0
 
 # Auth
 ADMIN_EMAIL = "dev@battwheels.internal"
-ADMIN_PASSWORD = "Admin@12345"
+ADMIN_PASSWORD = "DevTest@123"
 TOKEN_A = None
 TOKEN_B = None
 
