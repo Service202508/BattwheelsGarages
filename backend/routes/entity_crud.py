@@ -85,7 +85,9 @@ async def create_supplier(
     request: Request,
     ctx: TenantContext = Depends(tenant_context_required)
 ):
-    await require_technician_or_admin(request)
+    user = await require_auth(request)
+    if user.get("role") not in ["admin", "owner", "technician", "manager"]:
+        raise HTTPException(status_code=403, detail="Technician or Admin access required")
     
     supplier = Supplier(**data.model_dump())
     doc = supplier.model_dump()
