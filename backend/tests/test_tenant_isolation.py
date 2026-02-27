@@ -18,7 +18,7 @@ import asyncio
 from datetime import datetime, timezone
 
 # Test configuration
-BASE_URL = "http://localhost:8001/api"
+BASE_URL = "http://localhost:8001/api/v1"
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
