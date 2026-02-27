@@ -60,12 +60,14 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 ## Prioritized Backlog (Updated from Audit)
 
 ### P0 — Critical (Must Fix Before Production)
-- P0-01: EFI Decision Engine — zero tenant isolation (services/efi_decision_engine.py)
-- P0-02: EFI Embedding Service — zero tenant isolation (services/efi_embedding_service.py)
-- P0-03: Embedding Service — zero tenant isolation (services/embedding_service.py)
-- P0-04: Professional Tax hardcoded flat ₹200 for all states (services/hr_service.py)
-- P0-05: ESI employer contribution not calculated correctly (services/hr_service.py)
-- P0-06: 9 EFI collections missing from TenantGuard TENANT_COLLECTIONS (core/tenant/guard.py)
+- P0-01: **20 route files bypass RBAC** — all `-enhanced` routes unmapped (middleware/rbac.py:42-156,282)
+- P0-02: EFI Decision Engine — zero tenant isolation (services/efi_decision_engine.py, 11 DB ops)
+- P0-03: EFI Embedding Service — zero tenant isolation (services/efi_embedding_service.py, 6 DB ops)
+- P0-04: Embedding Service — zero tenant isolation (services/embedding_service.py, 10 DB ops)
+- P0-05: Event Processor — zero tenant isolation (services/event_processor.py, 21 DB ops)
+- P0-06: Scheduler — zero tenant isolation, all jobs global (services/scheduler.py, 13 DB ops)
+- P0-07: Professional Tax hardcoded flat ₹200 for all states (services/hr_service.py:462)
+- P0-08: 11 EFI collections missing from TenantGuard TENANT_COLLECTIONS (core/tenant/guard.py:37-83)
 
 ### P1 — High Priority
 - P1-01: log_item_history missing org_id in inserted docs (routes/items_enhanced.py:2827)
