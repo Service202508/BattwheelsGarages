@@ -25,8 +25,8 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://platform-hardening-1
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
 ADMIN_PASSWORD = "DevTest@123"
-TECH_EMAIL = "deepak@battwheelsgarages.in"
-TECH_PASSWORD = "DevTest@123"
+TECH_EMAIL = "tech.a@battwheels.internal"
+TECH_PASSWORD = "TechA@123"
 
 
 class TestAuthentication:

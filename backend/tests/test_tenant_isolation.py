@@ -21,10 +21,10 @@ from datetime import datetime, timezone
 BASE_URL = "http://localhost:8001/api"
 
 # Test credentials
-ADMIN_EMAIL = "admin@battwheels.in"
+ADMIN_EMAIL = "dev@battwheels.internal"
 ADMIN_PASSWORD = "DevTest@123"
-TECH_EMAIL = "deepak@battwheelsgarages.in"
-TECH_PASSWORD = "DevTest@123"
+TECH_EMAIL = "tech.a@battwheels.internal"
+TECH_PASSWORD = "TechA@123"
 
 
 class TestTenantContextResolution:
