@@ -958,6 +958,7 @@ async def get_items_summary(request: Request):
 
 @router.get("/")
 async def list_enhanced_items(
+    request: Request,
     item_type: str = "",
     group_id: str = "",
     warehouse_id: str = "",
@@ -971,8 +972,9 @@ async def list_enhanced_items(
 ):
     """List items with advanced filters and sorting"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    query = {}
+    query = {"organization_id": org_id}
     if item_type:
         query["item_type"] = item_type
     if group_id:
@@ -1004,7 +1006,7 @@ async def list_enhanced_items(
         item_id = item.get("item_id") or item.get("zoho_item_id") or str(item.get("_id", ""))
         if item.get("item_type") == "inventory" and item_id:
             stock_locs = await db.item_stock_locations.find(
-                {"item_id": item_id},
+                {"item_id": item_id, "organization_id": org_id},
                 {"_id": 0}
             ).to_list(100)
             item["stock_locations"] = stock_locs
@@ -1123,12 +1125,13 @@ async def bulk_update_stock(bulk: BulkStockUpdate):
 # ============== INVENTORY ADJUSTMENTS (MUST BE BEFORE /{item_id}) ==============
 
 @router.post("/adjustments")
-async def create_item_adjustment(adj: ItemAdjustmentCreate):
+async def create_item_adjustment(adj: ItemAdjustmentCreate, request: Request):
     """Create inventory adjustment"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Get item
-    item = await db.items.find_one({"item_id": adj.item_id})
+    item = await db.items.find_one({"item_id": adj.item_id, "organization_id": org_id})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
@@ -1138,7 +1141,8 @@ async def create_item_adjustment(adj: ItemAdjustmentCreate):
     # Get or create stock location
     stock_loc = await db.item_stock_locations.find_one({
         "item_id": adj.item_id,
-        "warehouse_id": adj.warehouse_id
+        "warehouse_id": adj.warehouse_id,
+        "organization_id": org_id
     })
     
     current_stock = stock_loc.get("stock", 0) if stock_loc else 0
@@ -1159,7 +1163,7 @@ async def create_item_adjustment(adj: ItemAdjustmentCreate):
     adj_date = adj.date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
     # Get warehouse name
-    warehouse = await db.warehouses.find_one({"warehouse_id": adj.warehouse_id})
+    warehouse = await db.warehouses.find_one({"warehouse_id": adj.warehouse_id, "organization_id": org_id})
     warehouse_name = warehouse.get("name", "") if warehouse else ""
     
     adj_dict = {
@@ -1191,6 +1195,7 @@ async def create_item_adjustment(adj: ItemAdjustmentCreate):
         await db.item_stock_locations.insert_one({
             "location_id": f"ISL-{uuid.uuid4().hex[:8].upper()}",
             "item_id": adj.item_id,
+            "organization_id": org_id,
             "warehouse_id": adj.warehouse_id,
             "warehouse_name": warehouse_name,
             "stock": new_stock,
@@ -1199,10 +1204,10 @@ async def create_item_adjustment(adj: ItemAdjustmentCreate):
         })
     
     # Update item total stock
-    all_locations = await db.item_stock_locations.find({"item_id": adj.item_id}).to_list(100)
+    all_locations = await db.item_stock_locations.find({"item_id": adj.item_id, "organization_id": org_id}).to_list(100)
     total_stock = sum(loc.get("stock", 0) for loc in all_locations)
     await db.items.update_one(
-        {"item_id": adj.item_id},
+        {"item_id": adj.item_id, "organization_id": org_id},
         {"$set": {
             "stock_on_hand": total_stock,
             "available_stock": total_stock,
