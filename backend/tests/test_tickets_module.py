@@ -61,7 +61,7 @@ class TestTicketModuleAuth:
     
     def test_unauthorized_ticket_access(self):
         """Test that ticket endpoints require authentication"""
-        response = requests.get(f"{BASE_URL}/api/tickets")
+        response = requests.get(f"{BASE_URL}/api/v1/tickets")
         assert response.status_code == 401
         print("✓ Unauthorized access correctly rejected")
 
@@ -108,7 +108,7 @@ class TestTicketCRUD:
             "error_codes_reported": ["E001", "E002"]
         }
         response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -118,7 +118,7 @@ class TestTicketCRUD:
         return data["ticket_id"]
     
     def test_create_ticket_success(self, auth_headers):
-        """Test POST /api/tickets - Create ticket with event emission"""
+        """Test POST /api/v1/tickets - Create ticket with event emission"""
         ticket_data = {
             "title": "TEST_Motor overheating during ride",
             "description": "Motor temperature warning appears after 10km ride",
@@ -132,7 +132,7 @@ class TestTicketCRUD:
             "resolution_type": "workshop"
         }
         response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -164,7 +164,7 @@ class TestTicketCRUD:
         
         # Verify AI matching was triggered (check if suggested_failure_cards populated)
         get_response = requests.get(
-            f"{BASE_URL}/api/tickets/{data['ticket_id']}",
+            f"{BASE_URL}/api/v1/tickets/{data['ticket_id']}",
             headers=auth_headers
         )
         assert get_response.status_code == 200
@@ -177,7 +177,7 @@ class TestTicketCRUD:
             "title": "TEST_Minimal ticket"
         }
         response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -189,9 +189,9 @@ class TestTicketCRUD:
         print(f"✓ Created minimal ticket: {data['ticket_id']}")
     
     def test_list_tickets(self, auth_headers):
-        """Test GET /api/tickets - List tickets"""
+        """Test GET /api/v1/tickets - List tickets"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -204,9 +204,9 @@ class TestTicketCRUD:
         print(f"✓ Listed {len(data['tickets'])} tickets (total: {data['total']})")
     
     def test_list_tickets_with_status_filter(self, auth_headers):
-        """Test GET /api/tickets?status=open - Filter by status"""
+        """Test GET /api/v1/tickets?status=open - Filter by status"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets?status=open",
+            f"{BASE_URL}/api/v1/tickets?status=open",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -219,9 +219,9 @@ class TestTicketCRUD:
         print(f"✓ Filtered tickets by status=open: {len(data['tickets'])} results")
     
     def test_list_tickets_with_priority_filter(self, auth_headers):
-        """Test GET /api/tickets?priority=high - Filter by priority"""
+        """Test GET /api/v1/tickets?priority=high - Filter by priority"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets?priority=high",
+            f"{BASE_URL}/api/v1/tickets?priority=high",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -233,9 +233,9 @@ class TestTicketCRUD:
         print(f"✓ Filtered tickets by priority=high: {len(data['tickets'])} results")
     
     def test_list_tickets_with_category_filter(self, auth_headers):
-        """Test GET /api/tickets?category=battery - Filter by category"""
+        """Test GET /api/v1/tickets?category=battery - Filter by category"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets?category=battery",
+            f"{BASE_URL}/api/v1/tickets?category=battery",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -247,9 +247,9 @@ class TestTicketCRUD:
         print(f"✓ Filtered tickets by category=battery: {len(data['tickets'])} results")
     
     def test_get_single_ticket(self, auth_headers, test_ticket_id):
-        """Test GET /api/tickets/{id} - Get single ticket"""
+        """Test GET /api/v1/tickets/{id} - Get single ticket"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets/{test_ticket_id}",
+            f"{BASE_URL}/api/v1/tickets/{test_ticket_id}",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -265,23 +265,23 @@ class TestTicketCRUD:
         print(f"  - Status: {data['status']}")
     
     def test_get_nonexistent_ticket(self, auth_headers):
-        """Test GET /api/tickets/{id} - Returns 404 for non-existent ticket"""
+        """Test GET /api/v1/tickets/{id} - Returns 404 for non-existent ticket"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets/tkt_nonexistent123",
+            f"{BASE_URL}/api/v1/tickets/tkt_nonexistent123",
             headers=auth_headers
         )
         assert response.status_code == 404
         print("✓ Non-existent ticket correctly returns 404")
     
     def test_update_ticket(self, auth_headers, test_ticket_id):
-        """Test PUT /api/tickets/{id} - Update ticket (emits TICKET_UPDATED)"""
+        """Test PUT /api/v1/tickets/{id} - Update ticket (emits TICKET_UPDATED)"""
         update_data = {
             "priority": "critical",
             "status": "in_progress",
             "description": "Updated description - issue confirmed after diagnosis"
         }
         response = requests.put(
-            f"{BASE_URL}/api/tickets/{test_ticket_id}",
+            f"{BASE_URL}/api/v1/tickets/{test_ticket_id}",
             headers=auth_headers,
             json=update_data
         )
@@ -353,7 +353,7 @@ class TestTicketLifecycle:
             "resolution_type": "workshop"
         }
         create_response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -369,7 +369,7 @@ class TestTicketLifecycle:
         
         # Step 2: Assign ticket (TICKET_ASSIGNED event)
         assign_response = requests.post(
-            f"{BASE_URL}/api/tickets/{ticket_id}/assign",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/assign",
             headers=auth_headers,
             json={"technician_id": technician_id}
         )
@@ -382,7 +382,7 @@ class TestTicketLifecycle:
         
         # Step 3: Update status to in_progress (TICKET_STATUS_CHANGED event)
         update_response = requests.put(
-            f"{BASE_URL}/api/tickets/{ticket_id}",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}",
             headers=auth_headers,
             json={"status": "in_progress"}
         )
@@ -394,7 +394,7 @@ class TestTicketLifecycle:
         
         # Step 4: Close ticket (TICKET_CLOSED event)
         close_response = requests.post(
-            f"{BASE_URL}/api/tickets/{ticket_id}/close",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/close",
             headers=auth_headers,
             json={
                 "resolution": "Replaced display connector cable",
@@ -416,7 +416,7 @@ class TestTicketLifecycle:
         print(f"  - Status history entries: {len(closed_ticket['status_history'])}")
     
     def test_assign_ticket(self, auth_headers, technician_id):
-        """Test POST /api/tickets/{id}/assign - Assign ticket to technician"""
+        """Test POST /api/v1/tickets/{id}/assign - Assign ticket to technician"""
         # Create a ticket first
         ticket_data = {
             "title": "TEST_Assignment test ticket",
@@ -424,7 +424,7 @@ class TestTicketLifecycle:
             "priority": "medium"
         }
         create_response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -432,7 +432,7 @@ class TestTicketLifecycle:
         
         # Assign ticket
         assign_response = requests.post(
-            f"{BASE_URL}/api/tickets/{ticket_id}/assign",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/assign",
             headers=auth_headers,
             json={"technician_id": technician_id}
         )
@@ -445,7 +445,7 @@ class TestTicketLifecycle:
         print(f"✓ Assigned ticket {ticket_id} to technician {technician_id}")
     
     def test_close_ticket_with_failure_card(self, auth_headers):
-        """Test POST /api/tickets/{id}/close - Close with failure card (FAILURE_CARD_USED event)"""
+        """Test POST /api/v1/tickets/{id}/close - Close with failure card (FAILURE_CARD_USED event)"""
         # Create a ticket
         ticket_data = {
             "title": "TEST_Close with failure card",
@@ -454,7 +454,7 @@ class TestTicketLifecycle:
             "description": "Battery draining fast"
         }
         create_response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -465,7 +465,7 @@ class TestTicketLifecycle:
         
         # Get suggested failure cards
         matches_response = requests.get(
-            f"{BASE_URL}/api/tickets/{ticket_id}/matches",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/matches",
             headers=auth_headers
         )
         assert matches_response.status_code == 200
@@ -485,7 +485,7 @@ class TestTicketLifecycle:
             close_data["selected_failure_card"] = failure_card_id
         
         close_response = requests.post(
-            f"{BASE_URL}/api/tickets/{ticket_id}/close",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/close",
             headers=auth_headers,
             json=close_data
         )
@@ -521,7 +521,7 @@ class TestAIMatching:
         }
     
     def test_get_ticket_matches(self, auth_headers):
-        """Test GET /api/tickets/{id}/matches - Get AI-suggested failure cards"""
+        """Test GET /api/v1/tickets/{id}/matches - Get AI-suggested failure cards"""
         # Create a ticket with specific symptoms
         ticket_data = {
             "title": "TEST_Battery not holding charge",
@@ -533,7 +533,7 @@ class TestAIMatching:
             "error_codes_reported": ["BAT001", "CHG002"]
         }
         create_response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -544,7 +544,7 @@ class TestAIMatching:
         
         # Get matches
         matches_response = requests.get(
-            f"{BASE_URL}/api/tickets/{ticket_id}/matches",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/matches",
             headers=auth_headers
         )
         assert matches_response.status_code == 200
@@ -563,7 +563,7 @@ class TestAIMatching:
                 print(f"    - {match.get('failure_id')}: {match.get('title', 'N/A')}")
     
     def test_select_failure_card(self, auth_headers):
-        """Test POST /api/tickets/{id}/select-card - Select failure card for ticket"""
+        """Test POST /api/v1/tickets/{id}/select-card - Select failure card for ticket"""
         # Create a ticket
         ticket_data = {
             "title": "TEST_Select failure card test",
@@ -571,7 +571,7 @@ class TestAIMatching:
             "description": "Motor making unusual noise"
         }
         create_response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -582,7 +582,7 @@ class TestAIMatching:
         
         # Get matches
         matches_response = requests.get(
-            f"{BASE_URL}/api/tickets/{ticket_id}/matches",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/matches",
             headers=auth_headers
         )
         matches = matches_response.json()
@@ -592,7 +592,7 @@ class TestAIMatching:
             
             # Select the failure card
             select_response = requests.post(
-                f"{BASE_URL}/api/tickets/{ticket_id}/select-card",
+                f"{BASE_URL}/api/v1/tickets/{ticket_id}/select-card",
                 headers=auth_headers,
                 json={"failure_id": failure_id}
             )
@@ -606,7 +606,7 @@ class TestAIMatching:
             
             # Verify ticket was updated
             get_response = requests.get(
-                f"{BASE_URL}/api/tickets/{ticket_id}",
+                f"{BASE_URL}/api/v1/tickets/{ticket_id}",
                 headers=auth_headers
             )
             updated_ticket = get_response.json()
@@ -615,14 +615,14 @@ class TestAIMatching:
             print("⚠ No failure cards available to select (skipping)")
     
     def test_select_failure_card_legacy_route(self, auth_headers):
-        """Test POST /api/tickets/{id}/select-card/{failure_id} - Legacy route"""
+        """Test POST /api/v1/tickets/{id}/select-card/{failure_id} - Legacy route"""
         # Create a ticket
         ticket_data = {
             "title": "TEST_Legacy select card test",
             "category": "battery"
         }
         create_response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -633,7 +633,7 @@ class TestAIMatching:
         
         # Get matches
         matches_response = requests.get(
-            f"{BASE_URL}/api/tickets/{ticket_id}/matches",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/matches",
             headers=auth_headers
         )
         matches = matches_response.json()
@@ -643,7 +643,7 @@ class TestAIMatching:
             
             # Use legacy route
             select_response = requests.post(
-                f"{BASE_URL}/api/tickets/{ticket_id}/select-card/{failure_id}",
+                f"{BASE_URL}/api/v1/tickets/{ticket_id}/select-card/{failure_id}",
                 headers=auth_headers
             )
             assert select_response.status_code == 200
@@ -674,9 +674,9 @@ class TestTicketStats:
         }
     
     def test_get_ticket_stats(self, auth_headers):
-        """Test GET /api/tickets/stats - Get ticket statistics"""
+        """Test GET /api/v1/tickets/stats - Get ticket statistics"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets/stats",
+            f"{BASE_URL}/api/v1/tickets/stats",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -717,9 +717,9 @@ class TestErrorHandling:
         }
     
     def test_update_nonexistent_ticket(self, auth_headers):
-        """Test PUT /api/tickets/{id} - Returns 404 for non-existent ticket"""
+        """Test PUT /api/v1/tickets/{id} - Returns 404 for non-existent ticket"""
         response = requests.put(
-            f"{BASE_URL}/api/tickets/tkt_nonexistent123",
+            f"{BASE_URL}/api/v1/tickets/tkt_nonexistent123",
             headers=auth_headers,
             json={"status": "in_progress"}
         )
@@ -727,9 +727,9 @@ class TestErrorHandling:
         print("✓ Update non-existent ticket returns 404")
     
     def test_close_nonexistent_ticket(self, auth_headers):
-        """Test POST /api/tickets/{id}/close - Returns 404 for non-existent ticket"""
+        """Test POST /api/v1/tickets/{id}/close - Returns 404 for non-existent ticket"""
         response = requests.post(
-            f"{BASE_URL}/api/tickets/tkt_nonexistent123/close",
+            f"{BASE_URL}/api/v1/tickets/tkt_nonexistent123/close",
             headers=auth_headers,
             json={"resolution": "Test", "resolution_outcome": "success"}
         )
@@ -737,9 +737,9 @@ class TestErrorHandling:
         print("✓ Close non-existent ticket returns 404")
     
     def test_assign_nonexistent_ticket(self, auth_headers):
-        """Test POST /api/tickets/{id}/assign - Returns 404 for non-existent ticket"""
+        """Test POST /api/v1/tickets/{id}/assign - Returns 404 for non-existent ticket"""
         response = requests.post(
-            f"{BASE_URL}/api/tickets/tkt_nonexistent123/assign",
+            f"{BASE_URL}/api/v1/tickets/tkt_nonexistent123/assign",
             headers=auth_headers,
             json={"technician_id": "user_test123"}
         )
@@ -747,11 +747,11 @@ class TestErrorHandling:
         print("✓ Assign non-existent ticket returns 404")
     
     def test_assign_nonexistent_technician(self, auth_headers):
-        """Test POST /api/tickets/{id}/assign - Returns 404 for non-existent technician"""
+        """Test POST /api/v1/tickets/{id}/assign - Returns 404 for non-existent technician"""
         # Create a ticket first
         ticket_data = {"title": "TEST_Assign error test"}
         create_response = requests.post(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=auth_headers,
             json=ticket_data
         )
@@ -759,7 +759,7 @@ class TestErrorHandling:
         
         # Try to assign to non-existent technician
         response = requests.post(
-            f"{BASE_URL}/api/tickets/{ticket_id}/assign",
+            f"{BASE_URL}/api/v1/tickets/{ticket_id}/assign",
             headers=auth_headers,
             json={"technician_id": "user_nonexistent123"}
         )
@@ -767,18 +767,18 @@ class TestErrorHandling:
         print("✓ Assign to non-existent technician returns 404")
     
     def test_get_matches_nonexistent_ticket(self, auth_headers):
-        """Test GET /api/tickets/{id}/matches - Returns 404 for non-existent ticket"""
+        """Test GET /api/v1/tickets/{id}/matches - Returns 404 for non-existent ticket"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets/tkt_nonexistent123/matches",
+            f"{BASE_URL}/api/v1/tickets/tkt_nonexistent123/matches",
             headers=auth_headers
         )
         assert response.status_code == 404
         print("✓ Get matches for non-existent ticket returns 404")
     
     def test_select_card_nonexistent_ticket(self, auth_headers):
-        """Test POST /api/tickets/{id}/select-card - Returns 404 for non-existent ticket"""
+        """Test POST /api/v1/tickets/{id}/select-card - Returns 404 for non-existent ticket"""
         response = requests.post(
-            f"{BASE_URL}/api/tickets/tkt_nonexistent123/select-card",
+            f"{BASE_URL}/api/v1/tickets/tkt_nonexistent123/select-card",
             headers=auth_headers,
             json={"failure_id": "fail_test123"}
         )
@@ -810,7 +810,7 @@ class TestCleanup:
         """Clean up TEST_ prefixed tickets"""
         # Get all tickets
         response = requests.get(
-            f"{BASE_URL}/api/tickets?limit=500",
+            f"{BASE_URL}/api/v1/tickets?limit=500",
             headers=auth_headers
         )
         if response.status_code == 200:
