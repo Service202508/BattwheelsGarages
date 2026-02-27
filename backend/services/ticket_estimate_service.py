@@ -1099,12 +1099,14 @@ class TicketEstimateService:
         action: str,
         description: str,
         user_id: str,
-        user_name: str
+        user_name: str,
+        organization_id: str = ""
     ):
         """Log estimate history entry"""
         await self.estimate_history.insert_one({
             "history_id": f"eh_{uuid.uuid4().hex[:12]}",
             "estimate_id": estimate_id,
+            "organization_id": organization_id,
             "action": action,
             "description": description,
             "user_id": user_id,
