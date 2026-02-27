@@ -854,8 +854,9 @@ async def report_new_contacts(days: int = 30, contact_type: Optional[str] = None
 @router.post("/")
 async def create_contact(contact: ContactCreate, background_tasks: BackgroundTasks, request: Request = None):
     """Create a new contact (customer, vendor, or both)"""
-    # Get org context for multi-tenant scoping
-    org_id = await get_org_id(request) if request else None
+    if not request:
+        raise HTTPException(status_code=403, detail="Organization context required")
+    org_id = await get_org_id(request)
     
     # Check for duplicate by GSTIN or email (org-scoped)
     if contact.gstin:
