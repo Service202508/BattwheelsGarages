@@ -36,9 +36,12 @@ async def get_org_from_request(request: Request, db) -> str:
     # Non-production hosts: skip subdomain extraction entirely
     non_production_patterns = [
         "emergentagent.com",
+        "emergentcf.cloud",
         "localhost",
         "127.0.0.1",
         "0.0.0.0",
+        ".preview.",
+        ".cluster",
     ]
     is_non_production = any(p in host for p in non_production_patterns)
 
