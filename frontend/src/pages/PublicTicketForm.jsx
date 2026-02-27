@@ -22,15 +22,25 @@ const API = `${BACKEND_URL}/api`;
 
 // Resolve the workshop slug from the current URL:
 // workshopname.battwheels.com → "workshopname"
-// Falls back to ?org query param for development / preview URLs
+// Falls back to ?org_slug or ?org query param for development / preview URLs
 function getOrgSlug() {
   const hostname = window.location.hostname;
-  const parts = hostname.split(".");
-  if (parts.length >= 3 && !["www", "app", "api", "platform"].includes(parts[0])) {
-    return parts[0];
+  
+  // Non-production: skip subdomain extraction
+  const isNonProduction = ["emergentagent.com", "localhost", "127.0.0.1"].some(p => hostname.includes(p));
+  
+  if (!isNonProduction) {
+    // Production domain: extract subdomain
+    const parts = hostname.split(".");
+    const excluded = ["www", "app", "api", "platform", "admin", "mail", "docs"];
+    if (parts.length >= 3 && !excluded.includes(parts[0])) {
+      return parts[0];
+    }
   }
+  
+  // Fallback: query param
   const params = new URLSearchParams(window.location.search);
-  return params.get("org") || null;
+  return params.get("org_slug") || params.get("org") || null;
 }
 
 function getPublicHeaders() {
@@ -38,6 +48,18 @@ function getPublicHeaders() {
   const headers = { "Content-Type": "application/json" };
   if (slug) headers["X-Organization-Slug"] = slug;
   return headers;
+}
+
+// Build API URL with org_slug query param fallback for non-production
+function publicApiUrl(path) {
+  const slug = getOrgSlug();
+  const base = `${API}${path}`;
+  // Always append org_slug as query param for reliability
+  if (slug) {
+    const separator = base.includes("?") ? "&" : "?";
+    return `${base}${separator}org_slug=${slug}`;
+  }
+  return base;
 }
 
 // Customer types
