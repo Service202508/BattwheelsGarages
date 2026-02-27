@@ -1,89 +1,97 @@
-# Battwheels OS — PRD & Development Status
+# Battwheels OS — Product Requirements Document
 
 ## Original Problem Statement
-Full-stack SaaS platform (React/FastAPI/MongoDB) for automotive service management with EFI AI diagnostics. After a 6-phase "Architectural Evolution Sprint", a full audit revealed 35/100 production readiness. User ordered a 10-fix Stabilisation Sprint followed by deep verification and 3 completion fixes.
+Enterprise garage management platform (SaaS) covering:
+- Multi-tenant ticket/job management
+- Estimates, invoicing, credit notes
+- GST compliance (GSTR-1, GSTR-3B, RCM, E-Invoice)
+- Inventory and stock management
+- Employee/HR management
+- Customer portal
+- Razorpay payment integration
+- Subscription/entitlement management
 
-## Current State: Subscription Safety Complete (Feb 2026)
+## What's Been Implemented (Cumulative)
 
-### Stabilisation Sprint — COMPLETE
-All 10 fixes + 3 completion fixes + 3 cleanups verified and passing.
+### Phase 0/0.5 — Setup & Emergency Fix (2026-02-27)
+- Environment checks completed
+- Live Razorpay keys replaced with test placeholders
 
-### Onboarding Critical Fixes (Feb 27, 2026) — COMPLETE
+### Phase 1 — Grand Audit (2026-02-27)
+- Comprehensive 11-area audit conducted
+- Report: `/app/GRAND_AUDIT_2026_02_27.md`
+- Production readiness score: 68/100
 
-| Fix | Status | Details |
-|-----|--------|---------|
-| Fix A: Public Pattern /v1/ Mismatch | DONE | Updated RBAC + TenantGuard public patterns to include /api/v1/... paths. Registration, webhooks, login, password reset all unblocked. |
-| Fix B: Org Slug Resolution | DONE | Rewrote get_org_from_request() to detect non-production hosts (emergentagent.com, emergentcf.cloud, localhost). Falls back to X-Organization-Slug header or ?org_slug= query param. |
-| Fix C: Subscription Payment Flow | DONE | Built complete Razorpay subscription checkout: POST /subscribe creates Razorpay subscription, webhook handles activated/charged/halted/cancelled events, cancel endpoint, payment history, frontend checkout with Razorpay.js |
+### Phase 2 — Stabilization Sprint (2026-02-27)
+All 9 fixes implemented and verified:
 
-### Subscription Safety Fixes (Feb 27, 2026) — COMPLETE
+| Fix | Category | Status |
+|---|---|---|
+| Fix 1-3 | Tenant Isolation (CRITICAL) | DONE |
+| Fix 4 | RBAC owner role (HIGH) | DONE |
+| Fix 5 | CSRF middleware rebuild (CRITICAL) | DONE |
+| Fix 6 | Input sanitization middleware (HIGH) | DONE |
+| Fix 7 | GSTR-3B RCM rebuild (HIGH) | DONE |
+| Fix 8 | Test suite triage (HIGH) | DONE |
+| Fix 9 | Dead code cleanup (MEDIUM) | DONE |
 
-| Fix | Status | Details |
-|-----|--------|---------|
-| Fix 1: Duplicate Subscription Prevention | DONE | Added check in POST /subscribe for existing active/created/authenticated/pending subscriptions in subscription_orders + org document. Returns 409 Conflict. |
-| Fix 2: Live Key Safety Warning | DONE | Logs WARNING when rzp_live_* key detected in non-production ENVIRONMENT. ENVIRONMENT=development set in .env. |
-| Fix 3: Auto-Trial on Registration | DONE | Signup now sets subscription_status=trialing, trial_active=true, trial_start=now, trial_end=now+14d on org document. |
+**Final Score: 80/100** (up from 68/100)
+**Report:** `/app/STABILIZATION_FINAL_2026_02_27.md`
 
-### Onboarding Flow: 12/12 PASS
-1. Register new org → 200 ✅
-2. Chart of Accounts → seeds on first journal use
-3. Admin invite users → 200 ✅
-4. Configure org settings → 200 ✅
-5. View subscription plans → 200 (public) ✅
-6. Razorpay subscription checkout → real subscription created ✅
-7. Webhook processes payment → org activated ✅
-8. Welcome email → Resend configured and working ✅
-9. Employee login → 200 ✅
-10. Public ticket form → org_slug resolution working ✅
-11. Customer submits ticket → 200 ✅
-12. Ticket in org's All Tickets → visible ✅
+### Additional Bugs Fixed During Sprint
+- `entity_crud.py` dict attribute access error (caused 500 on vehicle listing)
+- Ticket RBAC missing "owner" role (caused 403 for org owners)
 
-### Architecture
+## Architecture
+
 ```
-/app/backend/
-├── server.py (248 lines)
-├── middleware/ (rbac.py — updated public patterns, tenant_guard.py)
-├── core/tenant/guard.py (updated PUBLIC_ENDPOINTS + PUBLIC_PATTERNS)
-├── routes/
-│   ├── subscriptions.py (subscribe, cancel-razorpay, payment-history endpoints)
-│   ├── razorpay.py (webhook handler for subscription.* events)
-│   ├── public_tickets.py (updated get_org_from_request for non-production)
-│   └── ... (all other routes)
-├── utils/ (auth.py, period_lock.py, indexes.py — partial index fix)
-└── services/
+/app
+├── backend/
+│   ├── middleware/
+│   │   ├── csrf.py
+│   │   ├── sanitization.py
+│   │   ├── rbac.py
+│   │   ├── rate_limit.py
+│   │   └── tenant_guard.py
+│   ├── routes/ (70+ route modules)
+│   ├── services/
+│   ├── schemas/
+│   ├── tests/ (122 test files)
+│   └── server.py
+├── frontend/
+│   └── src/
+└── scripts/
+    ├── run_core_tests.sh
+    └── verify_prod_org.py
 ```
 
-### Key API Endpoints (New)
-- `POST /api/v1/subscriptions/subscribe` — Create Razorpay subscription checkout
-- `POST /api/v1/subscriptions/cancel-razorpay` — Cancel subscription at period end
-- `GET /api/v1/subscriptions/payment-history` — Payment receipts
-- Webhook: `subscription.activated`, `subscription.charged`, `subscription.pending`, `subscription.halted`, `subscription.cancelled`
+## Prioritized Backlog
 
-### Key Credentials
-- Dev: `dev@battwheels.internal` / `DevTest@123` (owner)
-- New: `rajesh.audit@battwheelsgarages.com` / `Garage@2026` (owner, org: org_d357321217cc)
-- Tech A: `tech.a@battwheels.internal` / `TechA@123` (technician)
+### P0 — Beta Launch Blockers
+- Await Phase 3 instructions from user
 
-### Testing Status
-- Stabilisation: 24/24 PASS
-- Onboarding: 12/12 PASS
-- Regression: No failures
+### P1 — High Priority
+- H-01/H-02: Implement pagination for 435+ unbounded `.find()` queries
+- H-07: Seed staging database with representative data for QA
+- Rewrite 72 stale test assertions to match current API (path + response format)
 
-## P2 — Backlog
+### P2 — Medium Priority
+- AIAssistant.jsx page build-out
 - Failure Card Insights Dashboard
-- AIAssistant.jsx implementation
-- Estimate-to-Ticket conversion flow
-- 20+ unbounded DB queries (pagination)
-- Finance & RBAC test coverage
-- Fix Reverse Charge in GSTR-3B
-- Zoho dead code removal (823 references)
-- contact_integration.py tenant isolation fix
+- Real E-Invoice NIC API implementation
+- INCIDENTS.md documentation
+- Zoho comment cleanup across route files
 
-## 3rd Party Integrations
-- Razorpay (Subscription payments — LIVE)
-- Gemini (EFI AI) — via Emergent LLM Key
-- Resend (Email — LIVE)
-- WhatsApp — MOCKED
+### P3 — Low Priority / Nice-to-have
+- Estimate-to-Ticket conversion flow enhancement
+- Category B/C test file cleanup/deletion
+- Load testing suite
 
-## Estimated Score: ~80/100
-(up from 78 — subscription safety fixes complete: duplicate prevention, live key warning, auto-trial)
+## Key Test Credentials
+- Admin: `dev@battwheels.internal` / `DevTest@123`
+- Technician: `tech.a@battwheels.internal` / `TechA@123`
+- Dev org: `dev-internal-testing-001`
+
+## Core Test Suite
+Run: `bash /app/scripts/run_core_tests.sh`
+Current pass rate: 235/373 (63%)
