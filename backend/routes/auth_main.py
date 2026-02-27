@@ -145,7 +145,7 @@ async def switch_organization(request: Request):
     
     # Verify user is a member of the target org
     membership = await db.organization_users.find_one({
-        "user_id": user.user_id,
+        "user_id": user["user_id"],
         "organization_id": target_org_id,
         "status": "active"
     })
@@ -154,7 +154,7 @@ async def switch_organization(request: Request):
         raise HTTPException(status_code=403, detail="You are not a member of this organization")
     
     # Create new token with target org
-    token = create_token(user.user_id, user.email, membership["role"], org_id=target_org_id)
+    token = create_token(user["user_id"], user["email"], membership["role"], org_id=target_org_id)
     
     # Get org details
     org = await db.organizations.find_one(
