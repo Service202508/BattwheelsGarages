@@ -19,7 +19,7 @@ class TestHealthAndAuth:
     
     def test_admin_login(self):
         """Admin login - admin@battwheels.in"""
-        res = requests.post(f"{BASE_URL}/api/auth/login", json={
+        res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -32,7 +32,7 @@ class TestHealthAndAuth:
     
     def test_technician_login(self):
         """Technician login - tech.a@battwheels.internal"""
-        res = requests.post(f"{BASE_URL}/api/auth/login", json={
+        res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "tech.a@battwheels.internal",
             "password": "TechA@123"
         })
@@ -50,7 +50,7 @@ class TestPermissionsAPI:
     @pytest.fixture
     def admin_token(self):
         """Get admin auth token"""
-        res = requests.post(f"{BASE_URL}/api/auth/login", json={
+        res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -227,7 +227,7 @@ class TestTechnicianPortalAPI:
     @pytest.fixture
     def tech_token(self):
         """Get technician auth token"""
-        res = requests.post(f"{BASE_URL}/api/auth/login", json={
+        res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "deepak@battwheelsgarages.in",
             "password": "DevTest@123"
         })
@@ -239,7 +239,7 @@ class TestTechnicianPortalAPI:
     def test_technician_dashboard(self, tech_token):
         """GET /api/technician/dashboard - Technician dashboard data"""
         res = requests.get(
-            f"{BASE_URL}/api/technician/dashboard",
+            f"{BASE_URL}/api/v1/technician/dashboard",
             headers={"Authorization": f"Bearer {tech_token}"}
         )
         print(f"Technician dashboard: {res.status_code}")
@@ -260,7 +260,7 @@ class TestTechnicianPortalAPI:
     def test_technician_my_tickets(self, tech_token):
         """GET /api/technician/tickets - Only assigned tickets"""
         res = requests.get(
-            f"{BASE_URL}/api/technician/tickets",
+            f"{BASE_URL}/api/v1/technician/tickets",
             headers={"Authorization": f"Bearer {tech_token}"}
         )
         print(f"Technician tickets: {res.status_code}")
@@ -275,7 +275,7 @@ class TestTechnicianPortalAPI:
     def test_technician_tickets_filter_status(self, tech_token):
         """GET /api/technician/tickets?status=active - Filter by status"""
         res = requests.get(
-            f"{BASE_URL}/api/technician/tickets",
+            f"{BASE_URL}/api/v1/technician/tickets",
             params={"status": "active"},
             headers={"Authorization": f"Bearer {tech_token}"}
         )
@@ -287,7 +287,7 @@ class TestTechnicianPortalAPI:
     def test_technician_attendance(self, tech_token):
         """GET /api/technician/attendance - Own attendance records"""
         res = requests.get(
-            f"{BASE_URL}/api/technician/attendance",
+            f"{BASE_URL}/api/v1/technician/attendance",
             headers={"Authorization": f"Bearer {tech_token}"}
         )
         print(f"Technician attendance: {res.status_code}")
@@ -304,7 +304,7 @@ class TestTechnicianPortalAPI:
     def test_technician_leave_requests(self, tech_token):
         """GET /api/technician/leave - Own leave requests"""
         res = requests.get(
-            f"{BASE_URL}/api/technician/leave",
+            f"{BASE_URL}/api/v1/technician/leave",
             headers={"Authorization": f"Bearer {tech_token}"}
         )
         print(f"Technician leave: {res.status_code}")
@@ -316,7 +316,7 @@ class TestTechnicianPortalAPI:
     def test_technician_payroll(self, tech_token):
         """GET /api/technician/payroll - Own payroll history"""
         res = requests.get(
-            f"{BASE_URL}/api/technician/payroll",
+            f"{BASE_URL}/api/v1/technician/payroll",
             headers={"Authorization": f"Bearer {tech_token}"}
         )
         print(f"Technician payroll: {res.status_code}")
@@ -327,7 +327,7 @@ class TestTechnicianPortalAPI:
     def test_technician_productivity(self, tech_token):
         """GET /api/technician/productivity - Own productivity metrics"""
         res = requests.get(
-            f"{BASE_URL}/api/technician/productivity",
+            f"{BASE_URL}/api/v1/technician/productivity",
             headers={"Authorization": f"Bearer {tech_token}"}
         )
         print(f"Technician productivity: {res.status_code}")
@@ -339,14 +339,14 @@ class TestTechnicianPortalAPI:
     
     def test_technician_unauthorized_without_token(self):
         """Technician APIs require authentication"""
-        res = requests.get(f"{BASE_URL}/api/technician/dashboard")
+        res = requests.get(f"{BASE_URL}/api/v1/technician/dashboard")
         print(f"Unauthorized access: {res.status_code}")
         assert res.status_code == 401
     
     @pytest.fixture
     def admin_token(self):
         """Get admin token"""
-        res = requests.post(f"{BASE_URL}/api/auth/login", json={
+        res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -357,7 +357,7 @@ class TestTechnicianPortalAPI:
     def test_admin_cannot_access_technician_portal(self, admin_token):
         """Admin role should be rejected from technician portal"""
         res = requests.get(
-            f"{BASE_URL}/api/technician/dashboard",
+            f"{BASE_URL}/api/v1/technician/dashboard",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Admin accessing tech portal: {res.status_code}")
@@ -370,7 +370,7 @@ class TestBusinessPortalAPI:
     @pytest.fixture
     def admin_token(self):
         """Get admin token for testing"""
-        res = requests.post(f"{BASE_URL}/api/auth/login", json={
+        res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
@@ -381,7 +381,7 @@ class TestBusinessPortalAPI:
     def test_business_registration_endpoint_exists(self):
         """POST /api/business/register - Endpoint exists"""
         res = requests.post(
-            f"{BASE_URL}/api/business/register",
+            f"{BASE_URL}/api/v1/business/register",
             json={
                 "business_name": "TEST_Fleet_Company",
                 "business_type": "fleet",
@@ -402,7 +402,7 @@ class TestBusinessPortalAPI:
     def test_business_dashboard_endpoint_exists(self, admin_token):
         """GET /api/business/dashboard - Endpoint exists"""
         res = requests.get(
-            f"{BASE_URL}/api/business/dashboard",
+            f"{BASE_URL}/api/v1/business/dashboard",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Business dashboard: {res.status_code}")
@@ -412,7 +412,7 @@ class TestBusinessPortalAPI:
     def test_business_fleet_endpoint_exists(self, admin_token):
         """GET /api/business/fleet - Endpoint exists"""
         res = requests.get(
-            f"{BASE_URL}/api/business/fleet",
+            f"{BASE_URL}/api/v1/business/fleet",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Business fleet: {res.status_code}")
@@ -421,7 +421,7 @@ class TestBusinessPortalAPI:
     def test_business_tickets_endpoint_exists(self, admin_token):
         """GET /api/business/tickets - Endpoint exists"""
         res = requests.get(
-            f"{BASE_URL}/api/business/tickets",
+            f"{BASE_URL}/api/v1/business/tickets",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Business tickets: {res.status_code}")
@@ -430,7 +430,7 @@ class TestBusinessPortalAPI:
     def test_business_invoices_endpoint_exists(self, admin_token):
         """GET /api/business/invoices - Endpoint exists"""
         res = requests.get(
-            f"{BASE_URL}/api/business/invoices",
+            f"{BASE_URL}/api/v1/business/invoices",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Business invoices: {res.status_code}")
@@ -439,7 +439,7 @@ class TestBusinessPortalAPI:
     def test_business_amc_endpoint_exists(self, admin_token):
         """GET /api/business/amc - Endpoint exists"""
         res = requests.get(
-            f"{BASE_URL}/api/business/amc",
+            f"{BASE_URL}/api/v1/business/amc",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Business AMC: {res.status_code}")
@@ -448,7 +448,7 @@ class TestBusinessPortalAPI:
     def test_business_reports_endpoint_exists(self, admin_token):
         """GET /api/business/reports/summary - Endpoint exists"""
         res = requests.get(
-            f"{BASE_URL}/api/business/reports/summary",
+            f"{BASE_URL}/api/v1/business/reports/summary",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Business reports: {res.status_code}")
@@ -457,7 +457,7 @@ class TestBusinessPortalAPI:
     def test_business_bulk_payment_endpoint_exists(self, admin_token):
         """POST /api/business/invoices/bulk-payment - Endpoint exists"""
         res = requests.post(
-            f"{BASE_URL}/api/business/invoices/bulk-payment",
+            f"{BASE_URL}/api/v1/business/invoices/bulk-payment",
             headers={
                 "Authorization": f"Bearer {admin_token}",
                 "Content-Type": "application/json"
@@ -477,7 +477,7 @@ class TestSeedDefaults:
     
     @pytest.fixture
     def admin_token(self):
-        res = requests.post(f"{BASE_URL}/api/auth/login", json={
+        res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
