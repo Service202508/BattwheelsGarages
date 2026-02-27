@@ -549,10 +549,11 @@ async def link_transactions_to_enhanced(
 
     for collection_name, contact_field in collections_to_update:
         collection = db[collection_name]
+        # H-02: hard cap, Sprint 3 for cursor pagination
         docs = await collection.find(
             {"organization_id": org_id, contact_field: {"$exists": True, "$ne": ""}},
             {"_id": 1, contact_field: 1}
-        ).to_list(10000)
+        ).to_list(500)
 
         updated = 0
         for doc in docs:
@@ -653,10 +654,11 @@ async def report_receivables_aging(
     db = _get_db()
     org_id = ctx.org_id
 
+    # H-02: hard cap, Sprint 3 for cursor pagination
     invoices = await db["invoices"].find(
         {"organization_id": org_id, "status": {"$nin": ["paid", "void"]}, "balance_due": {"$gt": 0}},
         {"_id": 0, "customer_id": 1, "balance_due": 1, "due_date": 1, "invoice_number": 1}
-    ).to_list(10000)
+    ).to_list(500)
 
     today = datetime.now(timezone.utc).date()
     customer_aging = {}
@@ -721,10 +723,11 @@ async def report_payables_aging(
     db = _get_db()
     org_id = ctx.org_id
 
+    # H-02: hard cap, Sprint 3 for cursor pagination
     bills = await db["bills"].find(
         {"organization_id": org_id, "status": {"$nin": ["paid", "void"]}, "balance_due": {"$gt": 0}},
         {"_id": 0, "vendor_id": 1, "balance_due": 1, "due_date": 1, "bill_number": 1}
-    ).to_list(10000)
+    ).to_list(500)
 
     today = datetime.now(timezone.utc).date()
     vendor_aging = {}

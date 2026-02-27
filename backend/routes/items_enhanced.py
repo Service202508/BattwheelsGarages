@@ -647,9 +647,10 @@ async def list_warehouses(include_inactive: bool = False):
     
     # Calculate stock values for each warehouse
     for wh in warehouses:
+        # H-02: hard cap, Sprint 3 for cursor pagination
         stock_locs = await db.item_stock_locations.find(
             {"warehouse_id": wh["warehouse_id"]}
-        ).to_list(10000)
+        ).to_list(500)
         wh["total_items"] = len(stock_locs)
         wh["total_stock"] = sum(s.get("stock", 0) for s in stock_locs)
     
@@ -1024,10 +1025,11 @@ async def get_low_stock_items():
     """Get items below reorder level"""
     db = get_db()
     
+    # H-02: hard cap, Sprint 3 for cursor pagination
     items = await db.items.find(
         {"item_type": "inventory"},
         {"_id": 0}
-    ).to_list(10000)
+    ).to_list(500)
     
     low_stock_items = []
     for item in items:
@@ -1604,7 +1606,8 @@ async def bulk_set_prices(pricelist_id: str, request: BulkItemPriceSet):
     
     # If percentage method, apply to all items
     if request.pricing_method == "percentage" and request.percentage != 0:
-        items = await db.items.find({"is_active": True}, {"_id": 0}).to_list(10000)
+        # H-02: hard cap, Sprint 3 for cursor pagination
+        items = await db.items.find({"is_active": True}, {"_id": 0}).to_list(500)
         
         for item in items:
             base_rate = item.get("sales_rate", 0) or item.get("rate", 0)
@@ -1958,7 +1961,8 @@ async def get_sales_by_item_report(
     if customer_id:
         query["customer_id"] = customer_id
     
-    invoices = await db.invoices.find(query, {"_id": 0}).to_list(10000)
+    # H-02: hard cap, Sprint 3 for cursor pagination
+    invoices = await db.invoices.find(query, {"_id": 0}).to_list(500)
     
     # Aggregate sales by item
     item_sales = {}
@@ -2039,7 +2043,8 @@ async def get_purchases_by_item_report(
     if vendor_id:
         query["vendor_id"] = vendor_id
     
-    bills = await db.bills.find(query, {"_id": 0}).to_list(10000)
+    # H-02: hard cap, Sprint 3 for cursor pagination
+    bills = await db.bills.find(query, {"_id": 0}).to_list(500)
     
     item_purchases = {}
     
@@ -2109,7 +2114,8 @@ async def get_inventory_valuation_report(
     
     query = {"item_type": {"$in": ["inventory", "sales_and_purchases"]}, "is_active": True}
     
-    items = await db.items.find(query, {"_id": 0}).to_list(10000)
+    # H-02: hard cap, Sprint 3 for cursor pagination
+    items = await db.items.find(query, {"_id": 0}).to_list(500)
     
     valuation_items = []
     total_value = 0
@@ -2281,7 +2287,8 @@ async def get_stock_summary(warehouse_id: str = ""):
     
     match_stage = {"item_type": {"$in": ["inventory", "sales_and_purchases"]}}
     
-    items = await db.items.find(match_stage, {"_id": 0}).to_list(10000)
+    # H-02: hard cap, Sprint 3 for cursor pagination
+    items = await db.items.find(match_stage, {"_id": 0}).to_list(500)
     
     summary = {
         "total_items": len(items),
