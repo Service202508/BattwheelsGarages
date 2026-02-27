@@ -28,7 +28,7 @@ class TestAuthentication:
     def test_admin_login(self):
         """Test admin can login successfully"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         assert response.status_code == 200, f"Login failed: {response.text}"
@@ -42,7 +42,7 @@ class TestAuthentication:
     def test_technician_login(self):
         """Test technician can login successfully"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": TECH_EMAIL, "password": TECH_PASSWORD}
         )
         assert response.status_code == 200, f"Login failed: {response.text}"
@@ -60,7 +60,7 @@ class TestOrganizationContext:
         """Get auth tokens for tests"""
         # Admin login
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         self.admin_token = response.json()["token"]
@@ -68,7 +68,7 @@ class TestOrganizationContext:
         
         # Technician login
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": TECH_EMAIL, "password": TECH_PASSWORD}
         )
         self.tech_token = response.json()["token"]
@@ -77,7 +77,7 @@ class TestOrganizationContext:
     def test_get_current_organization(self):
         """Test GET /api/org - returns current organization profile"""
         response = requests.get(
-            f"{BASE_URL}/api/org",
+            f"{BASE_URL}/api/v1/org",
             headers=self.admin_headers
         )
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -90,7 +90,7 @@ class TestOrganizationContext:
     def test_get_organization_settings(self):
         """Test GET /api/org/settings - returns organization settings"""
         response = requests.get(
-            f"{BASE_URL}/api/org/settings",
+            f"{BASE_URL}/api/v1/org/settings",
             headers=self.admin_headers
         )
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -107,7 +107,7 @@ class TestOrganizationContext:
     def test_list_organization_users(self):
         """Test GET /api/org/users - lists users in organization"""
         response = requests.get(
-            f"{BASE_URL}/api/org/users",
+            f"{BASE_URL}/api/v1/org/users",
             headers=self.admin_headers
         )
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -120,7 +120,7 @@ class TestOrganizationContext:
     def test_list_user_organizations(self):
         """Test GET /api/org/list - lists all organizations user belongs to"""
         response = requests.get(
-            f"{BASE_URL}/api/org/list",
+            f"{BASE_URL}/api/v1/org/list",
             headers=self.admin_headers
         )
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -141,14 +141,14 @@ class TestVehiclesScoping:
     def setup(self):
         """Get auth token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         self.token = response.json()["token"]
         self.headers = {"Authorization": f"Bearer {self.token}"}
         
         # Get org_id
-        org_response = requests.get(f"{BASE_URL}/api/org", headers=self.headers)
+        org_response = requests.get(f"{BASE_URL}/api/v1/org", headers=self.headers)
         if org_response.status_code == 200:
             self.org_id = org_response.json().get("organization_id")
         else:
@@ -157,7 +157,7 @@ class TestVehiclesScoping:
     def test_list_vehicles_without_header(self):
         """Test GET /api/vehicles - uses user's default organization"""
         response = requests.get(
-            f"{BASE_URL}/api/vehicles",
+            f"{BASE_URL}/api/v1/vehicles",
             headers=self.headers
         )
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -172,7 +172,7 @@ class TestVehiclesScoping:
         
         headers = {**self.headers, "X-Organization-ID": self.org_id}
         response = requests.get(
-            f"{BASE_URL}/api/vehicles",
+            f"{BASE_URL}/api/v1/vehicles",
             headers=headers
         )
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -188,14 +188,14 @@ class TestTicketsScoping:
     def setup(self):
         """Get auth token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         self.token = response.json()["token"]
         self.headers = {"Authorization": f"Bearer {self.token}"}
         
         # Get org_id
-        org_response = requests.get(f"{BASE_URL}/api/org", headers=self.headers)
+        org_response = requests.get(f"{BASE_URL}/api/v1/org", headers=self.headers)
         if org_response.status_code == 200:
             self.org_id = org_response.json().get("organization_id")
         else:
@@ -204,7 +204,7 @@ class TestTicketsScoping:
     def test_list_tickets_without_header(self):
         """Test GET /api/tickets - uses user's default organization"""
         response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=self.headers
         )
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -223,7 +223,7 @@ class TestTicketsScoping:
         
         headers = {**self.headers, "X-Organization-ID": self.org_id}
         response = requests.get(
-            f"{BASE_URL}/api/tickets",
+            f"{BASE_URL}/api/v1/tickets",
             headers=headers
         )
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -237,14 +237,14 @@ class TestCustomersScoping:
     def setup(self):
         """Get auth token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         self.token = response.json()["token"]
         self.headers = {"Authorization": f"Bearer {self.token}"}
         
         # Get org_id
-        org_response = requests.get(f"{BASE_URL}/api/org", headers=self.headers)
+        org_response = requests.get(f"{BASE_URL}/api/v1/org", headers=self.headers)
         if org_response.status_code == 200:
             self.org_id = org_response.json().get("organization_id")
         else:
@@ -253,7 +253,7 @@ class TestCustomersScoping:
     def test_list_customers_without_header(self):
         """Test GET /api/customers - uses user's default organization"""
         response = requests.get(
-            f"{BASE_URL}/api/customers",
+            f"{BASE_URL}/api/v1/customers",
             headers=self.headers
         )
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -272,7 +272,7 @@ class TestCustomersScoping:
         
         headers = {**self.headers, "X-Organization-ID": self.org_id}
         response = requests.get(
-            f"{BASE_URL}/api/customers",
+            f"{BASE_URL}/api/v1/customers",
             headers=headers
         )
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -286,14 +286,14 @@ class TestInventoryScoping:
     def setup(self):
         """Get auth token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         self.token = response.json()["token"]
         self.headers = {"Authorization": f"Bearer {self.token}"}
         
         # Get org_id
-        org_response = requests.get(f"{BASE_URL}/api/org", headers=self.headers)
+        org_response = requests.get(f"{BASE_URL}/api/v1/org", headers=self.headers)
         if org_response.status_code == 200:
             self.org_id = org_response.json().get("organization_id")
         else:
@@ -302,7 +302,7 @@ class TestInventoryScoping:
     def test_list_inventory_without_header(self):
         """Test GET /api/inventory - uses user's default organization"""
         response = requests.get(
-            f"{BASE_URL}/api/inventory",
+            f"{BASE_URL}/api/v1/inventory",
             headers=self.headers
         )
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -319,7 +319,7 @@ class TestPermissions:
         """Get auth tokens"""
         # Admin
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         self.admin_token = response.json()["token"]
@@ -327,7 +327,7 @@ class TestPermissions:
         
         # Technician
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": TECH_EMAIL, "password": TECH_PASSWORD}
         )
         self.tech_token = response.json()["token"]
@@ -336,7 +336,7 @@ class TestPermissions:
     def test_admin_can_update_settings(self):
         """Test admin/owner can update organization settings"""
         response = requests.patch(
-            f"{BASE_URL}/api/org/settings",
+            f"{BASE_URL}/api/v1/org/settings",
             headers=self.admin_headers,
             json={"service_radius_km": 55}
         )
@@ -346,7 +346,7 @@ class TestPermissions:
     def test_technician_cannot_update_settings(self):
         """Test technician cannot update organization settings"""
         response = requests.patch(
-            f"{BASE_URL}/api/org/settings",
+            f"{BASE_URL}/api/v1/org/settings",
             headers=self.tech_headers,
             json={"service_radius_km": 100}
         )
@@ -356,7 +356,7 @@ class TestPermissions:
     def test_technician_can_read_organization(self):
         """Test technician can read organization info"""
         response = requests.get(
-            f"{BASE_URL}/api/org",
+            f"{BASE_URL}/api/v1/org",
             headers=self.tech_headers
         )
         assert response.status_code == 200, f"Technician should be able to read org: {response.text}"
@@ -365,7 +365,7 @@ class TestPermissions:
     def test_technician_can_read_settings(self):
         """Test technician can read organization settings"""
         response = requests.get(
-            f"{BASE_URL}/api/org/settings",
+            f"{BASE_URL}/api/v1/org/settings",
             headers=self.tech_headers
         )
         assert response.status_code == 200, f"Technician should be able to read settings: {response.text}"
@@ -377,14 +377,14 @@ class TestUnauthenticatedAccess:
     
     def test_no_token_returns_401(self):
         """Test requests without auth token return 401"""
-        response = requests.get(f"{BASE_URL}/api/org")
+        response = requests.get(f"{BASE_URL}/api/v1/org")
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("✓ Unauthenticated access correctly denied (401)")
     
     def test_invalid_token_returns_401(self):
         """Test requests with invalid token return 401"""
         response = requests.get(
-            f"{BASE_URL}/api/org",
+            f"{BASE_URL}/api/v1/org",
             headers={"Authorization": "Bearer invalid_token"}
         )
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
@@ -398,7 +398,7 @@ class TestAvailableRoles:
     def setup(self):
         """Get auth token"""
         response = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}
         )
         self.token = response.json()["token"]
@@ -407,7 +407,7 @@ class TestAvailableRoles:
     def test_get_available_roles(self):
         """Test GET /api/org/roles - returns available roles and permissions"""
         response = requests.get(
-            f"{BASE_URL}/api/org/roles",
+            f"{BASE_URL}/api/v1/org/roles",
             headers=self.headers
         )
         assert response.status_code == 200, f"Failed: {response.text}"
