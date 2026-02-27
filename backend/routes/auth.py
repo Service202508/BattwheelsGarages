@@ -50,8 +50,15 @@ async def login(credentials: UserLogin, response: Response):
         _log.getLogger("auth.debug").warning(f"LOGIN FAIL: user not found for {credentials.email}")
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    _log.getLogger("auth.debug").warning(f"LOGIN: user found, hash_prefix={user.get('password_hash','')[:10]}")
-    if not verify_password(credentials.password, user.get("password_hash", "")):
+    pw_hash = user.get('password_hash','')
+    _log.getLogger("auth.debug").warning(f"LOGIN: password_received='{credentials.password}', hash='{pw_hash}'")
+    import bcrypt as _bc
+    try:
+        direct = _bc.checkpw(credentials.password.encode(), pw_hash.encode())
+        _log.getLogger("auth.debug").warning(f"LOGIN: direct_bcrypt_result={direct}")
+    except Exception as e:
+        _log.getLogger("auth.debug").warning(f"LOGIN: direct_bcrypt_error={e}")
+    if not verify_password(credentials.password, pw_hash):
         _log.getLogger("auth.debug").warning(f"LOGIN FAIL: password mismatch for {credentials.email}")
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
