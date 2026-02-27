@@ -16,10 +16,10 @@ from datetime import datetime
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip('/')
 
 # Test credentials
-ADMIN_EMAIL = "admin@battwheels.in"
+ADMIN_EMAIL = "dev@battwheels.internal"
 ADMIN_PASSWORD = "test_pwd_placeholder"
 TECH_EMAIL = "deepak@battwheelsgarages.in"
-TECH_PASSWORD = "tech123"
+TECH_PASSWORD = "DevTest@123"
 
 
 class TestAuthentication:
@@ -36,7 +36,7 @@ class TestAuthentication:
         assert "token" in data, "No token in response"
         assert "user" in data, "No user in response"
         assert data["user"]["email"] == ADMIN_EMAIL
-        assert data["user"]["role"] == "admin"
+        assert data["user"]["role"] == "DevTest@123"
         print(f"✓ Admin login successful - user_id: {data['user']['user_id']}")
     
     def test_technician_login(self):
@@ -415,7 +415,7 @@ class TestAvailableRoles:
         assert "roles" in data, "Missing roles array"
         role_names = [r["role"] for r in data["roles"]]
         assert "owner" in role_names, "Missing owner role"
-        assert "admin" in role_names, "Missing admin role"
+        assert "DevTest@123" in role_names, "Missing admin role"
         assert "technician" in role_names, "Missing technician role"
         print(f"✓ Available roles: {role_names}")
 

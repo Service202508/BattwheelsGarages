@@ -20,21 +20,21 @@ class TestHealthAndAuth:
     def test_admin_login(self):
         """Admin login - admin@battwheels.in"""
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "test_pwd_placeholder"
         })
         print(f"Admin login: {res.status_code}")
         assert res.status_code == 200
         data = res.json()
         assert "token" in data or "access_token" in data
-        assert data.get("user", {}).get("role") == "admin"
+        assert data.get("user", {}).get("role") == "DevTest@123"
         return data
     
     def test_technician_login(self):
         """Technician login - deepak@battwheelsgarages.in"""
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "deepak@battwheelsgarages.in",
-            "password": "tech123"
+            "password": "DevTest@123"
         })
         print(f"Technician login: {res.status_code}")
         assert res.status_code == 200
@@ -51,7 +51,7 @@ class TestPermissionsAPI:
     def admin_token(self):
         """Get admin auth token"""
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "test_pwd_placeholder"
         })
         if res.status_code != 200:
@@ -91,7 +91,7 @@ class TestPermissionsAPI:
         roles = data["roles"]
         # Check all 5 expected roles exist
         role_names = [r["role"] for r in roles]
-        expected_roles = ["admin", "manager", "technician", "customer", "business_customer"]
+        expected_roles = ["DevTest@123", "manager", "technician", "customer", "business_customer"]
         for expected in expected_roles:
             assert expected in role_names, f"Role '{expected}' not found"
         print(f"Found roles: {role_names}")
@@ -105,7 +105,7 @@ class TestPermissionsAPI:
         print(f"Get admin permissions: {res.status_code}")
         assert res.status_code == 200
         data = res.json()
-        assert data["role"] == "admin"
+        assert data["role"] == "DevTest@123"
         assert "modules" in data
         # Admin should have full access to dashboard
         dashboard_perms = data["modules"].get("dashboard", {})
@@ -193,7 +193,7 @@ class TestPermissionsAPI:
         """GET /api/permissions/check - Check specific permission"""
         res = requests.get(
             f"{BASE_URL}/api/permissions/check",
-            params={"role": "admin", "module_id": "dashboard", "action": "can_view"},
+            params={"role": "DevTest@123", "module_id": "dashboard", "action": "can_view"},
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Check permission: {res.status_code}")
@@ -229,7 +229,7 @@ class TestTechnicianPortalAPI:
         """Get technician auth token"""
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "deepak@battwheelsgarages.in",
-            "password": "tech123"
+            "password": "DevTest@123"
         })
         if res.status_code != 200:
             pytest.skip("Technician login failed")
@@ -347,7 +347,7 @@ class TestTechnicianPortalAPI:
     def admin_token(self):
         """Get admin token"""
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "test_pwd_placeholder"
         })
         if res.status_code != 200:
@@ -371,7 +371,7 @@ class TestBusinessPortalAPI:
     def admin_token(self):
         """Get admin token for testing"""
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "test_pwd_placeholder"
         })
         if res.status_code != 200:
@@ -478,7 +478,7 @@ class TestSeedDefaults:
     @pytest.fixture
     def admin_token(self):
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "test_pwd_placeholder"
         })
         if res.status_code != 200:
@@ -496,7 +496,7 @@ class TestSeedDefaults:
         data = res.json()
         assert "roles" in data
         roles = data["roles"]
-        assert "admin" in roles
+        assert "DevTest@123" in roles
         assert "technician" in roles
         assert "business_customer" in roles
 

@@ -49,7 +49,7 @@ class TestForgotPasswordFlow:
         """Forgot password with existing email returns success message"""
         res = requests.post(
             f"{BASE_URL}/api/auth/forgot-password",
-            json={"email": "admin@battwheels.in"},
+            json={"email": "dev@battwheels.internal"},
             headers={"Content-Type": "application/json"}
         )
         assert res.status_code == 200, f"Expected 200, got {res.status_code}: {res.text}"
@@ -118,7 +118,7 @@ class TestSelfServicePasswordChange:
         """Login as admin to get token"""
         res = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "admin"},
+            json={"email": "dev@battwheels.internal", "password": "DevTest@123"},
             headers={"Content-Type": "application/json"}
         )
         if res.status_code == 200:
@@ -129,7 +129,7 @@ class TestSelfServicePasswordChange:
         """Change password without auth should return 401"""
         res = requests.post(
             f"{BASE_URL}/api/auth/change-password",
-            json={"current_password": "admin", "new_password": "newpass123"},
+            json={"current_password": "DevTest@123", "new_password": "newpass123"},
             headers={"Content-Type": "application/json"}
         )
         assert res.status_code in [401, 403], f"Expected 401/403 without auth, got {res.status_code}"
@@ -156,7 +156,7 @@ class TestSelfServicePasswordChange:
         # Step 1: Change to new password (6+ chars required for new_password)
         res = requests.post(
             f"{BASE_URL}/api/auth/change-password",
-            json={"current_password": "admin", "new_password": "test_pwd_placeholder"},
+            json={"current_password": "DevTest@123", "new_password": "test_pwd_placeholder"},
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {admin_token}"
@@ -170,7 +170,7 @@ class TestSelfServicePasswordChange:
         # Step 2: Login with new password to verify
         login_res = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "test_pwd_placeholder"},
+            json={"email": "dev@battwheels.internal", "password": "test_pwd_placeholder"},
             headers={"Content-Type": "application/json"}
         )
         assert login_res.status_code == 200, f"Could not login with new password: {login_res.status_code}"
@@ -194,7 +194,7 @@ class TestSelfServicePasswordChange:
         # Step 4: Verify login with new password
         verify_res = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "admin!"},
+            json={"email": "dev@battwheels.internal", "password": "admin!"},
             headers={"Content-Type": "application/json"}
         )
         assert verify_res.status_code == 200, f"Login with password failed: {verify_res.status_code}"
@@ -210,7 +210,7 @@ class TestAdminResetEmployeePassword:
         """Login as admin to get token and headers"""
         res = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "admin"},
+            json={"email": "dev@battwheels.internal", "password": "DevTest@123"},
             headers={"Content-Type": "application/json"}
         )
         if res.status_code == 200:
@@ -286,7 +286,7 @@ class TestTechnicianLogin:
         """Verify technician credentials work"""
         res = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "tech@battwheels.in", "password": "tech123"},
+            json={"email": "tech.a@battwheels.internal", "password": "DevTest@123"},
             headers={"Content-Type": "application/json"}
         )
         if res.status_code == 200:

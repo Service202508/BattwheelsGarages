@@ -26,7 +26,7 @@ MONGO_URL = os.environ["MONGO_URL"]
 DB_NAME = os.environ["DB_NAME"]
 
 # Real org for ORG_A (admin user already has membership)
-ORG_A = "6996dcf072ffd2a2395fee7b"
+ORG_A = "dev-internal-testing-001"
 # Synthetic org for ORG_B
 ORG_B = "test_org_gstr3b_beta_001"
 ORG_B_USER_ID = "test_user_orgb_gstr3b"
@@ -75,7 +75,7 @@ ORGB_INV_TAX_TOTAL = 900.0
 ORGB_INV_TOTAL = 5900.0
 
 # Auth
-ADMIN_EMAIL = "admin@battwheels.in"
+ADMIN_EMAIL = "dev@battwheels.internal"
 ADMIN_PASSWORD = "Admin@12345"
 TOKEN_A = None
 TOKEN_B = None
@@ -146,7 +146,7 @@ async def seed_test_data():
             "email": ORG_B_EMAIL,
             "name": "GSTR3B Test User B",
             "password_hash": pw_hash,
-            "role": "admin",
+            "role": "DevTest@123",
             "organization_id": ORG_B,
             "is_active": True,
         }},
@@ -166,7 +166,7 @@ async def seed_test_data():
         {"$set": {
             "user_id": ORG_B_USER_ID,
             "organization_id": ORG_B,
-            "role": "admin",
+            "role": "DevTest@123",
             "status": "active",
         }},
         upsert=True

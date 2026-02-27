@@ -27,11 +27,11 @@ import time
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://trial-ready.preview.emergentagent.com")
 
 # Test credentials from review request
-ADMIN_EMAIL = "admin@battwheels.in"
+ADMIN_EMAIL = "dev@battwheels.internal"
 ADMIN_PASSWORD = "TestPass@123"
-TECH_EMAIL = "tech@battwheels.in"
+TECH_EMAIL = "tech.a@battwheels.internal"
 TECH_PASSWORD = "TestPass@123"
-ORG_ID = "6996dcf072ffd2a2395fee7b"
+ORG_ID = "dev-internal-testing-001"
 
 # Known test invoice IDs
 OUTSTANDING_INVOICE_ID = "inv_d616af1adb14"  # SENT/outstanding, total=21240

@@ -21,7 +21,7 @@ if not BASE_URL:
     BASE_URL = "https://trial-ready.preview.emergentagent.com"
 
 # Test credentials
-ADMIN_EMAIL = "admin@battwheels.in"
+ADMIN_EMAIL = "dev@battwheels.internal"
 ADMIN_PASSWORD = "test_pwd_placeholder"
 
 
@@ -87,7 +87,7 @@ class TestOrganizationSignup:
         # Verify user data
         user = data["user"]
         assert user["email"] == signup_data["admin_email"], "Email mismatch"
-        assert user["role"] == "admin", f"Expected admin role, got {user.get('role')}"
+        assert user["role"] == "DevTest@123", f"Expected admin role, got {user.get('role')}"
         
         print(f"PASS: Signup creates organization with ID: {org['organization_id']}")
         print(f"PASS: Signup creates admin user with ID: {user['user_id']}")

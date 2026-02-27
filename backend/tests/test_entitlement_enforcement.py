@@ -20,11 +20,11 @@ STARTER_EMAIL = "john@testcompany.com"
 STARTER_PASSWORD = "test_pwd_placeholder"
 STARTER_ORG = "org_9c74befbaa95"
 
-PROFESSIONAL_EMAIL = "admin@battwheels.in"
-PROFESSIONAL_PASSWORD = "admin"
+PROFESSIONAL_EMAIL = "dev@battwheels.internal"
+PROFESSIONAL_PASSWORD = "DevTest@123"
 
 PLATFORM_ADMIN_EMAIL = "platform-admin@battwheels.in"
-PLATFORM_ADMIN_PASSWORD = "admin"
+PLATFORM_ADMIN_PASSWORD = "DevTest@123"
 
 
 # ==================== FIXTURES ====================

@@ -8,10 +8,10 @@ import os
 from datetime import datetime
 
 BASE_URL = os.environ.get("TEST_API_URL", "http://localhost:8001/api")
-ADMIN_EMAIL = "admin@battwheels.in"
+ADMIN_EMAIL = "dev@battwheels.internal"
 ADMIN_PASSWORD = "test_pwd_placeholder"
 TECH_EMAIL = "deepak@battwheelsgarages.in"
-TECH_PASSWORD = "tech123"
+TECH_PASSWORD = "DevTest@123"
 
 
 class TestMultiTenantArchitecture:
@@ -107,7 +107,7 @@ class TestMultiTenantArchitecture:
         assert "roles" in data
         roles = [r["role"] for r in data["roles"]]
         assert "owner" in roles
-        assert "admin" in roles
+        assert "DevTest@123" in roles
         assert "technician" in roles
     
     # ==================== PERMISSION TESTS ====================

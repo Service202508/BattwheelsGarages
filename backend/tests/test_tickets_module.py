@@ -20,7 +20,7 @@ from datetime import datetime
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 # Test credentials
-ADMIN_EMAIL = "admin@battwheels.in"
+ADMIN_EMAIL = "dev@battwheels.internal"
 ADMIN_PASSWORD = "test_pwd_placeholder"
 
 
@@ -56,7 +56,7 @@ class TestTicketModuleAuth:
         assert response.status_code == 200
         data = response.json()
         assert "token" in data
-        assert data["user"]["role"] == "admin"
+        assert data["user"]["role"] == "DevTest@123"
         print(f"✓ Admin login successful, role: {data['user']['role']}")
     
     def test_unauthorized_ticket_access(self):

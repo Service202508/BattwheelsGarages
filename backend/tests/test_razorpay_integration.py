@@ -14,8 +14,8 @@ import os
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 # Test credentials
-TEST_EMAIL = "admin@battwheels.in"
-TEST_PASSWORD = "admin"
+TEST_EMAIL = "dev@battwheels.internal"
+TEST_PASSWORD = "DevTest@123"
 
 class TestRazorpayConfigAPI:
     """Test Razorpay payment configuration endpoints"""
