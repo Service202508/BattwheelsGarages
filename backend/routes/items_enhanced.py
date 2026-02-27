@@ -1510,13 +1510,14 @@ async def assign_price_list_to_contact(assignment: ContactPriceListAssign, reque
     return {"code": 0, "message": "Price list assigned to contact"}
 
 @router.get("/contact-price-lists/{contact_id}")
-async def get_contact_price_lists(contact_id: str):
+async def get_contact_price_lists(contact_id: str, request: Request):
     """Get price lists assigned to a contact"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    contact = await db.contacts_enhanced.find_one({"contact_id": contact_id}, {"_id": 0})
+    contact = await db.contacts_enhanced.find_one({"contact_id": contact_id, "organization_id": org_id}, {"_id": 0})
     if not contact:
-        contact = await db.contacts.find_one({"contact_id": contact_id}, {"_id": 0})
+        contact = await db.contacts.find_one({"contact_id": contact_id, "organization_id": org_id}, {"_id": 0})
     if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")
     
@@ -1531,11 +1532,11 @@ async def get_contact_price_lists(contact_id: str):
     
     # Get price list details
     if result["sales_price_list_id"]:
-        pl = await db.price_lists.find_one({"pricelist_id": result["sales_price_list_id"]}, {"_id": 0})
+        pl = await db.price_lists.find_one({"pricelist_id": result["sales_price_list_id"], "organization_id": org_id}, {"_id": 0})
         result["sales_price_list"] = pl
     
     if result["purchase_price_list_id"]:
-        pl = await db.price_lists.find_one({"pricelist_id": result["purchase_price_list_id"]}, {"_id": 0})
+        pl = await db.price_lists.find_one({"pricelist_id": result["purchase_price_list_id"], "organization_id": org_id}, {"_id": 0})
         result["purchase_price_list"] = pl
     
     return {"code": 0, "contact_price_lists": result}
@@ -1543,20 +1544,21 @@ async def get_contact_price_lists(contact_id: str):
 # ============== PHASE 2: LINE ITEM PRICING ==============
 
 @router.post("/calculate-line-prices")
-async def calculate_line_item_prices(request: LineItemPriceRequest):
+async def calculate_line_item_prices(line_request: LineItemPriceRequest, request: Request):
     """Calculate prices for line items based on contact or specific price list"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    price_list_id = request.price_list_id
+    price_list_id = line_request.price_list_id
     
     # If contact provided, get their assigned price list
-    if request.contact_id and not price_list_id:
-        contact = await db.contacts_enhanced.find_one({"contact_id": request.contact_id})
+    if line_request.contact_id and not price_list_id:
+        contact = await db.contacts_enhanced.find_one({"contact_id": line_request.contact_id, "organization_id": org_id})
         if not contact:
-            contact = await db.contacts.find_one({"contact_id": request.contact_id})
+            contact = await db.contacts.find_one({"contact_id": line_request.contact_id, "organization_id": org_id})
         
         if contact:
-            if request.transaction_type == "sales":
+            if line_request.transaction_type == "sales":
                 price_list_id = contact.get("sales_price_list_id")
             else:
                 price_list_id = contact.get("purchase_price_list_id")
@@ -1564,21 +1566,21 @@ async def calculate_line_item_prices(request: LineItemPriceRequest):
     # Get price list settings
     price_list = None
     if price_list_id:
-        price_list = await db.price_lists.find_one({"pricelist_id": price_list_id}, {"_id": 0})
+        price_list = await db.price_lists.find_one({"pricelist_id": price_list_id, "organization_id": org_id}, {"_id": 0})
     
     line_items = []
     total = 0
     
-    for item_request in request.items:
+    for item_request in line_request.items:
         item_id = item_request.get("item_id")
         quantity = item_request.get("quantity", 1)
         
-        item = await db.items.find_one({"item_id": item_id}, {"_id": 0})
+        item = await db.items.find_one({"item_id": item_id, "organization_id": org_id}, {"_id": 0})
         if not item:
             continue
         
         # Get base rate
-        if request.transaction_type == "sales":
+        if line_request.transaction_type == "sales":
             base_rate = item.get("sales_rate", 0) or item.get("rate", 0)
         else:
             base_rate = item.get("purchase_rate", 0)
@@ -1589,7 +1591,8 @@ async def calculate_line_item_prices(request: LineItemPriceRequest):
         if price_list_id:
             custom_price = await db.item_prices.find_one({
                 "item_id": item_id,
-                "price_list_id": price_list_id
+                "price_list_id": price_list_id,
+                "organization_id": org_id
             })
             
             if custom_price:
