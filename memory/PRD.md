@@ -47,10 +47,15 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 **Known gap:** `log_item_history` helper inserts history without org_id (requires signature change across callers)
 
 ### Full Codebase Audit — COMPLETED (2026-02-28)
-- Comprehensive 11-section read-only audit completed
-- Output: `/app/docs/REMEDIATION_AUDIT_2026.md` (1322 lines)
-- Findings: 6 P0, 18 P1, 16 P2 items cataloged
-- Key discoveries: 3 EFI services with ZERO tenant isolation, Professional Tax/ESI errors, 9 EFI collections missing from TenantGuard, broken workflow chain at Steps 4→5 and 5→6
+- Comprehensive A-through-N audit completed with file:line citations
+- Output: `/app/docs/REMEDIATION_AUDIT_2026.md` (1464 lines, 59 file citations, 641 table rows)
+- Findings: 8 P0, 22 P1, 19 P2 items cataloged
+- Key discoveries:
+  - P0: 20 route files bypass RBAC (all `-enhanced` routes unmapped in ROUTE_PERMISSIONS)
+  - P0: 5 services with ZERO tenant isolation (efi_decision_engine, efi_embedding_service, embedding_service, event_processor, scheduler)
+  - P0: 11 EFI collections missing from TenantGuard TENANT_COLLECTIONS
+  - P0: Professional Tax hardcoded flat ₹200 for all states
+  - P1: Workflow chain broken at Steps 4→5 and 5→6
 
 ## Prioritized Backlog (Updated from Audit)
 
