@@ -381,10 +381,10 @@ class TestSE404RBACTechnician:
     """Verify technician RBAC for payroll endpoint"""
 
     def test_tech_login_returns_200(self):
-        """Login as tech@battwheels.in must return HTTP 200"""
+        """Login as technician must return HTTP 200"""
         resp = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "tech@battwheels.in",
-            "password": "DevTest@123"
+            "email": "tech.a@battwheels.internal",
+            "password": "TechA@123"
         })
         print(f"Tech login: {resp.status_code}, {resp.text[:200]}")
         assert resp.status_code == 200, f"Tech login failed: {resp.text}"
