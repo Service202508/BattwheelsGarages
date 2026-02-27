@@ -155,26 +155,26 @@ async def require_auth(request: Request, db=None) -> UserContext:
     user_dict = await get_current_user(request, db or _db)
     return UserContext(user_dict)
 
-async def require_admin(request: Request, db) -> dict:
+async def require_admin(request: Request, db) -> UserContext:
     """Require admin role"""
     user = await get_current_user(request, db)
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
-    return user
+    return UserContext(user)
 
-async def require_technician_or_admin(request: Request, db) -> dict:
+async def require_technician_or_admin(request: Request, db) -> UserContext:
     """Require technician or admin role"""
     user = await get_current_user(request, db)
     if user.get("role") not in ["admin", "technician", "manager"]:
         raise HTTPException(status_code=403, detail="Technician or Admin access required")
-    return user
+    return UserContext(user)
 
-async def require_role(request: Request, db, roles: list) -> dict:
+async def require_role(request: Request, db, roles: list) -> UserContext:
     """Require specific role(s)"""
     user = await get_current_user(request, db)
     if user.get("role") not in roles:
         raise HTTPException(status_code=403, detail=f"Required role: {', '.join(roles)}")
-    return user
+    return UserContext(user)
 
 # User class for type hints — supports both attribute AND dict access
 class UserContext:
