@@ -174,6 +174,13 @@ async def seed_test_data():
 
     inv_a1_id = "inv_test_gstr3b_a1"
 
+    # Set org A's place_of_supply to match test data (intra-state with state 07)
+    await db.organization_settings.update_one(
+        {"organization_id": ORG_A},
+        {"$set": {"organization_id": ORG_A, "place_of_supply": "07"}},
+        upsert=True
+    )
+
     # === ORG A: MONTH_1 invoice (intra-state, CGST+SGST) ===
     await db.invoices_enhanced.insert_one({
         "invoice_id": inv_a1_id,
