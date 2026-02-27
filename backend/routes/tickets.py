@@ -147,8 +147,8 @@ async def get_current_user(request: Request, db) -> dict:
 
 
 async def require_technician_or_admin(user: dict):
-    """Require technician or admin role"""
-    if user.get("role") not in ["admin", "technician", "manager"]:
+    """Require technician, admin, or owner role"""
+    if user.get("role") not in ["admin", "technician", "manager", "owner"]:
         raise HTTPException(status_code=403, detail="Technician or admin access required")
 
 
