@@ -92,21 +92,98 @@ export default function SubscriptionManagement() {
 
   const handleUpgrade = async (planCode) => {
     try {
-      const response = await fetch(`${API}/subscriptions/change-plan?plan_code=${planCode}`, {
+      // For free plan, use direct change (no payment needed)
+      if (planCode === "free") {
+        const response = await fetch(`${API}/subscriptions/change-plan?plan_code=${planCode}`, {
+          method: "POST",
+          headers: getAuthHeaders()
+        });
+        if (response.ok) {
+          toast.success("Switched to Free plan");
+          setUpgradeDialogOpen(false);
+          fetchSubscriptionData();
+        } else {
+          const error = await response.json();
+          toast.error(error.detail || "Failed to change plan");
+        }
+        return;
+      }
+
+      // For paid plans, initiate Razorpay subscription checkout
+      const response = await fetch(`${API}/subscriptions/subscribe`, {
+        method: "POST",
+        headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify({ plan_code: planCode, billing_cycle: "monthly" })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        toast.error(error.detail || "Failed to initiate payment");
+        return;
+      }
+
+      const data = await response.json();
+
+      // Open Razorpay checkout
+      if (typeof window.Razorpay === "undefined") {
+        // Load Razorpay script dynamically
+        await new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+
+      const rzp = new window.Razorpay({
+        key: data.razorpay_key_id,
+        subscription_id: data.razorpay_subscription_id,
+        name: "Battwheels OS",
+        description: `${data.plan_name} Plan (Monthly)`,
+        handler: function () {
+          toast.success(`Subscribed to ${data.plan_name} plan! Payment processing...`);
+          setUpgradeDialogOpen(false);
+          // Give webhook a moment to process
+          setTimeout(() => fetchSubscriptionData(), 3000);
+        },
+        modal: {
+          ondismiss: function () {
+            toast.info("Payment cancelled");
+          }
+        },
+        theme: { color: "#C8FF00" }
+      });
+      rzp.open();
+
+    } catch (error) {
+      console.error("Upgrade error:", error);
+      toast.error("Failed to initiate payment. Please try again.");
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!window.confirm("Are you sure you want to cancel your subscription? You'll retain access until the end of the current billing period.")) return;
+    try {
+      const response = await fetch(`${API}/subscriptions/cancel-razorpay`, {
         method: "POST",
         headers: getAuthHeaders()
       });
-
       if (response.ok) {
-        toast.success(`Successfully upgraded to ${planCode} plan!`);
-        setUpgradeDialogOpen(false);
+        toast.success("Subscription will cancel at end of billing period");
         fetchSubscriptionData();
       } else {
-        const error = await response.json();
-        toast.error(error.detail || "Failed to change plan");
+        // If no Razorpay subscription, try the standard cancel
+        const res2 = await fetch(`${API}/subscriptions/cancel`, {
+          method: "POST",
+          headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+          body: JSON.stringify({ reason: "User cancelled" })
+        });
+        if (res2.ok) toast.success("Subscription cancelled");
+        else toast.error("Failed to cancel subscription");
       }
     } catch (error) {
-      toast.error("Failed to change plan");
+      toast.error("Failed to cancel subscription");
     }
   };
 
