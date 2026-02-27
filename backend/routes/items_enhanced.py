@@ -1221,6 +1221,7 @@ async def create_item_adjustment(adj: ItemAdjustmentCreate, request: Request):
 
 @router.get("/adjustments")
 async def list_item_adjustments(
+    request: Request,
     item_id: str = "",
     warehouse_id: str = "",
     reason: str = "",
@@ -1229,8 +1230,9 @@ async def list_item_adjustments(
 ):
     """List inventory adjustments"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    query = {}
+    query = {"organization_id": org_id}
     if item_id:
         query["item_id"] = item_id
     if warehouse_id:
@@ -1288,10 +1290,13 @@ async def create_price_list(price_list: PriceListCreate):
     return {"code": 0, "message": "Price list created", "price_list": pl_dict}
 
 @router.get("/price-lists")
-async def list_price_lists(include_inactive: bool = False):
+async def list_price_lists(request: Request, include_inactive: bool = False):
     """List all price lists"""
     db = get_db()
-    query = {} if include_inactive else {"is_active": True}
+    org_id = extract_org_id(request)
+    query = {"organization_id": org_id}
+    if not include_inactive:
+        query["is_active"] = True
     price_lists = await db.price_lists.find(query, {"_id": 0}).to_list(100)
     
     # Normalize and count items per price list
@@ -1304,22 +1309,23 @@ async def list_price_lists(include_inactive: bool = False):
         if "price_list_name" in pl and "name" not in pl:
             pl["name"] = pl["price_list_name"]
         
-        count = await db.item_prices.count_documents({"price_list_id": pl_id})
+        count = await db.item_prices.count_documents({"price_list_id": pl_id, "organization_id": org_id})
         pl["item_count"] = count
     
     return {"code": 0, "price_lists": price_lists}
 
 @router.get("/price-lists/{pricelist_id}")
-async def get_price_list(pricelist_id: str):
+async def get_price_list(pricelist_id: str, request: Request):
     """Get price list with item prices"""
     db = get_db()
-    pl = await db.price_lists.find_one({"pricelist_id": pricelist_id}, {"_id": 0})
+    org_id = extract_org_id(request)
+    pl = await db.price_lists.find_one({"pricelist_id": pricelist_id, "organization_id": org_id}, {"_id": 0})
     if not pl:
         raise HTTPException(status_code=404, detail="Price list not found")
     
     # Get item prices
     prices = await db.item_prices.aggregate([
-        {"$match": {"price_list_id": pricelist_id}},
+        {"$match": {"price_list_id": pricelist_id, "organization_id": org_id}},
         {"$lookup": {
             "from": "items",
             "localField": "item_id",
@@ -1416,10 +1422,11 @@ async def create_item_price(price: ItemPriceCreate):
     return {"code": 0, "message": "Item price created"}
 
 @router.get("/prices/{item_id}")
-async def get_item_prices(item_id: str):
+async def get_item_prices(item_id: str, request: Request):
     """Get all prices for an item"""
     db = get_db()
-    prices = await db.item_prices.find({"item_id": item_id}, {"_id": 0}).to_list(100)
+    org_id = extract_org_id(request)
+    prices = await db.item_prices.find({"item_id": item_id, "organization_id": org_id}, {"_id": 0}).to_list(100)
     return {"code": 0, "prices": prices}
 
 @router.delete("/prices/{item_id}/{price_list_id}")
