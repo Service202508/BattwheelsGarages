@@ -1,86 +1,64 @@
 # Battwheels OS — Product Requirements Document
 
 ## Original Problem Statement
-Battwheels OS is a SaaS platform for EV garages and service centers. The platform provides multi-tenant organization management, ticketing, invoicing, inventory, HR, GST compliance, and AI-powered diagnostics.
+Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The platform manages tickets, invoices, contacts, inventory, estimates, HR, banking, GST compliance, and more across three environments (dev/staging/production).
 
-## Architecture
-- **Frontend:** React (port 3000)
-- **Backend:** FastAPI (port 8001)
-- **Database:** MongoDB (3 environments: battwheels, battwheels_staging, battwheels_dev)
-- **Auth:** JWT + bcrypt password hashing
+## Core Architecture
+- **Backend:** FastAPI + MongoDB (motor) with multi-tenant isolation via `organization_id`
+- **Frontend:** React with Shadcn/UI components
+- **Databases:** battwheels_dev (development), battwheels_staging (staging), battwheels (production)
+- **Auth:** JWT-based with role-based access control (RBAC)
 
-## Three-Environment Discipline
-| Environment | Database | Purpose |
-|---|---|---|
-| Development | battwheels_dev | All new code, experiments, testing |
-| Staging | battwheels_staging | Pre-release QA gate |
-| Production | battwheels | Live data, real customers |
-
-## SaaS Architecture (Post-Reset)
-- **Production:** 1 user (platform-admin@battwheels.in), 0 orgs, 4 plans, 4 migrations
-- **Staging:** Mirrors production (1 platform-admin, 0 orgs, 4 plans, 4 migrations)
-- **Dev:** Volt Motors demo org with sample data (DO NOT TOUCH)
-- Customers sign up through the self-serve signup flow
+## Key Documents
+- `/app/ENVIRONMENT_SOP.md` — Three-environment discipline rules
+- `/app/CODING_STANDARDS.md` — Multi-tenancy & data integrity rules (Pattern A/B/C)
 
 ## What's Been Implemented
 
-### Sprint: Beta Launch Gate (COMPLETED - 2026-02-27)
-- Test suite pass rate: 86.4% (322 passed, 0 failed, 51 skipped)
-- Readiness score: 86/100
-- Fixed all critical bugs in signup flow, GST compliance, RBAC
+### Production Reset & Verification (2026-02-27)
+- Production and staging databases wiped clean (only platform-admin user + seed data)
+- Password sanitization bug fixed (bleach.clean corrupting special characters)
+- Login response password field leak patched
+- `scripts/verify_prod_org.py` updated for SaaS architecture (0 orgs = PASS)
+- Full test suite verified: 322 passed, 0 failed, 51 skipped
 
-### Credential Security Audit (COMPLETED - 2026-02-27)
-- All 13 production passwords reset with strong bcrypt hashes
-- Temporary test accounts cleaned from dev DB
-
-### Production Reset — Clean Slate for SaaS Launch (COMPLETED - 2026-02-27)
-- All 7 phases executed successfully
-- Production wiped: 2,222 docs → 1 user + 8 platform records
-- Platform admin preserved and verified
-- Signup flow tested end-to-end
-- Dev environment untouched
-- Staging set up to mirror production
-
-### Post-Reset Verification Session (COMPLETED - 2026-02-27)
-- All 5 session start protocol checks: GREEN
-- Production state: 1 user, 0 orgs, 4 plans, 4 migrations — VERIFIED
-- Staging state: FIXED (seeded plans + migrations from production)
-- Test suite: 322 passed, 0 failed, 0 errors, 51 skipped — STABLE
-- Signup with special characters (`TestP@ss&W0rd#99`): PASS
-- Login with same password: PASS, no password field in response
-- Bleach bypass fix: VERIFIED at middleware/sanitization.py:25-27
-- Password exclusion fix: VERIFIED at routes/auth.py:110
-
-### Bugs Fixed During Reset
-1. **Sanitization middleware corrupting passwords:** `bleach.clean()` was converting `&` to `&amp;` in password fields. Fixed by adding auth/signup endpoints to `SANITIZE_BYPASS_PREFIXES` in `middleware/sanitization.py`.
-2. **Password field leak in login response:** Login response was exposing a stale `password` field (bcrypt hash). Fixed by adding `"password"` to the exclusion filter in `routes/auth.py`.
+### H-01/H-02 Hard Cap Sprint (2026-02-27)
+- **H-01:** All 11 completely unbounded queries (`.to_list(None)`) capped to 1000
+  - services/fault_tree_import.py (1 query)
+  - services/embedding_service.py (2 queries)
+  - services/efi_embedding_service.py (4 queries)
+  - services/data_sanitization_service.py (4 queries)
+- **H-02:** 10 Tier 1 customer-facing queries capped from 10000 to 500
+  - routes/contact_integration.py (3 queries: sync, receivables-aging, payables-aging)
+  - routes/items_enhanced.py (7 queries: warehouses, low-stock, bulk-pricing, sales/purchases reports, valuation, stock-summary)
+- Export endpoints deliberately NOT touched (per instructions)
+- Test suite: 322 passed, 0 failed, 51 skipped (no regressions)
+- Production verified: ALL GREEN (6/6 PASS)
 
 ## Prioritized Backlog
 
-### P0 — Critical
-- None currently blocking
+### P0 — Sprint 3 (Cursor Pagination)
+- Replace H-01/H-02 hard caps with proper cursor-based pagination
+- Implement cursor pagination utility
+- Migrate Tier 1 list endpoints to cursor-based pagination
+- Migrate Tier 2 endpoints (reports, HR, banking)
 
-### P1 — High Priority (Tech Debt)
-- H-01/H-02: Implement pagination for 435+ unbounded database queries
-- H-07: Seed battwheels_staging database for proper QA environment (DONE)
+### P1 — Pattern A Violations
+- items_enhanced.py: get_low_stock_items, bulk_set_prices, get_inventory_valuation_report, get_stock_summary lack org_id scoping
+- Full Pattern A audit of remaining route files
 
-### P2 — Medium Priority
-- Address 51 skipped tests (missing data fixtures for Form16, starter plans, technician portal)
-- Address remaining Medium/Low priority audit items
+### P2 — Test Coverage
+- Address 51 skipped tests by creating necessary data fixtures
+- Create fixtures for Form16, starter plans, technician portal routes
 
-### P3 — Future
-- WhatsApp integration (currently mocked)
-- End-to-end verification for Form16, live Razorpay
-- Full staging promotion workflow
+### P3 — Remaining Audit Items
+- Tier 2/3 query hard caps (38 queries at 5000+, 80 at 1000+)
+- Medium/Low priority items from original platform audit
 
-## Key Credentials
-- **Dev:** demo@voltmotors.in, dev@battwheels.internal (DevTest@123)
-- **Production:** platform-admin@battwheels.in (v4Nx6^3Xh&uPWwxK9HOs)
-- **Staging:** platform-admin@battwheels.in (same password as production)
+## Credentials
+- **Dev:** dev@battwheels.internal / DevTest@123
+- **Platform Admin:** platform-admin@battwheels.in / v4Nx6^3Xh&uPWwxK9HOs
 
 ## 3rd Party Integrations
-- Razorpay (payment processing)
-- Resend (email)
-- bcrypt (password hashing)
-- bleach (input sanitization)
-- Sentry (error monitoring)
+- Razorpay, Resend, bleach, bcrypt
+- WhatsApp integration remains MOCKED
