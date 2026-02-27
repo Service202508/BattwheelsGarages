@@ -3059,6 +3059,7 @@ async def get_field_configuration(request: Request):
             field["is_active"] = True
             field["show_in_form"] = True
             field["allowed_roles"] = ["admin", "manager", "user"]
+            field["organization_id"] = org_id
             field["created_time"] = datetime.now(timezone.utc).isoformat()
             await db.item_field_config.insert_one(field.copy())
         fields = DEFAULT_FIELDS
