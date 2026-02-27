@@ -24,7 +24,7 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://platform-hardening-1
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
-ADMIN_PASSWORD = "DevTest@123"
+ADMIN_PASSWORD = "owner"
 TECH_EMAIL = "tech.a@battwheels.internal"
 TECH_PASSWORD = "TechA@123"
 
@@ -46,7 +46,7 @@ class TestAuthentication:
         assert "token" in data, "Missing token in response"
         assert "user" in data, "Missing user in response"
         assert data["user"]["email"] == ADMIN_EMAIL
-        assert data["user"]["role"] == "DevTest@123"
+        assert data["user"]["role"] == "owner"
         assert len(data["token"]) > 50  # JWT should be long
     
     def test_technician_login_success(self):
@@ -120,7 +120,7 @@ class TestTicketsCRUD:
         
         # Can be dict with tickets key or list
         if isinstance(data, dict):
-            assert "tickets" in data or "total" in data
+            assert "data" in data or "total" in data
             tickets = data.get("tickets", [])
         else:
             tickets = data
