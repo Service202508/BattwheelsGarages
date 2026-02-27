@@ -150,6 +150,32 @@ async def get_current_user(request: Request, db) -> dict:
     
     return user
 
+# User class for type hints — supports both attribute AND dict access
+class UserContext:
+    def __init__(self, user_dict: dict):
+        self._data = user_dict
+        self.user_id = user_dict.get("user_id")
+        self.email = user_dict.get("email")
+        self.name = user_dict.get("name")
+        self.role = user_dict.get("role")
+        self.is_active = user_dict.get("is_active", True)
+        self.department = user_dict.get("department")
+        self.designation = user_dict.get("designation")
+        self.organization_id = user_dict.get("organization_id")
+        self.picture = user_dict.get("picture")
+
+    def get(self, key, default=None):
+        return self._data.get(key, default)
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+    def __contains__(self, key):
+        return key in self._data
+
+    def __repr__(self):
+        return f"UserContext({self._data})"
+
 async def require_auth(request: Request, db=None) -> UserContext:
     """Require any authenticated user. Uses module db if not passed."""
     user_dict = await get_current_user(request, db or _db)
