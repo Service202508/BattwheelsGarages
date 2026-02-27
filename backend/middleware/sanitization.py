@@ -55,12 +55,14 @@ class SanitizationMiddleware(BaseHTTPMiddleware):
                     sanitized = _sanitize_value(data)
                     sanitized_bytes = json.dumps(sanitized).encode("utf-8")
 
-                    # Starlette body caching fix: override the receive callable
-                    # so route handlers read the sanitized body instead of raw
+                    # Starlette body caching fix: override BOTH the receive callable
+                    # AND the cached _body so route handlers read sanitized content
                     async def receive():
                         return {"type": "http.request", "body": sanitized_bytes}
 
                     request._receive = receive
+                    # Clear the cached body so next .body() call re-reads from _receive
+                    request._body = sanitized_bytes
             except (json.JSONDecodeError, UnicodeDecodeError):
                 # Not valid JSON — pass through unmodified
                 pass
