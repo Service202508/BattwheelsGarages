@@ -1075,18 +1075,20 @@ async def get_low_stock_items(request: Request):
 # ============== STOCK LOCATIONS (MUST BE BEFORE /{item_id}) ==============
 
 @router.post("/stock-locations")
-async def create_stock_location(location: ItemStockLocationCreate):
+async def create_stock_location(location: ItemStockLocationCreate, request: Request):
     """Create or update stock location"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Get warehouse name
-    warehouse = await db.warehouses.find_one({"warehouse_id": location.warehouse_id})
+    warehouse = await db.warehouses.find_one({"warehouse_id": location.warehouse_id, "organization_id": org_id})
     warehouse_name = warehouse.get("name", "") if warehouse else ""
     
     # Check if exists
     existing = await db.item_stock_locations.find_one({
         "item_id": location.item_id,
-        "warehouse_id": location.warehouse_id
+        "warehouse_id": location.warehouse_id,
+        "organization_id": org_id
     })
     
     if existing:
@@ -1099,6 +1101,7 @@ async def create_stock_location(location: ItemStockLocationCreate):
     location_dict = {
         "location_id": f"ISL-{uuid.uuid4().hex[:8].upper()}",
         "item_id": location.item_id,
+        "organization_id": org_id,
         "warehouse_id": location.warehouse_id,
         "warehouse_name": warehouse_name,
         "stock": location.stock,
@@ -1111,9 +1114,10 @@ async def create_stock_location(location: ItemStockLocationCreate):
     return {"code": 0, "message": "Stock location created"}
 
 @router.post("/stock-locations/bulk-update")
-async def bulk_update_stock(bulk: BulkStockUpdate):
+async def bulk_update_stock(bulk: BulkStockUpdate, request: Request):
     """Bulk update stock locations"""
     db = get_db()
+    org_id = extract_org_id(request)
     updated = 0
     
     for update in bulk.updates:
@@ -1122,7 +1126,7 @@ async def bulk_update_stock(bulk: BulkStockUpdate):
         stock = update.get("stock", 0)
         
         result = await db.item_stock_locations.update_one(
-            {"item_id": item_id, "warehouse_id": warehouse_id},
+            {"item_id": item_id, "warehouse_id": warehouse_id, "organization_id": org_id},
             {"$set": {"stock": stock, "updated_time": datetime.now(timezone.utc).isoformat()}},
             upsert=True
         )
