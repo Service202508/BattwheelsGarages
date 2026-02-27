@@ -107,7 +107,7 @@ async def login(credentials: UserLogin, response: Response):
         "created_at": datetime.now(timezone.utc).isoformat()
     })
     
-    user_response = {k: v for k, v in user.items() if k != "password_hash"}
+    user_response = {k: v for k, v in user.items() if k not in ("password_hash", "password")}
     
     return {
         "token": token, 
