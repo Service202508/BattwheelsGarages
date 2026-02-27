@@ -51,7 +51,7 @@ class TestGSTStates:
 class TestGSTINValidation:
     """Test GSTIN validation endpoint"""
     
-    def test_validate_valid_gstin(self):
+    def test_validate_valid_gstin(self, auth_headers):
         """POST /api/v1/gst/validate-gstin - Valid GSTIN returns details"""
         response = requests.post(
             f"{BASE_URL}/api/v1/gst/validate-gstin",
@@ -67,7 +67,7 @@ class TestGSTINValidation:
         assert data["state_name"] == "Maharashtra"
         assert data["pan"] == "AAACT1234A"
     
-    def test_validate_invalid_gstin_short(self):
+    def test_validate_invalid_gstin_short(self, auth_headers):
         """POST /api/v1/gst/validate-gstin - Short GSTIN returns error"""
         response = requests.post(
             f"{BASE_URL}/api/v1/gst/validate-gstin",
@@ -80,7 +80,7 @@ class TestGSTINValidation:
         assert data["valid"] == False
         assert "15 characters" in data["error"]
     
-    def test_validate_invalid_gstin_format(self):
+    def test_validate_invalid_gstin_format(self, auth_headers):
         """POST /api/v1/gst/validate-gstin - Invalid format returns error"""
         response = requests.post(
             f"{BASE_URL}/api/v1/gst/validate-gstin",
@@ -92,7 +92,7 @@ class TestGSTINValidation:
         assert data["code"] == 1
         assert data["valid"] == False
     
-    def test_validate_empty_gstin(self):
+    def test_validate_empty_gstin(self, auth_headers):
         """POST /api/v1/gst/validate-gstin - Empty GSTIN returns error"""
         response = requests.post(
             f"{BASE_URL}/api/v1/gst/validate-gstin",
@@ -107,7 +107,7 @@ class TestGSTINValidation:
 class TestGSTCalculation:
     """Test GST calculation endpoint"""
     
-    def test_intra_state_calculation(self):
+    def test_intra_state_calculation(self, auth_headers):
         """POST /api/v1/gst/calculate - Same state applies CGST+SGST"""
         response = requests.post(
             f"{BASE_URL}/api/v1/gst/calculate",
@@ -132,7 +132,7 @@ class TestGSTCalculation:
         assert data["igst_amount"] == 0
         assert data["total_gst"] == 1800.0
     
-    def test_inter_state_calculation(self):
+    def test_inter_state_calculation(self, auth_headers):
         """POST /api/v1/gst/calculate - Different state applies IGST"""
         response = requests.post(
             f"{BASE_URL}/api/v1/gst/calculate",
@@ -156,7 +156,7 @@ class TestGSTCalculation:
         assert data["igst_amount"] == 1800.0
         assert data["total_gst"] == 1800.0
     
-    def test_different_gst_rates(self):
+    def test_different_gst_rates(self, auth_headers):
         """POST /api/v1/gst/calculate - Test with 5% GST rate"""
         response = requests.post(
             f"{BASE_URL}/api/v1/gst/calculate",
@@ -180,7 +180,7 @@ class TestGSTCalculation:
 class TestOrganizationSettings:
     """Test organization GST settings endpoints"""
     
-    def test_get_organization_settings(self):
+    def test_get_organization_settings(self, auth_headers):
         """GET /api/v1/gst/organization-settings - Returns org GST settings"""
         response = requests.get(f"{BASE_URL}/api/v1/gst/organization-settings")
         assert response.status_code == 200
@@ -190,7 +190,7 @@ class TestOrganizationSettings:
         assert "settings" in data
         assert "place_of_supply" in data["settings"]
     
-    def test_update_organization_settings(self):
+    def test_update_organization_settings(self, auth_headers):
         """PUT /api/v1/gst/organization-settings - Updates GSTIN and state"""
         response = requests.put(
             f"{BASE_URL}/api/v1/gst/organization-settings",
@@ -213,7 +213,7 @@ class TestOrganizationSettings:
         assert get_data["settings"]["gstin"] == "27AAACT1234A1ZB"
         assert get_data["settings"]["place_of_supply"] == "27"
     
-    def test_update_with_invalid_gstin(self):
+    def test_update_with_invalid_gstin(self, auth_headers):
         """PUT /api/v1/gst/organization-settings - Invalid GSTIN returns 400"""
         response = requests.put(
             f"{BASE_URL}/api/v1/gst/organization-settings",
@@ -228,7 +228,7 @@ class TestOrganizationSettings:
 class TestGSTR1Report:
     """Test GSTR-1 report endpoint"""
     
-    def test_get_gstr1_json(self):
+    def test_get_gstr1_json(self, auth_headers):
         """GET /api/v1/gst/gstr1 - Returns GSTR-1 report data"""
         response = requests.get(f"{BASE_URL}/api/v1/gst/gstr1?month=2025-01")
         assert response.status_code == 200
@@ -251,21 +251,21 @@ class TestGSTR1Report:
         assert "sgst" in data["b2b"]["summary"]
         assert "igst" in data["b2b"]["summary"]
     
-    def test_get_gstr1_pdf(self):
+    def test_get_gstr1_pdf(self, auth_headers):
         """GET /api/v1/gst/gstr1?format=pdf - Exports GSTR-1 as PDF"""
         response = requests.get(f"{BASE_URL}/api/v1/gst/gstr1?month=2025-01&format=pdf")
         assert response.status_code == 200
         assert "application/pdf" in response.headers.get("content-type", "")
         assert len(response.content) > 1000  # PDF should have content
     
-    def test_get_gstr1_excel(self):
+    def test_get_gstr1_excel(self, auth_headers):
         """GET /api/v1/gst/gstr1?format=excel - Exports GSTR-1 as Excel"""
         response = requests.get(f"{BASE_URL}/api/v1/gst/gstr1?month=2025-01&format=excel")
         assert response.status_code == 200
         assert "spreadsheet" in response.headers.get("content-type", "")
         assert len(response.content) > 1000  # Excel should have content
     
-    def test_gstr1_invalid_month(self):
+    def test_gstr1_invalid_month(self, auth_headers):
         """GET /api/v1/gst/gstr1 - Invalid month format returns 400"""
         response = requests.get(f"{BASE_URL}/api/v1/gst/gstr1?month=invalid")
         assert response.status_code == 400
@@ -274,7 +274,7 @@ class TestGSTR1Report:
 class TestGSTR3BReport:
     """Test GSTR-3B report endpoint"""
     
-    def test_get_gstr3b_json(self):
+    def test_get_gstr3b_json(self, auth_headers):
         """GET /api/v1/gst/gstr3b - Returns GSTR-3B summary data"""
         response = requests.get(f"{BASE_URL}/api/v1/gst/gstr3b?month=2025-01")
         assert response.status_code == 200
@@ -314,14 +314,14 @@ class TestGSTR3BReport:
         assert "total_input_tax" in data["summary"]
         assert "net_tax_payable" in data["summary"]
     
-    def test_get_gstr3b_pdf(self):
+    def test_get_gstr3b_pdf(self, auth_headers):
         """GET /api/v1/gst/gstr3b?format=pdf - Exports GSTR-3B as PDF"""
         response = requests.get(f"{BASE_URL}/api/v1/gst/gstr3b?month=2025-01&format=pdf")
         assert response.status_code == 200
         assert "application/pdf" in response.headers.get("content-type", "")
         assert len(response.content) > 1000
     
-    def test_get_gstr3b_excel(self):
+    def test_get_gstr3b_excel(self, auth_headers):
         """GET /api/v1/gst/gstr3b?format=excel - Exports GSTR-3B as Excel"""
         response = requests.get(f"{BASE_URL}/api/v1/gst/gstr3b?month=2025-01&format=excel")
         assert response.status_code == 200
@@ -332,7 +332,7 @@ class TestGSTR3BReport:
 class TestHSNSummary:
     """Test HSN Summary endpoint"""
     
-    def test_get_hsn_summary_json(self):
+    def test_get_hsn_summary_json(self, auth_headers):
         """GET /api/v1/gst/hsn-summary - Returns HSN-wise summary"""
         response = requests.get(f"{BASE_URL}/api/v1/gst/hsn-summary?month=2025-01")
         assert response.status_code == 200
@@ -349,7 +349,7 @@ class TestHSNSummary:
         assert "sgst" in data["total"]
         assert "igst" in data["total"]
     
-    def test_get_hsn_summary_excel(self):
+    def test_get_hsn_summary_excel(self, auth_headers):
         """GET /api/v1/gst/hsn-summary?format=excel - Exports HSN summary as Excel"""
         response = requests.get(f"{BASE_URL}/api/v1/gst/hsn-summary?month=2025-01&format=excel")
         assert response.status_code == 200
