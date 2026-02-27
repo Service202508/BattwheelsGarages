@@ -3133,16 +3133,17 @@ async def validate_sac_code(sac_code: str = ""):
 # ============== ITEM ROUTES WITH PATH PARAMETERS (MUST BE LAST) ==============
 
 @router.get("/{item_id}")
-async def get_enhanced_item(item_id: str):
+async def get_enhanced_item(item_id: str, request: Request):
     """Get item with full details"""
     db = get_db()
-    item = await db.items.find_one({"item_id": item_id}, {"_id": 0})
+    org_id = extract_org_id(request)
+    item = await db.items.find_one({"item_id": item_id, "organization_id": org_id}, {"_id": 0})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
     # Get stock locations
     stock_locations = await db.item_stock_locations.find(
-        {"item_id": item_id},
+        {"item_id": item_id, "organization_id": org_id},
         {"_id": 0}
     ).to_list(100)
     item["stock_locations"] = stock_locations
@@ -3150,24 +3151,24 @@ async def get_enhanced_item(item_id: str):
     
     # Get adjustments history
     adjustments = await db.item_adjustments.find(
-        {"item_id": item_id},
+        {"item_id": item_id, "organization_id": org_id},
         {"_id": 0}
     ).sort("date", -1).limit(20).to_list(20)
     item["adjustments"] = adjustments
     
     # Get custom prices
     prices = await db.item_prices.find(
-        {"item_id": item_id},
+        {"item_id": item_id, "organization_id": org_id},
         {"_id": 0}
     ).to_list(100)
     item["price_list_rates"] = prices
     
     # Get transaction count
     invoice_count = await db.invoices.count_documents(
-        {"line_items.item_id": item_id}
+        {"line_items.item_id": item_id, "organization_id": org_id}
     )
     bill_count = await db.bills.count_documents(
-        {"line_items.item_id": item_id}
+        {"line_items.item_id": item_id, "organization_id": org_id}
     )
     item["transaction_count"] = invoice_count + bill_count
     item["is_used_in_transactions"] = item["transaction_count"] > 0
@@ -3262,11 +3263,12 @@ async def delete_enhanced_item(item_id: str):
 # ============== ITEM-SPECIFIC STOCK LOCATIONS ==============
 
 @router.get("/{item_id}/stock-locations")
-async def get_item_stock_locations(item_id: str):
+async def get_item_stock_locations(item_id: str, request: Request):
     """Get stock locations for an item"""
     db = get_db()
+    org_id = extract_org_id(request)
     locations = await db.item_stock_locations.find(
-        {"item_id": item_id},
+        {"item_id": item_id, "organization_id": org_id},
         {"_id": 0}
     ).to_list(100)
     
@@ -3279,13 +3281,14 @@ async def get_item_stock_locations(item_id: str):
 # ============== ADMIN DATA INTEGRITY ==============
 
 @router.post("/admin/fix-negative-stock")
-async def fix_negative_stock_items():
+async def fix_negative_stock_items(request: Request):
     """Fix items with negative stock by setting stock_on_hand to 0"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Find all items with negative stock
     negative_items = await db.items.find(
-        {"stock_on_hand": {"$lt": 0}},
+        {"stock_on_hand": {"$lt": 0}, "organization_id": org_id},
         {"_id": 0, "item_id": 1, "name": 1, "stock_on_hand": 1}
     ).to_list(1000)
     
@@ -3295,7 +3298,7 @@ async def fix_negative_stock_items():
     for item in negative_items:
         old_stock = item.get("stock_on_hand", 0)
         await db.items.update_one(
-            {"item_id": item["item_id"]},
+            {"item_id": item["item_id"], "organization_id": org_id},
             {"$set": {
                 "stock_on_hand": 0,
                 "quantity": 0,
@@ -3320,19 +3323,21 @@ async def fix_negative_stock_items():
 
 
 @router.get("/admin/stock-integrity-report")
-async def get_stock_integrity_report():
+async def get_stock_integrity_report(request: Request):
     """Get report of stock integrity issues"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Negative stock items
     negative_items = await db.items.find(
-        {"stock_on_hand": {"$lt": 0}},
+        {"stock_on_hand": {"$lt": 0}, "organization_id": org_id},
         {"_id": 0, "item_id": 1, "name": 1, "sku": 1, "stock_on_hand": 1}
     ).to_list(1000)
     
     # Items with mismatched quantity/stock_on_hand
     pipeline = [
         {"$match": {
+            "organization_id": org_id,
             "$expr": {
                 "$and": [
                     {"$ne": ["$quantity", "$stock_on_hand"]},
