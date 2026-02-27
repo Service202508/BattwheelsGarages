@@ -30,7 +30,7 @@ import pytest
 import requests
 
 # ── Config ──────────────────────────────────────────────────────────────────
-API_URL = os.getenv("REACT_APP_BACKEND_URL", "https://platform-hardening-1.preview.emergentagent.com")
+API_URL = os.getenv("REACT_APP_BACKEND_URL", "https://readiness-checkpoint.preview.emergentagent.com")
 BASE = f"{API_URL}/api"
 
 # ── Org / User constants ─────────────────────────────────────────────────────

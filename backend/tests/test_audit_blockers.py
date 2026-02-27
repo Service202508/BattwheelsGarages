@@ -111,7 +111,7 @@ class TestS1_06_CORSNoWildcard:
 
     def test_allowed_origin_gets_correct_acao(self):
         """Allowed origin gets echoed back (not wildcard) at app level"""
-        allowed = "https://platform-hardening-1.preview.emergentagent.com"
+        allowed = "https://readiness-checkpoint.preview.emergentagent.com"
         resp = requests.options(
             f"{self.INTERNAL_URL}/api/health",
             headers={
@@ -131,7 +131,7 @@ class TestS1_06_CORSNoWildcard:
         """Verify the CORS_ORIGINS environment default has no '*' entry."""
         cors_raw = os.environ.get(
             "CORS_ORIGINS",
-            "https://battwheels.com,https://app.battwheels.com,https://platform-hardening-1.preview.emergentagent.com",
+            "https://battwheels.com,https://app.battwheels.com,https://readiness-checkpoint.preview.emergentagent.com",
         )
         origins = [o.strip() for o in cors_raw.split(",") if o.strip()]
         assert "*" not in origins, f"FAIL S1.06: '*' found in CORS_ORIGINS list: {origins}"
