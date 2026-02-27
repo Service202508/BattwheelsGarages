@@ -1036,13 +1036,14 @@ async def list_enhanced_items(
     }
 
 @router.get("/low-stock")
-async def get_low_stock_items():
+async def get_low_stock_items(request: Request):
     """Get items below reorder level"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # H-02: hard cap, Sprint 3 for cursor pagination
     items = await db.items.find(
-        {"item_type": "inventory"},
+        {"item_type": "inventory", "organization_id": org_id},
         {"_id": 0}
     ).to_list(500)
     
@@ -1973,6 +1974,7 @@ async def get_contact_pricing_summary(contact_id: str):
 
 @router.get("/reports/sales-by-item")
 async def get_sales_by_item_report(
+    request: Request,
     start_date: str = "",
     end_date: str = "",
     item_id: str = "",
@@ -1981,9 +1983,10 @@ async def get_sales_by_item_report(
 ):
     """Sales by Item report - shows quantity sold and revenue per item"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Build query for invoices
-    query = {"status": {"$in": ["paid", "sent", "overdue", "partially_paid"]}}
+    query = {"organization_id": org_id, "status": {"$in": ["paid", "sent", "overdue", "partially_paid"]}}
     
     if start_date:
         query["invoice_date"] = {"$gte": start_date}
@@ -2057,6 +2060,7 @@ async def get_sales_by_item_report(
 
 @router.get("/reports/purchases-by-item")
 async def get_purchases_by_item_report(
+    request: Request,
     start_date: str = "",
     end_date: str = "",
     item_id: str = "",
@@ -2064,8 +2068,9 @@ async def get_purchases_by_item_report(
 ):
     """Purchases by Item report"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    query = {"status": {"$in": ["paid", "pending", "overdue", "partially_paid"]}}
+    query = {"organization_id": org_id, "status": {"$in": ["paid", "pending", "overdue", "partially_paid"]}}
     
     if start_date:
         query["bill_date"] = {"$gte": start_date}
@@ -2136,14 +2141,16 @@ async def get_purchases_by_item_report(
 
 @router.get("/reports/inventory-valuation")
 async def get_inventory_valuation_report(
+    request: Request,
     valuation_method: str = "fifo",
     warehouse_id: str = "",
     as_of_date: str = ""
 ):
     """Inventory valuation report with FIFO/LIFO tracking"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    query = {"item_type": {"$in": ["inventory", "sales_and_purchases"]}, "is_active": True}
+    query = {"organization_id": org_id, "item_type": {"$in": ["inventory", "sales_and_purchases"]}, "is_active": True}
     
     # H-02: hard cap, Sprint 3 for cursor pagination
     items = await db.items.find(query, {"_id": 0}).to_list(500)
@@ -2166,7 +2173,7 @@ async def get_inventory_valuation_report(
         
         # Get recent purchase lots for FIFO display
         recent_adjustments = await db.item_adjustments.find(
-            {"item_id": item.get("item_id"), "adjustment_type": "add"},
+            {"item_id": item.get("item_id"), "adjustment_type": "add", "organization_id": org_id},
             {"_id": 0}
         ).sort("created_time", -1).limit(5).to_list(5)
         
@@ -2204,21 +2211,23 @@ async def get_inventory_valuation_report(
 
 @router.get("/reports/item-movement")
 async def get_item_movement_report(
+    request: Request,
     item_id: str,
     start_date: str = "",
     end_date: str = ""
 ):
     """Item movement report - all stock in/out for an item"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    item = await db.items.find_one({"item_id": item_id}, {"_id": 0})
+    item = await db.items.find_one({"item_id": item_id, "organization_id": org_id}, {"_id": 0})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
     movements = []
     
     # Get adjustments
-    adj_query = {"item_id": item_id}
+    adj_query = {"item_id": item_id, "organization_id": org_id}
     if start_date:
         adj_query["created_time"] = {"$gte": start_date}
     if end_date:
@@ -2238,7 +2247,7 @@ async def get_item_movement_report(
         })
     
     # Get invoice line items (sales = out)
-    inv_query = {"line_items.item_id": item_id}
+    inv_query = {"organization_id": org_id, "line_items.item_id": item_id}
     if start_date:
         inv_query["invoice_date"] = {"$gte": start_date}
     if end_date:
@@ -2260,7 +2269,7 @@ async def get_item_movement_report(
                 })
     
     # Get bill line items (purchases = in)
-    bill_query = {"line_items.item_id": item_id}
+    bill_query = {"organization_id": org_id, "line_items.item_id": item_id}
     if start_date:
         bill_query["bill_date"] = {"$gte": start_date}
     if end_date:
