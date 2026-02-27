@@ -207,13 +207,14 @@ class TestBillsAPI(TestSetup):
         today = "2026-03-15"  # Use unlocked period
         due_date = "2026-04-14"
         
-        # First get a real vendor contact
-        vendor_resp = session.get(f"{BASE_URL}/api/v1/contacts-enhanced?type=vendor&limit=1", headers=auth_headers)
+        # First get a real vendor contact (must be contact_type=vendor)
+        vendor_resp = session.get(f"{BASE_URL}/api/v1/contacts-enhanced?limit=20", headers=auth_headers)
         if vendor_resp.status_code != 200:
-            pytest.skip("Could not list vendors")
-        vendors = vendor_resp.json().get("contacts", [])
+            pytest.skip("Could not list contacts")
+        contacts = vendor_resp.json().get("contacts", [])
+        vendors = [c for c in contacts if c.get("contact_type") == "vendor"]
         if not vendors:
-            pytest.skip("No vendors found in system")
+            pytest.skip("No vendor contacts found in system")
         
         vendor = vendors[0]
         vendor_id = vendor.get("contact_id")
