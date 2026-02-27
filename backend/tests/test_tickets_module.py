@@ -198,10 +198,10 @@ class TestTicketCRUD:
         data = response.json()
         
         assert "data" in data
-        assert "total" in data
+        assert "pagination" in data
         assert isinstance(data["data"], list)
         
-        print(f"✓ Listed {len(data['tickets'])} tickets (total: {data['total']})")
+        print(f"✓ Listed {len(data['data'])} tickets (total: {data['pagination'].get('total', 'N/A')})")
     
     def test_list_tickets_with_status_filter(self, auth_headers):
         """Test GET /api/v1/tickets?status=open - Filter by status"""
