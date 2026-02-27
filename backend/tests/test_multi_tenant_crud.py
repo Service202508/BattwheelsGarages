@@ -301,6 +301,7 @@ class TestInventoryCRUD:
         """Create inventory item should inherit organization ID"""
         item_data = {
             "name": f"TEST_Item {uuid.uuid4().hex[:6]}",
+            "sku": f"SKU-TEST-{uuid.uuid4().hex[:6]}",
             "category": "battery",
             "quantity": 10,
             "unit_price": 1500.0,
