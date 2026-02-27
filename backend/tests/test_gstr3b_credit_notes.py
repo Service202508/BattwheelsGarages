@@ -146,7 +146,7 @@ async def seed_test_data():
             "email": ORG_B_EMAIL,
             "name": "GSTR3B Test User B",
             "password_hash": pw_hash,
-            "role": "DevTest@123",
+            "role": "admin",
             "organization_id": ORG_B,
             "is_active": True,
         }},
@@ -166,7 +166,7 @@ async def seed_test_data():
         {"$set": {
             "user_id": ORG_B_USER_ID,
             "organization_id": ORG_B,
-            "role": "DevTest@123",
+            "role": "admin",
             "status": "active",
         }},
         upsert=True
