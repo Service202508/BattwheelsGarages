@@ -17,6 +17,12 @@ export const setOrganizationId = (orgId) => {
   }
 };
 
+// Helper to read CSRF token from cookie
+const getCsrfToken = () => {
+  const match = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
+};
+
 // Get standard headers with authentication and organization context
 export const getAuthHeaders = (includeOrgId = true) => {
   const headers = {
@@ -33,6 +39,12 @@ export const getAuthHeaders = (includeOrgId = true) => {
     if (orgId) {
       headers["X-Organization-ID"] = orgId;
     }
+  }
+  
+  // CSRF: attach token on every request (backend validates on state-changing methods)
+  const csrfToken = getCsrfToken();
+  if (csrfToken) {
+    headers["X-CSRF-Token"] = csrfToken;
   }
   
   return headers;
