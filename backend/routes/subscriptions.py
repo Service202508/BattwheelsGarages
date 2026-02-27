@@ -300,6 +300,212 @@ async def reactivate_subscription(
     }
 
 
+# ==================== RAZORPAY SUBSCRIPTION CHECKOUT ====================
+
+def _get_razorpay_client():
+    """Get Razorpay client using env credentials."""
+    import razorpay
+    key_id = os.environ.get("RAZORPAY_KEY_ID", "")
+    key_secret = os.environ.get("RAZORPAY_KEY_SECRET", "")
+    if not key_id or not key_secret:
+        return None
+    return razorpay.Client(auth=(key_id, key_secret))
+
+
+def _get_db():
+    """Get MongoDB database handle."""
+    from motor.motor_asyncio import AsyncIOMotorClient
+    client = AsyncIOMotorClient(os.environ.get("MONGO_URL"))
+    return client[os.environ.get("DB_NAME", "battwheels_dev")]
+
+
+class SubscribeRequest(BaseModel):
+    plan_code: str
+    billing_cycle: str = "monthly"
+
+
+@router.post("/subscribe", response_model=dict)
+async def subscribe_to_plan(
+    data: SubscribeRequest,
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """
+    Initiate a Razorpay subscription for the org.
+    Returns subscription_id and checkout data for the frontend.
+    """
+    ctx.require_permission("org:billing:update")
+
+    rp = _get_razorpay_client()
+    if not rp:
+        raise HTTPException(status_code=503, detail="Payment gateway not configured")
+
+    # Resolve plan
+    service = get_subscription_service()
+    try:
+        plan_code = PlanCode(data.plan_code)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid plan code")
+
+    plan = await service.get_plan(plan_code)
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+
+    if plan.price_monthly == 0:
+        raise HTTPException(status_code=400, detail="Free plan does not require payment")
+
+    db = _get_db()
+
+    # Get or create Razorpay Plan ID for this plan+cycle
+    amount_paise = int(plan.price_monthly * 100) if data.billing_cycle == "monthly" else int(plan.price_annual * 100)
+    period = "monthly" if data.billing_cycle == "monthly" else "yearly"
+    interval = 1
+
+    rp_plan_doc = await db.razorpay_plans.find_one(
+        {"plan_code": plan_code.value, "period": period},
+        {"_id": 0}
+    )
+
+    if not rp_plan_doc:
+        # Create plan in Razorpay
+        try:
+            rp_plan = rp.plan.create({
+                "period": period,
+                "interval": interval,
+                "item": {
+                    "name": f"Battwheels {plan.name} ({period.title()})",
+                    "amount": amount_paise,
+                    "currency": "INR",
+                    "description": plan.description or f"{plan.name} plan"
+                }
+            })
+            rp_plan_doc = {
+                "razorpay_plan_id": rp_plan["id"],
+                "plan_code": plan_code.value,
+                "period": period,
+                "amount_paise": amount_paise,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.razorpay_plans.insert_one(rp_plan_doc)
+            logger.info(f"Created Razorpay plan {rp_plan['id']} for {plan_code.value}/{period}")
+        except Exception as e:
+            logger.error(f"Failed to create Razorpay plan: {e}")
+            raise HTTPException(status_code=502, detail=f"Payment gateway error: {str(e)}")
+
+    # Get org for customer info
+    org = await db.organizations.find_one(
+        {"organization_id": ctx.org_id},
+        {"_id": 0, "name": 1, "admin_email": 1, "phone": 1}
+    )
+
+    # Create Razorpay Subscription
+    try:
+        rp_sub = rp.subscription.create({
+            "plan_id": rp_plan_doc["razorpay_plan_id"],
+            "total_count": 12 if period == "monthly" else 3,
+            "quantity": 1,
+            "customer_notify": 1,
+            "notes": {
+                "org_id": ctx.org_id,
+                "org_name": org.get("name", "") if org else "",
+                "plan_name": plan.name,
+                "plan_code": plan_code.value,
+                "billing_cycle": period
+            }
+        })
+    except Exception as e:
+        logger.error(f"Failed to create Razorpay subscription: {e}")
+        raise HTTPException(status_code=502, detail=f"Payment gateway error: {str(e)}")
+
+    # Store subscription reference
+    await db.subscription_orders.insert_one({
+        "subscription_order_id": f"subord_{uuid.uuid4().hex[:12]}",
+        "organization_id": ctx.org_id,
+        "razorpay_subscription_id": rp_sub["id"],
+        "razorpay_plan_id": rp_plan_doc["razorpay_plan_id"],
+        "plan_code": plan_code.value,
+        "billing_cycle": period,
+        "amount_paise": amount_paise,
+        "status": rp_sub.get("status", "created"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+
+    return {
+        "success": True,
+        "razorpay_subscription_id": rp_sub["id"],
+        "razorpay_key_id": os.environ.get("RAZORPAY_KEY_ID", ""),
+        "amount_paise": amount_paise,
+        "plan_name": plan.name,
+        "short_url": rp_sub.get("short_url"),
+        "status": rp_sub.get("status"),
+        "notes": rp_sub.get("notes", {})
+    }
+
+
+@router.post("/cancel-razorpay", response_model=dict)
+async def cancel_razorpay_subscription(
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """
+    Cancel the active Razorpay subscription for the org.
+    The org stays active until the current billing period ends.
+    """
+    ctx.require_permission("org:billing:update")
+
+    rp = _get_razorpay_client()
+    if not rp:
+        raise HTTPException(status_code=503, detail="Payment gateway not configured")
+
+    db = _get_db()
+
+    # Find the active subscription order
+    sub_order = await db.subscription_orders.find_one(
+        {"organization_id": ctx.org_id, "status": {"$in": ["active", "authenticated", "created"]}},
+        {"_id": 0},
+        sort=[("created_at", -1)]
+    )
+    if not sub_order:
+        raise HTTPException(status_code=404, detail="No active Razorpay subscription found")
+
+    rp_sub_id = sub_order["razorpay_subscription_id"]
+
+    try:
+        rp.subscription.cancel(rp_sub_id, {"cancel_at_cycle_end": 1})
+    except Exception as e:
+        logger.error(f"Failed to cancel Razorpay subscription: {e}")
+        raise HTTPException(status_code=502, detail=f"Payment gateway error: {str(e)}")
+
+    # Update local record
+    await db.subscription_orders.update_one(
+        {"razorpay_subscription_id": rp_sub_id},
+        {"$set": {"status": "cancelled", "cancelled_at": datetime.now(timezone.utc).isoformat()}}
+    )
+
+    # Mark subscription as cancel_at_period_end
+    service = get_subscription_service()
+    await service.cancel_subscription(ctx.org_id, reason="User cancelled via Razorpay", immediate=False)
+
+    return {
+        "success": True,
+        "message": "Subscription will cancel at end of current billing period",
+        "razorpay_subscription_id": rp_sub_id
+    }
+
+
+@router.get("/payment-history", response_model=dict)
+async def get_payment_history(
+    ctx: TenantContext = Depends(tenant_context_required)
+):
+    """Get subscription payment history for the org."""
+    db = _get_db()
+
+    payments = await db.subscription_payments.find(
+        {"organization_id": ctx.org_id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+
+    return {"payments": payments, "count": len(payments)}
+
+
 # ==================== ADMIN ENDPOINTS ====================
 
 @router.post("/admin/initialize-plans", response_model=dict)
