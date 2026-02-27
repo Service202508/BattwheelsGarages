@@ -764,8 +764,7 @@ async def create_enhanced_item(item: ItemCreate, request: Request):
     
     item_dict = {
         "item_id": item_id,
-        
-        # ===== BASIC INFO =====
+        "organization_id": org_id,
         "name": item.name,
         "sku": item.sku,
         "description": item.description,
@@ -869,7 +868,7 @@ async def create_enhanced_item(item: ItemCreate, request: Request):
     
     # Initialize stock locations for inventory items
     if item.item_type == "inventory" or item.track_inventory:
-        warehouses = await db.warehouses.find({"is_active": True}).to_list(100)
+        warehouses = await db.warehouses.find({"is_active": True, "organization_id": org_id}).to_list(100)
         target_warehouse_id = item.warehouse_id
         
         for wh in warehouses:
@@ -882,6 +881,7 @@ async def create_enhanced_item(item: ItemCreate, request: Request):
             await db.item_stock_locations.insert_one({
                 "location_id": f"ISL-{uuid.uuid4().hex[:8].upper()}",
                 "item_id": item_id,
+                "organization_id": org_id,
                 "warehouse_id": wh["warehouse_id"],
                 "warehouse_name": wh["name"],
                 "stock": stock_qty,
@@ -892,7 +892,7 @@ async def create_enhanced_item(item: ItemCreate, request: Request):
     # Update group item count
     if item.group_id:
         await db.item_groups.update_one(
-            {"group_id": item.group_id},
+            {"group_id": item.group_id, "organization_id": org_id},
             {"$inc": {"item_count": 1}}
         )
     
