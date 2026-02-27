@@ -223,7 +223,9 @@ try:
     from middleware.rate_limit import RateLimitMiddleware
     from middleware.rbac import RBACMiddleware
     from middleware.csrf import CSRFMiddleware
+    from middleware.sanitization import SanitizationMiddleware
     app.add_middleware(RateLimitMiddleware)
+    app.add_middleware(SanitizationMiddleware)  # Sanitize: after CSRF, strips HTML from all JSON
     app.add_middleware(CSRFMiddleware)       # CSRF: after auth, before routes
     app.add_middleware(RBACMiddleware)
     app.add_middleware(TenantGuardMiddleware)
