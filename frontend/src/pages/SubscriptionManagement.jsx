@@ -266,7 +266,7 @@ export default function SubscriptionManagement() {
                   <DialogHeader>
                     <DialogTitle>Choose Your Plan</DialogTitle>
                     <DialogDescription>
-                      Select the plan that best fits your business needs
+                      Select the plan that best fits your business needs. Paid plans use Razorpay for secure recurring payments.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
