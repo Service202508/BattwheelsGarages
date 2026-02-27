@@ -46,25 +46,43 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 
 **Known gap:** `log_item_history` helper inserts history without org_id (requires signature change across callers)
 
-## Prioritized Backlog
+### Full Codebase Audit — COMPLETED (2026-02-28)
+- Comprehensive 11-section read-only audit completed
+- Output: `/app/docs/REMEDIATION_AUDIT_2026.md` (1322 lines)
+- Findings: 6 P0, 18 P1, 16 P2 items cataloged
+- Key discoveries: 3 EFI services with ZERO tenant isolation, Professional Tax/ESI errors, 9 EFI collections missing from TenantGuard, broken workflow chain at Steps 4→5 and 5→6
 
-### P0 — Full Codebase Pattern A Audit
-- Audit ALL remaining route files for Pattern A violations (contacts_enhanced, invoices_enhanced, bills_enhanced, etc.)
-- Fix `log_item_history` helper to accept and include org_id
+## Prioritized Backlog (Updated from Audit)
 
-### P1 — Sprint 3 (Cursor Pagination)
-- Replace H-01/H-02 hard caps with proper cursor-based pagination
-- Implement cursor pagination utility
-- Migrate Tier 1 list endpoints to cursor-based pagination
-- Migrate Tier 2 endpoints (reports, HR, banking)
+### P0 — Critical (Must Fix Before Production)
+- P0-01: EFI Decision Engine — zero tenant isolation (services/efi_decision_engine.py)
+- P0-02: EFI Embedding Service — zero tenant isolation (services/efi_embedding_service.py)
+- P0-03: Embedding Service — zero tenant isolation (services/embedding_service.py)
+- P0-04: Professional Tax hardcoded flat ₹200 for all states (services/hr_service.py)
+- P0-05: ESI employer contribution not calculated correctly (services/hr_service.py)
+- P0-06: 9 EFI collections missing from TenantGuard TENANT_COLLECTIONS (core/tenant/guard.py)
 
-### P2 — Test Coverage
-- Address 51 skipped tests by creating necessary data fixtures
-- Create fixtures for Form16, starter plans, technician portal routes
+### P1 — High Priority
+- P1-01: log_item_history missing org_id in inserted docs (routes/items_enhanced.py:2827)
+- P1-02: org_query silently drops org_id when null (utils/database.py:29)
+- P1-03: Notification service — no org_id (services/notification_service.py)
+- P1-04: 32+ queries with .to_list(5000-10000) remaining
+- P1-05: No period lock enforcement on journal entry creation
+- P1-06: PF ceiling not enforced (₹15,000 basic cap)
+- P1-07-08: GSTR-1/3B compliance gaps
+- P1-09: No fiscal year concept in accounting
+- P1-10: RBAC fallthrough for unmapped routes
+- P1-11: Workflow chain broken at Steps 4→5 and 5→6
+- P1-12-17: Additional tenant isolation gaps in services
 
-### P3 — Remaining Audit Items
-- Tier 2/3 query hard caps (38 queries at 5000+, 80 at 1000+)
-- Medium/Low priority items from original platform audit
+### P2 — Medium Priority / Backlog
+- Cursor-based pagination to replace all hard caps
+- 51 skipped tests need data fixtures
+- CSRF secure flag, rate limiting in-memory
+- Multiple mocked email/notification features
+- Payroll statutory gaps (HRA exemption, 80C/80D, gratuity, bonus)
+- GST gaps (e-Way bill, GSTR-2A/2B, annual return)
+- Projects module skeleton needs expansion
 
 ## Credentials
 - **Dev:** dev@battwheels.internal / DevTest@123
