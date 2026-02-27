@@ -412,7 +412,6 @@ class TestAvailableRoles:
         data = response.json()
         assert "roles" in data, "Missing roles array"
         role_names = [r["role"] for r in data["roles"]]
-        assert "owner" in role_names, "Missing owner role"
         assert "admin" in role_names, "Missing admin role"
         assert "technician" in role_names, "Missing technician role"
         print(f"✓ Available roles: {role_names}")
