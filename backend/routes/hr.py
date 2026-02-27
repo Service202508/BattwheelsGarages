@@ -1864,17 +1864,17 @@ async def download_bulk_form16_zip(request: Request, fy: str, _: None = Depends(
     )
 
 
-async def get_org_id(request: Request, db) -> Optional[str]:
-    """Extract organization ID from request"""
+async def get_org_id(request: Request, db) -> str:
+    """Extract organization ID from request. Raises 403 if not resolvable."""
     try:
         auth_header = request.headers.get("authorization", "")
         if auth_header.startswith("Bearer "):
             from utils.auth import decode_token_safe
             token = auth_header.split(" ")[1]
             payload = decode_token_safe(token)
-            if payload:
-                return payload.get("org_id")
-    except:
+            if payload and payload.get("org_id"):
+                return payload["org_id"]
+    except Exception:
         pass
-    return None
+    raise HTTPException(status_code=403, detail="Organization context required")
 
