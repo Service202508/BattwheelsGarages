@@ -3,7 +3,7 @@
 ## Original Problem Statement
 Full-stack SaaS platform (React/FastAPI/MongoDB) for automotive service management with EFI AI diagnostics. After a 6-phase "Architectural Evolution Sprint", a full audit revealed 35/100 production readiness. User ordered a 10-fix Stabilisation Sprint followed by deep verification and 3 completion fixes.
 
-## Current State: Onboarding Ready (Feb 2026)
+## Current State: Subscription Safety Complete (Feb 2026)
 
 ### Stabilisation Sprint — COMPLETE
 All 10 fixes + 3 completion fixes + 3 cleanups verified and passing.
@@ -15,6 +15,14 @@ All 10 fixes + 3 completion fixes + 3 cleanups verified and passing.
 | Fix A: Public Pattern /v1/ Mismatch | DONE | Updated RBAC + TenantGuard public patterns to include /api/v1/... paths. Registration, webhooks, login, password reset all unblocked. |
 | Fix B: Org Slug Resolution | DONE | Rewrote get_org_from_request() to detect non-production hosts (emergentagent.com, emergentcf.cloud, localhost). Falls back to X-Organization-Slug header or ?org_slug= query param. |
 | Fix C: Subscription Payment Flow | DONE | Built complete Razorpay subscription checkout: POST /subscribe creates Razorpay subscription, webhook handles activated/charged/halted/cancelled events, cancel endpoint, payment history, frontend checkout with Razorpay.js |
+
+### Subscription Safety Fixes (Feb 27, 2026) — COMPLETE
+
+| Fix | Status | Details |
+|-----|--------|---------|
+| Fix 1: Duplicate Subscription Prevention | DONE | Added check in POST /subscribe for existing active/created/authenticated/pending subscriptions in subscription_orders + org document. Returns 409 Conflict. |
+| Fix 2: Live Key Safety Warning | DONE | Logs WARNING when rzp_live_* key detected in non-production ENVIRONMENT. ENVIRONMENT=development set in .env. |
+| Fix 3: Auto-Trial on Registration | DONE | Signup now sets subscription_status=trialing, trial_active=true, trial_start=now, trial_end=now+14d on org document. |
 
 ### Onboarding Flow: 12/12 PASS
 1. Register new org → 200 ✅
@@ -77,5 +85,5 @@ All 10 fixes + 3 completion fixes + 3 cleanups verified and passing.
 - Resend (Email — LIVE)
 - WhatsApp — MOCKED
 
-## Estimated Score: ~78/100
-(up from 72 — onboarding flow complete, subscription payments, public patterns fixed)
+## Estimated Score: ~80/100
+(up from 78 — subscription safety fixes complete: duplicate prevention, live key warning, auto-trial)
