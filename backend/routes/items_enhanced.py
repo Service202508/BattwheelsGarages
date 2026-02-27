@@ -1168,6 +1168,7 @@ async def create_item_adjustment(adj: ItemAdjustmentCreate, request: Request):
     
     adj_dict = {
         "adjustment_id": adj_id,
+        "organization_id": org_id,
         "item_id": adj.item_id,
         "item_name": item.get("name", ""),
         "warehouse_id": adj.warehouse_id,
