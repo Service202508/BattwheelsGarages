@@ -126,7 +126,9 @@ async def update_supplier(
     request: Request,
     ctx: TenantContext = Depends(tenant_context_required)
 ):
-    await require_technician_or_admin(request)
+    user = await require_auth(request)
+    if user.get("role") not in ["admin", "owner", "technician", "manager"]:
+        raise HTTPException(status_code=403, detail="Technician or Admin access required")
     query = {"supplier_id": supplier_id, "organization_id": ctx.org_id}
     update_dict = {k: v for k, v in update.model_dump().items() if v is not None}
     await db.suppliers.update_one(query, {"$set": update_dict})

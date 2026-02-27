@@ -216,6 +216,7 @@ class TestBillsAPI(TestSetup):
             "due_date": due_date,
             "line_items": [
                 {
+                    "name": "Software License",
                     "description": "Software License",
                     "quantity": 1,
                     "unit": "nos",
@@ -225,6 +226,7 @@ class TestBillsAPI(TestSetup):
                     "account_code": "5000"
                 },
                 {
+                    "name": "Annual Maintenance",
                     "description": "Annual Maintenance",
                     "quantity": 1,
                     "unit": "nos",
