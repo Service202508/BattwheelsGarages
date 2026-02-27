@@ -27,11 +27,17 @@ CSRF_BYPASS_PREFIXES = (
     "/api/webhooks/",
     "/api/public/",
     "/api/v1/public/",
-    "/api/v1/auth/",              # Auth endpoints are pre-session (no cookies)
-    "/api/v1/organizations/signup", # Signup is pre-session
+    "/api/auth/",                   # Auth endpoints (non-versioned)
+    "/api/v1/auth/",                # Auth endpoints (versioned)
+    "/api/v1/organizations/signup",  # Signup is pre-session
+    "/api/v1/organizations/accept-invite",  # Invite acceptance is pre-session
+    "/api/v1/customer-portal/auth",  # Customer portal auth
+    "/api/v1/business-portal/auth",  # Business portal auth
+    "/api/v1/technician-portal/auth",  # Technician portal auth
     "/docs",
     "/openapi.json",
     "/redoc",
+    "/api/health",
 )
 
 CSRF_COOKIE_NAME = "csrf_token"
