@@ -142,7 +142,7 @@ async def create_vehicle(
     user = await require_auth(request)
     
     vehicle = Vehicle(
-        owner_id=user.user_id,
+        owner_id=user.get("user_id"),
         owner_name=vehicle_data.owner_name,
         owner_email=vehicle_data.owner_email,
         owner_phone=vehicle_data.owner_phone,
