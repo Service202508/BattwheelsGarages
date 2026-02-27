@@ -253,6 +253,7 @@ class HRService:
         attendance = {
             "attendance_id": attendance_id,
             "employee_id": employee["employee_id"],
+            "organization_id": employee.get("organization_id", ""),
             "user_id": user_id,
             "date": today,
             "clock_in": now.isoformat(),
