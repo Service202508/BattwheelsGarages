@@ -8,12 +8,28 @@ import os
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
+ADMIN_EMAIL = "dev@battwheels.internal"
+ADMIN_PASSWORD = "DevTest@123"
+
+
+@pytest.fixture(scope="module")
+def auth_headers():
+    """Get admin auth headers for GST tests"""
+    resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
+        "email": ADMIN_EMAIL,
+        "password": ADMIN_PASSWORD
+    })
+    assert resp.status_code == 200, f"Login failed: {resp.text}"
+    token = resp.json()["token"]
+    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+
 class TestGSTStates:
     """Test Indian states endpoint"""
     
-    def test_get_indian_states(self):
+    def test_get_indian_states(self, auth_headers):
         """GET /api/v1/gst/states - Returns list of Indian states with GST codes"""
-        response = requests.get(f"{BASE_URL}/api/v1/gst/states")
+        response = requests.get(f"{BASE_URL}/api/v1/gst/states", headers=auth_headers)
         assert response.status_code == 200
         
         data = response.json()
