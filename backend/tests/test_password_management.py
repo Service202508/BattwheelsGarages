@@ -3,8 +3,8 @@ Password Management Module Tests
 ================================
 Tests for 3 password features:
 1. Admin Reset Password (POST /api/employees/{id}/reset-password)
-2. Self-Service Password Change (POST /api/auth/change-password)
-3. Forgot Password Flow (POST /api/auth/forgot-password, POST /api/auth/reset-password)
+2. Self-Service Password Change (POST /api/v1/auth/change-password)
+3. Forgot Password Flow (POST /api/v1/auth/forgot-password, POST /api/v1/auth/reset-password)
 
 Public whitelist verification for forgot-password and reset-password endpoints.
 """
@@ -19,9 +19,9 @@ class TestPublicEndpointWhitelist:
     """Test that public endpoints are accessible without auth"""
     
     def test_forgot_password_no_auth_required(self):
-        """POST /api/auth/forgot-password should NOT return 401/403"""
+        """POST /api/v1/auth/forgot-password should NOT return 401/403"""
         res = requests.post(
-            f"{BASE_URL}/api/auth/forgot-password",
+            f"{BASE_URL}/api/v1/auth/forgot-password",
             json={"email": "test@example.com"},
             headers={"Content-Type": "application/json"}
         )
@@ -30,9 +30,9 @@ class TestPublicEndpointWhitelist:
         print(f"✓ forgot-password accessible without auth (status: {res.status_code})")
     
     def test_reset_password_no_auth_required(self):
-        """POST /api/auth/reset-password should NOT return 401/403"""
+        """POST /api/v1/auth/reset-password should NOT return 401/403"""
         res = requests.post(
-            f"{BASE_URL}/api/auth/reset-password",
+            f"{BASE_URL}/api/v1/auth/reset-password",
             json={"token": "invalid_test_token", "new_password": "test_pwd_placeholder"},
             headers={"Content-Type": "application/json"}
         )
@@ -48,7 +48,7 @@ class TestForgotPasswordFlow:
     def test_forgot_password_existing_email(self):
         """Forgot password with existing email returns success message"""
         res = requests.post(
-            f"{BASE_URL}/api/auth/forgot-password",
+            f"{BASE_URL}/api/v1/auth/forgot-password",
             json={"email": "dev@battwheels.internal"},
             headers={"Content-Type": "application/json"}
         )
@@ -62,7 +62,7 @@ class TestForgotPasswordFlow:
     def test_forgot_password_nonexistent_email_prevents_enumeration(self):
         """Forgot password with nonexistent email should return success (prevent enumeration)"""
         res = requests.post(
-            f"{BASE_URL}/api/auth/forgot-password",
+            f"{BASE_URL}/api/v1/auth/forgot-password",
             json={"email": "nonexistent_user_xyz@example.com"},
             headers={"Content-Type": "application/json"}
         )
@@ -79,7 +79,7 @@ class TestResetPasswordFlow:
     def test_reset_password_invalid_token(self):
         """Reset password with invalid token returns 400"""
         res = requests.post(
-            f"{BASE_URL}/api/auth/reset-password",
+            f"{BASE_URL}/api/v1/auth/reset-password",
             json={"token": "invalid_bad_token_abc123", "new_password": "newpass123"},
             headers={"Content-Type": "application/json"}
         )
@@ -92,7 +92,7 @@ class TestResetPasswordFlow:
     def test_reset_password_missing_token(self):
         """Reset password without token should return validation error"""
         res = requests.post(
-            f"{BASE_URL}/api/auth/reset-password",
+            f"{BASE_URL}/api/v1/auth/reset-password",
             json={"new_password": "newpass123"},  # Missing token
             headers={"Content-Type": "application/json"}
         )
@@ -102,7 +102,7 @@ class TestResetPasswordFlow:
     def test_reset_password_short_password(self):
         """Reset password with password < 6 chars should fail validation"""
         res = requests.post(
-            f"{BASE_URL}/api/auth/reset-password",
+            f"{BASE_URL}/api/v1/auth/reset-password",
             json={"token": "test_token", "new_password": "abc"},  # Too short
             headers={"Content-Type": "application/json"}
         )
@@ -117,7 +117,7 @@ class TestSelfServicePasswordChange:
     def admin_token(self):
         """Login as admin to get token"""
         res = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "dev@battwheels.internal", "password": "DevTest@123"},
             headers={"Content-Type": "application/json"}
         )
@@ -128,7 +128,7 @@ class TestSelfServicePasswordChange:
     def test_change_password_requires_auth(self):
         """Change password without auth should return 401"""
         res = requests.post(
-            f"{BASE_URL}/api/auth/change-password",
+            f"{BASE_URL}/api/v1/auth/change-password",
             json={"current_password": "DevTest@123", "new_password": "newpass123"},
             headers={"Content-Type": "application/json"}
         )
@@ -138,7 +138,7 @@ class TestSelfServicePasswordChange:
     def test_change_password_wrong_current_password(self, admin_token):
         """Change password with wrong current password returns 401"""
         res = requests.post(
-            f"{BASE_URL}/api/auth/change-password",
+            f"{BASE_URL}/api/v1/auth/change-password",
             json={"current_password": "wrong_password_xyz", "new_password": "newpass123"},
             headers={
                 "Content-Type": "application/json",
@@ -155,7 +155,7 @@ class TestSelfServicePasswordChange:
         """Change password successfully, then revert back to original"""
         # Step 1: Change to new password (6+ chars required for new_password)
         res = requests.post(
-            f"{BASE_URL}/api/auth/change-password",
+            f"{BASE_URL}/api/v1/auth/change-password",
             json={"current_password": "DevTest@123", "new_password": "DevTest@123"},
             headers={
                 "Content-Type": "application/json",
@@ -169,7 +169,7 @@ class TestSelfServicePasswordChange:
         
         # Step 2: Login with new password to verify
         login_res = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "dev@battwheels.internal", "password": "DevTest@123"},
             headers={"Content-Type": "application/json"}
         )
@@ -181,7 +181,7 @@ class TestSelfServicePasswordChange:
         # Must restore via direct DB update after tests
         # For now, just change back to something 6+ chars that we know
         revert_res = requests.post(
-            f"{BASE_URL}/api/auth/change-password",
+            f"{BASE_URL}/api/v1/auth/change-password",
             json={"current_password": "DevTest@123", "new_password": "admin!"},  # 6 chars
             headers={
                 "Content-Type": "application/json",
@@ -193,7 +193,7 @@ class TestSelfServicePasswordChange:
         
         # Step 4: Verify login with new password
         verify_res = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "dev@battwheels.internal", "password": "admin!"},
             headers={"Content-Type": "application/json"}
         )
@@ -209,7 +209,7 @@ class TestAdminResetEmployeePassword:
     def admin_auth(self):
         """Login as admin to get token and headers"""
         res = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "dev@battwheels.internal", "password": "DevTest@123"},
             headers={"Content-Type": "application/json"}
         )
@@ -285,7 +285,7 @@ class TestTechnicianLogin:
     def test_technician_login(self):
         """Verify technician credentials work"""
         res = requests.post(
-            f"{BASE_URL}/api/auth/login",
+            f"{BASE_URL}/api/v1/auth/login",
             json={"email": "tech.a@battwheels.internal", "password": "DevTest@123"},
             headers={"Content-Type": "application/json"}
         )
