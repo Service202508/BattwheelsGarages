@@ -28,9 +28,9 @@ BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://platform-hardening-1
 
 # Test credentials from review request
 ADMIN_EMAIL = "dev@battwheels.internal"
-ADMIN_PASSWORD = "TestPass@123"
+ADMIN_PASSWORD = "DevTest@123"
 TECH_EMAIL = "tech.a@battwheels.internal"
-TECH_PASSWORD = "TestPass@123"
+TECH_PASSWORD = "TechA@123"
 ORG_ID = "dev-internal-testing-001"
 
 # Known test invoice IDs
