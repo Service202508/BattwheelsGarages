@@ -639,6 +639,13 @@ async def handle_razorpay_webhook(request: Request):
             {"$set": {"status": "processed", "processed_at": datetime.now(timezone.utc).isoformat()}}
         )
 
+    # ── Subscription events ──────────────────────────────────────────
+    elif event in ("subscription.activated", "subscription.charged",
+                   "subscription.pending", "subscription.halted",
+                   "subscription.cancelled", "subscription.completed"):
+        sub_entity = payload.get("payload", {}).get("subscription", {}).get("entity", {})
+        await _process_subscription_webhook(db, event, sub_entity)
+
     # Mark this (payment_id, event) pair as processed so duplicates are skipped
     if payment_id and event:
         await db.webhook_logs.update_one(
