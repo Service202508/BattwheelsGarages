@@ -473,15 +473,16 @@ class EFIEmbeddingManager:
         if subsystem and subsystem != "unknown":
             query["subsystem_category"] = subsystem
         
-        # Get all failure cards with embeddings
-        cards = await self.db.failure_cards.find(query, {"_id": 0}).to_list(None)
+        # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
+        cards = await self.db.failure_cards.find(query, {"_id": 0}).to_list(1000)
         
         if not cards:
             # Try without subsystem filter
+            # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
             cards = await self.db.failure_cards.find(
                 {"embedding_vector": {"$exists": True, "$ne": None}},
                 {"_id": 0}
-            ).to_list(None)
+            ).to_list(1000)
         
         if not cards:
             logger.warning("No failure cards with embeddings found")
@@ -489,7 +490,8 @@ class EFIEmbeddingManager:
         
         # Get all decision tree IDs for boosting
         tree_card_ids = set()
-        trees = await self.db.efi_decision_trees.find({}, {"failure_card_id": 1}).to_list(None)
+        # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
+        trees = await self.db.efi_decision_trees.find({}, {"failure_card_id": 1}).to_list(1000)
         for t in trees:
             tree_card_ids.add(t.get("failure_card_id"))
         
@@ -569,7 +571,8 @@ class EFIEmbeddingManager:
     
     async def embed_all_cards(self) -> Dict[str, Any]:
         """Generate embeddings for all failure cards"""
-        cards = await self.db.failure_cards.find({}, {"failure_id": 1, "_id": 0}).to_list(None)
+        # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
+        cards = await self.db.failure_cards.find({}, {"failure_id": 1, "_id": 0}).to_list(1000)
         
         results = {
             "total": len(cards),

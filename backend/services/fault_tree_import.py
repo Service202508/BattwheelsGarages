@@ -851,9 +851,10 @@ class FaultTreeImportService:
         )
         
         # Get parsed rows
+        # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
         rows = await self.db.parsed_rows.find(
             {"job_id": job_id, "validation_status": {"$ne": ValidationStatus.ERROR.value}}
-        ).to_list(None)
+        ).to_list(1000)
         
         total = len(rows)
         created = 0

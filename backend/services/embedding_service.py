@@ -357,17 +357,19 @@ class FailureCardEmbedder:
         Returns statistics about the operation.
         """
         # Find cards without embeddings
+        # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
         cards = await self.db.failure_cards.find(
             {"embedding_vector": {"$exists": False}},
             {"_id": 0}
-        ).to_list(None)
+        ).to_list(1000)
         
         if not cards:
             # Also check cards with null embeddings
+            # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
             cards = await self.db.failure_cards.find(
                 {"embedding_vector": None},
                 {"_id": 0}
-            ).to_list(None)
+            ).to_list(1000)
         
         if not cards:
             return {"status": "complete", "processed": 0, "message": "All cards already have embeddings"}

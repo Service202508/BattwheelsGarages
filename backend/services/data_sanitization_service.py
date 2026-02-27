@@ -449,7 +449,8 @@ class DataSanitizationService:
                 original_name = backup_col.replace(f"_backup_{job_id}_", "")
                 
                 # Get backup records
-                backup_records = await self.db[backup_col].find({}).to_list(length=None)
+                # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
+                backup_records = await self.db[backup_col].find({}).to_list(length=1000)
                 
                 if backup_records:
                     # Restore to original collection
@@ -505,10 +506,11 @@ class DataValidationService:
         issues = []
         
         # Check invoices reference existing customers
+        # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
         invoices = await self.db.invoices.find(
             {"organization_id": organization_id},
             {"customer_id": 1, "invoice_number": 1}
-        ).to_list(length=None)
+        ).to_list(length=1000)
         
         customer_ids = set()
         async for c in self.db.contacts.find({"organization_id": organization_id}, {"contact_id": 1}):
@@ -523,10 +525,11 @@ class DataValidationService:
                 })
         
         # Check items have valid stock levels
+        # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
         items_with_negative = await self.db.items.find(
             {"organization_id": organization_id, "stock_on_hand": {"$lt": 0}},
             {"item_id": 1, "name": 1, "stock_on_hand": 1}
-        ).to_list(length=None)
+        ).to_list(length=1000)
         
         for item in items_with_negative:
             issues.append({
@@ -548,9 +551,10 @@ class DataValidationService:
         completeness_issues = []
         
         # Check contacts have required fields
+        # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
         contacts = await self.db.contacts.find(
             {"organization_id": organization_id}
-        ).to_list(length=None)
+        ).to_list(length=1000)
         
         for contact in contacts:
             missing = []
