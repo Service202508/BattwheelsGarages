@@ -17,8 +17,8 @@ Battwheels OS is a SaaS platform for EV garages and service centers. The platfor
 | Production | battwheels | Live data, real customers |
 
 ## SaaS Architecture (Post-Reset)
-- **Production:** 1 user (platform-admin@battwheels.in), 0 orgs, 0 customers
-- **Staging:** Mirrors production (1 platform-admin, 0 orgs)
+- **Production:** 1 user (platform-admin@battwheels.in), 0 orgs, 4 plans, 4 migrations
+- **Staging:** Mirrors production (1 platform-admin, 0 orgs, 4 plans, 4 migrations)
 - **Dev:** Volt Motors demo org with sample data (DO NOT TOUCH)
 - Customers sign up through the self-serve signup flow
 
@@ -34,14 +34,22 @@ Battwheels OS is a SaaS platform for EV garages and service centers. The platfor
 - Temporary test accounts cleaned from dev DB
 
 ### Production Reset — Clean Slate for SaaS Launch (COMPLETED - 2026-02-27)
-- Phase 0: Session start protocol — all 5 checks passed
-- Phase 1: Full production audit — 223 collections, 2,222 documents catalogued
-- Phase 2: Production wiped — all data deleted, platform-admin preserved
-- Phase 3: Platform admin login verified (BUG FIXED: bleach sanitization corrupting passwords with & character)
-- Phase 4: End-to-end signup flow tested and verified (signup, login, module access, PA visibility)
-- Phase 5: Dev environment verified untouched
-- Phase 6: Staging set up to mirror production
-- Phase 7: Final state report generated
+- All 7 phases executed successfully
+- Production wiped: 2,222 docs → 1 user + 8 platform records
+- Platform admin preserved and verified
+- Signup flow tested end-to-end
+- Dev environment untouched
+- Staging set up to mirror production
+
+### Post-Reset Verification Session (COMPLETED - 2026-02-27)
+- All 5 session start protocol checks: GREEN
+- Production state: 1 user, 0 orgs, 4 plans, 4 migrations — VERIFIED
+- Staging state: FIXED (seeded plans + migrations from production)
+- Test suite: 322 passed, 0 failed, 0 errors, 51 skipped — STABLE
+- Signup with special characters (`TestP@ss&W0rd#99`): PASS
+- Login with same password: PASS, no password field in response
+- Bleach bypass fix: VERIFIED at middleware/sanitization.py:25-27
+- Password exclusion fix: VERIFIED at routes/auth.py:110
 
 ### Bugs Fixed During Reset
 1. **Sanitization middleware corrupting passwords:** `bleach.clean()` was converting `&` to `&amp;` in password fields. Fixed by adding auth/signup endpoints to `SANITIZE_BYPASS_PREFIXES` in `middleware/sanitization.py`.
@@ -54,7 +62,7 @@ Battwheels OS is a SaaS platform for EV garages and service centers. The platfor
 
 ### P1 — High Priority (Tech Debt)
 - H-01/H-02: Implement pagination for 435+ unbounded database queries
-- H-07: Seed battwheels_staging database for proper QA environment
+- H-07: Seed battwheels_staging database for proper QA environment (DONE)
 
 ### P2 — Medium Priority
 - Address 51 skipped tests (missing data fixtures for Form16, starter plans, technician portal)
