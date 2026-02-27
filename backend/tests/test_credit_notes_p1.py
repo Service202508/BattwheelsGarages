@@ -89,6 +89,7 @@ class TestCreditNoteValidations:
         payload = {
             "original_invoice_id": DRAFT_INVOICE_ID,
             "reason": "Test - should fail",
+            "credit_note_date": "2026-03-15",
             "line_items": [
                 {"name": "Test item", "quantity": 1, "rate": 100, "tax_rate": 18}
             ]
@@ -105,6 +106,7 @@ class TestCreditNoteValidations:
         payload = {
             "original_invoice_id": OUTSTANDING_INVOICE_ID,
             "reason": "Test - should fail due to excessive amount",
+            "credit_note_date": "2026-03-15",
             "line_items": [
                 {"name": "Excessive item", "quantity": 1, "rate": 50000, "tax_rate": 18}
             ]
@@ -132,6 +134,7 @@ class TestCreditNoteValidations:
             payload = {
                 "original_invoice_id": OUTSTANDING_INVOICE_ID,
                 "reason": "Test - should fail due to exceeding remaining",
+                "credit_note_date": "2026-03-15",
                 "line_items": [
                     {"name": "Excessive item", "quantity": 1, "rate": excessive_amount, "tax_rate": 0}
                 ]
@@ -168,6 +171,7 @@ class TestCreditNoteCreation:
         payload = {
             "original_invoice_id": OUTSTANDING_INVOICE_ID,
             "reason": "Test CN - outstanding invoice AR reversal",
+            "credit_note_date": "2026-03-15",
             "line_items": [
                 {"name": "Test Service Credit", "description": "Testing CN creation", "quantity": 1, "rate": credit_amount, "tax_rate": 18, "hsn_sac": "998311"}
             ],
@@ -220,6 +224,7 @@ class TestCreditNoteCreation:
         payload = {
             "original_invoice_id": PAID_INVOICE_ID,
             "reason": "Test CN - paid invoice Refund Payable",
+            "credit_note_date": "2026-03-15",
             "line_items": [
                 {"name": "Refund Credit", "description": "Testing refund payable", "quantity": 1, "rate": credit_amount, "tax_rate": 18, "hsn_sac": "998311"}
             ],
