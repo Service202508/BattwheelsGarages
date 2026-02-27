@@ -34,7 +34,7 @@ class TestSetup:
     @pytest.fixture(scope="class")
     def auth_token(self, session):
         """Get authentication token"""
-        response = session.post(f"{BASE_URL}/api/auth/login", json={
+        response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
@@ -60,7 +60,7 @@ class TestExpensesAPI(TestSetup):
     
     def test_get_expense_constants(self, session, auth_headers):
         """Test getting expense constants (statuses, payment modes, GST rates)"""
-        response = session.get(f"{BASE_URL}/api/expenses/constants", headers=auth_headers)
+        response = session.get(f"{BASE_URL}/api/v1/expenses/constants", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert "statuses" in data
@@ -72,7 +72,7 @@ class TestExpensesAPI(TestSetup):
     
     def test_list_expense_categories(self, session, auth_headers):
         """Test listing expense categories"""
-        response = session.get(f"{BASE_URL}/api/expenses/categories", headers=auth_headers)
+        response = session.get(f"{BASE_URL}/api/v1/expenses/categories", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert "categories" in data
@@ -103,7 +103,7 @@ class TestExpensesAPI(TestSetup):
             "notes": "Test expense for automation"
         }
         
-        response = session.post(f"{BASE_URL}/api/expenses", headers=auth_headers, json=expense_data)
+        response = session.post(f"{BASE_URL}/api/v1/expenses", headers=auth_headers, json=expense_data)
         assert response.status_code == 200
         data = response.json()
         assert data.get("code") == 0
@@ -125,7 +125,7 @@ class TestExpensesAPI(TestSetup):
             pytest.skip("No expense to submit")
         
         response = session.post(
-            f"{BASE_URL}/api/expenses/{TestExpensesAPI.expense_id}/submit",
+            f"{BASE_URL}/api/v1/expenses/{TestExpensesAPI.expense_id}/submit",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -140,7 +140,7 @@ class TestExpensesAPI(TestSetup):
             pytest.skip("No expense to approve")
         
         response = session.post(
-            f"{BASE_URL}/api/expenses/{TestExpensesAPI.expense_id}/approve",
+            f"{BASE_URL}/api/v1/expenses/{TestExpensesAPI.expense_id}/approve",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -161,7 +161,7 @@ class TestExpensesAPI(TestSetup):
             pytest.skip("No expense to mark paid")
         
         response = session.post(
-            f"{BASE_URL}/api/expenses/{TestExpensesAPI.expense_id}/mark-paid",
+            f"{BASE_URL}/api/v1/expenses/{TestExpensesAPI.expense_id}/mark-paid",
             headers=auth_headers,
             json={"payment_mode": "BANK"}
         )
@@ -179,7 +179,7 @@ class TestExpensesAPI(TestSetup):
     
     def test_get_expense_summary(self, session, auth_headers):
         """Test getting expense summary statistics"""
-        response = session.get(f"{BASE_URL}/api/expenses/summary", headers=auth_headers)
+        response = session.get(f"{BASE_URL}/api/v1/expenses/summary", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert data.get("code") == 0
@@ -197,7 +197,7 @@ class TestBillsAPI(TestSetup):
     
     def test_get_bill_constants(self, session, auth_headers):
         """Test getting bill constants"""
-        response = session.get(f"{BASE_URL}/api/bills/constants", headers=auth_headers)
+        response = session.get(f"{BASE_URL}/api/v1/bills/constants", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert "statuses" in data
@@ -240,7 +240,7 @@ class TestBillsAPI(TestSetup):
             "notes": "Test bill for automation"
         }
         
-        response = session.post(f"{BASE_URL}/api/bills", headers=auth_headers, json=bill_data)
+        response = session.post(f"{BASE_URL}/api/v1/bills", headers=auth_headers, json=bill_data)
         assert response.status_code == 200
         data = response.json()
         assert data.get("code") == 0
@@ -263,7 +263,7 @@ class TestBillsAPI(TestSetup):
             pytest.skip("No bill to fetch")
         
         response = session.get(
-            f"{BASE_URL}/api/bills/{TestBillsAPI.bill_id}",
+            f"{BASE_URL}/api/v1/bills/{TestBillsAPI.bill_id}",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -281,7 +281,7 @@ class TestBillsAPI(TestSetup):
             pytest.skip("No bill to approve")
         
         response = session.post(
-            f"{BASE_URL}/api/bills/{TestBillsAPI.bill_id}/approve",
+            f"{BASE_URL}/api/v1/bills/{TestBillsAPI.bill_id}/approve",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -310,7 +310,7 @@ class TestBillsAPI(TestSetup):
         }
         
         response = session.post(
-            f"{BASE_URL}/api/bills/{TestBillsAPI.bill_id}/record-payment",
+            f"{BASE_URL}/api/v1/bills/{TestBillsAPI.bill_id}/record-payment",
             headers=auth_headers,
             json=payment_data
         )
@@ -335,7 +335,7 @@ class TestBillsAPI(TestSetup):
             pytest.skip("No bill to check payments")
         
         response = session.get(
-            f"{BASE_URL}/api/bills/{TestBillsAPI.bill_id}/payments",
+            f"{BASE_URL}/api/v1/bills/{TestBillsAPI.bill_id}/payments",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -347,7 +347,7 @@ class TestBillsAPI(TestSetup):
     
     def test_vendor_aging_report(self, session, auth_headers):
         """Test vendor aging report shows correct amounts"""
-        response = session.get(f"{BASE_URL}/api/bills/aging/vendor", headers=auth_headers)
+        response = session.get(f"{BASE_URL}/api/v1/bills/aging/vendor", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert data.get("code") == 0
@@ -361,7 +361,7 @@ class TestBillsAPI(TestSetup):
     
     def test_aging_report_buckets(self, session, auth_headers):
         """Test aging report grouped by days overdue"""
-        response = session.get(f"{BASE_URL}/api/bills/aging", headers=auth_headers)
+        response = session.get(f"{BASE_URL}/api/v1/bills/aging", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert data.get("code") == 0
@@ -385,7 +385,7 @@ class TestBankingAPI(TestSetup):
     
     def test_get_banking_constants(self, session, auth_headers):
         """Test getting banking constants"""
-        response = session.get(f"{BASE_URL}/api/banking/constants", headers=auth_headers)
+        response = session.get(f"{BASE_URL}/api/v1/banking/constants", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert "account_types" in data
@@ -408,7 +408,7 @@ class TestBankingAPI(TestSetup):
             "is_default": False
         }
         
-        response = session.post(f"{BASE_URL}/api/banking/accounts", headers=auth_headers, json=account_data)
+        response = session.post(f"{BASE_URL}/api/v1/banking/accounts", headers=auth_headers, json=account_data)
         assert response.status_code == 200
         data = response.json()
         assert data.get("code") == 0
@@ -441,7 +441,7 @@ class TestBankingAPI(TestSetup):
             "is_default": False
         }
         
-        response = session.post(f"{BASE_URL}/api/banking/accounts", headers=auth_headers, json=account_data)
+        response = session.post(f"{BASE_URL}/api/v1/banking/accounts", headers=auth_headers, json=account_data)
         assert response.status_code == 200
         data = response.json()
         assert data.get("code") == 0
@@ -467,7 +467,7 @@ class TestBankingAPI(TestSetup):
         }
         
         response = session.post(
-            f"{BASE_URL}/api/banking/accounts/{TestBankingAPI.account_id_1}/transactions",
+            f"{BASE_URL}/api/v1/banking/accounts/{TestBankingAPI.account_id_1}/transactions",
             headers=auth_headers,
             json=txn_data
         )
@@ -500,7 +500,7 @@ class TestBankingAPI(TestSetup):
             "notes": "Test transfer"
         }
         
-        response = session.post(f"{BASE_URL}/api/banking/transfer", headers=auth_headers, json=transfer_data)
+        response = session.post(f"{BASE_URL}/api/v1/banking/transfer", headers=auth_headers, json=transfer_data)
         assert response.status_code == 200
         data = response.json()
         assert data.get("code") == 0
@@ -521,7 +521,7 @@ class TestBankingAPI(TestSetup):
             pytest.skip("No transaction to reconcile")
         
         response = session.post(
-            f"{BASE_URL}/api/banking/reconcile/{TestBankingAPI.transaction_id}?reconciled=true",
+            f"{BASE_URL}/api/v1/banking/reconcile/{TestBankingAPI.transaction_id}?reconciled=true",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -532,7 +532,7 @@ class TestBankingAPI(TestSetup):
     
     def test_get_banking_summary(self, session, auth_headers):
         """Test getting banking summary"""
-        response = session.get(f"{BASE_URL}/api/banking/summary", headers=auth_headers)
+        response = session.get(f"{BASE_URL}/api/v1/banking/summary", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert data.get("code") == 0
@@ -549,7 +549,7 @@ class TestBankingAPI(TestSetup):
             pytest.skip("No account to fetch transactions")
         
         response = session.get(
-            f"{BASE_URL}/api/banking/accounts/{TestBankingAPI.account_id_1}/transactions",
+            f"{BASE_URL}/api/v1/banking/accounts/{TestBankingAPI.account_id_1}/transactions",
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -560,7 +560,7 @@ class TestBankingAPI(TestSetup):
     
     def test_list_accounts(self, session, auth_headers):
         """Test listing all bank accounts"""
-        response = session.get(f"{BASE_URL}/api/banking/accounts", headers=auth_headers)
+        response = session.get(f"{BASE_URL}/api/v1/banking/accounts", headers=auth_headers)
         assert response.status_code == 200
         data = response.json()
         assert data.get("code") == 0
@@ -573,7 +573,7 @@ class TestBillsExport(TestSetup):
     
     def test_export_bills_csv(self, session, auth_headers):
         """Test exporting bills as CSV"""
-        response = session.get(f"{BASE_URL}/api/bills/export", headers=auth_headers)
+        response = session.get(f"{BASE_URL}/api/v1/bills/export", headers=auth_headers)
         assert response.status_code == 200
         assert "text/csv" in response.headers.get("Content-Type", "")
         content = response.text
@@ -590,7 +590,7 @@ class TestExpenseWorkflowEdgeCases(TestSetup):
         """Test that draft expense cannot be approved directly"""
         # Create a draft expense
         today = datetime.now().strftime("%Y-%m-%d")
-        response = session.get(f"{BASE_URL}/api/expenses/categories", headers=auth_headers)
+        response = session.get(f"{BASE_URL}/api/v1/expenses/categories", headers=auth_headers)
         cat_id = "test_cat"
         if response.status_code == 200:
             cats = response.json().get("categories", [])
@@ -606,13 +606,13 @@ class TestExpenseWorkflowEdgeCases(TestSetup):
             "payment_mode": "PENDING"
         }
         
-        response = session.post(f"{BASE_URL}/api/expenses", headers=auth_headers, json=expense_data)
+        response = session.post(f"{BASE_URL}/api/v1/expenses", headers=auth_headers, json=expense_data)
         if response.status_code == 200:
             expense_id = response.json()["expense"]["expense_id"]
             
             # Try to approve without submitting first
             response = session.post(
-                f"{BASE_URL}/api/expenses/{expense_id}/approve",
+                f"{BASE_URL}/api/v1/expenses/{expense_id}/approve",
                 headers=auth_headers
             )
             # Should fail because expense is in DRAFT status
@@ -632,7 +632,7 @@ def session():
 
 @pytest.fixture(scope="module")
 def auth_token(session):
-    response = session.post(f"{BASE_URL}/api/auth/login", json={
+    response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": TEST_EMAIL,
         "password": TEST_PASSWORD
     })
