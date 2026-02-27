@@ -28,6 +28,7 @@ import base64
 
 # Import tenant context for multi-tenant scoping
 from core.tenant.context import TenantContext, tenant_context_required, optional_tenant_context
+from utils.database import extract_org_id
 
 router = APIRouter(prefix="/items-enhanced", tags=["Items Enhanced"])
 
@@ -507,10 +508,13 @@ async def create_item_group(group: ItemGroupCreate):
     return {"code": 0, "message": "Item group created", "group": group_dict}
 
 @router.get("/groups")
-async def list_item_groups(include_inactive: bool = False):
+async def list_item_groups(request: Request, include_inactive: bool = False):
     """List all item groups"""
     db = get_db()
-    query = {} if include_inactive else {"is_active": True}
+    org_id = extract_org_id(request)
+    query = {"organization_id": org_id}
+    if not include_inactive:
+        query["is_active"] = True
     groups = await db.item_groups.find(query, {"_id": 0}).to_list(1000)
     
     # Build hierarchy
@@ -522,14 +526,17 @@ async def list_item_groups(include_inactive: bool = False):
 
 
 @router.get("/categories")
-async def list_item_categories(include_inactive: bool = False):
+async def list_item_categories(request: Request, include_inactive: bool = False):
     """List all item categories (alias for groups for Zoho compatibility)"""
     db = get_db()
-    query = {} if include_inactive else {"is_active": True}
+    org_id = extract_org_id(request)
+    query = {"organization_id": org_id}
+    if not include_inactive:
+        query["is_active"] = True
     groups = await db.item_groups.find(query, {"_id": 0}).to_list(1000)
     
     # Also get distinct categories from items collection as fallback
-    item_categories = await db.items.distinct("category")
+    item_categories = await db.items.distinct("category", {"organization_id": org_id})
     
     # Combine groups and item categories
     categories = []
@@ -553,16 +560,17 @@ async def list_item_categories(include_inactive: bool = False):
     return {"code": 0, "categories": categories, "total": len(categories)}
 
 @router.get("/groups/{group_id}")
-async def get_item_group(group_id: str):
+async def get_item_group(group_id: str, request: Request):
     """Get item group details with items"""
     db = get_db()
-    group = await db.item_groups.find_one({"group_id": group_id}, {"_id": 0})
+    org_id = extract_org_id(request)
+    group = await db.item_groups.find_one({"group_id": group_id, "organization_id": org_id}, {"_id": 0})
     if not group:
         raise HTTPException(status_code=404, detail="Item group not found")
     
     # Get items in this group
     items = await db.items.find(
-        {"$or": [{"group_id": group_id}, {"item_group_id": group_id}]},
+        {"organization_id": org_id, "$or": [{"group_id": group_id}, {"item_group_id": group_id}]},
         {"_id": 0, "item_id": 1, "name": 1, "sku": 1, "sales_rate": 1, "stock_on_hand": 1}
     ).to_list(100)
     
@@ -639,17 +647,20 @@ async def create_warehouse(warehouse: WarehouseCreate):
     return {"code": 0, "message": "Warehouse created", "warehouse": warehouse_dict}
 
 @router.get("/warehouses")
-async def list_warehouses(include_inactive: bool = False):
+async def list_warehouses(request: Request, include_inactive: bool = False):
     """List all warehouses"""
     db = get_db()
-    query = {} if include_inactive else {"is_active": True}
+    org_id = extract_org_id(request)
+    query = {"organization_id": org_id}
+    if not include_inactive:
+        query["is_active"] = True
     warehouses = await db.warehouses.find(query, {"_id": 0}).to_list(100)
     
     # Calculate stock values for each warehouse
     for wh in warehouses:
         # H-02: hard cap, Sprint 3 for cursor pagination
         stock_locs = await db.item_stock_locations.find(
-            {"warehouse_id": wh["warehouse_id"]}
+            {"warehouse_id": wh["warehouse_id"], "organization_id": org_id}
         ).to_list(500)
         wh["total_items"] = len(stock_locs)
         wh["total_stock"] = sum(s.get("stock", 0) for s in stock_locs)
@@ -657,16 +668,17 @@ async def list_warehouses(include_inactive: bool = False):
     return {"code": 0, "warehouses": warehouses}
 
 @router.get("/warehouses/{warehouse_id}")
-async def get_warehouse(warehouse_id: str):
+async def get_warehouse(warehouse_id: str, request: Request):
     """Get warehouse details with stock"""
     db = get_db()
-    warehouse = await db.warehouses.find_one({"warehouse_id": warehouse_id}, {"_id": 0})
+    org_id = extract_org_id(request)
+    warehouse = await db.warehouses.find_one({"warehouse_id": warehouse_id, "organization_id": org_id}, {"_id": 0})
     if not warehouse:
         raise HTTPException(status_code=404, detail="Warehouse not found")
     
     # Get stock in this warehouse
     stock_locations = await db.item_stock_locations.aggregate([
-        {"$match": {"warehouse_id": warehouse_id, "stock": {"$gt": 0}}},
+        {"$match": {"warehouse_id": warehouse_id, "organization_id": org_id, "stock": {"$gt": 0}}},
         {"$lookup": {
             "from": "items",
             "localField": "item_id",
@@ -714,13 +726,14 @@ async def update_warehouse(warehouse_id: str, warehouse: WarehouseCreate):
 # ============== ENHANCED ITEMS ==============
 
 @router.post("/")
-async def create_enhanced_item(item: ItemCreate):
+async def create_enhanced_item(item: ItemCreate, request: Request):
     """Create item with full Zoho Books-style features and CSV compatibility"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Check unique name/SKU
     if item.sku:
-        existing = await db.items.find_one({"sku": item.sku})
+        existing = await db.items.find_one({"sku": item.sku, "organization_id": org_id})
         if existing:
             raise HTTPException(status_code=400, detail="Item with this SKU already exists")
     
