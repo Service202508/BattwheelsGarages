@@ -27,14 +27,14 @@ class TestHealthAndAuth:
         assert res.status_code == 200
         data = res.json()
         assert "token" in data or "access_token" in data
-        assert data.get("user", {}).get("role") == "DevTest@123"
+        assert data.get("user", {}).get("role") == "owner"
         return data
     
     def test_technician_login(self):
-        """Technician login - deepak@battwheelsgarages.in"""
+        """Technician login - tech.a@battwheels.internal"""
         res = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "deepak@battwheelsgarages.in",
-            "password": "DevTest@123"
+            "email": "tech.a@battwheels.internal",
+            "password": "TechA@123"
         })
         print(f"Technician login: {res.status_code}")
         assert res.status_code == 200
