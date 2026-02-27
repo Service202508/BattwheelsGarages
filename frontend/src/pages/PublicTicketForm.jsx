@@ -27,7 +27,7 @@ function getOrgSlug() {
   const hostname = window.location.hostname;
   
   // Non-production: skip subdomain extraction
-  const isNonProduction = ["emergentagent.com", "localhost", "127.0.0.1"].some(p => hostname.includes(p));
+  const isNonProduction = ["emergentagent.com", "emergentcf.cloud", "localhost", "127.0.0.1"].some(p => hostname.includes(p));
   
   if (!isNonProduction) {
     // Production domain: extract subdomain
