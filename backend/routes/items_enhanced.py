@@ -1747,12 +1747,14 @@ async def create_item_barcode(barcode: ItemBarcodeCreate):
     }
 
 @router.get("/lookup/barcode/{barcode_value}")
-async def lookup_by_barcode(barcode_value: str):
+async def lookup_by_barcode(barcode_value: str, request: Request):
     """Look up item by barcode or SKU"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Search by barcode_value or SKU
     item = await db.items.find_one({
+        "organization_id": org_id,
         "$or": [
             {"barcode_value": barcode_value},
             {"sku": barcode_value}
@@ -1764,7 +1766,7 @@ async def lookup_by_barcode(barcode_value: str):
     
     # Get stock info
     stock_locations = await db.item_stock_locations.find(
-        {"item_id": item["item_id"]},
+        {"item_id": item["item_id"], "organization_id": org_id},
         {"_id": 0}
     ).to_list(100)
     
