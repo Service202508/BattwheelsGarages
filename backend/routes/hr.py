@@ -155,8 +155,7 @@ async def create_employee(request: Request, data: EmployeeCreateRequest):
 
     try:
         emp_data = data.model_dump()
-        if org_id:
-            emp_data["organization_id"] = org_id
+        emp_data["organization_id"] = org_id
         return await service.create_employee(emp_data, user.get("user_id"))
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
