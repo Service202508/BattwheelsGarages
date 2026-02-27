@@ -1087,7 +1087,7 @@ async def get_invoice_pdf(request: Request, invoice_id: str):
                 import os as _os
                 frontend_url = _os.environ.get("CORS_ORIGINS", "").split(",")[0].strip()
                 if not frontend_url:
-                    frontend_url = "https://prod-verify-clean.preview.emergentagent.com"
+                    frontend_url = "https://remediation-scan.preview.emergentagent.com"
                 survey_qr_url = f"{frontend_url}/survey/{ticket['survey_token']}"
 
     # ==================== GENERATE PDF ====================

@@ -8,7 +8,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://prod-verify-clean.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://remediation-scan.preview.emergentagent.com')
 ORG_ID = "org_71f0df814d6d"
 HEADERS = {
     "Content-Type": "application/json",

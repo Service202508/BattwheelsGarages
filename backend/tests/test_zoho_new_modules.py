@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://prod-verify-clean.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://remediation-scan.preview.emergentagent.com')
 
 @pytest.fixture(scope="module")
 def api_client():

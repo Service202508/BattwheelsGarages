@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://prod-verify-clean.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://remediation-scan.preview.emergentagent.com').rstrip('/')
 
 class TestAuth:
     """Authentication tests"""

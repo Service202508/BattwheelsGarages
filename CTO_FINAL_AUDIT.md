@@ -244,7 +244,7 @@ FIX 2 — QR Code in Invoice PDF
   Test result:
     PDF without ticket: 25,569 bytes
     PDF with ticket+survey QR: 25,938 bytes (+369 bytes = QR embedded)
-    QR links to: https://prod-verify-clean.preview.emergentagent.com/survey/{token}
+    QR links to: https://remediation-scan.preview.emergentagent.com/survey/{token}
 
 UPDATED SCORE:
   T8.1: ✅ PASS (was FAIL)
