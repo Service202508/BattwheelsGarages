@@ -43,7 +43,7 @@ DRAFT_INVOICE_ID = "inv_6ce2fdc798d7"        # DRAFT, total=10000
 def admin_session():
     """Authenticate as admin and return session with headers"""
     session = requests.Session()
-    response = session.post(f"{BASE_URL}/api/auth/login", json={
+    response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": ADMIN_EMAIL,
         "password": ADMIN_PASSWORD
     })
@@ -64,7 +64,7 @@ def admin_session():
 def tech_session():
     """Authenticate as technician and return session with headers"""
     session = requests.Session()
-    response = session.post(f"{BASE_URL}/api/auth/login", json={
+    response = session.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": TECH_EMAIL,
         "password": TECH_PASSWORD
     })
