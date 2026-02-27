@@ -25,8 +25,8 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 def admin_token():
     """Get admin JWT token"""
     resp = requests.post(f"{BASE_URL}/api/auth/login", json={
-        "email": "admin@battwheels.in",
-        "password": "admin"
+        "email": "dev@battwheels.internal",
+        "password": "DevTest@123"
     })
     assert resp.status_code == 200, f"Admin login failed: {resp.text}"
     return resp.json()["token"]
@@ -38,7 +38,7 @@ def admin_headers(admin_token):
     return {
         "Authorization": f"Bearer {admin_token}",
         "Content-Type": "application/json",
-        "X-Organization-ID": "6996dcf072ffd2a2395fee7b"
+        "X-Organization-ID": "dev-internal-testing-001"
     }
 
 
@@ -46,8 +46,8 @@ def admin_headers(admin_token):
 def tech_token():
     """Get technician JWT token"""
     resp = requests.post(f"{BASE_URL}/api/auth/login", json={
-        "email": "tech@battwheels.in",
-        "password": "tech123"
+        "email": "tech.a@battwheels.internal",
+        "password": "DevTest@123"
     })
     assert resp.status_code == 200, f"Tech login failed: {resp.text}"
     return resp.json()["token"]
