@@ -49,6 +49,7 @@ class CreateCreditNoteRequest(BaseModel):
     reason: str
     line_items: list[CreditNoteLineItem]
     notes: str = ""
+    credit_note_date: str = ""
 
 
 # ========================= HELPERS =========================
