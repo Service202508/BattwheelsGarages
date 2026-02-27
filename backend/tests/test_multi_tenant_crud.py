@@ -293,7 +293,9 @@ class TestInventoryCRUD:
         assert response.status_code == 200, f"Failed to list inventory: {response.text}"
         items = response.json()
         
-        assert isinstance(items, list)
+        assert isinstance(items, dict), "Expected dict with data key"
+        assert "data" in items, "Missing data key"
+        assert isinstance(items["data"], list)
     
     def test_create_inventory_with_org_scope(self, auth_headers):
         """Create inventory item should inherit organization ID"""
