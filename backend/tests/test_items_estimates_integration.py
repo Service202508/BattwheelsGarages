@@ -16,7 +16,7 @@ import os
 import uuid
 
 # Use the public URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://trial-ready.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://platform-hardening-1.preview.emergentagent.com').rstrip('/')
 
 # Test data from the review request
 TEST_CUSTOMER_ID = "CUST-93AE14BE3618"  # Full Zoho Test Co - has Wholesale price list
