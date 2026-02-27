@@ -657,6 +657,118 @@ async def handle_razorpay_webhook(request: Request):
     return {"status": "processed", "event": event}
 
 
+async def _process_subscription_webhook(db, event: str, sub_entity: Dict):
+    """
+    Handle Razorpay subscription lifecycle events.
+    Updates org subscription status and records payments.
+    """
+    rp_sub_id = sub_entity.get("id", "")
+    notes = sub_entity.get("notes", {})
+    org_id = notes.get("org_id", "")
+    plan_code = notes.get("plan_code", "")
+    plan_name = notes.get("plan_name", "")
+
+    if not org_id:
+        # Try to find org from subscription_orders
+        sub_order = await db.subscription_orders.find_one(
+            {"razorpay_subscription_id": rp_sub_id}, {"_id": 0, "organization_id": 1, "plan_code": 1}
+        )
+        if sub_order:
+            org_id = sub_order.get("organization_id", "")
+            plan_code = plan_code or sub_order.get("plan_code", "")
+
+    if not org_id:
+        logger.warning(f"[SUBSCRIPTION WEBHOOK] No org_id for subscription {rp_sub_id}, event {event}")
+        return
+
+    logger.info(f"[SUBSCRIPTION WEBHOOK] {event} for org={org_id}, sub={rp_sub_id}")
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    if event == "subscription.activated":
+        # Plan is now active — update org
+        current_end = sub_entity.get("current_end")
+        end_date = datetime.fromtimestamp(current_end, timezone.utc).isoformat() if current_end else (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
+
+        await db.organizations.update_one(
+            {"organization_id": org_id},
+            {"$set": {
+                "subscription_status": "active",
+                "subscription_plan": plan_code,
+                "razorpay_subscription_id": rp_sub_id,
+                "subscription_start": now_iso,
+                "subscription_end": end_date,
+                "trial_active": False,
+                "updated_at": now_iso
+            }}
+        )
+        await db.subscription_orders.update_one(
+            {"razorpay_subscription_id": rp_sub_id},
+            {"$set": {"status": "active", "activated_at": now_iso}}
+        )
+
+    elif event == "subscription.charged":
+        # Recurring payment succeeded — extend period, record payment
+        payment_entity = sub_entity.get("payment_id") or ""
+        amount = sub_entity.get("amount", 0)
+        current_end = sub_entity.get("current_end")
+        end_date = datetime.fromtimestamp(current_end, timezone.utc).isoformat() if current_end else (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
+
+        await db.organizations.update_one(
+            {"organization_id": org_id},
+            {"$set": {
+                "subscription_status": "active",
+                "subscription_end": end_date,
+                "updated_at": now_iso
+            }}
+        )
+
+        # Record subscription payment
+        await db.subscription_payments.insert_one({
+            "payment_id": f"subpay_{uuid.uuid4().hex[:12]}",
+            "organization_id": org_id,
+            "razorpay_subscription_id": rp_sub_id,
+            "razorpay_payment_id": payment_entity,
+            "plan_code": plan_code,
+            "amount_paise": amount,
+            "amount_inr": amount / 100 if amount else 0,
+            "status": "captured",
+            "period_end": end_date,
+            "created_at": now_iso
+        })
+
+    elif event == "subscription.pending":
+        # Payment retry pending
+        await db.organizations.update_one(
+            {"organization_id": org_id},
+            {"$set": {"subscription_status": "payment_pending", "updated_at": now_iso}}
+        )
+        logger.warning(f"[SUBSCRIPTION WEBHOOK] Payment pending for org={org_id}")
+
+    elif event == "subscription.halted":
+        # Payment failed after retries — downgrade
+        await db.organizations.update_one(
+            {"organization_id": org_id},
+            {"$set": {"subscription_status": "halted", "updated_at": now_iso}}
+        )
+        await db.subscription_orders.update_one(
+            {"razorpay_subscription_id": rp_sub_id},
+            {"$set": {"status": "halted", "halted_at": now_iso}}
+        )
+        logger.error(f"[SUBSCRIPTION WEBHOOK] Subscription halted for org={org_id}")
+
+    elif event in ("subscription.cancelled", "subscription.completed"):
+        await db.organizations.update_one(
+            {"organization_id": org_id},
+            {"$set": {"subscription_status": "cancelled", "updated_at": now_iso}}
+        )
+        await db.subscription_orders.update_one(
+            {"razorpay_subscription_id": rp_sub_id},
+            {"$set": {"status": "cancelled", "cancelled_at": now_iso}}
+        )
+
+
+
 async def process_payment_captured_webhook(payment_entity: Dict, org_id: str, invoice_id: str):
     """Process payment.captured webhook - update invoice and post journal entry"""
     db = get_db()
