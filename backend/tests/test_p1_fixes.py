@@ -347,7 +347,7 @@ class TestSE405XSSSanitization:
             "description": "Normal text",
             "priority": "low"
         }
-        resp = requests.post(f"{BASE_URL}/api/tickets", json=payload, headers=admin_headers)
+        resp = requests.post(f"{BASE_URL}/api/v1/tickets", json=payload, headers=admin_headers)
         if resp.status_code in [200, 201]:
             ticket = resp.json()
             stored_title = ticket.get("title", "")
@@ -366,7 +366,7 @@ class TestSE405XSSSanitization:
             "description": "Normal description without any HTML",
             "priority": "high"
         }
-        resp = requests.post(f"{BASE_URL}/api/tickets", json=payload, headers=admin_headers)
+        resp = requests.post(f"{BASE_URL}/api/v1/tickets", json=payload, headers=admin_headers)
         assert resp.status_code in [200, 201]
         ticket = resp.json()
         assert ticket.get("title") == plain_title, \
