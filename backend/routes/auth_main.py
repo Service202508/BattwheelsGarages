@@ -336,9 +336,10 @@ async def change_password(request: Request, data: ChangePasswordRequest):
             "password_changed_at": datetime.now(timezone.utc).isoformat(),
         }}
     )
-    logger.info(f"Password changed for user {user["user_id"]}")
+    uid = user["user_id"]
+    logger.info(f"Password changed for user {uid}")
     from utils.audit import log_audit, AuditAction
-    await log_audit(db, AuditAction.PASSWORD_CHANGED, "", user["user_id"], "user", user["user_id"])
+    await log_audit(db, AuditAction.PASSWORD_CHANGED, "", uid, "user", uid)
     return {"message": "Password changed successfully"}
 
 
