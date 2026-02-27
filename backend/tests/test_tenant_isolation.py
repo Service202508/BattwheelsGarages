@@ -165,7 +165,12 @@ class TestTenantDataIsolation:
         assert response.status_code == 200
         
         items = response.json()
-        assert isinstance(items, list)
+        # Response can be a list or a dict with 'data' key containing items
+        if isinstance(items, dict):
+            assert "data" in items, f"Expected 'data' key in response: {list(items.keys())}"
+            assert isinstance(items["data"], list)
+        else:
+            assert isinstance(items, list)
 
 
 class TestTenantGuardEnforcement:
