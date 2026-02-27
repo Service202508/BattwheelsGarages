@@ -1732,11 +1732,12 @@ async def bulk_set_prices(pricelist_id: str, price_data: BulkItemPriceSet, reque
 # ============== PHASE 2: BARCODE/QR SUPPORT ==============
 
 @router.post("/barcodes")
-async def create_item_barcode(barcode: ItemBarcodeCreate):
+async def create_item_barcode(barcode: ItemBarcodeCreate, request: Request):
     """Create or update barcode for an item"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    item = await db.items.find_one({"item_id": barcode.item_id})
+    item = await db.items.find_one({"item_id": barcode.item_id, "organization_id": org_id})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
@@ -1748,7 +1749,7 @@ async def create_item_barcode(barcode: ItemBarcodeCreate):
     
     # Update item with barcode
     await db.items.update_one(
-        {"item_id": barcode.item_id},
+        {"item_id": barcode.item_id, "organization_id": org_id},
         {"$set": {
             "barcode_type": barcode.barcode_type,
             "barcode_value": barcode_value,
@@ -1801,15 +1802,17 @@ async def lookup_by_barcode(barcode_value: str, request: Request):
     return {"code": 0, "item": item}
 
 @router.post("/lookup/batch")
-async def batch_barcode_lookup(barcodes: List[str]):
+async def batch_barcode_lookup(barcodes: List[str], request: Request):
     """Look up multiple items by barcode/SKU"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     results = []
     not_found = []
     
     for barcode in barcodes:
         item = await db.items.find_one({
+            "organization_id": org_id,
             "$or": [
                 {"barcode_value": barcode},
                 {"sku": barcode}
@@ -1835,6 +1838,7 @@ async def batch_barcode_lookup(barcodes: List[str]):
 @router.get("/item-price/{item_id}")
 async def get_item_price_for_contact(
     item_id: str,
+    request: Request,
     contact_id: str = "",
     transaction_type: str = "sales"
 ):
@@ -1849,9 +1853,10 @@ async def get_item_price_for_contact(
     - discount/markup applied: The adjustment made
     """
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Get item
-    item = await db.items.find_one({"item_id": item_id}, {"_id": 0})
+    item = await db.items.find_one({"item_id": item_id, "organization_id": org_id}, {"_id": 0})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
@@ -1883,9 +1888,9 @@ async def get_item_price_for_contact(
         return {"code": 0, "pricing": result}
     
     # Get contact's price list
-    contact = await db.contacts_enhanced.find_one({"contact_id": contact_id})
+    contact = await db.contacts_enhanced.find_one({"contact_id": contact_id, "organization_id": org_id})
     if not contact:
-        contact = await db.contacts.find_one({"contact_id": contact_id})
+        contact = await db.contacts.find_one({"contact_id": contact_id, "organization_id": org_id})
     
     if not contact:
         return {"code": 0, "pricing": result}
@@ -1900,7 +1905,7 @@ async def get_item_price_for_contact(
         return {"code": 0, "pricing": result}
     
     # Get price list details
-    price_list = await db.price_lists.find_one({"pricelist_id": price_list_id}, {"_id": 0})
+    price_list = await db.price_lists.find_one({"pricelist_id": price_list_id, "organization_id": org_id}, {"_id": 0})
     if not price_list:
         return {"code": 0, "pricing": result}
     
@@ -1912,7 +1917,8 @@ async def get_item_price_for_contact(
     # Check for custom price in price list
     custom_price = await db.item_prices.find_one({
         "item_id": item_id,
-        "price_list_id": price_list_id
+        "price_list_id": price_list_id,
+        "organization_id": org_id
     })
     
     if custom_price:
@@ -1947,16 +1953,17 @@ async def get_item_price_for_contact(
 
 
 @router.get("/contact-pricing-summary/{contact_id}")
-async def get_contact_pricing_summary(contact_id: str):
+async def get_contact_pricing_summary(contact_id: str, request: Request):
     """
     Get a summary of the pricing configuration for a contact.
     Useful for displaying which price list is being applied in Quotes/Invoices UI.
     """
     db = get_db()
+    org_id = extract_org_id(request)
     
-    contact = await db.contacts_enhanced.find_one({"contact_id": contact_id})
+    contact = await db.contacts_enhanced.find_one({"contact_id": contact_id, "organization_id": org_id})
     if not contact:
-        contact = await db.contacts.find_one({"contact_id": contact_id})
+        contact = await db.contacts.find_one({"contact_id": contact_id, "organization_id": org_id})
     
     if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")
@@ -1971,7 +1978,7 @@ async def get_contact_pricing_summary(contact_id: str):
     # Get sales price list
     sales_pl_id = contact.get("sales_price_list_id")
     if sales_pl_id:
-        pl = await db.price_lists.find_one({"pricelist_id": sales_pl_id}, {"_id": 0})
+        pl = await db.price_lists.find_one({"pricelist_id": sales_pl_id, "organization_id": org_id}, {"_id": 0})
         if pl:
             result["sales_price_list"] = {
                 "pricelist_id": sales_pl_id,
@@ -1983,7 +1990,7 @@ async def get_contact_pricing_summary(contact_id: str):
     # Get purchase price list
     purchase_pl_id = contact.get("purchase_price_list_id")
     if purchase_pl_id:
-        pl = await db.price_lists.find_one({"pricelist_id": purchase_pl_id}, {"_id": 0})
+        pl = await db.price_lists.find_one({"pricelist_id": purchase_pl_id, "organization_id": org_id}, {"_id": 0})
         if pl:
             result["purchase_price_list"] = {
                 "pricelist_id": purchase_pl_id,
