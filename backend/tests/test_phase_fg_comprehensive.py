@@ -19,7 +19,7 @@ import uuid
 from datetime import datetime, timezone
 
 # Use the production URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://production-readiness-7.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://prod-verify-clean.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 ADMIN_EMAIL = "admin@battwheels.in"

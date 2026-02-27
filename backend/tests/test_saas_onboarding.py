@@ -18,7 +18,7 @@ import uuid
 # Get API URL from environment
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
-    BASE_URL = "https://production-readiness-7.preview.emergentagent.com"
+    BASE_URL = "https://prod-verify-clean.preview.emergentagent.com"
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
