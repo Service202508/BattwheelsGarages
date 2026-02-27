@@ -23,32 +23,42 @@ router = APIRouter(prefix="/public", tags=["Public Tickets"])
 
 async def get_org_from_request(request: Request, db) -> str:
     """
-    Extract organization from subdomain.
-    workshopname.battwheels.com → look up org where slug = 'workshopname'
-    Falls back to X-Organization-Slug header for API clients and PWA.
+    Extract organization from subdomain or fallback headers/query params.
+    Production: workshopname.battwheels.com → look up org where slug = 'workshopname'
+    Non-production: Uses X-Organization-Slug header or ?org_slug= query param.
     """
     host = request.headers.get("host", "")
 
-    # Extract subdomain: "workshopname.battwheels.com" → "workshopname"
-    parts = host.split(".")
-    if len(parts) >= 3:
-        candidate = parts[0]
-        # Ignore known non-workshop prefixes (preview URLs, platform subdomains)
-        if candidate in ("www", "app", "api", "platform", "production-deploy-7", "audit-fixes-5"):
-            subdomain = None
-        else:
-            subdomain = candidate
-    else:
-        subdomain = None
+    # Non-production hosts: skip subdomain extraction entirely
+    non_production_patterns = [
+        "emergentagent.com",
+        "localhost",
+        "127.0.0.1",
+        "0.0.0.0",
+    ]
+    is_non_production = any(p in host for p in non_production_patterns)
 
-    # Fallback: check header (for direct API calls, mobile PWA, preview URLs)
+    subdomain = None
+
+    if not is_non_production:
+        # Production domain: extract subdomain from host
+        parts = host.split(".")
+        excluded_subdomains = {"www", "app", "api", "platform", "admin", "mail", "docs"}
+        if len(parts) >= 3 and parts[0] not in excluded_subdomains:
+            subdomain = parts[0]
+
+    # Fallback: header or query param (works on all environments)
     if not subdomain:
-        subdomain = request.headers.get("X-Organization-Slug", None)
+        subdomain = (
+            request.headers.get("X-Organization-Slug")
+            or request.query_params.get("org_slug")
+            or request.query_params.get("org")
+        )
 
     if not subdomain:
         raise HTTPException(
             status_code=400,
-            detail="Cannot determine workshop. Please use your workshop URL (e.g. yourworkshop.battwheels.com)."
+            detail="Cannot determine workshop. Use your workshop URL (e.g. yourworkshop.battwheels.com) or pass ?org_slug=yourworkshop."
         )
 
     org = await db.organizations.find_one(
