@@ -134,8 +134,8 @@ export default function PublicTicketForm() {
   const fetchMasterData = async () => {
     try {
       const [catRes, chargesRes] = await Promise.all([
-        fetch(`${API}/public/vehicle-categories`),
-        fetch(`${API}/public/service-charges`)
+        fetch(publicApiUrl("/public/vehicle-categories"), { headers: getPublicHeaders() }),
+        fetch(publicApiUrl("/public/service-charges"), { headers: getPublicHeaders() })
       ]);
       if (catRes.ok) setCategories((await catRes.json()).categories || []);
       if (chargesRes.ok) {
@@ -147,7 +147,7 @@ export default function PublicTicketForm() {
 
   const fetchModels = async (categoryCode) => {
     try {
-      const res = await fetch(`${API}/public/vehicle-models?category_code=${categoryCode}`);
+      const res = await fetch(publicApiUrl(`/public/vehicle-models?category_code=${categoryCode}`), { headers: getPublicHeaders() });
       if (res.ok) {
         const d = await res.json();
         setModels(d.models || []);
@@ -165,9 +165,9 @@ export default function PublicTicketForm() {
     if (!userInput || userInput.length < 3 || !formData.vehicle_category) return;
     setAiLoading(true);
     try {
-      const res = await fetch(`${API}/public/ai/issue-suggestions`, {
+      const res = await fetch(publicApiUrl("/public/ai/issue-suggestions"), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getPublicHeaders(),
         body: JSON.stringify({ vehicle_category: formData.vehicle_category, vehicle_model: formData.vehicle_model_name, vehicle_oem: formData.vehicle_oem, user_input: userInput })
       });
       if (res.ok) {
@@ -227,7 +227,7 @@ export default function PublicTicketForm() {
     if (!validateForm()) return;
     setSubmitting(true);
     try {
-      const res = await fetch(`${API}/public/tickets/submit`, {
+      const res = await fetch(publicApiUrl("/public/tickets/submit"), {
         method: "POST",
         headers: getPublicHeaders(),
         body: JSON.stringify({ ...formData, include_visit_fee: requiresPayment() })
@@ -243,7 +243,7 @@ export default function PublicTicketForm() {
   const handlePayment = async () => {
     if (!paymentDetails) return;
     if (paymentDetails.is_mock) {
-      const res = await fetch(`${API}/public/tickets/verify-payment`, {
+      const res = await fetch(publicApiUrl("/public/tickets/verify-payment"), {
         method: "POST", headers: getPublicHeaders(),
         body: JSON.stringify({ ticket_id: ticketResult.ticket_id, razorpay_order_id: paymentDetails.order_id, razorpay_payment_id: `pay_mock_${Date.now()}`, razorpay_signature: "mock" })
       });
@@ -254,7 +254,7 @@ export default function PublicTicketForm() {
       key: paymentDetails.key_id, amount: paymentDetails.amount_paise, currency: "INR",
       name: "Battwheels Garages", description: "Service Charges", order_id: paymentDetails.order_id,
       handler: async (r) => {
-        const res = await fetch(`${API}/public/tickets/verify-payment`, {
+        const res = await fetch(publicApiUrl("/public/tickets/verify-payment"), {
           method: "POST", headers: getPublicHeaders(),
           body: JSON.stringify({ ticket_id: ticketResult.ticket_id, ...r })
         });
