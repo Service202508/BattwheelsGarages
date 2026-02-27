@@ -1008,6 +1008,7 @@ def generate_gstr3b_pdf(data: dict, month: str, org_settings: dict) -> Response:
             <table>
                 <tr><th>Description</th><th class="amount">Taxable Value</th><th class="amount">CGST</th><th class="amount">SGST</th><th class="amount">IGST</th></tr>
                 <tr><td>Outward taxable supplies</td><td class="amount">₹{data['section_3_1']['taxable_value']:,.2f}</td><td class="amount">₹{data['section_3_1']['cgst']:,.2f}</td><td class="amount">₹{data['section_3_1']['sgst']:,.2f}</td><td class="amount">₹{data['section_3_1']['igst']:,.2f}</td></tr>
+                <tr><td>(d) Inward supplies (reverse charge)</td><td class="amount">₹{data['section_3_1_d']['taxable_value']:,.2f}</td><td class="amount">₹{data['section_3_1_d']['cgst']:,.2f}</td><td class="amount">₹{data['section_3_1_d']['sgst']:,.2f}</td><td class="amount">₹{data['section_3_1_d']['igst']:,.2f}</td></tr>
             </table>
         </div>
         
