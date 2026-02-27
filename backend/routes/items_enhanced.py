@@ -753,6 +753,7 @@ async def create_enhanced_item(item: ItemCreate, request: Request):
             image_doc = {
                 "image_id": f"IMG-{uuid.uuid4().hex[:8].upper()}",
                 "item_id": item_id,
+                "organization_id": org_id,
                 "image_name": item.image_name or "item_image",
                 "image_data": item.image_data,
                 "created_time": datetime.now(timezone.utc).isoformat()
@@ -1423,12 +1424,13 @@ async def create_item_price(price: ItemPriceCreate, request: Request):
         return {"code": 0, "message": "Item price updated"}
     
     # Get names
-    item = await db.items.find_one({"item_id": price.item_id})
-    pl = await db.price_lists.find_one({"pricelist_id": price.price_list_id})
+    item = await db.items.find_one({"item_id": price.item_id, "organization_id": org_id})
+    pl = await db.price_lists.find_one({"pricelist_id": price.price_list_id, "organization_id": org_id})
     
     price_dict = {
         "price_id": f"IP-{uuid.uuid4().hex[:8].upper()}",
         "item_id": price.item_id,
+        "organization_id": org_id,
         "item_name": item.get("name", "") if item else "",
         "price_list_id": price.price_list_id,
         "price_list_name": pl.get("name", "") if pl else "",
@@ -1682,6 +1684,7 @@ async def bulk_set_prices(pricelist_id: str, price_data: BulkItemPriceSet, reque
                 await db.item_prices.insert_one({
                     "price_id": f"IP-{uuid.uuid4().hex[:8].upper()}",
                     "item_id": item["item_id"],
+                    "organization_id": org_id,
                     "item_name": item.get("name", ""),
                     "price_list_id": pricelist_id,
                     "price_list_name": pl.get("name", ""),
@@ -1718,6 +1721,7 @@ async def bulk_set_prices(pricelist_id: str, price_data: BulkItemPriceSet, reque
                 await db.item_prices.insert_one({
                     "price_id": f"IP-{uuid.uuid4().hex[:8].upper()}",
                     "item_id": item_id,
+                    "organization_id": org_id,
                     "item_name": item.get("name", ""),
                     "price_list_id": pricelist_id,
                     "price_list_name": pl.get("name", ""),
