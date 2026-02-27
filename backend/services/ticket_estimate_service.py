@@ -595,7 +595,7 @@ class TicketEstimateService:
         await self._log_history(
             estimate_id, "approved",
             "Estimate approved",
-            user_id, user_name
+            user_id, user_name, organization_id
         )
         
         # Update ticket status to work_in_progress when estimate is approved
