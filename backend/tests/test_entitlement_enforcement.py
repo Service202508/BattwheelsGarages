@@ -32,7 +32,7 @@ PLATFORM_ADMIN_PASSWORD = "DevTest@123"
 @pytest.fixture(scope="module")
 def starter_token():
     """Get JWT token for starter org user"""
-    resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+    resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": STARTER_EMAIL,
         "password": STARTER_PASSWORD
     })
@@ -48,7 +48,7 @@ def starter_token():
 @pytest.fixture(scope="module")
 def professional_token():
     """Get JWT token for professional org user"""
-    resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+    resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": PROFESSIONAL_EMAIL,
         "password": PROFESSIONAL_PASSWORD
     })
@@ -64,7 +64,7 @@ def professional_token():
 @pytest.fixture(scope="module")
 def platform_admin_token():
     """Get JWT token for platform admin"""
-    resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+    resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": PLATFORM_ADMIN_EMAIL,
         "password": PLATFORM_ADMIN_PASSWORD
     })
@@ -96,7 +96,7 @@ class TestStarterPayrollBlocked:
     def test_starter_payroll_records_returns_403(self, starter_token):
         """GET /api/hr/payroll/records with starter plan should return 403"""
         headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         print(f"  Status: {resp.status_code}")
         print(f"  Body: {resp.text[:500]}")
         assert resp.status_code == 403, f"Expected 403 but got {resp.status_code}: {resp.text[:300]}"
@@ -104,7 +104,7 @@ class TestStarterPayrollBlocked:
     def test_starter_payroll_403_has_correct_error_structure(self, starter_token):
         """Response must have detail.error='feature_not_available'"""
         headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         assert resp.status_code == 403
         data = resp.json()
         print(f"  Response JSON: {data}")
@@ -116,7 +116,7 @@ class TestStarterPayrollBlocked:
     def test_starter_payroll_403_has_feature_field(self, starter_token):
         """detail must contain feature='Payroll'"""
         headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         detail = resp.json().get("detail", {})
         feature = detail.get("feature")
         print(f"  feature field: {feature}")
@@ -125,7 +125,7 @@ class TestStarterPayrollBlocked:
     def test_starter_payroll_403_has_current_plan_starter(self, starter_token):
         """detail must contain current_plan='starter'"""
         headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         detail = resp.json().get("detail", {})
         current_plan = detail.get("current_plan")
         print(f"  current_plan: {current_plan}")
@@ -134,7 +134,7 @@ class TestStarterPayrollBlocked:
     def test_starter_payroll_403_has_required_plan_professional(self, starter_token):
         """detail must contain required_plan='professional'"""
         headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         detail = resp.json().get("detail", {})
         required_plan = detail.get("required_plan")
         print(f"  required_plan: {required_plan}")
@@ -149,7 +149,7 @@ class TestProfessionalPayrollAllowed:
     def test_professional_payroll_records_returns_200(self, professional_token):
         """GET /api/hr/payroll/records with professional plan should return 200"""
         headers = make_headers(professional_token)
-        resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         print(f"  Status: {resp.status_code}")
         print(f"  Body: {resp.text[:500]}")
         assert resp.status_code == 200, f"Expected 200 but got {resp.status_code}: {resp.text[:300]}"
@@ -157,7 +157,7 @@ class TestProfessionalPayrollAllowed:
     def test_professional_payroll_200_has_data_field(self, professional_token):
         """Response should have 'data' field (pagination response)"""
         headers = make_headers(professional_token)
-        resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         assert resp.status_code == 200
         data = resp.json()
         print(f"  Response keys: {list(data.keys())}")
@@ -255,7 +255,7 @@ class TestPlatformAdminPlanChange:
         
         # Now test payroll access
         starter_headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=starter_headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=starter_headers)
         print(f"  Payroll status after upgrade: {resp.status_code}")
         print(f"  Payroll body: {resp.text[:300]}")
         assert resp.status_code == 200, f"Expected 200 after plan upgrade, got {resp.status_code}: {resp.text[:300]}"
@@ -273,7 +273,7 @@ class TestPlatformAdminPlanChange:
         assert resp.status_code == 200, f"Failed to revert to starter: {resp.text[:300]}"
         # Verify it's back to starter (payroll should be blocked again)
         starter_headers = make_headers(starter_token, STARTER_ORG)
-        payroll_resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=starter_headers)
+        payroll_resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=starter_headers)
         print(f"  Payroll after revert: {payroll_resp.status_code}")
         assert payroll_resp.status_code == 403, f"Expected 403 after reverting to starter, got {payroll_resp.status_code}"
 
@@ -368,7 +368,7 @@ class TestBattwheelsGaragesProfessionalAllAccess:
     def test_professional_payroll_accessible(self, professional_token):
         """Payroll should return 200 for professional org"""
         headers = make_headers(professional_token)
-        resp = requests.get(f"{BASE_URL}/api/hr/payroll/records", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/hr/payroll/records", headers=headers)
         print(f"  Payroll status: {resp.status_code}")
         assert resp.status_code == 200, f"Expected 200 for payroll, got {resp.status_code}: {resp.text[:300]}"
 
