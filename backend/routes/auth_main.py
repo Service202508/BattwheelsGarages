@@ -164,7 +164,7 @@ async def switch_organization(request: Request):
     
     # Update last active
     await db.organization_users.update_one(
-        {"organization_id": target_org_id, "user_id": user.user_id},
+        {"organization_id": target_org_id, "user_id": user["user_id"]},
         {"$set": {"last_active_at": datetime.now(timezone.utc).isoformat()}}
     )
     
@@ -249,12 +249,12 @@ async def get_me(request: Request):
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
     # Fetch full user doc to include is_platform_admin
-    full_user = await db.users.find_one({"user_id": user.user_id}, {"_id": 0, "password_hash": 0})
+    full_user = await db.users.find_one({"user_id": user["user_id"]}, {"_id": 0, "password_hash": 0})
     return {
-        "user_id": user.user_id,
-        "email": user.email,
+        "user_id": user["user_id"],
+        "email": user["email"],
         "name": user.name,
-        "role": user.role,
+        "role": user.get("role"),
         "designation": user.designation,
         "picture": user.picture,
         "is_platform_admin": bool(full_user.get("is_platform_admin", False)) if full_user else False
@@ -315,7 +315,7 @@ class AdminResetPasswordRequest(BaseModel):
 async def change_password(request: Request, data: ChangePasswordRequest):
     """Self-service password change — requires current password"""
     user = await require_auth(request)
-    full_user = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
+    full_user = await db.users.find_one({"user_id": user["user_id"]}, {"_id": 0})
     if not full_user:
         raise HTTPException(status_code=404, detail="User not found")
     
@@ -329,16 +329,16 @@ async def change_password(request: Request, data: ChangePasswordRequest):
     new_hash = hash_password(data.new_password)
     new_pwd_version = datetime.now(timezone.utc).timestamp()
     await db.users.update_one(
-        {"user_id": user.user_id},
+        {"user_id": user["user_id"]},
         {"$set": {
             "password_hash": new_hash,
             "password_version": new_pwd_version,
             "password_changed_at": datetime.now(timezone.utc).isoformat(),
         }}
     )
-    logger.info(f"Password changed for user {user.user_id}")
+    logger.info(f"Password changed for user {user["user_id"]}")
     from utils.audit import log_audit, AuditAction
-    await log_audit(db, AuditAction.PASSWORD_CHANGED, "", user.user_id, "user", user.user_id)
+    await log_audit(db, AuditAction.PASSWORD_CHANGED, "", user["user_id"], "user", user["user_id"])
     return {"message": "Password changed successfully"}
 
 
