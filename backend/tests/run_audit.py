@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 import os
 import sys
 
-BASE_URL = os.environ.get('API_BASE_URL', 'https://sprint-verified.preview.emergentagent.com')
+BASE_URL = os.environ.get('API_BASE_URL', 'https://trial-ready.preview.emergentagent.com')
 API_URL = f"{BASE_URL}/api"
 
 # Test credentials
