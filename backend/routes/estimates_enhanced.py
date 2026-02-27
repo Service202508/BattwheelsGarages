@@ -42,19 +42,22 @@ estimate_attachments_collection = db["estimate_attachments"]
 estimate_share_links_collection = db["estimate_share_links"]
 
 # Multi-tenant helpers (Phase F migration - using TenantContext)
-async def get_org_id(request: Request) -> Optional[str]:
-    """Get organization ID from request for multi-tenant scoping"""
+async def get_org_id(request: Request) -> str:
+    """Get organization ID from request for multi-tenant scoping.
+    Raises 403 if org context cannot be resolved — queries MUST be scoped.
+    """
     try:
         ctx = await optional_tenant_context(request)
-        return ctx.org_id if ctx else None
+        if ctx and ctx.org_id:
+            return ctx.org_id
     except Exception:
-        return None
+        pass
+    raise HTTPException(status_code=403, detail="Organization context required")
 
-def org_query(org_id: Optional[str], base_query: dict = None) -> dict:
-    """Add org_id to query if available"""
+def org_query(org_id: str, base_query: dict = None) -> dict:
+    """Add org_id to query — org_id is always required."""
     query = base_query or {}
-    if org_id:
-        query["organization_id"] = org_id
+    query["organization_id"] = org_id
     return query
 
 # Attachment limits (Zoho Books style)
