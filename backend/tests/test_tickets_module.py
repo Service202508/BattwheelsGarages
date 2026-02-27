@@ -56,7 +56,7 @@ class TestTicketModuleAuth:
         assert response.status_code == 200
         data = response.json()
         assert "token" in data
-        assert data["user"]["role"] == "DevTest@123"
+        assert data["user"]["role"] == "owner"
         print(f"✓ Admin login successful, role: {data['user']['role']}")
     
     def test_unauthorized_ticket_access(self):
