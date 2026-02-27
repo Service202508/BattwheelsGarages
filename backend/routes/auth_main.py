@@ -139,7 +139,7 @@ async def switch_organization(request: Request):
         raise HTTPException(status_code=400, detail="organization_id is required")
     
     # Get current user
-    user = await get_current_user(request)
+    user = await require_auth(request)
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -245,7 +245,7 @@ async def process_google_session(request: Request, response: Response):
 
 @router.get("/auth/me")
 async def get_me(request: Request):
-    user = await get_current_user(request)
+    user = await require_auth(request)
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
     # Fetch full user doc to include is_platform_admin
