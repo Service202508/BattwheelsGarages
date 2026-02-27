@@ -23,7 +23,7 @@ class TestPublicPlanEndpoints:
     
     def test_list_plans_returns_all_plans(self):
         """GET /api/subscriptions/plans - List all available plans"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/plans")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/plans")
         
         # Status code assertion
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -52,7 +52,7 @@ class TestPublicPlanEndpoints:
     
     def test_free_plan_has_correct_pricing(self):
         """Free plan should have 0 price"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/plans")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/plans")
         assert response.status_code == 200
         
         data = response.json()
@@ -63,7 +63,7 @@ class TestPublicPlanEndpoints:
     
     def test_enterprise_plan_has_all_features_enabled(self):
         """Enterprise plan should have all features enabled"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/plans")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/plans")
         assert response.status_code == 200
         
         data = response.json()
@@ -82,7 +82,7 @@ class TestPublicPlanEndpoints:
     
     def test_compare_plans_returns_comparison(self):
         """GET /api/subscriptions/plans/compare - Get plan comparison"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/plans/compare")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/plans/compare")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
@@ -101,7 +101,7 @@ class TestPublicPlanEndpoints:
     
     def test_get_specific_plan_by_code(self):
         """GET /api/subscriptions/plans/{plan_code} - Get specific plan"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/plans/starter")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/plans/starter")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
@@ -112,7 +112,7 @@ class TestPublicPlanEndpoints:
     
     def test_invalid_plan_code_returns_404(self):
         """GET /api/subscriptions/plans/{invalid_code} - Should return 404"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/plans/invalid_plan_xyz")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/plans/invalid_plan_xyz")
         
         assert response.status_code == 404, f"Expected 404 for invalid plan, got {response.status_code}"
 
@@ -136,7 +136,7 @@ class TestAuthenticatedSubscriptionEndpoints:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/organizations/signup",
+            f"{BASE_URL}/api/v1/organizations/signup",
             json=signup_data
         )
         
@@ -162,7 +162,7 @@ class TestAuthenticatedSubscriptionEndpoints:
     def test_get_current_subscription(self):
         """GET /api/subscriptions/current - Get current organization subscription"""
         response = requests.get(
-            f"{BASE_URL}/api/subscriptions/current",
+            f"{BASE_URL}/api/v1/subscriptions/current",
             headers=self.headers
         )
         
@@ -197,7 +197,7 @@ class TestAuthenticatedSubscriptionEndpoints:
     def test_new_org_starts_with_trial(self):
         """New organizations should start with a trial subscription"""
         response = requests.get(
-            f"{BASE_URL}/api/subscriptions/current",
+            f"{BASE_URL}/api/v1/subscriptions/current",
             headers=self.headers
         )
         
@@ -212,7 +212,7 @@ class TestAuthenticatedSubscriptionEndpoints:
     def test_get_all_entitlements(self):
         """GET /api/subscriptions/entitlements - Get all feature entitlements"""
         response = requests.get(
-            f"{BASE_URL}/api/subscriptions/entitlements",
+            f"{BASE_URL}/api/v1/subscriptions/entitlements",
             headers=self.headers
         )
         
@@ -245,7 +245,7 @@ class TestAuthenticatedSubscriptionEndpoints:
         """GET /api/subscriptions/entitlements/{feature} - Check enabled feature"""
         # efi_ai_guidance is enabled for starter plan
         response = requests.get(
-            f"{BASE_URL}/api/subscriptions/entitlements/efi_ai_guidance",
+            f"{BASE_URL}/api/v1/subscriptions/entitlements/efi_ai_guidance",
             headers=self.headers
         )
         
@@ -264,7 +264,7 @@ class TestAuthenticatedSubscriptionEndpoints:
         """GET /api/subscriptions/entitlements/{feature} - Check disabled feature returns upgrade_to"""
         # hr_payroll is enterprise only
         response = requests.get(
-            f"{BASE_URL}/api/subscriptions/entitlements/hr_payroll",
+            f"{BASE_URL}/api/v1/subscriptions/entitlements/hr_payroll",
             headers=self.headers
         )
         
@@ -282,7 +282,7 @@ class TestAuthenticatedSubscriptionEndpoints:
     def test_check_unknown_feature_returns_404(self):
         """GET /api/subscriptions/entitlements/{feature} - Unknown feature returns 404"""
         response = requests.get(
-            f"{BASE_URL}/api/subscriptions/entitlements/unknown_feature_xyz",
+            f"{BASE_URL}/api/v1/subscriptions/entitlements/unknown_feature_xyz",
             headers=self.headers
         )
         
@@ -291,7 +291,7 @@ class TestAuthenticatedSubscriptionEndpoints:
     def test_get_usage_limits(self):
         """GET /api/subscriptions/limits - Get usage limits and current usage"""
         response = requests.get(
-            f"{BASE_URL}/api/subscriptions/limits",
+            f"{BASE_URL}/api/v1/subscriptions/limits",
             headers=self.headers
         )
         
@@ -325,7 +325,7 @@ class TestAuthenticatedSubscriptionEndpoints:
     def test_starter_plan_limits_match_expected(self):
         """Verify starter plan has correct limits"""
         response = requests.get(
-            f"{BASE_URL}/api/subscriptions/limits",
+            f"{BASE_URL}/api/v1/subscriptions/limits",
             headers=self.headers
         )
         
@@ -347,26 +347,26 @@ class TestSubscriptionEndpointsAuth:
     
     def test_current_subscription_requires_auth(self):
         """GET /api/subscriptions/current - Should require authentication"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/current")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/current")
         
         # Should return 401 or 403 without auth
         assert response.status_code in [401, 403], f"Expected 401/403 without auth, got {response.status_code}"
     
     def test_entitlements_requires_auth(self):
         """GET /api/subscriptions/entitlements - Should require authentication"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/entitlements")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/entitlements")
         
         assert response.status_code in [401, 403], f"Expected 401/403 without auth, got {response.status_code}"
     
     def test_entitlement_check_requires_auth(self):
         """GET /api/subscriptions/entitlements/{feature} - Should require authentication"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/entitlements/efi_ai_guidance")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/entitlements/efi_ai_guidance")
         
         assert response.status_code in [401, 403], f"Expected 401/403 without auth, got {response.status_code}"
     
     def test_limits_requires_auth(self):
         """GET /api/subscriptions/limits - Should require authentication"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/limits")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/limits")
         
         assert response.status_code in [401, 403], f"Expected 401/403 without auth, got {response.status_code}"
     
@@ -386,7 +386,7 @@ class TestSubscriptionEndpointsAuth:
         }
         
         signup_response = requests.post(
-            f"{BASE_URL}/api/organizations/signup",
+            f"{BASE_URL}/api/v1/organizations/signup",
             json=signup_data
         )
         
@@ -397,7 +397,7 @@ class TestSubscriptionEndpointsAuth:
         
         # Try with invalid org ID
         response = requests.get(
-            f"{BASE_URL}/api/subscriptions/current",
+            f"{BASE_URL}/api/v1/subscriptions/current",
             headers={
                 "Authorization": f"Bearer {token}",
                 "X-Organization-ID": "org_invalid_123456"
@@ -412,7 +412,7 @@ class TestPlanFeatureEntitlement:
     
     def test_free_plan_features(self):
         """Verify free plan has correct feature entitlements"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/plans/free")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/plans/free")
         assert response.status_code == 200
         
         data = response.json()
@@ -434,7 +434,7 @@ class TestPlanFeatureEntitlement:
     
     def test_starter_plan_features(self):
         """Verify starter plan has correct feature entitlements"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/plans/starter")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/plans/starter")
         assert response.status_code == 200
         
         data = response.json()
@@ -455,7 +455,7 @@ class TestPlanFeatureEntitlement:
     
     def test_professional_plan_features(self):
         """Verify professional plan has correct feature entitlements"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/plans/professional")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/plans/professional")
         assert response.status_code == 200
         
         data = response.json()
@@ -479,7 +479,7 @@ class TestPlanFeatureEntitlement:
     
     def test_enterprise_all_features_enabled(self):
         """Verify enterprise plan has ALL features enabled"""
-        response = requests.get(f"{BASE_URL}/api/subscriptions/plans/enterprise")
+        response = requests.get(f"{BASE_URL}/api/v1/subscriptions/plans/enterprise")
         assert response.status_code == 200
         
         data = response.json()
