@@ -339,6 +339,52 @@ async def subscribe_to_plan(
     if not rp:
         raise HTTPException(status_code=503, detail="Payment gateway not configured")
 
+    # --- FIX 2: Razorpay live-key safety warning in non-production ---
+    environment = os.environ.get("ENVIRONMENT", "development")
+    rp_key_id = os.environ.get("RAZORPAY_KEY_ID", "")
+    if rp_key_id.startswith("rzp_live_") and environment != "production":
+        logger.warning(
+            "LIVE Razorpay key detected in '%s' environment! "
+            "Real subscriptions will be created. Switch to test keys (rzp_test_*) "
+            "for safe development.",
+            environment,
+        )
+
+    # --- FIX 1: Prevent duplicate subscriptions ---
+    db = _get_db()
+    existing_sub = await db.subscription_orders.find_one(
+        {
+            "organization_id": ctx.org_id,
+            "status": {"$in": ["created", "authenticated", "active", "pending"]},
+        },
+        {"_id": 0, "razorpay_subscription_id": 1, "status": 1},
+    )
+    if existing_sub:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                f"Organization already has an active subscription "
+                f"(status: {existing_sub['status']}, "
+                f"id: {existing_sub['razorpay_subscription_id']}). "
+                f"Cancel the existing subscription before creating a new one."
+            ),
+        )
+
+    # Also check the org document for an active razorpay subscription
+    org_check = await db.organizations.find_one(
+        {"organization_id": ctx.org_id},
+        {"_id": 0, "subscription_status": 1, "razorpay_subscription_id": 1},
+    )
+    if org_check and org_check.get("subscription_status") == "active" and org_check.get("razorpay_subscription_id"):
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                f"Organization already has an active paid subscription "
+                f"(razorpay: {org_check['razorpay_subscription_id']}). "
+                f"Cancel the existing subscription before creating a new one."
+            ),
+        )
+
     # Resolve plan
     service = get_subscription_service()
     try:
@@ -352,8 +398,6 @@ async def subscribe_to_plan(
 
     if plan.price_monthly == 0:
         raise HTTPException(status_code=400, detail="Free plan does not require payment")
-
-    db = _get_db()
 
     # Get or create Razorpay Plan ID for this plan+cycle
     amount_paise = int(plan.price_monthly * 100) if data.billing_cycle == "monthly" else int(plan.price_annual * 100)

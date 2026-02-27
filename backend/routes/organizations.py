@@ -182,20 +182,25 @@ async def signup_organization(data: OrganizationCreate):
         )
     
     now = datetime.now(timezone.utc).isoformat()
-    trial_ends_at = (datetime.now(timezone.utc) + timedelta(days=14)).isoformat()
+    now_dt = datetime.now(timezone.utc)
+    trial_ends_at = (now_dt + timedelta(days=14)).isoformat()
 
     # Generate IDs
     org_id = f"org_{uuid.uuid4().hex[:12]}"
     user_id = f"user_{uuid.uuid4().hex[:12]}"
     membership_id = f"mem_{uuid.uuid4().hex[:12]}"
 
-    # Create organization
+    # Create organization — FIX 3: auto-assign 14-day trial
     org_doc = {
         "organization_id": org_id,
         "name": data.name,
         "slug": generate_slug(data.name),
         "industry_type": data.industry_type,
         "plan_type": "free_trial",  # Start with free trial
+        "subscription_status": "trialing",
+        "trial_active": True,
+        "trial_start": now,
+        "trial_end": trial_ends_at,
         "plan_expires_at": trial_ends_at,
         "trial_ends_at": trial_ends_at,
         "logo_url": None,
