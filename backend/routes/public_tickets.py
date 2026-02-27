@@ -29,6 +29,10 @@ async def get_org_from_request(request: Request, db) -> str:
     """
     host = request.headers.get("host", "")
 
+    # DEBUG: log the actual host for troubleshooting
+    import logging
+    logging.getLogger("public_tickets").warning(f"get_org_from_request: host='{host}', query_params={dict(request.query_params)}, X-Org-Slug={request.headers.get('X-Organization-Slug')}")
+
     # Non-production hosts: skip subdomain extraction entirely
     non_production_patterns = [
         "emergentagent.com",
