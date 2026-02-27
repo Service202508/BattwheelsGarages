@@ -14,6 +14,8 @@ import csv
 import io
 import uuid
 
+pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
+
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 # All 39 Zoho Books compatible columns

@@ -8,6 +8,8 @@ import requests
 import os
 from datetime import datetime, timedelta
 
+pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
+
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 class TestDeliveryChallans:

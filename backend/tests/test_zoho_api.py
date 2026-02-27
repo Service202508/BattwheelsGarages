@@ -9,6 +9,8 @@ import requests
 import os
 import time
 
+pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
+
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 class TestZohoContacts:

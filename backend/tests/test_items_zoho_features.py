@@ -7,6 +7,8 @@ import requests
 import os
 import uuid
 
+pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
+
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://trial-ready.preview.emergentagent.com').rstrip('/')
 
 

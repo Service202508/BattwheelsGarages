@@ -1,3 +1,4 @@
+import pytest
 """
 Zoho Parity Regression Test Suite
 Synchronous version for reliable testing
@@ -10,6 +11,8 @@ import json
 import sys
 from datetime import datetime, timedelta
 import os
+
+pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
 
 # Configuration
 BASE_URL = os.environ.get("TEST_API_URL", "http://localhost:8001/api")
