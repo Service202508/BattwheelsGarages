@@ -255,6 +255,7 @@ export default function SubscriptionManagement() {
               <div className="text-sm text-[rgba(244,246,240,0.45)]">
                 Current period: {subscription.current_period_start ? new Date(subscription.current_period_start).toLocaleDateString() : "N/A"} - {subscription.current_period_end ? new Date(subscription.current_period_end).toLocaleDateString() : "N/A"}
               </div>
+              <div className="flex gap-2">
               <Dialog open={upgradeDialogOpen} onOpenChange={setUpgradeDialogOpen}>
                 <DialogTrigger asChild>
                   <Button data-testid="upgrade-plan-btn">
