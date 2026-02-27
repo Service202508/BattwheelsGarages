@@ -2321,11 +2321,12 @@ async def get_item_movement_report(
 # ============== INVENTORY REPORTS (MUST BE BEFORE /{item_id}) ==============
 
 @router.get("/reports/stock-summary")
-async def get_stock_summary(warehouse_id: str = ""):
+async def get_stock_summary(request: Request, warehouse_id: str = ""):
     """Get stock summary report"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    match_stage = {"item_type": {"$in": ["inventory", "sales_and_purchases"]}}
+    match_stage = {"organization_id": org_id, "item_type": {"$in": ["inventory", "sales_and_purchases"]}}
     
     # H-02: hard cap, Sprint 3 for cursor pagination
     items = await db.items.find(match_stage, {"_id": 0}).to_list(500)
@@ -2375,12 +2376,13 @@ async def get_stock_summary(warehouse_id: str = ""):
     return {"code": 0, "stock_summary": summary}
 
 @router.get("/reports/valuation")
-async def get_inventory_valuation():
+async def get_inventory_valuation(request: Request):
     """Get inventory valuation report"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     pipeline = [
-        {"$match": {"item_type": {"$in": ["inventory", "sales_and_purchases"]}}},
+        {"$match": {"organization_id": org_id, "item_type": {"$in": ["inventory", "sales_and_purchases"]}}},
         {"$project": {
             "_id": 0,
             "item_id": 1,
@@ -2491,6 +2493,7 @@ async def perform_bulk_action(request: BulkActionRequest):
 
 @router.get("/export")
 async def export_items(
+    request: Request,
     format: str = "csv",
     item_type: str = "",
     group_id: str = "",
@@ -2498,8 +2501,9 @@ async def export_items(
 ):
     """Export items to CSV (Zoho Books compatible) or JSON"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    query = {}
+    query = {"organization_id": org_id}
     if item_type:
         query["item_type"] = item_type
     if group_id:
@@ -2795,6 +2799,7 @@ async def log_item_history(db, item_id: str, action: str, changes: dict, user_na
 
 @router.get("/history")
 async def get_all_item_history(
+    request: Request,
     item_id: str = "",
     action: str = "",
     page: int = 1,
@@ -2802,8 +2807,9 @@ async def get_all_item_history(
 ):
     """Get item history with filters"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    query = {}
+    query = {"organization_id": org_id}
     if item_id:
         query["item_id"] = item_id
     if action:
@@ -2915,11 +2921,12 @@ async def update_item_preferences(prefs: ItemPreferences):
     return {"code": 0, "message": "Preferences updated", "preferences": prefs_dict}
 
 @router.get("/custom-fields")
-async def get_custom_fields():
+async def get_custom_fields(request: Request):
     """Get custom field definitions"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    fields = await db.item_custom_fields.find({}, {"_id": 0}).to_list(100)
+    fields = await db.item_custom_fields.find({"organization_id": org_id}, {"_id": 0}).to_list(100)
     return {"code": 0, "custom_fields": fields}
 
 @router.post("/custom-fields")
@@ -2994,11 +3001,12 @@ DEFAULT_FIELDS = [
 ]
 
 @router.get("/field-config")
-async def get_field_configuration():
+async def get_field_configuration(request: Request):
     """Get field visibility and access configuration"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    fields = await db.item_field_config.find({}, {"_id": 0}).sort("field_order", 1).to_list(100)
+    fields = await db.item_field_config.find({"organization_id": org_id}, {"_id": 0}).sort("field_order", 1).to_list(100)
     
     # If no config exists, create defaults
     if not fields:
@@ -3046,12 +3054,13 @@ async def update_single_field_config(field_name: str, config: FieldConfiguration
     return {"code": 0, "message": f"Field '{field_name}' configuration updated"}
 
 @router.get("/field-config/for-role/{role}")
-async def get_fields_for_role(role: str):
+async def get_fields_for_role(role: str, request: Request):
     """Get visible fields for a specific role"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     fields = await db.item_field_config.find(
-        {"is_active": True, "allowed_roles": role},
+        {"is_active": True, "allowed_roles": role, "organization_id": org_id},
         {"_id": 0}
     ).sort("field_order", 1).to_list(100)
     
