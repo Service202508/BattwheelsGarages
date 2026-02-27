@@ -253,10 +253,10 @@ async def get_me(request: Request):
     return {
         "user_id": user["user_id"],
         "email": user["email"],
-        "name": user.name,
+        "name": user.get("name"),
         "role": user.get("role"),
-        "designation": user.designation,
-        "picture": user.picture,
+        "designation": user.get("designation"),
+        "picture": user.get("picture"),
         "is_platform_admin": bool(full_user.get("is_platform_admin", False)) if full_user else False
     }
 
