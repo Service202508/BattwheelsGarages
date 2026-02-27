@@ -935,6 +935,8 @@ def generate_gstr3b_excel(data: dict, month: str) -> Response:
     ws.append(["Description", "Taxable Value", "CGST", "SGST", "IGST"])
     ws.append(["Outward taxable supplies", data["section_3_1"]["taxable_value"],
                data["section_3_1"]["cgst"], data["section_3_1"]["sgst"], data["section_3_1"]["igst"]])
+    ws.append(["(d) Inward supplies (reverse charge)", data["section_3_1_d"]["taxable_value"],
+               data["section_3_1_d"]["cgst"], data["section_3_1_d"]["sgst"], data["section_3_1_d"]["igst"]])
     ws.append([])
     
     # Section 4 - ITC
