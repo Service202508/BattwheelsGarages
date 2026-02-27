@@ -859,6 +859,15 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
             "gross_outward": round(outward_taxable, 2),
             "cn_adjustment": round(cn_taxable, 2)
         },
+        "section_3_1_d": {
+            "description": "Inward supplies liable to reverse charge",
+            "taxable_value": round(rcm_taxable, 2),
+            "cgst": round(rcm_cgst, 2),
+            "sgst": round(rcm_sgst, 2),
+            "igst": round(rcm_igst, 2),
+            "total_tax": round(rcm_total_tax, 2),
+            "bill_count": len(rcm_bills)
+        },
         "section_3_2": {
             "description": "Unregistered supplies (B2C)",
             "total_interstate": round(outward_igst - cn_igst, 2)
