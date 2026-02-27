@@ -2970,19 +2970,21 @@ async def get_custom_fields(request: Request):
     return {"code": 0, "custom_fields": fields}
 
 @router.post("/custom-fields")
-async def create_custom_field(field: CustomFieldDefinition):
+async def create_custom_field(field: CustomFieldDefinition, request: Request):
     """Create a custom field definition"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     if not field.field_id:
         field.field_id = f"CF-{uuid.uuid4().hex[:8].upper()}"
     
     # Check unique name
-    existing = await db.item_custom_fields.find_one({"field_name": field.field_name})
+    existing = await db.item_custom_fields.find_one({"field_name": field.field_name, "organization_id": org_id})
     if existing:
         raise HTTPException(status_code=400, detail="Field with this name already exists")
     
     field_dict = field.dict()
+    field_dict["organization_id"] = org_id
     field_dict["created_time"] = datetime.now(timezone.utc).isoformat()
     
     await db.item_custom_fields.insert_one(field_dict)
@@ -2991,15 +2993,16 @@ async def create_custom_field(field: CustomFieldDefinition):
     return {"code": 0, "message": "Custom field created", "field": field_dict}
 
 @router.put("/custom-fields/{field_id}")
-async def update_custom_field(field_id: str, field: CustomFieldDefinition):
+async def update_custom_field(field_id: str, field: CustomFieldDefinition, request: Request):
     """Update a custom field"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     field_dict = field.dict()
     field_dict["updated_time"] = datetime.now(timezone.utc).isoformat()
     
     result = await db.item_custom_fields.update_one(
-        {"field_id": field_id},
+        {"field_id": field_id, "organization_id": org_id},
         {"$set": field_dict}
     )
     
@@ -3009,11 +3012,12 @@ async def update_custom_field(field_id: str, field: CustomFieldDefinition):
     return {"code": 0, "message": "Custom field updated"}
 
 @router.delete("/custom-fields/{field_id}")
-async def delete_custom_field(field_id: str):
+async def delete_custom_field(field_id: str, request: Request):
     """Delete a custom field"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    result = await db.item_custom_fields.delete_one({"field_id": field_id})
+    result = await db.item_custom_fields.delete_one({"field_id": field_id, "organization_id": org_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Custom field not found")
     
@@ -3061,16 +3065,17 @@ async def get_field_configuration(request: Request):
     return {"code": 0, "field_config": fields}
 
 @router.put("/field-config")
-async def update_field_configuration(fields: List[FieldConfiguration]):
+async def update_field_configuration(fields: List[FieldConfiguration], request: Request):
     """Update field visibility and access configuration"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     for field in fields:
         field_dict = field.dict()
         field_dict["updated_time"] = datetime.now(timezone.utc).isoformat()
         
         await db.item_field_config.update_one(
-            {"field_name": field.field_name},
+            {"field_name": field.field_name, "organization_id": org_id},
             {"$set": field_dict},
             upsert=True
         )
@@ -3078,15 +3083,16 @@ async def update_field_configuration(fields: List[FieldConfiguration]):
     return {"code": 0, "message": "Field configuration updated"}
 
 @router.put("/field-config/{field_name}")
-async def update_single_field_config(field_name: str, config: FieldConfiguration):
+async def update_single_field_config(field_name: str, config: FieldConfiguration, request: Request):
     """Update configuration for a single field"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     config_dict = config.dict()
     config_dict["updated_time"] = datetime.now(timezone.utc).isoformat()
     
     result = await db.item_field_config.update_one(
-        {"field_name": field_name},
+        {"field_name": field_name, "organization_id": org_id},
         {"$set": config_dict},
         upsert=True
     )
@@ -3115,11 +3121,12 @@ async def get_fields_for_role(role: str, request: Request):
 # ============== AUTO SKU GENERATION ==============
 
 @router.get("/generate-sku")
-async def generate_sku():
+async def generate_sku(request: Request):
     """Generate next SKU based on preferences"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    prefs = await db.item_preferences.find_one({"type": "items_module"})
+    prefs = await db.item_preferences.find_one({"type": "items_module", "organization_id": org_id})
     if not prefs or not prefs.get("auto_generate_sku"):
         return {"code": 1, "message": "Auto SKU generation is disabled"}
     
@@ -3216,18 +3223,19 @@ async def get_enhanced_item(item_id: str, request: Request):
     return {"code": 0, "item": item}
 
 @router.put("/{item_id}")
-async def update_enhanced_item(item_id: str, item: ItemUpdate):
+async def update_enhanced_item(item_id: str, item: ItemUpdate, request: Request):
     """Update item with partial data"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    existing = await db.items.find_one({"item_id": item_id})
+    existing = await db.items.find_one({"item_id": item_id, "organization_id": org_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Item not found")
     
     # Check if type change is allowed
     if item.item_type and existing.get("item_type") != item.item_type:
-        invoice_count = await db.invoices.count_documents({"line_items.item_id": item_id})
-        bill_count = await db.bills.count_documents({"line_items.item_id": item_id})
+        invoice_count = await db.invoices.count_documents({"line_items.item_id": item_id, "organization_id": org_id})
+        bill_count = await db.bills.count_documents({"line_items.item_id": item_id, "organization_id": org_id})
         if invoice_count > 0 or bill_count > 0:
             raise HTTPException(status_code=400, detail="Cannot change item type when used in transactions")
     
@@ -3243,16 +3251,17 @@ async def update_enhanced_item(item_id: str, item: ItemUpdate):
         if "hsn_code" in update_data or "sac_code" in update_data:
             update_data["hsn_or_sac"] = update_data.get("hsn_code", existing.get("hsn_code", "")) or update_data.get("sac_code", existing.get("sac_code", ""))
         
-        await db.items.update_one({"item_id": item_id}, {"$set": update_data})
+        await db.items.update_one({"item_id": item_id, "organization_id": org_id}, {"$set": update_data})
     
     return {"code": 0, "message": "Item updated successfully"}
 
 @router.post("/{item_id}/activate")
-async def activate_item(item_id: str):
+async def activate_item(item_id: str, request: Request):
     """Activate item"""
     db = get_db()
+    org_id = extract_org_id(request)
     result = await db.items.update_one(
-        {"item_id": item_id},
+        {"item_id": item_id, "organization_id": org_id},
         {"$set": {"is_active": True, "status": "active", "updated_time": datetime.now(timezone.utc).isoformat()}}
     )
     if result.matched_count == 0:
@@ -3260,11 +3269,12 @@ async def activate_item(item_id: str):
     return {"code": 0, "message": "Item activated"}
 
 @router.post("/{item_id}/deactivate")
-async def deactivate_item(item_id: str):
+async def deactivate_item(item_id: str, request: Request):
     """Deactivate item"""
     db = get_db()
+    org_id = extract_org_id(request)
     result = await db.items.update_one(
-        {"item_id": item_id},
+        {"item_id": item_id, "organization_id": org_id},
         {"$set": {"is_active": False, "status": "inactive", "updated_time": datetime.now(timezone.utc).isoformat()}}
     )
     if result.matched_count == 0:
@@ -3272,13 +3282,14 @@ async def deactivate_item(item_id: str):
     return {"code": 0, "message": "Item deactivated"}
 
 @router.delete("/{item_id}")
-async def delete_enhanced_item(item_id: str):
+async def delete_enhanced_item(item_id: str, request: Request):
     """Delete item (only if not used in transactions)"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Check usage
-    invoice_count = await db.invoices.count_documents({"line_items.item_id": item_id})
-    bill_count = await db.bills.count_documents({"line_items.item_id": item_id})
+    invoice_count = await db.invoices.count_documents({"line_items.item_id": item_id, "organization_id": org_id})
+    bill_count = await db.bills.count_documents({"line_items.item_id": item_id, "organization_id": org_id})
     
     if invoice_count > 0 or bill_count > 0:
         raise HTTPException(
@@ -3287,13 +3298,13 @@ async def delete_enhanced_item(item_id: str):
         )
     
     # Delete stock locations
-    await db.item_stock_locations.delete_many({"item_id": item_id})
+    await db.item_stock_locations.delete_many({"item_id": item_id, "organization_id": org_id})
     
     # Delete prices
-    await db.item_prices.delete_many({"item_id": item_id})
+    await db.item_prices.delete_many({"item_id": item_id, "organization_id": org_id})
     
     # Delete item
-    result = await db.items.delete_one({"item_id": item_id})
+    result = await db.items.delete_one({"item_id": item_id, "organization_id": org_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Item not found")
     
