@@ -43,11 +43,16 @@ def init_router(database):
 
 @router.post("/login")
 async def login(credentials: UserLogin, response: Response):
+    import logging as _log
+    _log.getLogger("auth.debug").warning(f"LOGIN ATTEMPT: email={credentials.email}, db={db.name}")
     user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
     if not user:
+        _log.getLogger("auth.debug").warning(f"LOGIN FAIL: user not found for {credentials.email}")
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
+    _log.getLogger("auth.debug").warning(f"LOGIN: user found, hash_prefix={user.get('password_hash','')[:10]}")
     if not verify_password(credentials.password, user.get("password_hash", "")):
+        _log.getLogger("auth.debug").warning(f"LOGIN FAIL: password mismatch for {credentials.email}")
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     if not user.get("is_active", True):
