@@ -93,7 +93,7 @@ def get_token_a():
     global TOKEN_A
     if TOKEN_A:
         return TOKEN_A
-    resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+    resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": ADMIN_EMAIL, "password": ADMIN_PASSWORD
     })
     TOKEN_A = resp.json().get("token", "")
@@ -104,7 +104,7 @@ def get_token_b():
     global TOKEN_B
     if TOKEN_B:
         return TOKEN_B
-    resp = requests.post(f"{BASE_URL}/api/auth/login", json={
+    resp = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
         "email": ORG_B_EMAIL, "password": ORG_B_PASSWORD
     })
     TOKEN_B = resp.json().get("token", "")
