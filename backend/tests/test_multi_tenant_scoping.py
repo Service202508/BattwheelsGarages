@@ -333,7 +333,7 @@ class TestPermissions:
     
     def test_admin_can_update_settings(self):
         """Test admin/owner can update organization settings"""
-        response = requests.patch(
+        response = requests.put(
             f"{BASE_URL}/api/v1/organizations/me",
             headers=self.admin_headers,
             json={"service_radius_km": 55}
@@ -343,7 +343,7 @@ class TestPermissions:
     
     def test_technician_cannot_update_settings(self):
         """Test technician cannot update organization settings"""
-        response = requests.patch(
+        response = requests.put(
             f"{BASE_URL}/api/v1/organizations/me",
             headers=self.tech_headers,
             json={"service_radius_km": 100}
