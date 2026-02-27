@@ -150,9 +150,10 @@ async def get_current_user(request: Request, db) -> dict:
     
     return user
 
-async def require_auth(request: Request, db=None) -> dict:
+async def require_auth(request: Request, db=None) -> UserContext:
     """Require any authenticated user. Uses module db if not passed."""
-    return await get_current_user(request, db or _db)
+    user_dict = await get_current_user(request, db or _db)
+    return UserContext(user_dict)
 
 async def require_admin(request: Request, db) -> dict:
     """Require admin role"""
