@@ -326,6 +326,12 @@ export default function SubscriptionManagement() {
                   </div>
                 </DialogContent>
               </Dialog>
+              {subscription.plan?.code !== "free" && subscription.status !== "canceled" && (
+                <Button variant="ghost" size="sm" className="text-[rgba(255,59,47,0.7)] hover:text-[#FF3B2F]" onClick={handleCancelSubscription} data-testid="cancel-subscription-btn">
+                  <X className="h-4 w-4 mr-1" /> Cancel
+                </Button>
+              )}
+              </div>
             </div>
           </CardContent>
         </Card>
