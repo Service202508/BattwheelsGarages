@@ -60,9 +60,9 @@ class TestPermissionsAPI:
         return token
     
     def test_list_modules(self, admin_token):
-        """GET /api/permissions/modules - List all modules"""
+        """GET /api/v1/permissions/modules - List all modules"""
         res = requests.get(
-            f"{BASE_URL}/api/permissions/modules",
+            f"{BASE_URL}/api/v1/permissions/modules",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"List modules: {res.status_code}")
@@ -79,9 +79,9 @@ class TestPermissionsAPI:
         print(f"Found {len(modules)} modules")
     
     def test_list_roles(self, admin_token):
-        """GET /api/permissions/roles - List all roles"""
+        """GET /api/v1/permissions/roles - List all roles"""
         res = requests.get(
-            f"{BASE_URL}/api/permissions/roles",
+            f"{BASE_URL}/api/v1/permissions/roles",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"List roles: {res.status_code}")
@@ -97,9 +97,9 @@ class TestPermissionsAPI:
         print(f"Found roles: {role_names}")
     
     def test_get_admin_permissions(self, admin_token):
-        """GET /api/permissions/roles/admin - Admin has full access"""
+        """GET /api/v1/permissions/roles/admin - Admin has full access"""
         res = requests.get(
-            f"{BASE_URL}/api/permissions/roles/admin",
+            f"{BASE_URL}/api/v1/permissions/roles/admin",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Get admin permissions: {res.status_code}")
@@ -112,9 +112,9 @@ class TestPermissionsAPI:
         assert dashboard_perms.get("can_view") == True
     
     def test_get_technician_permissions(self, admin_token):
-        """GET /api/permissions/roles/technician - Verify technician restricted access"""
+        """GET /api/v1/permissions/roles/technician - Verify technician restricted access"""
         res = requests.get(
-            f"{BASE_URL}/api/permissions/roles/technician",
+            f"{BASE_URL}/api/v1/permissions/roles/technician",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Get technician permissions: {res.status_code}")
@@ -131,9 +131,9 @@ class TestPermissionsAPI:
         assert modules.get("settings", {}).get("can_view") == False
     
     def test_get_business_customer_permissions(self, admin_token):
-        """GET /api/permissions/roles/business_customer - Business customer access"""
+        """GET /api/v1/permissions/roles/business_customer - Business customer access"""
         res = requests.get(
-            f"{BASE_URL}/api/permissions/roles/business_customer",
+            f"{BASE_URL}/api/v1/permissions/roles/business_customer",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Get business_customer permissions: {res.status_code}")
@@ -146,10 +146,10 @@ class TestPermissionsAPI:
         assert modules.get("reports", {}).get("can_view") == True
     
     def test_update_module_permission(self, admin_token):
-        """PATCH /api/permissions/roles/{role}/module/{module_id} - Update permission"""
+        """PATCH /api/v1/permissions/roles/{role}/module/{module_id} - Update permission"""
         # Toggle a permission
         res = requests.patch(
-            f"{BASE_URL}/api/permissions/roles/technician/module/vehicles",
+            f"{BASE_URL}/api/v1/permissions/roles/technician/module/vehicles",
             headers={
                 "Authorization": f"Bearer {admin_token}",
                 "Content-Type": "application/json"
@@ -166,7 +166,7 @@ class TestPermissionsAPI:
         
         # Verify the update
         res2 = requests.get(
-            f"{BASE_URL}/api/permissions/roles/technician",
+            f"{BASE_URL}/api/v1/permissions/roles/technician",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert res2.status_code == 200
@@ -176,7 +176,7 @@ class TestPermissionsAPI:
         
         # Revert the change
         requests.patch(
-            f"{BASE_URL}/api/permissions/roles/technician/module/vehicles",
+            f"{BASE_URL}/api/v1/permissions/roles/technician/module/vehicles",
             headers={
                 "Authorization": f"Bearer {admin_token}",
                 "Content-Type": "application/json"
@@ -190,9 +190,9 @@ class TestPermissionsAPI:
         )
     
     def test_check_permission(self, admin_token):
-        """GET /api/permissions/check - Check specific permission"""
+        """GET /api/v1/permissions/check - Check specific permission"""
         res = requests.get(
-            f"{BASE_URL}/api/permissions/check",
+            f"{BASE_URL}/api/v1/permissions/check",
             params={"role": "DevTest@123", "module_id": "dashboard", "action": "can_view"},
             headers={"Authorization": f"Bearer {admin_token}"}
         )
@@ -203,7 +203,7 @@ class TestPermissionsAPI:
         
         # Check technician can't delete users
         res2 = requests.get(
-            f"{BASE_URL}/api/permissions/check",
+            f"{BASE_URL}/api/v1/permissions/check",
             params={"role": "technician", "module_id": "users", "action": "can_delete"},
             headers={"Authorization": f"Bearer {admin_token}"}
         )
@@ -212,9 +212,9 @@ class TestPermissionsAPI:
         assert data2.get("allowed") == False
     
     def test_get_nonexistent_role(self, admin_token):
-        """GET /api/permissions/roles/{invalid} - 404 for invalid role"""
+        """GET /api/v1/permissions/roles/{invalid} - 404 for invalid role"""
         res = requests.get(
-            f"{BASE_URL}/api/permissions/roles/nonexistent_role_xyz",
+            f"{BASE_URL}/api/v1/permissions/roles/nonexistent_role_xyz",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Get nonexistent role: {res.status_code}")
@@ -486,9 +486,9 @@ class TestSeedDefaults:
         return res.json().get("token") or res.json().get("access_token")
     
     def test_seed_default_permissions(self, admin_token):
-        """POST /api/permissions/seed-defaults - Seed default permissions"""
+        """POST /api/v1/permissions/seed-defaults - Seed default permissions"""
         res = requests.post(
-            f"{BASE_URL}/api/permissions/seed-defaults",
+            f"{BASE_URL}/api/v1/permissions/seed-defaults",
             headers={"Authorization": f"Bearer {admin_token}"}
         )
         print(f"Seed defaults: {res.status_code}")
