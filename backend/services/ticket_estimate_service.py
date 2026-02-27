@@ -196,7 +196,7 @@ class TicketEstimateService:
         await self._log_history(
             estimate_id, "created", 
             f"Estimate created from ticket {ticket_id}",
-            user_id, user_name
+            user_id, user_name, organization_id
         )
         
         # Return without _id
