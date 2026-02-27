@@ -124,6 +124,10 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if path in ["/api/health", "/", "/docs", "/openapi.json"]:
             return await call_next(request)
         
+        # Bypass rate limiting entirely during test runs
+        if os.environ.get("TESTING") == "1":
+            return await call_next(request)
+        
         # Determine rate limit category
         category = self._get_category(path)
         
