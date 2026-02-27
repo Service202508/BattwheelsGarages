@@ -311,7 +311,7 @@ class TestSE405XSSSanitization:
             "priority": "high",
             "category": "battery"
         }
-        resp = requests.post(f"{BASE_URL}/api/tickets", json=payload, headers=admin_headers)
+        resp = requests.post(f"{BASE_URL}/api/v1/tickets", json=payload, headers=admin_headers)
         print(f"Create ticket status: {resp.status_code}, body: {resp.text[:500]}")
         assert resp.status_code in [200, 201], f"Failed to create ticket: {resp.text}"
         
@@ -330,7 +330,7 @@ class TestSE405XSSSanitization:
             "priority": "medium",
             "category": "battery"
         }
-        resp = requests.post(f"{BASE_URL}/api/tickets", json=payload, headers=admin_headers)
+        resp = requests.post(f"{BASE_URL}/api/v1/tickets", json=payload, headers=admin_headers)
         print(f"Create ticket status: {resp.status_code}")
         assert resp.status_code in [200, 201], f"Failed: {resp.text}"
         
