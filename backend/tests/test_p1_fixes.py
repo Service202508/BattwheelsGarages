@@ -47,7 +47,7 @@ def tech_token():
     """Get technician JWT token"""
     resp = requests.post(f"{BASE_URL}/api/auth/login", json={
         "email": "tech.a@battwheels.internal",
-        "password": "DevTest@123"
+        "password": "TechA@123"
     })
     assert resp.status_code == 200, f"Tech login failed: {resp.text}"
     return resp.json()["token"]
