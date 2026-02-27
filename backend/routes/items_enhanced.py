@@ -3134,7 +3134,7 @@ async def generate_sku(request: Request):
     
     # Find the highest SKU number
     last_item = await db.items.find_one(
-        {"sku": {"$regex": f"^{re.escape(prefix)}\\d+$"}},
+        {"sku": {"$regex": f"^{re.escape(prefix)}\\d+$"}, "organization_id": org_id},
         sort=[("sku", -1)]
     )
     
