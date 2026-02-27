@@ -110,7 +110,7 @@ class TestOrganizationContext:
         )
         assert response.status_code == 200, f"Failed: {response.text}"
         data = response.json()
-        assert "users" in data, "Missing users array"
+        assert "members" in data, "Missing members array"
         assert "total" in data, "Missing total count"
         assert data["total"] >= 1, "No users found"
         print(f"✓ Organization users: {data['total']} members")
