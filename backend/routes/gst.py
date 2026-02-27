@@ -814,6 +814,38 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     net_sgst = max(0, outward_sgst - input_sgst - cn_sgst)
     net_igst = max(0, outward_igst - input_igst - cn_igst)
     
+    # SECTION 3.1(d) — Inward supplies liable to reverse charge — org-scoped
+    rcm_bill_query = org_query(org_id, {
+        "date": {"$gte": start_date, "$lt": end_date},
+        "reverse_charge": True
+    })
+    rcm_bills = await db.bills.find(rcm_bill_query, {"_id": 0}).to_list(10000)
+    
+    rcm_taxable = 0
+    rcm_cgst = 0
+    rcm_sgst = 0
+    rcm_igst = 0
+    
+    for bill in rcm_bills:
+        subtotal = bill.get("sub_total", 0) or bill.get("subtotal", 0) or 0
+        tax_total = bill.get("tax_total", 0) or (bill.get("total", 0) - subtotal)
+        vendor_gstin = bill.get("vendor_gstin", "") or bill.get("gst_no", "")
+        vendor_state = vendor_gstin[:2] if vendor_gstin and len(vendor_gstin) >= 2 else org_state
+        
+        rcm_taxable += subtotal
+        if vendor_state == org_state:
+            rcm_cgst += tax_total / 2
+            rcm_sgst += tax_total / 2
+        else:
+            rcm_igst += tax_total
+    
+    rcm_total_tax = rcm_cgst + rcm_sgst + rcm_igst
+    
+    # Add RCM to net tax liability (RCM is payable ON TOP of forward charge)
+    net_cgst += rcm_cgst
+    net_sgst += rcm_sgst
+    net_igst += rcm_igst
+    
     report_data = {
         "period": month,
         "filing_status": "draft",
