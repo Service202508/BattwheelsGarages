@@ -373,7 +373,7 @@ async def signup_organization(data: OrganizationCreate):
             "user_id": user_id,
             "email": data.admin_email,
             "name": data.admin_name,
-            "role": "admin"
+            "role": "owner"
         }
     }
 
