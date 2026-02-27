@@ -43,23 +43,11 @@ def init_router(database):
 
 @router.post("/login")
 async def login(credentials: UserLogin, response: Response):
-    import logging as _log
-    _log.getLogger("auth.debug").warning(f"LOGIN ATTEMPT: email={credentials.email}, db={db.name}")
     user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
     if not user:
-        _log.getLogger("auth.debug").warning(f"LOGIN FAIL: user not found for {credentials.email}")
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    pw_hash = user.get('password_hash','')
-    _log.getLogger("auth.debug").warning(f"LOGIN: password_received='{credentials.password}', hash='{pw_hash}'")
-    import bcrypt as _bc
-    try:
-        direct = _bc.checkpw(credentials.password.encode(), pw_hash.encode())
-        _log.getLogger("auth.debug").warning(f"LOGIN: direct_bcrypt_result={direct}")
-    except Exception as e:
-        _log.getLogger("auth.debug").warning(f"LOGIN: direct_bcrypt_error={e}")
-    if not verify_password(credentials.password, pw_hash):
-        _log.getLogger("auth.debug").warning(f"LOGIN FAIL: password mismatch for {credentials.email}")
+    if not verify_password(credentials.password, user.get("password_hash", "")):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     if not user.get("is_active", True):
