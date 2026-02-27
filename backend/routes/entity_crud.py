@@ -166,10 +166,10 @@ async def get_vehicles(
     user = await require_auth(request)
     base_query = {"organization_id": ctx.org_id}
     
-    if user.role in ["admin", "technician"]:
+    if user.get("role") in ["admin", "technician"]:
         vehicles = await db.vehicles.find(base_query, {"_id": 0}).to_list(1000)
     else:
-        query = {**base_query, "owner_id": user.user_id}
+        query = {**base_query, "owner_id": user.get("user_id")}
         vehicles = await db.vehicles.find(query, {"_id": 0}).to_list(100)
     return vehicles
 
