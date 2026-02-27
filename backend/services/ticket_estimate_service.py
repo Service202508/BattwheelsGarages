@@ -551,7 +551,7 @@ class TicketEstimateService:
         await self._log_history(
             estimate_id, "line_item_deleted",
             f"Removed line item: {existing.get('name')}",
-            user_id, user_name
+            user_id, user_name, organization_id
         )
         
         return await self.get_estimate_by_id(estimate_id, organization_id)
