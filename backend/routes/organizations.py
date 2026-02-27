@@ -298,12 +298,12 @@ async def signup_organization(data: OrganizationCreate):
     except Exception as e:
         logger.warning(f"Failed to initialize RBAC roles: {e}")
     
-    # Create JWT token
+    # Create JWT token — role MUST match membership role (owner for signup creator)
     from utils.auth import create_access_token
     token = create_access_token({
         "user_id": user_id,
         "email": data.admin_email,
-        "role": "admin",
+        "role": "owner",
         "org_id": org_id,
     })
     
