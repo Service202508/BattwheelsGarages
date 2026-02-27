@@ -27,7 +27,7 @@ class TestRazorpayConfigAPI:
         self.session.headers.update({"Content-Type": "application/json"})
         
         # Login to get token
-        login_response = self.session.post(f"{BASE_URL}/api/auth/login", json={
+        login_response = self.session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
@@ -42,7 +42,7 @@ class TestRazorpayConfigAPI:
     
     def test_get_payment_config_returns_status(self):
         """Test GET /api/payments/config returns configuration status"""
-        response = self.session.get(f"{BASE_URL}/api/payments/config")
+        response = self.session.get(f"{BASE_URL}/api/v1/payments/config")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
@@ -63,7 +63,7 @@ class TestRazorpayConfigAPI:
         session = requests.Session()
         session.headers.update({"Content-Type": "application/json"})
         
-        response = session.get(f"{BASE_URL}/api/payments/config")
+        response = session.get(f"{BASE_URL}/api/v1/payments/config")
         
         # Should still return 200 with default/global config status
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
@@ -82,7 +82,7 @@ class TestRazorpayConfigAPI:
             "test_mode": True
         }
         
-        response = self.session.post(f"{BASE_URL}/api/payments/config", json=fake_config)
+        response = self.session.post(f"{BASE_URL}/api/v1/payments/config", json=fake_config)
         
         # Should fail with 400 because credentials are invalid
         # The API validates against Razorpay before saving
@@ -102,7 +102,7 @@ class TestRazorpayConfigAPI:
             "test_mode": True
         }
         
-        response = self.session.post(f"{BASE_URL}/api/payments/config", json=short_config)
+        response = self.session.post(f"{BASE_URL}/api/v1/payments/config", json=short_config)
         
         # Should fail with 422 (validation error) or 400
         assert response.status_code in [400, 422], f"Expected 400/422 for short credentials, got {response.status_code}"
@@ -117,14 +117,14 @@ class TestRazorpayConfigAPI:
             "test_mode": True
         }
         
-        response = self.session.post(f"{BASE_URL}/api/payments/config", json=partial_config)
+        response = self.session.post(f"{BASE_URL}/api/v1/payments/config", json=partial_config)
         
         # Should fail with 422 (validation error)
         assert response.status_code == 422, f"Expected 422 for missing fields, got {response.status_code}"
     
     def test_payment_orders_endpoint_exists(self):
         """Test GET /api/payments/orders endpoint exists"""
-        response = self.session.get(f"{BASE_URL}/api/payments/orders")
+        response = self.session.get(f"{BASE_URL}/api/v1/payments/orders")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
@@ -134,7 +134,7 @@ class TestRazorpayConfigAPI:
     
     def test_payment_links_endpoint_exists(self):
         """Test GET /api/payments/links endpoint exists"""
-        response = self.session.get(f"{BASE_URL}/api/payments/links")
+        response = self.session.get(f"{BASE_URL}/api/v1/payments/links")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
@@ -153,7 +153,7 @@ class TestInvoicePaymentIntegration:
         self.session.headers.update({"Content-Type": "application/json"})
         
         # Login to get token
-        login_response = self.session.post(f"{BASE_URL}/api/auth/login", json={
+        login_response = self.session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
@@ -168,7 +168,7 @@ class TestInvoicePaymentIntegration:
     
     def test_get_invoices_with_balance_due(self):
         """Test fetching invoices with balance_due > 0"""
-        response = self.session.get(f"{BASE_URL}/api/invoices-enhanced/")
+        response = self.session.get(f"{BASE_URL}/api/v1/invoices-enhanced/")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
@@ -186,7 +186,7 @@ class TestInvoicePaymentIntegration:
     def test_create_payment_order_without_razorpay_config(self):
         """Test creating payment order fails gracefully when Razorpay not configured"""
         # First, let's get an invoice with balance
-        invoices_response = self.session.get(f"{BASE_URL}/api/invoices-enhanced/")
+        invoices_response = self.session.get(f"{BASE_URL}/api/v1/invoices-enhanced/")
         
         if invoices_response.status_code != 200:
             pytest.skip("Could not fetch invoices")
@@ -200,7 +200,7 @@ class TestInvoicePaymentIntegration:
         invoice_id = invoices_with_balance[0].get("invoice_id")
         
         # Try to create order
-        response = self.session.post(f"{BASE_URL}/api/payments/create-order", json={
+        response = self.session.post(f"{BASE_URL}/api/v1/payments/create-order", json={
             "invoice_id": invoice_id
         })
         
@@ -214,7 +214,7 @@ class TestInvoicePaymentIntegration:
     def test_create_payment_link_without_razorpay_config(self):
         """Test creating payment link fails gracefully when Razorpay not configured"""
         # First, get an invoice with balance
-        invoices_response = self.session.get(f"{BASE_URL}/api/invoices-enhanced/")
+        invoices_response = self.session.get(f"{BASE_URL}/api/v1/invoices-enhanced/")
         
         if invoices_response.status_code != 200:
             pytest.skip("Could not fetch invoices")
@@ -228,7 +228,7 @@ class TestInvoicePaymentIntegration:
         invoice_id = invoices_with_balance[0].get("invoice_id")
         
         # Try to create payment link
-        response = self.session.post(f"{BASE_URL}/api/payments/create-payment-link/{invoice_id}")
+        response = self.session.post(f"{BASE_URL}/api/v1/payments/create-payment-link/{invoice_id}")
         
         # Should fail with 400 because Razorpay is not configured
         assert response.status_code == 400, f"Expected 400, got {response.status_code}"
@@ -247,7 +247,7 @@ class TestOrganizationSettingsAPI:
         self.session.headers.update({"Content-Type": "application/json"})
         
         # Login to get token
-        login_response = self.session.post(f"{BASE_URL}/api/auth/login", json={
+        login_response = self.session.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TEST_EMAIL,
             "password": TEST_PASSWORD
         })
@@ -262,7 +262,7 @@ class TestOrganizationSettingsAPI:
     
     def test_get_organization_settings(self):
         """Test GET /api/org/settings returns settings"""
-        response = self.session.get(f"{BASE_URL}/api/org/settings")
+        response = self.session.get(f"{BASE_URL}/api/v1/org/settings")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
@@ -289,7 +289,7 @@ class TestWebhookEndpoint:
         session = requests.Session()
         session.headers.update({"Content-Type": "application/json"})
         
-        response = session.post(f"{BASE_URL}/api/payments/webhook", json={})
+        response = session.post(f"{BASE_URL}/api/v1/payments/webhook", json={})
         
         # Should return 400 for invalid payload, not 404
         assert response.status_code in [400, 200], f"Expected 400 or 200, got {response.status_code} - webhook endpoint may not exist"
@@ -319,7 +319,7 @@ class TestWebhookEndpoint:
             }
         }
         
-        response = session.post(f"{BASE_URL}/api/payments/webhook", json=test_payload)
+        response = session.post(f"{BASE_URL}/api/v1/payments/webhook", json=test_payload)
         
         # Without signature verification, webhook should still process
         # The order_id won't be found, but the endpoint should work
