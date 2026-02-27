@@ -56,9 +56,9 @@ org_limiter = Limiter(key_func=get_org_rate_limit_key)
 
 # Rate limit configurations
 RATE_LIMITS = {
-    # Authentication - prevent brute force
-    "auth_login": "5/minute",
-    "auth_register": "3/hour",
+    # Authentication - prevent brute force (relaxed in dev for test suite)
+    "auth_login": "60/minute" if os.environ.get("ENVIRONMENT") == "development" else "5/minute",
+    "auth_register": "30/hour" if os.environ.get("ENVIRONMENT") == "development" else "3/hour",
     "auth_password_reset": "5/hour",
     
     # AI/EFI - cost control per organization
