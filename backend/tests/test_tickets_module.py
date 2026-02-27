@@ -197,9 +197,9 @@ class TestTicketCRUD:
         assert response.status_code == 200
         data = response.json()
         
-        assert "tickets" in data
+        assert "data" in data
         assert "total" in data
-        assert isinstance(data["tickets"], list)
+        assert isinstance(data["data"], list)
         
         print(f"✓ Listed {len(data['tickets'])} tickets (total: {data['total']})")
     
@@ -213,7 +213,7 @@ class TestTicketCRUD:
         data = response.json()
         
         # All returned tickets should have status=open
-        for ticket in data["tickets"]:
+        for ticket in data["data"]:
             assert ticket["status"] == "open"
         
         print(f"✓ Filtered tickets by status=open: {len(data['tickets'])} results")
@@ -227,7 +227,7 @@ class TestTicketCRUD:
         assert response.status_code == 200
         data = response.json()
         
-        for ticket in data["tickets"]:
+        for ticket in data["data"]:
             assert ticket["priority"] == "high"
         
         print(f"✓ Filtered tickets by priority=high: {len(data['tickets'])} results")
@@ -241,7 +241,7 @@ class TestTicketCRUD:
         assert response.status_code == 200
         data = response.json()
         
-        for ticket in data["tickets"]:
+        for ticket in data["data"]:
             assert ticket["category"] == "battery"
         
         print(f"✓ Filtered tickets by category=battery: {len(data['tickets'])} results")
@@ -815,7 +815,7 @@ class TestCleanup:
         )
         if response.status_code == 200:
             data = response.json()
-            test_tickets = [t for t in data["tickets"] if t["title"].startswith("TEST_")]
+            test_tickets = [t for t in data["data"] if t["title"].startswith("TEST_")]
             print(f"Found {len(test_tickets)} test tickets to clean up")
             # Note: No delete endpoint, so just report
         print("✓ Cleanup check completed")
