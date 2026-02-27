@@ -7,7 +7,7 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get("TEST_API_URL", "http://localhost:8001/api")
+BASE_URL = os.environ.get("TEST_API_URL", "http://localhost:8001/api/v1")
 ADMIN_EMAIL = "dev@battwheels.internal"
 ADMIN_PASSWORD = "DevTest@123"
 TECH_EMAIL = "tech.a@battwheels.internal"
