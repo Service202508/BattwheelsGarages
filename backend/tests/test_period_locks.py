@@ -39,7 +39,7 @@ class TestPeriodLocksAuth:
     def setup_class(cls):
         """Get tokens for admin and technician"""
         # Admin login
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -51,7 +51,7 @@ class TestPeriodLocksAuth:
             print(f"Admin login failed: {response.status_code} - {response.text}")
         
         # Technician login
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TECHNICIAN_EMAIL,
             "password": TECHNICIAN_PASSWORD
         })
@@ -77,7 +77,7 @@ class TestPeriodLocksAPI:
     def setup_class(cls):
         """Get tokens for testing"""
         # Admin login
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -85,7 +85,7 @@ class TestPeriodLocksAPI:
             cls.admin_token = response.json()["token"]
         
         # Technician login
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": TECHNICIAN_EMAIL,
             "password": TECHNICIAN_PASSWORD
         })
@@ -196,7 +196,7 @@ class TestFinancialWriteBlocking:
     @classmethod
     def setup_class(cls):
         """Login and ensure January 2026 is locked"""
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
@@ -376,7 +376,7 @@ class TestPeriodLocksBillsAndPayments:
     
     @classmethod
     def setup_class(cls):
-        response = requests.post(f"{BASE_URL}/api/auth/login", json={
+        response = requests.post(f"{BASE_URL}/api/v1/auth/login", json={
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         })
