@@ -431,7 +431,7 @@ async def get_alerts(request: Request):
         })
     
     # Pending PO approvals
-    if user.role == "admin":
+    if user.get("role") == "admin":
         pending_pos = await db.purchase_orders.find(
             {"approval_status": "pending"},
             {"_id": 0}
