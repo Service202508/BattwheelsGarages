@@ -3,11 +3,14 @@ Subscription Routes
 ===================
 
 API endpoints for subscription and plan management.
+Includes Razorpay subscription checkout flow.
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Request
 from typing import List, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from pydantic import BaseModel
+import os, logging, uuid
 
 from core.subscriptions import (
     Plan, PlanCode, 
@@ -17,6 +20,7 @@ from core.subscriptions import (
 )
 from core.tenant.context import TenantContext, tenant_context_required
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/subscriptions", tags=["subscriptions"])
 
 
