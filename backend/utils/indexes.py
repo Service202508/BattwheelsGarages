@@ -35,11 +35,15 @@ async def ensure_compound_indexes(db):
         [("organization_id", 1), ("credit_account", 1), ("created_at", -1)],
         name="journal_entries_org_credit_date", background=True)
     # IDEMPOTENCY: Prevent duplicate journal entries for the same source document
+    # Uses partial filter — only enforce uniqueness when source_document_id is non-empty
     await db.journal_entries.create_index(
         [("organization_id", 1), ("source_document_id", 1), ("source_document_type", 1)],
         unique=True,
-        sparse=True,
-        name="unique_source_document_per_org_sparse", background=True)
+        name="unique_source_document_per_org_partial",
+        partialFilterExpression={
+            "source_document_id": {"$type": "string", "$gt": ""}
+        },
+        background=True)
 
     await db.contacts.create_index(
         [("organization_id", 1), ("name", 1)],
