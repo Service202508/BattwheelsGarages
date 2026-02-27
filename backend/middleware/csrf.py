@@ -27,6 +27,8 @@ CSRF_BYPASS_PREFIXES = (
     "/api/webhooks/",
     "/api/public/",
     "/api/v1/public/",
+    "/api/v1/auth/",              # Auth endpoints are pre-session (no cookies)
+    "/api/v1/organizations/signup", # Signup is pre-session
     "/docs",
     "/openapi.json",
     "/redoc",
