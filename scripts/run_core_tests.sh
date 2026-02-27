@@ -8,6 +8,9 @@ source /app/backend/.env 2>/dev/null
 source /app/frontend/.env 2>/dev/null
 set +a
 
+export REACT_APP_BACKEND_URL="${REACT_APP_BACKEND_URL:-http://localhost:8001}"
+export TESTING=1
+
 cd /app
 
 CORE_TESTS=(
