@@ -1666,19 +1666,20 @@ async def bulk_set_prices(pricelist_id: str, price_data: BulkItemPriceSet, reque
                 results["created"] += 1
     
     # Custom prices for specific items
-    elif request.pricing_method == "custom" and request.items:
-        for item_price in request.items:
+    elif price_data.pricing_method == "custom" and price_data.items:
+        for item_price in price_data.items:
             item_id = item_price.get("item_id")
             custom_rate = item_price.get("custom_rate", 0)
             
-            item = await db.items.find_one({"item_id": item_id})
+            item = await db.items.find_one({"item_id": item_id, "organization_id": org_id})
             if not item:
                 results["errors"].append(f"Item {item_id} not found")
                 continue
             
             existing = await db.item_prices.find_one({
                 "item_id": item_id,
-                "price_list_id": pricelist_id
+                "price_list_id": pricelist_id,
+                "organization_id": org_id
             })
             
             if existing:
