@@ -472,12 +472,13 @@ class SalesByItemFilter(BaseModel):
 # ============== ITEM GROUPS ==============
 
 @router.post("/groups")
-async def create_item_group(group: ItemGroupCreate):
+async def create_item_group(group: ItemGroupCreate, request: Request):
     """Create an item group (category)"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Check unique name
-    existing = await db.item_groups.find_one({"name": group.name})
+    existing = await db.item_groups.find_one({"name": group.name, "organization_id": org_id})
     if existing:
         raise HTTPException(status_code=400, detail="Item group with this name already exists")
     
@@ -486,12 +487,13 @@ async def create_item_group(group: ItemGroupCreate):
     # Get parent group name if exists
     parent_name = ""
     if group.parent_group_id:
-        parent = await db.item_groups.find_one({"group_id": group.parent_group_id})
+        parent = await db.item_groups.find_one({"group_id": group.parent_group_id, "organization_id": org_id})
         if parent:
             parent_name = parent.get("name", "")
     
     group_dict = {
         "group_id": group_id,
+        "organization_id": org_id,
         "name": group.name,
         "description": group.description,
         "parent_group_id": group.parent_group_id,
@@ -578,12 +580,13 @@ async def get_item_group(group_id: str, request: Request):
     return {"code": 0, "group": group}
 
 @router.put("/groups/{group_id}")
-async def update_item_group(group_id: str, group: ItemGroupCreate):
+async def update_item_group(group_id: str, group: ItemGroupCreate, request: Request):
     """Update item group"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     result = await db.item_groups.update_one(
-        {"group_id": group_id},
+        {"group_id": group_id, "organization_id": org_id},
         {"$set": {
             "name": group.name,
             "description": group.description,
@@ -599,18 +602,19 @@ async def update_item_group(group_id: str, group: ItemGroupCreate):
     return {"code": 0, "message": "Item group updated"}
 
 @router.delete("/groups/{group_id}")
-async def delete_item_group(group_id: str):
+async def delete_item_group(group_id: str, request: Request):
     """Delete item group (only if no items)"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     # Check for items
     item_count = await db.items.count_documents(
-        {"$or": [{"group_id": group_id}, {"item_group_id": group_id}]}
+        {"organization_id": org_id, "$or": [{"group_id": group_id}, {"item_group_id": group_id}]}
     )
     if item_count > 0:
         raise HTTPException(status_code=400, detail=f"Cannot delete group with {item_count} items")
     
-    result = await db.item_groups.delete_one({"group_id": group_id})
+    result = await db.item_groups.delete_one({"group_id": group_id, "organization_id": org_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Item group not found")
     
@@ -619,11 +623,12 @@ async def delete_item_group(group_id: str):
 # ============== WAREHOUSES ==============
 
 @router.post("/warehouses")
-async def create_warehouse(warehouse: WarehouseCreate):
+async def create_warehouse(warehouse: WarehouseCreate, request: Request):
     """Create a warehouse"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    existing = await db.warehouses.find_one({"name": warehouse.name})
+    existing = await db.warehouses.find_one({"name": warehouse.name, "organization_id": org_id})
     if existing:
         raise HTTPException(status_code=400, detail="Warehouse with this name already exists")
     
@@ -631,6 +636,7 @@ async def create_warehouse(warehouse: WarehouseCreate):
     
     warehouse_dict = {
         "warehouse_id": warehouse_id,
+        "organization_id": org_id,
         "name": warehouse.name,
         "location": warehouse.location,
         "is_primary": warehouse.is_primary,
@@ -703,12 +709,13 @@ async def get_warehouse(warehouse_id: str, request: Request):
     return {"code": 0, "warehouse": warehouse}
 
 @router.put("/warehouses/{warehouse_id}")
-async def update_warehouse(warehouse_id: str, warehouse: WarehouseCreate):
+async def update_warehouse(warehouse_id: str, warehouse: WarehouseCreate, request: Request):
     """Update warehouse"""
     db = get_db()
+    org_id = extract_org_id(request)
     
     result = await db.warehouses.update_one(
-        {"warehouse_id": warehouse_id},
+        {"warehouse_id": warehouse_id, "organization_id": org_id},
         {"$set": {
             "name": warehouse.name,
             "location": warehouse.location,
@@ -903,11 +910,12 @@ async def create_enhanced_item(item: ItemCreate, request: Request):
 
 # Image endpoint
 @router.get("/images/{image_id}")
-async def get_item_image(image_id: str):
+async def get_item_image(image_id: str, request: Request):
     """Get item image by ID"""
     db = get_db()
+    org_id = extract_org_id(request)
     
-    image = await db.item_images.find_one({"image_id": image_id}, {"_id": 0})
+    image = await db.item_images.find_one({"image_id": image_id, "organization_id": org_id}, {"_id": 0})
     if not image:
         raise HTTPException(status_code=404, detail="Image not found")
     
