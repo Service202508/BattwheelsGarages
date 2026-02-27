@@ -36,7 +36,7 @@ class TestAuthentication:
         assert "token" in data, "No token in response"
         assert "user" in data, "No user in response"
         assert data["user"]["email"] == ADMIN_EMAIL
-        assert data["user"]["role"] == "DevTest@123"
+        assert data["user"]["role"] == "owner"
         print(f"✓ Admin login successful - user_id: {data['user']['user_id']}")
     
     def test_technician_login(self):
