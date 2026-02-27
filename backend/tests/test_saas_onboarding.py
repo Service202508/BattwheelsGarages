@@ -87,7 +87,7 @@ class TestOrganizationSignup:
         # Verify user data
         user = data["user"]
         assert user["email"] == signup_data["admin_email"], "Email mismatch"
-        assert user["role"] == "DevTest@123", f"Expected admin role, got {user.get('role')}"
+        assert user["role"] == "owner", f"Expected owner role, got {user.get('role')}"
         
         print(f"PASS: Signup creates organization with ID: {org['organization_id']}")
         print(f"PASS: Signup creates admin user with ID: {user['user_id']}")
