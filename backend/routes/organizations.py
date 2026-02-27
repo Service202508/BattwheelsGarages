@@ -237,13 +237,13 @@ async def signup_organization(data: OrganizationCreate):
         "created_by": user_id
     }
     
-    # Create admin user
+    # Create admin user — role is "owner" for the signup creator (Fix 4 RBAC)
     user_doc = {
         "user_id": user_id,
         "email": data.admin_email,
         "password_hash": hash_password(data.admin_password),
         "name": data.admin_name,
-        "role": "admin",
+        "role": "owner",
         "designation": "Owner",
         "phone": data.phone,
         "picture": None,
