@@ -409,7 +409,7 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         "/redoc",
         "/openapi.json",
         
-        # Auth
+        # Auth (API_ROUTES — /api/auth/...)
         "/api/auth/login",
         "/api/auth/register",
         "/api/auth/session",
@@ -419,15 +419,21 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         "/api/auth/forgot-password",
         "/api/auth/reset-password",
         
-        # Public forms
+        # Auth (V1_ROUTES — /api/v1/auth/...)
+        "/api/v1/auth/login",
+        "/api/v1/auth/register",
+        "/api/v1/auth/session",
+        "/api/v1/auth/logout",
+        "/api/v1/auth/me",
+        "/api/v1/auth/forgot-password",
+        "/api/v1/auth/reset-password",
+        
+        # Public ticket forms (API_ROUTES — /api/public/...)
         "/api/public/tickets/submit",
         "/api/public/tickets/lookup",
         "/api/public/tickets/verify-payment",
         "/api/public/track",
         "/api/track-ticket",
-        "/api/v1/public-tickets/submit",
-        "/api/v1/public-tickets/lookup",
-        "/api/v1/public-tickets/track",
         
         # Master data (read-only public)
         "/api/master-data/vehicle-categories",
@@ -442,15 +448,24 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         "/api/customer-portal/login",
         "/api/customer-portal/auth",
         "/api/business-portal/register",
+        "/api/v1/customer-portal/login",
+        "/api/v1/customer-portal/auth",
+        "/api/v1/business-portal/register",
         
-        # Public self-serve signup (no auth needed)
+        # Public self-serve signup (V1_ROUTES — /api/v1/organizations/...)
         "/api/organizations/signup",
+        "/api/v1/organizations/signup",
         "/api/organizations/register",
+        "/api/v1/organizations/register",
         "/api/organizations/accept-invite",
+        "/api/v1/organizations/accept-invite",
 
-        # Public contact form (no auth needed)
+        # Public contact form (API_ROUTES — /api/...)
         "/api/contact",
         "/api/book-demo",
+        
+        # Public subscription plans (V1_ROUTES)
+        "/api/v1/subscriptions/plans",
     }
     
     # Patterns for public endpoints
