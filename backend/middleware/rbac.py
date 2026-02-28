@@ -310,9 +310,19 @@ class RBACMiddleware(BaseHTTPMiddleware):
         allowed_roles = get_allowed_roles(normalized_path)
         
         if allowed_roles is None:
-            # Route not in permissions map - allow authenticated users
-            logger.info(f"RBAC: Route {path} (normalized: {normalized_path}) not in map, allowing {user_role}")
-            return await call_next(request)
+            # DENY by default — unmapped routes are blocked
+            logger.warning(
+                f"RBAC DENIED: Route {path} (normalized: {normalized_path}) "
+                f"not in permission map. User {user_id} role={user_role}"
+            )
+            return JSONResponse(
+                status_code=403,
+                content={
+                    "detail": "Access denied. This route is not configured in the permission map.",
+                    "code": "RBAC_UNMAPPED_ROUTE",
+                    "your_role": user_role,
+                }
+            )
         
         # Check if user's role is authorized
         if not check_role_permission(user_role, allowed_roles):
