@@ -17,6 +17,7 @@ from models.knowledge_brain import (
 )
 from services.ai_assist_service import AIAssistService
 from services.knowledge_store_service import KnowledgeStoreService
+from utils.database import extract_org_id
 
 logger = logging.getLogger(__name__)
 
