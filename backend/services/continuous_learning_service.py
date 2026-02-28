@@ -622,3 +622,38 @@ class ContinuousLearningService:
                 status["_id"]: status["count"] for status in failure_card_stats
             }
         }
+
+    async def process_learning_queue(self, batch_size: int = 50) -> Dict[str, Any]:
+        """
+        Batch-process pending items in efi_learning_queue.
+        For each pending event:
+          1. Calls process_learning_event (which finds/creates failure cards + embeddings)
+          2. Falls back to _create_draft_failure_card for events without a matching card
+        Called by scheduler (every 15 min) or admin endpoint.
+        """
+        pending = await self.learning_queue.find(
+            {"status": "pending"}
+        ).sort("created_at", 1).limit(batch_size).to_list(batch_size)
+
+        processed = 0
+        failed = 0
+
+        for event in pending:
+            try:
+                event_id = event.get("event_id")
+                result = await self.process_learning_event(event_id)
+                if result.get("success"):
+                    processed += 1
+                else:
+                    failed += 1
+            except Exception as e:
+                logger.error(f"Batch process error for {event.get('event_id')}: {e}")
+                await self.learning_queue.update_one(
+                    {"event_id": event.get("event_id")},
+                    {"$set": {"status": "error", "error_message": str(e)}}
+                )
+                failed += 1
+
+        remaining = await self.learning_queue.count_documents({"status": "pending"})
+        logger.info(f"Queue processing complete: {processed} processed, {failed} failed, {remaining} remaining")
+        return {"processed": processed, "failed": failed, "remaining": remaining}
