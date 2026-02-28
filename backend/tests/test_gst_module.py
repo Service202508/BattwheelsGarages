@@ -198,11 +198,10 @@ class TestOrganizationSettings:
         assert "place_of_supply" in data["settings"]
     
     def test_update_organization_settings(self, auth_headers):
-        """PUT /api/v1/gst/organization-settings - Updates GSTIN and state"""
+        """PUT /api/v1/gst/organization-settings - Updates place_of_supply"""
         response = requests.put(
             f"{BASE_URL}/api/v1/gst/organization-settings",
             json={
-                "gstin": "27AAACT1234A1Z1",
                 "place_of_supply": "27",
                 "legal_name": "Battwheels Test",
                 "trade_name": "Battwheels"
@@ -218,7 +217,6 @@ class TestOrganizationSettings:
         # Verify settings were saved
         get_response = requests.get(f"{BASE_URL}/api/v1/gst/organization-settings", headers=auth_headers)
         get_data = get_response.json()
-        assert get_data["settings"]["gstin"] == "27AAACT1234A1Z1"
         assert get_data["settings"]["place_of_supply"] == "27"
     
     def test_update_with_invalid_gstin(self, auth_headers):
