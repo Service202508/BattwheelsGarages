@@ -721,6 +721,125 @@ async def seed_knowledge_articles_endpoint(request: Request, _=Depends(require_p
         raise HTTPException(status_code=500, detail=f"Seeding failed: {str(e)}")
 
 
+@router.post("/efi/fix-empty-failure-cards")
+async def fix_empty_failure_cards_endpoint(request: Request, _=Depends(require_platform_admin)):
+    """
+    Sprint 6B-03: Fix failure cards with empty text content.
+    For each empty card: check if source ticket exists, populate from it,
+    or mark as incomplete and exclude from EFI matching.
+    """
+    try:
+        from services.efi_embedding_service import EFIEmbeddingManager
+        from services.continuous_learning_service import _derive_vehicle_category
+
+        emb_mgr = EFIEmbeddingManager(db)
+
+        # Find cards with empty issue_title or description
+        empty_cards = await db.failure_cards.find(
+            {"$or": [
+                {"issue_title": {"$in": [None, ""]}},
+                {"description": {"$in": [None, ""]}}
+            ],
+            "is_seed_data": {"$ne": True}},
+            {"_id": 0}
+        ).to_list(100)
+
+        populated = 0
+        marked_incomplete = 0
+        embeddings_generated = 0
+        details = []
+
+        for card in empty_cards:
+            card_id = card.get("card_id")
+            ticket_id = card.get("ticket_id")
+
+            if not ticket_id or ticket_id.startswith("seed-"):
+                continue
+
+            # Look up source ticket
+            ticket = await db.tickets.find_one(
+                {"ticket_id": ticket_id}, {"_id": 0}
+            )
+
+            if ticket:
+                # Populate card from ticket
+                update_data = {
+                    "issue_title": ticket.get("title") or ticket.get("subject", ""),
+                    "description": (
+                        ticket.get("description", "") or
+                        ticket.get("complaint", "")
+                    ),
+                    "fault_category": (
+                        ticket.get("category", "unknown") or "unknown"
+                    ),
+                    "vehicle_category": (
+                        ticket.get("vehicle_category") or
+                        _derive_vehicle_category(ticket.get("vehicle_type", ""))
+                    ),
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                }
+
+                await db.failure_cards.update_one(
+                    {"card_id": card_id},
+                    {"$set": update_data}
+                )
+                populated += 1
+
+                # Generate embedding for the now-populated card
+                card_text = " ".join(filter(None, [
+                    update_data["issue_title"],
+                    update_data["description"],
+                    update_data["fault_category"],
+                ])).strip()
+
+                if card_text:
+                    try:
+                        emb_result = await emb_mgr.generate_complaint_embedding(card_text)
+                        if emb_result and emb_result.get("embedding"):
+                            await db.failure_cards.update_one(
+                                {"card_id": card_id},
+                                {"$set": {
+                                    "embedding_vector": emb_result["embedding"],
+                                    "embedding_generated_at": datetime.now(timezone.utc).isoformat(),
+                                }}
+                            )
+                            embeddings_generated += 1
+                    except Exception as emb_err:
+                        logger.warning(f"Embedding gen failed for {card_id}: {emb_err}")
+
+                details.append({
+                    "card_id": card_id, "action": "populated",
+                    "title": update_data["issue_title"][:50]
+                })
+            else:
+                # Mark as incomplete
+                await db.failure_cards.update_one(
+                    {"card_id": card_id},
+                    {"$set": {
+                        "is_incomplete": True,
+                        "incomplete_reason": "source_ticket_not_found",
+                        "excluded_from_efi": True,
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                    }}
+                )
+                marked_incomplete += 1
+                details.append({
+                    "card_id": card_id, "action": "marked_incomplete",
+                    "ticket_id": ticket_id
+                })
+
+        return {
+            "total_empty_cards": len(empty_cards),
+            "populated_from_tickets": populated,
+            "marked_incomplete": marked_incomplete,
+            "embeddings_generated": embeddings_generated,
+            "details": details,
+        }
+    except Exception as e:
+        logger.error(f"Fix empty failure cards failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Fix failed: {str(e)}")
+
+
 @router.post("/efi/regenerate-embeddings")
 async def regenerate_truncated_embeddings_endpoint(request: Request, _=Depends(require_platform_admin)):
     """
