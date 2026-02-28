@@ -320,7 +320,7 @@ async def complete_work(request: Request, ticket_id: str, data: CompleteWorkRequ
     db = get_db()
     
     ticket = await db.tickets.find_one(
-        {"ticket_id": ticket_id, "assigned_to": technician["user_id"]},
+        {"ticket_id": ticket_id, "assigned_to": technician["user_id"], "organization_id": org_id},
         {"_id": 0}
     )
     
@@ -341,7 +341,7 @@ async def complete_work(request: Request, ticket_id: str, data: CompleteWorkRequ
     })
     
     await db.tickets.update_one(
-        {"ticket_id": ticket_id},
+        {"ticket_id": ticket_id, "organization_id": org_id, "assigned_to": technician["user_id"]},
         {"$set": {
             "status": "work_completed",
             "work_completed_at": now.isoformat(),
