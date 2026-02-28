@@ -551,6 +551,7 @@ async def get_effectiveness_report(request: Request):
 async def get_part_anomaly_report(request: Request):
     """Get report of unexpected part usage"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     pipeline = [
         {"$match": {"expected_vs_actual": False}},
