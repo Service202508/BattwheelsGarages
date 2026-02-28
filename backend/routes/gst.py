@@ -1024,11 +1024,25 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     ).to_list(1000)
     # NOTE: Requires is_blocked_credit flag on bill documents.
     # Currently zero if flag not set — correct default.
+    # Bill schema: {sub_total, tax_total, total, vendor_gstin} — compute CGST/SGST/IGST from state
+
+    itc_ineligible_cgst = 0
+    itc_ineligible_sgst = 0
+    itc_ineligible_igst = 0
+    for b in blocked_bills:
+        b_tax = b.get("tax_total", 0) or (b.get("total", 0) - (b.get("sub_total", 0) or b.get("subtotal", 0) or 0))
+        b_vendor_gstin = b.get("vendor_gstin", "") or b.get("gst_no", "")
+        b_vendor_state = b_vendor_gstin[:2] if b_vendor_gstin and len(b_vendor_gstin) >= 2 else org_state
+        if b_vendor_state == org_state:
+            itc_ineligible_cgst += b_tax / 2
+            itc_ineligible_sgst += b_tax / 2
+        else:
+            itc_ineligible_igst += b_tax
 
     itc_ineligible_17_5 = {
-        "cgst": sum(b.get("cgst_amount", 0) for b in blocked_bills),
-        "sgst": sum(b.get("sgst_amount", 0) for b in blocked_bills),
-        "igst": sum(b.get("igst_amount", 0) for b in blocked_bills),
+        "cgst": itc_ineligible_cgst,
+        "sgst": itc_ineligible_sgst,
+        "igst": itc_ineligible_igst,
     }
     itc_ineligible_others = {"cgst": 0, "sgst": 0, "igst": 0}
 
