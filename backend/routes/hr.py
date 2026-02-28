@@ -167,27 +167,36 @@ async def create_employee(request: Request, data: EmployeeCreateRequest):
 
 
 @router.get("/employees")
-async def list_employees(request: Request, department: Optional[str] = None, status: str = "active", page: int = Query(1, ge=1),
+async def list_employees(request: Request, department: Optional[str] = None, status: str = "active", cursor: Optional[str] = Query(None, description="Cursor for keyset pagination"), page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1)
 ):
-    """List employees with standardized pagination"""
+    """List employees with cursor-based or legacy pagination"""
     import math
+    from utils.pagination import paginate_keyset
+
     if limit > 100:
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
     service = get_service()
     org_id = await get_org_id(request, service.db)
 
-    # Build query with org_id filter (TENANT GUARD)
     query = {"status": status}
     if org_id:
         query["organization_id"] = org_id
     if department:
         query["department"] = department
+
+    if cursor:
+        return await paginate_keyset(
+            service.db.employees, query,
+            sort_field="created_at", sort_order=-1,
+            tiebreaker_field="employee_id",
+            limit=limit, cursor=cursor,
+        )
+
+    # Legacy skip/limit path
     total = await service.db.employees.count_documents(query)
     total_pages = math.ceil(total / limit) if total > 0 else 1
-
-    # Get paginated data
     skip = (page - 1) * limit
     employees = await service.db.employees.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
 
