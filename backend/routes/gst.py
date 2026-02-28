@@ -101,8 +101,31 @@ GST_RATES = [0, 5, 12, 18, 28]
 # ============== GSTIN VALIDATION ==============
 GSTIN_REGEX = r'^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$'
 
+
+def compute_gstin_checksum(gstin_14: str) -> str:
+    """
+    Compute the checksum character (position 15) of a GSTIN.
+    Uses mod-36 weighted sum algorithm as per GST specification.
+    gstin_14: first 14 characters of GSTIN
+    Returns: single checksum character (0-9 or A-Z)
+    """
+    CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    factor = 1
+    total = 0
+    for char in gstin_14.upper():
+        if char not in CHARS:
+            return None  # Invalid character
+        digit = CHARS.index(char)
+        product = factor * digit
+        product = (product // 36) + (product % 36)
+        total += product
+        factor = 2 if factor == 1 else 1
+    check_digit = (36 - (total % 36)) % 36
+    return CHARS[check_digit]
+
+
 def validate_gstin(gstin: str) -> dict:
-    """Validate GSTIN format and extract details"""
+    """Validate GSTIN format, state code, and checksum (P2-18)"""
     if not gstin:
         return {"valid": False, "error": "GSTIN is empty"}
     
@@ -117,6 +140,14 @@ def validate_gstin(gstin: str) -> dict:
     state_code = gstin[:2]
     if state_code not in INDIAN_STATES:
         return {"valid": False, "error": f"Invalid state code: {state_code}"}
+    
+    # Checksum validation (P2-18) — mod-36 algorithm on first 14 chars
+    expected_check = compute_gstin_checksum(gstin[:14])
+    if expected_check is None or gstin[14] != expected_check:
+        return {
+            "valid": False,
+            "error": f"Invalid GSTIN checksum. Expected {expected_check} at position 15."
+        }
     
     # Extract details
     return {
