@@ -110,7 +110,7 @@ async def quick_diagnose(
     Quick diagnosis endpoint for category-based symptom lookup.
     Returns matching failure cards and diagnostic suggestions.
     """
-    org_id = http_request.headers.get("X-Organization-ID", "global")
+    org_id = extract_org_id(http_request)
     
     store = get_knowledge_store()
     
@@ -360,7 +360,7 @@ async def get_source_details(
     Get full details of a knowledge source.
     Used when user clicks on a citation link.
     """
-    org_id = http_request.headers.get("X-Organization-ID", "global")
+    org_id = extract_org_id(http_request)
     db = get_db()
     
     # Try knowledge articles
@@ -399,7 +399,7 @@ async def list_knowledge(http_request: Request, knowledge_type: Optional[str] = 
     """
     List knowledge articles with filters.
     """
-    org_id = http_request.headers.get("X-Organization-ID", "global")
+    org_id = extract_org_id(http_request)
     db = get_db()
     
     query = {
@@ -439,7 +439,7 @@ async def list_failure_cards(http_request: Request, subsystem: Optional[str] = N
     """
     List failure cards with filters.
     """
-    org_id = http_request.headers.get("X-Organization-ID", "global")
+    org_id = extract_org_id(http_request)
     db = get_db()
     
     query = {
@@ -497,7 +497,7 @@ async def ai_health():
 @router.get("/stats")
 async def get_ai_stats(http_request: Request):
     """Get AI usage statistics for the organization"""
-    org_id = http_request.headers.get("X-Organization-ID", "global")
+    org_id = extract_org_id(http_request)
     db = get_db()
     
     # Query stats
