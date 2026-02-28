@@ -10,6 +10,11 @@ Handles:
 - Pattern detection trigger (Part E)
 
 This runs in background - NO UI impact for technicians.
+
+DEPRECATED_COLLECTIONS:
+  efi_failure_cards — consolidated into failure_cards in Sprint 3B-01.
+  All reads and writes now use failure_cards as the single canonical
+  collection. The efi_failure_cards collection is no longer referenced.
 """
 
 import logging
