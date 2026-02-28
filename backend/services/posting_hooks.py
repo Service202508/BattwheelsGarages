@@ -88,6 +88,10 @@ async def post_invoice_journal_entry(
         return False, "Double entry service not available", None
     
     try:
+        # Period lock check — must be first operation (P1-05)
+        invoice_date = invoice.get("invoice_date", invoice.get("date", ""))
+        await _check_period_lock(organization_id, invoice_date)
+        
         success, msg, entry = await service.post_sales_invoice(
             organization_id=organization_id,
             invoice=invoice,
@@ -122,6 +126,10 @@ async def post_payment_received_journal_entry(
         return False, "Double entry service not available", None
     
     try:
+        # Period lock check — must be first operation (P1-05)
+        payment_date = payment.get("payment_date", payment.get("date", ""))
+        await _check_period_lock(organization_id, payment_date)
+        
         success, msg, entry = await service.post_payment_received(
             organization_id=organization_id,
             payment=payment,
@@ -157,6 +165,10 @@ async def post_bill_journal_entry(
         return False, "Double entry service not available", None
     
     try:
+        # Period lock check — must be first operation (P1-05)
+        bill_date = bill.get("bill_date", bill.get("date", ""))
+        await _check_period_lock(organization_id, bill_date)
+        
         success, msg, entry = await service.post_purchase_bill(
             organization_id=organization_id,
             bill=bill,
@@ -191,6 +203,10 @@ async def post_bill_payment_journal_entry(
         return False, "Double entry service not available", None
     
     try:
+        # Period lock check — must be first operation (P1-05)
+        payment_date = payment.get("payment_date", payment.get("date", ""))
+        await _check_period_lock(organization_id, payment_date)
+        
         success, msg, entry = await service.post_bill_payment(
             organization_id=organization_id,
             payment=payment,
@@ -225,6 +241,10 @@ async def post_expense_journal_entry(
         return False, "Double entry service not available", None
     
     try:
+        # Period lock check — must be first operation (P1-05)
+        expense_date = expense.get("expense_date", expense.get("date", ""))
+        await _check_period_lock(organization_id, expense_date)
+        
         success, msg, entry = await service.post_expense(
             organization_id=organization_id,
             expense=expense,
@@ -278,6 +298,12 @@ async def post_payroll_run_journal_entry(
         return False, "Double entry service not available", None
     
     try:
+        # Period lock check — must be first operation (P1-05)
+        # Use the first payroll record's pay_date or generated_at as the transaction date
+        if payroll_records:
+            payroll_date = payroll_records[0].get("pay_date", payroll_records[0].get("generated_at", ""))
+            await _check_period_lock(organization_id, payroll_date)
+        
         success, msg, entry = await service.post_payroll_run(
             organization_id=organization_id,
             payroll_records=payroll_records,
@@ -313,6 +339,9 @@ async def reverse_transaction_journal_entry(
         return False, "Double entry service not available", None
     
     try:
+        # Period lock check — must be first operation (P1-05)
+        await _check_period_lock(organization_id, reversal_date)
+        
         success, msg, entry = await service.reverse_journal_entry(
             organization_id=organization_id,
             entry_id=original_entry_id,
