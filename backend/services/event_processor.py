@@ -86,8 +86,11 @@ class EFIEventProcessor:
     
     async def mark_processed(self, event: dict, result: dict):
         """Mark event as successfully processed"""
+        filter_q = {"event_id": event["event_id"]}
+        if event.get("organization_id"):
+            filter_q["organization_id"] = event["organization_id"]  # TIER 1: org-scoped — Sprint 1C
         await self.db.efi_events.update_one(
-            {"event_id": event["event_id"]},
+            filter_q,
             {"$set": {
                 "processed": True,
                 "processed_at": datetime.now(timezone.utc).isoformat(),
@@ -98,8 +101,11 @@ class EFIEventProcessor:
     async def mark_error(self, event: dict, error: str):
         """Mark event as failed"""
         retry_count = event.get("retry_count", 0) + 1
+        filter_q = {"event_id": event["event_id"]}
+        if event.get("organization_id"):
+            filter_q["organization_id"] = event["organization_id"]  # TIER 1: org-scoped — Sprint 1C
         await self.db.efi_events.update_one(
-            {"event_id": event["event_id"]},
+            filter_q,
             {"$set": {
                 "error_message": error,
                 "retry_count": retry_count,
