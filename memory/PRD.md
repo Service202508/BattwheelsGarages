@@ -58,10 +58,15 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
   - Credential audit: all env vars set; Razorpay in TEST mode; IRP is per-org DB config
   - Graceful degradation: already in place for Sentry, Resend, Razorpay, IRP
   - Pre-production audit score: **77/100**
-  - 2 unscoped finds identified: banking_module.py:731, inventory_api.py:577
-  - EFI learning queue: 33 pending items, no auto-processor
-  - Sprint 5B: SIGNIFICANT WORK needed (+13 to reach 90/100)
-- GSTR-3B Rule 42/43 (partial exempt ratio) — requires exempt_supply_ratio on org settings (Sprint 5A)
+- **Sprint 5B: COMPLETE** (see `/app/docs/SPRINT_5B_FINAL_REPORT.md`)
+  - 5B-01: Fixed 2 unscoped queries (banking_module.py, inventory_api.py)
+  - 5B-02: Wired EFI learning queue processor (admin endpoint + scheduler)
+  - 5B-03: Processed 51 pending queue items into failure cards
+  - 5B-04: Verified PT state count (16 states)
+  - 5B-05: Fixed 6 skipped tests (20→14 skipped)
+  - 5B-06: Full end-to-end smoke test passed (8 steps)
+  - **Production readiness score: 90/100** — GATE PASSED
+- GSTR-3B Rule 42/43 (partial exempt ratio) — requires exempt_supply_ratio on org settings (deferred)
 
 ## Prioritized Backlog
 
