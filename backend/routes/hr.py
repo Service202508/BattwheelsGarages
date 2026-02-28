@@ -87,6 +87,7 @@ class EmployeeUpdateRequest(BaseModel):
     salary_structure: Optional[dict] = None
     bank_details: Optional[dict] = None
     status: Optional[str] = None
+    work_state_code: Optional[str] = None  # 2-letter state code for PT calculation (P0-07)
 
 
 class LeaveRequest(BaseModel):
