@@ -239,10 +239,11 @@ async def send_whatsapp_async(phone_number: str, message: str) -> dict:
         logger.error(f"Failed to send WhatsApp: {str(e)}")
         return {"status": "failed", "error": str(e)}
 
-async def log_notification(channel: str, recipient: str, template: str, status: str, error: str = None):
+async def log_notification(channel: str, recipient: str, template: str, status: str, error: str = None, org_id: str = None):
     """Log notification to database"""
     log = {
         "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
+        "organization_id": org_id,  # P1-03 FIX: org_id scoped — Sprint 1B
         "channel": channel,
         "recipient": recipient,
         "template": template,
