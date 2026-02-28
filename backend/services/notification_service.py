@@ -257,11 +257,14 @@ async def log_notification(channel: str, recipient: str, template: str, status: 
 
 # Routes
 @router.post("/send-email")
-async def send_email(request: EmailRequest, background_tasks: BackgroundTasks):
+async def send_email(request: EmailRequest, background_tasks: BackgroundTasks, req: Request = None):
     """Send email notification"""
     template = EMAIL_TEMPLATES.get(request.template)
     if not template:
         raise HTTPException(status_code=400, detail=f"Unknown template: {request.template}")
+    
+    # P1-03 FIX: extract org_id from request context — Sprint 1B
+    org_id = getattr(getattr(req, "state", None), "tenant_org_id", None) if req else None
     
     # Format subject and content
     subject = template["subject"].format(**request.context)
@@ -275,7 +278,8 @@ async def send_email(request: EmailRequest, background_tasks: BackgroundTasks):
             recipient=request.recipient_email,
             template=request.template,
             status=result.get("status", "unknown"),
-            error=result.get("error")
+            error=result.get("error"),
+            org_id=org_id
         )
     
     background_tasks.add_task(send_and_log)
