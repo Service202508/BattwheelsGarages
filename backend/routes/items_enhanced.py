@@ -1765,7 +1765,7 @@ async def create_item_barcode(barcode: ItemBarcodeCreate, request: Request):
     await log_item_history(db, barcode.item_id, "barcode_added", {
         "barcode_type": barcode.barcode_type,
         "barcode_value": barcode_value
-    }, "System")
+    }, "System", org_id=org_id)
     
     return {
         "code": 0,
