@@ -32,7 +32,8 @@ def init_router(database):
 
 
 @router.post("/upload")
-async def upload_fault_tree(request: Request, background_tasks: BackgroundTasks, file: UploadFile = File(...)
+async def upload_fault_tree(request: Request, background_tasks: BackgroundTasks, file: UploadFile = File(...),
+    _=Depends(require_platform_admin)
 ):
     """
     Upload Excel file for fault tree import
