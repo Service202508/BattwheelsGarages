@@ -294,13 +294,14 @@ class EFIDecisionTreeEngine:
                     result["session_completed"] = True
         
         await self.db.efi_sessions.update_one(
-            {"session_id": session_id},
+            {"session_id": session_id, "organization_id": session.get("organization_id")},
             update_data
         )
         
-        # Log action
+        # Log action (TIER 1: org-scoped — Sprint 1C)
         await self.db.technician_action_logs.insert_one({
             "log_id": f"log_{uuid.uuid4().hex[:8]}",
+            "organization_id": session.get("organization_id"),
             "session_id": session_id,
             "ticket_id": session["ticket_id"],
             "step_id": step_id,
