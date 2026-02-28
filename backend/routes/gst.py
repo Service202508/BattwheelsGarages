@@ -841,19 +841,48 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     outward_sgst = 0
     outward_igst = 0
     
+    # B2C tracking for Section 3.2 (P1-10: inter-state vs intra-state split)
+    b2c_interstate_taxable = 0
+    b2c_interstate_igst = 0
+    b2c_interstate_by_state = {}
+    b2c_intrastate_taxable = 0
+    b2c_intrastate_cgst = 0
+    b2c_intrastate_sgst = 0
+    
     for inv in all_3b_invoices:
         subtotal = inv.get("sub_total", 0) or inv.get("subtotal", 0) or 0
         tax_total = inv.get("tax_total", 0) or (inv.get("total", 0) - subtotal)
         customer_gstin = inv.get("customer_gstin", "") or inv.get("gst_no", "")
         customer_state = customer_gstin[:2] if customer_gstin and len(customer_gstin) >= 2 else org_state
+        is_intra = customer_state == org_state
         
         outward_taxable += subtotal
         
-        if customer_state == org_state:
+        if is_intra:
             outward_cgst += tax_total / 2
             outward_sgst += tax_total / 2
         else:
             outward_igst += tax_total
+        
+        # B2C split (Section 3.2 / Table 3.2) — invoices without valid GSTIN
+        is_b2c = not (customer_gstin and validate_gstin(customer_gstin).get("valid"))
+        if is_b2c:
+            if not is_intra:
+                b2c_interstate_taxable += subtotal
+                b2c_interstate_igst += tax_total
+                state_name = INDIAN_STATES.get(customer_state, "Unknown")
+                if customer_state not in b2c_interstate_by_state:
+                    b2c_interstate_by_state[customer_state] = {
+                        "place_of_supply": customer_state,
+                        "state_name": state_name,
+                        "taxable_value": 0, "igst": 0
+                    }
+                b2c_interstate_by_state[customer_state]["taxable_value"] += subtotal
+                b2c_interstate_by_state[customer_state]["igst"] += tax_total
+            else:
+                b2c_intrastate_taxable += subtotal
+                b2c_intrastate_cgst += tax_total / 2
+                b2c_intrastate_sgst += tax_total / 2
     
     # INPUT TAX CREDIT (Bills + Expenses) — org-scoped
     bills = await db.bills.find(
