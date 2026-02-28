@@ -100,29 +100,26 @@ class GeminiEmbeddingService(BaseEmbeddingService):
         return self.output_dim
     
     def _text_to_hash_embedding(self, text: str) -> List[float]:
-        """Generate deterministic pseudo-embedding from text hash"""
-        # Use SHA-256 for consistent hashing
+        """Generate deterministic pseudo-embedding from text hash.
+        Uses multiple hash functions to fill all dimensions."""
         text_normalized = text.lower().strip()
-        hash_bytes = hashlib.sha256(text_normalized.encode()).digest()
-        
-        # Convert bytes to floats in range [-1, 1]
+
+        sha_hash = hashlib.sha256(text_normalized.encode()).digest()
+        md5_hash = hashlib.md5(text_normalized.encode()).digest()
+        combined = sha_hash + md5_hash
+
         embedding = []
-        for i in range(0, min(len(hash_bytes), self.output_dim * 4), 4):
-            if len(embedding) >= self.output_dim:
-                break
-            # Convert 4 bytes to a float between -1 and 1
-            val = int.from_bytes(hash_bytes[i:i+4], 'big') / (2**32 - 1)
-            embedding.append(val * 2 - 1)  # Scale to [-1, 1]
-        
-        # Pad with zeros if needed
-        while len(embedding) < self.output_dim:
-            embedding.append(0.0)
-        
-        # Normalize to unit vector
+        for i in range(self.output_dim):
+            byte_idx = i % len(combined)
+            val = combined[byte_idx] / 255.0 * 2 - 1
+            variation = (i / self.output_dim) * 0.1
+            val = val * (1 - variation) + variation * math.sin(i * 0.1)
+            embedding.append(val)
+
         norm = math.sqrt(sum(x*x for x in embedding))
         if norm > 0:
             embedding = [x / norm for x in embedding]
-        
+
         return embedding[:self.output_dim]
     
     async def _extract_semantic_features(self, text: str) -> List[float]:
