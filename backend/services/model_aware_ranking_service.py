@@ -191,7 +191,7 @@ class ModelAwareRankingService:
             "status": {"$in": ["approved", "draft"]}
         }
         
-        # TIER 2 SHARED-BRAIN: efi_failure_cards cross-tenant by design — Sprint 1D
+        # TIER 2 SHARED-BRAIN: failure_cards cross-tenant by design — Sprint 3B-01 consolidated
         # No org_id filter on failure_cards — shared knowledge base
         
         # Add subsystem filter if available
