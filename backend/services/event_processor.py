@@ -600,7 +600,7 @@ class EFIEventProcessor:
             "notes": f"Usage #{usage_count}, {'Success' if is_success else 'Failure'}"
         }
         
-        # Update card
+        # Update card (SHARED-BRAIN: cross-tenant by design — Sprint 3A for scope review)
         await self.db.failure_cards.update_one(
             {"failure_id": failure_card_id},
             {
@@ -620,7 +620,7 @@ class EFIEventProcessor:
             }
         )
         
-        # Emit confidence updated event
+        # Emit confidence updated event (TIER 1: org-scoped — Sprint 1C)
         await self._emit_event(
             EFIEventType.CONFIDENCE_UPDATED.value,
             {
@@ -629,7 +629,8 @@ class EFIEventProcessor:
                 "new_confidence": new_confidence,
                 "change_reason": change_reason,
                 "effectiveness": effectiveness
-            }
+            },
+            org_id=org_id
         )
         
         logger.info(
