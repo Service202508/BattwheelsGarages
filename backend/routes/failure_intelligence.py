@@ -457,6 +457,7 @@ async def get_knowledge_relations(request: Request, source_id: Optional[str] = N
 async def get_entity_graph(request: Request, entity_type: str, entity_id: str, depth: int = 2):
     """Get knowledge graph around an entity"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     relations = await service.db.knowledge_relations.find({
         "$or": [
