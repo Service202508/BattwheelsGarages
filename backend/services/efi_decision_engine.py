@@ -416,10 +416,13 @@ class EFILearningEngine:
         
         return learning_entry
     
-    async def get_pending_learning_items(self, limit: int = 50) -> List[Dict]:
+    async def get_pending_learning_items(self, limit: int = 50, org_id: str = None) -> List[Dict]:
         """Get items pending engineer review"""
+        query = {"status": "pending_review"}
+        if org_id:
+            query["organization_id"] = org_id  # TIER 1: org-scoped — Sprint 1C
         items = await self.db.efi_learning_queue.find(
-            {"status": "pending_review"},
+            query,
             {"_id": 0}
         ).sort("captured_at", -1).limit(limit).to_list(limit)
         return items
