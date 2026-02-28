@@ -573,10 +573,10 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
         entry["total_quantity"] += 1
     
     # Net adjustments: grand_total should subtract credit note amounts
-    cn_taxable = cdnr_summary["taxable_value"]
-    cn_cgst = cdnr_summary["cgst"]
-    cn_sgst = cdnr_summary["sgst"]
-    cn_igst = cdnr_summary["igst"]
+    cn_taxable = cdnr_summary["taxable_value"] + cdnr_unreg_summary["taxable_value"]
+    cn_cgst = cdnr_summary["cgst"] + cdnr_unreg_summary["cgst"]
+    cn_sgst = cdnr_summary["sgst"] + cdnr_unreg_summary["sgst"]
+    cn_igst = cdnr_summary["igst"] + cdnr_unreg_summary["igst"]
     
     report_data = {
         "period": month,
@@ -591,11 +591,25 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
         },
         "b2c_small": {
             "summary": aggregate(b2c_small),
-            "invoices": b2c_small
+            "invoices": b2c_small,
+            "by_state_rate": list(b2cs_by_state_rate.values())
         },
         "cdnr": {
             "summary": cdnr_summary,
             "notes": cdnr_entries
+        },
+        "cdnr_unregistered": {
+            "summary": cdnr_unreg_summary,
+            "notes": cdnr_unregistered_entries
+        },
+        "hsn_summary": {
+            "by_code_rate": list(hsn_by_code_rate.values()),
+            "totals": {
+                "taxable_value": sum(h["taxable_value"] for h in hsn_by_code_rate.values()),
+                "cgst": sum(h["cgst"] for h in hsn_by_code_rate.values()),
+                "sgst": sum(h["sgst"] for h in hsn_by_code_rate.values()),
+                "igst": sum(h["igst"] for h in hsn_by_code_rate.values()),
+            }
         },
         "grand_total": {
             "taxable_value": aggregate(b2b_invoices)["taxable_value"] + aggregate(b2c_large)["taxable_value"] + aggregate(b2c_small)["taxable_value"] - cn_taxable,
@@ -603,7 +617,7 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
             "sgst": aggregate(b2b_invoices)["sgst"] + aggregate(b2c_large)["sgst"] + aggregate(b2c_small)["sgst"] - cn_sgst,
             "igst": aggregate(b2b_invoices)["igst"] + aggregate(b2c_large)["igst"] + aggregate(b2c_small)["igst"] - cn_igst,
             "total_invoices": len(b2b_invoices) + len(b2c_large) + len(b2c_small),
-            "total_credit_notes": len(cdnr_entries)
+            "total_credit_notes": len(cdnr_entries) + len(cdnr_unregistered_entries)
         }
     }
     
