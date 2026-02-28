@@ -210,6 +210,9 @@ class TicketService:
             "vehicle_make": data.vehicle_make,
             "vehicle_model": data.vehicle_model,
             "vehicle_number": data.vehicle_number,
+            "vehicle_category": data.vehicle_category,  # Sprint 3B-05
+            "vehicle_year": data.vehicle_year,            # Sprint 3B-05
+            "symptoms": data.symptoms or [],              # Sprint 3B-05
             
             # Customer info
             "customer_id": data.customer_id or user_id,
