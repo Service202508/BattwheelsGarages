@@ -17,7 +17,7 @@ import pytest
 import httpx
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://debt-remediation-qa.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://efi-queue-finish.preview.emergentagent.com').rstrip('/')
 ADMIN_EMAIL = "admin@battwheels.in"
 ADMIN_PASSWORD = "DevTest@123"
 TECH_EMAIL = "deepak@battwheelsgarages.in"

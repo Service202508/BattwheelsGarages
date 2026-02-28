@@ -16,7 +16,7 @@ import os
 import time
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://debt-remediation-qa.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://efi-queue-finish.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 ADMIN_EMAIL = "dev@battwheels.internal"
