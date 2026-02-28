@@ -62,6 +62,10 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
   - EFI learning queue: 33 pending items, no auto-processor
   - Sprint 5B: SIGNIFICANT WORK needed (+13 to reach 90/100)
 - GSTR-3B Rule 42/43 (partial exempt ratio) — requires exempt_supply_ratio on org settings (Sprint 5A)
+
+## Prioritized Backlog
+
+### P0 — Critical
 - Knowledge pipeline incomplete: ticket closure -> knowledge_articles never auto-triggered
 
 ### P1 — High Priority

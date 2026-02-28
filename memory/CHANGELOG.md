@@ -1,6 +1,29 @@
 # Battwheels OS — Changelog
 
-## 2026-03-01 — Sprint 4B Complete
+## 2026-03-01 — Sprint 5A Complete
+
+### 5A Credential Audit
+- All env vars present in backend/.env
+- Sentry, Resend, JWT_SECRET, CORS_ORIGINS, EMERGENT_LLM_KEY: SET and functional
+- Razorpay: SET but TEST mode keys (rzp_test_...)
+- IRP: Per-org DB config (not env vars) — correct architecture
+- GEMINI_API_KEY: Not used — platform uses EMERGENT_LLM_KEY
+
+### 5A Graceful Degradation
+- No changes needed — all 4 categories already graceful:
+  - Sentry: if/guard in server.py:35-43
+  - Resend: mocked response in email_service.py:188
+  - Razorpay: returns None from get_razorpay_client when missing
+  - IRP: returns skip_irn:true from einvoice.py:133-140
+
+### 5A Pre-Production Audit
+- Security: 24/30 (2 unscoped finds: banking_module.py:731, inventory_api.py:577)
+- Statutory: 22/25 (ITC Rule 42/43 deferred)
+- EFI: 12/20 (capture works, processing pipeline missing, 14 seed embeddings)
+- Tests: 13/15 (419 passed, 20 skipped)
+- Production: 6/10 (Razorpay test-only, 2 unscoped queries)
+- **Total: 77/100**
+
 
 ### 4B-00: Suite Cleanup
 - Added `test_payroll_statutory.py` to `scripts/run_core_tests.sh`
