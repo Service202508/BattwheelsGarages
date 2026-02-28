@@ -56,4 +56,50 @@ async def enforce_period_lock(db, org_id: str, transaction_date_str: str):
             status_code=423,
             detail=f"Financial period {dt.strftime('%B %Y')} is locked. "
                    f"No transactions can be created or modified in this period."
+
+
+async def check_period_locked(organization_id: str, transaction_date: str) -> None:
+    """
+    Check if the period containing transaction_date is locked.
+    Raises ValueError if the period is locked.
+    
+    Sprint 4A-04: Moved from services/posting_hooks.py.
+    This is the standalone version that creates its own DB connection,
+    used by posting_hooks.py and double_entry_service.py.
+    
+    transaction_date: ISO date string (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)
+    """
+    if not organization_id or not transaction_date:
+        return
+    
+    try:
+        dt = datetime.fromisoformat(transaction_date.replace("Z", "+00:00"))
+    except (ValueError, AttributeError):
+        try:
+            dt = datetime.strptime(transaction_date[:10], "%Y-%m-%d")
+        except Exception:
+            return
+    
+    MONGO_URL = os.environ.get("MONGO_URL")
+    DB_NAME = os.environ.get("DB_NAME")
+    client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
+    db = client[DB_NAME]
+    
+    lock = await db.period_locks.find_one({
+        "org_id": organization_id,
+        "period_month": dt.month,
+        "period_year": dt.year,
+        "unlocked_at": None
+    })
+    
+    if lock:
+        raise ValueError(
+            f"Cannot post journal entry: period {dt.month}/{dt.year} "
+            f"is locked for organization {organization_id}"
+        )
+
+
+# Backward-compatible alias for posting_hooks imports
+_check_period_lock = check_period_locked
+
         )
