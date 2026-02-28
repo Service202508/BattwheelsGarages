@@ -62,6 +62,7 @@ class EmployeeCreateRequest(BaseModel):
     permanent_address: Optional[str] = None
     city: Optional[str] = None
     state: Optional[str] = None
+    work_state_code: Optional[str] = None  # 2-letter state code for PT calculation (P0-07)
     pincode: Optional[str] = None
     emergency_contact_name: Optional[str] = None
     emergency_contact_phone: Optional[str] = None
