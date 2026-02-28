@@ -261,6 +261,7 @@ async def start_diagnostic_session(request: Request, data: StartSessionRequest):
         session = await _decision_engine.start_session(
             ticket_id=data.ticket_id,
             failure_card_id=data.failure_card_id,
+            org_id=org_id,
             technician_id=user.get("user_id"),
             technician_name=user.get("name")
         )
