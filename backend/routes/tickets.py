@@ -469,6 +469,23 @@ async def complete_work(request: Request, ticket_id: str, data: CompleteWorkRequ
             user_id=user.get("user_id"),
             user_name=user.get("name", "System")
         )
+        
+        # P1-13B: Step 7→8 bridge — check if invoice exists for this ticket
+        org_id = ticket.get("organization_id", "")
+        if org_id:
+            existing_invoice = await service.db.invoices.find_one(
+                {"ticket_id": ticket_id, "organization_id": org_id}, {"_id": 0, "invoice_id": 1, "status": 1}
+            )
+            if existing_invoice:
+                ticket["invoice_status"] = existing_invoice.get("status")
+                ticket["invoice_id"] = existing_invoice.get("invoice_id")
+            else:
+                ticket["next_action"] = "create_invoice"
+                ticket["invoice_prompt"] = (
+                    "Ticket completed. No invoice found. "
+                    "Create invoice from estimates?"
+                )
+        
         return ticket
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
