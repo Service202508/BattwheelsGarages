@@ -2120,12 +2120,49 @@ async def update_estimate_status(estimate_id: str, status_update: StatusUpdate, 
     
     # Handle auto-conversion for accepted status
     conversion_result = None
+    stock_warnings = []
+    next_action = None
     if new_status == "accepted":
         preferences = await get_estimate_preferences()
         if preferences.get("auto_convert_on_accept", False):
             conversion_result = await auto_convert_estimate(estimate_id, preferences)
+        
+        # P1-13B: Step 4→5 bridge — check stock availability for parts
+        try:
+            org_id = await get_org_id(request)
+            line_items = estimate.get("line_items", [])
+            for item in line_items:
+                item_id = item.get("item_id")
+                if not item_id:
+                    continue
+                # Skip labour items
+                if item.get("item_type") in ("labour", "labor", "service"):
+                    continue
+                required_qty = float(item.get("quantity", 1))
+                inv_item = await db.inventory.find_one(
+                    {"item_id": item_id, "organization_id": org_id}, {"_id": 0})
+                available = float(inv_item.get("quantity", 0)) if inv_item else 0
+                if available < required_qty:
+                    stock_warnings.append({
+                        "item_id": item_id,
+                        "item_name": item.get("name") or item.get("item_name") or item_id,
+                        "required": required_qty,
+                        "available": available
+                    })
+            if not stock_warnings:
+                next_action = "allocate_parts"
+        except Exception as e:
+            logger.warning(f"Stock check failed for estimate {estimate_id}: {e}")
     
-    return {"code": 0, "message": f"Status updated to {new_status}", "conversion": conversion_result}
+    response = {
+        "code": 0,
+        "message": f"Status updated to {new_status}",
+        "conversion": conversion_result
+    }
+    if new_status == "accepted":
+        response["stock_warnings"] = stock_warnings
+        response["next_action"] = next_action
+    return response
 
 @router.post("/{estimate_id}/send")
 async def send_estimate(estimate_id: str, email_to: Optional[str] = None, message: str = ""):
