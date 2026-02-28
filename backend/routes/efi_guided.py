@@ -393,7 +393,7 @@ async def get_pending_learning(request: Request, limit: int = Query(50, le=200))
     if not _learning_engine:
         raise HTTPException(status_code=503, detail="Learning engine not initialized")
     
-    items = await _learning_engine.get_pending_learning_items(limit)
+    items = await _learning_engine.get_pending_learning_items(limit, org_id=org_id)
     return {"items": items, "count": len(items)}
 
 
