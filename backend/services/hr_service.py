@@ -20,6 +20,120 @@ from services.posting_hooks import post_payroll_run_journal_entry
 
 logger = logging.getLogger(__name__)
 
+# ==================== PROFESSIONAL TAX SLABS (P0-07) ====================
+# State-wise monthly PT slab tables. Tuple format: (lower, upper, amount_INR)
+
+PROFESSIONAL_TAX_SLABS = {
+    "MH": [  # Maharashtra
+        (0, 7500, 0),
+        (7501, 10000, 175),
+        (10001, float("inf"), 200),
+        # Note: Feb is 300 in Maharashtra — handled separately
+    ],
+    "KA": [  # Karnataka
+        (0, 15000, 0),
+        (15001, float("inf"), 200),
+    ],
+    "TN": [  # Tamil Nadu
+        (0, 3500, 0),
+        (3501, 5000, 16.5),
+        (5001, 7500, 25),
+        (7501, 10000, 41.5),
+        (10001, 12500, 58.5),
+        (12501, 15000, 83.5),
+        (15001, 20000, 125),
+        (20001, float("inf"), 166.5),
+    ],
+    "AP": [  # Andhra Pradesh
+        (0, 15000, 0),
+        (15001, 20000, 150),
+        (20001, float("inf"), 200),
+    ],
+    "TS": [  # Telangana
+        (0, 15000, 0),
+        (15001, 20000, 150),
+        (20001, float("inf"), 200),
+    ],
+    "GJ": [  # Gujarat
+        (0, 5999, 0),
+        (6000, 8999, 80),
+        (9000, 11999, 150),
+        (12000, float("inf"), 200),
+    ],
+    "WB": [  # West Bengal
+        (0, 8500, 0),
+        (8501, 10000, 90),
+        (10001, 15000, 110),
+        (15001, 25000, 130),
+        (25001, 40000, 150),
+        (40001, float("inf"), 200),
+    ],
+    "MP": [  # Madhya Pradesh
+        (0, 18750, 0),
+        (18751, float("inf"), 208),
+    ],
+    "OR": [  # Odisha
+        (0, 13304, 0),
+        (13305, 25000, 125),
+        (25001, float("inf"), 200),
+    ],
+    "AS": [  # Assam
+        (0, 10000, 0),
+        (10001, float("inf"), 208),
+    ],
+    "MG": [  # Meghalaya
+        (0, 4167, 0),
+        (4168, float("inf"), 208),
+    ],
+    "HR": [  # Haryana — no PT
+        (0, float("inf"), 0),
+    ],
+    "DL": [  # Delhi — no PT
+        (0, float("inf"), 0),
+    ],
+    "RJ": [  # Rajasthan — no PT
+        (0, float("inf"), 0),
+    ],
+    "UP": [  # Uttar Pradesh — no PT
+        (0, float("inf"), 0),
+    ],
+    "DEFAULT": [  # Fallback for unlisted states
+        (0, float("inf"), 0),
+    ],
+}
+
+# Month name → integer mapping for payroll month parsing
+MONTH_NAME_TO_INT = {
+    "january": 1, "february": 2, "march": 3, "april": 4,
+    "may": 5, "june": 6, "july": 7, "august": 8,
+    "september": 9, "october": 10, "november": 11, "december": 12,
+}
+
+
+def calculate_professional_tax(gross_salary: float, state_code: str, month: int) -> float:
+    """
+    Calculate monthly Professional Tax based on state and gross salary.
+    state_code: 2-letter state code (e.g. "MH", "KA", "TN")
+    month: integer 1-12 (1=January, 2=February, etc.)
+    Returns: monthly PT deduction amount in INR
+    """
+    slabs = PROFESSIONAL_TAX_SLABS.get(
+        state_code.upper(),
+        PROFESSIONAL_TAX_SLABS["DEFAULT"]
+    )
+    pt = 0
+    for lower, upper, amount in slabs:
+        if lower <= gross_salary <= upper:
+            pt = amount
+            break
+
+    # Maharashtra February special: 300 instead of 200
+    if state_code.upper() == "MH" and month == 2 and gross_salary > 10000:
+        pt = 300
+
+    return round(pt, 2)
+
+
 # Constants
 STANDARD_WORK_HOURS = 8
 LATE_THRESHOLD_MINUTES = 15
