@@ -197,11 +197,13 @@ async def get_efi_suggestions(request: Request, ticket_id: str):
         raise HTTPException(status_code=404, detail="Ticket not found")
     
     preprocessing = ticket.get("efi_preprocessing", {})
+    classified_subsystem = preprocessing.get("classified_subsystem", "unknown")
     
     # If not preprocessed, do it now
     if not preprocessing.get("similar_cards"):
         complaint_text = f"{ticket.get('title', '')} {ticket.get('description', '')}"
         result = await _embedding_manager.generate_complaint_embedding(complaint_text)
+        classified_subsystem = result.get("classified_subsystem", "unknown")
         
         similar_cards = await _embedding_manager.find_similar_failure_cards(
             embedding=result["embedding"],
@@ -223,8 +225,9 @@ async def get_efi_suggestions(request: Request, ticket_id: str):
     
     # Check if decision trees exist for these cards
     for card in similar_cards:
+        card_fid = card.get("failure_id") or card.get("card_id")
         tree = await _db.efi_decision_trees.find_one(
-            {"failure_card_id": card["failure_id"]},
+            {"failure_card_id": card_fid},
             {"_id": 0, "tree_id": 1, "steps": 1}
         )
         card["has_decision_tree"] = tree is not None
@@ -237,26 +240,27 @@ async def get_efi_suggestions(request: Request, ticket_id: str):
     )
     
     # Sprint 6B-04: Enrich suggestions with knowledge articles
+    # Sprint 6D: Include both global and tenant-scoped articles
     for card in similar_cards:
         failure_id = card.get("failure_id") or card.get("card_id")
         subsystem = card.get("subsystem_category") or card.get("fault_category")
         
-        # Priority 1: Exact match by source_id (failure card ID)
         ka = await _db.knowledge_articles.find_one(
-            {"source_id": failure_id},
+            {
+                "$or": [
+                    {"source_id": failure_id},
+                    {
+                        "subsystem": subsystem,
+                        "approval_status": "approved",
+                        "$or": [
+                            {"scope": "global"},
+                            {"organization_id": org_id}
+                        ]
+                    }
+                ]
+            },
             {"_id": 0, "knowledge_id": 1, "title": 1, "summary": 1, "content": 1}
-        )
-        
-        # Priority 2: Global article matching subsystem
-        if not ka and subsystem:
-            ka = await _db.knowledge_articles.find_one(
-                {
-                    "subsystem": subsystem,
-                    "approval_status": "approved",
-                    "scope": "global",
-                },
-                {"_id": 0, "knowledge_id": 1, "title": 1, "summary": 1, "content": 1}
-            )
+        ) if (failure_id or subsystem) else None
         
         if ka:
             card["knowledge_article"] = {
@@ -268,7 +272,7 @@ async def get_efi_suggestions(request: Request, ticket_id: str):
     
     return {
         "ticket_id": ticket_id,
-        "classified_subsystem": preprocessing.get("classified_subsystem", "unknown"),
+        "classified_subsystem": classified_subsystem,
         "suggested_paths": similar_cards,
         "active_session": active_session,
         "has_active_session": active_session is not None
