@@ -1331,14 +1331,26 @@ class DoubleEntryService:
     async def get_profit_and_loss(
         self,
         organization_id: str,
-        start_date: str,
-        end_date: str
+        start_date: str = None,
+        end_date: str = None,
+        fiscal_year: int = None
     ) -> Dict:
         """
         Generate Profit & Loss from journal entries.
         
         Income accounts minus Expense accounts for the period.
+        fiscal_year: FY start year (e.g. 2025 for FY 2025-26).
         """
+        # Fiscal year resolution (P1-11)
+        if fiscal_year is not None:
+            fy_start, fy_end = get_fiscal_year_dates(fiscal_year)
+            start_date = fy_start.strftime("%Y-%m-%d")
+            end_date = fy_end.strftime("%Y-%m-%d")
+        elif not start_date or not end_date:
+            fy_start, fy_end = get_current_fiscal_year_dates()
+            start_date = fy_start.strftime("%Y-%m-%d")
+            end_date = fy_end.strftime("%Y-%m-%d")
+        
         # Aggregate income and expense accounts
         pipeline = [
             {
