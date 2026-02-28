@@ -179,12 +179,12 @@ class EFIDecisionTreeEngine:
             "tree": tree
         }
     
-    async def get_session_by_ticket(self, ticket_id: str) -> Optional[Dict]:
+    async def get_session_by_ticket(self, ticket_id: str, org_id: str = None) -> Optional[Dict]:
         """Get active session for a ticket"""
-        session = await self.db.efi_sessions.find_one(
-            {"ticket_id": ticket_id, "status": "active"},
-            {"_id": 0}
-        )
+        query = {"ticket_id": ticket_id, "status": "active"}
+        if org_id:
+            query["organization_id"] = org_id  # TIER 1: org-scoped — Sprint 1C
+        session = await self.db.efi_sessions.find_one(query, {"_id": 0})
         
         if session:
             return await self.get_session(session["session_id"])
