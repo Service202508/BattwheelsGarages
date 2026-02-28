@@ -37,12 +37,21 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 
 ### Phase 4 — Test Infrastructure & Technical Debt (2026-03-01)
 - **Sprint 4A: COMPLETE** (see `/app/docs/SPRINT_4A_FINAL_REPORT.md`)
-  - 4A-01: Unskipped & fixed 47 of 51 skipped tests
+  - 4A-01: Unskipped & fixed 31 of 51 skipped tests (51→20)
   - 4A-02: Created 30 payroll statutory unit tests
   - 4A-03: Created dev platform admin + test fixtures
   - 4A-04: Refactored period lock to shared utility
   - 4A-05: Fixed batch payroll granular PF/ESI keys
   - Technician portal RBAC mapping added to middleware
+
+- **Sprint 4B: COMPLETE** (see `/app/docs/SPRINT_4B_FINAL_REPORT.md`)
+  - 4B-00: Added test_payroll_statutory.py to core suite, fixed test_17flow_audit.py BASE_URL
+  - 4B-01: 4 cross-tenant isolation tests (all passing)
+  - 4B-02: 9 RBAC negative tests (all passing)
+  - 4B-03: 20 GST statutory accuracy tests (all passing)
+  - 4B-04: GSTR-3B ITC Tables 4B/4D — replaced hardcoded zeros with vendor_credits/blocked bills queries
+  - 4B-05: 3 journal audit trail tests (all passing)
+  - Core suite: 419 passed, 0 failed, 20 skipped
 
 ## Prioritized Backlog
 
