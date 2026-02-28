@@ -537,9 +537,15 @@ class EFIEventProcessor:
         if not ticket_id:
             return {"status": "error", "reason": "no_ticket_id"}
         
-        # Get the technician action for this ticket
+        # TIER 1: Extract org_id from event — Sprint 1C
+        org_id = event.get("organization_id") or event["data"].get("organization_id")
+        
+        # Get the technician action for this ticket (TIER 1: org-scoped — Sprint 1C)
+        action_query = {"ticket_id": ticket_id}
+        if org_id:
+            action_query["organization_id"] = org_id
         action = await self.db.technician_actions.find_one(
-            {"ticket_id": ticket_id},
+            action_query,
             {"_id": 0}
         )
         
