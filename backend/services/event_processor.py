@@ -382,8 +382,18 @@ class EFIEventProcessor:
         if not action_id or not ticket_id:
             return {"status": "error", "reason": "missing_ids"}
         
-        action = await self.db.technician_actions.find_one({"action_id": action_id}, {"_id": 0})
-        ticket = await self.db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+        # TIER 1: Extract org_id from event — Sprint 1C
+        org_id = event.get("organization_id") or event["data"].get("organization_id")
+        
+        action_query = {"action_id": action_id}
+        if org_id:
+            action_query["organization_id"] = org_id
+        action = await self.db.technician_actions.find_one(action_query, {"_id": 0})
+        
+        ticket_query = {"ticket_id": ticket_id}
+        if org_id:
+            ticket_query["organization_id"] = org_id
+        ticket = await self.db.tickets.find_one(ticket_query, {"_id": 0})
         
         if not action or not ticket:
             return {"status": "error", "reason": "records_not_found"}
