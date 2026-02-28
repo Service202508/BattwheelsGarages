@@ -87,6 +87,7 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 - ~~P0-01: 20 route files bypass RBAC~~ **RESOLVED 2026-02-28**
 - ~~P0-06: Scheduler zero tenant isolation~~ **RESOLVED 2026-02-28**
 - ~~P0-08: 11 EFI collections missing from TenantGuard~~ **RESOLVED 2026-02-28**
+- P0-02 to P0-05: ~~EFI Tenant Isolation~~ **RESOLVED 2026-02-28 (Sprint 1C)**
 - P0-02: EFI Decision Engine — zero tenant isolation (services/efi_decision_engine.py, 11 DB ops)
 - P0-03: EFI Embedding Service — zero tenant isolation (services/efi_embedding_service.py, 6 DB ops)
 - P0-04: Embedding Service — zero tenant isolation (services/embedding_service.py, 10 DB ops)
