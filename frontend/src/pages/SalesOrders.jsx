@@ -77,7 +77,7 @@ export default function SalesOrders({ user }) {
       if (response.ok) {
         const data = await response.json();
         // Only tickets without sales orders
-        setTickets(data.filter(t => !t.has_sales_order && t.status !== "closed"));
+        setTickets((data.data || data || []).filter(t => !t.has_sales_order && t.status !== "closed"));
       }
     } catch (error) {
       console.error("Failed to fetch tickets:", error);

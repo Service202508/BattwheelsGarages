@@ -388,7 +388,7 @@ export default function TimeTracking({ user }) {
       
       if (ticketsRes.ok) {
         const data = await ticketsRes.json();
-        setTickets(data.tickets || []);
+        setTickets(data.data || data.tickets || []);
       }
       
       if (usersRes.ok) {
