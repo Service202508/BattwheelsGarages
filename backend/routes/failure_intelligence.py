@@ -328,6 +328,7 @@ async def list_emerging_patterns(request: Request, status: Optional[str] = None,
 async def review_pattern(request: Request, pattern_id: str, action: str, notes: Optional[str] = None):
     """Review and action an emerging pattern"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     pattern = await service.db.emerging_patterns.find_one({"pattern_id": pattern_id}, {"_id": 0})
     if not pattern:
