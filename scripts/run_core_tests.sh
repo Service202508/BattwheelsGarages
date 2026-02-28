@@ -34,6 +34,7 @@ CORE_TESTS=(
   backend/tests/test_subscription_entitlements_api.py
   backend/tests/test_entitlement_enforcement.py
   backend/tests/test_tickets_module.py
+  backend/tests/test_payroll_statutory.py
 )
 
 echo "========================================="
