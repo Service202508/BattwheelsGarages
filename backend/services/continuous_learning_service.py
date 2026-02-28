@@ -27,6 +27,19 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 logger = logging.getLogger(__name__)
 
 
+def _derive_vehicle_category(vehicle_type: str) -> str:
+    """Derive 2W/3W/4W category from vehicle_type string.
+    Sprint 3B-05: used as fallback when vehicle_category not set on ticket."""
+    vt = vehicle_type.lower() if vehicle_type else ""
+    if any(x in vt for x in ["scooter", "motorcycle", "bike", "two"]):
+        return "2W"
+    elif any(x in vt for x in ["three", "auto", "e-rick"]):
+        return "3W"
+    elif any(x in vt for x in ["car", "suv", "sedan", "four", "van", "truck"]):
+        return "4W"
+    return "2W"  # default for EV workshops
+
+
 class ContinuousLearningService:
     """
     Continuous Learning Engine for EFI Intelligence.
