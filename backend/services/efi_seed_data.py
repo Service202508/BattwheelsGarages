@@ -1297,12 +1297,24 @@ MOTOR_CARDS = [
 # ==================== SEED FUNCTION ====================
 
 async def seed_failure_cards_and_trees(db):
-    """Seed all failure cards with their decision trees"""
+    """Seed all failure cards with their decision trees.
+    Sprint 3B-SEED: also generates embeddings for each card."""
     
     all_cards = BATTERY_CARDS + ELECTRICAL_CARDS + CONTROLLER_CARDS + MOTOR_CARDS
     
     cards_inserted = 0
+    cards_skipped = 0
     trees_inserted = 0
+    embeddings_generated = 0
+    
+    # Initialize embedding service for card embedding generation
+    embedding_manager = None
+    try:
+        from services.efi_embedding_service import EFIEmbeddingManager
+        embedding_manager = EFIEmbeddingManager(db)
+    except Exception as e:
+        import logging
+        logging.getLogger("efi_seed").warning(f"Embedding service unavailable: {e}")
     
     for card_data in all_cards:
         # Extract decision tree data
@@ -1310,18 +1322,53 @@ async def seed_failure_cards_and_trees(db):
         
         # Add common fields
         card_data["source_type"] = "seeded"
+        card_data["is_seed_data"] = True
+        card_data["organization_id"] = None  # Shared brain — no org
+        card_data["status"] = card_data.get("status", "approved")
         card_data["created_at"] = datetime.now(timezone.utc).isoformat()
         card_data["updated_at"] = datetime.now(timezone.utc).isoformat()
         card_data["first_detected_at"] = datetime.now(timezone.utc).isoformat()
         
-        # Check if card already exists
-        existing = await db.failure_cards.find_one({"title": card_data["title"]})
+        # Check if card already exists (by title or failure_id)
+        existing = await db.failure_cards.find_one(
+            {"$or": [
+                {"title": card_data.get("title")},
+                {"failure_id": card_data.get("failure_id")}
+            ]}
+        )
         if existing:
-            card_data["failure_id"] = existing["failure_id"]
+            card_data["failure_id"] = existing.get("failure_id") or existing.get("card_id")
+            cards_skipped += 1
         else:
             # Insert card
             await db.failure_cards.insert_one(card_data)
             cards_inserted += 1
+            
+            # Sprint 3B-03: Generate embedding for seed card
+            if embedding_manager:
+                try:
+                    card_text = " ".join(filter(None, [
+                        card_data.get("title", ""),
+                        card_data.get("symptom_text", ""),
+                        card_data.get("root_cause", ""),
+                        card_data.get("subsystem_category", ""),
+                    ])).strip()
+                    if card_text:
+                        emb_result = await embedding_manager.generate_complaint_embedding(card_text)
+                        if emb_result and emb_result.get("embedding"):
+                            await db.failure_cards.update_one(
+                                {"failure_id": card_data["failure_id"]},
+                                {"$set": {
+                                    "embedding_vector": emb_result["embedding"],
+                                    "embedding_generated_at": datetime.now(timezone.utc).isoformat()
+                                }}
+                            )
+                            embeddings_generated += 1
+                except Exception as emb_err:
+                    import logging
+                    logging.getLogger("efi_seed").warning(
+                        f"Embedding failed for {card_data.get('title')}: {emb_err}"
+                    )
         
         # Create decision tree
         if tree_data:
@@ -1360,7 +1407,9 @@ async def seed_failure_cards_and_trees(db):
     
     return {
         "cards_inserted": cards_inserted,
+        "cards_skipped": cards_skipped,
         "trees_inserted": trees_inserted,
+        "embeddings_generated": embeddings_generated,
         "total_cards": len(all_cards)
     }
 
