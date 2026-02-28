@@ -741,7 +741,7 @@ class EFIEventProcessor:
         """Find tickets with similar symptoms but no linked failure card"""
         import uuid
         
-        # Aggregate tickets without failure card suggestions
+        # Aggregate tickets without failure card suggestions (group by org+category for tenant isolation)
         pipeline = [
             {
                 "$match": {
@@ -754,7 +754,7 @@ class EFIEventProcessor:
             },
             {
                 "$group": {
-                    "_id": "$category",
+                    "_id": {"category": "$category", "organization_id": "$organization_id"},
                     "count": {"$sum": 1},
                     "tickets": {"$push": {
                         "ticket_id": "$ticket_id",
@@ -772,6 +772,8 @@ class EFIEventProcessor:
         patterns = []
         for cluster in clusters:
             pattern_id = f"pat_{uuid.uuid4().hex[:12]}"
+            cluster_org_id = cluster["_id"].get("organization_id")
+            cluster_category = cluster["_id"].get("category", "unknown")
             
             # Extract common symptoms
             descriptions = [t.get("description", "") for t in cluster["tickets"]]
@@ -785,8 +787,9 @@ class EFIEventProcessor:
             
             patterns.append({
                 "pattern_id": pattern_id,
+                "organization_id": cluster_org_id,  # TIER 1: org-scoped — Sprint 1C
                 "pattern_type": "symptom_cluster",
-                "description": f"Repeating {cluster['_id']} issues without documented solution",
+                "description": f"Repeating {cluster_category} issues without documented solution",
                 "detected_symptoms": common_symptoms,
                 "affected_vehicles": [
                     {"make_model": k, "count": v}
