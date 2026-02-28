@@ -433,11 +433,15 @@ class EFILearningEngine:
         action: str,  # "create_card", "update_card", "dismiss"
         reviewer_id: str,
         reviewer_name: str,
+        org_id: str = None,
         notes: Optional[str] = None
     ) -> Dict:
         """Review and act on learning item"""
         
-        item = await self.db.efi_learning_queue.find_one({"entry_id": entry_id})
+        query = {"entry_id": entry_id}
+        if org_id:
+            query["organization_id"] = org_id  # TIER 1: org-scoped — Sprint 1C
+        item = await self.db.efi_learning_queue.find_one(query)
         if not item:
             raise ValueError("Learning item not found")
         
