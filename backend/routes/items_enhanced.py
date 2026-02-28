@@ -2795,7 +2795,7 @@ async def import_items(request: Request, file: UploadFile = File(...), overwrite
             if existing:
                 if overwrite_existing:
                     await db.items.update_one({"item_id": existing["item_id"], "organization_id": org_id}, {"$set": item_data})
-                    await log_item_history(db, existing["item_id"], "updated", {"source": "import"}, "System")
+                    await log_item_history(db, existing["item_id"], "updated", {"source": "import"}, "System", org_id=org_id)
                     results["updated"] += 1
                 else:
                     results["skipped"] += 1
