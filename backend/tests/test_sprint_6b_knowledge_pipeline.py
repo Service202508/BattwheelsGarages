@@ -26,7 +26,7 @@ class TestAuthHelper:
         """Login as platform admin and return token"""
         resp = requests.post(
             f"{BASE_URL}/api/v1/auth/login",
-            json={"email": "platform-dev@battwheels.internal", "password": "DevTest@123"},
+            json={"email": "platform-admin@battwheels.in", "password": "DevTest@123"},
             headers={"Content-Type": "application/json"}
         )
         assert resp.status_code == 200, f"Platform admin login failed: {resp.text}"

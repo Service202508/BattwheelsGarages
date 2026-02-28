@@ -26,7 +26,7 @@ DEV_ORG_ID = "dev-internal-testing-001"
 # Test credentials
 DEV_USER_EMAIL = "dev@battwheels.internal"
 DEV_USER_PASSWORD = "DevTest@123"
-PLATFORM_ADMIN_EMAIL = "platform-dev@battwheels.internal"
+PLATFORM_ADMIN_EMAIL = "platform-admin@battwheels.in"
 PLATFORM_ADMIN_PASSWORD = "DevTest@123"
 
 
