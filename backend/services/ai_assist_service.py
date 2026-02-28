@@ -66,7 +66,13 @@ class AIAssistService:
         start_time = time.time()
         query_id = f"AIQ-{uuid.uuid4().hex[:12].upper()}"
         
-        organization_id = request.organization_id or "global"
+        organization_id = request.organization_id
+        if not organization_id:
+            from fastapi import HTTPException
+            raise HTTPException(
+                status_code=401,
+                detail="Organization context required for AI assistance"
+            )
         
         # Check tenant config and limits
         config = await self.get_tenant_config(organization_id)
@@ -135,7 +141,13 @@ class AIAssistService:
         request: AIQueryRequest
     ) -> tuple[List[Dict], List[AISource]]:
         """Retrieve relevant knowledge from the knowledge base"""
-        organization_id = request.organization_id or "global"
+        organization_id = request.organization_id
+        if not organization_id:
+            from fastapi import HTTPException
+            raise HTTPException(
+                status_code=401,
+                detail="Organization context required for AI assistance"
+            )
         
         # Search knowledge base
         results = await self.knowledge_store.search_knowledge(
