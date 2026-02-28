@@ -236,6 +236,31 @@ async def get_efi_suggestions(request: Request, ticket_id: str):
         {"_id": 0}
     )
     
+    # Sprint 6B-04: Enrich suggestions with knowledge articles
+    for card in similar_cards:
+        failure_id = card.get("failure_id") or card.get("card_id")
+        subsystem = card.get("subsystem_category") or card.get("fault_category")
+        
+        ka = await _db.knowledge_articles.find_one(
+            {"$or": [
+                {"source_id": failure_id},
+                {
+                    "subsystem": subsystem,
+                    "approval_status": "approved",
+                    "scope": "global",
+                },
+            ]},
+            {"_id": 0, "knowledge_id": 1, "title": 1, "summary": 1, "content": 1}
+        )
+        
+        if ka:
+            card["knowledge_article"] = {
+                "knowledge_id": ka.get("knowledge_id"),
+                "title": ka.get("title"),
+                "summary": ka.get("summary"),
+                "content": ka.get("content"),
+            }
+    
     return {
         "ticket_id": ticket_id,
         "classified_subsystem": preprocessing.get("classified_subsystem", "unknown"),
