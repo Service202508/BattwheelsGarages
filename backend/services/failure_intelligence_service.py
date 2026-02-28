@@ -274,7 +274,7 @@ class EFIService:
         source_type: Optional[str] = None,
         limit: int = 50,
         skip: int = 0,
-        organization_id: str
+        organization_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """List failure cards with filtering"""
         query = {}
