@@ -6,7 +6,11 @@ Call these from invoice, payment, bill, expense, and payroll modules.
 """
 
 import logging
+import os
 from typing import Optional, Tuple, Dict, Any
+from datetime import datetime
+
+import motor.motor_asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +29,45 @@ def _get_service():
             logger.warning(f"Double entry service not available: {e}")
             return None
     return _service
+
+
+# ==================== PERIOD LOCK CHECK (P1-05) ====================
+
+async def _check_period_lock(organization_id: str, transaction_date: str) -> None:
+    """
+    Check if the period containing transaction_date is locked.
+    Raises ValueError if the period is locked.
+    
+    transaction_date: ISO date string (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)
+    """
+    if not organization_id or not transaction_date:
+        return  # Cannot check without org or date
+    
+    try:
+        dt = datetime.fromisoformat(transaction_date.replace("Z", "+00:00"))
+    except (ValueError, AttributeError):
+        try:
+            dt = datetime.strptime(transaction_date[:10], "%Y-%m-%d")
+        except Exception:
+            return  # Unparseable date — let the posting proceed
+    
+    MONGO_URL = os.environ.get("MONGO_URL")
+    DB_NAME = os.environ.get("DB_NAME")
+    client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
+    db = client[DB_NAME]
+    
+    lock = await db.period_locks.find_one({
+        "org_id": organization_id,
+        "period_month": dt.month,
+        "period_year": dt.year,
+        "unlocked_at": None
+    })
+    
+    if lock:
+        raise ValueError(
+            f"Cannot post journal entry: period {dt.month}/{dt.year} "
+            f"is locked for organization {organization_id}"
+        )
 
 
 async def post_invoice_journal_entry(
