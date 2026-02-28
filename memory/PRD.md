@@ -94,6 +94,15 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 - **UNBOUNDED RESOLVED:** All 8 `.to_list(10000)` queries in gst.py capped to `.to_list(5000)`
 - Verification: Core tests 322/0/51, Production ALL GREEN
 
+### Sprint 2C — Indian Payroll Statutory Compliance (2026-02-28)
+- **P1-06/P1-07 RESOLVED:** PF wage ceiling at 15000, EPS/EPF split (8.33%/3.67%), employee PF uncapped at 12% of full basic
+- **P1-08 RESOLVED:** PF admin charges (0.5%) and EDLI (0.5%) on capped pf_wages added to employer cost and CTC
+- **Section I.4 VERIFIED:** ESI employer rate 3.25% was already correct; refactored with ESI_WAGE_CEILING=21000 constant
+- **H.3 Carry-forward RESOLVED:** HSN summary endpoint org_id scoping added (routes/gst.py:1283)
+- Constants added: PF_WAGE_CEILING=15000, ESI_WAGE_CEILING=21000 at module level
+- Backward-compatible keys retained: pf_deduction, pf_employer
+- Verification: Core tests 322/0/51, Production ALL GREEN
+
 ## Prioritized Backlog (Updated from Audit)
 
 ### P0 — Critical (Must Fix Before Production)
