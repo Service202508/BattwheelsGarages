@@ -432,6 +432,30 @@ class ContinuousLearningService:
         action = "upserted" if result.upserted_id else "updated"
         logger.info(f"{action} failure card for ticket {ticket_id} (card_id={card_id})")
         
+        # Sprint 3B-03: Auto-generate embedding after upsert
+        try:
+            from services.efi_embedding_service import EFIEmbeddingManager
+            efi_emb = EFIEmbeddingManager(self.db)
+            card_text = " ".join(filter(None, [
+                event.get("actual_root_cause", ""),
+                event.get("subsystem", ""),
+                event.get("category", ""),
+                " ".join(event.get("symptoms", [])),
+            ])).strip()
+            if card_text:
+                emb_result = await efi_emb.generate_complaint_embedding(card_text)
+                if emb_result and emb_result.get("embedding"):
+                    await self.failure_cards.update_one(
+                        {"ticket_id": ticket_id, "organization_id": org_id},
+                        {"$set": {
+                            "embedding_vector": emb_result["embedding"],
+                            "subsystem_category": emb_result.get("classified_subsystem"),
+                            "embedding_generated_at": datetime.now(timezone.utc).isoformat()
+                        }}
+                    )
+        except Exception as emb_err:
+            logger.warning(f"Embedding generation failed for learning card {ticket_id}: {emb_err}")
+        
         return card_id
     
     async def _check_for_patterns(self, event: Dict) -> Optional[Dict]:
