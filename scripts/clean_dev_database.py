@@ -1,11 +1,20 @@
-# Sprint 6D-02: Clean dev database
-# Removes test data accumulation while preserving demo org and legitimate data.
-#
-# Usage:
-#   python scripts/clean_dev_database.py --dry-run   # preview deletions
-#   python scripts/clean_dev_database.py              # execute deletions
-#
-# SAFETY: Hard-coded to ONLY run against battwheels_dev.
+"""
+Clean Development Database
+==========================
+Removes test data accumulated from automated test runs while
+PRESERVING the following critical orgs and ALL their data:
+
+  1. demo-volt-motors-001  (demo org for user validation)
+  2. dev-internal-testing-001  (core test infrastructure org)
+  3. org_9c74befbaa95  (starter entitlement test org)
+  4. Platform admin user (platform-admin@battwheels.in)
+
+Usage:
+    python scripts/clean_dev_database.py --dry-run   # Preview
+    python scripts/clean_dev_database.py              # Execute
+
+SAFETY: Hard-coded to ONLY run against battwheels_dev.
+"""
 
 import asyncio
 import os
@@ -13,37 +22,33 @@ import sys
 from motor.motor_asyncio import AsyncIOMotorClient
 
 PROTECTED_ORG_IDS = {
-    "demo-volt-motors-001",  # Demo org (Volt Motors)
+    "demo-volt-motors-001",
+    "dev-internal-testing-001",
+    "org_9c74befbaa95",
 }
 
-PROTECTED_USERS = {
+PROTECTED_EMAILS = {
     "platform-admin@battwheels.in",
+    "dev@battwheels.internal",
     "demo@voltmotors.in",
+    "tech.a@battwheels.internal",
+    "john@testcompany.com",
+    "admin@battwheels.in",
+    "tech@battwheels.in",
+    "deepak@battwheelsgarages.in",
 }
 
-TEST_TICKET_PATTERNS = [
-    {"title": {"$regex": "^TEST_"}},
-    {"title": {"$regex": "^Tech-Other-"}},
-    {"title": {"$regex": "^Tech-Own-"}},
-    {"title": {"$regex": "^CrossTenant-"}},
-    {"title": {"$regex": "^Smoke Test"}},
-    {"title": {"$regex": "^Tenant Context Test"}},
-    {"title": {"$regex": "^SE4\\.05 XSS"}},
-    {"title": {"$regex": "^alert\\("}},
-    {"title": {"$regex": "^&lt;alert"}},
-    {"title": {"$regex": "^<script"}},
-    {"title": {"$regex": "^Normal Battery Overheating"}},
-]
-
-# Collections to clean by org_id (delete all docs not in protected orgs)
 ORG_SCOPED_COLLECTIONS = [
-    "contacts", "items", "estimates", "estimates_enhanced",
-    "sales_orders", "purchase_orders", "payments", "expenses",
-    "attendance", "leave_requests", "payroll_runs", "payroll_slips",
-    "bank_accounts", "bank_transactions", "reconciliation_sessions",
-    "efi_learning_queue", "efi_sessions",
-    "period_locks", "organization_settings", "chart_of_accounts",
-    "notifications", "time_entries",
+    "tickets", "invoices_enhanced", "estimates", "contacts",
+    "items", "employees", "payroll_records", "payslips",
+    "journal_entries", "chart_of_accounts", "bank_accounts",
+    "bank_transactions", "credit_notes", "bills", "bills_enhanced",
+    "failure_cards", "knowledge_articles", "sales_orders",
+    "purchase_orders", "time_entries", "projects", "tasks",
+    "customer_vehicles", "gst_settings", "organization_settings",
+    "period_locks", "sequences", "subscriptions",
+    "razorpay_config", "payment_orders", "payment_links",
+    "webhook_logs",
 ]
 
 
@@ -56,109 +61,120 @@ async def clean(dry_run: bool):
     db = client[db_name]
 
     mode = "DRY RUN" if dry_run else "LIVE"
-    print(f"{'='*60}")
-    print(f"  Dev Database Cleanup [{mode}]")
+    print("=" * 60)
+    print(f"  Clean Development Database [{mode}]")
     print(f"  Database: {db_name}")
     print(f"  Protected orgs: {PROTECTED_ORG_IDS}")
-    print(f"{'='*60}")
+    print("=" * 60)
 
-    # 1. Identify test organizations (all except protected)
-    all_orgs = await db.organizations.find(
-        {"organization_id": {"$nin": list(PROTECTED_ORG_IDS)}},
-        {"_id": 0, "organization_id": 1, "name": 1}
-    ).to_list(5000)
-    test_org_ids = [o["organization_id"] for o in all_orgs]
-    print(f"\n[1] Test organizations to delete: {len(test_org_ids)}")
-    for o in all_orgs[:5]:
-        print(f"    {o['organization_id']}: {o.get('name','')}")
-    if len(all_orgs) > 5:
-        print(f"    ... and {len(all_orgs) - 5} more")
+    total_deleted = 0
 
-    # 2. Delete test tickets (by pattern + by test org)
-    test_ticket_filter = {"$or": TEST_TICKET_PATTERNS}
-    pattern_count = await db.tickets.count_documents(test_ticket_filter)
+    # ================================================================
+    # 1. Delete test organizations (not in protected set)
+    # ================================================================
+    print("\n[1] Cleaning test organizations...")
+    all_orgs = await db.organizations.find({}, {"_id": 0, "organization_id": 1, "name": 1}).to_list(500)
+    test_orgs = [o for o in all_orgs if o["organization_id"] not in PROTECTED_ORG_IDS]
+    test_org_ids = [o["organization_id"] for o in test_orgs]
 
-    org_ticket_filter = {"organization_id": {"$in": test_org_ids}}
-    org_ticket_count = await db.tickets.count_documents(org_ticket_filter)
+    print(f"    Protected orgs: {len(all_orgs) - len(test_orgs)}")
+    print(f"    Test orgs to delete: {len(test_orgs)}")
+    for o in test_orgs[:10]:
+        print(f"      - {o['organization_id']}: {o.get('name', 'N/A')}")
+    if len(test_orgs) > 10:
+        print(f"      ... and {len(test_orgs) - 10} more")
 
-    combined_filter = {"$or": [test_ticket_filter, org_ticket_filter]}
-    total_ticket_del = await db.tickets.count_documents(combined_filter)
+    if not dry_run and test_org_ids:
+        r = await db.organizations.delete_many({"organization_id": {"$in": test_org_ids}})
+        total_deleted += r.deleted_count
+        print(f"    Deleted {r.deleted_count} organizations")
 
-    print(f"\n[2] Tickets to delete: {total_ticket_del}")
-    print(f"    By pattern: {pattern_count}")
-    print(f"    By test org: {org_ticket_count}")
+    # ================================================================
+    # 2. Delete org-scoped data for test organizations
+    # ================================================================
+    print("\n[2] Cleaning org-scoped data for test organizations...")
+    for coll_name in ORG_SCOPED_COLLECTIONS:
+        coll = db[coll_name]
+        count = await coll.count_documents({"organization_id": {"$in": test_org_ids}}) if test_org_ids else 0
+        if count > 0:
+            print(f"    {coll_name}: {count} docs")
+            if not dry_run:
+                r = await coll.delete_many({"organization_id": {"$in": test_org_ids}})
+                total_deleted += r.deleted_count
 
-    if not dry_run:
-        r = await db.tickets.delete_many(combined_filter)
-        print(f"    Deleted: {r.deleted_count}")
-
-    # 3. Delete invoices in test orgs
-    inv_count = await db.invoices_enhanced.count_documents({"organization_id": {"$in": test_org_ids}})
-    print(f"\n[3] Invoices to delete (test orgs): {inv_count}")
-    if not dry_run and inv_count > 0:
-        r = await db.invoices_enhanced.delete_many({"organization_id": {"$in": test_org_ids}})
-        print(f"    Deleted: {r.deleted_count}")
-
-    # 4. Delete employees in test orgs
-    emp_count = await db.employees.count_documents({"organization_id": {"$in": test_org_ids}})
-    print(f"\n[4] Employees to delete (test orgs): {emp_count}")
-    if not dry_run and emp_count > 0:
-        r = await db.employees.delete_many({"organization_id": {"$in": test_org_ids}})
-        print(f"    Deleted: {r.deleted_count}")
-
-    # 5. Delete users in test orgs (except protected)
-    user_filter = {
-        "email": {"$nin": list(PROTECTED_USERS)},
+    # ================================================================
+    # 3. Delete test users (not in protected emails, not in protected orgs)
+    # ================================================================
+    print("\n[3] Cleaning test users...")
+    test_users_query = {
+        "email": {"$nin": list(PROTECTED_EMAILS)},
+        "organization_id": {"$nin": list(PROTECTED_ORG_IDS)},
         "is_platform_admin": {"$ne": True},
+    }
+    test_users = await db.users.find(test_users_query, {"_id": 0, "user_id": 1, "email": 1}).to_list(1000)
+    test_user_ids = [u["user_id"] for u in test_users]
+
+    print(f"    Test users to delete: {len(test_users)}")
+    for u in test_users[:5]:
+        print(f"      - {u['email']} ({u['user_id']})")
+    if len(test_users) > 5:
+        print(f"      ... and {len(test_users) - 5} more")
+
+    if not dry_run and test_user_ids:
+        r = await db.users.delete_many({"user_id": {"$in": test_user_ids}})
+        total_deleted += r.deleted_count
+        print(f"    Deleted {r.deleted_count} users")
+
+    # ================================================================
+    # 4. Delete organization_users for test users/orgs
+    # ================================================================
+    print("\n[4] Cleaning organization_users...")
+    ou_query = {
         "$or": [
             {"organization_id": {"$in": test_org_ids}},
-            {"organizations": {"$elemMatch": {"$in": test_org_ids}}},
+            {"user_id": {"$in": test_user_ids}},
         ]
-    }
-    user_count = await db.users.count_documents(user_filter)
-    print(f"\n[5] Users to delete (test orgs, non-protected): {user_count}")
-    if not dry_run and user_count > 0:
-        r = await db.users.delete_many(user_filter)
-        print(f"    Deleted: {r.deleted_count}")
+    } if (test_org_ids or test_user_ids) else {"_id": None}
 
-    # Also delete orphan users not in any protected org
-    orphan_filter = {
-        "email": {"$nin": list(PROTECTED_USERS)},
-        "is_platform_admin": {"$ne": True},
-        "organization_id": {"$nin": list(PROTECTED_ORG_IDS)},
-    }
+    ou_count = await db.organization_users.count_documents(ou_query)
+    print(f"    organization_users to delete: {ou_count}")
+    if not dry_run and ou_count > 0:
+        r = await db.organization_users.delete_many(ou_query)
+        total_deleted += r.deleted_count
+        print(f"    Deleted {r.deleted_count}")
 
-    # 6. Delete org-scoped collection data for test orgs
-    print(f"\n[6] Org-scoped collections cleanup:")
-    for coll_name in ORG_SCOPED_COLLECTIONS:
-        count = await db[coll_name].count_documents({"organization_id": {"$in": test_org_ids}})
-        if count > 0:
-            print(f"    {coll_name}: {count} docs to delete")
-            if not dry_run:
-                r = await db[coll_name].delete_many({"organization_id": {"$in": test_org_ids}})
-                print(f"      Deleted: {r.deleted_count}")
+    # ================================================================
+    # 5. Clean password_reset_tokens for test users
+    # ================================================================
+    print("\n[5] Cleaning password reset tokens...")
+    token_count = await db.password_reset_tokens.count_documents(
+        {"user_id": {"$in": test_user_ids}}
+    ) if test_user_ids else 0
+    print(f"    Tokens to delete: {token_count}")
+    if not dry_run and token_count > 0:
+        r = await db.password_reset_tokens.delete_many({"user_id": {"$in": test_user_ids}})
+        total_deleted += r.deleted_count
 
-    # 7. Delete the test organizations themselves
-    print(f"\n[7] Organizations to delete: {len(test_org_ids)}")
-    if not dry_run:
-        r = await db.organizations.delete_many({"organization_id": {"$in": test_org_ids}})
-        print(f"    Deleted: {r.deleted_count}")
+    # ================================================================
+    # Summary
+    # ================================================================
+    print(f"\n{'=' * 60}")
+    if dry_run:
+        print("  DRY RUN COMPLETE - No data was deleted")
+        print("  Run without --dry-run to execute cleanup")
+    else:
+        print(f"  CLEANUP COMPLETE - Deleted {total_deleted} documents total")
 
-    # 8. Delete subscriptions for test orgs
-    sub_count = await db.subscriptions.count_documents({"organization_id": {"$in": test_org_ids}})
-    print(f"\n[8] Subscriptions to delete: {sub_count}")
-    if not dry_run and sub_count > 0:
-        r = await db.subscriptions.delete_many({"organization_id": {"$in": test_org_ids}})
-        print(f"    Deleted: {r.deleted_count}")
+    # Post-cleanup verification
+    remaining_orgs = await db.organizations.find({}, {"_id": 0, "organization_id": 1, "name": 1}).to_list(100)
+    print(f"\n  Remaining organizations ({len(remaining_orgs)}):")
+    for o in remaining_orgs:
+        protected = "PROTECTED" if o["organization_id"] in PROTECTED_ORG_IDS else ""
+        print(f"    - {o['organization_id']}: {o.get('name', 'N/A')} {protected}")
 
-    # 9. Final counts
-    print(f"\n{'='*60}")
-    print(f"  POST-CLEANUP COUNTS")
-    print(f"{'='*60}")
-    for coll_name in ["tickets", "invoices_enhanced", "employees", "failure_cards",
-                       "knowledge_articles", "users", "organizations"]:
-        count = await db[coll_name].count_documents({})
-        print(f"  {coll_name}: {count}")
+    remaining_users = await db.users.count_documents({})
+    print(f"\n  Remaining users: {remaining_users}")
+    print(f"{'=' * 60}")
 
     client.close()
 
