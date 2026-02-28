@@ -648,8 +648,9 @@ class TicketService:
             )
             
             now = datetime.now(timezone.utc)
+            org_id = ticket.get("organization_id")
             await self.db.efi_platform_patterns.update_one(
-                {"pattern_key": pattern_key},
+                {"pattern_key": pattern_key, "organization_id": org_id},
                 {
                     "$inc": {"occurrence_count": 1, "correct_count": 1 if was_correct else 0},
                     "$set": {
@@ -660,6 +661,7 @@ class TicketService:
                     },
                     "$setOnInsert": {
                         "pattern_key": pattern_key,
+                        "organization_id": org_id,
                         "first_seen": now.isoformat(),
                     }
                 },
@@ -668,12 +670,12 @@ class TicketService:
             
             # Recalculate confidence score
             pattern = await self.db.efi_platform_patterns.find_one(
-                {"pattern_key": pattern_key}, {"_id": 0}
+                {"pattern_key": pattern_key, "organization_id": org_id}, {"_id": 0}
             )
             if pattern and pattern.get("occurrence_count", 0) > 0:
                 confidence = pattern["correct_count"] / pattern["occurrence_count"]
                 await self.db.efi_platform_patterns.update_one(
-                    {"pattern_key": pattern_key},
+                    {"pattern_key": pattern_key, "organization_id": org_id},
                     {"$set": {"confidence_score": round(confidence, 3)}}
                 )
             
