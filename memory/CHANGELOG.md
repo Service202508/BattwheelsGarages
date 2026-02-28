@@ -1,5 +1,45 @@
 # Battwheels OS — Changelog
 
+## 2026-03-01 — Sprint 5B Complete (Production Gate PASSED: 90/100)
+
+### 5B-01: Unscoped Query Fixes
+- `banking_module.py:187`: `bank_accounts.find()` now includes `organization_id: org_id`
+- `inventory_api.py:578`: `services.find()` now includes `organization_id: ctx.org_id`
+- Both queries previously leaked data across tenants
+
+### 5B-02: EFI Learning Queue Processor
+- Created `process_learning_queue()` in `services/continuous_learning_service.py`
+- Admin endpoint: `POST /api/v1/platform/efi/process-queue`
+- Added to scheduler: runs every 15 minutes
+- Converts pending learning events into failure cards with embeddings
+
+### 5B-03: Queue Processing
+- Processed 51 total learning events (37 initial + 14 from smoke test)
+- All converted to failure_cards: 22 cards total, 15 with embeddings
+- Queue cleared: 0 pending items remaining
+
+### 5B-04: PT State Count Verification
+- Confirmed `PROFESSIONAL_TAX_SLABS` contains 16 state entries
+- Resolved discrepancy between sprint reports (was showing 6 vs 16)
+
+### 5B-05: Skipped Test Remediation
+- Fixed 6 skipped tests: 2 in `test_multi_tenant_crud.py`, 4 in `test_p1_fixes.py`
+- Skipped count reduced: 20 → 14
+- Core suite: 425 passed, 14 skipped, 0 failed
+
+### 5B-06: End-to-End Smoke Test
+- Full 8-step production flow verified:
+  1. User login → 2. Contact creation → 3. Ticket creation → 4. EFI suggestions
+  5. Ticket closure (learning event captured) → 6. Invoice creation
+  7. Journal entry + audit log → 8. EFI queue processing
+- All steps PASSED
+
+### Score: 77 → 90 (+13)
+- Security: 24→28 (fixed unscoped queries, verified tenant guard)
+- EFI: 12→18 (queue processor wired, pipeline end-to-end verified)
+- Tests: 13→14 (6 tests unskipped)
+- Production: 6→8 (unscoped queries eliminated)
+
 ## 2026-03-01 — Sprint 5A Complete
 
 ### 5A Credential Audit
