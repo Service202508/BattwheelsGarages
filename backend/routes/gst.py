@@ -1143,17 +1143,17 @@ def generate_gstr3b_excel(data: dict, month: str) -> Response:
     ws.append(["4. Eligible ITC"])
     ws['A7'].font = Font(bold=True)
     ws.append(["Description", "CGST", "SGST", "IGST"])
-    ws.append(["Input Tax Credit", data["section_4"]["cgst"], data["section_4"]["sgst"], data["section_4"]["igst"]])
+    ws.append(["Input Tax Credit", data["section_4"]["table_4C"]["cgst"], data["section_4"]["table_4C"]["sgst"], data["section_4"]["table_4C"]["igst"]])
     ws.append([])
     
     # Section 6 - Payment
     ws.append(["6.1 Payment of Tax"])
     ws['A11'].font = Font(bold=True)
     ws.append(["Tax", "Liability", "ITC Available", "Net Payable"])
-    ws.append(["CGST", data["section_3_1"]["cgst"], data["section_4"]["cgst"], data["section_6"]["net_cgst"]])
-    ws.append(["SGST", data["section_3_1"]["sgst"], data["section_4"]["sgst"], data["section_6"]["net_sgst"]])
-    ws.append(["IGST", data["section_3_1"]["igst"], data["section_4"]["igst"], data["section_6"]["net_igst"]])
-    ws.append(["Total", data["section_3_1"]["total_tax"], data["section_4"]["total_itc"], data["section_6"]["total_liability"]])
+    ws.append(["CGST", data["section_3_1"]["cgst"], data["section_4"]["table_4C"]["cgst"], data["section_6"]["net_cgst"]])
+    ws.append(["SGST", data["section_3_1"]["sgst"], data["section_4"]["table_4C"]["sgst"], data["section_6"]["net_sgst"]])
+    ws.append(["IGST", data["section_3_1"]["igst"], data["section_4"]["table_4C"]["igst"], data["section_6"]["net_igst"]])
+    ws.append(["Total", data["section_3_1"]["total_tax"], data["section_4"]["table_4C"]["total_itc"], data["section_6"]["total_liability"]])
     
     ws.column_dimensions['A'].width = 25
     ws.column_dimensions['B'].width = 18
