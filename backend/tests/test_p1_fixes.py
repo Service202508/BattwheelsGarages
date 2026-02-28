@@ -14,7 +14,7 @@ from pathlib import Path
 
 load_dotenv(Path(__file__).parent.parent / '.env')
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 
 # ─────────────────────────────────────────────────────────────────
