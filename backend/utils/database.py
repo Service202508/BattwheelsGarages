@@ -26,12 +26,16 @@ def extract_org_id(request) -> Optional[str]:
     return org_id
 
 
-def org_query(org_id: Optional[str], extra: dict = None) -> dict:
+def org_query(org_id: str, extra: dict = None) -> dict:
     """Build a MongoDB query dict with organization_id guard.
-    Returns the query with org_id if available, otherwise just the extra dict."""
-    q = {}
-    if org_id:
-        q["organization_id"] = org_id
+    Raises ValueError if org_id is falsy — prevents unscoped global queries."""
+    if not org_id:
+        raise ValueError(
+            "org_query called with None org_id — "
+            "this would produce an unscoped global query. "
+            "Ensure extract_org_id() is called before org_query()."
+        )
+    q = {"organization_id": org_id}
     if extra:
         q.update(extra)
     return q
