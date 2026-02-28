@@ -415,6 +415,7 @@ async def review_learning_item(request: Request, entry_id: str, action: str, not
             action=action,
             reviewer_id=user.get("user_id"),
             reviewer_name=user.get("name", "Unknown"),
+            org_id=org_id,
             notes=notes
         )
         return result
