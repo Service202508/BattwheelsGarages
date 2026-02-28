@@ -573,7 +573,16 @@ class HRService:
         # Deductions
         pf_deduction = basic * 0.12  # 12% of basic
         esi_deduction = gross * 0.0075 if gross <= 21000 else 0  # ESI if gross <= 21000
-        professional_tax = 200  # Standard PT
+        
+        # Professional Tax — state-wise slab calculation (P0-07)
+        state_code = employee.get("work_state_code") or employee.get("state_code") or "DEFAULT"
+        # Parse month name to integer (e.g. "January" → 1)
+        pt_month = MONTH_NAME_TO_INT.get(month.lower(), datetime.now().month) if isinstance(month, str) else month
+        professional_tax = calculate_professional_tax(
+            gross_salary=gross,
+            state_code=state_code,
+            month=pt_month
+        )
         tds = salary.get("tds", 0)
         
         total_deductions = pf_deduction + esi_deduction + professional_tax + tds
