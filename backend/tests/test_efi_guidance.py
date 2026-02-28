@@ -4,6 +4,9 @@ Tests for Hinglish mode, visual specs, and ask-back functionality
 """
 
 import pytest
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from unittest.mock import MagicMock, AsyncMock, patch
 
 

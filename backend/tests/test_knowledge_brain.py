@@ -5,6 +5,9 @@ Tests for LLM Provider, Expert Queue, and Feature Flags
 
 import pytest
 import asyncio
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from unittest.mock import MagicMock, AsyncMock, patch
 from datetime import datetime, timezone
 
