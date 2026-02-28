@@ -597,6 +597,25 @@ class TicketService:
         # EFI FEEDBACK LOOP: Update platform patterns with confirmed fault data
         await self._update_efi_platform_patterns(existing, data)
         
+        # Sprint 3B-02: Auto-trigger EFI learning capture — non-blocking
+        try:
+            from services.continuous_learning_service import ContinuousLearningService
+            learning_service = ContinuousLearningService(self.db)
+            await learning_service.capture_ticket_closure(
+                ticket_id=ticket_id,
+                organization_id=organization_id or existing.get("organization_id", ""),
+                closure_data={
+                    "resolution": data.resolution or "",
+                    "actual_root_cause": data.resolution_notes or data.resolution or "",
+                    "parts_replaced": existing.get("parts_used", []),
+                    "subsystem": existing.get("category"),
+                    "ai_was_correct": None,
+                    "closed_at": now.isoformat()
+                }
+            )
+        except Exception as efi_err:
+            logger.warning(f"EFI learning capture failed for {ticket_id}: {efi_err}")
+        
         # Generate satisfaction survey token
         try:
             survey_token = f"srv_{uuid.uuid4().hex[:24]}"
