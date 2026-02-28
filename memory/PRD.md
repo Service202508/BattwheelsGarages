@@ -99,7 +99,8 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 ### P1 — High Priority
 - ~~P1-02: org_query silently drops org_id when null~~ **RESOLVED 2026-02-28**
 - ~~P1-03: Notification service — no org_id~~ **RESOLVED 2026-02-28**
-- P1-01: log_item_history missing org_id in inserted docs (routes/items_enhanced.py:2827)
+- ~~P1-01: log_item_history missing org_id~~ **RESOLVED 2026-02-28 (Sprint 1C)**
+- P1-04: log_item_history missing org_id in inserted docs (routes/items_enhanced.py:2827)
 - P1-04: 32+ queries with .to_list(5000-10000) remaining
 - P1-05: No period lock enforcement on journal entry creation
 - P1-06: PF ceiling not enforced (₹15,000 basic cap)
