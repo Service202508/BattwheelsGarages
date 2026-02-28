@@ -2065,7 +2065,7 @@ async def recalculate_estimate_totals(estimate_id: str):
 # ========================= STATUS WORKFLOW ENDPOINTS =========================
 
 @router.put("/{estimate_id}/status")
-async def update_estimate_status(estimate_id: str, status_update: StatusUpdate):
+async def update_estimate_status(estimate_id: str, status_update: StatusUpdate, request: Request):
     """Update estimate status"""
     estimate = await estimates_collection.find_one({"estimate_id": estimate_id})
     if not estimate:
