@@ -121,7 +121,7 @@ V1_ROUTES = [
     "routes.amc", "routes.documents", "routes.uploads", "routes.pdf_templates",
     "routes.notifications", "routes.subscriptions", "routes.time_tracking",
     "routes.projects", "routes.productivity", "routes.contact_integration",
-    "routes.invoice_automation", "routes.invoice_payments", "routes.export",
+    "routes.invoice_automation", "routes.export",
     "routes.razorpay", "routes.einvoice",
     "routes.efi_guided", "routes.failure_cards", "routes.failure_intelligence",
     "routes.ai_assistant", "routes.ai_guidance", "routes.efi_intelligence",
