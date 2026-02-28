@@ -78,6 +78,14 @@ TENANT_COLLECTIONS = {
     # Ticket estimates
     "ticket_estimates", "ticket_estimate_line_items", "ticket_estimate_history",
     
+    # EFI Extended (Sprint 1B — previously missing)
+    "efi_decision_trees", "efi_sessions", "learning_queue",
+    "embedding_cache", "efi_events", "emerging_patterns",
+    "symptoms", "knowledge_relations",
+    
+    # AI & Notification Logs (Sprint 1B — previously missing)
+    "ai_queries", "ai_escalations", "notification_logs",
+    
     # Zoho sync
     "zoho_sync_mappings",
 }
