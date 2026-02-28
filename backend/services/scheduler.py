@@ -250,8 +250,9 @@ async def generate_recurring_expenses():
             if re.get("end_date") and next_date_str > re.get("end_date"):
                 new_status = "expired"
             
+            # SCHEDULER-FIX: org_id scoped from recurring expense profile — Sprint 1B
             await db.recurring_expenses.update_one(
-                {"recurring_expense_id": re.get("recurring_expense_id")},
+                {"recurring_expense_id": re.get("recurring_expense_id"), "organization_id": org_id},
                 {
                     "$set": {"next_expense_date": next_date_str, "last_expense_date": today, "status": new_status},
                     "$inc": {"expenses_generated": 1}
