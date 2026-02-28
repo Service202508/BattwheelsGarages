@@ -88,7 +88,7 @@ class ModelAwareRankingService:
     
     def __init__(self, db: AsyncIOMotorDatabase):
         self.db = db
-        self.failure_cards = db.efi_failure_cards
+        self.failure_cards = db.failure_cards  # Sprint 3B-01: consolidated from efi_failure_cards
         self.knowledge_items = db.knowledge_items
     
     async def rank_causes(
