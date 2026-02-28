@@ -580,6 +580,7 @@ async def get_part_anomaly_report(request: Request):
 async def list_events(request: Request, event_type: Optional[str] = None, processed: Optional[bool] = None, limit: int = 50):
     """List EFI system events"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     query = {}
     if event_type:
@@ -598,6 +599,7 @@ async def list_events(request: Request, event_type: Optional[str] = None, proces
 async def process_pending_events(request: Request, background_tasks: BackgroundTasks):
     """Process pending EFI events"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     pending = await service.db.efi_events.count_documents({"processed": False})
     
