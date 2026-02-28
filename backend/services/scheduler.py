@@ -71,9 +71,12 @@ async def generate_recurring_invoices():
     
     for ri in recurring:
         try:
-            # Get next invoice number
+            # SCHEDULER-FIX: org_id scoped from recurring profile — Sprint 1B
+            org_id = ri.get("organization_id")
+            
+            # Get next invoice number (scoped to org)
             counter = await db.counters.find_one_and_update(
-                {"_id": "invoices"},
+                {"_id": "invoices", "organization_id": org_id},
                 {"$inc": {"seq": 1}},
                 upsert=True,
                 return_document=True
@@ -86,10 +89,11 @@ async def generate_recurring_invoices():
             payment_terms = ri.get("payment_terms", 30)
             due_date = (datetime.strptime(today, "%Y-%m-%d") + timedelta(days=payment_terms)).strftime("%Y-%m-%d")
             
-            # Create invoice
+            # Create invoice with organization_id from profile
             invoice = {
                 "invoice_id": invoice_id,
                 "invoice_number": invoice_number,
+                "organization_id": org_id,  # SCHEDULER-FIX: org_id from recurring profile — Sprint 1B
                 "customer_id": ri.get("customer_id"),
                 "customer_name": ri.get("customer_name"),
                 "date": today,
@@ -110,9 +114,10 @@ async def generate_recurring_invoices():
             
             await db.invoices.insert_one(invoice)
             
-            # Update customer outstanding
+            # Update customer outstanding (scoped to org)
+            # SCHEDULER-FIX: org_id scoped from recurring profile — Sprint 1B
             await db.contacts.update_one(
-                {"contact_id": ri.get("customer_id")},
+                {"contact_id": ri.get("customer_id"), "organization_id": org_id},
                 {"$inc": {"outstanding_receivable_amount": ri.get("total", 0)}}
             )
             
