@@ -144,14 +144,8 @@ class ContinuousLearningService:
         await self.learning_queue.insert_one(learning_event)
         logger.info(f"Captured learning event {event_id} for ticket {ticket_id}")
         
-        # EFI-PIPELINE-GAP: No automated call to knowledge_store_service here.
-        # The learning event is written to efi_learning_queue and updates
-        # failure_cards on processing, but NEVER creates or updates
-        # knowledge_articles or knowledge_embeddings.
-        # The knowledge_store_service.create_failure_card_from_ticket() method
-        # exists but is only reachable via manual API (routes/knowledge_brain.py).
-        # Sprint 3A documents this gap; Sprint 3B should bridge it with an
-        # anonymised write to knowledge_articles after learning event processing.
+        # Sprint 6B-01: Knowledge articles now auto-generated via
+        # process_learning_event() → _create_or_update_knowledge_article()
         
         # Trigger immediate processing for high-value events
         if closure_data.get("ai_was_correct") is False or closure_data.get("unsafe_incident"):
