@@ -390,6 +390,7 @@ async def create_symptom(request: Request, data: SymptomCreate):
 async def list_symptoms(request: Request, category: Optional[str] = None, search: Optional[str] = None):
     """List symptoms from library"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     query = {}
     if category:
