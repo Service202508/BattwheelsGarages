@@ -1160,7 +1160,14 @@ async def update_invoice(invoice_id: str, update: InvoiceUpdate, request: Reques
         # Recalculate totals if line items changed
         if update.line_items:
             customer = await contacts_collection.find_one({"contact_id": existing.get("customer_id")})
-            org_state = "DL"
+            org_settings = await db.organization_settings.find_one(
+                {"organization_id": org_id}, {"_id": 0}
+            )
+            org_state = (
+                org_settings.get("state_code") or
+                org_settings.get("place_of_supply") or
+                "DL"
+            ) if org_settings else "DL"
             customer_state = update.place_of_supply or existing.get("place_of_supply", "")
             is_igst = customer_state and customer_state != org_state
             is_inclusive = existing.get("is_inclusive_tax", False)
