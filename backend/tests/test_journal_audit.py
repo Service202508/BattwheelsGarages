@@ -8,10 +8,15 @@ import os
 import sys
 import subprocess
 import pytest
-import asyncio
-from datetime import datetime, timezone
+
+# Set env vars BEFORE any service imports (audit_log.py reads at import time)
+if not os.environ.get("MONGO_URL"):
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+import asyncio
 
 
 def get_db():
