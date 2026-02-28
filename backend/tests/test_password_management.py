@@ -219,7 +219,7 @@ class TestAdminResetEmployeePassword:
     def test_admin_reset_requires_auth(self):
         """Admin reset endpoint requires authentication"""
         res = requests.post(
-            f"{BASE_URL}/api/employees/test_id/reset-password",
+            f"{BASE_URL}/api/v1/employees/test_id/reset-password",
             json={"new_password": "newpass123"},
             headers={"Content-Type": "application/json"}
         )
@@ -229,7 +229,7 @@ class TestAdminResetEmployeePassword:
     def test_admin_reset_nonexistent_employee(self, admin_auth):
         """Admin reset for nonexistent employee returns 404"""
         res = requests.post(
-            f"{BASE_URL}/api/employees/nonexistent_emp_id_xyz/reset-password",
+            f"{BASE_URL}/api/v1/employees/nonexistent_emp_id_xyz/reset-password",
             json={"new_password": "newpass123"},
             headers=admin_auth
         )
@@ -239,7 +239,7 @@ class TestAdminResetEmployeePassword:
     def test_admin_reset_for_employee_with_work_email(self, admin_auth):
         """Admin can reset password for employee with work_email"""
         # First, get list of employees to find one with work_email
-        emp_res = requests.get(f"{BASE_URL}/api/employees", headers=admin_auth)
+        emp_res = requests.get(f"{BASE_URL}/api/v1/hr/employees", headers=admin_auth)
         if emp_res.status_code != 200:
             pytest.skip(f"Could not fetch employees: {emp_res.status_code}")
         
@@ -259,7 +259,7 @@ class TestAdminResetEmployeePassword:
         
         # Try to reset password
         res = requests.post(
-            f"{BASE_URL}/api/employees/{target_emp['employee_id']}/reset-password",
+            f"{BASE_URL}/api/v1/employees/{target_emp['employee_id']}/reset-password",
             json={"new_password": "test_pwd_placeholder"},
             headers=admin_auth
         )

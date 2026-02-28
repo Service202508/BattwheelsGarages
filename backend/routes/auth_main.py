@@ -463,16 +463,29 @@ async def admin_reset_employee_password(employee_id: str, request: Request):
     if payload.get("role") not in ["owner", "admin", "org_admin"]:
         raise HTTPException(status_code=403, detail="Only admins can reset passwords")
     
-    employee = await db.users.find_one({"user_id": employee_id})
-    if not employee:
+    # Look up employee record first
+    emp_record = await db.employees.find_one({"employee_id": employee_id}, {"_id": 0})
+    if not emp_record:
         raise HTTPException(status_code=404, detail="Employee not found")
+    
+    # Find the linked user account via user_id or work_email
+    user = None
+    if emp_record.get("user_id"):
+        user = await db.users.find_one({"user_id": emp_record["user_id"]})
+    if not user and emp_record.get("work_email"):
+        user = await db.users.find_one({"email": emp_record["work_email"]})
+    if not user and emp_record.get("email"):
+        user = await db.users.find_one({"email": emp_record["email"]})
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="No user account found for this employee")
     
     import secrets
     temp_password = secrets.token_urlsafe(12)
     new_hash = hash_password(temp_password)
     
     await db.users.update_one(
-        {"user_id": employee_id},
+        {"user_id": user["user_id"]},
         {"$set": {
             "password_hash": new_hash,
             "password_version": datetime.now(timezone.utc).timestamp(),
