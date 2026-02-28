@@ -820,7 +820,7 @@ class EFIEventProcessor:
             },
             {
                 "$group": {
-                    "_id": "$part_id",
+                    "_id": {"part_id": "$part_id", "organization_id": "$organization_id"},
                     "count": {"$sum": 1},
                     "part_name": {"$first": "$part_name"},
                     "failure_cards": {"$addToSet": "$failure_card_id"},
@@ -835,9 +835,11 @@ class EFIEventProcessor:
         patterns = []
         for anomaly in anomalies:
             pattern_id = f"pat_{uuid.uuid4().hex[:12]}"
+            anomaly_org_id = anomaly["_id"].get("organization_id")
             
             patterns.append({
                 "pattern_id": pattern_id,
+                "organization_id": anomaly_org_id,  # TIER 1: org-scoped — Sprint 1C
                 "pattern_type": "part_anomaly",
                 "description": f"Part '{anomaly.get('part_name')}' not matching expectations",
                 "affected_parts": [{
