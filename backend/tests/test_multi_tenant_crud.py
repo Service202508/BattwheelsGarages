@@ -334,6 +334,7 @@ class TestInventoryCRUD:
         # First create an item
         item_data = {
             "name": f"TEST_UpdateItem {uuid.uuid4().hex[:6]}",
+            "sku": f"SKU-UPD-{uuid.uuid4().hex[:6]}",
             "category": "parts",
             "quantity": 20,
             "unit_price": 500.0,
@@ -374,6 +375,7 @@ class TestInventoryCRUD:
         # First create an item
         item_data = {
             "name": f"TEST_DeleteItem {uuid.uuid4().hex[:6]}",
+            "sku": f"SKU-DEL-{uuid.uuid4().hex[:6]}",
             "category": "parts",
             "quantity": 5,
             "unit_price": 100.0,
