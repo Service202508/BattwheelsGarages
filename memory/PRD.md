@@ -71,22 +71,22 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 ## Prioritized Backlog
 
 ### P0 — Critical
-- None (production gate passed)
+- None (production gate passed at 90/100, bugs fixed in 6A)
 
 ### P1 — High Priority
 - Razorpay LIVE keys (user must provide)
-- GST settings persistence: `PUT /api/v1/settings/gst` does not save `place_of_supply`
 - Cursor-based pagination for all hard-capped queries
 - GSTR-3B ITC data-driven integration test (with actual vendor_credits / blocked bills)
-- Address 14 remaining skipped tests (complex fixture work)
+- Address 13 remaining skipped tests (complex fixture work)
 
 ### P2 — Medium Priority
-- ITC Rule 42/43 implementation
-- Knowledge articles pipeline completion
+- Knowledge articles pipeline completion (0 documents, auto-generation not wired)
 - Two disconnected failure card collections (`failure_cards` vs `efi_failure_cards`)
 - `efi_platform_patterns` duplicate schemas (pattern_id vs pattern_key)
 - CSRF secure flag, rate limiting in-memory
 - Multiple mocked email/notification features (WhatsApp)
+- Background job for embedding regeneration (current endpoint times out via ingress)
+- `supply_type` dropdown on invoice form for exempt supply classification
 
 ## Credentials
 - **Dev:** dev@battwheels.internal / DevTest@123
