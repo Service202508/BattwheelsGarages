@@ -429,9 +429,9 @@ class DoubleEntryService:
         """
         # Period lock check — prevent posting to locked periods (P1-13C)
         if entry_date and organization_id:
-            from services.posting_hooks import _check_period_lock
+            from utils.period_lock import check_period_locked
             try:
-                await _check_period_lock(organization_id, entry_date)
+                await check_period_locked(organization_id, entry_date)
             except ValueError as e:
                 return False, str(e), None
         
