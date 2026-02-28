@@ -259,11 +259,18 @@ class ContinuousLearningService:
         - Same subsystem
         - Similar symptoms or DTC codes
         """
-        # Build query
+        # Build query — handle both legacy field names (Sprint 3B-01)
+        subsystem_val = event.get("subsystem") or event.get("category")
         query = {
             "status": {"$in": ["approved", "draft"]},
-            "subsystem": event.get("subsystem") or event.get("category")
         }
+        # failure_cards uses fault_category or subsystem or subsystem_category
+        if subsystem_val:
+            query["$or"] = [
+                {"subsystem": subsystem_val},
+                {"fault_category": subsystem_val},
+                {"subsystem_category": subsystem_val},
+            ]
         
         # Try model-specific first
         if event.get("vehicle_model"):
