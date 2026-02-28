@@ -284,7 +284,7 @@ class TestInventoryCRUD:
             "password": ADMIN_PASSWORD
         })
         token = response.json()["token"]
-        return {"Authorization": f"Bearer {token}"}
+        return {"Authorization": f"Bearer {token}", "X-Organization-ID": "dev-internal-testing-001"}
     
     def test_list_inventory(self, auth_headers):
         """List inventory should return items for user's org"""
