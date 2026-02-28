@@ -2824,11 +2824,12 @@ async def import_items(request: Request, file: UploadFile = File(...), overwrite
 
 # ============== ITEM HISTORY (MUST BE BEFORE /{item_id}) ==============
 
-async def log_item_history(db, item_id: str, action: str, changes: dict, user_name: str):
+async def log_item_history(db, item_id: str, action: str, changes: dict, user_name: str, org_id: str = None):
     """Helper function to log item history"""
     history_entry = {
         "history_id": f"IH-{uuid.uuid4().hex[:8].upper()}",
         "item_id": item_id,
+        "organization_id": org_id,  # P1-01 FIX: org-scoped — Sprint 1C
         "action": action,
         "changes": changes,
         "user_name": user_name,
