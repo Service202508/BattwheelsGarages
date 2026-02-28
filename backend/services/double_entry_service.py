@@ -28,6 +28,37 @@ logger = logging.getLogger(__name__)
 
 CURRENCY_PRECISION = Decimal('0.01')
 
+
+# ==================== INDIAN FISCAL YEAR HELPERS (P1-11) ====================
+
+def get_indian_fiscal_year(date: datetime) -> tuple:
+    """
+    Returns (fy_start_year, fy_end_year) for a given date.
+    Example: date=2025-06-15 -> (2025, 2026) meaning FY 2025-26
+    Example: date=2026-01-15 -> (2025, 2026) still FY 2025-26
+    """
+    if date.month >= 4:
+        return (date.year, date.year + 1)
+    else:
+        return (date.year - 1, date.year)
+
+
+def get_fiscal_year_dates(fy_start_year: int) -> tuple:
+    """
+    Returns (start_date, end_date) for a fiscal year.
+    fy_start_year=2025 -> (2025-04-01, 2026-03-31)
+    """
+    start = datetime(fy_start_year, 4, 1)
+    end = datetime(fy_start_year + 1, 3, 31, 23, 59, 59)
+    return (start, end)
+
+
+def get_current_fiscal_year_dates() -> tuple:
+    """Returns start and end dates of current Indian fiscal year."""
+    today = datetime.now()
+    fy_start, _ = get_indian_fiscal_year(today)
+    return get_fiscal_year_dates(fy_start)
+
 class EntryType(str, Enum):
     """Types of journal entries"""
     SALES = "SALES"
