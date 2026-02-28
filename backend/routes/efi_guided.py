@@ -368,6 +368,7 @@ async def capture_completion(request: Request, data: CaptureCompletionRequest):
     
     result = await _learning_engine.capture_job_completion(
         ticket_id=data.ticket_id,
+        org_id=org_id,
         session_id=data.session_id,
         actual_resolution=data.actual_resolution,
         actual_parts_used=data.actual_parts_used,
