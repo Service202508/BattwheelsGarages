@@ -728,13 +728,13 @@ async def get_balance_sheet_report(
     total_equity = sum(acc.get("balance", 0) for acc in equity)
     
     # Add bank account balances to assets
-    bank_accounts = await bank_accounts_col.find({"is_active": True}, {"_id": 0}).to_list(50)
+    bank_accounts = await bank_accounts_col.find({"is_active": True, "organization_id": org_id}, {"_id": 0}).to_list(50)
     bank_total = sum(ba.get("current_balance", 0) for ba in bank_accounts)
     total_assets += bank_total
     
     # Add receivables
     receivables_result = await db.invoices.aggregate([
-        {"$match": {"status": {"$in": ["sent", "overdue", "partially_paid"]}}},
+        {"$match": {"organization_id": org_id, "status": {"$in": ["sent", "overdue", "partially_paid"]}}},
         {"$group": {"_id": None, "total": {"$sum": "$balance_due"}}}
     ]).to_list(1)
     receivables = receivables_result[0]["total"] if receivables_result else 0
