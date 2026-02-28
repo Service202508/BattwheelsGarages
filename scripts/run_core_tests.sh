@@ -42,6 +42,9 @@ CORE_TESTS=(
   backend/tests/test_csrf_middleware.py
   backend/tests/test_gstr3b_rcm.py
   backend/tests/test_calculations_regression.py
+  backend/tests/test_sanitization_middleware.py
+  backend/tests/test_efi_guidance.py
+  backend/tests/test_knowledge_brain.py
 )
 
 echo "========================================="
