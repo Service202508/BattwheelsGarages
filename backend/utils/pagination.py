@@ -3,21 +3,40 @@ Battwheels OS - Pagination Utilities
 =====================================
 
 Standard pagination pattern for all list endpoints.
+Supports both skip/limit (backward compat) and cursor-based (keyset) pagination.
 
-Usage:
+Usage (cursor-based — preferred for high-traffic endpoints):
+    from utils.pagination import paginate_keyset, get_pagination_params_v2
+
+    @router.get("/items")
+    async def list_items(
+        cursor: Optional[str] = Query(None),
+        limit: int = Query(25, ge=1, le=100),
+    ):
+        query = {"organization_id": org_id}
+        return await paginate_keyset(
+            db.items, query,
+            sort_field="created_at", sort_order=-1,
+            tiebreaker_field="item_id",
+            limit=limit, cursor=cursor,
+        )
+
+Usage (legacy skip/limit):
     from utils.pagination import paginate, PaginationParams, PaginatedResponse
-    
+
     @router.get("/items")
     async def list_items(pagination: PaginationParams = Depends()):
         query = {"organization_id": org_id}
         return await paginate(db.items, query, pagination)
 """
 
-from typing import Optional, List, Any, Dict
+from typing import Optional, List, Any, Dict, Tuple
 from fastapi import Query
 from pydantic import BaseModel, Field
 from dataclasses import dataclass
 import math
+import base64
+import json
 
 
 # Maximum allowed limit to prevent unbounded queries
