@@ -461,10 +461,10 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
         
         if customer_gstin and validate_gstin(customer_gstin)["valid"]:
             b2b_invoices.append(inv_data)
-        elif not is_intra_state and total > 250000:
-            b2c_large.append(inv_data)
+        elif total > 250000:
+            b2c_large.append(inv_data)  # B2CL: no GSTIN, value > 2.5L
         else:
-            b2c_small.append(inv_data)
+            b2c_small.append(inv_data)  # B2CS: no GSTIN, value <= 2.5L
     
     # Aggregate totals
     def aggregate(inv_list):
