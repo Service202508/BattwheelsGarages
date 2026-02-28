@@ -57,10 +57,19 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
   - P0: Professional Tax hardcoded flat ₹200 for all states
   - P1: Workflow chain broken at Steps 4→5 and 5→6
 
+### RBAC Bypass Fix — P0-01 RESOLVED (2026-02-28)
+- Added 20 missing route patterns to ROUTE_PERMISSIONS in middleware/rbac.py
+- Changed fallthrough logic from "allow all authenticated" to 403 Forbidden deny-by-default
+- Fixed regex patterns from `/.*$` to `(/.*)?$` to cover root-level paths (e.g., `/api/tickets`)
+- Added 3 missing auth-related routes: change-password, switch-organization, employees
+- Added technician to inventory roles (business requirement validated by test)
+- Total patterns in RBAC map: 93 (up from 70)
+- Verification: RBAC script ALL PASS, Core tests 322 passed / 51 skipped / 0 failed, Production ALL GREEN
+
 ## Prioritized Backlog (Updated from Audit)
 
 ### P0 — Critical (Must Fix Before Production)
-- P0-01: **20 route files bypass RBAC** — all `-enhanced` routes unmapped (middleware/rbac.py:42-156,282)
+- ~~P0-01: 20 route files bypass RBAC~~ **RESOLVED 2026-02-28**
 - P0-02: EFI Decision Engine — zero tenant isolation (services/efi_decision_engine.py, 11 DB ops)
 - P0-03: EFI Embedding Service — zero tenant isolation (services/efi_embedding_service.py, 6 DB ops)
 - P0-04: Embedding Service — zero tenant isolation (services/embedding_service.py, 10 DB ops)
