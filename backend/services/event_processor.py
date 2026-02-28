@@ -655,6 +655,7 @@ class EFIEventProcessor:
         """Track when a card is used (viewed/selected by technician)"""
         failure_id = event["data"].get("failure_id")
         
+        # SHARED-BRAIN: cross-tenant by design — Sprint 3A for scope review
         await self.db.failure_cards.update_one(
             {"failure_id": failure_id},
             {"$set": {"last_used_at": datetime.now(timezone.utc).isoformat()}}
@@ -665,8 +666,9 @@ class EFIEventProcessor:
     async def handle_card_approved(self, event: dict) -> Dict[str, Any]:
         """Handle card approval - trigger network sync"""
         failure_id = event["data"].get("failure_id")
+        org_id = event.get("organization_id") or event["data"].get("organization_id")
         
-        # Update card status
+        # SHARED-BRAIN: cross-tenant by design — Sprint 3A for scope review
         await self.db.failure_cards.update_one(
             {"failure_id": failure_id},
             {"$set": {
@@ -675,10 +677,11 @@ class EFIEventProcessor:
             }}
         )
         
-        # Trigger sync event
+        # Trigger sync event (TIER 1: org-scoped — Sprint 1C)
         await self._emit_event(
             EFIEventType.SYNC_REQUESTED.value,
-            {"failure_id": failure_id, "sync_type": "card_approved"}
+            {"failure_id": failure_id, "sync_type": "card_approved"},
+            org_id=org_id
         )
         
         return {"status": "success", "failure_id": failure_id}
