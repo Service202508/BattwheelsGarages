@@ -121,11 +121,11 @@ async def clean(dry_run: bool):
         r = await db.users.delete_many(user_filter)
         print(f"    Deleted: {r.deleted_count}")
 
-    # Also delete orphan users not in any org and not protected
+    # Also delete orphan users not in any protected org
     orphan_filter = {
         "email": {"$nin": list(PROTECTED_USERS)},
         "is_platform_admin": {"$ne": True},
-        "organization_id": {"$nin": list(PROTECTED_ORG_IDS) | set(test_org_ids)},
+        "organization_id": {"$nin": list(PROTECTED_ORG_IDS)},
     }
 
     # 6. Delete org-scoped collection data for test orgs
