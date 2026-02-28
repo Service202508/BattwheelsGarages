@@ -135,6 +135,7 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/customer-portal(/.*)?$":   ["customer", "fleet_customer"],
     r"^/api/business-portal(/.*)?$":   ["fleet_customer"],
     r"^/api/technician-portal(/.*)?$": ["technician"],
+    r"^/api/technician(/.*)?$":        ["technician"],
     
     # ============ AMC (WARRANTY) ============
     r"^/api/amc(/.*)?$":               ["org_admin", "admin", "owner", "manager", "accountant"],
