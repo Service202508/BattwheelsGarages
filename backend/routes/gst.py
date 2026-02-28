@@ -1156,7 +1156,9 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         },
         "summary": {
             "total_output_tax": round(outward_cgst + outward_sgst + outward_igst - cn_tax_total, 2),
-            "total_input_tax": round(input_cgst + input_sgst + input_igst, 2),
+            "total_input_tax": round(net_itc_cgst + net_itc_sgst + net_itc_igst, 2),
+            "itc_reversed": round(itc_reversed_total_cgst + itc_reversed_total_sgst + itc_reversed_total_igst, 2),
+            "itc_ineligible": round(itc_ineligible_total_cgst + itc_ineligible_total_sgst + itc_ineligible_total_igst, 2),
             "rcm_tax_liability": round(rcm_total_tax, 2),
             "net_tax_payable": round(net_cgst + net_sgst + net_igst, 2)
         }
