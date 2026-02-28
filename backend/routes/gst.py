@@ -1030,9 +1030,9 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     cn_value = sum(cn.get("total", 0) for cn in cn_list)
     
     # Adjust net liability by deducting CN tax
-    net_cgst = max(0, outward_cgst - input_cgst - cn_cgst)
-    net_sgst = max(0, outward_sgst - input_sgst - cn_sgst)
-    net_igst = max(0, outward_igst - input_igst - cn_igst)
+    net_cgst = max(0, outward_cgst - net_itc_cgst - cn_cgst)
+    net_sgst = max(0, outward_sgst - net_itc_sgst - cn_sgst)
+    net_igst = max(0, outward_igst - net_itc_igst - cn_igst)
     
     # SECTION 3.1(d) — Inward supplies liable to reverse charge — org-scoped
     rcm_bill_query = org_query(org_id, {
