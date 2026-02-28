@@ -686,3 +686,20 @@ async def seed_efi_brain(request: Request, _=Depends(require_platform_admin)):
     except Exception as e:
         logger.error(f"EFI brain seeding failed: {e}")
         raise HTTPException(status_code=500, detail=f"Seeding failed: {str(e)}")
+
+
+@router.post("/efi/process-queue")
+async def process_efi_learning_queue(request: Request, _=Depends(require_platform_admin)):
+    """
+    Sprint 5B-02: Process pending EFI learning queue items.
+    Converts queued learning events into failure cards with embeddings.
+    Requires platform_admin role.
+    """
+    try:
+        from services.continuous_learning_service import ContinuousLearningService
+        service = ContinuousLearningService(db)
+        result = await service.process_learning_queue(batch_size=100)
+        return {"success": True, **result}
+    except Exception as e:
+        logger.error(f"EFI queue processing failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Queue processing failed: {str(e)}")
