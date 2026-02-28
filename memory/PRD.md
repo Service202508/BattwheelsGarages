@@ -81,6 +81,19 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 - Tier 2 (failure_cards, efi_decision_trees, knowledge_articles) intentionally left cross-tenant per architectural rule
 - Verification: Core tests 322/0/51, Production ALL GREEN
 
+### Sprint 2A — Indian Statutory Compliance (2026-02-28)
+- State-wise Professional Tax slab calculations in services/hr_service.py
+- Period lock enforcement on all journal entry postings in services/posting_hooks.py
+- Indian fiscal year awareness in accounting reports (services/double_entry_service.py)
+- Immutable audit trail for journal entry creation and reversals
+
+### Sprint 2B — GST Compliance Fixes (2026-02-28)
+- **P2-18 RESOLVED:** GSTIN checksum validation (Luhn mod-36 algorithm) in `compute_gstin_checksum()`, enforced by `validate_gstin()`
+- **P1-09 RESOLVED:** GSTR-1 enhancements: B2CL/B2CS segregation, CDNR split (registered/unregistered), HSN summary by code+rate, credit note adjustments
+- **P1-10 RESOLVED:** GSTR-3B enhancements: Table 3.2 (inter/intra-state B2C split), Table 4 (ITC categorization: imports, RCM, ISD, all other, reversed, ineligible)
+- **UNBOUNDED RESOLVED:** All 8 `.to_list(10000)` queries in gst.py capped to `.to_list(5000)`
+- Verification: Core tests 322/0/51, Production ALL GREEN
+
 ## Prioritized Backlog (Updated from Audit)
 
 ### P0 — Critical (Must Fix Before Production)
