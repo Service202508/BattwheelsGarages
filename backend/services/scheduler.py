@@ -155,8 +155,9 @@ async def generate_recurring_invoices():
                 new_status = "expired"
             
             # Update recurring invoice
+            # SCHEDULER-FIX: org_id scoped from recurring profile — Sprint 1B
             await db.recurring_invoices.update_one(
-                {"recurring_invoice_id": ri.get("recurring_invoice_id")},
+                {"recurring_invoice_id": ri.get("recurring_invoice_id"), "organization_id": org_id},
                 {
                     "$set": {
                         "next_invoice_date": next_date_str,
