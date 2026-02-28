@@ -45,6 +45,7 @@ CORE_TESTS=(
   backend/tests/test_sanitization_middleware.py
   backend/tests/test_efi_guidance.py
   backend/tests/test_knowledge_brain.py
+  backend/tests/test_sprint_6c_cursor_pagination.py
 )
 
 echo "========================================="
