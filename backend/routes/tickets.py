@@ -388,6 +388,30 @@ async def close_ticket(request: Request, ticket_id: str, data: TicketCloseReques
             if not existing_fc:
                 await service.db.failure_cards.insert_one(failure_card)
                 ticket["failure_card_id"] = fc_card_id
+                
+                # Sprint 3B-03: Auto-generate embedding for new failure card
+                try:
+                    from services.efi_embedding_service import EFIEmbeddingManager
+                    efi_emb = EFIEmbeddingManager(service.db)
+                    card_text = (
+                        f"{failure_card.get('issue_title', '')} "
+                        f"{failure_card.get('issue_description', '')} "
+                        f"{failure_card.get('root_cause', '')} "
+                        f"{failure_card.get('fault_category', '')}"
+                    ).strip()
+                    if card_text:
+                        emb_result = await efi_emb.generate_complaint_embedding(card_text)
+                        if emb_result and emb_result.get("embedding"):
+                            await service.db.failure_cards.update_one(
+                                {"card_id": fc_card_id},
+                                {"$set": {
+                                    "embedding_vector": emb_result["embedding"],
+                                    "subsystem_category": emb_result.get("classified_subsystem"),
+                                    "embedding_generated_at": datetime.now(_tz.utc).isoformat()
+                                }}
+                            )
+                except Exception as emb_err:
+                    logger.warning(f"Embedding generation failed for card {fc_card_id}: {emb_err}")
         except Exception as e:
             logger.warning(f"Failed to create failure card for ticket {ticket_id}: {e}")
         
