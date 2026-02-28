@@ -359,7 +359,7 @@ class KnowledgeStoreService:
             "problem_title": ticket.get("subject", ticket.get("title", "Resolved Issue")),
             "problem_description": ticket.get("description", ""),
             "symptoms": ticket.get("symptoms", []),
-            "dtc_codes": ticket.get("dtc_codes", []),
+            "dtc_codes": ticket.get("dtc_codes") or ticket.get("error_codes_reported", []),
             "vehicle_make": ticket.get("vehicle_make"),
             "vehicle_model": ticket.get("vehicle_model"),
             "subsystem": ticket.get("category"),
