@@ -239,6 +239,14 @@ class EmbeddingService:
         
         return dot_product / (norm1 * norm2)
     
+    # 3A-02: Only Tier 2 shared-brain collections may be searched without org_id scoping.
+    # Any new collection that needs embedding search must be explicitly added here.
+    ALLOWED_SEARCH_COLLECTIONS = {
+        "failure_cards",        # Tier 2 — shared brain, no org_id needed
+        "knowledge_articles",   # Tier 2 — shared brain
+        "knowledge_embeddings", # Tier 2 — shared brain
+    }
+
     async def find_similar(
         self,
         query_embedding: List[float],
@@ -252,9 +260,20 @@ class EmbeddingService:
         Find similar documents using vector similarity.
         
         Uses MongoDB $vectorSearch if available, falls back to in-memory.
+        
+        3A-02: collection parameter is guarded by ALLOWED_SEARCH_COLLECTIONS
+        to prevent unscoped searches on arbitrary tenant-scoped collections.
         """
         if self.db is None or not query_embedding:
             return []
+        
+        # 3A-02: Constrain parameterized collection search — Sprint 3A
+        if collection not in self.ALLOWED_SEARCH_COLLECTIONS:
+            raise ValueError(
+                f"Embedding search on '{collection}' is not permitted. "
+                f"Only shared-brain Tier 2 collections may be searched "
+                f"without org_id scoping. Allowed: {self.ALLOWED_SEARCH_COLLECTIONS}"
+            )
         
         filter_query = filter_query or {}
         
