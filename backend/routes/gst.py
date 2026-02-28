@@ -344,10 +344,11 @@ async def update_organization_gst_settings(request: Request, settings: Organizat
             raise HTTPException(status_code=400, detail=validation["error"])
     
     await db.organization_settings.update_one(
-        {},
+        org_query(org_id, {}),
         {"$set": {
             "gstin": settings.gstin,
             "place_of_supply": settings.place_of_supply,
+            "state_code": settings.place_of_supply,
             "legal_name": settings.legal_name,
             "trade_name": settings.trade_name,
             "address": settings.address
