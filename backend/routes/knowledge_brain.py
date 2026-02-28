@@ -56,8 +56,8 @@ async def ai_assist_query(
     - Error code interpretation
     - Technical documentation search
     """
-    # Get organization from header
-    org_id = http_request.headers.get("X-Organization-ID")
+    # Get organization from JWT token state (set by TenantGuardMiddleware)
+    org_id = extract_org_id(http_request)
     if org_id:
         request.organization_id = org_id
     
