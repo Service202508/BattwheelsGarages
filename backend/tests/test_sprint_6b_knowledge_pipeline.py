@@ -30,7 +30,7 @@ class TestAuthHelper:
             headers={"Content-Type": "application/json"}
         )
         assert resp.status_code == 200, f"Platform admin login failed: {resp.text}"
-        return resp.json().get("access_token")
+        return resp.json().get("token")  # API returns "token" not "access_token"
     
     @staticmethod
     def get_dev_user_token() -> str:
@@ -41,7 +41,7 @@ class TestAuthHelper:
             headers={"Content-Type": "application/json"}
         )
         assert resp.status_code == 200, f"Dev user login failed: {resp.text}"
-        return resp.json().get("access_token")
+        return resp.json().get("token")  # API returns "token" not "access_token"
 
 
 @pytest.fixture(scope="module")
