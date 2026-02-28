@@ -108,13 +108,49 @@ async def create_failure_card(request: Request, data: FailureCardCreate):
 
 
 @router.get("/failure-cards")
-async def list_failure_cards(request: Request, status: Optional[str] = None, subsystem: Optional[str] = None, search: Optional[str] = None, min_confidence: Optional[float] = None, min_effectiveness: Optional[float] = None, source_type: Optional[str] = None, limit: int = Query(50, le=500),
+async def list_failure_cards(request: Request, status: Optional[str] = None, subsystem: Optional[str] = None, search: Optional[str] = None, min_confidence: Optional[float] = None, min_effectiveness: Optional[float] = None, source_type: Optional[str] = None, cursor: Optional[str] = Query(None, description="Cursor for keyset pagination"), limit: int = Query(50, le=500),
     skip: int = Query(0, ge=0)
 ):
-    """List failure cards with filtering"""
+    """List failure cards with filtering and cursor-based or legacy pagination"""
+    from utils.pagination import paginate_keyset
+
     service = get_service()
     org_id = extract_org_id(request)
-    
+
+    if cursor:
+        # Build query directly for cursor-based path
+        query = {}
+        if org_id:
+            query["organization_id"] = org_id
+        if status:
+            query["status"] = status
+        if subsystem:
+            query["subsystem_category"] = subsystem
+        if min_confidence:
+            query["confidence_score"] = {"$gte": min_confidence}
+        if min_effectiveness:
+            query["effectiveness_score"] = {"$gte": min_effectiveness}
+        if source_type:
+            query["source_type"] = source_type
+        if search:
+            query["$or"] = [
+                {"title": {"$regex": search, "$options": "i"}},
+                {"description": {"$regex": search, "$options": "i"}},
+                {"root_cause": {"$regex": search, "$options": "i"}},
+                {"keywords": {"$in": [search.lower()]}},
+                {"error_codes": {"$in": [search.upper()]}},
+                {"signature_hash": search}
+            ]
+
+        return await paginate_keyset(
+            service.db.failure_cards, query,
+            sort_field="confidence_score", sort_order=-1,
+            tiebreaker_field="failure_id",
+            limit=limit, cursor=cursor,
+            projection={"_id": 0, "embedding_vector": 0},
+        )
+
+    # Legacy skip/limit path
     return await service.list_failure_cards(
         status=status,
         subsystem=subsystem,
