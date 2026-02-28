@@ -813,6 +813,8 @@ class EFIService:
         doc = action.model_dump()
         doc['started_at'] = doc['started_at'].isoformat()
         doc['completed_at'] = doc['completed_at'].isoformat()
+        if org_id:
+            doc['organization_id'] = org_id
         
         for diag in doc.get('attempted_diagnostics', []):
             if isinstance(diag.get('timestamp'), datetime):
@@ -823,13 +825,6 @@ class EFIService:
         
         await self.db.technician_actions.insert_one(doc)
         doc.pop("_id", None)
-        
-        # Add organization_id to the stored action
-        if org_id:
-            await self.db.technician_actions.update_one(
-                {"action_id": doc["action_id"]},
-                {"$set": {"organization_id": org_id}}
-            )
         
         # EMIT ACTION_COMPLETED EVENT
         await self.dispatcher.emit(
