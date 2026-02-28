@@ -16,6 +16,7 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 - `/app/docs/SPRINT_6A_FINAL_REPORT.md` — Sprint 6A final report
 - `/app/docs/SPRINT_6B_FINAL_REPORT.md` — Sprint 6B (Knowledge Pipeline) final report
 - `/app/docs/SPRINT_6C_FINAL_REPORT.md` — Sprint 6C (Cursor Pagination) final report
+- `/app/docs/SPRINT_6D_FINAL_REPORT.md` — Sprint 6D (Pre-Launch Readiness) final report
 
 ## What's Been Implemented
 
@@ -36,50 +37,50 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 ### Phase 5 — Production Gate
 - Sprint 5A/5B: Pre-production audit, GATE PASSED (90/100)
 
-### Phase 6 — Bug Fixes, Knowledge Pipeline & Pagination
-- **Sprint 6A: COMPLETE** — GST settings fix (Pattern A), org_state fix, embeddings, Rule 42/43
-- **Sprint 6B: COMPLETE** — Knowledge Pipeline: auto-generate articles from learning events, seed from failure cards, fix empty cards, wire into EFI response. 22 knowledge articles total.
-- **Sprint 6C: COMPLETE** — Cursor-based (keyset) pagination on 5 highest-traffic endpoints:
-  - GET /api/v1/tickets (1961 items, sort by created_at)
-  - GET /api/v1/invoices-enhanced (14 items, sort by invoice_date)
-  - GET /api/v1/hr/employees (2 items, sort by created_at)
-  - GET /api/v1/failure-intelligence/failure-cards (sort by confidence_score)
-  - GET /api/v1/journal-entries (844 items, sort by entry_date)
-  - Shared utility: `utils/pagination.py` with `paginate_keyset()`, `encode_cursor()`, `decode_cursor()`
-  - Backward compatible: legacy page/limit still works, `next_cursor` included in all responses
+### Phase 6 — Bug Fixes, Knowledge Pipeline, Pagination & Readiness
+- **Sprint 6A: COMPLETE** — GST settings fix, org_state fix, embeddings, Rule 42/43
+- **Sprint 6B: COMPLETE** — Knowledge Pipeline: auto-generate articles from learning events
+- **Sprint 6C: COMPLETE** — Cursor-based pagination on 5 endpoints (backward compatible)
+- **Sprint 6D: COMPLETE** (2026-02-28) — Pre-launch readiness:
+  - 6D-01: 8 compound MongoDB indexes for paginated collections
+  - 6D-02: Database cleanup script (safe, preserves 3 protected orgs)
+  - 6D-03: Volt Motors demo account seeded with realistic data
+  - 6D-04: Final readiness audit — Score: 93/100
+  - 6D-05: Dead code cleanup (stripe_webhook.py, fault_tree_import.py, efi_failure_cards)
+  - Test environment restoration script (`scripts/restore_test_env.py`)
 
 ## Prioritized Backlog
 
-### P0 — Critical
-- None (production gate passed, knowledge pipeline + pagination complete)
-
 ### P1 — High Priority
+- Frontend upgrade to use server-side cursor pagination
 - Razorpay LIVE keys (user must provide)
-- Frontend upgrade to use server-side cursor pagination (currently client-side)
-- GSTR-3B ITC data-driven integration test
-- Address 13 remaining skipped tests
-- GST supply_type UI dropdown on invoice form
+- Address remaining 13 skipped tests
 
 ### P2 — Medium Priority
-- Knowledge article embeddings for semantic search
-- Compound indexes for cursor pagination fields
-- Consolidate failure_cards vs efi_failure_cards collections
-- Background job for embedding regeneration (ingress timeout)
-- CSRF secure flag, rate limiting improvements
-- WhatsApp notification integration (mocked)
+- Background task runner for long-running jobs (embedding regeneration)
 - Migrate hybrid embeddings to true embedding model
+- Purge stale sessions/tenant_roles data
+- WhatsApp notification integration (currently mocked)
 
 ## Credentials
+- **Demo:** demo@voltmotors.in / Demo@12345
 - **Dev:** dev@battwheels.internal / DevTest@123
 - **Platform Admin:** platform-admin@battwheels.in / DevTest@123
-- **Technician:** deepak@battwheelsgarages.in / DevTest@123
+- **P0 Admin:** admin@battwheels.in / TestPass@123
+- **P0 Tech:** tech@battwheels.in / TestPass@123
 
 ## 3rd Party Integrations
 - Razorpay (test keys), Resend, bleach, bcrypt
 - Emergent LLM Key (gpt-4o-mini for hybrid embeddings)
 - WhatsApp remains MOCKED
 
-## Test Baseline (Post Sprint 6C)
+## Test Baseline (Post Sprint 6D)
 - Core suite: 428 passed, 0 failed, 13 skipped
-- Sprint 6B tests: 13/13, Sprint 6C tests: 17/17
-- Production readiness: 90/100
+- Sprint readiness score: 93/100
+- Protected orgs: demo-volt-motors-001, dev-internal-testing-001, org_9c74befbaa95
+
+## Scripts
+- `scripts/restore_test_env.py` — Restores test infrastructure (repeatable)
+- `scripts/clean_dev_database.py` — Removes test data (supports --dry-run)
+- `scripts/add_pagination_indexes.py` — Creates compound indexes
+- `scripts/seed_demo_data.py` / `scripts/seed_demo_org.py` — Seeds demo org
