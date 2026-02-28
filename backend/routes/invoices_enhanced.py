@@ -878,15 +878,16 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
 
 @router.get("")
 @router.get("/")
-async def list_invoices(request: Request, customer_id: Optional[str] = None, status: Optional[str] = None, search: Optional[str] = None, date_from: Optional[str] = None, date_to: Optional[str] = None, overdue_only: bool = False, sort_by: str = "invoice_date", sort_order: str = "desc", page: int = Query(1, ge=1),
+async def list_invoices(request: Request, customer_id: Optional[str] = None, status: Optional[str] = None, search: Optional[str] = None, date_from: Optional[str] = None, date_to: Optional[str] = None, overdue_only: bool = False, sort_by: str = "invoice_date", sort_order: str = "desc", cursor: Optional[str] = Query(None, description="Cursor for keyset pagination"), page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1)
 ):
-    """List invoices with filters and standardized pagination"""
+    """List invoices with filters and cursor-based or legacy pagination"""
     import math
+    from utils.pagination import paginate_keyset
+
     if limit > 100:
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
-    # Get org context for multi-tenant scoping
     org_id = await get_org_id(request)
     query = org_query(org_id, {})
 
@@ -916,9 +917,19 @@ async def list_invoices(request: Request, customer_id: Optional[str] = None, sta
         else:
             query["invoice_date"] = {"$lte": date_to}
 
+    sort_dir = -1 if sort_order == "desc" else 1
+
+    if cursor:
+        return await paginate_keyset(
+            invoices_collection, query,
+            sort_field=sort_by, sort_order=sort_dir,
+            tiebreaker_field="invoice_id",
+            limit=limit, cursor=cursor,
+        )
+
+    # Legacy skip/limit path
     total = await invoices_collection.count_documents(query)
     skip = (page - 1) * limit
-    sort_dir = -1 if sort_order == "desc" else 1
     total_pages = math.ceil(total / limit) if total > 0 else 1
 
     invoices = await invoices_collection.find(query, {"_id": 0}).sort(sort_by, sort_dir).skip(skip).limit(limit).to_list(limit)
