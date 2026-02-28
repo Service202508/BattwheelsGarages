@@ -186,7 +186,8 @@ class AdvancedSearchService:
         query: str,
         filter_query: Dict[str, Any] = None,
         limit: int = 20,
-        fuzzy: bool = True
+        fuzzy: bool = True,
+        org_id: str = None
     ) -> List[Dict[str, Any]]:
         """
         Perform text-based search on failure cards.
@@ -227,12 +228,14 @@ class AdvancedSearchService:
         
         # Fallback to simpler query if regex fails
         try:
+            # TIER 2 SHARED-BRAIN: failure_cards cross-tenant by design — Sprint 1D
             candidates = await self.db.failure_cards.find(
                 mongo_query,
                 {"_id": 0, "embedding_vector": 0}
             ).limit(limit * 3).to_list(limit * 3)
         except Exception as e:
             logger.warning(f"Complex query failed, using simple: {e}")
+            # TIER 2 SHARED-BRAIN: failure_cards cross-tenant by design — Sprint 1D
             # Simple keyword search
             candidates = await self.db.failure_cards.find(
                 {**filter_query, "keywords": {"$in": expanded_tokens}},
@@ -325,7 +328,8 @@ class AdvancedSearchService:
         vehicle_model: str = None,
         limit: int = 10,
         text_weight: float = 0.4,
-        vector_weight: float = 0.6
+        vector_weight: float = 0.6,
+        org_id: str = None
     ) -> List[Dict[str, Any]]:
         """
         Hybrid search combining text and vector approaches.
