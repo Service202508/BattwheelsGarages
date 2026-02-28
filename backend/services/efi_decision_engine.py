@@ -313,9 +313,12 @@ class EFIDecisionTreeEngine:
         
         return result
     
-    async def get_suggested_estimate(self, session_id: str) -> Optional[Dict]:
+    async def get_suggested_estimate(self, session_id: str, org_id: str = None) -> Optional[Dict]:
         """Get smart estimate from completed session"""
-        session = await self.db.efi_sessions.find_one({"session_id": session_id})
+        query = {"session_id": session_id}
+        if org_id:
+            query["organization_id"] = org_id  # TIER 1: org-scoped — Sprint 1C
+        session = await self.db.efi_sessions.find_one(query)
         if not session or session.get("status") != "completed":
             return None
         
