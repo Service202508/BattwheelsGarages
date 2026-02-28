@@ -97,6 +97,7 @@ async def get_current_user(request: Request, db) -> dict:
 async def create_failure_card(request: Request, data: FailureCardCreate):
     """Create a new failure intelligence card"""
     service = get_service()
+    org_id = extract_org_id(request)
     user = await get_current_user(request, service.db)
     
     result = await service.create_failure_card(
@@ -112,7 +113,7 @@ async def list_failure_cards(request: Request, status: Optional[str] = None, sub
 ):
     """List failure cards with filtering"""
     service = get_service()
-    org_id = request.headers.get("X-Organization-ID") or None
+    org_id = extract_org_id(request)
     
     return await service.list_failure_cards(
         status=status,
@@ -131,6 +132,7 @@ async def list_failure_cards(request: Request, status: Optional[str] = None, sub
 async def get_failure_card(request: Request, failure_id: str):
     """Get a single failure card by ID"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     card = await service.get_failure_card(failure_id)
     if not card:
@@ -142,6 +144,7 @@ async def get_failure_card(request: Request, failure_id: str):
 async def get_confidence_history(request: Request, failure_id: str):
     """Get confidence score history for a failure card"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     try:
         return await service.get_confidence_history(failure_id)
