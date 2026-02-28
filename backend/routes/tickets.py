@@ -202,53 +202,75 @@ async def list_tickets(request: Request, ctx: TenantContext = Depends(tenant_con
     priority: Optional[str] = Query(None, description="Filter by priority"),
     category: Optional[str] = Query(None, description="Filter by category"),
     ticket_type: Optional[str] = Query(None, description="Filter by ticket type: onsite or workshop"),
-    page: int = Query(1, ge=1, description="Page number"),
+    cursor: Optional[str] = Query(None, description="Cursor for keyset pagination (from next_cursor)"),
+    page: int = Query(1, ge=1, description="Page number (legacy, ignored when cursor is set)"),
     limit: int = Query(25, ge=1, le=100, description="Items per page (max 100)"),
     sort_by: Optional[str] = Query(None, description="Sort field"),
     sort_order: str = Query("desc", pattern="^(asc|desc)$", description="Sort order")
 ):
     """
-    List tickets with pagination and filtering
+    List tickets with cursor-based pagination and filtering.
     
-    Returns standardized paginated response:
+    Cursor-based: pass `cursor` from previous response's `next_cursor`.
+    Legacy: pass `page` and `limit` (skip/limit, less efficient at scale).
+    
+    Returns:
     - data: Array of tickets
-    - pagination: {page, limit, total_count, total_pages, has_next, has_prev}
-    
-    - Customers see only their tickets
-    - Technicians see assigned + unassigned tickets
-    - Admins see all tickets
-    - Strictly scoped to user's organization
+    - pagination: {limit, total_count, has_next, has_prev, next_cursor}
     """
+    from utils.pagination import paginate_keyset
+
     service = get_service()
     user = await get_current_user(request, service.db)
-    
-    # Cap limit at 100
+
     if limit > 100:
         limit = 100
-    
-    # Calculate skip for backward compatibility with service layer
-    skip = (page - 1) * limit
-    
-    # Use tenant context for org_id (strict enforcement)
-    result = await service.list_tickets(
-        user_id=user.get("user_id"),
-        user_role=user.get("role"),
-        status=status,
-        priority=priority,
-        category=category,
-        ticket_type=ticket_type,
-        limit=limit,
-        skip=skip,
-        organization_id=ctx.org_id
-    )
-    
-    # Get total count for pagination
-    total_count = result.get("total", len(result.get("tickets", [])))
+
+    # Build query (same logic as service layer)
+    query = {"organization_id": ctx.org_id}
+
+    if status:
+        query["status"] = status
+    if priority:
+        query["priority"] = priority
+    if category:
+        query["category"] = category
+    if ticket_type and ticket_type in ("onsite", "workshop"):
+        query["ticket_type"] = ticket_type
+
+    # Role-based filtering
+    user_role = user.get("role")
+    if user_role == "customer":
+        query["customer_id"] = user.get("user_id")
+    elif user_role == "technician":
+        query["$or"] = [
+            {"assigned_technician_id": user.get("user_id")},
+            {"assigned_technician_id": None}
+        ]
+
+    sort_field = sort_by or "created_at"
+    sort_dir = -1 if sort_order == "desc" else 1
+
+    if cursor:
+        return await paginate_keyset(
+            service.db.tickets, query,
+            sort_field=sort_field, sort_order=sort_dir,
+            tiebreaker_field="ticket_id",
+            limit=limit, cursor=cursor,
+        )
+
+    # Legacy skip/limit path
     import math
+    skip = (page - 1) * limit
+    total_count = await service.db.tickets.count_documents(query)
     total_pages = math.ceil(total_count / limit) if total_count > 0 else 1
-    
+
+    tickets = await service.db.tickets.find(
+        query, {"_id": 0}
+    ).sort(sort_field, sort_dir).skip(skip).limit(limit).to_list(limit)
+
     return {
-        "data": result.get("tickets", []),
+        "data": tickets,
         "pagination": {
             "page": page,
             "limit": limit,
