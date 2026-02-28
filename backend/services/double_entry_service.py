@@ -576,6 +576,27 @@ class DoubleEntryService:
                     "updated_at": datetime.now(timezone.utc).isoformat()
                 }}
             )
+            
+            # Tamper-evident journal audit trail — APPEND-ONLY (P1-21)
+            journal_audit_entry = {
+                "audit_id": f"JA-{uuid.uuid4().hex[:8].upper()}",
+                "organization_id": organization_id,
+                "action": "REVERSE",
+                "journal_entry_id": reversal_entry["entry_id"],
+                "original_entry_id": entry_id,
+                "performed_by": created_by or "system_post",
+                "performed_at": datetime.now(timezone.utc).isoformat(),
+                "entry_data": {
+                    "reason": reason,
+                    "reversal_date": reversal_date,
+                    "original_reference": original.get("reference_number", ""),
+                    "total_debit": float(sum(
+                        Decimal(str(l.get("debit_amount", 0))) for l in reversal_lines
+                    )),
+                    "line_count": len(reversal_lines)
+                }
+            }
+            await self.db.journal_audit_log.insert_one(journal_audit_entry)
         
         return success, msg, reversal_entry
     
