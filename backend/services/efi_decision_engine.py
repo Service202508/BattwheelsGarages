@@ -369,6 +369,7 @@ class EFILearningEngine:
     async def capture_job_completion(
         self,
         ticket_id: str,
+        org_id: str,
         session_id: Optional[str] = None,
         actual_resolution: Optional[str] = None,
         actual_parts_used: List[Dict] = None,
