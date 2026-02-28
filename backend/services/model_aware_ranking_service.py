@@ -49,6 +49,7 @@ class ConfidenceLevel(str, Enum):
 @dataclass
 class RankingContext:
     """Context for ranking failure cards"""
+    organization_id: str
     vehicle_make: Optional[str] = None
     vehicle_model: Optional[str] = None
     vehicle_variant: Optional[str] = None
@@ -57,7 +58,6 @@ class RankingContext:
     symptoms: List[str] = None
     dtc_codes: List[str] = None
     description: str = ""
-    organization_id: Optional[str] = None
     
     def __post_init__(self):
         self.symptoms = self.symptoms or []
@@ -191,31 +191,15 @@ class ModelAwareRankingService:
             "status": {"$in": ["approved", "draft"]}
         }
         
-        # Add org filter (include global cards)
-        if context.organization_id:
-            query["$or"] = [
-                {"organization_id": context.organization_id},
-                {"organization_id": None},
-                {"scope": "global"}
-            ]
+        # TIER 2 SHARED-BRAIN: efi_failure_cards cross-tenant by design — Sprint 1D
+        # No org_id filter on failure_cards — shared knowledge base
         
         # Add subsystem filter if available
         if context.subsystem:
-            if "$or" in query:
-                # Already has $or, need to use $and
-                existing_or = query.pop("$or")
-                query["$and"] = [
-                    {"$or": existing_or},
-                    {"$or": [
-                        {"subsystem": context.subsystem},
-                        {"subsystem": {"$regex": context.subsystem, "$options": "i"}}
-                    ]}
-                ]
-            else:
-                query["$or"] = [
-                    {"subsystem": context.subsystem},
-                    {"subsystem": {"$regex": context.subsystem, "$options": "i"}}
-                ]
+            query["$or"] = [
+                {"subsystem": context.subsystem},
+                {"subsystem": {"$regex": context.subsystem, "$options": "i"}}
+            ]
         
         # Fetch candidates
         candidates = await self.failure_cards.find(
@@ -224,6 +208,7 @@ class ModelAwareRankingService:
         ).limit(limit).to_list(limit)
         
         # Also search knowledge items if not enough failure cards
+        # TIER 2 SHARED-BRAIN: knowledge_items cross-tenant by design — Sprint 1D
         if len(candidates) < 10:
             knowledge_query = {}
             if context.subsystem:
