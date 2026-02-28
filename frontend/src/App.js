@@ -37,7 +37,7 @@ import Employees from "@/pages/Employees";
 import FailureIntelligence from "@/pages/FailureIntelligence";
 import FaultTreeImport from "@/pages/FaultTreeImport";
 import AMCManagement from "@/pages/AMCManagement";
-import TechnicianProductivity from "@/pages/TechnicianProductivity";
+import TechnicianProductivity from "@/pages/ProductivityDashboard";
 import Quotes from "@/pages/Quotes";
 import Bills from "@/pages/Bills";
 import CreditNotes from "@/pages/CreditNotes";
