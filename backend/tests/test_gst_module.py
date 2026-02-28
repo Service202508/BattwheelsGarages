@@ -197,7 +197,6 @@ class TestOrganizationSettings:
         assert "settings" in data
         assert "place_of_supply" in data["settings"]
     
-    @pytest.mark.skip(reason="Organization settings GSTIN persistence issue — pre-existing")
     def test_update_organization_settings(self, auth_headers):
         """PUT /api/v1/gst/organization-settings - Updates GSTIN and state"""
         response = requests.put(
