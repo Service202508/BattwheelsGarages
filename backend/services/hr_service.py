@@ -140,6 +140,10 @@ LATE_THRESHOLD_MINUTES = 15
 EARLY_DEPARTURE_THRESHOLD_MINUTES = 15
 OVERTIME_MULTIPLIER = 1.5
 
+# Indian statutory ceilings (FY 2025-26)
+PF_WAGE_CEILING = 15000   # ₹/month — employer PF capped at this basic wage
+ESI_WAGE_CEILING = 21000  # ₹/month gross — ESI applicable only below this
+
 
 class HRService:
     """HR management service with event emission"""
