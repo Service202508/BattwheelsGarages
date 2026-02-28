@@ -843,7 +843,7 @@ class EFIEventProcessor:
                 "pattern_type": "part_anomaly",
                 "description": f"Part '{anomaly.get('part_name')}' not matching expectations",
                 "affected_parts": [{
-                    "part_id": anomaly["_id"],
+                    "part_id": anomaly["_id"].get("part_id"),
                     "name": anomaly.get("part_name"),
                     "anomaly_type": "expectation_mismatch",
                     "count": anomaly["count"]
