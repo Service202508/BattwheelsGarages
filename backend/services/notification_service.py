@@ -319,10 +319,18 @@ async def send_whatsapp(request: WhatsAppRequest, background_tasks: BackgroundTa
 async def send_ticket_notification(
     ticket_id: str, 
     notification_type: str, 
-    background_tasks: BackgroundTasks
+    background_tasks: BackgroundTasks,
+    req: Request = None
 ):
     """Send notification for ticket events"""
-    ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    # P1-03 FIX: extract org_id from request context — Sprint 1B
+    org_id = getattr(getattr(req, "state", None), "tenant_org_id", None) if req else None
+    
+    # P1-03 FIX: scope ticket lookup by org_id — Sprint 1B
+    ticket_query = {"ticket_id": ticket_id}
+    if org_id:
+        ticket_query["organization_id"] = org_id
+    ticket = await db.tickets.find_one(ticket_query, {"_id": 0})
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     
