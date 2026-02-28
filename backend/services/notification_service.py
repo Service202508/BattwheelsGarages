@@ -398,9 +398,15 @@ async def get_notification_logs(
     return logs
 
 @router.get("/stats")
-async def get_notification_stats():
+async def get_notification_stats(req: Request):
     """Get notification statistics"""
-    pipeline = [
+    # P1-03 FIX: scope stats by org_id — Sprint 1B
+    org_id = getattr(getattr(req, "state", None), "tenant_org_id", None)
+    
+    pipeline = []
+    if org_id:
+        pipeline.append({"$match": {"organization_id": org_id}})
+    pipeline.extend([
         {"$group": {
             "_id": {"channel": "$channel", "status": "$status"},
             "count": {"$sum": 1}
@@ -415,7 +421,7 @@ async def get_notification_stats():
             },
             "total": {"$sum": "$count"}
         }}
-    ]
+    ])
     
     result = await db.notification_logs.aggregate(pipeline).to_list(100)
     return result
