@@ -233,6 +233,7 @@ async def match_ticket_to_failures(request: Request, ticket_id: str):
 async def record_technician_action(request: Request, data: TechnicianActionCreate):
     """Record technician diagnostic and repair actions"""
     service = get_service()
+    org_id = extract_org_id(request)
     user = await get_current_user(request, service.db)
     
     try:
@@ -249,6 +250,7 @@ async def record_technician_action(request: Request, data: TechnicianActionCreat
 async def list_technician_actions(request: Request, ticket_id: Optional[str] = None, technician_id: Optional[str] = None, include_hypotheses: bool = False, limit: int = 50):
     """List technician actions"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     query = {}
     if ticket_id:
