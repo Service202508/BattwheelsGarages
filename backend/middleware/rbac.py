@@ -41,9 +41,9 @@ ROLE_HIERARCHY = {
 # Pattern -> List of allowed roles
 ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     # ============ FINANCE ROUTES (Restricted) ============
-    r"^/api/finance/.*$":           ["org_admin", "admin", "owner", "accountant"],
-    r"^/api/banking/.*$":           ["org_admin", "admin", "owner", "accountant"],
-    r"^/api/banking-module/.*$":    ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/finance(/.*)?$":           ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/banking(/.*)?$":           ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/banking-module(/.*)?$":    ["org_admin", "admin", "owner", "accountant"],
     r"^/api/journal.*$":            ["org_admin", "admin", "owner", "accountant"],
     r"^/api/chart-of-accounts.*$":  ["org_admin", "admin", "owner", "accountant"],
     
@@ -52,107 +52,107 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/hr/employees.*$":       ["org_admin", "admin", "owner", "manager", "hr"],
     r"^/api/hr/attendance.*$":      ["org_admin", "admin", "owner", "manager", "hr", "technician", "accountant"],
     r"^/api/hr/leave.*$":           ["org_admin", "admin", "owner", "manager", "hr", "technician", "accountant"],
-    r"^/api/hr/.*$":                ["org_admin", "admin", "owner", "hr"],
-    r"^/api/payroll/.*$":           ["org_admin", "admin", "owner", "hr"],
+    r"^/api/hr(/.*)?$":                ["org_admin", "admin", "owner", "hr"],
+    r"^/api/payroll(/.*)?$":           ["org_admin", "admin", "owner", "hr"],
     
     # ============ INVOICING ============
-    r"^/api/invoices/.*$":          ["org_admin", "admin", "owner", "accountant", "manager"],
-    r"^/api/bills/.*$":             ["org_admin", "admin", "owner", "accountant"],
-    r"^/api/expenses/.*$":          ["org_admin", "admin", "owner", "accountant", "manager"],
-    r"^/api/credit-notes/.*$":      ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/invoices(/.*)?$":          ["org_admin", "admin", "owner", "accountant", "manager"],
+    r"^/api/bills(/.*)?$":             ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/expenses(/.*)?$":          ["org_admin", "admin", "owner", "accountant", "manager"],
+    r"^/api/credit-notes(/.*)?$":      ["org_admin", "admin", "owner", "accountant"],
     r"^/api/payments.*$":           ["org_admin", "admin", "owner", "accountant"],
     
     # ============ ESTIMATES/QUOTES ============
-    r"^/api/estimates/.*$":         ["org_admin", "admin", "owner", "manager", "technician", "dispatcher"],
-    r"^/api/ticket-estimates/.*$":  ["org_admin", "admin", "owner", "manager", "technician"],
-    r"^/api/sales-orders/.*$":      ["org_admin", "admin", "owner", "manager", "accountant"],
+    r"^/api/estimates(/.*)?$":         ["org_admin", "admin", "owner", "manager", "technician", "dispatcher"],
+    r"^/api/ticket-estimates(/.*)?$":  ["org_admin", "admin", "owner", "manager", "technician"],
+    r"^/api/sales-orders(/.*)?$":      ["org_admin", "admin", "owner", "manager", "accountant"],
     
     # ============ OPERATIONS ============
-    r"^/api/tickets/.*$":           ["org_admin", "admin", "owner", "manager", "technician", "dispatcher"],
-    r"^/api/job-cards/.*$":         ["org_admin", "admin", "owner", "manager", "technician"],
-    r"^/api/vehicles/.*$":          ["org_admin", "admin", "owner", "manager", "technician", "dispatcher"],
+    r"^/api/tickets(/.*)?$":           ["org_admin", "admin", "owner", "manager", "technician", "dispatcher"],
+    r"^/api/job-cards(/.*)?$":         ["org_admin", "admin", "owner", "manager", "technician"],
+    r"^/api/vehicles(/.*)?$":          ["org_admin", "admin", "owner", "manager", "technician", "dispatcher"],
     
     # ============ INVENTORY ============
-    r"^/api/inventory/.*$":         ["org_admin", "admin", "owner", "manager", "accountant"],
-    r"^/api/items/.*$":             ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
-    r"^/api/allocations/.*$":       ["org_admin", "admin", "owner", "manager", "technician"],
+    r"^/api/inventory(/.*)?$":         ["org_admin", "admin", "owner", "manager", "accountant"],
+    r"^/api/items(/.*)?$":             ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
+    r"^/api/allocations(/.*)?$":       ["org_admin", "admin", "owner", "manager", "technician"],
     r"^/api/stock.*$":              ["org_admin", "admin", "owner", "manager", "accountant"],
-    r"^/api/composite-items/.*$":   ["org_admin", "admin", "owner", "manager"],
-    r"^/api/purchase-orders/.*$":   ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/composite-items(/.*)?$":   ["org_admin", "admin", "owner", "manager"],
+    r"^/api/purchase-orders(/.*)?$":   ["org_admin", "admin", "owner", "accountant"],
     
     # ============ CONTACTS/CRM ============
-    r"^/api/contacts/.*$":          ["org_admin", "admin", "owner", "manager", "dispatcher"],
-    r"^/api/suppliers/.*$":         ["org_admin", "admin", "owner", "accountant"],
-    r"^/api/customers/.*$":         ["org_admin", "admin", "owner", "manager", "dispatcher"],
+    r"^/api/contacts(/.*)?$":          ["org_admin", "admin", "owner", "manager", "dispatcher"],
+    r"^/api/suppliers(/.*)?$":         ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/customers(/.*)?$":         ["org_admin", "admin", "owner", "manager", "dispatcher"],
     
     # ============ EFI/AI (Operations) ============
-    r"^/api/efi/.*$":               ["org_admin", "admin", "owner", "manager", "technician"],
-    r"^/api/ai/.*$":                ["org_admin", "admin", "owner", "manager", "technician"],
+    r"^/api/efi(/.*)?$":               ["org_admin", "admin", "owner", "manager", "technician"],
+    r"^/api/ai(/.*)?$":                ["org_admin", "admin", "owner", "manager", "technician"],
     r"^/api/failure.*$":            ["org_admin", "admin", "owner", "manager", "technician"],
     r"^/api/knowledge.*$":          ["org_admin", "admin", "owner", "manager", "technician"],
     
     # ============ REPORTS ============
-    r"^/api/reports/.*$":           ["org_admin", "admin", "owner", "accountant", "manager"],
-    r"^/api/gst/.*$":               ["org_admin", "admin", "owner", "accountant"],
-    r"^/api/productivity/.*$":      ["org_admin", "admin", "owner", "manager", "hr"],
+    r"^/api/reports(/.*)?$":           ["org_admin", "admin", "owner", "accountant", "manager"],
+    r"^/api/gst(/.*)?$":               ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/productivity(/.*)?$":      ["org_admin", "admin", "owner", "manager", "hr"],
     
     # ============ SETTINGS/ADMIN ============
     r"^/api/organizations/settings.*$": ["org_admin", "admin", "owner"],
     r"^/api/organizations/users.*$":    ["org_admin", "admin", "owner"],
-    r"^/api/organizations/.*$":         ["org_admin", "admin", "owner", "manager", "accountant", "technician", "viewer"],
-    r"^/api/settings/.*$":              ["org_admin", "admin", "owner"],
-    r"^/api/permissions/.*$":           ["org_admin", "admin", "owner"],
-    r"^/api/users/.*$":                 ["org_admin", "admin", "owner"],
+    r"^/api/organizations(/.*)?$":         ["org_admin", "admin", "owner", "manager", "accountant", "technician", "viewer"],
+    r"^/api/settings(/.*)?$":              ["org_admin", "admin", "owner"],
+    r"^/api/permissions(/.*)?$":           ["org_admin", "admin", "owner"],
+    r"^/api/users(/.*)?$":                 ["org_admin", "admin", "owner"],
     r"^/api/technicians$":              ["org_admin", "admin", "owner", "manager", "dispatcher"],
     
     # ============ PLATFORM ADMIN (Battwheels operator only) ============
-    r"^/api/platform/.*$":              ["owner", "admin"],
-    r"^/api/v1/platform/.*$":           ["owner", "admin"],
+    r"^/api/platform(/.*)?$":              ["owner", "admin"],
+    r"^/api/v1/platform(/.*)?$":           ["owner", "admin"],
     
     # ============ DOCUMENT MANAGEMENT ============
-    r"^/api/documents/.*$":         ["org_admin", "admin", "owner", "manager", "technician"],
-    r"^/api/uploads/.*$":           ["org_admin", "admin", "owner", "manager", "technician", "accountant"],
-    r"^/api/pdf-templates/.*$":     ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/documents(/.*)?$":         ["org_admin", "admin", "owner", "manager", "technician"],
+    r"^/api/uploads(/.*)?$":           ["org_admin", "admin", "owner", "manager", "technician", "accountant"],
+    r"^/api/pdf-templates(/.*)?$":     ["org_admin", "admin", "owner", "accountant"],
     
     # ============ INTEGRATIONS ============
-    r"^/api/razorpay/.*$":          ["org_admin", "admin", "owner", "accountant"],
-    r"^/api/stripe/.*$":            ["org_admin", "admin", "owner", "accountant"],
-    r"^/api/einvoice/.*$":          ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/razorpay(/.*)?$":          ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/stripe(/.*)?$":            ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/einvoice(/.*)?$":          ["org_admin", "admin", "owner", "accountant"],
     
     # ============ SUBSCRIPTIONS/BILLING ============
-    r"^/api/subscriptions/.*$":     ["org_admin", "admin", "owner"],
-    r"^/api/plans/.*$":             ["org_admin", "admin", "owner", "manager", "viewer"],
+    r"^/api/subscriptions(/.*)?$":     ["org_admin", "admin", "owner"],
+    r"^/api/plans(/.*)?$":             ["org_admin", "admin", "owner", "manager", "viewer"],
     
     # ============ NOTIFICATIONS ============
-    r"^/api/notifications/.*$":     ["org_admin", "admin", "owner", "manager", "technician", "dispatcher", "accountant"],
+    r"^/api/notifications(/.*)?$":     ["org_admin", "admin", "owner", "manager", "technician", "dispatcher", "accountant"],
     
     # ============ CUSTOMER PORTALS ============
-    r"^/api/customer-portal/.*$":   ["customer", "fleet_customer"],
-    r"^/api/business-portal/.*$":   ["fleet_customer"],
-    r"^/api/technician-portal/.*$": ["technician"],
+    r"^/api/customer-portal(/.*)?$":   ["customer", "fleet_customer"],
+    r"^/api/business-portal(/.*)?$":   ["fleet_customer"],
+    r"^/api/technician-portal(/.*)?$": ["technician"],
     
     # ============ AMC (WARRANTY) ============
-    r"^/api/amc/.*$":               ["org_admin", "admin", "owner", "manager", "accountant"],
+    r"^/api/amc(/.*)?$":               ["org_admin", "admin", "owner", "manager", "accountant"],
     
     # ============ TIME TRACKING ============
-    r"^/api/time-tracking/.*$":     ["org_admin", "admin", "owner", "manager", "technician"],
+    r"^/api/time-tracking(/.*)?$":     ["org_admin", "admin", "owner", "manager", "technician"],
     
     # ============ PROJECTS ============
-    r"^/api/projects/.*$":          ["org_admin", "admin", "owner", "manager", "technician"],
+    r"^/api/projects(/.*)?$":          ["org_admin", "admin", "owner", "manager", "technician"],
     
     # ============ DATA MANAGEMENT ============
-    r"^/api/data-management/.*$":   ["org_admin", "admin", "owner"],
-    r"^/api/data-migration/.*$":    ["org_admin", "admin", "owner"],
-    r"^/api/data-integrity/.*$":    ["org_admin", "admin", "owner"],
-    r"^/api/export/.*$":            ["org_admin", "admin", "owner", "accountant"],
-    r"^/api/seed/.*$":              ["org_admin", "admin", "owner"],
+    r"^/api/data-management(/.*)?$":   ["org_admin", "admin", "owner"],
+    r"^/api/data-migration(/.*)?$":    ["org_admin", "admin", "owner"],
+    r"^/api/data-integrity(/.*)?$":    ["org_admin", "admin", "owner"],
+    r"^/api/export(/.*)?$":            ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/seed(/.*)?$":              ["org_admin", "admin", "owner"],
     
     # ============ DELIVERY CHALLANS ============
-    r"^/api/delivery-challans/.*$": ["org_admin", "admin", "owner", "manager", "accountant"],
-    r"^/api/recurring-invoices/.*$": ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/delivery-challans(/.*)?$": ["org_admin", "admin", "owner", "manager", "accountant"],
+    r"^/api/recurring-invoices(/.*)?$": ["org_admin", "admin", "owner", "accountant"],
     
     # ============ MASTER DATA ============
-    r"^/api/master-data/.*$":       ["org_admin", "admin", "owner", "manager"],
+    r"^/api/master-data(/.*)?$":       ["org_admin", "admin", "owner", "manager"],
     
     # ============ ENHANCED MODULES (P0 — previously unmapped) ============
     r"^/api/invoices-enhanced(/.*)?$":      ["org_admin", "admin", "owner", "accountant", "manager"],
