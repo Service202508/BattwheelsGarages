@@ -905,7 +905,7 @@ async def create_enhanced_item(item: ItemCreate, request: Request):
         )
     
     # Log history
-    await log_item_history(db, item_id, "created", {"name": item.name, "type": item.item_type}, "System")
+    await log_item_history(db, item_id, "created", {"name": item.name, "type": item.item_type}, "System", org_id=org_id)
     
     return {"code": 0, "message": "Item created successfully", "item": item_dict}
 
