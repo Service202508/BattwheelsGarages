@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 import os
 import sys
 
-BASE_URL = os.environ.get('API_BASE_URL', 'https://platform-review-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('API_BASE_URL', 'https://security-fixes-4.preview.emergentagent.com')
 API_URL = f"{BASE_URL}/api"
 ORG_ID = "6996dcf072ffd2a2395fee7b"  # Battwheels Garages production org
 
