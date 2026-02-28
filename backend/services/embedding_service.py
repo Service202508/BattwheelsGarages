@@ -188,19 +188,25 @@ class EmbeddingService:
                         embedding = embedding_data.embedding
                         results[original_idx] = embedding
                         
-                        # Cache
+                        # Cache (TIER 1: org-scoped — Sprint 1C)
                         if self.db is not None:
                             text = batch_texts[j]
                             text_hash = self._compute_text_hash(text)
+                            cache_doc = {
+                                "text_hash": text_hash,
+                                "text_preview": text[:200],
+                                "embedding": embedding,
+                                "model": EMBEDDING_MODEL,
+                                "created_at": datetime.now(timezone.utc).isoformat()
+                            }
+                            if org_id:
+                                cache_doc["organization_id"] = org_id
+                            cache_filter = {"text_hash": text_hash}
+                            if org_id:
+                                cache_filter["organization_id"] = org_id
                             await self.db.embedding_cache.update_one(
-                                {"text_hash": text_hash},
-                                {"$set": {
-                                    "text_hash": text_hash,
-                                    "text_preview": text[:200],
-                                    "embedding": embedding,
-                                    "model": EMBEDDING_MODEL,
-                                    "created_at": datetime.now(timezone.utc).isoformat()
-                                }},
+                                cache_filter,
+                                {"$set": cache_doc},
                                 upsert=True
                             )
                     
