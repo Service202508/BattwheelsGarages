@@ -117,7 +117,7 @@ class TicketCreateData(BaseModel):
     attachments_count: int = 0
     estimated_cost: Optional[float] = None
     error_codes_reported: List[str] = []
-    organization_id: Optional[str] = None  # Multi-tenant scoping
+    organization_id: str  # Multi-tenant scoping — required, Sprint 1D
 
 
 class TicketUpdateData(BaseModel):
@@ -265,8 +265,7 @@ class TicketService:
         }
         
         # Add organization_id for multi-tenant scoping
-        if data.organization_id:
-            ticket_doc["organization_id"] = data.organization_id
+        ticket_doc["organization_id"] = data.organization_id
 
         # ── SLA FIELDS: Calculate deadlines based on priority ──
         try:
