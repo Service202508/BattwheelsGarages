@@ -152,7 +152,7 @@ Output ONLY the JSON array, nothing else. Example format: [-0.5, 0.3, 0.8, ...]"
                         "model": self.model,
                         "messages": [{"role": "user", "content": prompt}],
                         "temperature": 0.1,  # Low temperature for consistency
-                        "max_tokens": 2000
+                        "max_tokens": 8000
                     }
                 )
                 
