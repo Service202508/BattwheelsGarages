@@ -177,15 +177,23 @@ async def list_journal_entries(request: Request, start_date: str = Query(None, d
     total = result.get("total", len(result.get("entries", [])))
     total_pages = math.ceil(total / limit) if total > 0 else 1
 
+    entries = result.get("entries", [])
+    from utils.pagination import encode_cursor
+    next_cursor = None
+    if entries and page < total_pages:
+        last = entries[-1]
+        next_cursor = encode_cursor(last.get("entry_date"), last.get("entry_id"))
+
     return {
-        "data": result.get("entries", []),
+        "data": entries,
         "pagination": {
             "page": page,
             "limit": limit,
             "total_count": total,
             "total_pages": total_pages,
             "has_next": page < total_pages,
-            "has_prev": page > 1
+            "has_prev": page > 1,
+            "next_cursor": next_cursor,
         }
     }
 
