@@ -274,7 +274,7 @@ class EFIService:
         source_type: Optional[str] = None,
         limit: int = 50,
         skip: int = 0,
-        organization_id: Optional[str] = None
+        organization_id: str
     ) -> Dict[str, Any]:
         """List failure cards with filtering"""
         query = {}
@@ -723,9 +723,12 @@ class EFIService:
             matching_stages_used=stages_used
         )
     
-    async def match_ticket_to_failures(self, ticket_id: str) -> Dict[str, Any]:
+    async def match_ticket_to_failures(self, ticket_id: str, org_id: str = None) -> Dict[str, Any]:
         """Match an existing ticket to failure cards"""
-        ticket = await self.db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+        ticket_query = {"ticket_id": ticket_id}
+        if org_id:
+            ticket_query["organization_id"] = org_id
+        ticket = await self.db.tickets.find_one(ticket_query, {"_id": 0})
         if not ticket:
             raise ValueError(f"Ticket {ticket_id} not found")
         
@@ -743,8 +746,11 @@ class EFIService:
         # Update ticket
         if response.matches:
             suggested_ids = [m.failure_id for m in response.matches]
+            ticket_update_filter = {"ticket_id": ticket_id}
+            if org_id:
+                ticket_update_filter["organization_id"] = org_id
             await self.db.tickets.update_one(
-                {"ticket_id": ticket_id},
+                ticket_update_filter,
                 {"$set": {
                     "suggested_failure_cards": suggested_ids,
                     "ai_match_performed": True,
@@ -876,13 +882,19 @@ class EFIService:
     
     # ==================== PART USAGE ====================
     
-    async def record_part_usage(self, data: PartUsageCreate) -> Dict[str, Any]:
+    async def record_part_usage(self, data: PartUsageCreate, org_id: str = None) -> Dict[str, Any]:
         """Record part usage with failure card linkage"""
-        ticket = await self.db.tickets.find_one({"ticket_id": data.ticket_id}, {"_id": 0})
+        ticket_query = {"ticket_id": data.ticket_id}
+        if org_id:
+            ticket_query["organization_id"] = org_id
+        ticket = await self.db.tickets.find_one(ticket_query, {"_id": 0})
         if not ticket:
             raise ValueError(f"Ticket {data.ticket_id} not found")
         
-        part = await self.db.inventory.find_one({"item_id": data.part_id}, {"_id": 0})
+        part_query = {"item_id": data.part_id}
+        if org_id:
+            part_query["organization_id"] = org_id
+        part = await self.db.inventory.find_one(part_query, {"_id": 0})
         if not part:
             raise ValueError(f"Part {data.part_id} not found")
         
@@ -923,6 +935,7 @@ class EFIService:
     
     async def get_analytics_overview(self) -> Dict[str, Any]:
         """Get EFI system analytics"""
+        # TIER 2 SHARED-BRAIN: failure_cards cross-tenant by design — Sprint 1D
         total_cards = await self.db.failure_cards.count_documents({})
         approved_cards = await self.db.failure_cards.count_documents({"status": "approved"})
         draft_cards = await self.db.failure_cards.count_documents({"status": "draft"})
