@@ -236,7 +236,7 @@ class TestInvoiceGSTClassification:
             json={
                 "customer_id": customer_id,
                 "reference_number": f"6A-TEST-{place_of_supply}",
-                "invoice_date": "2026-02-28",
+                "invoice_date": "2026-03-01",
                 "payment_terms": 30,
                 "line_items": [{"name": "Test Item", "quantity": 1, "rate": 10000, "tax_rate": 18, "hsn_sac_code": "998719"}],
                 "place_of_supply": place_of_supply
