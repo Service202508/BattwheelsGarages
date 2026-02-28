@@ -412,6 +412,7 @@ async def list_symptoms(request: Request, category: Optional[str] = None, search
 async def create_knowledge_relation(request: Request, data: dict):
     """Create a relationship in the knowledge graph"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     relation = KnowledgeRelation(
         source_type=data["source_type"],
