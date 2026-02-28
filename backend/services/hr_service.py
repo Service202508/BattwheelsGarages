@@ -745,12 +745,42 @@ class HRService:
             priority=EventPriority.HIGH
         )
         
+        # Sprint 4A-05: Aggregate granular PF/ESI fields from payslip records
+        total_employee_pf = sum(
+            r.get("deductions", {}).get("pf_employee", 0) for r in records)
+        total_employer_epf = sum(
+            r.get("employer_contributions", {}).get("pf_employer_epf", 0) for r in records)
+        total_employer_eps = sum(
+            r.get("employer_contributions", {}).get("pf_employer_eps", 0) for r in records)
+        total_pf_admin = sum(
+            r.get("employer_contributions", {}).get("pf_admin_charges", 0) for r in records)
+        total_edli = sum(
+            r.get("employer_contributions", {}).get("edli_charges", 0) for r in records)
+        total_employee_esi = sum(
+            r.get("deductions", {}).get("esi_employee", 0) for r in records)
+        total_employer_esi = sum(
+            r.get("employer_contributions", {}).get("esi_employer", 0) for r in records)
+        total_pt = sum(
+            r.get("deductions", {}).get("professional_tax", 0) for r in records)
+        total_tds = sum(
+            r.get("deductions", {}).get("tds", 0) for r in records)
+        
         return {
             "month": month,
             "year": year,
             "employees_processed": len(records),
             "total_gross": round(total_gross, 2),
             "total_net": round(total_net, 2),
+            # Sprint 4A-05: Granular PF/ESI/PT breakdown
+            "total_employee_pf": round(total_employee_pf, 2),
+            "total_employer_epf": round(total_employer_epf, 2),
+            "total_employer_eps": round(total_employer_eps, 2),
+            "total_pf_admin": round(total_pf_admin, 2),
+            "total_edli": round(total_edli, 2),
+            "total_employee_esi": round(total_employee_esi, 2),
+            "total_employer_esi": round(total_employer_esi, 2),
+            "total_pt": round(total_pt, 2),
+            "total_tds": round(total_tds, 2),
             "status": "generated",
             "journal_entry_id": journal_entry_id
         }
