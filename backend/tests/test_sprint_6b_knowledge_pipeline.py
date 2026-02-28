@@ -84,11 +84,13 @@ class Test6B01ProcessQueueKnowledgeArticles:
     
     def test_knowledge_articles_exist_from_learning_events(self, platform_admin_token):
         """Verify knowledge articles with source_type=learning_event exist"""
-        # Check database via API or direct count
-        # We use a different approach: query the suggestions endpoint
+        # Check database via API - needs org context even for platform admin
         resp = requests.get(
             f"{BASE_URL}/api/v1/efi-guided/failure-cards",
-            headers={"Authorization": f"Bearer {platform_admin_token}"}
+            headers={
+                "Authorization": f"Bearer {platform_admin_token}",
+                "X-Organization-ID": "dev-internal-testing-001"
+            }
         )
         # This verifies the service is up; knowledge article count
         # verified via seed-articles in 6B-02
