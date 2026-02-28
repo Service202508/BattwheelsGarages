@@ -153,8 +153,11 @@ class EmbeddingService:
             text_hash = self._compute_text_hash(text)
             
             if use_cache and self.db is not None:
+                cache_query = {"text_hash": text_hash}
+                if org_id:
+                    cache_query["organization_id"] = org_id  # TIER 1: org-scoped — Sprint 1C
                 cached = await self.db.embedding_cache.find_one(
-                    {"text_hash": text_hash},
+                    cache_query,
                     {"_id": 0, "embedding": 1}
                 )
                 if cached:
