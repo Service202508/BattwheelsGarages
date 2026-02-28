@@ -439,6 +439,7 @@ async def create_knowledge_relation(request: Request, data: dict):
 async def get_knowledge_relations(request: Request, source_id: Optional[str] = None, target_id: Optional[str] = None, relation_type: Optional[str] = None):
     """Get relationships from knowledge graph"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     query = {}
     if source_id:
