@@ -66,7 +66,7 @@ class TestJournalCreateAudit:
             ]
             success, msg, entry = await svc.create_journal_entry(
                 organization_id=org_id,
-                entry_date="2026-01-15",
+                entry_date="2026-12-15",
                 description="4B-05 audit test CREATE",
                 lines=lines,
                 created_by="test-4b05"
@@ -120,7 +120,7 @@ class TestJournalReverseAudit:
             ]
             success, msg, entry = await svc.create_journal_entry(
                 organization_id=org_id,
-                entry_date="2026-01-20",
+                entry_date="2026-12-20",
                 description="4B-05 audit test REVERSE",
                 lines=lines,
                 created_by="test-4b05"
@@ -132,7 +132,7 @@ class TestJournalReverseAudit:
             rev_success, rev_msg, rev_entry = await svc.reverse_journal_entry(
                 organization_id=org_id,
                 entry_id=entry_id,
-                reversal_date="2026-01-21",
+                reversal_date="2026-12-21",
                 created_by="test-4b05",
                 reason="4B-05 test reversal"
             )
