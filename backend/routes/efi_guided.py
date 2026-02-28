@@ -241,26 +241,31 @@ async def get_efi_suggestions(request: Request, ticket_id: str):
     
     # Sprint 6B-04: Enrich suggestions with knowledge articles
     # Sprint 6D: Include both global and tenant-scoped articles
+    ka_projection = {"_id": 0, "knowledge_id": 1, "title": 1, "summary": 1, "content": 1}
     for card in similar_cards:
         failure_id = card.get("failure_id") or card.get("card_id")
         subsystem = card.get("subsystem_category") or card.get("fault_category")
         
-        ka = await _db.knowledge_articles.find_one(
-            {
-                "$or": [
-                    {"source_id": failure_id},
-                    {
-                        "subsystem": subsystem,
-                        "approval_status": "approved",
-                        "$or": [
-                            {"scope": "global"},
-                            {"organization_id": org_id}
-                        ]
-                    }
-                ]
-            },
-            {"_id": 0, "knowledge_id": 1, "title": 1, "summary": 1, "content": 1}
-        ) if (failure_id or subsystem) else None
+        # Priority 1: Exact match by source_id (specific to this failure card)
+        ka = None
+        if failure_id:
+            ka = await _db.knowledge_articles.find_one(
+                {"source_id": failure_id}, ka_projection
+            )
+        
+        # Priority 2: Subsystem fallback (global or tenant-scoped)
+        if not ka and subsystem:
+            ka = await _db.knowledge_articles.find_one(
+                {
+                    "subsystem": subsystem,
+                    "approval_status": "approved",
+                    "$or": [
+                        {"scope": "global"},
+                        {"organization_id": org_id}
+                    ]
+                },
+                ka_projection
+            )
         
         if ka:
             card["knowledge_article"] = {
