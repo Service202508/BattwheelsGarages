@@ -352,6 +352,7 @@ async def review_pattern(request: Request, pattern_id: str, action: str, notes: 
 @router.post("/patterns/detect")
 async def trigger_pattern_detection(request: Request, background_tasks: BackgroundTasks):
     """Manually trigger pattern detection job"""
+    org_id = extract_org_id(request)
     if _event_processor:
         background_tasks.add_task(
             _event_processor.detect_emerging_patterns,
