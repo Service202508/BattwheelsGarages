@@ -521,6 +521,57 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
         "total_value": sum(e["note_value"] for e in cdnr_entries),
     }
     
+    cdnr_unreg_summary = {
+        "count": len(cdnr_unregistered_entries),
+        "taxable_value": sum(e["taxable_value"] for e in cdnr_unregistered_entries),
+        "cgst": sum(e["cgst"] for e in cdnr_unregistered_entries),
+        "sgst": sum(e["sgst"] for e in cdnr_unregistered_entries),
+        "igst": sum(e["igst"] for e in cdnr_unregistered_entries),
+        "total_tax": sum(e["total_tax"] for e in cdnr_unregistered_entries),
+        "total_value": sum(e["note_value"] for e in cdnr_unregistered_entries),
+    }
+    
+    # B2CS summary by state+rate (P1-09 — Table 7 GSTR-1)
+    b2cs_by_state_rate = {}
+    for inv in b2c_small:
+        state = inv.get("state_name", "Unknown")
+        rate = inv.get("gst_rate", 0)
+        key = f"{state}_{rate}"
+        if key not in b2cs_by_state_rate:
+            b2cs_by_state_rate[key] = {
+                "state": state,
+                "gst_rate": rate,
+                "taxable_value": 0, "cgst": 0, "sgst": 0, "igst": 0,
+                "total_tax": 0, "count": 0
+            }
+        entry = b2cs_by_state_rate[key]
+        entry["taxable_value"] += inv.get("taxable_value", 0)
+        entry["cgst"] += inv.get("cgst", 0)
+        entry["sgst"] += inv.get("sgst", 0)
+        entry["igst"] += inv.get("igst", 0)
+        entry["total_tax"] += inv.get("total_tax", 0)
+        entry["count"] += 1
+    
+    # HSN summary by hsn_code + gst_rate (P1-09 — Table 12 GSTR-1)
+    hsn_by_code_rate = {}
+    all_invoices_for_hsn = b2b_invoices + b2c_large + b2c_small
+    for inv in all_invoices_for_hsn:
+        hsn = inv.get("hsn_code", inv.get("hsn_sac", "9987"))
+        rate = inv.get("gst_rate", 0)
+        key = f"{hsn}_{rate}"
+        if key not in hsn_by_code_rate:
+            hsn_by_code_rate[key] = {
+                "hsn_code": hsn, "gst_rate": rate,
+                "taxable_value": 0, "cgst": 0, "sgst": 0, "igst": 0,
+                "total_quantity": 0, "uom": "NOS"
+            }
+        entry = hsn_by_code_rate[key]
+        entry["taxable_value"] += inv.get("taxable_value", 0)
+        entry["cgst"] += inv.get("cgst", 0)
+        entry["sgst"] += inv.get("sgst", 0)
+        entry["igst"] += inv.get("igst", 0)
+        entry["total_quantity"] += 1
+    
     # Net adjustments: grand_total should subtract credit note amounts
     cn_taxable = cdnr_summary["taxable_value"]
     cn_cgst = cdnr_summary["cgst"]
