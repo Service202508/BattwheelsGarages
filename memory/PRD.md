@@ -14,6 +14,7 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 - `/app/CODING_STANDARDS.md` — Multi-tenancy & data integrity rules (Pattern A/B/C)
 - `/app/docs/REMEDIATION_AUDIT_2026.md` — Master audit document (1465 lines)
 - `/app/docs/SPRINT_4A_FINAL_REPORT.md` — Sprint 4A complete final report
+- `/app/docs/SPRINT_6B_FINAL_REPORT.md` — Sprint 6B (Knowledge Pipeline) final report
 
 ## What's Been Implemented
 
@@ -36,56 +37,39 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 - Sprint 3A: EFI Pipeline Audit & Anonymisation Layer
 
 ### Phase 4 — Test Infrastructure & Technical Debt (2026-03-01)
-- **Sprint 4A: COMPLETE** (see `/app/docs/SPRINT_4A_FINAL_REPORT.md`)
-  - 4A-01: Unskipped & fixed 31 of 51 skipped tests (51→20)
-  - 4A-02: Created 30 payroll statutory unit tests
-  - 4A-03: Created dev platform admin + test fixtures
-  - 4A-04: Refactored period lock to shared utility
-  - 4A-05: Fixed batch payroll granular PF/ESI keys
-  - Technician portal RBAC mapping added to middleware
-
-- **Sprint 4B: COMPLETE** (see `/app/docs/SPRINT_4B_FINAL_REPORT.md`)
-  - 4B-00: Added test_payroll_statutory.py to core suite, fixed test_17flow_audit.py BASE_URL
-  - 4B-01: 4 cross-tenant isolation tests (all passing)
-  - 4B-02: 9 RBAC negative tests (all passing)
-  - 4B-03: 20 GST statutory accuracy tests (all passing)
-  - 4B-04: GSTR-3B ITC Tables 4B/4D — replaced hardcoded zeros with vendor_credits/blocked bills queries
-  - 4B-05: 3 journal audit trail tests (all passing)
-  - Core suite: 419 passed, 0 failed, 20 skipped
+- **Sprint 4A: COMPLETE** — 31 tests unskipped, 30 payroll tests, dev platform admin
+- **Sprint 4B: COMPLETE** — Cross-tenant tests, RBAC tests, GST statutory tests, GSTR-3B ITC
 
 ### Phase 5 — Production Gate (2026-03-01)
-- **Sprint 5A: COMPLETE** (see `/app/docs/SPRINT_5A_FINAL_REPORT.md`)
-  - Credential audit: all env vars set; Razorpay in TEST mode; IRP is per-org DB config
-  - Graceful degradation: already in place for Sentry, Resend, Razorpay, IRP
-  - Pre-production audit score: **77/100**
-- **Sprint 5B: COMPLETE** (see `/app/docs/SPRINT_5B_FINAL_REPORT.md`)
-  - 5B-01: Fixed 2 unscoped queries (banking_module.py, inventory_api.py)
-  - 5B-02: Wired EFI learning queue processor (admin endpoint + scheduler)
-  - 5B-03: Processed 51 pending queue items into failure cards
-  - 5B-04: Verified PT state count (16 states)
-  - 5B-05: Fixed 6 skipped tests (20→14 skipped)
-  - 5B-06: Full end-to-end smoke test passed (8 steps)
-  - **Production readiness score: 90/100** — GATE PASSED
-- GSTR-3B Rule 42/43 (partial exempt ratio) — requires exempt_supply_ratio on org settings (deferred)
+- **Sprint 5A: COMPLETE** — Pre-production audit score: 77/100
+- **Sprint 5B: COMPLETE** — Production readiness score: 90/100, GATE PASSED
+
+### Phase 6 — Bug Fixes & Knowledge Pipeline (2026-02-28)
+- **Sprint 6A: COMPLETE** — GST settings fix (Pattern A), org_state hardcode removed, EFI embeddings regenerated, Rule 42/43 implemented
+- **Sprint 6B: COMPLETE** — Knowledge Pipeline:
+  - 6B-01: Auto-generate knowledge articles from learning events
+  - 6B-02: Seed 14 knowledge articles from failure cards
+  - 6B-03: Fix 8 empty failure cards (populated from source tickets)
+  - 6B-04: Wire knowledge articles into EFI suggestion response
 
 ## Prioritized Backlog
 
 ### P0 — Critical
-- None (production gate passed at 90/100, bugs fixed in 6A)
+- None (production gate passed, knowledge pipeline complete)
 
 ### P1 — High Priority
 - Razorpay LIVE keys (user must provide)
 - Cursor-based pagination for all hard-capped queries
-- GSTR-3B ITC data-driven integration test (with actual vendor_credits / blocked bills)
-- Address 13 remaining skipped tests (complex fixture work)
+- GSTR-3B ITC data-driven integration test
+- Address 13 remaining skipped tests
 
 ### P2 — Medium Priority
-- Knowledge articles pipeline completion (0 documents, auto-generation not wired)
+- Knowledge article embeddings (for semantic search on articles)
 - Two disconnected failure card collections (`failure_cards` vs `efi_failure_cards`)
-- `efi_platform_patterns` duplicate schemas (pattern_id vs pattern_key)
+- `efi_platform_patterns` duplicate schemas
 - CSRF secure flag, rate limiting in-memory
 - Multiple mocked email/notification features (WhatsApp)
-- Background job for embedding regeneration (current endpoint times out via ingress)
+- Background job for embedding regeneration (endpoint times out via ingress)
 - `supply_type` dropdown on invoice form for exempt supply classification
 
 ## Credentials
@@ -95,10 +79,12 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 - **Starter User:** john@testcompany.com / testpass123
 
 ## 3rd Party Integrations
-- Razorpay, Resend, bleach, bcrypt
+- Razorpay (test keys), Resend, bleach, bcrypt
+- Emergent LLM Key (gpt-4o-mini for hybrid embeddings)
 - WhatsApp integration remains MOCKED
 
-## Test Baseline (Post Sprint 6A)
+## Test Baseline (Post Sprint 6B)
 - Core suite: 428 passed, 0 failed, 13 skipped
-- Test growth: 322 (pre-4A) → 353 (post-4A) → 419 (post-4B) → 425 (post-5B) → 428 (post-6A)
+- Sprint 6B tests: 13/13 passed
+- Test growth: 322 (pre-4A) → 353 (post-4A) → 419 (post-4B) → 425 (post-5B) → 428 (post-6A/6B)
 - Production readiness: 90/100
