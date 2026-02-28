@@ -35,6 +35,10 @@ CORE_TESTS=(
   backend/tests/test_entitlement_enforcement.py
   backend/tests/test_tickets_module.py
   backend/tests/test_payroll_statutory.py
+  backend/tests/test_cross_tenant_isolation.py
+  backend/tests/test_rbac_negative.py
+  backend/tests/test_gst_statutory.py
+  backend/tests/test_journal_audit.py
 )
 
 echo "========================================="
