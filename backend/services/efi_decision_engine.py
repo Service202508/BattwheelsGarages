@@ -150,12 +150,12 @@ class EFIDecisionTreeEngine:
             "tree": tree
         }
     
-    async def get_session(self, session_id: str) -> Optional[Dict]:
+    async def get_session(self, session_id: str, org_id: str = None) -> Optional[Dict]:
         """Get session with current step details"""
-        session = await self.db.efi_sessions.find_one(
-            {"session_id": session_id},
-            {"_id": 0}
-        )
+        query = {"session_id": session_id}
+        if org_id:
+            query["organization_id"] = org_id  # TIER 1: org-scoped — Sprint 1C
+        session = await self.db.efi_sessions.find_one(query, {"_id": 0})
         
         if not session:
             return None
