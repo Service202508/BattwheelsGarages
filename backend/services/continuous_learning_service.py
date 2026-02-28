@@ -242,7 +242,18 @@ class ContinuousLearningService:
                         "failure_card_id": new_card_id
                     })
             
-            # 2. Check for patterns (Part E - Pattern Detection)
+            # 2. Auto-generate knowledge article (Sprint 6B-01)
+            try:
+                ka_result = await self._create_or_update_knowledge_article(event)
+                if ka_result:
+                    result["actions_taken"].append({
+                        "action": "knowledge_article_upserted",
+                        **ka_result
+                    })
+            except Exception as ka_err:
+                logger.warning(f"Knowledge article creation failed for {event_id}: {ka_err}")
+            
+            # 3. Check for patterns (Part E - Pattern Detection)
             pattern_result = await self._check_for_patterns(event)
             if pattern_result:
                 result["actions_taken"].append({
