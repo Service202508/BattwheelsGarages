@@ -199,6 +199,7 @@ async def create_credit_note(request: Request, body: CreateCreditNoteRequest):
         "customer_gstin": invoice.get("customer_gstin", invoice.get("customer", {}).get("gstin", "")),
         "reason": body.reason,
         "notes": body.notes,
+        "credit_note_date": cn_date,
         "line_items": computed_items,
         "subtotal": subtotal,
         "cgst_amount": total_cgst,
