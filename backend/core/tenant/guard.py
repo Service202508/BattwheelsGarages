@@ -488,8 +488,6 @@ class TenantGuardMiddleware(BaseHTTPMiddleware):
         r"^/api/v1/razorpay/webhook$",
         r"^/api/payments/webhook$",
         r"^/api/v1/payments/webhook$",
-        r"^/api/stripe/webhook$",
-        r"^/api/v1/stripe/webhook$",
         r"^/api/invoices/public/.*",
         r"^/api/estimates/public/.*",
         r"^/api/quotes/public/.*",

@@ -121,7 +121,6 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     
     # ============ INTEGRATIONS ============
     r"^/api/razorpay(/.*)?$":          ["org_admin", "admin", "owner", "accountant"],
-    r"^/api/stripe(/.*)?$":            ["org_admin", "admin", "owner", "accountant"],
     r"^/api/einvoice(/.*)?$":          ["org_admin", "admin", "owner", "accountant"],
     
     # ============ SUBSCRIPTIONS/BILLING ============
