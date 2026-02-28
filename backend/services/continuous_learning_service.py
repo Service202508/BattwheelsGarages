@@ -264,26 +264,43 @@ class ContinuousLearningService:
         query = {
             "status": {"$in": ["approved", "draft"]},
         }
+        
+        # Use $and to combine filters without clobbering $or
+        and_conditions = []
+        
         # failure_cards uses fault_category or subsystem or subsystem_category
         if subsystem_val:
-            query["$or"] = [
-                {"subsystem": subsystem_val},
-                {"fault_category": subsystem_val},
-                {"subsystem_category": subsystem_val},
-            ]
+            and_conditions.append({
+                "$or": [
+                    {"subsystem": subsystem_val},
+                    {"fault_category": subsystem_val},
+                    {"subsystem_category": subsystem_val},
+                ]
+            })
         
-        # Try model-specific first
+        # Try model-specific or global cards
         if event.get("vehicle_model"):
-            query["$or"] = [
-                {"vehicle_model": event["vehicle_model"]},
-                {"vehicle_model": None},  # Global cards
-                {"scope": "global"}
-            ]
+            and_conditions.append({
+                "$or": [
+                    {"vehicle_model": event["vehicle_model"]},
+                    {"vehicle_model": None},
+                    {"scope": "global"},
+                    {"organization_id": None},  # Seed cards have no org
+                ]
+            })
         
         # Add DTC code matching if available
         if event.get("dtc_codes"):
-            query["$or"] = query.get("$or", [])
-            query["$or"].append({"dtc_code": {"$in": event["dtc_codes"]}})
+            and_conditions.append({
+                "$or": [
+                    {"dtc_codes": {"$in": event["dtc_codes"]}},
+                    {"dtc_code": {"$in": event["dtc_codes"]}},
+                    {"error_codes": {"$in": event["dtc_codes"]}},
+                ]
+            })
+        
+        if and_conditions:
+            query["$and"] = and_conditions
         
         # Find best matching card
         cards = await self.failure_cards.find(
