@@ -772,10 +772,14 @@ class EFIService:
         self,
         data: TechnicianActionCreate,
         technician_id: str,
-        technician_name: Optional[str]
+        technician_name: Optional[str],
+        org_id: str = None
     ) -> Dict[str, Any]:
         """Record technician diagnostic and repair actions"""
-        ticket = await self.db.tickets.find_one({"ticket_id": data.ticket_id}, {"_id": 0})
+        ticket_query = {"ticket_id": data.ticket_id}
+        if org_id:
+            ticket_query["organization_id"] = org_id
+        ticket = await self.db.tickets.find_one(ticket_query, {"_id": 0})
         if not ticket:
             raise ValueError(f"Ticket {data.ticket_id} not found")
         
@@ -818,6 +822,14 @@ class EFIService:
                 hyp['ruled_out_at'] = hyp['ruled_out_at'].isoformat()
         
         await self.db.technician_actions.insert_one(doc)
+        doc.pop("_id", None)
+        
+        # Add organization_id to the stored action
+        if org_id:
+            await self.db.technician_actions.update_one(
+                {"action_id": doc["action_id"]},
+                {"$set": {"organization_id": org_id}}
+            )
         
         # EMIT ACTION_COMPLETED EVENT
         await self.dispatcher.emit(
