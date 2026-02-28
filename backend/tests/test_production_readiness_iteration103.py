@@ -20,10 +20,10 @@ ORG_ID = "dev-internal-testing-001"
 
 @pytest.fixture(scope="module")
 def auth_headers():
-    """Get JWT auth headers for admin@battwheels.in"""
+    """Get JWT auth headers for dev@battwheels.internal"""
     res = requests.post(f"{BASE_URL}/api/auth/login", json={
-        "email": "admin@battwheels.in",
-        "password": "admin"
+        "email": "dev@battwheels.internal",
+        "password": "DevTest@123"
     })
     if res.status_code != 200:
         pytest.skip(f"Auth failed: {res.status_code} {res.text[:200]}")

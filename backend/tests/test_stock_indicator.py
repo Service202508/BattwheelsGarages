@@ -20,7 +20,7 @@ class TestStockIndicatorFeature:
     def auth_token(self):
         """Get authentication token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         assert response.status_code == 200, f"Login failed: {response.text}"

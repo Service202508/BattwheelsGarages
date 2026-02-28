@@ -20,7 +20,7 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 def auth_token():
     """Get admin auth token for all tests"""
     response = requests.post(f"{BASE_URL}/api/auth/login", json={
-        "email": "admin@battwheels.in",
+        "email": "dev@battwheels.internal",
         "password": "DevTest@123"
     })
     assert response.status_code == 200, f"Login failed: {response.text}"
@@ -41,7 +41,7 @@ class TestAuthentication:
     def test_admin_login_success(self):
         """Test admin login with valid credentials"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         assert response.status_code == 200
@@ -49,7 +49,7 @@ class TestAuthentication:
         assert "token" in data
         assert "user" in data
         assert data["user"]["role"] == "admin"
-        assert data["user"]["email"] == "admin@battwheels.in"
+        assert data["user"]["email"] == "dev@battwheels.internal"
 
 
 # ==================== INVENTORY MODULE TESTS ====================

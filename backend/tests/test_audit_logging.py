@@ -19,8 +19,8 @@ MONGO_URL = os.environ["MONGO_URL"]
 DB_NAME = os.environ["DB_NAME"]
 
 ORG_ID = "dev-internal-testing-001"
-ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "Admin@12345"
+ADMIN_EMAIL = "dev@battwheels.internal"
+ADMIN_PASSWORD = "DevTest@123"
 
 TOKEN = None
 REQUIRED_FIELDS = {"org_id", "user_id", "user_role", "action", "entity_type",

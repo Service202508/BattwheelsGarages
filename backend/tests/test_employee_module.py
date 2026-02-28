@@ -15,7 +15,7 @@ class TestEmployeeModule:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Setup test fixtures"""
-        self.admin_email = "admin@battwheels.in"
+        self.admin_email = "dev@battwheels.internal"
         self.admin_password = "DevTest@123"
         self.test_employee_email = "test.employee@battwheels.in"
         self.test_employee_password = "test123"
@@ -659,7 +659,7 @@ class TestCleanup:
         
         # Login as admin
         login_response = session.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         token = login_response.json().get("token")

@@ -13,7 +13,7 @@ import os
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://phase0-cleanup.preview.emergentagent.com')
 
 # Test credentials
-TEST_EMAIL = "admin@battwheels.in"
+TEST_EMAIL = "dev@battwheels.internal"
 TEST_PASSWORD = "admin"
 
 @pytest.fixture(scope="module")

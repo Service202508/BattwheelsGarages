@@ -18,7 +18,7 @@ class TestEmployeeCreation:
     def admin_token(self):
         """Login as admin and get token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         assert response.status_code == 200, f"Admin login failed: {response.text}"
@@ -33,13 +33,13 @@ class TestEmployeeCreation:
     def test_admin_login(self):
         """Test admin can login successfully"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         assert response.status_code == 200, f"Admin login failed: {response.text}"
         data = response.json()
         assert "token" in data, "Token not returned"
-        assert data.get("user", {}).get("email") == "admin@battwheels.in"
+        assert data.get("user", {}).get("email") == "dev@battwheels.internal"
         print(f"✓ Admin login successful - role: {data.get('user', {}).get('role')}")
     
     def test_create_employee_with_correct_fields(self, auth_headers):
@@ -229,7 +229,7 @@ class TestEmployeeValidation:
     def admin_token(self):
         """Login as admin and get token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         if response.status_code != 200:

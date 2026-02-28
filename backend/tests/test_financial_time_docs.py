@@ -17,7 +17,7 @@ class TestAuthSetup:
     def auth_token(self):
         """Get authentication token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         if response.status_code == 200:
@@ -36,7 +36,7 @@ class TestAuthSetup:
     def test_login_works(self):
         """Verify login works"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         assert response.status_code == 200
@@ -54,7 +54,7 @@ class TestFinancialDashboardAPIs:
     def auth_headers(self):
         """Get authenticated headers"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         token = response.json().get("token")
@@ -214,7 +214,7 @@ class TestFinancialDashboardAPIs:
         """Financial summary requires X-Organization-ID header"""
         # Get auth token first
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         token = response.json().get("token")
@@ -238,7 +238,7 @@ class TestTimeTrackingAPIs:
     def auth_headers(self):
         """Get authenticated headers"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         token = response.json().get("token")
@@ -442,7 +442,7 @@ class TestDocumentsAPIs:
     def auth_headers(self):
         """Get authenticated headers"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         token = response.json().get("token")

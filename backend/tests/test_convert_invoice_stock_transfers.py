@@ -17,7 +17,7 @@ if not BASE_URL:
     BASE_URL = "https://phase0-cleanup.preview.emergentagent.com"
 
 # Test credentials
-ADMIN_EMAIL = "admin@battwheels.in"
+ADMIN_EMAIL = "dev@battwheels.internal"
 ADMIN_PASSWORD = "DevTest@123"
 ORGANIZATION_ID = "org_71f0df814d6d"
 

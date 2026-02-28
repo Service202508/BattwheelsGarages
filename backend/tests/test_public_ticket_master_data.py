@@ -449,7 +449,7 @@ class TestMasterDataInternalAPI:
         """Get auth token for internal APIs"""
         login_response = requests.post(
             f"{API}/auth/login",
-            json={"email": "admin@battwheels.in", "password": "DevTest@123"}
+            json={"email": "dev@battwheels.internal", "password": "DevTest@123"}
         )
         if login_response.status_code == 200:
             token = login_response.json().get("token")

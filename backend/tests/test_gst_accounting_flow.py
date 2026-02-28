@@ -17,7 +17,7 @@ if not BASE_URL:
     BASE_URL = "https://phase0-cleanup.preview.emergentagent.com"
 
 # Test credentials
-TEST_EMAIL = "admin@battwheels.in"
+TEST_EMAIL = "dev@battwheels.internal"
 TEST_PASSWORD = "DevTest@123"
 # Organization ID for multi-tenant scoping (Battwheels Garages - has the test tickets)
 TEST_ORG_ID = "dev-internal-testing-001"

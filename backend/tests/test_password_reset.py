@@ -16,8 +16,8 @@ AUTH = f"{API_URL}/api/auth"
 V1 = f"{API_URL}/api/v1"
 
 # Test credentials
-ADMIN_EMAIL = "admin@battwheels.in"
-ADMIN_PASSWORD = "Admin@12345"
+ADMIN_EMAIL = "dev@battwheels.internal"
+ADMIN_PASSWORD = "DevTest@123"
 
 STRONG_PASSWORD = "NewSecure@123"
 

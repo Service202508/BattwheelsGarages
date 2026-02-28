@@ -13,7 +13,7 @@ if not BASE_URL:
     BASE_URL = "https://phase0-cleanup.preview.emergentagent.com"
 
 # Test credentials
-TEST_EMAIL = "admin@battwheels.in"
+TEST_EMAIL = "dev@battwheels.internal"
 TEST_PASSWORD = "DevTest@123"
 
 

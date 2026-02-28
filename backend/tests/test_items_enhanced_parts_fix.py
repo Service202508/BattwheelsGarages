@@ -26,7 +26,7 @@ class TestItemsEnhancedPartsFix:
         # Login to get token
         login_response = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "DevTest@123"},
+            json={"email": "dev@battwheels.internal", "password": "DevTest@123"},
             headers=self.headers
         )
         if login_response.status_code == 200:
@@ -160,7 +160,7 @@ class TestItemsEnhancedPagination:
         self.headers = {"Content-Type": "application/json"}
         login_response = requests.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "DevTest@123"},
+            json={"email": "dev@battwheels.internal", "password": "DevTest@123"},
             headers=self.headers
         )
         if login_response.status_code == 200:

@@ -31,7 +31,7 @@ class TestCustomerAuth:
     def test_admin_login_success(self):
         """Test admin can login with valid credentials"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         assert response.status_code == 200, f"Admin login failed: {response.text}"
@@ -317,7 +317,7 @@ class TestAdminAMCManagement:
     def setup(self):
         """Get admin token for tests"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         if response.status_code != 200:
@@ -381,7 +381,7 @@ class TestRoleBasedAccess:
         """Test admin can access customer portal routes (for support)"""
         # Login as admin
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         if response.status_code != 200:

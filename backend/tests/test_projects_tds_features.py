@@ -26,8 +26,8 @@ class TestAuth:
     def test_login_success(self):
         """Test login with admin credentials"""
         response = self.session.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
-            "password": "admin"
+            "email": "dev@battwheels.internal",
+            "password": "DevTest@123"
         })
         assert response.status_code == 200, f"Login failed: {response.text}"
         data = response.json()
@@ -42,8 +42,8 @@ def auth_token():
     session = requests.Session()
     session.headers.update({"Content-Type": "application/json"})
     response = session.post(f"{BASE_URL}/api/auth/login", json={
-        "email": "admin@battwheels.in",
-        "password": "admin"
+        "email": "dev@battwheels.internal",
+        "password": "DevTest@123"
     })
     if response.status_code == 200:
         data = response.json()

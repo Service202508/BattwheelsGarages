@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 
 # Org admin credentials
-ORG_ADMIN_EMAIL = "admin@battwheels.in"
+ORG_ADMIN_EMAIL = "dev@battwheels.internal"
 ORG_ADMIN_PASS = "admin"
 ORG_ID = "dev-internal-testing-001"
 

@@ -47,7 +47,7 @@ class TestOrganizationSettingsExportImport:
     def auth_token(self):
         """Login and get auth token"""
         login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         if login_response.status_code == 200:
@@ -139,7 +139,7 @@ class TestCustomerPortalTickets:
         """Setup: Create a test contact with portal access"""
         # Login as admin to create contact with portal access
         login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         if login_response.status_code != 200:
@@ -384,7 +384,7 @@ class TestOrganizationSwitcher:
     def auth_headers(self):
         """Login and get auth headers"""
         login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         if login_response.status_code == 200:

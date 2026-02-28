@@ -14,7 +14,7 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://phase0-cleanup.previ
 def auth_token():
     """Get authentication token"""
     response = requests.post(f"{BASE_URL}/api/auth/login", json={
-        "email": "admin@battwheels.in",
+        "email": "dev@battwheels.internal",
         "password": "DevTest@123"
     })
     assert response.status_code == 200, f"Login failed: {response.text}"

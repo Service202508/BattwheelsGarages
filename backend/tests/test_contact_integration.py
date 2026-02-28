@@ -21,7 +21,7 @@ class TestContactIntegrationModule:
         # Login to get token
         login_response = self.session.post(
             f"{BASE_URL}/api/auth/login",
-            json={"email": "admin@battwheels.in", "password": "DevTest@123"}
+            json={"email": "dev@battwheels.internal", "password": "DevTest@123"}
         )
         assert login_response.status_code == 200, f"Login failed: {login_response.text}"
         token = login_response.json().get("token")

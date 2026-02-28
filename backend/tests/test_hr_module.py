@@ -15,7 +15,7 @@ class TestAuthentication:
     def test_admin_login(self):
         """Test admin login with valid credentials"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         assert response.status_code == 200
@@ -33,7 +33,7 @@ class TestAttendanceModule:
     def auth_token(self):
         """Get admin auth token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         return response.json()["token"]
@@ -125,7 +125,7 @@ class TestLeaveManagement:
     def auth_token(self):
         """Get admin auth token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         return response.json()["token"]
@@ -232,7 +232,7 @@ class TestPayrollModule:
     def auth_token(self):
         """Get admin auth token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         return response.json()["token"]
@@ -332,7 +332,7 @@ class TestHRIntegration:
     def auth_token(self):
         """Get admin auth token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "admin@battwheels.in",
+            "email": "dev@battwheels.internal",
             "password": "DevTest@123"
         })
         return response.json()["token"]

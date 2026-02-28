@@ -28,7 +28,7 @@ ORG_ID = "org_71f0df814d6d"
 def auth_headers():
     """Login and get auth token for all tests"""
     login_res = requests.post(f"{BASE_URL}/api/auth/login", json={
-        "email": "admin@battwheels.in",
+        "email": "dev@battwheels.internal",
         "password": "DevTest@123"
     })
     assert login_res.status_code == 200, f"Login failed: {login_res.text}"
