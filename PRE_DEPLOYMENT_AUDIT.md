@@ -273,7 +273,7 @@ Checks for PostgreSQL/Redis/Railway have been adapted to the actual stack.
 
 ### 🔴 [S1.06] CORS wildcard (`*`) 
 - **Error:** `Access-Control-Allow-Origin: *` for all origins. Any malicious website can call the API on behalf of a logged-in user.
-- **Remediation:** In `server.py`, replace `_cors_origins_raw = "*"` with your specific domains: `allow_origins=["https://accounting-sprint2d.preview.emergentagent.com", "https://app.battwheels.com"]`. Set `CORS_ORIGINS` env var in production.
+- **Remediation:** In `server.py`, replace `_cors_origins_raw = "*"` with your specific domains: `allow_origins=["https://debt-remediation-qa.preview.emergentagent.com", "https://app.battwheels.com"]`. Set `CORS_ORIGINS` env var in production.
 
 ### 🔴 [SE4.06] No security headers
 - **Error:** Missing: `X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`, `Content-Security-Policy`.

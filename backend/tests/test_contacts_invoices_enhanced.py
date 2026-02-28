@@ -10,7 +10,7 @@ import os
 import uuid
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://accounting-sprint2d.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://debt-remediation-qa.preview.emergentagent.com').rstrip('/')
 API_URL = f"{BASE_URL}/api"
 
 # Test data prefix for cleanup
