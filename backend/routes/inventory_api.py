@@ -564,10 +564,11 @@ async def receive_stock(po_id: str, items: List[dict], request: Request):
 
 @router.post("/services")
 async def create_service(data: ServiceOfferingCreate, request: Request):
-    await require_admin(request)
+    ctx = await require_admin(request)
     service = ServiceOffering(**data.model_dump())
     doc = service.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
+    doc['organization_id'] = ctx.org_id
     await db.services.insert_one(doc)
     return service.model_dump()
 
@@ -579,9 +580,9 @@ async def get_services(request: Request):
 
 @router.put("/services/{service_id}")
 async def update_service(service_id: str, data: dict, request: Request):
-    await require_admin(request)
-    await db.services.update_one({"service_id": service_id}, {"$set": data})
-    service = await db.services.find_one({"service_id": service_id}, {"_id": 0})
+    ctx = await require_admin(request)
+    await db.services.update_one({"service_id": service_id, "organization_id": ctx.org_id}, {"$set": data})
+    service = await db.services.find_one({"service_id": service_id, "organization_id": ctx.org_id}, {"_id": 0})
     return service
 
 # ==================== SALES ORDER ROUTES ====================
