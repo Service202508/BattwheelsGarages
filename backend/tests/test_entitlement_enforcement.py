@@ -220,7 +220,7 @@ class TestPlatformAdminPlanChange:
     def test_platform_admin_can_list_organizations(self, platform_admin_token):
         """GET /api/platform/organizations should return list"""
         headers = make_headers(platform_admin_token)
-        resp = requests.get(f"{BASE_URL}/api/platform/organizations", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/platform/organizations", headers=headers)
         print(f"  Status: {resp.status_code}")
         print(f"  Body: {resp.text[:500]}")
         assert resp.status_code == 200, f"Expected 200 but got {resp.status_code}: {resp.text[:300]}"
@@ -233,7 +233,7 @@ class TestPlatformAdminPlanChange:
         """PUT /api/platform/organizations/org_9c74befbaa95/plan to professional should succeed"""
         headers = make_headers(platform_admin_token)
         resp = requests.put(
-            f"{BASE_URL}/api/platform/organizations/{STARTER_ORG}/plan",
+            f"{BASE_URL}/api/v1/platform/organizations/{STARTER_ORG}/plan",
             json={"plan_type": "professional"},
             headers=headers
         )
@@ -248,7 +248,7 @@ class TestPlatformAdminPlanChange:
         # First upgrade
         platform_headers = make_headers(platform_admin_token)
         requests.put(
-            f"{BASE_URL}/api/platform/organizations/{STARTER_ORG}/plan",
+            f"{BASE_URL}/api/v1/platform/organizations/{STARTER_ORG}/plan",
             json={"plan_type": "professional"},
             headers=platform_headers
         )
@@ -264,7 +264,7 @@ class TestPlatformAdminPlanChange:
         """CLEANUP: Revert org_9c74befbaa95 back to starter plan"""
         platform_headers = make_headers(platform_admin_token)
         resp = requests.put(
-            f"{BASE_URL}/api/platform/organizations/{STARTER_ORG}/plan",
+            f"{BASE_URL}/api/v1/platform/organizations/{STARTER_ORG}/plan",
             json={"plan_type": "starter"},
             headers=platform_headers
         )
@@ -286,7 +286,7 @@ class TestStarterProjectsBlocked:
     def test_starter_projects_returns_403(self, starter_token):
         """GET /api/projects with starter plan should return 403"""
         headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/projects", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/projects", headers=headers)
         print(f"  Status: {resp.status_code}")
         print(f"  Body: {resp.text[:500]}")
         assert resp.status_code == 403, f"Expected 403 but got {resp.status_code}: {resp.text[:300]}"
@@ -294,7 +294,7 @@ class TestStarterProjectsBlocked:
     def test_starter_projects_403_has_feature_not_available(self, starter_token):
         """Projects 403 must have feature_not_available error"""
         headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/projects", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/projects", headers=headers)
         assert resp.status_code == 403
         data = resp.json()
         detail = data.get("detail", {})
@@ -305,7 +305,7 @@ class TestStarterProjectsBlocked:
     def test_starter_projects_blocked_feature_is_project_management(self, starter_token):
         """Projects 403 must indicate project_management feature key"""
         headers = make_headers(starter_token, STARTER_ORG)
-        resp = requests.get(f"{BASE_URL}/api/projects", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/projects", headers=headers)
         detail = resp.json().get("detail", {})
         feature_key = detail.get("feature_key")
         print(f"  feature_key: {feature_key}")
@@ -375,7 +375,7 @@ class TestBattwheelsGaragesProfessionalAllAccess:
     def test_professional_projects_accessible(self, professional_token):
         """Projects should NOT return 403 for professional org"""
         headers = make_headers(professional_token)
-        resp = requests.get(f"{BASE_URL}/api/projects", headers=headers)
+        resp = requests.get(f"{BASE_URL}/api/v1/projects", headers=headers)
         print(f"  Projects status: {resp.status_code}")
         assert resp.status_code != 403, \
             f"Professional should access projects but got 403: {resp.text[:300]}"
