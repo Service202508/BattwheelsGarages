@@ -1263,6 +1263,7 @@ async def get_hsn_summary(request: Request, month: str = "", format: str = Query
     Required for GSTR-1 filing
     """
     db = get_db()
+    org_id = extract_org_id(request)
     
     if not month:
         month = datetime.now(timezone.utc).strftime("%Y-%m")
