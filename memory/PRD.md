@@ -66,10 +66,19 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 - Total patterns in RBAC map: 93 (up from 70)
 - Verification: RBAC script ALL PASS, Core tests 322 passed / 51 skipped / 0 failed, Production ALL GREEN
 
+### Sprint 1B — Tenant Isolation & Fail-Fast Fixes (2026-02-28)
+- **P1-02 RESOLVED:** org_query() in utils/database.py now raises ValueError on None org_id instead of silently returning unscoped {}
+- **P0-08 RESOLVED:** Added 11 missing EFI collections to TenantGuard TENANT_COLLECTIONS (efi_decision_trees, efi_sessions, learning_queue, embedding_cache, efi_events, emerging_patterns, symptoms, knowledge_relations, ai_queries, ai_escalations, notification_logs)
+- **P0-06 RESOLVED:** All 4 scheduler jobs (overdue marking, recurring invoices, recurring expenses, payment reminders) now scope every DB operation by org_id extracted from source records
+- **P1-03 RESOLVED:** All 4 notification_service.py DB operations now include org_id (log insert, ticket lookup, log query, stats aggregate)
+- Verification: Core tests 322/0/51, Production ALL GREEN
+
 ## Prioritized Backlog (Updated from Audit)
 
 ### P0 — Critical (Must Fix Before Production)
 - ~~P0-01: 20 route files bypass RBAC~~ **RESOLVED 2026-02-28**
+- ~~P0-06: Scheduler zero tenant isolation~~ **RESOLVED 2026-02-28**
+- ~~P0-08: 11 EFI collections missing from TenantGuard~~ **RESOLVED 2026-02-28**
 - P0-02: EFI Decision Engine — zero tenant isolation (services/efi_decision_engine.py, 11 DB ops)
 - P0-03: EFI Embedding Service — zero tenant isolation (services/efi_embedding_service.py, 6 DB ops)
 - P0-04: Embedding Service — zero tenant isolation (services/embedding_service.py, 10 DB ops)
