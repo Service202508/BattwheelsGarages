@@ -2922,7 +2922,7 @@ async def create_value_adjustment(adj: ValueAdjustmentCreate, request: Request):
         "old_rate": current_rate,
         "new_rate": adj.new_value_per_unit,
         "adjustment_amount": adjustment_amount
-    }, "System")
+    }, "System", org_id=org_id)
     
     del adj_dict["_id"]
     return {"code": 0, "message": "Value adjustment created", "adjustment": adj_dict}
