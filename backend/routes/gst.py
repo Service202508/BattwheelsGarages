@@ -1113,20 +1113,20 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
             },
             "table_4B": {
                 "description": "ITC Reversed",
-                "(1)_as_per_rules_42_43": {"cgst": 0, "sgst": 0, "igst": 0},
-                "(2)_others": {"cgst": 0, "sgst": 0, "igst": 0},
+                "(1)_as_per_rules_42_43": {"cgst": round(itc_reversed_rule42_43["cgst"], 2), "sgst": round(itc_reversed_rule42_43["sgst"], 2), "igst": round(itc_reversed_rule42_43["igst"], 2)},
+                "(2)_others": {"cgst": round(itc_reversed_others["cgst"], 2), "sgst": round(itc_reversed_others["sgst"], 2), "igst": round(itc_reversed_others["igst"], 2)},
             },
             "table_4C": {
                 "description": "Net ITC Available (A) - (B)",
-                "cgst": round(input_cgst, 2),
-                "sgst": round(input_sgst, 2),
-                "igst": round(input_igst, 2),
-                "total_itc": round(input_cgst + input_sgst + input_igst, 2)
+                "cgst": round(net_itc_cgst, 2),
+                "sgst": round(net_itc_sgst, 2),
+                "igst": round(net_itc_igst, 2),
+                "total_itc": round(net_itc_cgst + net_itc_sgst + net_itc_igst, 2)
             },
             "table_4D": {
                 "description": "Ineligible ITC",
-                "(1)_as_per_section_17_5": {"cgst": 0, "sgst": 0, "igst": 0},
-                "(2)_others": {"cgst": 0, "sgst": 0, "igst": 0},
+                "(1)_as_per_section_17_5": {"cgst": round(itc_ineligible_17_5["cgst"], 2), "sgst": round(itc_ineligible_17_5["sgst"], 2), "igst": round(itc_ineligible_17_5["igst"], 2)},
+                "(2)_others": {"cgst": round(itc_ineligible_others["cgst"], 2), "sgst": round(itc_ineligible_others["sgst"], 2), "igst": round(itc_ineligible_others["igst"], 2)},
             }
         },
         "section_5": {
