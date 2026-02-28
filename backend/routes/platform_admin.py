@@ -706,6 +706,21 @@ async def process_efi_learning_queue(request: Request, _=Depends(require_platfor
 
 
 
+@router.post("/knowledge/seed-articles")
+async def seed_knowledge_articles_endpoint(request: Request, _=Depends(require_platform_admin)):
+    """
+    Sprint 6B-02: Seed knowledge articles from existing failure cards.
+    Creates global knowledge articles from seed failure cards.
+    """
+    try:
+        from services.efi_seed_data import seed_knowledge_articles
+        result = await seed_knowledge_articles(db)
+        return {"success": True, **result}
+    except Exception as e:
+        logger.error(f"Knowledge article seeding failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Seeding failed: {str(e)}")
+
+
 @router.post("/efi/regenerate-embeddings")
 async def regenerate_truncated_embeddings_endpoint(request: Request, _=Depends(require_platform_admin)):
     """
