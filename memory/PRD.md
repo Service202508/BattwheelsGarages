@@ -56,18 +56,17 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 ## Prioritized Backlog
 
 ### P0 — Critical
-- Sprint 4B: Compliance Tests (next sprint)
-- GSTR-3B ITC Tables 4B/4D (currently hardcoded to zero)
+- GSTR-3B Rule 42/43 (partial exempt ratio) — requires exempt_supply_ratio on org settings (Sprint 5A)
 - Knowledge pipeline incomplete: ticket closure -> knowledge_articles never auto-triggered
 
 ### P1 — High Priority
 - Cursor-based pagination for all hard-capped queries
+- GSTR-3B ITC data-driven integration test (with actual vendor_credits / blocked bills)
 - Two disconnected failure card collections (`failure_cards` vs `efi_failure_cards`)
 - Data contract gaps: 5 missing ticket fields, dtc_codes name mismatch
 - EFI brain has no data (0 embeddings, 0 trees, 0 articles)
 - `feed_efi_brain` not auto-triggered after ticket closure
-- Fix `test_17flow_audit.py` BASE_URL issue
-- Address 3 remaining skipped tests (complex inter-test dependencies)
+- Address 20 remaining skipped tests (complex inter-test dependencies / fixture infra)
 - Subscription cache invalidation for test infrastructure
 
 ### P2 — Medium Priority
