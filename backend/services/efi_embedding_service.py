@@ -171,8 +171,11 @@ Output ONLY the JSON array, nothing else. Example format: [-0.5, 0.3, 0.8, ...]"
                     
                     try:
                         features = json.loads(content)
-                        if isinstance(features, list) and len(features) >= self.output_dim:
-                            # Normalize and return
+                        if isinstance(features, list) and len(features) >= 8:
+                            # Pad if Gemini returned fewer than output_dim
+                            if len(features) < self.output_dim:
+                                pad = self._text_to_hash_embedding(text)
+                                features = features + pad[len(features):]
                             features = features[:self.output_dim]
                             norm = math.sqrt(sum(x*x for x in features))
                             if norm > 0:
