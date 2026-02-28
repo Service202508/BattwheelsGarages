@@ -207,7 +207,7 @@ async def get_ticket_detail(request: Request, ticket_id: str):
     db = get_db()
     
     ticket = await db.tickets.find_one(
-        {"ticket_id": ticket_id, "assigned_to": technician["user_id"]},
+        {"ticket_id": ticket_id, "assigned_to": technician["user_id"], "organization_id": org_id},
         {"_id": 0}
     )
     
@@ -268,7 +268,7 @@ async def start_work(request: Request, ticket_id: str, data: StartWorkRequest):
     
     # Verify ticket is assigned to technician
     ticket = await db.tickets.find_one(
-        {"ticket_id": ticket_id, "assigned_to": technician["user_id"]},
+        {"ticket_id": ticket_id, "assigned_to": technician["user_id"], "organization_id": org_id},
         {"_id": 0}
     )
     
@@ -290,7 +290,7 @@ async def start_work(request: Request, ticket_id: str, data: StartWorkRequest):
     })
     
     await db.tickets.update_one(
-        {"ticket_id": ticket_id},
+        {"ticket_id": ticket_id, "organization_id": org_id, "assigned_to": technician["user_id"]},
         {"$set": {
             "status": "work_in_progress",
             "work_started_at": now.isoformat(),
