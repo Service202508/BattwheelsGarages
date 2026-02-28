@@ -503,6 +503,7 @@ async def get_entity_graph(request: Request, entity_type: str, entity_id: str, d
 async def get_efi_analytics(request: Request):
     """Get EFI system analytics"""
     service = get_service()
+    org_id = extract_org_id(request)
     return await service.get_analytics_overview()
 
 
