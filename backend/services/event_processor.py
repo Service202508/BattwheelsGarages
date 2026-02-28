@@ -165,9 +165,12 @@ class EFIEventProcessor:
         matches.sort(key=lambda x: x.get("match_score", 0), reverse=True)
         top_matches = matches[:5]
         
-        # Update ticket with suggestions
+        # Update ticket with suggestions (TIER 1: org-scoped — Sprint 1C)
+        ticket_update_filter = {"ticket_id": ticket_id}
+        if org_id:
+            ticket_update_filter["organization_id"] = org_id
         await self.db.tickets.update_one(
-            {"ticket_id": ticket_id},
+            ticket_update_filter,
             {"$set": {
                 "suggested_failure_cards": [m["failure_id"] for m in top_matches],
                 "ai_match_performed": True,
@@ -176,14 +179,15 @@ class EFIEventProcessor:
             }}
         )
         
-        # Emit match completed event
+        # Emit match completed event (TIER 1: org-scoped — Sprint 1C)
         await self._emit_event(
             EFIEventType.MATCH_COMPLETED.value,
             {
                 "ticket_id": ticket_id,
                 "matches_found": len(top_matches),
                 "top_match_score": top_matches[0]["match_score"] if top_matches else 0
-            }
+            },
+            org_id=org_id
         )
         
         return {
