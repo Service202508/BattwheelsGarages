@@ -182,30 +182,38 @@ class GeminiEmbeddingService(BaseEmbeddingService):
         return None
     
     async def embed_text(self, text: str, task_type: str = "SEMANTIC_SIMILARITY") -> EmbeddingResponse:
-        """
-        Generate embedding using semantic feature extraction.
-        Falls back to hash-based embedding if API fails.
-        """
+        """Generate hybrid embedding: 8 LLM semantic dims + 248 text feature dims."""
         self._ensure_initialized()
+        model_used = "hybrid-semantic+text"
         
-        embedding = None
-        model_used = self.model
+        # Part 2: Deterministic text features (always available, dims 8-255)
+        text_features = self._text_to_features(text)
         
-        # Try semantic extraction if available
+        # Part 1: LLM semantic dims (dims 0-7)
+        semantic_dims = None
         if self._available:
-            embedding = await self._extract_semantic_features(text)
-            
-        # Fallback to hash-based embedding
-        if embedding is None:
-            embedding = self._text_to_hash_embedding(text)
-            model_used = "hash-fallback"
-            logger.debug(f"Using hash fallback for: {text[:50]}...")
+            semantic_dims = await self._extract_semantic_features(text)
+        
+        if semantic_dims is None:
+            # No LLM available — use zero semantic dims, rely on text features only
+            semantic_dims = [0.0] * self.SEMANTIC_DIM_COUNT
+            model_used = "text-features-only"
+            logger.debug(f"Using text features only for: {text[:50]}...")
+        
+        # Combine: weight semantic dims higher (they carry meaning)
+        weighted_semantic = [v * self.SEMANTIC_WEIGHT for v in semantic_dims]
+        embedding = weighted_semantic + text_features
+        
+        # Normalize to unit vector
+        norm = math.sqrt(sum(x*x for x in embedding))
+        if norm > 0:
+            embedding = [x / norm for x in embedding]
         
         return EmbeddingResponse(
             text=text,
-            embedding=embedding,
+            embedding=embedding[:self.output_dim],
             model=model_used,
-            dimensions=len(embedding)
+            dimensions=self.output_dim
         )
     
     async def embed_batch(self, texts: List[str], task_type: str = "SEMANTIC_SIMILARITY") -> List[EmbeddingResponse]:
