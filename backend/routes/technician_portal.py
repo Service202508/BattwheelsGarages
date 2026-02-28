@@ -68,7 +68,7 @@ async def get_technician_dashboard(request: Request):
     month_start = today_start.replace(day=1)
     
     # Get assigned tickets by status
-    assigned_filter = {"assigned_to": tech_id}
+    assigned_filter = {"assigned_to": tech_id, "organization_id": org_id}
     
     open_tickets = await db.tickets.count_documents({**assigned_filter, "status": {"$in": ["open", "assigned", "technician_assigned"]}})
     in_progress = await db.tickets.count_documents({**assigned_filter, "status": "work_in_progress"})
