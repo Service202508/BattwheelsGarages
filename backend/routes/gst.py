@@ -485,8 +485,9 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
     })
     credit_notes = await db.credit_notes.find(cn_query, {"_id": 0}).to_list(1000)
     
-    # Build CDNR entries with proper GST breakdown
+    # Build CDNR entries with proper GST breakdown — split by registered/unregistered (P1-09)
     cdnr_entries = []
+    cdnr_unregistered_entries = []
     for cn in credit_notes:
         cn_data = {
             "credit_note_number": cn.get("credit_note_number", ""),
@@ -504,7 +505,11 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
             "note_type": "Credit Note",
             "gst_treatment": cn.get("gst_treatment", "cgst_sgst"),
         }
-        cdnr_entries.append(cn_data)
+        buyer_gstin = cn.get("customer_gstin", "")
+        if buyer_gstin and validate_gstin(buyer_gstin)["valid"]:
+            cdnr_entries.append(cn_data)
+        else:
+            cdnr_unregistered_entries.append(cn_data)
     
     cdnr_summary = {
         "count": len(cdnr_entries),
