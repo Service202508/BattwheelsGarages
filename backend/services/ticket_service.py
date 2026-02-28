@@ -270,11 +270,7 @@ class TicketService:
         # ── SLA FIELDS: Calculate deadlines based on priority ──
         try:
             from routes.sla import get_sla_config_for_org, calculate_sla_deadlines
-            if data.organization_id:
-                sla_config = await get_sla_config_for_org(data.organization_id)
-            else:
-                from routes.sla import DEFAULT_SLA_CONFIG
-                sla_config = DEFAULT_SLA_CONFIG
+            sla_config = await get_sla_config_for_org(data.organization_id)
             sla_fields = calculate_sla_deadlines(
                 created_at=now.isoformat(),
                 priority=data.priority or "medium",
