@@ -64,17 +64,30 @@ class BaseEmbeddingService(ABC):
 
 class GeminiEmbeddingService(BaseEmbeddingService):
     """
-    Gemini-based embedding service using Emergent LLM Key.
+    Hybrid embedding service: LLM semantic features + deterministic text features.
     
-    Since direct embedding models aren't available via Emergent proxy,
-    this uses the Gemini chat model to extract semantic features and
-    create consistent vector representations.
+    Since dedicated embedding models (text-embedding-004, text-embedding-3-small)
+    are not available via the Emergent proxy, this uses a two-part approach:
+    
+    Part 1 (dims 0-7): 8 LLM-rated semantic dimensions via gpt-4o-mini.
+        These capture domain-specific meaning: which EV subsystem is involved,
+        severity, component affected, urgency.
+    
+    Part 2 (dims 8-255): 248 deterministic text features.
+        Character trigrams + word-level hashing provides text differentiation.
+        Different texts produce different vectors; similar texts produce similar vectors.
+    
+    The LLM dims are weighted 3x to dominate similarity calculations.
     """
+    
+    SEMANTIC_DIM_COUNT = 8
+    SEMANTIC_WEIGHT = 3.0  # Weight LLM dims higher in final vector
+    SEMANTIC_DIMS = "battery,motor,controller,severity,cell,BMS,charger,urgency"
     
     def __init__(self, api_key: Optional[str] = None, output_dim: int = 256):
         self.api_key = api_key or os.environ.get("EMERGENT_LLM_KEY")
         self.output_dim = output_dim
-        self.model = "gemini/gemini-2.5-flash"
+        self.model = "gpt-4o-mini"
         self.proxy_url = os.environ.get("INTEGRATION_PROXY_URL", "https://integrations.emergentagent.com")
         self._initialized = False
         self._available = False
@@ -83,14 +96,12 @@ class GeminiEmbeddingService(BaseEmbeddingService):
         """Lazy initialization check"""
         if self._initialized:
             return
-            
         self._available = bool(self.api_key)
         self._initialized = True
-        
         if self._available:
-            logger.info("Gemini embedding service initialized with Emergent LLM Key")
+            logger.info("Hybrid embedding service initialized (LLM semantic + text features)")
         else:
-            logger.warning("Gemini embedding service: No API key found")
+            logger.warning("Hybrid embedding service: No API key — using text features only")
     
     def is_available(self) -> bool:
         self._ensure_initialized()
@@ -99,49 +110,44 @@ class GeminiEmbeddingService(BaseEmbeddingService):
     def get_dimensions(self) -> int:
         return self.output_dim
     
-    def _text_to_hash_embedding(self, text: str) -> List[float]:
-        """Generate deterministic pseudo-embedding from text hash.
-        Uses multiple hash functions to fill all dimensions."""
+    def _text_to_features(self, text: str) -> List[float]:
+        """Generate deterministic text features using character trigrams and word hashing.
+        Produces self.output_dim - SEMANTIC_DIM_COUNT features."""
         text_normalized = text.lower().strip()
-
-        sha_hash = hashlib.sha256(text_normalized.encode()).digest()
-        md5_hash = hashlib.md5(text_normalized.encode()).digest()
-        combined = sha_hash + md5_hash
-
-        embedding = []
-        for i in range(self.output_dim):
-            byte_idx = i % len(combined)
-            val = combined[byte_idx] / 255.0 * 2 - 1
-            variation = (i / self.output_dim) * 0.1
-            val = val * (1 - variation) + variation * math.sin(i * 0.1)
-            embedding.append(val)
-
-        norm = math.sqrt(sum(x*x for x in embedding))
+        feat_dim = self.output_dim - self.SEMANTIC_DIM_COUNT
+        features = [0.0] * feat_dim
+        
+        # Character trigram hashing
+        for i in range(len(text_normalized) - 2):
+            trigram = text_normalized[i:i+3]
+            h = int(hashlib.md5(trigram.encode()).hexdigest(), 16)
+            idx = h % feat_dim
+            features[idx] += 1.0
+        
+        # Word-level hashing
+        words = text_normalized.split()
+        for w in words:
+            h = int(hashlib.sha256(w.encode()).hexdigest(), 16)
+            idx = h % feat_dim
+            features[idx] += 2.0  # Words weighted more than trigrams
+        
+        # Normalize to unit vector
+        norm = math.sqrt(sum(x*x for x in features))
         if norm > 0:
-            embedding = [x / norm for x in embedding]
-
-        return embedding[:self.output_dim]
+            features = [x / norm for x in features]
+        
+        return features
     
-    async def _extract_semantic_features(self, text: str) -> List[float]:
-        """
-        Use Gemini to extract semantic features from text.
-        Returns a normalized vector based on semantic analysis.
-        """
+    async def _extract_semantic_features(self, text: str) -> Optional[List[float]]:
+        """Use LLM to rate text on 8 EV diagnostic dimensions.
+        Returns 8 floats between -1 and 1, or None on failure."""
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
-                # Ask Gemini to extract semantic features as numbers
-                prompt = f"""Analyze this EV service complaint and output ONLY a JSON array of exactly {self.output_dim} floating point numbers between -1 and 1.
-These numbers should represent semantic features like:
-- Problem severity (urgent vs minor)
-- System involved (battery, motor, controller, electrical)
-- Type of issue (failure, performance, intermittent)
-- Customer impact level
-- Diagnostic complexity
-
-Complaint: "{text}"
-
-Output ONLY the JSON array, nothing else. Example format: [-0.5, 0.3, 0.8, ...]"""
-
+                prompt = (
+                    f'[0.9,0.1,...] Rate this EV complaint on {self.SEMANTIC_DIM_COUNT} dims '
+                    f'({self.SEMANTIC_DIMS}) as floats -1 to 1. '
+                    f'Complaint: "{text}". Reply with ONLY the JSON array.'
+                )
                 response = await client.post(
                     f"{self.proxy_url}/llm/chat/completions",
                     headers={
@@ -151,45 +157,28 @@ Output ONLY the JSON array, nothing else. Example format: [-0.5, 0.3, 0.8, ...]"
                     json={
                         "model": self.model,
                         "messages": [{"role": "user", "content": prompt}],
-                        "temperature": 0.1,  # Low temperature for consistency
-                        "max_tokens": 8000
+                        "temperature": 0.0,
+                        "max_tokens": 200
                     }
                 )
-                
                 if response.status_code == 200:
-                    data = response.json()
-                    content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
-                    
-                    # Parse the JSON array from response
-                    # Clean up potential markdown formatting
+                    content = response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
                     content = content.strip()
-                    if content.startswith("```"):
-                        content = content.split("```")[1]
-                        if content.startswith("json"):
-                            content = content[4:]
-                    content = content.strip()
+                    if "```" in content:
+                        content = content.split("```")[1].replace("json", "", 1).strip()
                     
-                    try:
-                        features = json.loads(content)
-                        if isinstance(features, list) and len(features) >= 8:
-                            # Pad if Gemini returned fewer than output_dim
-                            if len(features) < self.output_dim:
-                                pad = self._text_to_hash_embedding(text)
-                                features = features + pad[len(features):]
-                            features = features[:self.output_dim]
-                            norm = math.sqrt(sum(x*x for x in features))
-                            if norm > 0:
-                                features = [x / norm for x in features]
-                            return features
-                    except json.JSONDecodeError:
-                        logger.warning(f"Failed to parse semantic features JSON: {content[:100]}")
-                        
+                    import re
+                    match = re.search(r'\[[\d\s,.\-eE]+\]', content.replace('\n', ' '))
+                    if match:
+                        features = json.loads(match.group())
+                        if isinstance(features, list) and len(features) >= self.SEMANTIC_DIM_COUNT:
+                            return [float(v) for v in features[:self.SEMANTIC_DIM_COUNT]]
+                    
+                    logger.warning(f"LLM returned unparseable content: {content[:100]}")
                 else:
-                    logger.warning(f"Semantic extraction failed: {response.status_code}")
-                    
+                    logger.warning(f"LLM semantic extraction failed: {response.status_code}")
         except Exception as e:
             logger.error(f"Semantic feature extraction error: {e}")
-        
         return None
     
     async def embed_text(self, text: str, task_type: str = "SEMANTIC_SIMILARITY") -> EmbeddingResponse:
