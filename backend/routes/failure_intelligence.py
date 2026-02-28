@@ -28,6 +28,7 @@ from services.failure_intelligence_service import (
     init_efi_service
 )
 from core.subscriptions.entitlement import require_feature
+from utils.database import extract_org_id
 
 logger = logging.getLogger(__name__)
 
