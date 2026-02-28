@@ -394,14 +394,14 @@ async def get_gstr1_report(request: Request, month: str = "", # Format: YYYY-MM
         "invoice_date": {"$gte": start_date, "$lt": end_date},
         "status": {"$in": ["sent", "paid", "partial", "overdue"]}
     })
-    invoices = await db.invoices_enhanced.find(inv_query, {"_id": 0}).to_list(10000)
+    invoices = await db.invoices_enhanced.find(inv_query, {"_id": 0}).to_list(5000)  # SPRINT-2B: hard-cap unbounded query
     
     # Also fetch from legacy invoices collection (Zoho-synced)
     legacy_query = org_query(org_id, {
         "date": {"$gte": start_date, "$lt": end_date},
         "status": {"$in": ["sent", "paid", "partial", "overdue"]}
     })
-    legacy_invoices = await db.invoices.find(legacy_query, {"_id": 0}).to_list(10000)
+    legacy_invoices = await db.invoices.find(legacy_query, {"_id": 0}).to_list(5000)  # SPRINT-2B: hard-cap unbounded query
     
     # Get organization settings — org-scoped
     org_settings = await db.organization_settings.find_one(
@@ -827,13 +827,13 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         "invoice_date": {"$gte": start_date, "$lt": end_date},
         "status": {"$in": ["sent", "paid", "partial", "overdue"]}
     })
-    invoices_enh = await db.invoices_enhanced.find(inv_query, {"_id": 0}).to_list(10000)
+    invoices_enh = await db.invoices_enhanced.find(inv_query, {"_id": 0}).to_list(5000)  # SPRINT-2B: hard-cap unbounded query
     
     legacy_query = org_query(org_id, {
         "date": {"$gte": start_date, "$lt": end_date},
         "status": {"$in": ["sent", "paid", "partial", "overdue"]}
     })
-    invoices_leg = await db.invoices.find(legacy_query, {"_id": 0}).to_list(10000)
+    invoices_leg = await db.invoices.find(legacy_query, {"_id": 0}).to_list(5000)  # SPRINT-2B: hard-cap unbounded query
     all_3b_invoices = list(invoices_enh) + list(invoices_leg)
     
     outward_taxable = 0
@@ -989,7 +989,7 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         "date": {"$gte": start_date, "$lt": end_date},
         "reverse_charge": True
     })
-    rcm_bills = await db.bills.find(rcm_bill_query, {"_id": 0}).to_list(10000)
+    rcm_bills = await db.bills.find(rcm_bill_query, {"_id": 0}).to_list(5000)  # SPRINT-2B: hard-cap unbounded query
     
     rcm_taxable = 0
     rcm_cgst = 0
@@ -1281,7 +1281,7 @@ async def get_hsn_summary(request: Request, month: str = "", format: str = Query
     invoices = await db.invoices.find(
         {"date": {"$gte": start_date, "$lt": end_date}},
         {"_id": 0, "line_items": 1}
-    ).to_list(10000)
+    ).to_list(5000)  # SPRINT-2B: hard-cap unbounded query
     
     hsn_data = {}
     
