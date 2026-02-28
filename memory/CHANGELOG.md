@@ -1,5 +1,34 @@
 # Battwheels OS — Changelog
 
+## 2026-03-01 — Sprint 6A Complete (5 Production Bugs Fixed)
+
+### 6A-01: GST Settings Persistence Fix
+- Bug: `routes/gst.py:347` — `update_one({}, ...)` wrote to unscoped document
+- Fix: Changed to `update_one(org_query(org_id, {}), ...)` — writes scoped to org
+- Added `state_code` field to `$set` for invoice lookup
+- Unskipped `test_update_organization_settings` — now passing
+
+### 6A-02 + 6A-03: Org State Hardcode + IGST Classification
+- Removed `org_state = "DL"` hardcode at `invoices_enhanced.py:737` and `:1163`
+- Replaced with DB lookup from `organization_settings.state_code`
+- Intra-state (same state) → CGST + SGST; Inter-state (different) → IGST
+- Added 2 tests: `test_intrastate_invoice_uses_cgst_sgst`, `test_interstate_invoice_uses_igst`
+
+### 6A-04: Embedding Regeneration
+- Fixed `_text_to_hash_embedding`: was 8 non-zero dims + 248 zeros, now fills all 256 dims
+- Increased Gemini API `max_tokens` from 2000 to 8000
+- Added partial JSON array handling (accepts ≥8 elements, pads rest with hash)
+- Added `POST /api/v1/platform/efi/regenerate-embeddings` admin endpoint
+- All 15 cards regenerated with full 256-dim vectors
+
+### 6A-05: GSTR-3B Rule 42/43 Implementation
+- Replaced TODO comment with exempt supply ratio calculation
+- Queries `invoices_enhanced` for `supply_type: "exempt"` in period
+- Computes reversal proportional to exempt/total ratio
+- Zero reversal when no exempt supplies (correct, not a gap)
+
+### Test Suite: 425 → 428 passed, 14 → 13 skipped
+
 ## 2026-03-01 — Sprint 5B Complete (Production Gate PASSED: 90/100)
 
 ### 5B-01: Unscoped Query Fixes
