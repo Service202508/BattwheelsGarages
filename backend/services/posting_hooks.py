@@ -35,39 +35,12 @@ def _get_service():
 
 async def _check_period_lock(organization_id: str, transaction_date: str) -> None:
     """
-    Check if the period containing transaction_date is locked.
-    Raises ValueError if the period is locked.
-    
-    transaction_date: ISO date string (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)
+    Sprint 4A-04: Delegate to canonical implementation in utils/period_lock.py.
+    Kept here as a thin wrapper for backward compatibility with callers
+    that still import from this module.
     """
-    if not organization_id or not transaction_date:
-        return  # Cannot check without org or date
-    
-    try:
-        dt = datetime.fromisoformat(transaction_date.replace("Z", "+00:00"))
-    except (ValueError, AttributeError):
-        try:
-            dt = datetime.strptime(transaction_date[:10], "%Y-%m-%d")
-        except Exception:
-            return  # Unparseable date — let the posting proceed
-    
-    MONGO_URL = os.environ.get("MONGO_URL")
-    DB_NAME = os.environ.get("DB_NAME")
-    client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-    db = client[DB_NAME]
-    
-    lock = await db.period_locks.find_one({
-        "org_id": organization_id,
-        "period_month": dt.month,
-        "period_year": dt.year,
-        "unlocked_at": None
-    })
-    
-    if lock:
-        raise ValueError(
-            f"Cannot post journal entry: period {dt.month}/{dt.year} "
-            f"is locked for organization {organization_id}"
-        )
+    from utils.period_lock import check_period_locked
+    await check_period_locked(organization_id, transaction_date)
 
 
 async def post_invoice_journal_entry(
