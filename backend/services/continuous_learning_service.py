@@ -202,13 +202,23 @@ class ContinuousLearningService:
                         update_ops["$set"]["historical_success_rate"] = new_rate
                         update_ops["$set"]["last_confidence_update"] = datetime.now(timezone.utc).isoformat()
                 
-                await self.failure_cards.update_one(
-                    {"failure_card_id": failure_card["failure_card_id"]},
-                    update_ops
-                )
+                # Sprint 3B-01: handle different ID field names across card sources
+                card_id_field = None
+                card_id_value = None
+                for id_field in ("card_id", "failure_id", "failure_card_id"):
+                    if failure_card.get(id_field):
+                        card_id_field = id_field
+                        card_id_value = failure_card[id_field]
+                        break
+                
+                if card_id_field:
+                    await self.failure_cards.update_one(
+                        {card_id_field: card_id_value},
+                        update_ops
+                    )
                 result["actions_taken"].append({
                     "action": "updated_failure_card",
-                    "failure_card_id": failure_card["failure_card_id"]
+                    "failure_card_id": card_id_value
                 })
             else:
                 # Create draft failure card for unknown issue
