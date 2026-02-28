@@ -106,7 +106,7 @@ class ContinuousLearningService:
             "category": ticket.get("category"),
             "subsystem": closure_data.get("subsystem") or ticket.get("category"),
             "symptoms": ticket.get("symptoms", []),
-            "dtc_codes": ticket.get("dtc_codes", []),
+            "dtc_codes": ticket.get("dtc_codes") or ticket.get("error_codes_reported", []),
             
             # Resolution data
             "actual_root_cause": closure_data.get("actual_root_cause") or closure_data.get("resolution"),
