@@ -703,3 +703,66 @@ async def process_efi_learning_queue(request: Request, _=Depends(require_platfor
     except Exception as e:
         logger.error(f"EFI queue processing failed: {e}")
         raise HTTPException(status_code=500, detail=f"Queue processing failed: {str(e)}")
+
+
+
+@router.post("/efi/regenerate-embeddings")
+async def regenerate_truncated_embeddings_endpoint(request: Request, _=Depends(require_platform_admin)):
+    """
+    Sprint 6A-04: Find failure cards with truncated embeddings
+    (last 10 values all 0.0) and regenerate them using the
+    current embedding service.
+    """
+    try:
+        from services.efi_embedding_service import EFIEmbeddingManager
+        emb_mgr = EFIEmbeddingManager(db)
+
+        cards = await db.failure_cards.find(
+            {"embedding_vector": {"$exists": True}}
+        ).to_list(1000)
+
+        truncated = []
+        for card in cards:
+            vec = card.get("embedding_vector", [])
+            if len(vec) >= 10 and all(v == 0.0 for v in vec[-10:]):
+                truncated.append(card)
+
+        regenerated = 0
+        failed_ids = []
+        for card in truncated:
+            card_text = " ".join(filter(None, [
+                card.get("title", ""),
+                card.get("description", ""),
+                card.get("symptom_text", ""),
+                card.get("subsystem_category", ""),
+                card.get("failure_mode", ""),
+            ]))
+            if not card_text.strip():
+                failed_ids.append(card.get("card_id", "unknown"))
+                continue
+
+            result = await emb_mgr.generate_complaint_embedding(card_text)
+            if result and result.get("embedding"):
+                vec = result["embedding"]
+                if not all(v == 0.0 for v in vec[-10:]):
+                    await db.failure_cards.update_one(
+                        {"card_id": card["card_id"]},
+                        {"$set": {
+                            "embedding_vector": vec,
+                            "embedding_regenerated_at": datetime.now(timezone.utc).isoformat()
+                        }}
+                    )
+                    regenerated += 1
+                else:
+                    failed_ids.append(card.get("card_id", "unknown"))
+            else:
+                failed_ids.append(card.get("card_id", "unknown"))
+
+        return {
+            "truncated_found": len(truncated),
+            "regenerated": regenerated,
+            "failed_ids": failed_ids
+        }
+    except Exception as e:
+        logger.error(f"Embedding regeneration failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Regeneration failed: {str(e)}")
