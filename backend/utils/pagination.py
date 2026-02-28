@@ -246,3 +246,134 @@ def enforce_pagination_on_cursor(cursor, max_limit: int = MAX_LIMIT):
     # This is mainly for audit purposes - in production,
     # use the paginate() function directly
     return cursor.limit(max_limit)
+
+
+# ==================== CURSOR-BASED (KEYSET) PAGINATION ====================
+
+
+def encode_cursor(sort_value: Any, tiebreaker_value: Any) -> str:
+    """Encode a cursor from a sort field value and a tiebreaker (unique) field value."""
+    payload = json.dumps({"v": sort_value, "t": tiebreaker_value})
+    return base64.urlsafe_b64encode(payload.encode()).decode().rstrip("=")
+
+
+def decode_cursor(cursor_str: str) -> Tuple[Any, Any]:
+    """Decode a cursor string back to (sort_value, tiebreaker_value)."""
+    padding = 4 - len(cursor_str) % 4
+    if padding != 4:
+        cursor_str += "=" * padding
+    payload = json.loads(base64.urlsafe_b64decode(cursor_str.encode()).decode())
+    return payload["v"], payload["t"]
+
+
+async def paginate_keyset(
+    collection,
+    query: Dict[str, Any],
+    sort_field: str,
+    sort_order: int,
+    tiebreaker_field: str,
+    limit: int = DEFAULT_LIMIT,
+    cursor: Optional[str] = None,
+    projection: Optional[Dict[str, Any]] = None,
+    include_total: bool = True,
+) -> Dict[str, Any]:
+    """
+    Cursor-based (keyset) pagination for MongoDB.
+
+    Uses sort_field + tiebreaker_field for deterministic ordering.
+    When cursor is provided, seeks directly to the correct position
+    without scanning skipped documents.
+
+    When cursor is None, returns the first page (backward compatible
+    with skip/limit clients that don't pass a cursor).
+
+    Args:
+        collection: Motor collection
+        query: Base filter query (org-scoped, status filters, etc.)
+        sort_field: Primary sort field (e.g. "created_at", "invoice_date")
+        sort_order: 1 for ascending, -1 for descending
+        tiebreaker_field: Unique field for tie-breaking (e.g. "ticket_id")
+        limit: Page size (capped at MAX_LIMIT)
+        cursor: Opaque cursor from previous response's next_cursor
+        projection: MongoDB projection (always excludes _id)
+        include_total: Whether to compute total_count (expensive at scale)
+
+    Returns:
+        {
+            "data": [...],
+            "pagination": {
+                "limit": N,
+                "total_count": N,
+                "has_next": bool,
+                "next_cursor": "..." | null,
+                "has_prev": bool
+            }
+        }
+    """
+    if limit > MAX_LIMIT:
+        limit = MAX_LIMIT
+
+    if projection is None:
+        projection = {"_id": 0}
+    elif "_id" not in projection:
+        projection["_id"] = 0
+
+    # Ensure tiebreaker field is in projection (needed for cursor construction)
+    if tiebreaker_field not in projection and not any(v == 1 for v in projection.values() if isinstance(v, int) and v == 1):
+        pass  # projection is exclusion-based, tiebreaker included by default
+    elif any(v == 1 for v in projection.values() if isinstance(v, int)):
+        # inclusion-based projection: ensure tiebreaker and sort field are included
+        projection[tiebreaker_field] = 1
+        projection[sort_field] = 1
+
+    # Total count from base query (before cursor filter)
+    total_count = 0
+    if include_total:
+        total_count = await collection.count_documents(query)
+
+    has_prev = False
+
+    # Apply cursor filter
+    if cursor:
+        has_prev = True
+        sort_value, tie_value = decode_cursor(cursor)
+
+        if sort_order == -1:
+            cursor_filter = {"$or": [
+                {sort_field: {"$lt": sort_value}},
+                {sort_field: sort_value, tiebreaker_field: {"$lt": tie_value}},
+            ]}
+        else:
+            cursor_filter = {"$or": [
+                {sort_field: {"$gt": sort_value}},
+                {sort_field: sort_value, tiebreaker_field: {"$gt": tie_value}},
+            ]}
+
+        query = {"$and": [query, cursor_filter]}
+
+    # Fetch limit + 1 to detect has_next
+    items = await collection.find(query, projection).sort([
+        (sort_field, sort_order),
+        (tiebreaker_field, sort_order),
+    ]).limit(limit + 1).to_list(limit + 1)
+
+    has_next = len(items) > limit
+    if has_next:
+        items = items[:limit]
+
+    # Build next_cursor from last item
+    next_cursor = None
+    if has_next and items:
+        last = items[-1]
+        next_cursor = encode_cursor(last.get(sort_field), last.get(tiebreaker_field))
+
+    return {
+        "data": items,
+        "pagination": {
+            "limit": limit,
+            "total_count": total_count,
+            "has_next": has_next,
+            "has_prev": has_prev,
+            "next_cursor": next_cursor,
+        },
+    }
