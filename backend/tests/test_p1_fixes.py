@@ -57,7 +57,6 @@ def tech_token():
 # DB2.04 — MongoDB org_id indexes
 # ─────────────────────────────────────────────────────────────────
 
-@pytest.mark.skip(reason="deprecated — webhook_logs indexes need maintenance before re-enabling")
 class TestDB204OrgIdIndexes:
     """Verify organization_id indexes exist on all required collections"""
 
