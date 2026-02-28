@@ -845,7 +845,8 @@ class EFIEventProcessor:
         self,
         event_type: str,
         data: dict,
-        priority: int = 5
+        priority: int = 5,
+        org_id: str = None
     ):
         """Emit a new EFI event"""
         import uuid
@@ -856,6 +857,7 @@ class EFIEventProcessor:
             "source": "event_processor",
             "priority": priority,
             "data": data,
+            "organization_id": org_id,  # TIER 1: org-scoped — Sprint 1C
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "processed": False,
             "retry_count": 0,
