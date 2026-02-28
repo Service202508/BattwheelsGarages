@@ -111,12 +111,13 @@ class EFIDecisionTreeEngine:
         self, 
         ticket_id: str, 
         failure_card_id: str,
+        org_id: str,
         technician_id: Optional[str] = None,
         technician_name: Optional[str] = None
     ) -> Dict:
         """Start a new EFI diagnostic session"""
         
-        # Get the decision tree
+        # Get the decision tree (TIER 2 — no org_id)
         tree = await self.get_tree_for_card(failure_card_id)
         if not tree:
             raise ValueError(f"No decision tree found for failure card {failure_card_id}")
@@ -132,6 +133,7 @@ class EFIDecisionTreeEngine:
         )
         
         session_dict = session.model_dump()
+        session_dict["organization_id"] = org_id  # TIER 1: org-scoped — Sprint 1C
         await self.db.efi_sessions.insert_one(session_dict.copy())
         
         # Return session with current step details
