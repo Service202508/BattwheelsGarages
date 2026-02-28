@@ -364,7 +364,7 @@ async def update_failure_card(
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    result = await db.efi_failure_cards.update_one(
+    result = await db.failure_cards.update_one(
         {"failure_card_id": card_id, "organization_id": org_id},
         {"$set": update_data}
     )
@@ -386,7 +386,7 @@ async def approve_failure_card(card_id: str, http_request: Request):
     
     db = get_db()
     
-    result = await db.efi_failure_cards.update_one(
+    result = await db.failure_cards.update_one(
         {"failure_card_id": card_id, "organization_id": org_id, "status": "draft"},
         {
             "$set": {
@@ -547,11 +547,11 @@ async def get_dashboard_summary(http_request: Request):
     ).sort("created_at", -1).limit(5).to_list(5)
     
     # Failure card stats
-    draft_cards = await db.efi_failure_cards.count_documents({
+    draft_cards = await db.failure_cards.count_documents({
         "organization_id": org_id,
         "status": "draft"
     })
-    approved_cards = await db.efi_failure_cards.count_documents({
+    approved_cards = await db.failure_cards.count_documents({
         "$or": [
             {"organization_id": org_id, "status": "approved"},
             {"scope": "global", "status": "approved"}
