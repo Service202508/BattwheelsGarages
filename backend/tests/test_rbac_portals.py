@@ -236,11 +236,19 @@ class TestTechnicianPortalAPI:
         token = res.json().get("token") or res.json().get("access_token")
         return token
     
-    def test_technician_dashboard(self, tech_token):
+    @pytest.fixture
+    def tech_headers(self, tech_token):
+        """Headers for technician requests including org scope"""
+        return {
+            "Authorization": f"Bearer {tech_token}",
+            "X-Organization-ID": "dev-internal-testing-001"
+        }
+    
+    def test_technician_dashboard(self, tech_headers):
         """GET /api/technician/dashboard - Technician dashboard data"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/dashboard",
-            headers={"Authorization": f"Bearer {tech_token}"}
+            headers=tech_headers
         )
         print(f"Technician dashboard: {res.status_code}")
         assert res.status_code == 200
