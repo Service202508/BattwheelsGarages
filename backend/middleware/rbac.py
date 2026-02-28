@@ -96,6 +96,11 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/gst(/.*)?$":               ["org_admin", "admin", "owner", "accountant"],
     r"^/api/productivity(/.*)?$":      ["org_admin", "admin", "owner", "manager", "hr"],
     
+    # ============ AUTHENTICATED AUTH ROUTES ============
+    r"^/api/auth/change-password$":     ["org_admin", "admin", "owner", "manager", "accountant", "hr", "technician", "dispatcher", "viewer"],
+    r"^/api/auth/switch-organization$": ["org_admin", "admin", "owner", "manager", "accountant", "hr", "technician", "dispatcher", "viewer"],
+    r"^/api/employees(/.*)?$":          ["org_admin", "admin", "owner", "hr"],
+    
     # ============ SETTINGS/ADMIN ============
     r"^/api/organizations/settings.*$": ["org_admin", "admin", "owner"],
     r"^/api/organizations/users.*$":    ["org_admin", "admin", "owner"],
