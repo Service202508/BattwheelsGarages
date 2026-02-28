@@ -21,7 +21,7 @@ def auth_headers():
     })
     assert resp.status_code == 200, f"Login failed: {resp.text}"
     token = resp.json()["token"]
-    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "X-Organization-ID": "dev-internal-testing-001"}
 
 
 class TestGSTStates:
