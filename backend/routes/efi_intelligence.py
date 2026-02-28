@@ -250,7 +250,7 @@ async def get_failure_cards(http_request: Request, status: str = Query("all", de
     if vehicle_model:
         query["vehicle_model"] = {"$regex": vehicle_model, "$options": "i"}
     
-    cards = await db.efi_failure_cards.find(
+    cards = await db.failure_cards.find(
         query,
         {"_id": 0}
     ).sort("historical_success_rate", -1).limit(limit).to_list(limit)
@@ -269,7 +269,7 @@ async def get_failure_card(card_id: str, http_request: Request):
         raise HTTPException(status_code=400, detail="Organization ID required")
     
     db = get_db()
-    card = await db.efi_failure_cards.find_one(
+    card = await db.failure_cards.find_one(
         {"failure_card_id": card_id},
         {"_id": 0}
     )
@@ -340,7 +340,7 @@ async def create_failure_card(
         "created_by": user_id
     }
     
-    await db.efi_failure_cards.insert_one(card)
+    await db.failure_cards.insert_one(card)
     
     return {"success": True, "failure_card_id": card_id}
 
