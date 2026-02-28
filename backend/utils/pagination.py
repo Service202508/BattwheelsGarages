@@ -336,7 +336,12 @@ async def paginate_keyset(
     # Apply cursor filter
     if cursor:
         has_prev = True
-        sort_value, tie_value = decode_cursor(cursor)
+        try:
+            sort_value, tie_value = decode_cursor(cursor)
+        except (json.JSONDecodeError, KeyError, ValueError, Exception) as e:
+            # Invalid cursor - raise HTTP 400 error
+            from fastapi import HTTPException
+            raise HTTPException(status_code=400, detail=f"Invalid cursor format: {str(e)}")
 
         if sort_order == -1:
             cursor_filter = {"$or": [
