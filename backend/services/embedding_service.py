@@ -129,7 +129,8 @@ class EmbeddingService:
     async def get_embeddings_batch(
         self,
         texts: List[str],
-        use_cache: bool = True
+        use_cache: bool = True,
+        org_id: str = None
     ) -> List[Optional[List[float]]]:
         """
         Get embeddings for multiple texts in batch.
