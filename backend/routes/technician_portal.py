@@ -168,7 +168,7 @@ async def get_my_tickets(request: Request, status: Optional[str] = None, priorit
     technician = await get_current_technician(request)
     db = get_db()
     
-    query = {"assigned_to": technician["user_id"]}
+    query = {"assigned_to": technician["user_id"], "organization_id": org_id}
     
     if status:
         if status == "active":
