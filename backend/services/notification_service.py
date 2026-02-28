@@ -287,11 +287,14 @@ async def send_email(request: EmailRequest, background_tasks: BackgroundTasks, r
     return {"status": "queued", "recipient": request.recipient_email, "template": request.template}
 
 @router.post("/send-whatsapp")
-async def send_whatsapp(request: WhatsAppRequest, background_tasks: BackgroundTasks):
+async def send_whatsapp(request: WhatsAppRequest, background_tasks: BackgroundTasks, req: Request = None):
     """Send WhatsApp notification"""
     template = WHATSAPP_TEMPLATES.get(request.template)
     if not template:
         raise HTTPException(status_code=400, detail=f"Unknown template: {request.template}")
+    
+    # P1-03 FIX: extract org_id from request context — Sprint 1B
+    org_id = getattr(getattr(req, "state", None), "tenant_org_id", None) if req else None
     
     # Format message
     message = template.format(**request.context)
@@ -304,7 +307,8 @@ async def send_whatsapp(request: WhatsAppRequest, background_tasks: BackgroundTa
             recipient=request.phone_number,
             template=request.template,
             status=result.get("status", "unknown"),
-            error=result.get("error")
+            error=result.get("error"),
+            org_id=org_id
         )
     
     background_tasks.add_task(send_and_log)
