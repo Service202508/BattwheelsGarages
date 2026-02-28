@@ -73,6 +73,14 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 - **P1-03 RESOLVED:** All 4 notification_service.py DB operations now include org_id (log insert, ticket lookup, log query, stats aggregate)
 - Verification: Core tests 322/0/51, Production ALL GREEN
 
+### Sprint 1C — EFI Tenant Isolation (2026-02-28)
+- **P0-02 RESOLVED:** efi_decision_engine.py — 8 functions updated with org_id parameter (efi_sessions, learning_queue, technician_action_logs all scoped)
+- **P0-03/04 RESOLVED:** embedding_service.py — 4 embedding_cache operations scoped by org_id. failure_cards left untouched (Tier 2 shared brain)
+- **P0-05 RESOLVED:** event_processor.py — efi_events, tickets, technician_actions all scoped. failure_cards marked SHARED-BRAIN. emerging_patterns now per-org via aggregation grouping
+- **P1-01 RESOLVED:** items_enhanced.py — log_item_history now includes org_id in all 8 call sites
+- Tier 2 (failure_cards, efi_decision_trees, knowledge_articles) intentionally left cross-tenant per architectural rule
+- Verification: Core tests 322/0/51, Production ALL GREEN
+
 ## Prioritized Backlog (Updated from Audit)
 
 ### P0 — Critical (Must Fix Before Production)
