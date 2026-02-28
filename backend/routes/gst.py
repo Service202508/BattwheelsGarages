@@ -961,10 +961,60 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         itc_all_other["cgst"] += exp_cgst
         itc_all_other["sgst"] += exp_sgst
     
-    # NET TAX LIABILITY
-    net_cgst = max(0, outward_cgst - input_cgst)
-    net_sgst = max(0, outward_sgst - input_sgst)
-    net_igst = max(0, outward_igst - input_igst)
+    # TABLE 4B — ITC Reversed (Sprint 4B-04)
+    # Query vendor_credits for approved/issued/applied credits in the period
+    vendor_credit_query = org_query(org_id, {
+        "date": {"$gte": start_date, "$lte": end_date},
+        "status": {"$in": ["approved", "issued", "applied"]}
+    })
+    vendor_credits_list = await db.vendor_credits.find(
+        vendor_credit_query, {"_id": 0}
+    ).to_list(1000)
+
+    itc_reversed_others = {
+        "cgst": sum(vc.get("cgst_amount", 0) for vc in vendor_credits_list),
+        "sgst": sum(vc.get("sgst_amount", 0) for vc in vendor_credits_list),
+        "igst": sum(vc.get("igst_amount", 0) for vc in vendor_credits_list),
+    }
+    # TODO: Rule 42/43 calculation requires exempt supply ratio — not yet captured on bills. Sprint 5A.
+    itc_reversed_rule42_43 = {"cgst": 0, "sgst": 0, "igst": 0}
+
+    itc_reversed_total_cgst = itc_reversed_rule42_43["cgst"] + itc_reversed_others["cgst"]
+    itc_reversed_total_sgst = itc_reversed_rule42_43["sgst"] + itc_reversed_others["sgst"]
+    itc_reversed_total_igst = itc_reversed_rule42_43["igst"] + itc_reversed_others["igst"]
+
+    # TABLE 4D — Ineligible ITC (Sprint 4B-04)
+    # Query bills where is_blocked_credit = True (Section 17(5) blocked inputs)
+    blocked_bills_query = org_query(org_id, {
+        "date": {"$gte": start_date, "$lt": end_date},
+        "is_blocked_credit": True
+    })
+    blocked_bills = await db.bills.find(
+        blocked_bills_query, {"_id": 0}
+    ).to_list(1000)
+    # NOTE: Requires is_blocked_credit flag on bill documents.
+    # Currently zero if flag not set — correct default.
+
+    itc_ineligible_17_5 = {
+        "cgst": sum(b.get("cgst_amount", 0) for b in blocked_bills),
+        "sgst": sum(b.get("sgst_amount", 0) for b in blocked_bills),
+        "igst": sum(b.get("igst_amount", 0) for b in blocked_bills),
+    }
+    itc_ineligible_others = {"cgst": 0, "sgst": 0, "igst": 0}
+
+    itc_ineligible_total_cgst = itc_ineligible_17_5["cgst"] + itc_ineligible_others["cgst"]
+    itc_ineligible_total_sgst = itc_ineligible_17_5["sgst"] + itc_ineligible_others["sgst"]
+    itc_ineligible_total_igst = itc_ineligible_17_5["igst"] + itc_ineligible_others["igst"]
+
+    # NET ITC = 4A total - 4B reversed - 4D ineligible
+    net_itc_cgst = input_cgst - itc_reversed_total_cgst - itc_ineligible_total_cgst
+    net_itc_sgst = input_sgst - itc_reversed_total_sgst - itc_ineligible_total_sgst
+    net_itc_igst = input_igst - itc_reversed_total_igst - itc_ineligible_total_igst
+
+    # NET TAX LIABILITY (uses net ITC after reversals and ineligible deductions)
+    net_cgst = max(0, outward_cgst - net_itc_cgst)
+    net_sgst = max(0, outward_sgst - net_itc_sgst)
+    net_igst = max(0, outward_igst - net_itc_igst)
     
     # Credit Notes (reduce output liability) — org-scoped, proper GST breakdown
     cn_query_3b = org_query(org_id, {
