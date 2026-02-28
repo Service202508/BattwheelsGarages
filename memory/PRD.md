@@ -98,7 +98,7 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 - Razorpay, Resend, bleach, bcrypt
 - WhatsApp integration remains MOCKED
 
-## Test Baseline (Post Sprint 5B)
-- Core suite: 425 passed, 0 failed, 14 skipped
-- Test growth: 322 (pre-4A) → 353 (post-4A) → 419 (post-4B) → 425 (post-5B)
+## Test Baseline (Post Sprint 6A)
+- Core suite: 428 passed, 0 failed, 13 skipped
+- Test growth: 322 (pre-4A) → 353 (post-4A) → 419 (post-4B) → 425 (post-5B) → 428 (post-6A)
 - Production readiness: 90/100
