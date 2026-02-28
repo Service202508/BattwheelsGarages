@@ -888,17 +888,24 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
     bills = await db.bills.find(
         org_query(org_id, {"date": {"$gte": start_date, "$lt": end_date}}),
         {"_id": 0}
-    ).to_list(10000)
+    ).to_list(5000)  # SPRINT-2B: hard-cap unbounded query
     
     expenses = await db.expenses.find(
         org_query(org_id, {"expense_date": {"$gte": start_date, "$lt": end_date}}),
         {"_id": 0}
-    ).to_list(10000)
+    ).to_list(5000)  # SPRINT-2B: hard-cap unbounded query
     
     input_taxable = 0
     input_cgst = 0
     input_sgst = 0
     input_igst = 0
+    
+    # ITC categorization for Section 4 / Table 4 (P1-10)
+    itc_import_goods = {"cgst": 0, "sgst": 0, "igst": 0}
+    itc_import_services = {"cgst": 0, "sgst": 0, "igst": 0}
+    itc_rcm = {"cgst": 0, "sgst": 0, "igst": 0}
+    itc_isd = {"cgst": 0, "sgst": 0, "igst": 0}
+    itc_all_other = {"cgst": 0, "sgst": 0, "igst": 0}
     
     for bill in bills:
         subtotal = bill.get("sub_total", 0) or bill.get("subtotal", 0) or 0
@@ -909,17 +916,50 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         input_taxable += subtotal
         
         if vendor_state == org_state:
-            input_cgst += tax_total / 2
-            input_sgst += tax_total / 2
+            bill_cgst = tax_total / 2
+            bill_sgst = tax_total / 2
+            bill_igst = 0
         else:
-            input_igst += tax_total
+            bill_cgst = 0
+            bill_sgst = 0
+            bill_igst = tax_total
+        
+        input_cgst += bill_cgst
+        input_sgst += bill_sgst
+        input_igst += bill_igst
+        
+        # Categorize ITC (Table 4A — P1-10)
+        gst_treatment = bill.get("gst_treatment", "")
+        is_import = bill.get("is_import", False) or gst_treatment in ("import", "overseas")
+        is_rcm = bill.get("reverse_charge", False)
+        is_isd = bill.get("is_isd", False) or gst_treatment == "isd"
+        is_service = bill.get("is_service", False) or bill.get("supply_type") == "service"
+        
+        if is_import and is_service:
+            target = itc_import_services
+        elif is_import:
+            target = itc_import_goods
+        elif is_rcm:
+            target = itc_rcm
+        elif is_isd:
+            target = itc_isd
+        else:
+            target = itc_all_other
+        
+        target["cgst"] += bill_cgst
+        target["sgst"] += bill_sgst
+        target["igst"] += bill_igst
     
     for exp in expenses:
         amount = exp.get("amount", 0)
         tax_amount = exp.get("tax_amount", 0) or amount * 0.18  # Assume 18% if not specified
+        exp_cgst = tax_amount / 2
+        exp_sgst = tax_amount / 2
         input_taxable += amount
-        input_cgst += tax_amount / 2
-        input_sgst += tax_amount / 2
+        input_cgst += exp_cgst
+        input_sgst += exp_sgst
+        itc_all_other["cgst"] += exp_cgst
+        itc_all_other["sgst"] += exp_sgst
     
     # NET TAX LIABILITY
     net_cgst = max(0, outward_cgst - input_cgst)
