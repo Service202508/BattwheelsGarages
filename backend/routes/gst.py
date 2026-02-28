@@ -1278,9 +1278,9 @@ async def get_hsn_summary(request: Request, month: str = "", format: str = Query
     except:
         raise HTTPException(status_code=400, detail="Invalid month format")
     
-    # Get all invoice line items with HSN codes
+    # Get all invoice line items with HSN codes — org-scoped (Sprint 2C carry-forward)
     invoices = await db.invoices.find(
-        {"date": {"$gte": start_date, "$lt": end_date}},
+        {"organization_id": org_id, "date": {"$gte": start_date, "$lt": end_date}},
         {"_id": 0, "line_items": 1}
     ).to_list(5000)  # SPRINT-2B: hard-cap unbounded query
     
