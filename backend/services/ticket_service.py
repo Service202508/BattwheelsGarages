@@ -283,9 +283,7 @@ class TicketService:
         
         # Enrich with vehicle data if vehicle_id provided
         if data.vehicle_id:
-            vehicle_query = {"vehicle_id": data.vehicle_id}
-            if data.organization_id:
-                vehicle_query["organization_id"] = data.organization_id
+            vehicle_query = {"vehicle_id": data.vehicle_id, "organization_id": data.organization_id}
             vehicle = await self.db.vehicles.find_one(vehicle_query, {"_id": 0})
             if vehicle:
                 if not ticket_doc["customer_name"]:
