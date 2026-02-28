@@ -345,7 +345,7 @@ async def get_smart_estimate(request: Request, session_id: str):
     if not _decision_engine:
         raise HTTPException(status_code=503, detail="Decision engine not initialized")
     
-    estimate = await _decision_engine.get_suggested_estimate(session_id)
+    estimate = await _decision_engine.get_suggested_estimate(session_id, org_id=org_id)
     if not estimate:
         raise HTTPException(status_code=404, detail="No estimate available. Session may not be completed.")
     
