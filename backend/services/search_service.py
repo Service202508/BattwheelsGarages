@@ -284,7 +284,8 @@ class AdvancedSearchService:
         query: str,
         filter_query: Dict[str, Any] = None,
         limit: int = 20,
-        min_score: float = 0.5
+        min_score: float = 0.5,
+        org_id: str = None
     ) -> List[Dict[str, Any]]:
         """
         Perform vector semantic search using embeddings.
