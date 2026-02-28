@@ -473,11 +473,13 @@ class EFIEmbeddingManager:
         if subsystem and subsystem != "unknown":
             query["subsystem_category"] = subsystem
         
+        # TIER 2 SHARED-BRAIN: failure_cards cross-tenant by design — Sprint 1C
         # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
         cards = await self.db.failure_cards.find(query, {"_id": 0}).to_list(1000)
         
         if not cards:
             # Try without subsystem filter
+            # TIER 2 SHARED-BRAIN: failure_cards cross-tenant by design — Sprint 1C
             # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
             cards = await self.db.failure_cards.find(
                 {"embedding_vector": {"$exists": True, "$ne": None}},
@@ -490,6 +492,7 @@ class EFIEmbeddingManager:
         
         # Get all decision tree IDs for boosting
         tree_card_ids = set()
+        # TIER 2 SHARED-BRAIN: efi_decision_trees cross-tenant by design — Sprint 1C
         # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
         trees = await self.db.efi_decision_trees.find({}, {"failure_card_id": 1}).to_list(1000)
         for t in trees:
@@ -531,6 +534,7 @@ class EFIEmbeddingManager:
     
     async def embed_failure_card(self, failure_id: str) -> Dict[str, Any]:
         """Generate and store embedding for a single failure card (uses fast hash-based)"""
+        # TIER 2 SHARED-BRAIN: failure_cards cross-tenant by design — Sprint 1C
         card = await self.db.failure_cards.find_one({"failure_id": failure_id})
         if not card:
             raise ValueError(f"Failure card {failure_id} not found")
@@ -550,7 +554,7 @@ class EFIEmbeddingManager:
         fallback = FallbackEmbeddingService(self.embedding_service.get_dimensions())
         embedding_response = await fallback.embed_text(text)
         
-        # Update card with embedding
+        # TIER 2 SHARED-BRAIN: failure_cards cross-tenant by design — Sprint 1C
         await self.db.failure_cards.update_one(
             {"failure_id": failure_id},
             {
@@ -571,6 +575,7 @@ class EFIEmbeddingManager:
     
     async def embed_all_cards(self) -> Dict[str, Any]:
         """Generate embeddings for all failure cards"""
+        # TIER 2 SHARED-BRAIN: failure_cards cross-tenant by design — Sprint 1C
         # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
         cards = await self.db.failure_cards.find({}, {"failure_id": 1, "_id": 0}).to_list(1000)
         

@@ -2824,7 +2824,7 @@ async def import_items(request: Request, file: UploadFile = File(...), overwrite
 
 # ============== ITEM HISTORY (MUST BE BEFORE /{item_id}) ==============
 
-async def log_item_history(db, item_id: str, action: str, changes: dict, user_name: str, org_id: str = None):
+async def log_item_history(db, item_id: str, action: str, changes: dict, user_name: str, org_id: str):
     """Helper function to log item history"""
     history_entry = {
         "history_id": f"IH-{uuid.uuid4().hex[:8].upper()}",
