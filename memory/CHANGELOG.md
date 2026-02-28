@@ -1,47 +1,31 @@
 # Battwheels OS — Changelog
 
-## Feb 24, 2026 — Regression Fix (Session 3b)
-- Fixed invoices-enhanced 307 redirect stripping auth headers (added `@router.get("")` route)
-- Bumped login rate limit from 5/min to 10/min (still blocks brute force, allows test flows)
-- Result: **20/20 tests passing — 100% regression**
+## 2026-03-01 — Sprint 4A Complete
 
-## Feb 24, 2026 — Hardening Sprint (Session 3)
-All 14 items implemented and verified:
+### 4A-01: Skipped Test Audit
+- Unskipped 40 tests by creating dev fixtures (platform admin, professional user, technician, starter user)
+- Fixed API URL prefixes in test code (added `/api/v1/` prefix)
+- Added `X-Organization-ID` headers to test requests requiring tenant context
+- Unskipped 7 technician portal RBAC tests by adding `r"^/api/technician(/.*)?$"` to ROUTE_PERMISSIONS in `middleware/rbac.py`
+- Fixed `test_rbac_portals.py` BASE_URL from env var to `http://localhost:8001`
+- Fixed test order dependency in `test_entitlement_enforcement.py` (plan revert cleanup now runs reliably)
+- **Result:** 47 of 51 skipped tests now passing. 4 remain (1 intentional, 3 deferred).
 
-### Multi-Tenancy (Item 1)
-- Fixed org_id stamps in master_data.py, invoice_payments.py, invoices_enhanced.py
-- 0 unscoped queries remaining in routes/
+### 4A-02: Payroll Statutory Tests
+- Created `tests/test_payroll_statutory.py` with 30 unit tests
+- Coverage: PF wage ceiling (15000), EPS/EPF split, PF Admin/EDLI charges, ESI ceiling (21000), multi-state Professional Tax (MH, KA, GJ, TN, DL, UP)
+- All 30 tests passing
 
-### Security
-- **S5:** Password version in JWT (`pwd_v` field) — sessions invalidated on password change
-- **S2:** `is_active` DB check on every JWT validation — deactivated users blocked immediately
-- **S4:** Rate limiting: 10/min on login endpoint (SlowAPI)
-- **S3:** PIL-based MIME validation added to file upload service
-- **S1:** Password reset tokens using SHA-256 hash + 1h TTL (verified)
+### 4A-03: Dev Platform Admin
+- Created `scripts/create_dev_platform_admin.py` for platform admin user
+- Created `scripts/seed_dev_org.py` for organizations, subscriptions, and test users
+- Users: platform-admin@battwheels.in, dev@battwheels.internal, deepak@battwheelsgarages.in, john@testcompany.com
 
-### Data Integrity
-- **D1:** Atomic inventory deduction via `find_one_and_update` with `$gte` floor check
-- **D3:** Unique compound index on `payroll_runs(organization_id, period)` — prevents duplicate runs
-- **Section 5:** Razorpay webhook atomicity — critical block pattern, notifications fail silently
+### 4A-04: Period Lock Refactor
+- Created `utils/period_lock.py` with `check_period_lock`, `enforce_period_lock`, `check_period_locked`
+- Updated `services/posting_hooks.py` and `services/double_entry_service.py` to import from shared utility
+- Eliminated circular dependency risk
 
-### Operational
-- **O1:** Structured audit logging (`utils/audit.py`) wired to: ticket close, password change, payroll run, user removal, Razorpay payment (6+ endpoints)
-- **O2:** Enhanced health check — MongoDB ping + env var verification
-- **O3:** Bounded cursor iteration in tally_export, data_migration, platform_admin
-
-### Architecture
-- **Section 7:** 17+ compound indexes auto-created on startup via `utils/indexes.py`
-- **Section 8:** Lifespan refactor — replaced all `@app.on_event` with `@asynccontextmanager`
-- **B1:** Indian FY (April-March) date defaults in BusinessReports.jsx + backend/frontend utilities
-
-## Feb 24, 2026 — Session 2
-- API v1 versioning: auth at /api/auth/, business at /api/v1/
-- EFI feedback loop UI: Shadcn Dialog in JobCard.jsx
-- MongoDB schema validators on 7 collections
-
-## Feb 24, 2026 — Session 1
-- Master audit of 16 modules
-- Multi-tenancy hardening: 22 route files patched
-- Legacy data cleanup
-- Environment separation: dev/staging/prod
-- Password security reset
+### 4A-05: Batch Payroll Granular Keys
+- Updated `services/hr_service.py` `generate_payroll` to aggregate: `pf_employer_epf`, `pf_employer_eps`, `pf_admin`, `edli`, `esi_employer`, `esi_employee`, `professional_tax`
+- `post_payroll_run` now receives accurate granular statutory data
