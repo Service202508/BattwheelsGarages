@@ -209,6 +209,7 @@ async def deprecate_failure_card(request: Request, failure_id: str, reason: str)
 async def match_failure(request: Request, data: FailureMatchRequest):
     """AI-powered failure matching - 4-stage pipeline"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     response = await service.match_failure(data)
     return response
@@ -218,9 +219,10 @@ async def match_failure(request: Request, data: FailureMatchRequest):
 async def match_ticket_to_failures(request: Request, ticket_id: str):
     """Match an existing ticket to failure cards"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     try:
-        return await service.match_ticket_to_failures(ticket_id)
+        return await service.match_ticket_to_failures(ticket_id, org_id=org_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
