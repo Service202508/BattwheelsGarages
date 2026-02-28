@@ -2478,7 +2478,7 @@ async def perform_bulk_action(bulk_request: BulkActionRequest, request: Request)
                     {"item_id": item_id, "organization_id": org_id},
                     {"$set": {"is_active": True, "status": "active", "updated_time": datetime.now(timezone.utc).isoformat()}}
                 )
-                await log_item_history(db, item_id, "activated", {}, "System")
+                await log_item_history(db, item_id, "activated", {}, "System", org_id=org_id)
                 results["success"] += 1
                 
             elif bulk_request.action == "deactivate":
@@ -2486,7 +2486,7 @@ async def perform_bulk_action(bulk_request: BulkActionRequest, request: Request)
                     {"item_id": item_id, "organization_id": org_id},
                     {"$set": {"is_active": False, "status": "inactive", "updated_time": datetime.now(timezone.utc).isoformat()}}
                 )
-                await log_item_history(db, item_id, "deactivated", {}, "System")
+                await log_item_history(db, item_id, "deactivated", {}, "System", org_id=org_id)
                 results["success"] += 1
                 
             elif bulk_request.action == "delete":
