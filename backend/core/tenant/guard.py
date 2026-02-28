@@ -66,6 +66,7 @@ TENANT_COLLECTIONS = {
     # Financial
     "ledger", "journal_entries", "bank_accounts",
     "bank_transactions", "reconciliations", "chart_of_accounts",
+    "journal_audit_log",  # Append-only audit trail for journal modifications (P1-21)
     
     # Stock
     "stock", "stock_transfers", "warehouses",
