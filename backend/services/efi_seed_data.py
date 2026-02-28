@@ -1324,6 +1324,7 @@ async def seed_failure_cards_and_trees(db):
         card_data["source_type"] = "seeded"
         card_data["is_seed_data"] = True
         card_data["organization_id"] = None  # Shared brain — no org
+        card_data["ticket_id"] = f"seed-{card_data['failure_id']}"  # Unique ticket_id for index compat
         card_data["status"] = card_data.get("status", "approved")
         card_data["created_at"] = datetime.now(timezone.utc).isoformat()
         card_data["updated_at"] = datetime.now(timezone.utc).isoformat()
