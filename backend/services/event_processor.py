@@ -129,7 +129,13 @@ class EFIEventProcessor:
         if not ticket_id:
             return {"status": "error", "reason": "no_ticket_id"}
         
-        ticket = await self.db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+        # TIER 1: Extract org_id from event — Sprint 1C
+        org_id = event.get("organization_id") or event["data"].get("organization_id")
+        
+        ticket_query = {"ticket_id": ticket_id}
+        if org_id:
+            ticket_query["organization_id"] = org_id
+        ticket = await self.db.tickets.find_one(ticket_query, {"_id": 0})
         if not ticket:
             return {"status": "error", "reason": "ticket_not_found"}
         
