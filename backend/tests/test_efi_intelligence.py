@@ -78,7 +78,8 @@ class MockCollection:
 class MockDB:
     """Mock MongoDB database"""
     def __init__(self):
-        self.efi_failure_cards = MockCollection()
+        self.failure_cards = MockCollection()  # Sprint 3B-01: consolidated
+        self.efi_failure_cards = self.failure_cards  # Alias for backward compat in tests
         self.ai_guidance_snapshots = MockCollection()
         self.ai_guidance_feedback = MockCollection()
         self.efi_learning_queue = MockCollection()
