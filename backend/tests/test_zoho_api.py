@@ -26,7 +26,7 @@ class TestZohoContacts:
             "contact_type": "customer",
             "email": "test_abc@example.com",
             "phone": "9876543210",
-            "gst_no": "29AABCU9603R1ZM",
+            "gst_no": "29AABCU9603R1ZJ",
             "gst_treatment": "business_gst",
             "place_of_supply": "KA",
             "payment_terms": 30,
@@ -49,7 +49,7 @@ class TestZohoContacts:
             "contact_type": "vendor",
             "email": "test_xyz@vendor.com",
             "phone": "9123456789",
-            "gst_no": "27AABCU9603R1ZM",
+            "gst_no": "27AABCU9603R1ZN",
             "payment_terms": 45
         })
         assert response.status_code == 200

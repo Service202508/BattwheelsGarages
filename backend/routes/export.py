@@ -28,7 +28,7 @@ def get_db():
 # ============== E-INVOICE GENERATION (GST Compliant) ==============
 
 class EInvoiceConfig(BaseModel):
-    gstin: str = "29AABCU9603R1ZM"  # Supplier GSTIN
+    gstin: str = "29AABCU9603R1ZJ"  # Supplier GSTIN
     legal_name: str = "Battwheels EV Solutions Pvt Ltd"
     trade_name: str = "Battwheels Garages"
     address: str = "123 Industrial Area"

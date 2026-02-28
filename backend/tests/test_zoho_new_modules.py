@@ -590,7 +590,7 @@ class TestContactsEnhanced:
     def test_validate_gstin(self, authenticated_client):
         """Test GSTIN validation endpoint"""
         # Valid GSTIN format
-        response = authenticated_client.get(f"{BASE_URL}/api/contacts-enhanced/validate-gstin/27AABCU9603R1ZM")
+        response = authenticated_client.get(f"{BASE_URL}/api/contacts-enhanced/validate-gstin/27AABCU9603R1ZN")
         assert response.status_code == 200
         data = response.json()
         assert data["valid"] == True

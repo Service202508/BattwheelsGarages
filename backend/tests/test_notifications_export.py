@@ -214,7 +214,7 @@ class TestExportAPI:
             "contact_name": "TEST_Export Customer",
             "contact_type": "customer",
             "email": "test.export@example.com",
-            "gst_no": "29AABCU9603R1ZM",
+            "gst_no": "29AABCU9603R1ZJ",
             "billing_address": {
                 "street": "123 Test Street",
                 "city": "Bangalore",

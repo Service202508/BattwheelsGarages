@@ -96,7 +96,7 @@ class TestExpensesAPI(TestSetup):
             "description": "TEST Office stationery purchase",
             "amount": 1000,
             "category_id": category_id,
-            "vendor_gstin": "29AABCU9603R1ZM",  # Valid GSTIN format
+            "vendor_gstin": "29AABCU9603R1ZJ",  # Valid GSTIN format
             "gst_rate": 18,
             "is_igst": False,
             "payment_mode": "PENDING",
@@ -223,7 +223,7 @@ class TestBillsAPI(TestSetup):
             "bill_number": f"TEST_INV_{datetime.now().strftime('%H%M%S')}",
             "vendor_id": vendor_id,
             "vendor_name": vendor.get("name", "TEST_Supplier"),
-            "vendor_gstin": vendor.get("gstin", "29AABCU9603R1ZM"),
+            "vendor_gstin": vendor.get("gstin", "29AABCU9603R1ZJ"),
             "bill_date": today,
             "due_date": due_date,
             "line_items": [

@@ -219,7 +219,7 @@ class TestOrganizationSettings:
         # Verify settings were saved
         get_response = requests.get(f"{BASE_URL}/api/v1/gst/organization-settings", headers=auth_headers)
         get_data = get_response.json()
-        assert get_data["settings"]["gstin"] == "27AAACT1234A1ZB"
+        assert get_data["settings"]["gstin"] == "27AAACT1234A1Z1"
         assert get_data["settings"]["place_of_supply"] == "27"
     
     def test_update_with_invalid_gstin(self, auth_headers):

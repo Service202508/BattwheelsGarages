@@ -80,7 +80,7 @@ class TestGSTINValidation:
     
     def test_validate_valid_gstin_maharashtra(self):
         """GET /api/customers-enhanced/validate-gstin/{gstin} - Valid Maharashtra GSTIN"""
-        gstin = "27AABCU9603R1ZM"
+        gstin = "27AABCU9603R1ZN"
         response = requests.get(f"{BASE_URL}/api/customers-enhanced/validate-gstin/{gstin}")
         assert response.status_code == 200
         data = response.json()

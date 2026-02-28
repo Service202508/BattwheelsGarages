@@ -76,7 +76,7 @@ class TestBillsEnhancedCRUD:
             "contact_type": "vendor",
             "email": f"test_vendor_{uuid.uuid4().hex[:6]}@test.com",
             "phone": "9876543210",
-            "gstin": "29AABCU9603R1ZM",
+            "gstin": "29AABCU9603R1ZJ",
             "gst_treatment": "registered",
             "payment_terms": 30
         }

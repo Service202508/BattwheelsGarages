@@ -329,7 +329,7 @@ class TestContactsEnhanced:
             "contact_type": "customer",
             "email": f"audit{int(datetime.now().timestamp())}@test.com",
             "phone": "+919876543210",
-            "gstin": "27AABCU9603R1ZM",
+            "gstin": "27AABCU9603R1ZN",
             "place_of_supply": "Maharashtra",
             "gst_treatment": "registered",
             "payment_terms": 30,
