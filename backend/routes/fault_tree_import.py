@@ -2,7 +2,7 @@
 Battwheels OS - Fault Tree Import Routes
 Admin interface for importing EV Failure Intelligence from Excel
 """
-from fastapi import APIRouter, HTTPException, Request, UploadFile, File, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Request, UploadFile, File, BackgroundTasks, Depends
 from typing import Optional
 from datetime import datetime, timezone
 import os
@@ -10,6 +10,7 @@ import tempfile
 import aiohttp
 import logging
 from utils.database import extract_org_id, org_query
+from utils.auth import require_platform_admin
 
 
 logger = logging.getLogger(__name__)
