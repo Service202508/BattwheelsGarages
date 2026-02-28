@@ -1433,13 +1433,23 @@ class DoubleEntryService:
     async def get_balance_sheet(
         self,
         organization_id: str,
-        as_of_date: str
+        as_of_date: str = None,
+        fiscal_year: int = None
     ) -> Dict:
         """
         Generate Balance Sheet from journal entries.
         
         Assets = Liabilities + Equity
+        fiscal_year: FY start year (e.g. 2025 for FY 2025-26).
         """
+        # Fiscal year resolution (P1-11)
+        if fiscal_year is not None:
+            _, fy_end = get_fiscal_year_dates(fiscal_year)
+            as_of_date = fy_end.strftime("%Y-%m-%d")
+        elif not as_of_date:
+            _, fy_end = get_current_fiscal_year_dates()
+            as_of_date = fy_end.strftime("%Y-%m-%d")
+        
         # Aggregate asset, liability, and equity accounts
         pipeline = [
             {
