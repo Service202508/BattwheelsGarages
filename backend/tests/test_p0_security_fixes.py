@@ -14,7 +14,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://invoice-bugs.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://platform-review-1.preview.emergentagent.com').rstrip('/')
 ORG_ID = "dev-internal-testing-001"
 
 # Test credentials
