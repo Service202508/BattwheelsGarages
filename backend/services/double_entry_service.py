@@ -427,6 +427,11 @@ class DoubleEntryService:
         Returns:
             Tuple of (success, message, entry_dict)
         """
+        # Period lock check — prevent posting to locked periods (P1-13C)
+        if entry_date and organization_id:
+            from services.posting_hooks import _check_period_lock
+            await _check_period_lock(organization_id, entry_date)
+        
         # Ensure system accounts exist
         await self.ensure_system_accounts(organization_id)
         
