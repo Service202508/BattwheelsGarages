@@ -2813,7 +2813,7 @@ async def import_items(request: Request, file: UploadFile = File(...), overwrite
                 item_data["created_time"] = datetime.now(timezone.utc).isoformat()
                 
                 await db.items.insert_one(item_data)
-                await log_item_history(db, item_id, "created", {"source": "import"}, "System")
+                await log_item_history(db, item_id, "created", {"source": "import"}, "System", org_id=org_id)
                 results["created"] += 1
                 
         except Exception as e:
