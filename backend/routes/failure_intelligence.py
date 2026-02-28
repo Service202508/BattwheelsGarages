@@ -240,7 +240,8 @@ async def record_technician_action(request: Request, data: TechnicianActionCreat
         return await service.record_technician_action(
             data=data,
             technician_id=user.get("user_id"),
-            technician_name=user.get("name")
+            technician_name=user.get("name"),
+            org_id=org_id
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
