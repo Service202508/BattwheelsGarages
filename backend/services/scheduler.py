@@ -195,10 +195,13 @@ async def generate_recurring_expenses():
     
     for re in recurring:
         try:
+            # SCHEDULER-FIX: org_id scoped from recurring expense profile — Sprint 1B
+            org_id = re.get("organization_id")
             expense_id = f"EXP-{uuid.uuid4().hex[:12].upper()}"
             
             expense = {
                 "expense_id": expense_id,
+                "organization_id": org_id,  # SCHEDULER-FIX: org_id from recurring profile — Sprint 1B
                 "vendor_id": re.get("vendor_id", ""),
                 "vendor_name": re.get("vendor_name", ""),
                 "account_id": re.get("account_id"),
