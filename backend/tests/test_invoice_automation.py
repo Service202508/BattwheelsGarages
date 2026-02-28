@@ -298,7 +298,7 @@ class TestInvoicePaymentsStripe:
         """Test POST /api/invoice-payments/create-payment-link"""
         payload = {
             "invoice_id": unpaid_invoice_id,
-            "origin_url": "https://rbac-bypass-fix.preview.emergentagent.com"
+            "origin_url": "https://p0-p1-patch.preview.emergentagent.com"
         }
         
         response = requests.post(

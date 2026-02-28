@@ -30,7 +30,7 @@ import pytest
 import requests
 
 # ── Config ──────────────────────────────────────────────────────────────────
-API_URL = os.getenv("REACT_APP_BACKEND_URL", "https://rbac-bypass-fix.preview.emergentagent.com")
+API_URL = os.getenv("REACT_APP_BACKEND_URL", "https://p0-p1-patch.preview.emergentagent.com")
 BASE = f"{API_URL}/api"
 
 # ── Org / User constants ─────────────────────────────────────────────────────

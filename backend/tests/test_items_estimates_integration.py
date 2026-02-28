@@ -16,7 +16,7 @@ import os
 import uuid
 
 # Use the public URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://rbac-bypass-fix.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://p0-p1-patch.preview.emergentagent.com').rstrip('/')
 
 # Test data from the review request
 TEST_CUSTOMER_ID = "CUST-93AE14BE3618"  # Full Zoho Test Co - has Wholesale price list
