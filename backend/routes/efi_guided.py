@@ -320,6 +320,7 @@ async def record_step_outcome(request: Request, session_id: str,
             session_id=session_id,
             step_id=step_id,
             outcome=data.outcome,
+            org_id=org_id,
             actual_measurement=data.actual_measurement,
             notes=data.notes,
             time_taken_seconds=data.time_taken_seconds
