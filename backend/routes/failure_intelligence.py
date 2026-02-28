@@ -309,6 +309,7 @@ async def list_part_usage(request: Request, ticket_id: Optional[str] = None, fai
 async def list_emerging_patterns(request: Request, status: Optional[str] = None, pattern_type: Optional[str] = None, limit: int = 50):
     """List detected emerging patterns"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     query = {}
     if status:
