@@ -381,6 +381,7 @@ class EFILearningEngine:
         
         learning_entry = {
             "entry_id": f"learn_{uuid.uuid4().hex[:8]}",
+            "organization_id": org_id,  # TIER 1: org-scoped — Sprint 1C
             "ticket_id": ticket_id,
             "session_id": session_id,
             "actual_resolution": actual_resolution,
@@ -397,7 +398,10 @@ class EFILearningEngine:
         
         # Check if this suggests a new failure card
         if session_id:
-            session = await self.db.efi_sessions.find_one({"session_id": session_id})
+            session_query = {"session_id": session_id}
+            if org_id:
+                session_query["organization_id"] = org_id  # TIER 1: org-scoped — Sprint 1C
+            session = await self.db.efi_sessions.find_one(session_query)
             if session:
                 # If there's significant deviation, propose new card
                 has_deviation = (
