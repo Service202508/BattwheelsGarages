@@ -73,7 +73,7 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     r"^/api/vehicles(/.*)?$":          ["org_admin", "admin", "owner", "manager", "technician", "dispatcher"],
     
     # ============ INVENTORY ============
-    r"^/api/inventory(/.*)?$":         ["org_admin", "admin", "owner", "manager", "accountant"],
+    r"^/api/inventory(/.*)?$":         ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
     r"^/api/items(/.*)?$":             ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
     r"^/api/allocations(/.*)?$":       ["org_admin", "admin", "owner", "manager", "technician"],
     r"^/api/stock.*$":              ["org_admin", "admin", "owner", "manager", "accountant"],
