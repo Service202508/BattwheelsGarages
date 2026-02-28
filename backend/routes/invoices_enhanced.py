@@ -932,7 +932,16 @@ async def list_invoices(request: Request, customer_id: Optional[str] = None, sta
     skip = (page - 1) * limit
     total_pages = math.ceil(total / limit) if total > 0 else 1
 
-    invoices = await invoices_collection.find(query, {"_id": 0}).sort(sort_by, sort_dir).skip(skip).limit(limit).to_list(limit)
+    invoices = await invoices_collection.find(query, {"_id": 0}).sort([
+        (sort_by, sort_dir),
+        ("invoice_id", sort_dir),
+    ]).skip(skip).limit(limit).to_list(limit)
+
+    from utils.pagination import encode_cursor
+    next_cursor = None
+    if invoices and page < total_pages:
+        last = invoices[-1]
+        next_cursor = encode_cursor(last.get(sort_by), last.get("invoice_id"))
 
     return {
         "data": invoices,
@@ -942,7 +951,8 @@ async def list_invoices(request: Request, customer_id: Optional[str] = None, sta
             "total_count": total,
             "total_pages": total_pages,
             "has_next": page < total_pages,
-            "has_prev": page > 1
+            "has_prev": page > 1,
+            "next_cursor": next_cursor,
         }
     }
 
