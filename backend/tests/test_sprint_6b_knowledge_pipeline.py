@@ -82,19 +82,22 @@ class Test6B01ProcessQueueKnowledgeArticles:
         assert "failed" in data
         print(f"Process queue result: processed={data['processed']}, failed={data['failed']}")
     
-    def test_knowledge_articles_exist_from_learning_events(self, platform_admin_token):
-        """Verify knowledge articles with source_type=learning_event exist"""
-        # Check database via API - needs org context even for platform admin
+    def test_knowledge_articles_exist_from_learning_events(self, dev_user_token):
+        """Verify knowledge articles with source_type=learning_event exist via failure cards"""
+        # failure_cards is a shared-brain endpoint, requires org context for EFI feature entitlement
         resp = requests.get(
-            f"{BASE_URL}/api/v1/efi-guided/failure-cards",
+            f"{BASE_URL}/api/v1/efi-guided/failure-cards?limit=5",
             headers={
-                "Authorization": f"Bearer {platform_admin_token}",
+                "Authorization": f"Bearer {dev_user_token}",
                 "X-Organization-ID": "dev-internal-testing-001"
             }
         )
-        # This verifies the service is up; knowledge article count
+        # This verifies the EFI service is up; knowledge article count
         # verified via seed-articles in 6B-02
-        assert resp.status_code == 200
+        assert resp.status_code == 200, f"Failed: {resp.text}"
+        data = resp.json()
+        assert "cards" in data
+        print(f"Failure cards available: {data.get('total', len(data.get('cards', [])))}")
 
 
 # ====================
