@@ -28,13 +28,25 @@ SANITIZE_BYPASS_PREFIXES = (
 )
 
 
-def _sanitize_value(value):
-    """Recursively sanitize all strings in a JSON structure."""
+# Keys whose values must NEVER be sanitized (passwords, tokens, secrets)
+PASSWORD_FIELDS = frozenset({
+    "password", "new_password", "current_password", "old_password",
+    "password_hash", "confirm_password", "temporary_password",
+    "token", "refresh_token", "secret", "api_key",
+})
+
+
+def _sanitize_value(value, key=None):
+    """Recursively sanitize all strings in a JSON structure.
+    Password and secret fields are explicitly skipped to prevent credential corruption.
+    """
+    if key and key.lower() in PASSWORD_FIELDS:
+        return value
     if isinstance(value, str):
         cleaned = bleach.clean(value, tags=[], attributes={}, strip=True)
         return cleaned
     elif isinstance(value, dict):
-        return {k: _sanitize_value(v) for k, v in value.items()}
+        return {k: _sanitize_value(v, key=k) for k, v in value.items()}
     elif isinstance(value, list):
         return [_sanitize_value(item) for item in value]
     return value
