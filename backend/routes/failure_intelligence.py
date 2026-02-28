@@ -156,6 +156,7 @@ async def get_confidence_history(request: Request, failure_id: str):
 async def update_failure_card(request: Request, failure_id: str, data: FailureCardUpdate):
     """Update a failure card"""
     service = get_service()
+    org_id = extract_org_id(request)
     user = await get_current_user(request, service.db)
     
     try:
@@ -172,6 +173,7 @@ async def update_failure_card(request: Request, failure_id: str, data: FailureCa
 async def approve_failure_card(request: Request, failure_id: str, approved_by: Optional[str] = None):
     """Approve a failure card for network distribution"""
     service = get_service()
+    org_id = extract_org_id(request)
     user = await get_current_user(request, service.db)
     
     try:
@@ -188,6 +190,7 @@ async def approve_failure_card(request: Request, failure_id: str, approved_by: O
 async def deprecate_failure_card(request: Request, failure_id: str, reason: str):
     """Deprecate a failure card"""
     service = get_service()
+    org_id = extract_org_id(request)
     user = await get_current_user(request, service.db)
     
     try:
