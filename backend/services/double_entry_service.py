@@ -504,6 +504,24 @@ class DoubleEntryService:
             user_id=created_by,
         )
         
+        # Tamper-evident journal audit trail — APPEND-ONLY (P1-21)
+        # No DELETE or UPDATE operations should ever exist for journal_audit_log
+        journal_audit_entry = {
+            "audit_id": f"JA-{uuid.uuid4().hex[:8].upper()}",
+            "organization_id": organization_id,
+            "action": "CREATE",
+            "journal_entry_id": entry_dict.get("entry_id", reference_number),
+            "performed_by": created_by or "system_post",
+            "performed_at": datetime.now(timezone.utc).isoformat(),
+            "entry_data": {
+                "reference": reference_number,
+                "date": journal_entry.date,
+                "total_debit": float(total_debit),
+                "line_count": len(journal_entry.lines)
+            }
+        }
+        await self.db.journal_audit_log.insert_one(journal_audit_entry)
+        
         return True, "Journal entry created successfully", entry_dict
     
     async def reverse_journal_entry(
