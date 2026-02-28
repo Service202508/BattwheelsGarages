@@ -1416,6 +1416,69 @@ async def seed_failure_cards_and_trees(db):
     }
 
 
+# ==================== SEED KNOWLEDGE ARTICLES (Sprint 6B-02) ====================
+
+async def seed_knowledge_articles(db):
+    """
+    Create knowledge articles from seeded failure cards.
+    These are global (organization_id=None, scope=global)
+    because they come from shared seed data.
+    """
+    seed_cards = await db.failure_cards.find(
+        {"is_seed_data": True},
+        {"_id": 0}
+    ).to_list(100)
+
+    inserted = 0
+    skipped = 0
+
+    for card in seed_cards:
+        card_id = card.get("card_id") or card.get("failure_id")
+        if not card_id:
+            skipped += 1
+            continue
+
+        existing = await db.knowledge_articles.find_one(
+            {"source_id": card_id},
+            {"_id": 0, "knowledge_id": 1}
+        )
+        if existing:
+            skipped += 1
+            continue
+
+        article = {
+            "knowledge_id": f"KB-SEED-{card_id}",
+            "organization_id": None,
+            "scope": "global",
+            "knowledge_type": "repair_procedure",
+            "title": card.get("title") or card.get("issue_title", ""),
+            "summary": card.get("symptom_text") or card.get("description", ""),
+            "content": "\n\n".join(filter(None, [
+                f"**Root Cause:** {card.get('root_cause', '')}",
+                f"**Diagnosis Steps:** {chr(10).join(str(s.get('instruction', s)) for s in card.get('diagnosis_steps', []))}" if card.get("diagnosis_steps") else None,
+                f"**Resolution Steps:** {chr(10).join(str(s) for s in card.get('resolution_steps', []))}" if card.get("resolution_steps") else None,
+                f"**Root Cause Details:** {card.get('root_cause_details', '')}" if card.get("root_cause_details") else None,
+            ])),
+            "symptoms": card.get("symptoms") or card.get("symptom_cluster", []),
+            "dtc_codes": card.get("dtc_codes") or card.get("error_codes", []),
+            "vehicle_category": card.get("vehicle_category", "2W"),
+            "subsystem": card.get("subsystem_category") or card.get("subsystem", "unknown"),
+            "confidence_score": card.get("confidence_score", 0.7),
+            "approval_status": "approved",
+            "source_type": "seed_data",
+            "source_id": card_id,
+            "created_by": "system_seed",
+            "is_seed_data": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
+
+        await db.knowledge_articles.insert_one(article)
+        inserted += 1
+
+    return {"inserted": inserted, "skipped": skipped}
+
+
 # Run seeding if called directly
 if __name__ == "__main__":
     import motor.motor_asyncio
