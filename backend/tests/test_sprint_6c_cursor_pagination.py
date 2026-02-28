@@ -434,7 +434,7 @@ class TestBackwardCompatibility:
         print("✓ Employees backward compat: works without cursor")
     
     def test_failure_cards_without_cursor(self, dev_session):
-        """Failure cards endpoint works without cursor"""
+        """Failure cards endpoint works without cursor (legacy)"""
         resp = dev_session.get(f"{BASE_URL}/api/v1/efi/failure-cards", params={"limit": 10})
         assert resp.status_code == 200
         print("✓ Failure cards backward compat: works without cursor")
