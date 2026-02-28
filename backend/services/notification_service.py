@@ -378,12 +378,17 @@ async def send_ticket_notification(
 
 @router.get("/logs")
 async def get_notification_logs(
+    req: Request,
     channel: Optional[str] = None,
     status: Optional[str] = None,
     limit: int = 100
 ):
     """Get notification logs"""
+    # P1-03 FIX: scope logs by org_id — Sprint 1B
+    org_id = getattr(getattr(req, "state", None), "tenant_org_id", None)
     query = {}
+    if org_id:
+        query["organization_id"] = org_id
     if channel:
         query["channel"] = channel
     if status:
