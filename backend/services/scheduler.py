@@ -287,6 +287,9 @@ async def send_payment_reminders():
     
     for invoice in overdue:
         try:
+            # SCHEDULER-FIX: org_id scoped from invoice record — Sprint 1B
+            org_id = invoice.get("organization_id")
+            
             due_date = datetime.strptime(invoice.get("due_date", today), "%Y-%m-%d")
             days_overdue = (today_date - due_date).days
             
@@ -300,18 +303,20 @@ async def send_payment_reminders():
                 if days_since_reminder < 7:
                     continue
             
-            # Get customer email
+            # Get customer email (scoped to org)
+            # SCHEDULER-FIX: org_id scoped from invoice record — Sprint 1B
             customer = await db.contacts.find_one(
-                {"contact_id": invoice.get("customer_id")},
+                {"contact_id": invoice.get("customer_id"), "organization_id": org_id},
                 {"_id": 0, "email": 1, "contact_name": 1}
             )
             
             if not customer or not customer.get("email"):
                 continue
             
-            # Create reminder record
+            # Create reminder record with org_id
             reminder = {
                 "reminder_id": f"REM-{uuid.uuid4().hex[:12].upper()}",
+                "organization_id": org_id,  # SCHEDULER-FIX: org_id from invoice record — Sprint 1B
                 "invoice_id": invoice.get("invoice_id"),
                 "invoice_number": invoice.get("invoice_number"),
                 "customer_id": invoice.get("customer_id"),
@@ -326,9 +331,10 @@ async def send_payment_reminders():
             
             await db.payment_reminders.insert_one(reminder)
             
-            # Update invoice with reminder info
+            # Update invoice with reminder info (scoped to org)
+            # SCHEDULER-FIX: org_id scoped from invoice record — Sprint 1B
             await db.invoices.update_one(
-                {"invoice_id": invoice.get("invoice_id")},
+                {"invoice_id": invoice.get("invoice_id"), "organization_id": org_id},
                 {
                     "$set": {"last_reminder_date": today},
                     "$inc": {"reminder_count": 1}
