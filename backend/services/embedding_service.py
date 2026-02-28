@@ -56,13 +56,14 @@ class EmbeddingService:
         """Generate deterministic hash for text caching."""
         return hashlib.sha256(text.encode()).hexdigest()[:32]
     
-    async def get_embedding(self, text: str, use_cache: bool = True) -> Optional[List[float]]:
+    async def get_embedding(self, text: str, use_cache: bool = True, org_id: str = None) -> Optional[List[float]]:
         """
         Get embedding for a single text string.
         
         Args:
             text: Text to embed
             use_cache: Whether to check cache first
+            org_id: Organization ID for cache scoping (TIER 1)
             
         Returns:
             1536-dimensional embedding vector or None if error
@@ -77,10 +78,13 @@ class EmbeddingService:
         text = text.strip()[:8000]  # Limit to 8000 chars
         text_hash = self._compute_text_hash(text)
         
-        # Check cache
+        # Check cache (TIER 1: org-scoped — Sprint 1C)
         if use_cache and self.db is not None:
+            cache_query = {"text_hash": text_hash}
+            if org_id:
+                cache_query["organization_id"] = org_id
             cached = await self.db.embedding_cache.find_one(
-                {"text_hash": text_hash},
+                cache_query,
                 {"_id": 0, "embedding": 1}
             )
             if cached:
@@ -96,17 +100,23 @@ class EmbeddingService:
             
             embedding = response.data[0].embedding
             
-            # Cache the result
+            # Cache the result (TIER 1: org-scoped — Sprint 1C)
             if self.db is not None:
+                cache_doc = {
+                    "text_hash": text_hash,
+                    "text_preview": text[:200],
+                    "embedding": embedding,
+                    "model": EMBEDDING_MODEL,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+                if org_id:
+                    cache_doc["organization_id"] = org_id
+                cache_filter = {"text_hash": text_hash}
+                if org_id:
+                    cache_filter["organization_id"] = org_id
                 await self.db.embedding_cache.update_one(
-                    {"text_hash": text_hash},
-                    {"$set": {
-                        "text_hash": text_hash,
-                        "text_preview": text[:200],
-                        "embedding": embedding,
-                        "model": EMBEDDING_MODEL,
-                        "created_at": datetime.now(timezone.utc).isoformat()
-                    }},
+                    cache_filter,
+                    {"$set": cache_doc},
                     upsert=True
                 )
             
