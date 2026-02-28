@@ -516,7 +516,7 @@ class DoubleEntryService:
             "entry_data": {
                 "reference": reference_number,
                 "date": entry_date,
-                "total_debit": float(total_debit),
+                "total_debit": float(sum(l.debit_amount for l in entry.lines)),
                 "line_count": len(entry.lines)
             }
         }
