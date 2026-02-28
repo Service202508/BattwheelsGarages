@@ -387,7 +387,8 @@ async def post_credit_note_journal(db, org_id: str, cn: dict, is_paid: bool, use
         "description": f"CN {cn['credit_note_number']} - {credit_label} for {cn['original_invoice_number']}"
     })
     
-    cn_date = cn.get("created_at", datetime.now(timezone.utc).isoformat())[:10]
+    cn_date = (cn.get("credit_note_date") or cn.get("date") or 
+              cn.get("created_at", datetime.now(timezone.utc).isoformat()))[:10]
     
     success, msg, entry = await service.create_journal_entry(
         organization_id=org_id,
