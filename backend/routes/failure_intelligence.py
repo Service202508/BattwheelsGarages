@@ -631,6 +631,7 @@ async def generate_embeddings(request: Request, background_tasks: BackgroundTask
     
     Note: Requires OPENAI_API_KEY in environment. Emergent LLM key does not support embeddings.
     """
+    org_id = extract_org_id(request)
     try:
         from services.embedding_service import get_card_embedder, get_embedding_service
         
@@ -678,6 +679,7 @@ async def generate_embeddings(request: Request, background_tasks: BackgroundTask
 async def get_embedding_status(request: Request):
     """Check embedding generation status for failure cards."""
     service = get_service()
+    org_id = extract_org_id(request)
     
     # Check if embedding service is available
     try:
