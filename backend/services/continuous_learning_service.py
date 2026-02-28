@@ -113,7 +113,7 @@ class ContinuousLearningService:
             "vehicle_make": ticket.get("vehicle_info", {}).get("make") or ticket.get("vehicle_oem"),
             "vehicle_model": ticket.get("vehicle_info", {}).get("model") or ticket.get("vehicle_model"),
             "vehicle_variant": ticket.get("vehicle_info", {}).get("variant"),
-            "vehicle_category": ticket.get("vehicle_category", "2W"),
+            "vehicle_category": ticket.get("vehicle_category") or _derive_vehicle_category(ticket.get("vehicle_type", "")),
             
             # Issue context
             "category": ticket.get("category"),
