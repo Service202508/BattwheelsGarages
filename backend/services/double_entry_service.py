@@ -1072,8 +1072,7 @@ class DoubleEntryService:
             return False, "Required salary accounts not found", None
         
         # Aggregate totals from all payroll records (P1-13A granular)
-        PF_WAGE_CEILING = 15000
-        ESI_WAGE_CEILING = 21000
+        PF_WAGE_CEILING = 15000  # Used in fallback calculation below
         
         total_gross = Decimal("0")
         total_net = Decimal("0")
