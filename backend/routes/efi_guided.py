@@ -280,7 +280,7 @@ async def get_session(request: Request, session_id: str):
     if not _decision_engine:
         raise HTTPException(status_code=503, detail="Decision engine not initialized")
     
-    session = await _decision_engine.get_session(session_id)
+    session = await _decision_engine.get_session(session_id, org_id=org_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     
@@ -296,7 +296,7 @@ async def get_session_by_ticket(request: Request, ticket_id: str):
     if not _decision_engine:
         raise HTTPException(status_code=503, detail="Decision engine not initialized")
     
-    session = await _decision_engine.get_session_by_ticket(ticket_id)
+    session = await _decision_engine.get_session_by_ticket(ticket_id, org_id=org_id)
     return session or {"active_session": None}
 
 
