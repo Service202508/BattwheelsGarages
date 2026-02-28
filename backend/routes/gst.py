@@ -962,7 +962,8 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         itc_all_other["sgst"] += exp_sgst
     
     # TABLE 4B — ITC Reversed (Sprint 4B-04)
-    # Query vendor_credits for approved/issued/applied credits in the period
+    # vendor_credits schema: {amount, line_items: [{rate, tax_rate, amount}], status, date, organization_id}
+    # No cgst_amount/sgst_amount/igst_amount fields — compute from line_items and linked bill state
     vendor_credit_query = org_query(org_id, {
         "date": {"$gte": start_date, "$lte": end_date},
         "status": {"$in": ["approved", "issued", "applied"]}
@@ -971,10 +972,39 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         vendor_credit_query, {"_id": 0}
     ).to_list(1000)
 
+    itc_reversed_cgst = 0
+    itc_reversed_sgst = 0
+    itc_reversed_igst = 0
+    for vc in vendor_credits_list:
+        # Sum tax from line_items
+        vc_tax = 0
+        for li in vc.get("line_items", []):
+            item_amount = li.get("amount", 0) or (li.get("quantity", 0) * li.get("rate", 0))
+            item_tax_rate = li.get("tax_rate", 0) or 0
+            vc_tax += item_amount * (item_tax_rate / 100)
+        # If no line_items, estimate from total amount with zero tax
+        # Determine intra/inter from linked bill's vendor GSTIN
+        linked_bill_id = vc.get("linked_bill_id")
+        vendor_state = org_state  # default to intra-state
+        if linked_bill_id:
+            linked_bill = await db.bills.find_one(
+                {"bill_id": linked_bill_id, "organization_id": org_id},
+                {"vendor_gstin": 1, "_id": 0}
+            )
+            if linked_bill:
+                vg = linked_bill.get("vendor_gstin", "")
+                if vg and len(vg) >= 2:
+                    vendor_state = vg[:2]
+        if vendor_state == org_state:
+            itc_reversed_cgst += vc_tax / 2
+            itc_reversed_sgst += vc_tax / 2
+        else:
+            itc_reversed_igst += vc_tax
+
     itc_reversed_others = {
-        "cgst": sum(vc.get("cgst_amount", 0) for vc in vendor_credits_list),
-        "sgst": sum(vc.get("sgst_amount", 0) for vc in vendor_credits_list),
-        "igst": sum(vc.get("igst_amount", 0) for vc in vendor_credits_list),
+        "cgst": itc_reversed_cgst,
+        "sgst": itc_reversed_sgst,
+        "igst": itc_reversed_igst,
     }
     # TODO: Rule 42/43 calculation requires exempt supply ratio — not yet captured on bills. Sprint 5A.
     itc_reversed_rule42_43 = {"cgst": 0, "sgst": 0, "igst": 0}
