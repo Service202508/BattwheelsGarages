@@ -177,3 +177,84 @@ class TestGSTCalculation:
         """28% GST (luxury goods rate)."""
         result = calculate_gst(1000, 28, "27", "29")  # inter-state
         assert result["igst_amount"] == 280
+
+
+
+# ==================== INVOICE GST CLASSIFICATION (Sprint 6A-03) ====================
+
+class TestInvoiceGSTClassification:
+    """Tests that invoice creation correctly applies IGST vs CGST/SGST
+    based on org state from settings vs customer place_of_supply."""
+
+    BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://efi-queue-finish.preview.emergentagent.com")
+    ORG_ID = None
+    TOKEN = None
+
+    @pytest.fixture(autouse=True)
+    def setup_auth(self):
+        """Get auth token for the dev org."""
+        import requests
+        resp = requests.post(f"{self.BASE_URL}/api/auth/login", json={
+            "email": "dev@battwheels.internal",
+            "password": "DevTest@123"
+        })
+        data = resp.json()
+        self.TOKEN = data.get("token", "")
+        self.ORG_ID = data.get("user", {}).get("organization_id", "")
+        self.HEADERS = {
+            "Authorization": f"Bearer {self.TOKEN}",
+            "X-Organization-ID": self.ORG_ID,
+            "Content-Type": "application/json"
+        }
+        # Set org place_of_supply to DL for predictable state
+        requests.put(
+            f"{self.BASE_URL}/api/v1/gst/organization-settings",
+            json={"gstin": "07AAACT1234A1Z3", "place_of_supply": "DL", "legal_name": "Test", "trade_name": "Test"},
+            headers=self.HEADERS
+        )
+
+    def _create_invoice(self, place_of_supply):
+        import requests
+        # Get or create a customer
+        contacts = requests.get(
+            f"{self.BASE_URL}/api/v1/contacts-enhanced/?limit=1",
+            headers=self.HEADERS
+        ).json()
+        contact_list = contacts.get("contacts", contacts.get("items", contacts if isinstance(contacts, list) else []))
+        if contact_list:
+            customer_id = contact_list[0].get("contact_id", "")
+        else:
+            c = requests.post(
+                f"{self.BASE_URL}/api/v1/contacts-enhanced/",
+                json={"name": "GST Test Customer", "email": "gst-test@test.in", "phone": "9000000000", "contact_type": "customer"},
+                headers=self.HEADERS
+            ).json()
+            customer_id = c.get("contact_id", "")
+
+        resp = requests.post(
+            f"{self.BASE_URL}/api/v1/invoices-enhanced/",
+            json={
+                "customer_id": customer_id,
+                "reference_number": f"6A-TEST-{place_of_supply}",
+                "invoice_date": "2026-02-28",
+                "payment_terms": 30,
+                "line_items": [{"name": "Test Item", "quantity": 1, "rate": 10000, "tax_rate": 18, "hsn_sac_code": "998719"}],
+                "place_of_supply": place_of_supply
+            },
+            headers=self.HEADERS
+        )
+        return resp.json().get("invoice", resp.json())
+
+    def test_intrastate_invoice_uses_cgst_sgst(self):
+        """Intra-state (org DL, customer DL): CGST+SGST applied, IGST=0"""
+        inv = self._create_invoice("DL")
+        assert inv.get("cgst_total", 0) == 900, f"Expected CGST=900, got {inv.get('cgst_total')}"
+        assert inv.get("sgst_total", 0) == 900, f"Expected SGST=900, got {inv.get('sgst_total')}"
+        assert inv.get("igst_total", 0) == 0, f"Expected IGST=0, got {inv.get('igst_total')}"
+
+    def test_interstate_invoice_uses_igst(self):
+        """Inter-state (org DL, customer MH): IGST applied, CGST=0, SGST=0"""
+        inv = self._create_invoice("MH")
+        assert inv.get("igst_total", 0) == 1800, f"Expected IGST=1800, got {inv.get('igst_total')}"
+        assert inv.get("cgst_total", 0) == 0, f"Expected CGST=0, got {inv.get('cgst_total')}"
+        assert inv.get("sgst_total", 0) == 0, f"Expected SGST=0, got {inv.get('sgst_total')}"
