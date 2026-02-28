@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 # Use public URL from environment
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
-    BASE_URL = "https://phase0-cleanup.preview.emergentagent.com"
+    BASE_URL = ""
 
 # Test credentials
 TEST_EMAIL = "dev@battwheels.internal"

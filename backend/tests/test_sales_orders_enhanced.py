@@ -7,7 +7,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://phase0-cleanup.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '')
 
 # Test data
 TEST_CUSTOMER_ID = "CON-235065AEEC94"  # Rahul Sharma - customer
