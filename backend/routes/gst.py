@@ -1039,15 +1039,45 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
             "bill_count": len(rcm_bills)
         },
         "section_3_2": {
-            "description": "Unregistered supplies (B2C)",
-            "total_interstate": round(outward_igst - cn_igst, 2)
+            "description": "Inter-state supplies to unregistered persons (Table 3.2)",
+            "interstate": {
+                "supplies": list(b2c_interstate_by_state.values()),
+                "total_taxable_value": round(b2c_interstate_taxable, 2),
+                "total_igst": round(b2c_interstate_igst, 2),
+            },
+            "intrastate": {
+                "total_taxable_value": round(b2c_intrastate_taxable, 2),
+                "total_cgst": round(b2c_intrastate_cgst, 2),
+                "total_sgst": round(b2c_intrastate_sgst, 2),
+            }
         },
         "section_4": {
-            "description": "Eligible ITC (Input Tax Credit)",
-            "cgst": round(input_cgst, 2),
-            "sgst": round(input_sgst, 2),
-            "igst": round(input_igst, 2),
-            "total_itc": round(input_cgst + input_sgst + input_igst, 2)
+            "description": "Eligible ITC (Input Tax Credit — Table 4)",
+            "table_4A": {
+                "description": "ITC Available (whether in full or part)",
+                "(1)_import_of_goods": {"cgst": round(itc_import_goods["cgst"], 2), "sgst": round(itc_import_goods["sgst"], 2), "igst": round(itc_import_goods["igst"], 2)},
+                "(2)_import_of_services": {"cgst": round(itc_import_services["cgst"], 2), "sgst": round(itc_import_services["sgst"], 2), "igst": round(itc_import_services["igst"], 2)},
+                "(3)_inward_supplies_rcm": {"cgst": round(itc_rcm["cgst"], 2), "sgst": round(itc_rcm["sgst"], 2), "igst": round(itc_rcm["igst"], 2)},
+                "(4)_inward_supplies_isd": {"cgst": round(itc_isd["cgst"], 2), "sgst": round(itc_isd["sgst"], 2), "igst": round(itc_isd["igst"], 2)},
+                "(5)_all_other_itc": {"cgst": round(itc_all_other["cgst"], 2), "sgst": round(itc_all_other["sgst"], 2), "igst": round(itc_all_other["igst"], 2)},
+            },
+            "table_4B": {
+                "description": "ITC Reversed",
+                "(1)_as_per_rules_42_43": {"cgst": 0, "sgst": 0, "igst": 0},
+                "(2)_others": {"cgst": 0, "sgst": 0, "igst": 0},
+            },
+            "table_4C": {
+                "description": "Net ITC Available (A) - (B)",
+                "cgst": round(input_cgst, 2),
+                "sgst": round(input_sgst, 2),
+                "igst": round(input_igst, 2),
+                "total_itc": round(input_cgst + input_sgst + input_igst, 2)
+            },
+            "table_4D": {
+                "description": "Ineligible ITC",
+                "(1)_as_per_section_17_5": {"cgst": 0, "sgst": 0, "igst": 0},
+                "(2)_others": {"cgst": 0, "sgst": 0, "igst": 0},
+            }
         },
         "section_5": {
             "description": "Exempt, Nil-rated & Non-GST",
