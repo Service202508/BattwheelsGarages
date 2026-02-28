@@ -39,6 +39,9 @@ CORE_TESTS=(
   backend/tests/test_rbac_negative.py
   backend/tests/test_gst_statutory.py
   backend/tests/test_journal_audit.py
+  backend/tests/test_csrf_middleware.py
+  backend/tests/test_gstr3b_rcm.py
+  backend/tests/test_calculations_regression.py
 )
 
 echo "========================================="
