@@ -2515,7 +2515,7 @@ async def perform_bulk_action(bulk_request: BulkActionRequest, request: Request)
                     item["created_time"] = datetime.now(timezone.utc).isoformat()
                     item["updated_time"] = datetime.now(timezone.utc).isoformat()
                     await db.items.insert_one(item)
-                    await log_item_history(db, new_id, "cloned", {"source_item_id": item_id}, "System")
+                    await log_item_history(db, new_id, "cloned", {"source_item_id": item_id}, "System", org_id=org_id)
                     results["success"] += 1
                 else:
                     results["failed"] += 1
