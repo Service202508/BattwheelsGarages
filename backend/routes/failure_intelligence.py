@@ -511,6 +511,7 @@ async def get_efi_analytics(request: Request):
 async def get_effectiveness_report(request: Request):
     """Get effectiveness report for failure cards"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     pipeline = [
         {"$match": {"status": "approved", "usage_count": {"$gt": 0}}},
