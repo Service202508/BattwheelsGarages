@@ -106,6 +106,9 @@ class TicketCreateData(BaseModel):
     vehicle_make: Optional[str] = None
     vehicle_model: Optional[str] = None
     vehicle_number: Optional[str] = None
+    vehicle_category: Optional[str] = None  # Sprint 3B-05: "2W"/"3W"/"4W"
+    vehicle_year: Optional[int] = None      # Sprint 3B-05: manufacturing year
+    symptoms: Optional[list] = []           # Sprint 3B-05: structured symptom list
     customer_id: Optional[str] = None
     customer_name: Optional[str] = None
     customer_type: str = "individual"
