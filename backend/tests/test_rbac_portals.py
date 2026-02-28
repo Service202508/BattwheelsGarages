@@ -321,22 +321,22 @@ class TestTechnicianPortalAPI:
         assert "requests" in data
         assert "balance" in data
     
-    def test_technician_payroll(self, tech_token):
+    def test_technician_payroll(self, tech_headers):
         """GET /api/technician/payroll - Own payroll history"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/payroll",
-            headers={"Authorization": f"Bearer {tech_token}"}
+            headers=tech_headers
         )
         print(f"Technician payroll: {res.status_code}")
         assert res.status_code == 200
         data = res.json()
         assert "payslips" in data
     
-    def test_technician_productivity(self, tech_token):
+    def test_technician_productivity(self, tech_headers):
         """GET /api/technician/productivity - Own productivity metrics"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/productivity",
-            headers={"Authorization": f"Bearer {tech_token}"}
+            headers=tech_headers
         )
         print(f"Technician productivity: {res.status_code}")
         assert res.status_code == 200
