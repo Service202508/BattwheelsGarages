@@ -32,7 +32,7 @@ PLATFORM_ADMIN_PASSWORD = "DevTest@123"
 
 @pytest.fixture(scope="module")
 def dev_session():
-    """Login as dev user and return session with auth cookies + org header"""
+    """Login as dev user and return session with auth token + org header"""
     session = requests.Session()
     session.headers.update({
         "Content-Type": "application/json",
@@ -45,6 +45,13 @@ def dev_session():
         "password": DEV_USER_PASSWORD
     })
     assert resp.status_code == 200, f"Login failed: {resp.text}"
+    
+    # Extract token and add to session headers
+    login_data = resp.json()
+    token = login_data.get("token")
+    if token:
+        session.headers.update({"Authorization": f"Bearer {token}"})
+    
     return session
 
 
@@ -62,6 +69,13 @@ def platform_admin_session():
         "password": PLATFORM_ADMIN_PASSWORD
     })
     assert resp.status_code == 200, f"Platform admin login failed: {resp.text}"
+    
+    # Extract token and add to session headers
+    login_data = resp.json()
+    token = login_data.get("token")
+    if token:
+        session.headers.update({"Authorization": f"Bearer {token}"})
+    
     return session
 
 
