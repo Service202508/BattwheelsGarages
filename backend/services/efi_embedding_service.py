@@ -467,7 +467,10 @@ class EFIEmbeddingManager:
         """Find similar failure cards using embedding similarity"""
         
         # Build query filter
-        query = {"embedding_vector": {"$exists": True, "$ne": None}}
+        query = {
+            "embedding_vector": {"$exists": True, "$ne": None},
+            "excluded_from_efi": {"$ne": True},
+        }
         if subsystem and subsystem != "unknown":
             query["subsystem_category"] = subsystem
         
