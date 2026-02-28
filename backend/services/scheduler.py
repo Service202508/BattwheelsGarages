@@ -24,21 +24,32 @@ async def update_overdue_invoices():
     """
     Update invoice status to 'overdue' for invoices past due date.
     Should be run daily.
+    SCHEDULER-FIX: org_id scoped from each invoice record — Sprint 1B
     """
     db = get_db()
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
-    result = await db.invoices.update_many(
+    # Fetch matching invoices with their org_ids first
+    invoices = await db.invoices.find(
         {
             "status": {"$in": ["sent", "partial"]},
             "due_date": {"$lt": today},
             "balance": {"$gt": 0}
         },
-        {"$set": {"status": "overdue"}}
-    )
+        {"_id": 1, "organization_id": 1}
+    ).to_list(length=1000)
     
-    logger.info(f"Marked {result.modified_count} invoices as overdue")
-    return {"updated": result.modified_count}
+    updated = 0
+    for inv in invoices:
+        # SCHEDULER-FIX: org_id scoped from invoice record — Sprint 1B
+        await db.invoices.update_one(
+            {"_id": inv["_id"], "organization_id": inv.get("organization_id")},
+            {"$set": {"status": "overdue"}}
+        )
+        updated += 1
+    
+    logger.info(f"Marked {updated} invoices as overdue")
+    return {"updated": updated}
 
 
 async def generate_recurring_invoices():
