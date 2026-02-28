@@ -198,7 +198,16 @@ async def list_employees(request: Request, department: Optional[str] = None, sta
     total = await service.db.employees.count_documents(query)
     total_pages = math.ceil(total / limit) if total > 0 else 1
     skip = (page - 1) * limit
-    employees = await service.db.employees.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    employees = await service.db.employees.find(query, {"_id": 0}).sort([
+        ("created_at", -1),
+        ("employee_id", -1),
+    ]).skip(skip).limit(limit).to_list(limit)
+
+    from utils.pagination import encode_cursor
+    next_cursor = None
+    if employees and page < total_pages:
+        last = employees[-1]
+        next_cursor = encode_cursor(last.get("created_at"), last.get("employee_id"))
 
     return {
         "data": employees,
@@ -208,7 +217,8 @@ async def list_employees(request: Request, department: Optional[str] = None, sta
             "total_count": total,
             "total_pages": total_pages,
             "has_next": page < total_pages,
-            "has_prev": page > 1
+            "has_prev": page > 1,
+            "next_cursor": next_cursor,
         }
     }
 
