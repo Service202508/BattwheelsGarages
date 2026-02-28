@@ -267,7 +267,17 @@ async def list_tickets(request: Request, ctx: TenantContext = Depends(tenant_con
 
     tickets = await service.db.tickets.find(
         query, {"_id": 0}
-    ).sort(sort_field, sort_dir).skip(skip).limit(limit).to_list(limit)
+    ).sort([
+        (sort_field, sort_dir),
+        ("ticket_id", sort_dir),
+    ]).skip(skip).limit(limit).to_list(limit)
+
+    # Build next_cursor from last item for cursor transition
+    from utils.pagination import encode_cursor
+    next_cursor = None
+    if tickets and page < total_pages:
+        last = tickets[-1]
+        next_cursor = encode_cursor(last.get(sort_field), last.get("ticket_id"))
 
     return {
         "data": tickets,
@@ -277,7 +287,8 @@ async def list_tickets(request: Request, ctx: TenantContext = Depends(tenant_con
             "total_count": total_count,
             "total_pages": total_pages,
             "has_next": page < total_pages,
-            "has_prev": page > 1
+            "has_prev": page > 1,
+            "next_cursor": next_cursor,
         }
     }
 
