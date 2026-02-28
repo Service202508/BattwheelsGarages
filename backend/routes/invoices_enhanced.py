@@ -734,7 +734,14 @@ async def create_invoice(invoice: InvoiceCreate, background_tasks: BackgroundTas
     invoice_number = await get_next_invoice_number()
     
     # Determine if IGST applies (different state)
-    org_state = "DL"  # Organization state
+    org_settings = await db.organization_settings.find_one(
+        {"organization_id": org_id}, {"_id": 0}
+    )
+    org_state = (
+        org_settings.get("state_code") or
+        org_settings.get("place_of_supply") or
+        "DL"
+    ) if org_settings else "DL"
     customer_state = invoice.place_of_supply or customer.get("place_of_supply", "")
     is_igst = customer_state and customer_state != org_state
     
