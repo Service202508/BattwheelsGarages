@@ -298,7 +298,7 @@ class TestInvoicePaymentsStripe:
         """Test POST /api/invoice-payments/create-payment-link"""
         payload = {
             "invoice_id": unpaid_invoice_id,
-            "origin_url": "https://gstr-report-enhance.preview.emergentagent.com"
+            "origin_url": "https://accounting-sprint2d.preview.emergentagent.com"
         }
         
         response = requests.post(

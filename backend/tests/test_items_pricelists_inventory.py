@@ -8,7 +8,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://gstr-report-enhance.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://accounting-sprint2d.preview.emergentagent.com').rstrip('/')
 
 @pytest.fixture(scope="module")
 def auth_token():

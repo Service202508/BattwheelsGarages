@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 import os
 import sys
 
-BASE_URL = os.environ.get('API_BASE_URL', 'https://gstr-report-enhance.preview.emergentagent.com')
+BASE_URL = os.environ.get('API_BASE_URL', 'https://accounting-sprint2d.preview.emergentagent.com')
 API_URL = f"{BASE_URL}/api"
 
 # Test credentials

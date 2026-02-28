@@ -24,7 +24,7 @@ import os
 import time
 
 # Use public URL for testing
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://gstr-report-enhance.preview.emergentagent.com")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://accounting-sprint2d.preview.emergentagent.com")
 
 # Test credentials from review request
 ADMIN_EMAIL = "dev@battwheels.internal"

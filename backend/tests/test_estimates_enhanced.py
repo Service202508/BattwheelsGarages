@@ -9,7 +9,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://gstr-report-enhance.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://accounting-sprint2d.preview.emergentagent.com')
 
 # Test data storage
 test_data = {
