@@ -55,7 +55,7 @@ class TestGSTINValidation:
         """POST /api/v1/gst/validate-gstin - Valid GSTIN returns details"""
         response = requests.post(
             f"{BASE_URL}/api/v1/gst/validate-gstin",
-            json={"gstin": "27AAACT1234A1ZB"},
+            json={"gstin": "27AAACT1234A1Z1"},
             headers=auth_headers
         )
         assert response.status_code == 200
@@ -63,7 +63,7 @@ class TestGSTINValidation:
         data = response.json()
         assert data["code"] == 0
         assert data["valid"] == True
-        assert data["gstin"] == "27AAACT1234A1ZB"
+        assert data["gstin"] == "27AAACT1234A1Z1"
         assert data["state_code"] == "27"
         assert data["state_name"] == "Maharashtra"
         assert data["pan"] == "AAACT1234A"
@@ -203,7 +203,7 @@ class TestOrganizationSettings:
         response = requests.put(
             f"{BASE_URL}/api/v1/gst/organization-settings",
             json={
-                "gstin": "27AAACT1234A1ZB",
+                "gstin": "27AAACT1234A1Z1",
                 "place_of_supply": "27",
                 "legal_name": "Battwheels Test",
                 "trade_name": "Battwheels"

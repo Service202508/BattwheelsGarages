@@ -155,7 +155,7 @@ class TestFlow02WorkshopProfile:
         """PUT /api/organizations/me updates GSTIN and address"""
         assert state["token"], "No token from Flow 01"
         payload = {
-            "gstin": "07AABCU9603R1ZX",
+            "gstin": "07AABCU9603R1ZP",
             "address": "Koramangala, Bangalore",
         }
         res = requests.put(
@@ -179,7 +179,7 @@ class TestFlow02WorkshopProfile:
         data = res.json()
         org = data.get("organization", data)
         gstin = org.get("gstin", "")
-        assert gstin == "07AABCU9603R1ZX", f"GSTIN not persisted: got '{gstin}'"
+        assert gstin == "07AABCU9603R1ZP", f"GSTIN not persisted: got '{gstin}'"
         print(f"PASS: GSTIN persists: {gstin}")
 
 

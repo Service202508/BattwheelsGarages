@@ -129,7 +129,7 @@ class TestContactsEnhancedV2CRUD:
             "contact_type": "customer",
             "email": f"{TEST_PREFIX.lower()}@test.com",
             "phone": "9876543210",
-            "gstin": "27AABCU9603R1ZM",
+            "gstin": "27AABCU9603R1ZN",
             "gst_treatment": "registered",
             "payment_terms": 30
         }
@@ -786,7 +786,7 @@ class TestContactsEnhancedV2GSTINValidation:
     
     def test_validate_valid_gstin(self):
         """GET /api/contacts-enhanced/validate-gstin/{gstin} validates correct GSTIN"""
-        valid_gstin = "27AABCU9603R1ZM"
+        valid_gstin = "27AABCU9603R1ZN"
         response = requests.get(f"{API_URL}/contacts-enhanced/validate-gstin/{valid_gstin}")
         assert response.status_code == 200
         data = response.json()

@@ -189,7 +189,7 @@ async def seed_test_data():
         "invoice_date": f"{MONTH_1}-15",
         "status": "sent",
         "customer_name": "Test Customer Alpha",
-        "customer_gstin": "07AABCU1234A1ZB",
+        "customer_gstin": "07AABCU1234A1Z1",
         "sub_total": INV_SUBTOTAL,
         "tax_total": INV_TAX_TOTAL,
         "total": INV_TOTAL,
