@@ -153,6 +153,36 @@ ROUTE_PERMISSIONS: Dict[str, List[str]] = {
     
     # ============ MASTER DATA ============
     r"^/api/master-data/.*$":       ["org_admin", "admin", "owner", "manager"],
+    
+    # ============ ENHANCED MODULES (P0 — previously unmapped) ============
+    r"^/api/invoices-enhanced(/.*)?$":      ["org_admin", "admin", "owner", "accountant", "manager"],
+    r"^/api/bills-enhanced(/.*)?$":         ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/items-enhanced(/.*)?$":         ["org_admin", "admin", "owner", "manager", "accountant", "technician"],
+    r"^/api/contacts-enhanced(/.*)?$":      ["org_admin", "admin", "owner", "manager", "dispatcher"],
+    r"^/api/estimates-enhanced(/.*)?$":     ["org_admin", "admin", "owner", "manager", "technician", "dispatcher"],
+    r"^/api/inventory-enhanced(/.*)?$":     ["org_admin", "admin", "owner", "manager", "accountant"],
+    r"^/api/sales-orders-enhanced(/.*)?$":  ["org_admin", "admin", "owner", "manager", "accountant"],
+    
+    # ============ ADVANCED/INTEGRATION MODULES (previously unmapped) ============
+    r"^/api/reports-advanced(/.*)?$":       ["org_admin", "admin", "owner", "accountant", "manager"],
+    r"^/api/contact-integration(/.*)?$":    ["org_admin", "admin", "owner", "manager", "dispatcher"],
+    r"^/api/invoice-automation(/.*)?$":     ["org_admin", "admin", "owner", "accountant", "manager"],
+    r"^/api/invoice-payments(/.*)?$":       ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/vendor-credits(/.*)?$":         ["org_admin", "admin", "owner", "accountant"],
+    
+    # ============ EFI/AI EXTENDED (previously unmapped) ============
+    r"^/api/efi-guided(/.*)?$":             ["org_admin", "admin", "owner", "manager", "technician"],
+    r"^/api/ai-assist(/.*)?$":              ["org_admin", "admin", "owner", "manager", "technician"],
+    r"^/api/expert-queue(/.*)?$":           ["org_admin", "admin", "owner", "manager", "technician"],
+    
+    # ============ INVENTORY EXTENDED (previously unmapped) ============
+    r"^/api/inv-adjustments(/.*)?$":        ["org_admin", "admin", "owner", "manager", "accountant"],
+    r"^/api/serial-batch(/.*)?$":           ["org_admin", "admin", "owner", "manager", "accountant"],
+    
+    # ============ CONFIG/ANALYTICS (previously unmapped) ============
+    r"^/api/sla(/.*)?$":                    ["org_admin", "admin", "owner", "manager"],
+    r"^/api/dashboard/financial(/.*)?$":    ["org_admin", "admin", "owner", "accountant"],
+    r"^/api/insights(/.*)?$":               ["org_admin", "admin", "owner", "accountant", "manager"],
 }
 
 # Compiled patterns for performance
