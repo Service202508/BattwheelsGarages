@@ -575,8 +575,27 @@ class HRService:
         gross = basic + hra + da + special
         
         # Deductions
-        pf_deduction = basic * 0.12  # 12% of basic
-        esi_deduction = gross * 0.0075 if gross <= 21000 else 0  # ESI if gross <= 21000
+        # Employee PF — on actual basic (no ceiling)
+        employee_pf = round(basic * 0.12, 2)
+        
+        # Employer PF — capped at PF_WAGE_CEILING (P1-06, P1-07)
+        pf_wages = min(basic, PF_WAGE_CEILING)
+        employer_eps = round(pf_wages * 0.0833, 2)    # 8.33% to Pension (EPS)
+        employer_epf = round(pf_wages * 0.0367, 2)    # 3.67% to Provident Fund (EPF)
+        employer_pf_total = round(employer_eps + employer_epf, 2)
+        
+        # PF Admin charges — employer only (P1-08)
+        pf_admin_charges = round(pf_wages * 0.005, 2)   # 0.5% admin
+        edli_charges = round(pf_wages * 0.005, 2)       # 0.5% EDLI
+        total_pf_overhead = round(pf_admin_charges + edli_charges, 2)
+        
+        # ESI — Section I.4 verification: employee 0.75%, employer 3.25%
+        if gross <= ESI_WAGE_CEILING:
+            employee_esi = round(gross * 0.0075, 2)
+            employer_esi = round(gross * 0.0325, 2)
+        else:
+            employee_esi = 0
+            employer_esi = 0
         
         # Professional Tax — state-wise slab calculation (P0-07)
         state_code = employee.get("work_state_code") or employee.get("state_code") or "DEFAULT"
@@ -589,12 +608,8 @@ class HRService:
         )
         tds = salary.get("tds", 0)
         
-        total_deductions = pf_deduction + esi_deduction + professional_tax + tds
+        total_deductions = employee_pf + employee_esi + professional_tax + tds
         net_salary = gross - total_deductions
-        
-        # Employer contributions
-        employer_pf = basic * 0.13  # 13% of basic (12% PF + 1% admin)
-        employer_esi = gross * 0.0325 if gross <= 21000 else 0
         
         return {
             "employee_id": employee_id,
@@ -609,18 +624,26 @@ class HRService:
                 "gross": gross
             },
             "deductions": {
-                "pf_employee": round(pf_deduction, 2),
-                "esi_employee": round(esi_deduction, 2),
+                "pf_employee": employee_pf,
+                "pf_deduction": employee_pf,  # backward-compatible alias
+                "esi_employee": employee_esi,
                 "professional_tax": professional_tax,
                 "tds": tds,
                 "total": round(total_deductions, 2)
             },
             "employer_contributions": {
-                "pf_employer": round(employer_pf, 2),
-                "esi_employer": round(employer_esi, 2)
+                "pf_employer_epf": employer_epf,
+                "pf_employer_eps": employer_eps,
+                "pf_employer_total": employer_pf_total,
+                "pf_admin_charges": pf_admin_charges,
+                "edli_charges": edli_charges,
+                "pf_wages": pf_wages,
+                "pf_employer": round(employer_pf_total, 2),  # backward-compatible alias
+                "esi_employer": round(employer_esi, 2),
+                "esi_applicable": gross <= ESI_WAGE_CEILING
             },
             "net_salary": round(net_salary, 2),
-            "ctc": round(gross + employer_pf + employer_esi, 2)
+            "ctc": round(gross + employer_pf_total + total_pf_overhead + employer_esi, 2)
         }
     
     async def generate_payroll(self, month: str, year: int, user_id: str) -> Dict[str, Any]:
