@@ -276,10 +276,11 @@ async def list_technician_actions(request: Request, ticket_id: Optional[str] = N
 async def record_part_usage(request: Request, data: PartUsageCreate):
     """Record part usage with failure card linkage"""
     service = get_service()
+    org_id = extract_org_id(request)
     await get_current_user(request, service.db)  # Auth check
     
     try:
-        return await service.record_part_usage(data)
+        return await service.record_part_usage(data, org_id=org_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -288,6 +289,7 @@ async def record_part_usage(request: Request, data: PartUsageCreate):
 async def list_part_usage(request: Request, ticket_id: Optional[str] = None, failure_card_id: Optional[str] = None, unexpected_only: bool = False, limit: int = 100):
     """List part usage records"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     query = {}
     if ticket_id:
