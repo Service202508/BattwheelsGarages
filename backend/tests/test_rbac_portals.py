@@ -265,11 +265,11 @@ class TestTechnicianPortalAPI:
         assert "total_assigned" in tickets
         print(f"Dashboard data: {data}")
     
-    def test_technician_my_tickets(self, tech_token):
+    def test_technician_my_tickets(self, tech_headers):
         """GET /api/technician/tickets - Only assigned tickets"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/tickets",
-            headers={"Authorization": f"Bearer {tech_token}"}
+            headers=tech_headers
         )
         print(f"Technician tickets: {res.status_code}")
         assert res.status_code == 200
@@ -280,23 +280,23 @@ class TestTechnicianPortalAPI:
         # (They should be, but we're just checking structure)
         print(f"Found {data['total']} assigned tickets")
     
-    def test_technician_tickets_filter_status(self, tech_token):
+    def test_technician_tickets_filter_status(self, tech_headers):
         """GET /api/technician/tickets?status=active - Filter by status"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/tickets",
             params={"status": "active"},
-            headers={"Authorization": f"Bearer {tech_token}"}
+            headers=tech_headers
         )
         print(f"Technician active tickets: {res.status_code}")
         assert res.status_code == 200
         data = res.json()
         assert "tickets" in data
     
-    def test_technician_attendance(self, tech_token):
+    def test_technician_attendance(self, tech_headers):
         """GET /api/technician/attendance - Own attendance records"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/attendance",
-            headers={"Authorization": f"Bearer {tech_token}"}
+            headers=tech_headers
         )
         print(f"Technician attendance: {res.status_code}")
         assert res.status_code == 200
@@ -309,11 +309,11 @@ class TestTechnicianPortalAPI:
         assert "present" in summary
         assert "absent" in summary
     
-    def test_technician_leave_requests(self, tech_token):
+    def test_technician_leave_requests(self, tech_headers):
         """GET /api/technician/leave - Own leave requests"""
         res = requests.get(
             f"{BASE_URL}/api/v1/technician/leave",
-            headers={"Authorization": f"Bearer {tech_token}"}
+            headers=tech_headers
         )
         print(f"Technician leave: {res.status_code}")
         assert res.status_code == 200
