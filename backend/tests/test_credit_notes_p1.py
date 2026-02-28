@@ -24,7 +24,7 @@ import os
 import time
 
 # Use public URL for testing
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://remediation-scan.preview.emergentagent.com")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://rbac-bypass-fix.preview.emergentagent.com")
 
 # Test credentials from review request
 ADMIN_EMAIL = "dev@battwheels.internal"

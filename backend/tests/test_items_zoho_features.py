@@ -9,7 +9,7 @@ import uuid
 
 pytestmark = pytest.mark.skip(reason="deprecated — Zoho integration removed")
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://remediation-scan.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://rbac-bypass-fix.preview.emergentagent.com').rstrip('/')
 
 
 class TestSearchSortFilter:
