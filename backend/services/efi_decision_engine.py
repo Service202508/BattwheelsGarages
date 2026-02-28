@@ -459,7 +459,7 @@ class EFILearningEngine:
             update["proposed_card_created"] = True
         
         await self.db.efi_learning_queue.update_one(
-            {"entry_id": entry_id},
+            {"entry_id": entry_id, "organization_id": item.get("organization_id")},
             {"$set": update}
         )
         
