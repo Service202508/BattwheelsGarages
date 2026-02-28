@@ -38,7 +38,7 @@ class ContinuousLearningService:
     def __init__(self, db: AsyncIOMotorDatabase):
         self.db = db
         self.learning_queue = db.efi_learning_queue
-        self.failure_cards = db.efi_failure_cards
+        self.failure_cards = db.failure_cards  # Sprint 3B-01: consolidated from efi_failure_cards
         self.guidance_snapshots = db.ai_guidance_snapshots
         self.tickets = db.tickets
         self.model_risk_alerts = db.efi_model_risk_alerts
