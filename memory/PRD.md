@@ -71,22 +71,22 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 ## Prioritized Backlog
 
 ### P0 — Critical
-- Knowledge pipeline incomplete: ticket closure -> knowledge_articles never auto-triggered
+- None (production gate passed)
 
 ### P1 — High Priority
+- Razorpay LIVE keys (user must provide)
+- GST settings persistence: `PUT /api/v1/settings/gst` does not save `place_of_supply`
 - Cursor-based pagination for all hard-capped queries
 - GSTR-3B ITC data-driven integration test (with actual vendor_credits / blocked bills)
-- Two disconnected failure card collections (`failure_cards` vs `efi_failure_cards`)
-- Data contract gaps: 5 missing ticket fields, dtc_codes name mismatch
-- EFI brain has no data (0 embeddings, 0 trees, 0 articles)
-- `feed_efi_brain` not auto-triggered after ticket closure
-- Address 20 remaining skipped tests (complex inter-test dependencies / fixture infra)
-- Subscription cache invalidation for test infrastructure
+- Address 14 remaining skipped tests (complex fixture work)
 
 ### P2 — Medium Priority
+- ITC Rule 42/43 implementation
+- Knowledge articles pipeline completion
+- Two disconnected failure card collections (`failure_cards` vs `efi_failure_cards`)
 - `efi_platform_patterns` duplicate schemas (pattern_id vs pattern_key)
 - CSRF secure flag, rate limiting in-memory
-- Multiple mocked email/notification features
+- Multiple mocked email/notification features (WhatsApp)
 
 ## Credentials
 - **Dev:** dev@battwheels.internal / DevTest@123
