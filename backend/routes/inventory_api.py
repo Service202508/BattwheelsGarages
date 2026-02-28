@@ -573,8 +573,8 @@ async def create_service(data: ServiceOfferingCreate, request: Request):
 
 @router.get("/services")
 async def get_services(request: Request):
-    await require_auth(request)
-    services = await db.services.find({"is_active": True}, {"_id": 0}).to_list(1000)
+    ctx = await require_auth(request)
+    services = await db.services.find({"is_active": True, "organization_id": ctx.org_id}, {"_id": 0}).to_list(1000)
     return services
 
 @router.put("/services/{service_id}")
