@@ -484,9 +484,10 @@ class EFIEventProcessor:
             "first_detected_at": datetime.now(timezone.utc).isoformat(),
         }
         
+        # SHARED-BRAIN: cross-tenant by design — Sprint 3A for scope review
         await self.db.failure_cards.insert_one(draft_card)
         
-        # Emit card created event
+        # Emit card created event (TIER 1: org-scoped — Sprint 1C)
         await self._emit_event(
             EFIEventType.CARD_CREATED.value,
             {
@@ -495,7 +496,8 @@ class EFIEventProcessor:
                 "source_ticket_id": ticket_id,
                 "needs_expert_review": True
             },
-            priority=3  # Higher priority for expert review queue
+            priority=3,  # Higher priority for expert review queue
+            org_id=org_id
         )
         
         logger.info(f"Created draft failure card {failure_id} from ticket {ticket_id}")
