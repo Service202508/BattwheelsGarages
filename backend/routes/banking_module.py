@@ -742,7 +742,7 @@ async def get_balance_sheet_report(
     
     # Add payables to liabilities
     payables_result = await db.bills.aggregate([
-        {"$match": {"status": {"$in": ["open", "overdue", "partially_paid"]}}},
+        {"$match": {"organization_id": org_id, "status": {"$in": ["open", "overdue", "partially_paid"]}}},
         {"$group": {"_id": None, "total": {"$sum": "$balance_due"}}}
     ]).to_list(1)
     payables = payables_result[0]["total"] if payables_result else 0
