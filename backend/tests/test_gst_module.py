@@ -307,11 +307,13 @@ class TestGSTR3BReport:
         assert "igst" in data["section_3_1"]
         assert "total_tax" in data["section_3_1"]
         
-        # Verify section 4 (ITC) structure
-        assert "cgst" in data["section_4"]
-        assert "sgst" in data["section_4"]
-        assert "igst" in data["section_4"]
-        assert "total_itc" in data["section_4"]
+        # Verify section 4 (ITC) structure — now nested under table_4C (P1-10)
+        assert "table_4A" in data["section_4"]
+        assert "table_4C" in data["section_4"]
+        assert "cgst" in data["section_4"]["table_4C"]
+        assert "sgst" in data["section_4"]["table_4C"]
+        assert "igst" in data["section_4"]["table_4C"]
+        assert "total_itc" in data["section_4"]["table_4C"]
         
         # Verify section 6 (Payment) structure
         assert "net_cgst" in data["section_6"]
