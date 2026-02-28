@@ -2,7 +2,7 @@
 Battwheels OS - Notification Service
 Handles Email (Resend) and WhatsApp (Twilio) notifications
 """
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional, List
 from datetime import datetime, timezone
