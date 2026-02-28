@@ -134,6 +134,7 @@ V1_ROUTES = [
     "routes.expenses", "routes.banking",
     "routes.banking_module",
     "routes.financial_dashboard", "routes.organizations",
+    "routes.fault_tree_import",
     # Extracted from server.py inline routes
     "routes.auth_main", "routes.entity_crud", "routes.inventory_api",
     "routes.sales_finance_api", "routes.operations_api",
