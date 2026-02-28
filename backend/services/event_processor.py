@@ -556,7 +556,7 @@ class EFIEventProcessor:
         if not failure_card_id:
             return {"status": "skipped", "reason": "no_card_used"}
         
-        # Get current card
+        # Get current card (SHARED-BRAIN: cross-tenant by design — Sprint 3A for scope review)
         card = await self.db.failure_cards.find_one(
             {"failure_id": failure_card_id},
             {"_id": 0}
