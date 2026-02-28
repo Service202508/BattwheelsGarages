@@ -1672,7 +1672,7 @@ class DoubleEntryService:
         entries = await self.journal_entries.find(
             query,
             {"_id": 0}
-        ).sort("entry_date", -1).skip(skip).limit(limit).to_list(limit)
+        ).sort([("entry_date", -1), ("entry_id", -1)]).skip(skip).limit(limit).to_list(limit)
         
         return {
             "entries": entries,
