@@ -597,6 +597,7 @@ async def get_my_productivity(request: Request):
     # This month's stats
     resolved_this_month = await db.tickets.count_documents({
         "assigned_to": tech_id,
+        "organization_id": org_id,
         "status": {"$in": ["resolved", "closed", "work_completed"]},
         "updated_at": {"$gte": month_start.isoformat()}
     })
@@ -605,6 +606,7 @@ async def get_my_productivity(request: Request):
     resolved_tickets = await db.tickets.find(
         {
             "assigned_to": tech_id,
+            "organization_id": org_id,
             "status": {"$in": ["resolved", "closed", "work_completed"]},
             "resolved_at": {"$exists": True}
         },
@@ -634,6 +636,7 @@ async def get_my_productivity(request: Request):
         week_start = week_end - timedelta(days=7)
         count = await db.tickets.count_documents({
             "assigned_to": tech_id,
+            "organization_id": org_id,
             "status": {"$in": ["resolved", "closed", "work_completed"]},
             "updated_at": {"$gte": week_start.isoformat(), "$lt": week_end.isoformat()}
         })
@@ -643,10 +646,11 @@ async def get_my_productivity(request: Request):
         })
     weekly_trend.reverse()
     
-    # Get rank among technicians
+    # Get rank among technicians (scoped to org)
     all_tech_resolved = await db.tickets.aggregate([
         {"$match": {
             "assigned_to": {"$exists": True},
+            "organization_id": org_id,
             "status": {"$in": ["resolved", "closed", "work_completed"]},
             "updated_at": {"$gte": month_start.isoformat()}
         }},
