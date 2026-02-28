@@ -482,6 +482,67 @@ class ContinuousLearningService:
         
         return card_id
     
+    async def _create_or_update_knowledge_article(self, event: Dict) -> Optional[Dict]:
+        """
+        Sprint 6B-01: Auto-generate a knowledge article from a learning event.
+        Upserts by source_id (ticket_id) + organization_id to avoid duplicates.
+        """
+        ticket_id = event.get("ticket_id")
+        org_id = event.get("organization_id")
+
+        if not ticket_id:
+            return None
+
+        title = (
+            event.get("actual_root_cause", "")[:100] or
+            f"Repair: {event.get('subsystem') or event.get('category', 'Unknown Fault')}"
+        )
+        description = event.get("actual_root_cause", "")
+        symptoms = event.get("symptoms", [])
+        dtc_codes = event.get("dtc_codes", [])
+        resolution = " / ".join(event.get("repair_actions", [])) if event.get("repair_actions") else description
+
+        content = "\n\n".join(filter(None, [
+            f"**Root Cause:** {description}",
+            f"**Resolution:** {resolution}",
+            f"**Symptoms:** {', '.join(symptoms)}" if symptoms else None,
+        ]))
+
+        article_data = {
+            "organization_id": org_id,
+            "scope": "tenant",
+            "knowledge_type": "repair_procedure",
+            "title": title,
+            "summary": description,
+            "content": content,
+            "symptoms": symptoms,
+            "dtc_codes": dtc_codes,
+            "vehicle_category": event.get("vehicle_category", "2W"),
+            "subsystem": event.get("subsystem") or event.get("category", "unknown"),
+            "confidence_score": 0.6,
+            "approval_status": "approved",
+            "source_type": "learning_event",
+            "source_id": ticket_id,
+            "created_by": "system_learning",
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
+
+        result = await self.db.knowledge_articles.update_one(
+            {"source_id": ticket_id, "organization_id": org_id},
+            {
+                "$set": article_data,
+                "$setOnInsert": {
+                    "knowledge_id": f"KB-LE-{uuid.uuid4().hex[:8].upper()}",
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                }
+            },
+            upsert=True
+        )
+
+        action = "created" if result.upserted_id else "updated"
+        logger.info(f"Knowledge article {action} for ticket {ticket_id}")
+        return {"ticket_id": ticket_id, "action": action}
+
     async def _check_for_patterns(self, event: Dict) -> Optional[Dict]:
         """
         Part E - Lean Pattern Detection
