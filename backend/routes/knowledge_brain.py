@@ -81,7 +81,7 @@ async def get_ticket_ai_suggestions(
     Get AI-powered suggestions for a specific ticket.
     Returns diagnostic steps, probable causes, and estimate suggestions.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = extract_org_id(http_request)
     if not org_id:
         raise HTTPException(status_code=400, detail="Organization ID required")
     
@@ -148,7 +148,7 @@ async def submit_feedback(
     Submit feedback on AI response quality.
     Used to improve the knowledge base and AI accuracy.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = extract_org_id(http_request)
     if org_id:
         feedback.organization_id = org_id
     
@@ -170,7 +170,7 @@ async def escalate_to_expert(
     Escalate a query to human expert review.
     Creates an internal expert queue ticket or Zendesk ticket if configured.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = extract_org_id(http_request)
     if org_id:
         escalation.organization_id = org_id
     
@@ -208,7 +208,7 @@ async def upload_knowledge(
     Upload new knowledge article to the tenant knowledge base.
     Article goes to 'draft' status until approved.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = extract_org_id(http_request)
     user_id = http_request.headers.get("X-User-ID", "system")
     
     store = get_knowledge_store()
@@ -256,7 +256,7 @@ async def create_failure_card(
     Create a new failure card in the knowledge base.
     Failure cards provide structured diagnostic and repair procedures.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = extract_org_id(http_request)
     user_id = http_request.headers.get("X-User-ID", "system")
     
     store = get_knowledge_store()
@@ -285,7 +285,7 @@ async def create_knowledge_from_ticket(
     Create a failure card draft from a resolved ticket.
     Converts successful resolutions into reusable knowledge.
     """
-    org_id = http_request.headers.get("X-Organization-ID") if http_request else None
+    org_id = extract_org_id(http_request) if http_request else None
     user_id = http_request.headers.get("X-User-ID", "system") if http_request else "system"
     
     db = get_db()
@@ -332,7 +332,7 @@ async def approve_knowledge(
     Approve or reject a knowledge article.
     Requires supervisor/admin role.
     """
-    org_id = http_request.headers.get("X-Organization-ID")
+    org_id = extract_org_id(http_request)
     user_id = http_request.headers.get("X-User-ID", "system")
     
     store = get_knowledge_store()
