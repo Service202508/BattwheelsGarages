@@ -370,6 +370,7 @@ async def trigger_pattern_detection(request: Request, background_tasks: Backgrou
 async def create_symptom(request: Request, data: SymptomCreate):
     """Create a new symptom in the library"""
     service = get_service()
+    org_id = extract_org_id(request)
     
     symptom = Symptom(
         code=data.code,
