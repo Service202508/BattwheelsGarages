@@ -661,3 +661,28 @@ async def get_platform_version():
         "release_date": RELEASE_DATE,
         "changelog_url": CHANGELOG_URL,
     }
+
+
+# ==================== EFI BRAIN SEEDING ====================
+
+@router.post("/efi/seed-brain")
+async def seed_efi_brain(request: Request, _=Depends(require_platform_admin)):
+    """
+    Seed the EFI brain with initial failure card data.
+    Sprint 3B-SEED: Populates failure_cards + efi_decision_trees
+    with common Indian EV failure patterns and generates embeddings.
+    
+    Requires platform_admin role.
+    Idempotent — skips cards that already exist.
+    """
+    try:
+        from services.efi_seed_data import seed_failure_cards_and_trees
+        result = await seed_failure_cards_and_trees(db)
+        return {
+            "success": True,
+            "message": "EFI brain seeding complete",
+            **result
+        }
+    except Exception as e:
+        logger.error(f"EFI brain seeding failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Seeding failed: {str(e)}")
