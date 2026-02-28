@@ -367,55 +367,70 @@ class ContinuousLearningService:
     
     async def _create_draft_failure_card(self, event: Dict) -> str:
         """
-        Create a draft failure card from the learning event.
-        Requires supervisor approval before becoming active.
+        Create or update a failure card from the learning event.
+        Uses upsert by ticket_id + organization_id to avoid duplicates
+        with auto-created cards from routes/tickets.py (Sprint 3B-01).
         """
-        card_id = f"FC-{uuid.uuid4().hex[:12].upper()}"
+        card_id = f"fc_{uuid.uuid4().hex[:12]}"
+        ticket_id = event.get("ticket_id")
+        org_id = event.get("organization_id")
         
-        card = {
-            "failure_card_id": card_id,
-            "organization_id": event.get("organization_id"),
-            "scope": "tenant",
-            
+        learning_data = {
             # Vehicle classification
             "vehicle_make": event.get("vehicle_make"),
             "vehicle_model": event.get("vehicle_model"),
             "vehicle_variant": event.get("vehicle_variant"),
             "vehicle_category": event.get("vehicle_category", "2W"),
             
-            # Issue details
+            # Issue details — write to both field names for compatibility
             "subsystem": event.get("subsystem") or event.get("category"),
+            "fault_category": event.get("subsystem") or event.get("category"),
             "symptom_cluster": event.get("symptoms", []),
             "dtc_code": event["dtc_codes"][0] if event.get("dtc_codes") else None,
             "dtc_codes": event.get("dtc_codes", []),
             
             # Root cause and fix
             "probable_root_cause": event.get("actual_root_cause"),
+            "root_cause": event.get("actual_root_cause"),
             "verified_fix": event.get("actual_root_cause"),
             "parts_required": event.get("parts_replaced", []),
             "estimated_repair_time_minutes": event.get("resolution_time_minutes") or 60,
             
-            # Initial metrics
+            # Metrics
             "historical_success_rate": 0.5,
-            "recurrence_counter": 1,
-            "usage_count": 1,
-            "positive_feedback_count": 0,
-            "negative_feedback_count": 0,
-            "confidence_score": 0.3,  # Low confidence for new cards
+            "confidence_score": 0.3,
             
             # Status
             "status": "draft",
             "source_type": "field_discovery",
-            "source_ticket_id": event.get("ticket_id"),
             
             # Timestamps
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "first_detected_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
             "last_used_at": datetime.now(timezone.utc).isoformat()
         }
         
-        await self.failure_cards.insert_one(card)
-        logger.info(f"Created draft failure card {card_id} from ticket {event.get('ticket_id')}")
+        # Sprint 3B-01: upsert by ticket_id + organization_id
+        result = await self.failure_cards.update_one(
+            {"ticket_id": ticket_id, "organization_id": org_id},
+            {
+                "$set": learning_data,
+                "$inc": {"recurrence_counter": 1, "usage_count": 1},
+                "$setOnInsert": {
+                    "card_id": card_id,
+                    "ticket_id": ticket_id,
+                    "organization_id": org_id,
+                    "scope": "tenant",
+                    "positive_feedback_count": 0,
+                    "negative_feedback_count": 0,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "first_detected_at": datetime.now(timezone.utc).isoformat()
+                }
+            },
+            upsert=True
+        )
+        
+        action = "upserted" if result.upserted_id else "updated"
+        logger.info(f"{action} failure card for ticket {ticket_id} (card_id={card_id})")
         
         return card_id
     
