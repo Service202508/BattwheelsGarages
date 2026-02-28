@@ -241,17 +241,22 @@ async def get_efi_suggestions(request: Request, ticket_id: str):
         failure_id = card.get("failure_id") or card.get("card_id")
         subsystem = card.get("subsystem_category") or card.get("fault_category")
         
+        # Priority 1: Exact match by source_id (failure card ID)
         ka = await _db.knowledge_articles.find_one(
-            {"$or": [
-                {"source_id": failure_id},
+            {"source_id": failure_id},
+            {"_id": 0, "knowledge_id": 1, "title": 1, "summary": 1, "content": 1}
+        )
+        
+        # Priority 2: Global article matching subsystem
+        if not ka and subsystem:
+            ka = await _db.knowledge_articles.find_one(
                 {
                     "subsystem": subsystem,
                     "approval_status": "approved",
                     "scope": "global",
                 },
-            ]},
-            {"_id": 0, "knowledge_id": 1, "title": 1, "summary": 1, "content": 1}
-        )
+                {"_id": 0, "knowledge_id": 1, "title": 1, "summary": 1, "content": 1}
+            )
         
         if ka:
             card["knowledge_article"] = {
