@@ -483,7 +483,7 @@ class EFIEmbeddingManager:
             # TIER 2 SHARED-BRAIN: failure_cards cross-tenant by design — Sprint 1C
             # H-01: hard cap, remove in Sprint 3 when cursor pagination implemented
             cards = await self.db.failure_cards.find(
-                {"embedding_vector": {"$exists": True, "$ne": None}},
+                {"embedding_vector": {"$exists": True, "$ne": None}, "excluded_from_efi": {"$ne": True}},
                 {"_id": 0}
             ).to_list(1000)
         
