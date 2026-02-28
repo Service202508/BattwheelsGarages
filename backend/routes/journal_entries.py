@@ -126,17 +126,42 @@ async def list_journal_entries(request: Request, start_date: str = Query(None, d
     entry_type: str = Query(None, description="Filter by entry type"),
     account_id: str = Query(None, description="Filter by account"),
     is_posted: bool = Query(None, description="Filter by posted status"),
+    cursor: Optional[str] = Query(None, description="Cursor for keyset pagination"),
     page: int = Query(1, ge=1),
     limit: int = Query(25, ge=1)
 ):
-    """List journal entries with filters and standardized pagination"""
+    """List journal entries with filters and cursor-based or legacy pagination"""
     import math
+    from utils.pagination import paginate_keyset
+
     if limit > 100:
         raise HTTPException(status_code=400, detail="Limit cannot exceed 100 per page")
 
     org_id = await get_org_id(request)
     service = get_service()
 
+    if cursor:
+        # Build query for cursor path
+        query = {"organization_id": org_id}
+        if start_date:
+            query["entry_date"] = {"$gte": start_date}
+        if end_date:
+            query.setdefault("entry_date", {})["$lte"] = end_date
+        if entry_type:
+            query["entry_type"] = entry_type
+        if account_id:
+            query["lines.account_id"] = account_id
+        if is_posted is not None:
+            query["is_posted"] = is_posted
+
+        return await paginate_keyset(
+            service.journal_entries, query,
+            sort_field="entry_date", sort_order=-1,
+            tiebreaker_field="entry_id",
+            limit=limit, cursor=cursor,
+        )
+
+    # Legacy skip/limit path
     skip = (page - 1) * limit
     result = await service.get_journal_entries(
         organization_id=org_id,
