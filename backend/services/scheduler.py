@@ -373,5 +373,13 @@ async def run_all_scheduled_jobs():
         results["payment_reminders"] = await send_payment_reminders()
     except Exception as e:
         results["payment_reminders"] = {"error": str(e)}
+
+    try:
+        from services.continuous_learning_service import ContinuousLearningService
+        learning_svc = ContinuousLearningService(get_db())
+        results["efi_learning_queue"] = await learning_svc.process_learning_queue(batch_size=50)
+    except Exception as e:
+        results["efi_learning_queue"] = {"error": str(e)}
+
     
     return results
