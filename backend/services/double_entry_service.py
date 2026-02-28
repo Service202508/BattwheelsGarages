@@ -515,9 +515,9 @@ class DoubleEntryService:
             "performed_at": datetime.now(timezone.utc).isoformat(),
             "entry_data": {
                 "reference": reference_number,
-                "date": journal_entry.date,
+                "date": entry_date,
                 "total_debit": float(total_debit),
-                "line_count": len(journal_entry.lines)
+                "line_count": len(entry.lines)
             }
         }
         await self.db.journal_audit_log.insert_one(journal_audit_entry)
