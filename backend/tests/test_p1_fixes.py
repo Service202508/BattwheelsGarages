@@ -158,7 +158,6 @@ class TestDB204OrgIdIndexes:
 # PY9.03 — Webhook idempotency
 # ─────────────────────────────────────────────────────────────────
 
-@pytest.mark.skip(reason="deprecated — Razorpay webhook secrets changed to disabled for safety")
 class TestPY903WebhookIdempotency:
     """Verify POST /api/payments/webhook is idempotent"""
 
