@@ -1007,8 +1007,39 @@ async def get_gstr3b_report(request: Request, month: str = "", # Format: YYYY-MM
         "sgst": itc_reversed_sgst,
         "igst": itc_reversed_igst,
     }
-    # TODO: Rule 42/43 calculation requires exempt supply ratio — not yet captured on bills. Sprint 5A.
-    itc_reversed_rule42_43 = {"cgst": 0, "sgst": 0, "igst": 0}
+
+    # Rule 42/43: ITC reversal for exempt/non-business use
+    # ITC must be reversed proportional to exempt supply ratio.
+    # Formula: Reversal = Total_ITC_Available × (Exempt_Supply / Total_Supply)
+    # If an org has NO exempt supplies (most EV workshops), the ratio is 0
+    # and the reversal is correctly zero — this is not a gap, it's the
+    # expected result under Rule 42/43 when 100% of supplies are taxable.
+    exempt_invoices_query = org_query(org_id, {
+        "invoice_date": {"$gte": start_date, "$lt": end_date},
+        "supply_type": "exempt"
+    })
+    exempt_invoices = await db.invoices_enhanced.find(
+        exempt_invoices_query, {"_id": 0, "sub_total": 1}
+    ).to_list(5000)
+    total_exempt_value = sum(
+        inv.get("sub_total", 0) for inv in exempt_invoices
+    )
+    total_supply_value = outward_taxable  # total taxable outward (before CN)
+
+    if total_exempt_value > 0 and total_supply_value > 0:
+        exempt_ratio = total_exempt_value / (total_supply_value + total_exempt_value)
+        total_itc_available_cgst = input_cgst
+        total_itc_available_sgst = input_sgst
+        total_itc_available_igst = input_igst
+        itc_reversed_rule42_43 = {
+            "cgst": round(total_itc_available_cgst * exempt_ratio, 2),
+            "sgst": round(total_itc_available_sgst * exempt_ratio, 2),
+            "igst": round(total_itc_available_igst * exempt_ratio, 2),
+        }
+    else:
+        # No exempt supplies — Rule 42/43 reversal is correctly zero.
+        # This is the expected result for businesses with 100% taxable supplies.
+        itc_reversed_rule42_43 = {"cgst": 0, "sgst": 0, "igst": 0}
 
     itc_reversed_total_cgst = itc_reversed_rule42_43["cgst"] + itc_reversed_others["cgst"]
     itc_reversed_total_sgst = itc_reversed_rule42_43["sgst"] + itc_reversed_others["sgst"]
