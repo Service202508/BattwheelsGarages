@@ -103,6 +103,13 @@ Battwheels OS is a multi-tenant SaaS ERP platform for EV service businesses. The
 - Backward-compatible keys retained: pf_deduction, pf_employer
 - Verification: Core tests 322/0/51, Production ALL GREEN
 
+### Sprint 2D — Workflow Chain + Payroll Journal + Period Lock (2026-02-28)
+- **P1-13A RESOLVED:** Payroll journal entry split into 16 granular lines (6 Dr + 10 Cr). Separate accounts for EPF/EPS/PF Admin/EDLI/ESI Employee/ESI Employer. Debit=Credit balance verified before posting.
+- **P1-13B RESOLVED:** Estimate approval includes stock_warnings[] and next_action; ticket completion includes invoice check with next_action/invoice_prompt.
+- **P1-13C RESOLVED:** Period lock check added to create_journal_entry in double_entry_service.py (lazy import from posting_hooks).
+- **Regression fix:** Credit note journal date corrected from created_at to credit_note_date.
+- Verification: Core tests 322/0/51, Production ALL GREEN
+
 ## Prioritized Backlog (Updated from Audit)
 
 ### P0 — Critical (Must Fix Before Production)
