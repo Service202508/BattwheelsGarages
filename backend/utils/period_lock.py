@@ -5,12 +5,22 @@ Reusable utility to check and enforce period locks on financial write operations
 A locked period prevents any financial transaction from being created, modified,
 or deleted with a date falling within that locked period.
 
+Sprint 4A-04: This is the canonical location for period lock checking.
+Both posting_hooks.py and double_entry_service.py import from here,
+eliminating the circular dependency risk between those modules.
+
 Usage:
     from utils.period_lock import enforce_period_lock
     await enforce_period_lock(db, org_id, transaction_date_str)
+
+    # For posting hooks / double_entry_service:
+    from utils.period_lock import check_period_locked
+    await check_period_locked(org_id, transaction_date_str)
 """
+import os
 from datetime import datetime
 from fastapi import HTTPException
+import motor.motor_asyncio
 
 
 async def check_period_lock(db, org_id: str, transaction_date: datetime) -> bool:
