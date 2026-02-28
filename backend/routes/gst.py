@@ -1216,7 +1216,7 @@ def generate_gstr3b_pdf(data: dict, month: str, org_settings: dict) -> Response:
             <div class="section-title">4. Eligible ITC (Input Tax Credit)</div>
             <table>
                 <tr><th>Description</th><th class="amount">CGST</th><th class="amount">SGST</th><th class="amount">IGST</th><th class="amount">Total</th></tr>
-                <tr><td>Input Tax Credit</td><td class="amount">₹{data['section_4']['cgst']:,.2f}</td><td class="amount">₹{data['section_4']['sgst']:,.2f}</td><td class="amount">₹{data['section_4']['igst']:,.2f}</td><td class="amount">₹{data['section_4']['total_itc']:,.2f}</td></tr>
+                <tr><td>Input Tax Credit</td><td class="amount">₹{data['section_4']['table_4C']['cgst']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['sgst']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['igst']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['total_itc']:,.2f}</td></tr>
             </table>
         </div>
         
@@ -1224,10 +1224,10 @@ def generate_gstr3b_pdf(data: dict, month: str, org_settings: dict) -> Response:
             <div class="section-title">6.1 Payment of Tax</div>
             <table>
                 <tr><th>Tax</th><th class="amount">Output Tax</th><th class="amount">ITC Used</th><th class="amount">Net Payable</th></tr>
-                <tr><td>CGST</td><td class="amount">₹{data['section_3_1']['cgst']:,.2f}</td><td class="amount">₹{data['section_4']['cgst']:,.2f}</td><td class="amount">₹{data['section_6']['net_cgst']:,.2f}</td></tr>
-                <tr><td>SGST</td><td class="amount">₹{data['section_3_1']['sgst']:,.2f}</td><td class="amount">₹{data['section_4']['sgst']:,.2f}</td><td class="amount">₹{data['section_6']['net_sgst']:,.2f}</td></tr>
-                <tr><td>IGST</td><td class="amount">₹{data['section_3_1']['igst']:,.2f}</td><td class="amount">₹{data['section_4']['igst']:,.2f}</td><td class="amount">₹{data['section_6']['net_igst']:,.2f}</td></tr>
-                <tr class="total"><td>Total</td><td class="amount">₹{data['section_3_1']['total_tax']:,.2f}</td><td class="amount">₹{data['section_4']['total_itc']:,.2f}</td><td class="amount">₹{data['section_6']['total_liability']:,.2f}</td></tr>
+                <tr><td>CGST</td><td class="amount">₹{data['section_3_1']['cgst']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['cgst']:,.2f}</td><td class="amount">₹{data['section_6']['net_cgst']:,.2f}</td></tr>
+                <tr><td>SGST</td><td class="amount">₹{data['section_3_1']['sgst']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['sgst']:,.2f}</td><td class="amount">₹{data['section_6']['net_sgst']:,.2f}</td></tr>
+                <tr><td>IGST</td><td class="amount">₹{data['section_3_1']['igst']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['igst']:,.2f}</td><td class="amount">₹{data['section_6']['net_igst']:,.2f}</td></tr>
+                <tr class="total"><td>Total</td><td class="amount">₹{data['section_3_1']['total_tax']:,.2f}</td><td class="amount">₹{data['section_4']['table_4C']['total_itc']:,.2f}</td><td class="amount">₹{data['section_6']['total_liability']:,.2f}</td></tr>
             </table>
         </div>
         
