@@ -1005,60 +1005,79 @@ class DoubleEntryService:
         """
         Auto-post journal entry for payroll run (batch of all employees).
         
-        DEBIT:  Salary Expense (total gross salaries)
-        DEBIT:  Employer PF Contribution (employer PF)
-        DEBIT:  Employer ESI Contribution (employer ESI)
-        CREDIT: Salary Payable (total net take-home)
-        CREDIT: TDS Payable (total TDS deducted)
-        CREDIT: Employee PF Payable (total employee PF)
-        CREDIT: Employer PF Payable (total employer PF)
-        CREDIT: ESI Payable (total ESI - employee + employer)
-        CREDIT: Professional Tax Payable (total PT)
+        P1-13A: Granular PF/ESI journal lines for challan reconciliation.
+        
+        DEBIT (Expenses):
+          Salary Expense              Dr  [total gross]
+          PF Expense — EPF (Employer) Dr  [sum employer_epf]
+          PF Expense — EPS (Employer) Dr  [sum employer_eps]
+          PF Admin Charges Expense    Dr  [sum pf_admin_charges]
+          EDLI Charges Expense        Dr  [sum edli_charges]
+          ESI Expense (Employer)      Dr  [sum employer_esi]
+        
+        CREDIT (Liabilities):
+          Salary Payable              Cr  [total net salary]
+          PF Payable — Employee       Cr  [sum employee_pf]
+          PF Payable — EPF (Employer) Cr  [sum employer_epf]
+          PF Payable — EPS (Employer) Cr  [sum employer_eps]
+          PF Admin Payable            Cr  [sum pf_admin_charges]
+          EDLI Payable                Cr  [sum edli_charges]
+          ESI Payable — Employee      Cr  [sum employee_esi]
+          ESI Payable — Employer      Cr  [sum employer_esi]
+          Professional Tax Payable    Cr  [sum professional_tax]
+          TDS Payable                 Cr  [sum tds]
         """
         await self.ensure_system_accounts(organization_id)
         
-        # Get accounts
+        # Get / create accounts — expense side
         salary_expense = await self.get_account_by_code(organization_id, "6100")
-        employer_pf_expense = await self.get_account_by_code(organization_id, "6110")
-        employer_esi_expense = await self.get_account_by_code(organization_id, "6120")
+        epf_expense = await self.get_or_create_account(
+            organization_id, "PF Expense — EPF (Employer)", AccountType.EXPENSE, "6110")
+        eps_expense = await self.get_or_create_account(
+            organization_id, "PF Expense — EPS (Employer)", AccountType.EXPENSE, "6111")
+        pf_admin_expense = await self.get_or_create_account(
+            organization_id, "PF Admin Charges Expense", AccountType.EXPENSE, "6112")
+        edli_expense = await self.get_or_create_account(
+            organization_id, "EDLI Charges Expense", AccountType.EXPENSE, "6113")
+        esi_expense = await self.get_or_create_account(
+            organization_id, "ESI Expense (Employer)", AccountType.EXPENSE, "6120")
+        
+        # Get / create accounts — liability side
         salary_payable = await self.get_account_by_code(organization_id, "2310")
-        tds_payable = await self.get_account_by_code(organization_id, "2320")
-        employee_pf_payable = await self.get_account_by_code(organization_id, "2330")
-        employer_pf_payable = await self.get_account_by_code(organization_id, "2331")
-        esi_payable = await self.get_account_by_code(organization_id, "2340")
-        pt_payable = await self.get_account_by_code(organization_id, "2350")
+        tds_payable = await self.get_or_create_account(
+            organization_id, "TDS Payable (Salary)", AccountType.LIABILITY, "2320")
+        emp_pf_payable = await self.get_or_create_account(
+            organization_id, "PF Payable — Employee", AccountType.LIABILITY, "2330")
+        er_epf_payable = await self.get_or_create_account(
+            organization_id, "PF Payable — EPF (Employer)", AccountType.LIABILITY, "2331")
+        er_eps_payable = await self.get_or_create_account(
+            organization_id, "PF Payable — EPS (Employer)", AccountType.LIABILITY, "2332")
+        pf_admin_payable = await self.get_or_create_account(
+            organization_id, "PF Admin Payable", AccountType.LIABILITY, "2333")
+        edli_payable = await self.get_or_create_account(
+            organization_id, "EDLI Payable", AccountType.LIABILITY, "2334")
+        esi_ee_payable = await self.get_or_create_account(
+            organization_id, "ESI Payable — Employee", AccountType.LIABILITY, "2341")
+        esi_er_payable = await self.get_or_create_account(
+            organization_id, "ESI Payable — Employer", AccountType.LIABILITY, "2342")
+        pt_payable = await self.get_or_create_account(
+            organization_id, "Professional Tax Payable", AccountType.LIABILITY, "2350")
         
         if not all([salary_expense, salary_payable]):
             return False, "Required salary accounts not found", None
         
-        # If employer accounts don't exist yet, create them
-        if not employer_pf_expense:
-            employer_pf_expense = await self.get_or_create_account(
-                organization_id, "Employer PF Contribution", AccountType.EXPENSE, "6110"
-            )
-        if not employer_esi_expense:
-            employer_esi_expense = await self.get_or_create_account(
-                organization_id, "Employer ESI Contribution", AccountType.EXPENSE, "6120"
-            )
-        if not employee_pf_payable:
-            employee_pf_payable = await self.get_or_create_account(
-                organization_id, "Employee PF Payable", AccountType.LIABILITY, "2330"
-            )
-        if not employer_pf_payable:
-            employer_pf_payable = await self.get_or_create_account(
-                organization_id, "Employer PF Payable", AccountType.LIABILITY, "2331"
-            )
-        if not pt_payable:
-            pt_payable = await self.get_or_create_account(
-                organization_id, "Professional Tax Payable", AccountType.LIABILITY, "2350"
-            )
+        # Aggregate totals from all payroll records (P1-13A granular)
+        PF_WAGE_CEILING = 15000
+        ESI_WAGE_CEILING = 21000
         
-        # Aggregate totals from all payroll records
         total_gross = Decimal("0")
         total_net = Decimal("0")
         total_tds = Decimal("0")
         total_employee_pf = Decimal("0")
-        total_employer_pf = Decimal("0")
+        total_employer_epf = Decimal("0")
+        total_employer_eps = Decimal("0")
+        total_pf_admin = Decimal("0")
+        total_edli = Decimal("0")
         total_employee_esi = Decimal("0")
         total_employer_esi = Decimal("0")
         total_pt = Decimal("0")
@@ -1069,7 +1088,6 @@ class DoubleEntryService:
         payroll_run_id = ""
         
         for record in payroll_records:
-            # Handle both flat and nested structure
             earnings = record.get("earnings", {})
             deductions = record.get("deductions", {})
             employer_contrib = record.get("employer_contributions", {})
@@ -1079,136 +1097,165 @@ class DoubleEntryService:
                 record.get("gross_salary", 0) or 
                 record.get("gross", 0) or 0
             ))
-            net = Decimal(str(
-                record.get("net_salary", 0) or 0
-            ))
-            tds = Decimal(str(
-                deductions.get("tds", 0) or 
-                record.get("tds", 0) or 0
-            ))
+            net = Decimal(str(record.get("net_salary", 0) or 0))
+            tds = Decimal(str(deductions.get("tds", 0) or record.get("tds", 0) or 0))
             employee_pf = Decimal(str(
-                deductions.get("pf_employee", 0) or 
-                record.get("pf_employee", 0) or 0
-            ))
+                deductions.get("pf_employee", 0) or record.get("pf_employee", 0) or 0))
             employee_esi = Decimal(str(
-                deductions.get("esi_employee", 0) or 
-                record.get("esi_employee", 0) or 0
-            ))
+                deductions.get("esi_employee", 0) or record.get("esi_employee", 0) or 0))
             pt = Decimal(str(
-                deductions.get("professional_tax", 0) or 
-                record.get("professional_tax", 0) or 0
-            ))
-            employer_pf = Decimal(str(
-                employer_contrib.get("pf_employer", 0) or 
-                record.get("pf_employer", 0) or 0
-            ))
-            employer_esi = Decimal(str(
-                employer_contrib.get("esi_employer", 0) or 
-                record.get("esi_employer", 0) or 0
-            ))
+                deductions.get("professional_tax", 0) or record.get("professional_tax", 0) or 0))
+            
+            # Granular employer PF fields (Sprint 2C)
+            # Fallback: compute from basic if new fields not present
+            employer_epf = Decimal(str(employer_contrib.get("pf_employer_epf", 0) or 0))
+            employer_eps = Decimal(str(employer_contrib.get("pf_employer_eps", 0) or 0))
+            pf_admin = Decimal(str(employer_contrib.get("pf_admin_charges", 0) or 0))
+            edli = Decimal(str(employer_contrib.get("edli_charges", 0) or 0))
+            employer_esi = Decimal(str(employer_contrib.get("esi_employer", 0) or record.get("esi_employer", 0) or 0))
+            
+            # Fallback: if granular PF fields are zero but old pf_employer exists, split it
+            if employer_epf == 0 and employer_eps == 0:
+                old_pf = Decimal(str(
+                    employer_contrib.get("pf_employer", 0) or record.get("pf_employer", 0) or 0))
+                if old_pf > 0:
+                    basic = Decimal(str(earnings.get("basic", 0) or record.get("basic", 0) or 0))
+                    pf_wages = min(basic, Decimal(str(PF_WAGE_CEILING)))
+                    employer_epf = (pf_wages * Decimal("0.0367")).quantize(Decimal("0.01"))
+                    employer_eps = (pf_wages * Decimal("0.0833")).quantize(Decimal("0.01"))
+                    pf_admin = (pf_wages * Decimal("0.005")).quantize(Decimal("0.01"))
+                    edli = (pf_wages * Decimal("0.005")).quantize(Decimal("0.01"))
             
             total_gross += gross
             total_net += net
             total_tds += tds
             total_employee_pf += employee_pf
-            total_employer_pf += employer_pf
+            total_employer_epf += employer_epf
+            total_employer_eps += employer_eps
+            total_pf_admin += pf_admin
+            total_edli += edli
             total_employee_esi += employee_esi
             total_employer_esi += employer_esi
             total_pt += pt
             
-            # Get month/year from first record
             if not month:
                 month = record.get("month", "")
                 year = str(record.get("year", ""))
                 payroll_run_id = record.get("payroll_id", "")
         
-        total_esi = total_employee_esi + total_employer_esi
-        
         lines = []
         
-        # DEBIT: Salary Expense (gross salary)
+        # ---- DEBIT lines (expenses) ----
         if total_gross > 0:
             lines.append({
                 "account_id": salary_expense["account_id"],
-                "debit_amount": float(total_gross),
-                "credit_amount": 0,
+                "debit_amount": float(total_gross), "credit_amount": 0,
                 "description": f"Gross salary expense {month} {year}"
             })
-        
-        # DEBIT: Employer PF Contribution
-        if total_employer_pf > 0 and employer_pf_expense:
+        if total_employer_epf > 0:
             lines.append({
-                "account_id": employer_pf_expense["account_id"],
-                "debit_amount": float(total_employer_pf),
-                "credit_amount": 0,
-                "description": f"Employer PF contribution {month} {year}"
+                "account_id": epf_expense["account_id"],
+                "debit_amount": float(total_employer_epf), "credit_amount": 0,
+                "description": f"PF Expense — EPF (Employer) {month} {year}"
+            })
+        if total_employer_eps > 0:
+            lines.append({
+                "account_id": eps_expense["account_id"],
+                "debit_amount": float(total_employer_eps), "credit_amount": 0,
+                "description": f"PF Expense — EPS (Employer) {month} {year}"
+            })
+        if total_pf_admin > 0:
+            lines.append({
+                "account_id": pf_admin_expense["account_id"],
+                "debit_amount": float(total_pf_admin), "credit_amount": 0,
+                "description": f"PF Admin Charges {month} {year}"
+            })
+        if total_edli > 0:
+            lines.append({
+                "account_id": edli_expense["account_id"],
+                "debit_amount": float(total_edli), "credit_amount": 0,
+                "description": f"EDLI Charges {month} {year}"
+            })
+        if total_employer_esi > 0:
+            lines.append({
+                "account_id": esi_expense["account_id"],
+                "debit_amount": float(total_employer_esi), "credit_amount": 0,
+                "description": f"ESI Expense (Employer) {month} {year}"
             })
         
-        # DEBIT: Employer ESI Contribution
-        if total_employer_esi > 0 and employer_esi_expense:
-            lines.append({
-                "account_id": employer_esi_expense["account_id"],
-                "debit_amount": float(total_employer_esi),
-                "credit_amount": 0,
-                "description": f"Employer ESI contribution {month} {year}"
-            })
-        
-        # CREDIT: Salary Payable (net take-home)
+        # ---- CREDIT lines (liabilities) ----
         if total_net > 0:
             lines.append({
                 "account_id": salary_payable["account_id"],
-                "debit_amount": 0,
-                "credit_amount": float(total_net),
+                "debit_amount": 0, "credit_amount": float(total_net),
                 "description": f"Net salary payable {month} {year}"
             })
-        
-        # CREDIT: TDS Payable
-        if total_tds > 0 and tds_payable:
+        if total_employee_pf > 0:
             lines.append({
-                "account_id": tds_payable["account_id"],
-                "debit_amount": 0,
-                "credit_amount": float(total_tds),
-                "description": f"TDS deducted {month} {year}"
+                "account_id": emp_pf_payable["account_id"],
+                "debit_amount": 0, "credit_amount": float(total_employee_pf),
+                "description": f"PF Payable — Employee {month} {year}"
             })
-        
-        # CREDIT: Employee PF Payable
-        if total_employee_pf > 0 and employee_pf_payable:
+        if total_employer_epf > 0:
             lines.append({
-                "account_id": employee_pf_payable["account_id"],
-                "debit_amount": 0,
-                "credit_amount": float(total_employee_pf),
-                "description": f"Employee PF deduction {month} {year}"
+                "account_id": er_epf_payable["account_id"],
+                "debit_amount": 0, "credit_amount": float(total_employer_epf),
+                "description": f"PF Payable — EPF (Employer) {month} {year}"
             })
-        
-        # CREDIT: Employer PF Payable
-        if total_employer_pf > 0 and employer_pf_payable:
+        if total_employer_eps > 0:
             lines.append({
-                "account_id": employer_pf_payable["account_id"],
-                "debit_amount": 0,
-                "credit_amount": float(total_employer_pf),
-                "description": f"Employer PF contribution {month} {year}"
+                "account_id": er_eps_payable["account_id"],
+                "debit_amount": 0, "credit_amount": float(total_employer_eps),
+                "description": f"PF Payable — EPS (Employer) {month} {year}"
             })
-        
-        # CREDIT: ESI Payable (employee + employer)
-        if total_esi > 0 and esi_payable:
+        if total_pf_admin > 0:
             lines.append({
-                "account_id": esi_payable["account_id"],
-                "debit_amount": 0,
-                "credit_amount": float(total_esi),
-                "description": f"ESI payable (employee + employer) {month} {year}"
+                "account_id": pf_admin_payable["account_id"],
+                "debit_amount": 0, "credit_amount": float(total_pf_admin),
+                "description": f"PF Admin Payable {month} {year}"
             })
-        
-        # CREDIT: Professional Tax Payable
-        if total_pt > 0 and pt_payable:
+        if total_edli > 0:
+            lines.append({
+                "account_id": edli_payable["account_id"],
+                "debit_amount": 0, "credit_amount": float(total_edli),
+                "description": f"EDLI Payable {month} {year}"
+            })
+        if total_employee_esi > 0:
+            lines.append({
+                "account_id": esi_ee_payable["account_id"],
+                "debit_amount": 0, "credit_amount": float(total_employee_esi),
+                "description": f"ESI Payable — Employee {month} {year}"
+            })
+        if total_employer_esi > 0:
+            lines.append({
+                "account_id": esi_er_payable["account_id"],
+                "debit_amount": 0, "credit_amount": float(total_employer_esi),
+                "description": f"ESI Payable — Employer {month} {year}"
+            })
+        if total_pt > 0:
             lines.append({
                 "account_id": pt_payable["account_id"],
-                "debit_amount": 0,
-                "credit_amount": float(total_pt),
-                "description": f"Professional tax {month} {year}"
+                "debit_amount": 0, "credit_amount": float(total_pt),
+                "description": f"Professional Tax Payable {month} {year}"
+            })
+        if total_tds > 0:
+            lines.append({
+                "account_id": tds_payable["account_id"],
+                "debit_amount": 0, "credit_amount": float(total_tds),
+                "description": f"TDS Payable (Salary) {month} {year}"
             })
         
         if not lines:
             return False, "No payroll amounts to post", None
+        
+        # Verify debit = credit before posting (P1-13A)
+        total_debit = sum(Decimal(str(l["debit_amount"])) for l in lines)
+        total_credit = sum(Decimal(str(l["credit_amount"])) for l in lines)
+        if total_debit != total_credit:
+            return False, (
+                f"Journal entry imbalance: Dr ₹{total_debit:,.2f} != Cr ₹{total_credit:,.2f}. "
+                f"Cannot post unbalanced payroll entry."
+            ), None
         
         narration = (
             f"Payroll {month} {year} — {employee_count} employees | "
