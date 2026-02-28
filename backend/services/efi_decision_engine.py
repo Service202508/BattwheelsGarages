@@ -195,13 +195,17 @@ class EFIDecisionTreeEngine:
         session_id: str,
         step_id: str,
         outcome: str,  # "pass" or "fail"
+        org_id: str = None,
         actual_measurement: Optional[str] = None,
         notes: Optional[str] = None,
         time_taken_seconds: int = 0
     ) -> Dict:
         """Record step outcome and advance to next step"""
         
-        session = await self.db.efi_sessions.find_one({"session_id": session_id})
+        session_query = {"session_id": session_id}
+        if org_id:
+            session_query["organization_id"] = org_id  # TIER 1: org-scoped — Sprint 1C
+        session = await self.db.efi_sessions.find_one(session_query)
         if not session:
             raise ValueError("Session not found")
         
