@@ -290,9 +290,12 @@ async def create_knowledge_from_ticket(
     
     db = get_db()
     
-    # Get ticket
+    # TENANT GUARD: Only access tickets belonging to the caller's org
+    ticket_query = {"ticket_id": ticket_id}
+    if org_id:
+        ticket_query["organization_id"] = org_id
     ticket = await db.tickets.find_one(
-        {"ticket_id": ticket_id},
+        ticket_query,
         {"_id": 0}
     )
     
