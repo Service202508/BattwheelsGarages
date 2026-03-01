@@ -644,7 +644,7 @@ async def list_sales_orders(
 @router.get("/summary")
 async def get_salesorders_summary(request: Request):
     """Get sales orders summary statistics"""
-    org_id = extract_org_id(request)
+    org_id = await get_org_id(request)
     base = org_query(org_id)
     total = await salesorders_collection.count_documents(base)
     draft = await salesorders_collection.count_documents(org_query(org_id, {"status": "draft"}))
