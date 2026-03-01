@@ -302,6 +302,8 @@ class TestBankTransactions:
             "account_name": f"Txn Bank {uuid.uuid4().hex[:6]}",
             "account_type": "current",
             "bank_name": "Txn Test Bank",
+            "account_number": f"ACCT{uuid.uuid4().hex[:10].upper()}",
+            "ifsc_code": "TEST0001234",
             "opening_balance": 50000.0,
             "currency": "INR"
         })
