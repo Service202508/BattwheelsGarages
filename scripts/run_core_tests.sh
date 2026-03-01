@@ -55,6 +55,9 @@ CORE_TESTS=(
   backend/tests/test_credit_notes_comprehensive.py
   backend/tests/test_accounting_comprehensive.py
   backend/tests/test_gst_comprehensive.py
+  backend/tests/test_inventory_comprehensive.py
+  backend/tests/test_contacts_comprehensive.py
+  backend/tests/test_projects_comprehensive.py
 )
 
 echo "========================================="
