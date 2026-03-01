@@ -260,9 +260,9 @@ Please provide:
           </div>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-bw-white">AI Diagnostic Assistant</h1>
+              <h1 className="text-2xl font-bold text-bw-white">Battwheels EFI™</h1>
               <span className="px-3 py-1 text-[10px] font-semibold bg-bw-volt/10 text-bw-volt border border-bw-volt/25 rounded-full font-mono uppercase tracking-[0.1em]">
-                Powered by EFI
+                AI Diagnostics
               </span>
             </div>
             <p className="text-bw-white/[0.45] mt-1">Get instant AI-powered diagnosis for your EV issues</p>
