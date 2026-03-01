@@ -10,7 +10,7 @@ import {
   Battery, Wrench, Plug, Zap, Settings, Code, ArrowUpDown, 
   CircleDot, Thermometer, Wind, HelpCircle,
   Bike, Truck, Car, CheckCircle, AlertTriangle, Lightbulb,
-  Copy, RotateCcw, Brain, Target, Shield, Clock, Cpu
+  RotateCcw, Brain, Target, Shield, Clock, Cpu
 } from "lucide-react";
 import { API, getAuthHeaders } from "@/App";
 
