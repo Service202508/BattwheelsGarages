@@ -47,6 +47,9 @@ CORE_TESTS=(
   backend/tests/test_knowledge_brain.py
   backend/tests/test_sprint_6c_cursor_pagination.py
   backend/tests/test_sprint_6b_knowledge_pipeline.py
+  backend/tests/test_tickets_comprehensive.py
+  backend/tests/test_estimates_comprehensive.py
+  backend/tests/test_efi_comprehensive.py
 )
 
 echo "========================================="
